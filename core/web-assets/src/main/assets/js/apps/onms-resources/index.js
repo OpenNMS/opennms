@@ -101,7 +101,7 @@ angular.module('onms-resources', [
       $scope.loaded = true;
       $scope.hasResources = data.children.resource.length > 0;
       var reduced = _.map(data.children.resource, function(obj) {
-        return { id: obj.id, label: obj.label, typeLabel: obj.typeLabel, checked: false, hasFlows: obj.externalValueAttributes.hasFlows };
+        return { id: obj.id, label: obj.label, typeLabel: obj.typeLabel, checked: false, hasFlows: obj.externalValueAttributes.hasFlows==='true' };
       });
       $scope.resources = _.groupBy(_.sortBy(reduced, function(r) {
         var type = r['typeLabel'];
