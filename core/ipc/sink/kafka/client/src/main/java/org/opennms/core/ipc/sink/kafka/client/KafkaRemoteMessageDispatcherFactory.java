@@ -69,8 +69,10 @@ import org.slf4j.LoggerFactory;
 import com.google.common.math.IntMath;
 import com.google.protobuf.ByteString;
 
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
+import io.opentracing.util.GlobalTracer;
 
 public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<String> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRemoteMessageDispatcherFactory.class);
@@ -106,9 +108,10 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                 byte[] messageInBytes = wrapMessageToProto(messageId, chunk, totalChunks, sinkMessageContent);
                 final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, messageId, messageInBytes);
                 // Add tags to tracer active span.
-                if (getTracer().activeSpan() != null && (chunk + 1 == totalChunks)) {
-                    getTracer().activeSpan().setTag(TracerConstants.TAG_TOPIC, topic);
-                    getTracer().activeSpan().setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageContent.length);
+                Span activeSpan = getTracer().activeSpan();
+                if (activeSpan != null && (chunk + 1 == totalChunks)) {
+                    activeSpan.setTag(TracerConstants.TAG_TOPIC, topic);
+                    activeSpan.setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageContent.length);
                 }
                 // Keep sending record till it delivers successfully.
                 while (true) {
@@ -159,7 +162,6 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             });
 
         }
-
         return sinkMessageBuilder.build().toByteArray();
     }
 
@@ -241,7 +243,10 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     @Override
     public Tracer getTracer() {
-        return getTracerRegistry().getTracer();
+        if (getTracerRegistry() != null) {
+            return getTracerRegistry().getTracer();
+        }
+        return  GlobalTracer.get();
     }
 
     public MinionIdentity getMinionIdentity() {

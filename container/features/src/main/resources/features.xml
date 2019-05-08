@@ -300,7 +300,7 @@
     </feature>
 
     <feature name="opennms-identity" version="${project.version}" description="OpenNMS :: Features :: Identity">
-        <bundle>wrap:mvn:org.opennms.features/org.opennms.features.opennms-identity/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/org.opennms.features.opennms-identity/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core" version="${project.version}" description="OpenNMS :: Core">

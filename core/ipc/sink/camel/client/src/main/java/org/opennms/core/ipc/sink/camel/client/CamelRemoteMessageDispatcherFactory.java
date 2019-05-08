@@ -50,6 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * Message dispatcher that sends messages via JMS.
@@ -88,6 +89,9 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
             tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, minionIdentity.getLocation());
+            if (headers.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER) instanceof String) {
+                tracer.activeSpan().setTag(TracerConstants.TAG_TOPIC, (String) headers.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER));
+            }
             String tracingInfo = TracingInfoCarrier.marshalTracingInfo(tracingInfoCarrier.getTracingInfoMap());
             if (tracingInfo != null) {
                 headers.put(CamelSinkConstants.JMS_SINK_TRACING_INFO, tracingInfo);
@@ -127,7 +131,10 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     @Override
     public Tracer getTracer() {
-        return getTracerRegistry().getTracer();
+        if (getTracerRegistry() != null) {
+            return getTracerRegistry().getTracer();
+        }
+        return GlobalTracer.get();
     }
 
     public void setTracerRegistry(TracerRegistry tracerRegistry) {

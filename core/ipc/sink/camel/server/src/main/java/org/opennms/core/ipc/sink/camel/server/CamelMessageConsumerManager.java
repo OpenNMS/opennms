@@ -69,6 +69,12 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
         context.start();
     }
 
+    public CamelMessageConsumerManager(CamelContext context, Identity identity, TracerRegistry tracerRegistry) throws Exception {
+        this.context = Objects.requireNonNull(context);
+        this.identity = Objects.requireNonNull(identity);
+        this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
+    }
+
     @Override
     protected synchronized void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (!routeIdsByModule.containsKey(module)) {

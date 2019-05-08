@@ -26,6 +26,8 @@
     <bean id="camelMessageConsumerManager" class="org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager"
           init-method="start" >
         <argument ref="sinkServer"/>
+        <argument ref="identity"/>
+        <argument ref="tracerRegistry"/>
     </bean>
 
     <service ref="camelMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />

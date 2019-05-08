@@ -81,6 +81,7 @@ import com.google.common.collect.Table;
 
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
@@ -225,7 +226,7 @@ public class ElasticFlowRepository implements FlowRepository {
         }
 
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());
-        final Tracer tracer = tracerRegistry.getTracer();
+        final Tracer tracer = getTracer();
         try (final Timer.Context ctx = logPersistingTimer.time();
              Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
             // Add location and source address tags to span.
@@ -679,4 +680,10 @@ public class ElasticFlowRepository implements FlowRepository {
         }
     }
 
+    private Tracer getTracer() {
+        if (tracerRegistry != null) {
+            return tracerRegistry.getTracer();
+        }
+        return GlobalTracer.get();
+    }
 }

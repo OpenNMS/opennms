@@ -55,6 +55,7 @@ import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.util.GlobalTracer;
 
 public class CamelSinkServerProcessor implements Processor {
 
@@ -69,7 +70,7 @@ public class CamelSinkServerProcessor implements Processor {
     public CamelSinkServerProcessor(CamelMessageConsumerManager consumerManager, SinkModule<?, Message> module, TracerRegistry tracerRegistry) {
         this.consumerManager = Objects.requireNonNull(consumerManager);
         this.module = Objects.requireNonNull(module);
-        this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
+        this.tracerRegistry = tracerRegistry;
         jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
         jmxReporter.start();
         messageSize = metricRegistry.histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
@@ -88,7 +89,6 @@ public class CamelSinkServerProcessor implements Processor {
         messageSize.update(messageBytes.length);
 
         try (Scope scope = spanBuilder.startActive(true);
-             // dispatchTime is a metric which measures time taken to dispatch
              Timer.Context context = dispatchTime.time()) {
             scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageBytes.length);
             consumerManager.dispatch(module, message);
@@ -101,7 +101,12 @@ public class CamelSinkServerProcessor implements Processor {
             tracingInfo.putAll(TracingInfoCarrier.unmarshalTracinginfo(tracingInfoObj));
         }
         Tracer.SpanBuilder spanBuilder;
-        Tracer tracer = tracerRegistry.getTracer();
+        Tracer tracer;
+        if (tracerRegistry != null) {
+            tracer = tracerRegistry.getTracer();
+        } else {
+            tracer = GlobalTracer.get();
+        }
         SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfo));
         if (context != null) {
             spanBuilder = tracer.buildSpan(module.getId()).asChildOf(context);

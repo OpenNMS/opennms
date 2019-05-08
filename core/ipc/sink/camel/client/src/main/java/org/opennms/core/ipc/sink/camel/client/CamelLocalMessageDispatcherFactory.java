@@ -41,6 +41,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * Message producer that dispatches the messages directly the consumers.
@@ -77,11 +78,14 @@ public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatche
     public void setTracerRegistry(TracerRegistry tracerRegistry) {
         this.tracerRegistry = tracerRegistry;
     }
+
     @Override
     public Tracer getTracer() {
-        return getTracerRegistry().getTracer();
+        if (getTracerRegistry() != null) {
+            return getTracerRegistry().getTracer();
+        }
+        return GlobalTracer.get();
     }
-
 
     @Override
     public void afterPropertiesSet() {

@@ -30,10 +30,7 @@ package org.opennms.core.ipc.sink.kafka.server;
 
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.DEFAULT_MESSAGEID_CONFIG;
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MESSAGEID_CACHE_CONFIG;
-import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.DEFAULT_MESSAGEID_CONFIG;
-import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MESSAGEID_CACHE_CONFIG;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,13 +70,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -90,6 +86,7 @@ import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.util.GlobalTracer;
 
 public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
 
@@ -188,8 +185,8 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                             // Update metrics.
                             messageSize.update(messageInBytes.length);
                             Tracer.SpanBuilder spanBuilder = buildSpanFromSinkMessage(sinkMessage);
+                            // Tracing scope and Metrics Timer context will measure the time to dispatch.
                             try(Scope scope = spanBuilder.startActive(true);
-                                // dispatchTime is a metric which measures time taken to dispatch
                                 Timer.Context context = dispatchTime.time()) {
                                 scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageInBytes.length);
                                 scope.span().setTag(TracerConstants.TAG_TOPIC, topic);
@@ -216,7 +213,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
 
         private Tracer.SpanBuilder buildSpanFromSinkMessage(SinkMessageProtos.SinkMessage sinkMessage) {
 
-            Tracer tracer = tracerRegistry.getTracer();
+            Tracer tracer = getTracer();
             Tracer.SpanBuilder spanBuilder;
             Map<String, String> tracingInfoMap = new HashMap<>();
             sinkMessage.getTracingInfoList().forEach(tracingInfo -> {
@@ -302,5 +299,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
 
     public void setTracerRegistry(TracerRegistry tracerRegistry) {
         this.tracerRegistry = tracerRegistry;
+    }
+
+    public Tracer getTracer() {
+        if (tracerRegistry != null) {
+            return tracerRegistry.getTracer();
+        }
+        return GlobalTracer.get();
     }
 }
