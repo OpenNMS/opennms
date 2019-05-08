@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.rest.impl.renderer.json;
+package org.opennms.netmgt.graph.rest.impl.renderer;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,6 @@ import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
-import org.opennms.netmgt.graph.rest.impl.renderer.GraphRenderer;
 
 public class JsonGraphRenderer implements GraphRenderer {
 

@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.graph.rest.impl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -40,11 +38,7 @@ import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.rest.api.GraphRestService;
-import org.opennms.netmgt.graph.rest.impl.renderer.GraphRenderer;
-import org.opennms.netmgt.graph.rest.impl.renderer.json.JsonGraphRenderer;
-import org.opennms.netmgt.graph.rest.impl.renderer.xml.XmlGraphRenderer;
-
-import com.google.common.base.Strings;
+import org.opennms.netmgt.graph.rest.impl.renderer.JsonGraphRenderer;
 
 public class GraphRestServiceImpl implements GraphRestService {
 
@@ -55,77 +49,30 @@ public class GraphRestServiceImpl implements GraphRestService {
     }
 
     @Override
-    public Response listContainerInfo(String acceptHeader) {
-        final MediaType contentType = parseContentType(acceptHeader);
-        if (contentType == null) {
-            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
-        }
+    public Response listContainerInfo() {
         final List<GraphContainerInfo> graphContainerInfos = graphService.getGraphContainerInfos();
         if (graphContainerInfos.isEmpty()) {
             return Response.noContent().build();
         }
-        final String rendered = render(contentType, graphContainerInfos);
-        return Response.ok(rendered).type(contentType).build();
+        final String rendered = render(graphContainerInfos);
+        return Response.ok(rendered).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
     @Override
-    public Response getContainer(String acceptHeader, String containerId) {
-        GraphContainer container = graphService.getGraphContainer(containerId);
+    public Response getContainer(String containerId) {
+        final GraphContainer container = graphService.getGraphContainer(containerId);
         if (container == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        final MediaType contentType = parseContentType(acceptHeader);
-        if (contentType == null) {
-            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
-        }
-        final String rendered = render(contentType, container);
-        return Response.ok(rendered).type(contentType).build();
+        final String rendered = render(container);
+        return Response.ok(rendered).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
-    // Tries to parse the provided type
-    protected static MediaType parseContentType(String type) {
-        if (Strings.isNullOrEmpty(type)) {
-            return null;
-        }
-        // If multi valued, try for each value, until one matches
-        if (type.contains(",")) {
-            final List<String> multipleTypes = Arrays.stream(type.split(","))
-                    .map(String::trim)
-                    .filter(value -> !Strings.isNullOrEmpty(value))
-                    .collect(Collectors.toList());
-            for (String eachType : multipleTypes) {
-                final MediaType parsedType = parseContentType(eachType);
-                if (parsedType != null) {
-                    return parsedType;
-                }
-            }
-        }
-        final MediaType mediaType = MediaType.valueOf(type);
-        if (mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
-            return mediaType;
-        }
-        if (mediaType.equals(MediaType.WILDCARD_TYPE)) {
-            return MediaType.APPLICATION_JSON_TYPE;
-        }
-        return null;
+    private static String render(List<GraphContainerInfo> infos) {
+        return new JsonGraphRenderer().render(infos);
     }
 
-    private static String render(MediaType mediaType, List<GraphContainerInfo> infos) {
-        return getRenderer(mediaType).render(infos);
+    private static String render(GraphContainer graphContainer) {
+        return new JsonGraphRenderer().render(graphContainer);
     }
-
-    private static String render(MediaType mediaType, GraphContainer graphContainer) {
-        return getRenderer(mediaType).render(graphContainer);
-    }
-
-    protected static GraphRenderer getRenderer(MediaType mediaType) {
-        if (mediaType.equals(MediaType.APPLICATION_JSON_TYPE)) {
-            return new JsonGraphRenderer();
-        }
-        if (mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
-            return new XmlGraphRenderer();
-        }
-        throw new IllegalArgumentException("Cannot render '" + mediaType + "'");
-    }
-
 }

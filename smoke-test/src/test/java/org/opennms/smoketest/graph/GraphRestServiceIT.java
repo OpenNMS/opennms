@@ -32,18 +32,12 @@ import static com.jayway.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.graphml.model.GraphML;
-import org.opennms.features.graphml.model.GraphMLReader;
-import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.KarafShell;
@@ -84,62 +78,33 @@ public class GraphRestServiceIT  extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void verifyContainerListInfosDefaultsToJson() {
-        // Automatically fall back to json
-        given().get().then().statusCode(204); // no content
-
-        // Post a Graph
-        createGraphML();
-
-        // Verify creation
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> verifyJsonInfo());
-    }
-
-    @Test
-    public void verifyContainerListInfosAsJson() {
+    public void verifyContainerListInfos() {
         // Explicitly ask for json
         given().accept(ContentType.JSON).then().statusCode(204);
+
+        // Verify without content type
+        given().then().statusCode(204);
 
         // Post a Graph
         createGraphML();
 
         // Verify creation if asked explicitly for JSON
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> verifyJsonInfo());
-    }
-
-    @Test
-    public void verifyContainerListInfosAsXml() {
-        // Automatically fall back to json
-        given().get().then().statusCode(204); // no content
-
-        // Explicitly ask for XML
-        given().accept(ContentType.XML).then().statusCode(204);
-
-        // Post a Graph
-        createGraphML();
-
-       // Verify creation if asked explicitly for XML
         await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
-            given().accept(ContentType.XML)
-                    .get()
-                    .then()
-                    .statusCode(200)
-                    .contentType(ContentType.XML)
-                    .content("containers.@count", Matchers.is("1"))
-                    .content("containers.@offset", Matchers.is("0"))
-                    .content("containers.@totalCount", Matchers.is("1"))
-                    .content("containers.container[0].@id", Matchers.is(CONTAINER_ID))
-                    .content("containers.container[0].@label", Matchers.is(GraphMLTopologyIT.LABEL))
-                    .content("containers.container[0].graphs.children().size()", Matchers.is(2))
-                    .content("containers.container[0].graphs.graph[0].@namespace", Matchers.is("acme:regions"))
-                    .content("containers.container[0].graphs.graph[1].@namespace", Matchers.is("acme:markets"))
-                    .content("containers.container[0].graphs.graph[1].@label", Matchers.is("Markets"))
-                    .content("containers.container[0].graphs.graph[1].@description", Matchers.is("The Markets Layer"));
+            given().accept(ContentType.JSON).get()
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .content("[0].id", Matchers.is(CONTAINER_ID))
+                    .content("[0].label", Matchers.is(GraphMLTopologyIT.LABEL))
+                    .content("[0].graphs.size()", Matchers.is(2))
+                    .content("[0].graphs[0].namespace", Matchers.is("acme:regions"))
+                    .content("[0].graphs[1].namespace", Matchers.is("acme:markets"))
+                    .content("[0].graphs[1].label", Matchers.is("Markets"))
+                    .content("[0].graphs[1].description", Matchers.is("The Markets Layer"));
         });
     }
 
     @Test
-    public void verifyGetContainerAsJson() {
+    public void verifyGetContainer() {
         createGraphML();
         await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
             given().get(CONTAINER_ID).then()
@@ -155,46 +120,6 @@ public class GraphRestServiceIT  extends OpenNMSSeleniumTestCase {
                     .content("graphs[1].vertices", Matchers.hasSize(16))
                     .content("graphs[1].edges", Matchers.hasSize(0));
         });
-    }
-
-    @Test
-    public void verifyGetContainerAsXml() {
-        createGraphML();
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
-            try (InputStream inputStream = given().accept(ContentType.XML)
-                    .get(CONTAINER_ID).then()
-                    .contentType(ContentType.XML)
-                    .extract().response().asInputStream() ) {
-                final GraphML graphML = GraphMLReader.read(inputStream);
-                Assert.assertThat(graphML.getGraphs(), Matchers.hasSize(2));
-                Assert.assertThat(graphML.getGraphs().get(0).getId(), Matchers.is("regions"));
-                Assert.assertThat(graphML.getGraphs().get(0).getProperties().get("namespace"), Matchers.is("acme:regions"));
-                Assert.assertThat(graphML.getGraphs().get(0).getNodes(), Matchers.hasSize(4));
-                Assert.assertThat(graphML.getGraphs().get(0).getEdges(), Matchers.hasSize(16));
-
-                Assert.assertThat(graphML.getGraphs().get(1).getId(), Matchers.is("markets"));
-                Assert.assertThat(graphML.getGraphs().get(1).getProperties().get("namespace"), Matchers.is("acme:markets"));
-                Assert.assertThat(graphML.getGraphs().get(1).getNodes(), Matchers.hasSize(16));
-                Assert.assertThat(graphML.getGraphs().get(1).getEdges(), Matchers.hasSize(0));
-            } catch (IOException | InvalidGraphException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    private void verifyJsonInfo() {
-        given().accept(ContentType.JSON)
-                .get()
-                .then()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .content("[0].id", Matchers.is(CONTAINER_ID))
-                .content("[0].label", Matchers.is(GraphMLTopologyIT.LABEL))
-                .content("[0].graphs.size()", Matchers.is(2))
-                .content("[0].graphs[0].namespace", Matchers.is("acme:regions"))
-                .content("[0].graphs[1].namespace", Matchers.is("acme:markets"))
-                .content("[0].graphs[1].label", Matchers.is("Markets"))
-                .content("[0].graphs[1].description", Matchers.is("The Markets Layer"));
     }
 
     private void createGraphML() {
