@@ -28,6 +28,9 @@
 
 package org.opennms.core.ipc.sink.camel.server;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
+import static org.opennms.core.ipc.sink.api.MessageConsumerManager.METRIC_DISPATCH_TIME;
+import static org.opennms.core.ipc.sink.api.MessageConsumerManager.METRIC_MESSAGE_SIZE;
 import static org.opennms.core.ipc.sink.camel.CamelSinkConstants.JMS_SINK_TRACING_INFO;
 
 import java.util.HashMap;
@@ -42,6 +45,11 @@ import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 import io.opentracing.Scope;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
@@ -53,11 +61,19 @@ public class CamelSinkServerProcessor implements Processor {
     private final CamelMessageConsumerManager consumerManager;
     private final SinkModule<?, Message> module;
     private final TracerRegistry tracerRegistry;
+    private MetricRegistry metricRegistry = new MetricRegistry();
+    private JmxReporter jmxReporter = null;
+    private Histogram messageSize;
+    private Timer dispatchTime;
 
     public CamelSinkServerProcessor(CamelMessageConsumerManager consumerManager, SinkModule<?, Message> module, TracerRegistry tracerRegistry) {
         this.consumerManager = Objects.requireNonNull(consumerManager);
         this.module = Objects.requireNonNull(module);
         this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
+        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
+        jmxReporter.start();
+        messageSize = metricRegistry.histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
+        dispatchTime = metricRegistry.timer(MetricRegistry.name(module.getId(), METRIC_DISPATCH_TIME));
     }
 
     @Override
@@ -66,8 +82,14 @@ public class CamelSinkServerProcessor implements Processor {
         // build span from message headers and retrieve custom tags into tracing info.
         Map<String, String> tracingInfo = new HashMap<>();
         Tracer.SpanBuilder spanBuilder = buildSpanFromHeaders(exchange.getIn(), tracingInfo);
-        try (Scope scope = spanBuilder.startActive(true)) {
-            final Message message = module.unmarshal(messageBytes);
+
+        final Message message = module.unmarshal(messageBytes);
+        // Update metrics.
+        messageSize.update(messageBytes.length);
+
+        try (Scope scope = spanBuilder.startActive(true);
+             // dispatchTime is a metric which measures time taken to dispatch
+             Timer.Context context = dispatchTime.time()) {
             scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageBytes.length);
             consumerManager.dispatch(module, message);
         }
@@ -87,5 +109,6 @@ public class CamelSinkServerProcessor implements Processor {
             spanBuilder = tracer.buildSpan(module.getId());
         }
         return spanBuilder;
+
     }
 }

@@ -248,6 +248,15 @@ public class RestClient {
         return getBuilder(target).get(Long.class);
     }
 
+    public void resetGeocoderConfiguration() {
+        final WebTarget target = getTargetV2().path("geocoding").path("config");
+        final Response response = getBuilder(target).delete();
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
+    }
+
     private WebTarget getTarget() {
         final Client client = ClientBuilder.newClient();
         return client.target(String.format("http://%s:%d/opennms/rest", addr.getHostString(), addr.getPort()));

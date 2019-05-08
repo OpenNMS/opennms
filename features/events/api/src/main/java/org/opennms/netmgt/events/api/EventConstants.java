@@ -501,7 +501,6 @@ public abstract class EventConstants {
     public static final String PARAM_REPORT_TITLE = "reportTitle";
     public static final String PARAM_REPORT_GRAPH_COUNT = "graphCount";
 
-
     public static final String MONITORING_SYSTEM_ADDED_UEI = "uei.opennms.org/internal/monitoringSystemAdded";
     public static final String MONITORING_SYSTEM_LOCATION_CHANGED_UEI = "uei.opennms.org/internal/monitoringSystemLocationChanged";
     public static final String MONITORING_SYSTEM_DELETED_UEI = "uei.opennms.org/internal/monitoringSystemDeleted";
