@@ -203,18 +203,18 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
                     String.format("The namespace of the edge (%s) doesn't match the namespace of this graph (%s). Edge: %s ",
                     edge.getNamespace(), this.getNamespace(), edge.toString()));
         }
-        if (edge.getSource().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getSource().getId()) == null) {
-            throw new IllegalArgumentException(
-                    String.format("Adding an VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
-                            edge.getSource().getId(), this.getNamespace()));
-        }
-        if (edge.getTarget().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getTarget().getId()) == null) {
-            throw new IllegalArgumentException(
-                    String.format("Adding an VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
-                            edge.getTarget().getId(), this.getNamespace()));
-        }
+        assertVertexFromSameNamespaceIsKnown(edge.getSource());
+        assertVertexFromSameNamespaceIsKnown(edge.getTarget());
         jungGraph.addEdge(edge, edge.getSource(), edge.getTarget());
         edgeToIdMap.put(edge.getId(), edge);
+    }
+
+    private void assertVertexFromSameNamespaceIsKnown(VertexRef vertex){
+        if (vertex.getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(vertex.getId()) == null) {
+            throw new IllegalArgumentException(
+                    String.format("Adding an VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
+                            vertex.getId(), this.getNamespace()));
+        }
     }
 
     @Override

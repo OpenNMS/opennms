@@ -44,7 +44,7 @@ public class EdgeEntity extends AbstractGraphEntity {
     @Embedded
     @AttributeOverrides(value = {
             @AttributeOverride(name = "namespace", column = @Column(name = "source_vertex_namespace")),
-            @AttributeOverride(name = "id", column = @Column(name = "target_vertex_id"))
+            @AttributeOverride(name = "id", column = @Column(name = "source_vertex_id"))
     })
     private VertexRefEntity source;
 
