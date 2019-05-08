@@ -30,7 +30,7 @@ package org.opennms.features.topology.plugins.topo.application.browsers;
 
 import org.opennms.features.topology.api.browsers.AbstractSelectionLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
-import org.opennms.features.topology.plugins.topo.application.OnmsApplicationVertex;
+import org.opennms.features.topology.plugins.topo.application.LegacyApplicationVertex;
 
 import com.vaadin.ui.Button;
 import com.vaadin.v7.data.Property;
@@ -68,7 +68,7 @@ public class ApplicationSelectionLinkGenerator extends AbstractSelectionLinkGene
 					public void buttonClick(Button.ClickEvent event) {
 						final Integer applicationId = idProperty.getValue();
 						final String applicationName = labelProperty.getValue();
-						final OnmsApplicationVertex vertex = new OnmsApplicationVertex(applicationId.toString(), applicationName);
+						final LegacyApplicationVertex vertex = new LegacyApplicationVertex(applicationId.toString(), applicationName);
 						fireVertexUpdatedEvent(vertex);
 					}
 				});

@@ -52,25 +52,25 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class ApplicationSearchProvider extends AbstractSearchProvider implements SearchProvider {
+public class LegacyApplicationSearchProvider extends AbstractSearchProvider implements SearchProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationSearchProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LegacyApplicationSearchProvider.class);
     private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
 
     private ApplicationDao applicationDao;
 
-    public ApplicationSearchProvider(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
+    public LegacyApplicationSearchProvider(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
         this.transactionAwareBeanProxyFactory = Objects.requireNonNull(transactionAwareBeanProxyFactory);
     }
     
     @Override
     public String getSearchProviderNamespace() {
-        return ApplicationTopologyProvider.TOPOLOGY_NAMESPACE;
+        return LegacyApplicationTopologyProvider.TOPOLOGY_NAMESPACE;
     }
 
     @Override
     public boolean contributesTo(String namespace) {
-        return ApplicationTopologyProvider.TOPOLOGY_NAMESPACE.equalsIgnoreCase(namespace);
+        return LegacyApplicationTopologyProvider.TOPOLOGY_NAMESPACE.equalsIgnoreCase(namespace);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class ApplicationSearchProvider extends AbstractSearchProvider implements
 
         // TODO: patrick do we want to replace the dao call also with a call to GraphService?
         for (OnmsApplication application : applicationDao.findMatching(dbQueryCriteria)) {
-            final OnmsApplicationVertex applicationVertex = new OnmsApplicationVertex(application);
+            final LegacyApplicationVertex applicationVertex = new LegacyApplicationVertex(application);
             SearchResult searchResult = new SearchResult(applicationVertex, true, false);
             results.add(searchResult);
         }

@@ -34,11 +34,11 @@ import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertexType;
 import org.opennms.netmgt.model.OnmsApplication;
 
-public class OnmsApplicationVertex extends AbstractLevelAwareVertex implements LevelAware {
+public class LegacyApplicationVertex extends AbstractLevelAwareVertex implements LevelAware {
 
     private Integer serviceTypeId;
 
-    public OnmsApplicationVertex(org.opennms.netmgt.graph.provider.application.ApplicationVertex vertex) {
+    public LegacyApplicationVertex(org.opennms.netmgt.graph.provider.application.ApplicationVertex vertex) {
         this(vertex.getId(), vertex.getName());
         final boolean isApplication = (vertex.getVertexType() == ApplicationVertexType.Application);
         if(isApplication) {
@@ -53,7 +53,7 @@ public class OnmsApplicationVertex extends AbstractLevelAwareVertex implements L
         }
     }
 
-    public OnmsApplicationVertex(OnmsApplication application) {
+    public LegacyApplicationVertex(OnmsApplication application) {
         this(application.getId().toString(), application.getName());
         setTooltipText(String.format("Application '%s'", application.getName()));
         setIconKey("application.application");
@@ -63,8 +63,8 @@ public class OnmsApplicationVertex extends AbstractLevelAwareVertex implements L
      * Creates a new {@link ApplicationVertex}.
      * @param id the unique id of this vertex. Must be unique overall the namespace.
      */
-    public OnmsApplicationVertex(String id, String label) {
-        super(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
+    public LegacyApplicationVertex(String id, String label) {
+        super(LegacyApplicationTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
     }
     
     public void setServiceTypeId(Integer serviceTypeId) {
@@ -87,11 +87,11 @@ public class OnmsApplicationVertex extends AbstractLevelAwareVertex implements L
         return applicationId != null && applicationId.equals(getRoot().getId());
     }
 
-    public OnmsApplicationVertex getRoot() {
+    public LegacyApplicationVertex getRoot() {
         if (isRoot()) {
             return this;
         }
-        return ((OnmsApplicationVertex)getParent()).getRoot();
+        return ((LegacyApplicationVertex)getParent()).getRoot();
     }
 
     @Override

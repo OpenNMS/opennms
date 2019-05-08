@@ -46,11 +46,11 @@ import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.google.common.collect.Collections2;
 
-public class ApplicationStatusProvider implements StatusProvider {
+public class LegacyApplicationStatusProvider implements StatusProvider {
 
     private final ApplicationDao applicationDao;
 
-    public ApplicationStatusProvider(ApplicationDao applicationDao) {
+    public LegacyApplicationStatusProvider(ApplicationDao applicationDao) {
         this.applicationDao = applicationDao;
     }
 
@@ -73,7 +73,7 @@ public class ApplicationStatusProvider implements StatusProvider {
 
         // calculate status for children
         for (VertexRef eachVertex : vertexRefs) {
-            OnmsApplicationVertex applicationVertex = (OnmsApplicationVertex) eachVertex;
+            LegacyApplicationVertex applicationVertex = (LegacyApplicationVertex) eachVertex;
             Status alarmStatus = statusMap.get(createKey(applicationVertex));
             if (alarmStatus == null) {
                 alarmStatus = createStatus(OnmsSeverity.NORMAL, 0);
@@ -83,11 +83,11 @@ public class ApplicationStatusProvider implements StatusProvider {
 
         // calculate status for root
         for (VertexRef eachRoot : vertexRefsRoot) {
-            OnmsApplicationVertex eachRootApplication = (OnmsApplicationVertex) eachRoot;
+            LegacyApplicationVertex eachRootApplication = (LegacyApplicationVertex) eachRoot;
             OnmsSeverity maxSeverity = OnmsSeverity.NORMAL;
             int count = 0;
             for (VertexRef eachChild : eachRootApplication.getChildren()) {
-                OnmsApplicationVertex eachChildApplication = (OnmsApplicationVertex) eachChild;
+                LegacyApplicationVertex eachChildApplication = (LegacyApplicationVertex) eachChild;
                 ApplicationStatusEntity.Key childKey = createKey(eachChildApplication);
                 Status childStatus = statusMap.get(childKey);
                 if (childStatus != null && maxSeverity.isLessThan(createSeverity(childStatus.computeStatus()))) {
@@ -110,13 +110,13 @@ public class ApplicationStatusProvider implements StatusProvider {
         return null;
     }
 
-    private ApplicationStatusEntity.Key createKey(OnmsApplicationVertex vertex) {
+    private ApplicationStatusEntity.Key createKey(LegacyApplicationVertex vertex) {
         return new ApplicationStatusEntity.Key(String.valueOf(vertex.getNodeID()), String.valueOf(vertex.getServiceTypeId()), vertex.getIpAddress());
     }
 
     @Override
     public String getNamespace() {
-        return ApplicationTopologyProvider.TOPOLOGY_NAMESPACE;
+        return LegacyApplicationTopologyProvider.TOPOLOGY_NAMESPACE;
     }
 
     @Override
@@ -125,7 +125,7 @@ public class ApplicationStatusProvider implements StatusProvider {
     }
 
     private Collection<VertexRef> getRootElements(Collection<VertexRef> vertices) {
-        return Collections2.filter(vertices, input -> ((OnmsApplicationVertex) input).isRoot());
+        return Collections2.filter(vertices, input -> ((LegacyApplicationVertex) input).isRoot());
     }
 
     private List<VertexRef> getVertexRefsForNamespace(Collection<VertexRef> vertices) {

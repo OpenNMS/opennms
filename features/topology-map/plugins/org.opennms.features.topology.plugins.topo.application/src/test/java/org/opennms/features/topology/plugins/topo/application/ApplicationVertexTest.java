@@ -36,7 +36,7 @@ public class ApplicationVertexTest {
 
     @Test
     public void testHierarchy() {
-        OnmsApplicationVertex vertex = createVertex("100");
+        LegacyApplicationVertex vertex = createVertex("100");
         vertex.addChildren(createVertex("service:1"));
         vertex.addChildren(createVertex("service:2"));
 
@@ -47,8 +47,8 @@ public class ApplicationVertexTest {
 
         // Verify first level
         for (VertexRef eachRef : vertex.getChildren()) {
-            Assert.assertEquals(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE, eachRef.getNamespace());
-            OnmsApplicationVertex child = (OnmsApplicationVertex) eachRef;
+            Assert.assertEquals(LegacyApplicationTopologyProvider.TOPOLOGY_NAMESPACE, eachRef.getNamespace());
+            LegacyApplicationVertex child = (LegacyApplicationVertex) eachRef;
 
             Assert.assertEquals(false, child.isRoot());
             Assert.assertEquals(true, child.isLeaf());
@@ -59,7 +59,7 @@ public class ApplicationVertexTest {
         }
     }
 
-    private static OnmsApplicationVertex createVertex(String id) {
-        return new OnmsApplicationVertex(id, id);
+    private static LegacyApplicationVertex createVertex(String id) {
+        return new LegacyApplicationVertex(id, id);
     }
 }

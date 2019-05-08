@@ -56,13 +56,13 @@ import org.opennms.netmgt.graph.simple.SimpleEdge;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class ApplicationTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
+public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
     public static final String TOPOLOGY_NAMESPACE = "application";
 
     private GraphService graphService;
 
-    public ApplicationTopologyProvider(GraphService graphService) {
+    public LegacyApplicationTopologyProvider(GraphService graphService) {
         super(TOPOLOGY_NAMESPACE);
         this.graphService = Objects.requireNonNull(graphService);
     }
@@ -73,7 +73,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
         final GenericGraph genericGraph = graphService.getGraph(ApplicationGraphProvider.TOPOLOGY_NAMESPACE);
         final ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph);
         for (ApplicationVertex eachApplicationVertex : applicationGraph.getVertices()) {
-            OnmsApplicationVertex applicationVertex = new OnmsApplicationVertex(eachApplicationVertex);
+            LegacyApplicationVertex applicationVertex = new LegacyApplicationVertex(eachApplicationVertex);
             graph.addVertices(applicationVertex);
         }
         for (SimpleEdge edge : applicationGraph.getEdges()) {
@@ -95,8 +95,8 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                 // find the other side of the edge:
                 org.opennms.netmgt.graph.api.VertexRef parentRef = Stream.of(edge.getSource(), edge.getTarget())
                         .filter(ref -> !ref.equals(serviceVertex.getVertexRef())).findFirst().get();
-                OnmsApplicationVertex parent = (OnmsApplicationVertex) graph.getVertex(new DefaultVertexRef(parentRef.getNamespace(), parentRef.getId()));
-                OnmsApplicationVertex child = (OnmsApplicationVertex) graph.getVertex(new DefaultVertexRef(serviceVertex.getNamespace(), serviceVertex.getId()));
+                LegacyApplicationVertex parent = (LegacyApplicationVertex) graph.getVertex(new DefaultVertexRef(parentRef.getNamespace(), parentRef.getId()));
+                LegacyApplicationVertex child = (LegacyApplicationVertex) graph.getVertex(new DefaultVertexRef(serviceVertex.getNamespace(), serviceVertex.getId()));
                 if (parent == null) {
                     throw new IllegalStateException("Parent vertex [namespace='"+ parentRef.getNamespace() +"', id='" + parentRef.getId() +"'] was not found in graph.");
                 }
@@ -125,7 +125,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                             .filter( v -> v.getVertexType() == ApplicationVertexType.Application)
                             .findFirst();
                     if (firstVertex.isPresent()) {
-                        return Lists.newArrayList(new DefaultVertexHopCriteria(new OnmsApplicationVertex(firstVertex.get())));
+                        return Lists.newArrayList(new DefaultVertexHopCriteria(new LegacyApplicationVertex(firstVertex.get())));
                     }
                     return null;
                 });
@@ -133,9 +133,9 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
 
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType contentType) {
-        Set<OnmsApplicationVertex> filteredVertices = selectedVertices.stream()
+        Set<LegacyApplicationVertex> filteredVertices = selectedVertices.stream()
                 .filter(v -> TOPOLOGY_NAMESPACE.equals(v.getNamespace()))
-                .map(v -> (OnmsApplicationVertex) v)
+                .map(v -> (LegacyApplicationVertex) v)
                 .collect(Collectors.toSet());
         Set<Integer> nodeIds = extractNodeIds(filteredVertices);
         switch (contentType) {
@@ -145,8 +145,8 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                 return new SelectionChangedListener.IdSelection<>(nodeIds);
             case Application:
                 final Set<Integer> applicationIds = filteredVertices.stream()
-                        .filter(OnmsApplicationVertex::isRoot)
-                        .map(OnmsApplicationVertex::getId)
+                        .filter(LegacyApplicationVertex::isRoot)
+                        .map(LegacyApplicationVertex::getId)
                         .map(Integer::valueOf)
                         .collect(Collectors.toSet());
                 return new SelectionChangedListener.IdSelection<>(applicationIds);
@@ -162,10 +162,10 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                 ContentType.Node).contains(type);
     }
 
-    private Set<Integer> extractNodeIds(Set<OnmsApplicationVertex> applicationVertices) {
+    private Set<Integer> extractNodeIds(Set<LegacyApplicationVertex> applicationVertices) {
         return applicationVertices.stream()
                 .filter(eachVertex -> TOPOLOGY_NAMESPACE.equals(eachVertex.getNamespace()) && eachVertex.getNodeID() != null)
-                .map(OnmsApplicationVertex::getNodeID)
+                .map(LegacyApplicationVertex::getNodeID)
                 .collect(Collectors.toSet());
     }
 }
