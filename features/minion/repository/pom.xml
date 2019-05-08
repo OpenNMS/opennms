@@ -318,14 +318,6 @@
             <artifactId>org.opennms.protocols.xml</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- TODO MVR this is including 4.1.7 with java 8, but 4.2.1-SNAPSHOT with java 9. WTF? -->
-        <!-- TODO MVR temporarily disable -->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.cxf.karaf</groupId>-->
-            <!--<artifactId>cxf-karaf-commands</artifactId>-->
-            <!--<version>${cxfVersion}</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
     </dependencies>
 
     <repositories>
