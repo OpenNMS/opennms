@@ -8,6 +8,7 @@
 OpenTracing enables distributed tracing which makes it possible to monitor RPCs or transactions across process boundaries.
 This functionality can be leveraged to help track and diagnose communication problems that may arise in distributed deployments of _{opennms-product-name}_ that leverage _Minion_ and/or _Sentinel_.
 _{opennms-product-name}_ currently supports link:https://www.jaegertracing.io/[Jaeger] which implements the OpenTracing API.
+OpenTracing is now supported on RPC calls between _Minion_ and _{opennms-product-name}_  and Sink API calls (including flows) between _Minion_ and _Sentinel_ or _{opennms-product-name}_ 
 
 ==== Enabling Tracing on _{opennms-product-name}_
 
@@ -25,6 +26,7 @@ Restart _{opennms-product-name}_ to apply the changes.
 Additional Jaeger tracing options can be added to the `jaeger.properties` file specified above.
 Available configuration options are listed link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[here].
 
+
 ==== Enabling Tracing on _Minion_
 
 Enable tracing with Jaeger on _Minion_ by installing the `opennms-core-tracing-jaeger` feature.
@@ -38,4 +40,19 @@ NOTE: Uninstalling the `opennms-core-tracing-jaeger` feature at runtime is not y
 To disable tracing with Jaeger, remove the reference from the features boot file and restart _Minion_.
 
 Additional Jaeger tracing options can be added to `$MINION_HOME/etc/system.properties` on _Minion_.
+Available configuration options are listed link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[here].
+
+==== Enabling Tracing on _Sentinel_
+
+Enable tracing with Jaeger on _Sentinel_ by installing the `opennms-core-tracing-jaeger` feature.
+
+[source, sh]
+----
+echo 'opennms-core-tracing-jaeger' >> "$SENTINEL_HOME/etc/featuresBoot.d/jaeger.boot"
+----
+
+NOTE: Uninstalling the `opennms-core-tracing-jaeger` feature at runtime is not yet supported.
+To disable tracing with Jaeger, remove the reference from the features boot file and restart _Sentinel_.
+
+Additional Jaeger tracing options can be added to `$SENTINEL_HOME/etc/system.properties` on _Sentinel_.
 Available configuration options are listed link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[here].

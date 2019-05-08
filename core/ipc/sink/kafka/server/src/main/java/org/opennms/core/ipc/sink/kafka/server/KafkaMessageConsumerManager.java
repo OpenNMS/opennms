@@ -168,7 +168,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                             }
                             Tracer.SpanBuilder spanBuilder = buildSpanFromSinkMessage(sinkMessage);
                             try(Scope scope = spanBuilder.startActive(true)) {
-                                scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessage.getSerializedSize());
+                                scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageInBytes.length);
                                 scope.span().setTag(TracerConstants.TAG_TOPIC, topic);
                                 dispatch(module, module.unmarshal(messageInBytes));
                             }
