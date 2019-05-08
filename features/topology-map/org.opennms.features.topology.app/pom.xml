@@ -36,6 +36,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <skip>${skipSurefire}</skip>
                     <excludes>
                         <exclude>**/*GwtTest.java</exclude>
                     </excludes>

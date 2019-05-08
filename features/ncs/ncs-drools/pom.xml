@@ -64,6 +64,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <skip>${skipSurefire}</skip>
           <forkMode>pertest</forkMode>
           <argLine>-Xmx256m</argLine>
           <includes>

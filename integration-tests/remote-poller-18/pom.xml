@@ -30,6 +30,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <skip>${skipSurefire}</skip>
           <systemPropertyVariables>
             <httpRemotingWebAppPath>${org.opennms.assemblies:org.opennms.assemblies.http-remoting:war}</httpRemotingWebAppPath>
           </systemPropertyVariables>

@@ -27,6 +27,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <skip>${skipSurefire}</skip>
           <systemPropertyVariables>
             <opennms.home>${project.build.testOutputDirectory}</opennms.home>
           </systemPropertyVariables>

@@ -24,6 +24,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <skip>${skipSurefire}</skip>
           <systemPropertyVariables>
             <!-- Turn off queuing in the RRD output -->
             <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>

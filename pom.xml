@@ -843,6 +843,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
+          <skip>${skipSurefire}</skip>
           <systemPropertyVariables>
             <java.awt.headless>true</java.awt.headless>
             <mock.logLevel>${mock.logLevel}</mock.logLevel>

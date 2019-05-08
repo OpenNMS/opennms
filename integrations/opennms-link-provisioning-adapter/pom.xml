@@ -36,6 +36,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <skip>${skipSurefire}</skip>
           <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
           <systemProperties>
             <property>
