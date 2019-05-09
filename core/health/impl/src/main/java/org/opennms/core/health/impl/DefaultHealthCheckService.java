@@ -66,7 +66,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultHealthCheckService.class);
 
     // HealthChecks are performed asynchronously with this executor.
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setNameFormat("health-check-%d").build());
+    private final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("health-check-%d").build());
 
     // Context to load the services
     private BundleContext bundleContext;
