@@ -183,7 +183,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     public void addVertex(GenericVertex vertex) {
         Objects.requireNonNull(vertex);
         Objects.requireNonNull(vertex.getId());
-        if (jungGraph.containsVertex(vertex)) return; // already added
+        if (jungGraph.containsVertex(vertex.getVertexRef())) return; // already added
         jungGraph.addVertex(vertex.getVertexRef());
         vertexToIdMap.put(vertex.getId(), vertex);
 
@@ -227,7 +227,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     @Override
     public void removeVertex(GenericVertex vertex) {
         Objects.requireNonNull(vertex);
-        jungGraph.removeVertex(vertex);
+        jungGraph.removeVertex(vertex.getVertexRef());
         vertexToIdMap.remove(vertex.getId());
     }
 
@@ -284,14 +284,14 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
 
     @Override
     public Collection<GenericVertex> getNeighbors(GenericVertex eachVertex) {
-        return resolveVertexRefs(jungGraph.getNeighbors(eachVertex));
+        return resolveVertexRefs(jungGraph.getNeighbors(eachVertex.getVertexRef()));
     }
 
     @Override
     public Collection<GenericEdge> getConnectingEdges(GenericVertex eachVertex) {
         final Set<GenericEdge> edges = new HashSet<>();
         if (eachVertex != null) {
-            final GenericVertexRef genericVertexRef = eachVertex.getVertexRef();
+            final VertexRef genericVertexRef = eachVertex.getVertexRef();
             edges.addAll(jungGraph.getInEdges(genericVertexRef));
             edges.addAll(jungGraph.getOutEdges(genericVertexRef));
         }

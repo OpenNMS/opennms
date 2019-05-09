@@ -50,14 +50,6 @@ public class BusinessServiceEdge extends SimpleEdge {
         super(edgeToClone);
     }
 
-    public AbstractBusinessServiceVertex getBusinessServiceSource() {
-        return (AbstractBusinessServiceVertex) getSource();
-    }
-
-    public AbstractBusinessServiceVertex getBusinessServiceTarget() {
-        return (AbstractBusinessServiceVertex) getTarget();
-    }
-
     private void setMapFunction(MapFunction mapFunction){
         this.delegate.setProperty(PROPERTY_MAP_FUNCTION, mapFunction);
     }

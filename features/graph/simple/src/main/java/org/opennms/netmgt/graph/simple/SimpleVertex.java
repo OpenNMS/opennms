@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.simple;
 import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.aware.LocationAware;
 import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
@@ -67,6 +68,10 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
     @Override
     public String getId() {
         return delegate.getId();
+    }
+
+    public VertexRef getVertexRef(){
+        return delegate.getVertexRef();
     }
 
     public String getLabel() {

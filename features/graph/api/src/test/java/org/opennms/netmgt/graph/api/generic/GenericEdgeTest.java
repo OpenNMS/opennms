@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.api.generic;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import org.junit.Test;
+import org.opennms.netmgt.graph.api.VertexRef;
 
 public class GenericEdgeTest {
 
@@ -41,13 +42,13 @@ public class GenericEdgeTest {
      */
     @Test
     public void namespaceShouldBeEnforced(){
-        GenericVertexRef refWithOurNamespace1 = new GenericVertexRef(NAMESPACE, "v1");
-        GenericVertexRef refWithOurNamespace2 = new GenericVertexRef(NAMESPACE, "v2");
-        GenericVertexRef refWithForeignNamespace1 = new GenericVertexRef("I don't know you, namespace", "v3");
-        GenericVertexRef refWithForeignNamespace2 = new GenericVertexRef("I don't know you either, namespace", "v4");
-        new GenericEdge(NAMESPACE, refWithOurNamespace1, refWithOurNamespace2); // should throw no Excpetion
-        new GenericEdge(NAMESPACE, refWithOurNamespace1, refWithForeignNamespace1); // should throw no Excpetion
-        new GenericEdge(NAMESPACE, refWithForeignNamespace1, refWithOurNamespace1); // should throw no Excpetion
+        VertexRef refWithOurNamespace1 = new VertexRef(NAMESPACE, "v1");
+        VertexRef refWithOurNamespace2 = new VertexRef(NAMESPACE, "v2");
+        VertexRef refWithForeignNamespace1 = new VertexRef("I don't know you, namespace", "v3");
+        VertexRef refWithForeignNamespace2 = new VertexRef("I don't know you either, namespace", "v4");
+        new GenericEdge(NAMESPACE, refWithOurNamespace1, refWithOurNamespace2); // should throw no Exception
+        new GenericEdge(NAMESPACE, refWithOurNamespace1, refWithForeignNamespace1); // should throw no Exception
+        new GenericEdge(NAMESPACE, refWithForeignNamespace1, refWithOurNamespace1); // should throw no Exception
         assertThrowsException(IllegalArgumentException.class, () -> new GenericEdge(NAMESPACE, refWithForeignNamespace1, refWithForeignNamespace2));
     }
 }

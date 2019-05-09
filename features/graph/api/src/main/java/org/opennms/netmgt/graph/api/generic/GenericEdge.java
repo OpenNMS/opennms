@@ -39,23 +39,23 @@ import com.google.common.base.MoreObjects;
 
 public class GenericEdge extends GenericElement implements Edge {
 
-    private final GenericVertexRef source;
-    private final GenericVertexRef target;
+    private final VertexRef source;
+    private final VertexRef target;
 
-    public GenericEdge(String namespace, GenericVertexRef source, GenericVertexRef target) {
+    public GenericEdge(String namespace, VertexRef source, VertexRef target) {
         this(source, target, new MapBuilder<String, Object>()
                 .withProperty(GenericProperties.NAMESPACE, namespace)
                 .build());
     }
 
-    public GenericEdge(String namespace, GenericVertexRef source, GenericVertexRef target, Map<String, Object> properties) {
+    public GenericEdge(String namespace, VertexRef source, VertexRef target, Map<String, Object> properties) {
         this(source, target, new MapBuilder<String, Object>()
                 .withProperties(properties)
                 .withProperty(GenericProperties.NAMESPACE, namespace)
                 .build());
     }
 
-    private GenericEdge(GenericVertexRef source, GenericVertexRef target, Map<String, Object> properties) {
+    private GenericEdge(VertexRef source, VertexRef target, Map<String, Object> properties) {
         super(properties);
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
@@ -74,8 +74,8 @@ public class GenericEdge extends GenericElement implements Edge {
 
     /** Copy constructor with new namespace */
     public GenericEdge(GenericEdge copyMe, String newNamespace) {
-        this(new GenericVertexRef(newNamespace, copyMe.source.getId()),
-                new GenericVertexRef(newNamespace, copyMe.target.getId()),
+        this(new VertexRef(newNamespace, copyMe.source.getId()),
+                new VertexRef(newNamespace, copyMe.target.getId()),
                 new MapBuilder<String, Object>()
                 .withProperties(copyMe.getProperties())
                 .withProperty(GenericProperties.NAMESPACE, newNamespace)

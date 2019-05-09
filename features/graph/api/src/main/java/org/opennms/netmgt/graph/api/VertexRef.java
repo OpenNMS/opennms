@@ -28,7 +28,55 @@
 
 package org.opennms.netmgt.graph.api;
 
-public interface VertexRef {
-    String getNamespace();
-    String getId();
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+
+/** immutable composite key that is unique over all graphs / graph containers */
+public final class VertexRef {
+
+    private final String namespace;
+    private final String id;
+
+    public VertexRef(String namespace, String id) {
+        this.namespace = requireNotEmpty(namespace, "namespace");
+        this.id = requireNotEmpty(id, "id");
+    }
+
+    private String requireNotEmpty(String stringToAssert, String attributeName) {
+        if(Strings.isNullOrEmpty(stringToAssert)) {
+            throw new IllegalArgumentException(String.format("%s cannot be null or empty", attributeName));
+        }
+        return stringToAssert;
+    }
+
+    public String getNamespace(){
+        return namespace;
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VertexRef that = (VertexRef) o;
+        return Objects.equal(namespace, that.namespace) &&
+                Objects.equal(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(namespace, id);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("namespace", namespace)
+                .add("id", id)
+                .toString();
+    }
 }

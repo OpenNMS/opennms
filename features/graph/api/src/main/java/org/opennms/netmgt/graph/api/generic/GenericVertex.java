@@ -66,9 +66,8 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware, 
                 .withProperty(GenericProperties.NAMESPACE, namespace).build());
     }
 
-    // TODO MVR this is a duplicat eand should probably be removed, as a vertex is already a vertexref, there is no need to have a `getVertexRef` method
-    public GenericVertexRef getVertexRef() {
-        return new GenericVertexRef(this.getNamespace(), this.getId());
+    public VertexRef getVertexRef() {
+        return new VertexRef(this.getNamespace(), this.getId());
     }
 
 //    // TODO MVR implement me
