@@ -231,11 +231,11 @@ checkXmlFiles(){
 	TEMPFILE="$(getTempFile)"
 	find -L "$OPENNMS_HOME/etc/imports" -type f -name \*.xml 2>/dev/null | while read -r "FILE"; do
 		if grep "non-ip-snmp-primary" "$FILE" >/dev/null 2>&1 || grep "non-ip-interfaces" "$FILE" >/dev/null 2>&1; then
-			echo "$FILE" >&2
+			echo "ERROR: Old attributes found: $FILE" >&2
 		fi
 	done >/dev/null 2>"$TEMPFILE"
 
-	FAILCOUNT="$(wc -l < "$TEMPFILE")"
+	FAILCOUNT="$(grep -c 'Old attributes found' < "$TEMPFILE")"
 	if [ "$FAILCOUNT" -gt 0 ]; then
 		cat <<END
 
@@ -259,17 +259,18 @@ END
 }
 
 checkRpmFiles(){
-	CHECKDIRS="$OPENNMS_HOME/etc"
+	CHECKDIRS=("$OPENNMS_HOME/etc")
 
 	for dir in "$OPENNMS_HOME"/*webapps/*; do
 		if [ -d "$dir/WEB-INF" ]; then
-			CHECKDIRS="$CHECKDIRS $dir/WEB-INF"
+			CHECKDIRS+=("$dir/WEB-INF")
 		fi
 	done
 
 	for EXTENSION in rpmnew rpmsave dpkg-dist; do
-		if [ "$(find -L "$CHECKDIRS" -name \*."$EXTENSION" 2>/dev/null | wc -l)" -gt 0 ]; then
-			cat <<END >&2
+		for CHECKDIR in "${CHECKDIRS[@]}"; do
+			if [ "$(find -L "$CHECKDIR" -name \*."$EXTENSION" 2>/dev/null | wc -l)" -gt 0 ]; then
+				cat <<END >&2
 
 WARNING!  You have files that end in .$EXTENSION in your
 OPENNMS_HOME ($OPENNMS_HOME) directory.
@@ -281,17 +282,18 @@ up-to-date and delete any leftover .$EXTENSION files or
 ${install.package.description} will not start.
 
 END
-			case "$COMMAND" in
-				status)
-					# when calling `opennms status` return 3 for "stopped"
-					return 3	# From LSB: 3 - program is stopped
-					;;
-				*)
-					# any other init command should return 6 on error
-					return 6	# From LSB: 6 - program is not configured
-					;;
-			esac
-		fi
+				case "$COMMAND" in
+					status)
+						# when calling `opennms status` return 3 for "stopped"
+						return 3	# From LSB: 3 - program is stopped
+						;;
+					*)
+						# any other init command should return 6 on error
+						return 6	# From LSB: 6 - program is not configured
+						;;
+				esac
+			fi
+		done
 	done
 
 	return 0
