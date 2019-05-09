@@ -15,8 +15,9 @@ NOTE: Unless specific otherwise, all unit of time are expressed in milliseconds.
 | `/flows/applications`             | Retrieve traffic summary statistics for the top N applications or specific applications
 | `/flows/applications/enumerate`   | Retrieve a list of the applications with flows
 | `/flows/applications/series`      | Retrieve time series metrics for the top N applications or specific applications
-| `/flows/conversations`            | Retrieve traffic summary statistics for the top N conversations
-| `/flows/conversations/series`     | Retrieve time series metrics for the top N conversations
+| `/flows/conversations`            | Retrieve traffic summary statistics for the top N conversations or specific conversations
+| `/flows/conversations/enumerate`  | Retrieve a list of the conversations with flows
+| `/flows/conversations/series`     | Retrieve time series metrics for the top N conversations or specific conversations
 | `/flows/hosts`                    | Retrieve traffic summary statistics for the top N hosts or specific hosts
 | `/flows/hosts/enumerate`          | Retrieve a list of the hosts with flows
 | `/flows/hosts/series`             | Retrieve time series metrics for the top N hosts or specific hosts
@@ -62,21 +63,46 @@ The `applications` and `applications/series` endpoints also support:
 | name               | default   | comment
 | N                  | none      | Number of top entries (determined by total bytes transferred) to return
 | includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
-                                   the bytes transferred for the flows that fall outside of the Top N.
+                                   the bytes transferred for the flows that fall outside of the selected set
 | application        | none      | If provided, returns only flow series that match the given application(s). This field
                                    can be repeated for any number of applications to be included in the query.
 |===
 
-Both endpoints requires one of `N` or `application` query parameters to be set and will return an error if neither or
+Both endpoints require one of `N` or `application` query parameters to be set and will return an error if neither or
 both are set.
 
-The `conversations` endpoint also supports:
+The `conversations/enumerate` endpoint also supports:
+
+[options="header"]
+|===
+| name               | default   | comment
+| limit              | 10        | Number of hosts with flows to return
+| location           | ".*"        | If provided, filters the results to only include conversations matching the given
+location regex pattern
+| protocol           | ".*"        | If provided, filters the results to only include conversations matching the given
+protocol regex pattern
+| lower              | ".*"        | If provided, filters the results to only include conversations matching the given
+lower IP address regex pattern
+| upper              | ".*"        | If provided, filters the results to only include conversations matching the given
+upper IP address regex pattern
+| application        | ".*"        | If provided, filters the results to only include conversations matching the given
+application regex pattern
+|===
+
+The `conversations` and `conversations/series` endpoints also supports:
 
 [options="header"]
 |===
 | name               | default   | comment
 | N                  | 10        | Number of top entries (determined by total bytes transferred) to return
+| includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
+                                   the bytes transferred for the flows that fall outside of selected set.
+| conversation       | none      | If provided, returns only flow series that match the given conversation(s). This field
+                                   can be repeated for any number of conversations to be included in the query.
 |===
+
+Both endpoints requires one of `N` or `conversation` query parameters to be set and will return an error if neither or
+both are set.
 
 The `converstations/series` endpoint also supports:
 
@@ -92,7 +118,7 @@ The `hosts/enumerate` endpoint also supports:
 |===
 | name               | default   | comment
 | limit              | 10        | Number of hosts with flows to return
-| pattern            | ""        | If provided, filters the results to only include hosts with names that match the given
+| pattern            | ".*"        | If provided, filters the results to only include hosts with names that match the given
 regex pattern
 |===
 
@@ -103,7 +129,7 @@ The `hosts` and `hosts/series` endpoints also support:
 | name               | default   | comment
 | N                  | none      | Number of top entries (determined by total bytes transferred) to return
 | includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
-                                   the bytes transferred for the flows that fall outside of the Top N.
+                                   the bytes transferred for the flows that fall outside of the selected set.
 | host               | none      | If provided, returns only flow series that match the given host(s). This field
                                    can be repeated for any number of hosts to be included in the query.
 |===

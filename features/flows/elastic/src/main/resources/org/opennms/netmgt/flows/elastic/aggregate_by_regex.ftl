@@ -5,10 +5,9 @@
       "filter": [
 <#list filters as filter>${filter}<#sep>,</#list>
       ],
-      "must": 
-      {
+      "must": {
         "regexp": {
-          "hosts": {
+          "${field?json_string}": {
             "value": "${regex?json_string}"
           }
         }
@@ -18,7 +17,7 @@
   "aggs": {
     "grouped_by": {
       "terms": {
-        "field": "hosts",
+        "field": "${field?json_string}",
         "include": "${regex?json_string}",
         "size": ${limit?long?c},
         "order": {

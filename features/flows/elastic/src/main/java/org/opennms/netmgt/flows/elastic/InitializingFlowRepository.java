@@ -113,18 +113,37 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters) {
-        return delegate.getTopNConversations(N, filters);
+    public CompletableFuture<List<String>> getConversations(String locationPattern, String protocolPattern,
+                                                            String lowerIPPattern, String upperIPPattern,
+                                                            String applicationPattern, long limit,
+                                                            List<Filter> filters) {
+        return delegate.getConversations(locationPattern, protocolPattern, lowerIPPattern, upperIPPattern,
+                applicationPattern, limit, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
-        return delegate.getTopNConversationsSeries(N, step, filters);
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversationSummaries(int N, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNConversationSummaries(N, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<List<String>> getHosts(String prefix, long limit, List<Filter> filters) {
-        return delegate.getHosts(prefix, limit, filters);
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getConversationSummaries(Set<String> conversations, boolean includeOther, List<Filter> filters) {
+        return delegate.getConversationSummaries(conversations, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
+        return delegate.getConversationSeries(conversations, step, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNConversationSeries(N, step, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getHosts(String regex, long limit, List<Filter> filters) {
+        return delegate.getHosts(regex, limit, filters);
     }
 
     @Override

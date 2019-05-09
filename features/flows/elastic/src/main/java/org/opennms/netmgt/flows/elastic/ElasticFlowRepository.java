@@ -344,32 +344,65 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters) {
-        return getTotalBytesFromTopN(N, "netflow.convo_key", null, false, filters)
+    public CompletableFuture<List<String>> getConversations(String locationPattern, String protocolPattern,
+                                                            String lowerIPPattern, String upperIPPattern,
+                                                            String applicationPattern, long limit,
+                                                            List<Filter> filters) {
+        // Handle the unquoted null value
+        if(applicationPattern.equals(".*")) {
+            applicationPattern = String.format("(\\\"%s\\\"|null)", applicationPattern);
+        } else if (!applicationPattern.equals("null")) {
+            applicationPattern =String.format("\\\"%s\\\"", applicationPattern);
+        }
+        
+        String regex = String.format("\\[\\\"%s\\\",%s,\\\"%s\\\",\\\"%s\\\",%s\\]",
+                locationPattern,
+                protocolPattern,
+                lowerIPPattern,
+                upperIPPattern,
+                applicationPattern);
+        String query = searchQueryProvider.getConversationsRegexQuery(regex, limit, filters);
+        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(res -> processGroupedByResult(res, limit));
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversationSummaries(int N,
+                                                                                                 boolean includeOther,
+                                                                                                 List<Filter> filters) {
+        return getTotalBytesFromTopN(N, "netflow.convo_key", null, includeOther, filters)
                 .thenApply((res) -> res.stream()
-                        .map(summary -> {
-                            final ConversationKey conversation =
-                                    ConversationKeyUtils.fromJsonString(summary.getEntity());
-                            final TrafficSummary<ConversationKey> out = new TrafficSummary<>(conversation);
-                            out.setBytesIn(summary.getBytesIn());
-                            out.setBytesOut(summary.getBytesOut());
-                            return out;
-                        })
+                        .map(this::mapFromStringSummary)
                         .collect(Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N,
-                                                                                                           long step,
-                                                                                                           List<Filter> filters) {
-        return getSeriesFromTopN(N, step, "netflow.convo_key", null, false, filters)
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getConversationSummaries(Set<String> conversations,
+                                                                                             boolean includeOther,
+                                                                                             List<Filter> filters) {
+        return getTotalBytesFrom(conversations, "netflow.convo_key", null, includeOther,
+                filters).thenApply(summaries -> summaries.stream()
+                .map(this::mapFromStringSummary)
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
+        return getSeriesFor(conversations, "netflow.convo_key", step, includeOther, filters)
                 .thenApply((res) -> mapTable(res, (key) -> ConversationKeyUtils.fromJsonString(key)));
     }
 
     @Override
-    public CompletableFuture<List<String>> getHosts(String prefix, long limit, List<Filter> filters) {
-        // Append a '.*' to the end of the prefix to turn it into a prefix regex
-        final String hostsQuery = searchQueryProvider.getHostsQuery(prefix + ".*", limit, filters);
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationSeries(int N,
+                                                                                                          long step,
+                                                                                                          boolean includeOther,
+                                                                                                          List<Filter> filters) {
+        return getSeriesFromTopN(N, step, "netflow.convo_key", null, includeOther, filters)
+                .thenApply((res) -> mapTable(res, (key) -> ConversationKeyUtils.fromJsonString(key)));
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getHosts(String regex, long limit, List<Filter> filters) {
+        final String hostsQuery = searchQueryProvider.getHostsQuery(regex, limit, filters);
         return searchAsync(hostsQuery, extractTimeRangeFilter(filters)).thenApply(res -> processGroupedByResult(res,
                 limit));
     }
@@ -428,11 +461,11 @@ public class ElasticFlowRepository implements FlowRepository {
 
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
         final ImmutableTable.Builder<Directional<String>, Long, Double> builder = ImmutableTable.builder();
-        final String seriesFromApplicationQuery = searchQueryProvider.getSeriesFromQuery(entities, step,
+        final String seriesFromQuery = searchQueryProvider.getSeriesFromQuery(entities, step,
                 timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, filters);
         CompletableFuture<Void> seriesFuture;
 
-        seriesFuture = searchAsync(seriesFromApplicationQuery, timeRangeFilter)
+        seriesFuture = searchAsync(seriesFromQuery, timeRangeFilter)
                 .thenApply(res -> {
                     toTable(builder, res);
                     return null;
@@ -763,6 +796,20 @@ public class ElasticFlowRepository implements FlowRepository {
         } else {
             throw new IllegalArgumentException("Unknown direction value: " + directionAsString);
         }
+    }
+
+    private TrafficSummary<ConversationKey> mapFromStringSummary(TrafficSummary<String> trafficSummary) {
+        final ConversationKey conversationKey;
+
+        if (trafficSummary.getEntity().equals(OTHER_NAME)) {
+            conversationKey = ConversationKeyUtils.forOther();
+        } else {
+            conversationKey = ConversationKeyUtils.fromJsonString(trafficSummary.getEntity());
+        }
+
+        final TrafficSummary<ConversationKey> mapped = new TrafficSummary<>(conversationKey);
+        mapped.copyBytes(trafficSummary);
+        return mapped;
     }
 
     public Identity getIdentity() {

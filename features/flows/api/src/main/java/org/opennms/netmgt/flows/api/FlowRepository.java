@@ -53,11 +53,19 @@ public interface FlowRepository {
     
     CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters);
+    CompletableFuture<List<String>> getConversations(String locationPattern, String protocolPattern,
+                                                     String lowerIPPattern, String upperIPPattern,
+                                                     String applicationPattern, long limit, List<Filter> filters);
+    
+    CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversationSummaries(int N, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters);
+    CompletableFuture<List<TrafficSummary<ConversationKey>>> getConversationSummaries(Set<String> conversations, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<List<String>> getHosts(String prefix, long limit, List<Filter> filters);
+    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters);
+    
+    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationSeries(int N, long step, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<List<String>> getHosts(String regex, long limit, List<Filter> filters);
 
     CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther, List<Filter> filters);
 

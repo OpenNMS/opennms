@@ -51,6 +51,7 @@ import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -288,40 +289,18 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetTopNConversations() throws ExecutionException, InterruptedException {
-        // Retrieve the Top N conversation over the entire time range
-        final List<TrafficSummary<ConversationKey>> convoTrafficSummary = flowRepository.getTopNConversations(2, getFilters()).get();
-        assertThat(convoTrafficSummary, hasSize(2));
-
-        // Expect the conversations, with the sum of all the bytes from all the flows
-        TrafficSummary<ConversationKey> convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.101"));
-        assertThat(convo.getEntity().getApplication(), equalTo("https"));
-        assertThat(convo.getBytesIn(), equalTo(110L));
-        assertThat(convo.getBytesOut(), equalTo(1100L));
-
-        convo = convoTrafficSummary.get(1);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
-        assertThat(convo.getEntity().getApplication(), equalTo("https"));
-        assertThat(convo.getBytesIn(), equalTo(100L));
-        assertThat(convo.getBytesOut(), equalTo(1000L));
-    }
-
-    @Test
     public void canGetHosts() throws ExecutionException, InterruptedException {
         // Get only the first host
-        List<String> hosts = flowRepository.getHosts("", 1, getFilters()).get();
+        List<String> hosts = flowRepository.getHosts(".*", 1, getFilters()).get();
         assertThat(hosts, equalTo(Collections.singletonList("10.1.1.11")));
 
         // Get first 10 hosts
-        hosts = flowRepository.getHosts("", 10, getFilters()).get();
+        hosts = flowRepository.getHosts(".*", 10, getFilters()).get();
         assertThat(hosts, equalTo(Arrays.asList("10.1.1.11", "10.1.1.12", "10.1.1.13", "192.168.1.100",
                 "192.168.1.101", "192.168.1.102")));
 
         // Get the first 10 hosts with a prefix
-        hosts = flowRepository.getHosts("10.1.1.", 10, getFilters()).get();
+        hosts = flowRepository.getHosts("10.1.1.*", 10, getFilters()).get();
         assertThat(hosts, equalTo(Arrays.asList("10.1.1.11", "10.1.1.12", "10.1.1.13")));
 
         // Find all the hosts using a regex
@@ -457,6 +436,128 @@ public class FlowQueryIT {
         assertThat(hostTraffic.rowKeySet(), hasSize(6));
     }
 
+    @Ignore
+    @Test
+    public void canGetConversations() throws ExecutionException, InterruptedException {
+        // Get all the conversations
+        List<String> conversations =
+                flowRepository.getConversations(".*", ".*", ".*", ".*", ".*", 10, getFilters()).get();
+        assertThat(conversations, hasSize(4));
+        
+        // Find all the conversations with a null application
+        conversations =
+                flowRepository.getConversations(".*", ".*", ".*", ".*", "null", 10, getFilters()).get();
+        assertThat(conversations, hasSize(1));
+
+        // Find all the conversations involving 10.1.1.12 as the lower IP
+        conversations =
+                flowRepository.getConversations(".*", ".*", "10.1.1.12", ".*", ".*", 10, getFilters()).get();
+        assertThat(conversations, hasSize(2));
+
+        // Find a specific conversation
+        conversations =
+                flowRepository.getConversations("test", "6", "10.1.1.11", "192.168.1.100", "http", 10, getFilters()).get();
+        assertThat(conversations, hasSize(1));
+        assertThat(conversations.iterator().next(), equalTo("[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]"));
+        
+    }
+
+    @Test
+    public void canGetTopNConversationSummaries() throws ExecutionException, InterruptedException {
+        // Retrieve the Top N conversation over the entire time range
+        List<TrafficSummary<ConversationKey>> convoTrafficSummary = flowRepository.getTopNConversationSummaries(2, false, getFilters()).get();
+        assertThat(convoTrafficSummary, hasSize(2));
+
+        // Expect the conversations, with the sum of all the bytes from all the flows
+        TrafficSummary<ConversationKey> convo = convoTrafficSummary.get(0);
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.101"));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
+        assertThat(convo.getBytesIn(), equalTo(110L));
+        assertThat(convo.getBytesOut(), equalTo(1100L));
+
+        convo = convoTrafficSummary.get(1);
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
+        assertThat(convo.getBytesIn(), equalTo(100L));
+        assertThat(convo.getBytesOut(), equalTo(1000L));
+
+        // Get the top 1 plus others
+        convoTrafficSummary = flowRepository.getTopNConversationSummaries(1, true, getFilters()).get();
+        assertThat(convoTrafficSummary, hasSize(2));
+        
+        convo = convoTrafficSummary.get(0);
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.101"));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
+        assertThat(convo.getBytesIn(), equalTo(110L));
+        assertThat(convo.getBytesOut(), equalTo(1100L));
+
+        convo = convoTrafficSummary.get(1);
+        assertThat(convo.getEntity(), equalTo(ConversationKeyUtils.forOther()));
+        assertThat(convo.getBytesIn(), equalTo(310L));
+        assertThat(convo.getBytesOut(), equalTo(1200L));
+    }
+    
+    @Test
+    public void canGetConversationSummaries() throws ExecutionException, InterruptedException {
+        // Get a specific conversation
+        List<TrafficSummary<ConversationKey>> convoTrafficSummary =
+                flowRepository.getConversationSummaries(ImmutableSet.of("[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]"),
+                        false, getFilters()).get();
+        assertThat(convoTrafficSummary, hasSize(1));
+        TrafficSummary<ConversationKey> convo = convoTrafficSummary.get(0);
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.11"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getApplication(), equalTo("http"));
+        assertThat(convo.getBytesIn(), equalTo(10L));
+        assertThat(convo.getBytesOut(), equalTo(100L));
+
+        // Get a specific conversation plus others
+        convoTrafficSummary = flowRepository.getConversationSummaries(
+                ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), true,
+                getFilters()).get();
+        assertThat(convoTrafficSummary, hasSize(2));
+        convo = convoTrafficSummary.get(0);
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
+        assertThat(convo.getBytesIn(), equalTo(100L));
+        assertThat(convo.getBytesOut(), equalTo(1000L));
+
+        convo = convoTrafficSummary.get(1);
+        assertThat(convo.getEntity().getLowerIp(), equalTo("Other"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("Other"));
+        assertThat(convo.getEntity().getApplication(), equalTo("Other"));
+        assertThat(convo.getBytesIn(), equalTo(320L));
+        assertThat(convo.getBytesOut(), equalTo(1300L));
+        
+    }
+
+    @Test
+    public void canGetConversationSeries() throws ExecutionException, InterruptedException {
+        // Get series for specific host
+        Table<Directional<ConversationKey>, Long, Double> convoTraffic = flowRepository.getConversationSeries(ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, false, getFilters()).get();
+        assertThat(convoTraffic.rowKeySet(), hasSize(2));
+        verifyHttpsSeries(convoTraffic, ConversationKeyUtils.fromJsonString("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"));
+        
+        // Get series for same host and include others
+        convoTraffic = flowRepository.getConversationSeries(ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, true, getFilters()).get();
+        assertThat(convoTraffic.rowKeySet(), hasSize(4));
+    }
+    
+    @Test
+    public void canRetrieveTopNConversationsSeries() throws ExecutionException, InterruptedException {
+        // Top 10
+        Table<Directional<ConversationKey>, Long, Double> convoTraffic = flowRepository.getTopNConversationSeries(10, 10, false, getFilters()).get();
+        assertThat(convoTraffic.rowKeySet(), hasSize(8));
+
+        // Top 2 with others
+        convoTraffic = flowRepository.getTopNConversationSeries(2, 10, true, getFilters()).get();
+        assertThat(convoTraffic.rowKeySet(), hasSize(6));
+    }
+
     private void verifyHttpsSeries(Table<Directional<String>, Long, Double> appTraffic, String label) {
         // Pull the values from the table into arrays for easy comparision and validate
         List<Long> timestamps = getTimestampsFrom(appTraffic);
@@ -481,6 +582,23 @@ public class FlowQueryIT {
                 17.741935483870968));
         assertThat(httpsEgressValues, containsDoubles(error, 751.36476426799, 816.3771712158809, 354.83870967741933,
                 177.41935483870967));
+    }
+
+    private void verifyHttpsSeries(Table<Directional<ConversationKey>, Long, Double> convoTraffic, ConversationKey label) {
+        // Pull the values from the table into arrays for easy comparision and validate
+        List<Long> timestamps = getTimestampsFrom(convoTraffic);
+        List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), convoTraffic);
+        List<Double> httpsEgressValues = getValuesFor(new Directional<>(label, false), convoTraffic);
+
+        // In the range t=[10,20) for this conversation between 10.1.1.12 and 192.168.1.100 https:
+        //   100 bytes from [13,26]
+        //      = rate of 100/(26-13)
+        //      = 7.6923 b/ms
+        //   7 ms was spent in the range, so 7 * 7.6923 = 53.8461 bytes
+        final double error = 1E-8;
+        assertThat(timestamps, contains(10L, 20L));
+        assertThat(httpsIngressValues, containsDoubles(error, 53.84615384615385, 46.15384615384615));
+        assertThat(httpsEgressValues, containsDoubles(error, 538.4615384615385, 461.53846153846155));
     }
 
     private static Matcher<Iterable<Double>> containsDoubles(double error, Double... items) {
@@ -508,12 +626,6 @@ public class FlowQueryIT {
             column.add(val);
         }
         return column;
-    }
-
-    @Test
-    public void canRetrieveTopNConversationsSeries() throws ExecutionException, InterruptedException {
-        final Table<Directional<ConversationKey>, Long, Double> convoTraffic = flowRepository.getTopNConversationsSeries(10, 10, getFilters()).get();
-        assertThat(convoTraffic.rowKeySet(), hasSize(8));
     }
 
     private void loadDefaultFlows() throws FlowException {

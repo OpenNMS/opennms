@@ -151,10 +151,22 @@ public class SearchQueryProvider implements FilterVisitor<String> {
     public String getHostsQuery(String regex, long limit, List<Filter> filters) {
         Objects.requireNonNull(filters);
 
-        return render("aggregate_by_hosts.ftl", ImmutableMap.builder()
+        return render("aggregate_by_regex.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("regex", regex)
                 .put("limit", limit)
+                .put("field", "hosts")
+                .build());
+    }
+
+    public String getConversationsRegexQuery(String regex, long limit, List<Filter> filters) {
+        Objects.requireNonNull(filters);
+
+        return render("aggregate_by_regex.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("regex", regex)
+                .put("limit", limit)
+                .put("field", "netflow.convo_key")
                 .build());
     }
 
