@@ -48,6 +48,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
@@ -76,7 +77,7 @@ import com.codahale.metrics.Timer;
  * @version $Id: $
  */
 @Transactional
-public class JdbcFilterDao implements FilterDao, InitializingBean, DisposableBean {
+public class JdbcFilterDao implements FilterDao, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcFilterDao.class);
     private static final Pattern SQL_KEYWORD_PATTERN = Pattern.compile("\\s+(?:AND|OR|(?:NOT )?(?:LIKE|IN)|IS (?:NOT )?DISTINCT FROM)\\s+|(?:\\s+IS (?:NOT )?NULL|::(?:TIMESTAMP|INET))(?!\\w)|(?<!\\w)(?:NOT\\s+|IPLIKE(?=\\())", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final Pattern SQL_QUOTE_PATTERN = Pattern.compile("'(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"");
@@ -144,7 +145,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean, DisposableBea
         jmxReporter.start();
     }
 
-    @Override
+    @PreDestroy
     public void destroy() throws Exception {
         if (jmxReporter != null) {
             jmxReporter.stop();
