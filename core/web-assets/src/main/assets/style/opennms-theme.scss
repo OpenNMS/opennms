@@ -219,7 +219,7 @@ Bootstrap Theme Specific Stylesheet
     :: spans in the node list and node details pages
     -------------------------------------------------- */
 
-span.NLdbid, span.NLfs, span.NLfid, span.NLloc {
+span.NLdbid, span.NLfs, span.NLfid, span.NLloc, span.NLflows {
   display: none;
 }
 
@@ -227,7 +227,7 @@ div.NLnode {
   line-height: 2em;
 }
 
-div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid, div.NLnode:hover span.NLloc {
+div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid, div.NLnode:hover span.NLloc, div.NLnode:hover span.NLflows {
   display: inline;
 }
 

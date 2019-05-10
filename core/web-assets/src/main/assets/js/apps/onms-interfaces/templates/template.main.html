@@ -71,6 +71,7 @@
             <th sort order="'ifName'"  by="snmpOrder" reverse="snmpReverse">SNMP ifName</th>
             <th sort order="'ifAlias'" by="snmpOrder" reverse="snmpReverse">SNMP ifAlias</th>
             <th sort order="'ifSpeed'" by="snmpOrder" reverse="snmpReverse">SNMP ifSpeed</th>
+            <th sort order="'hasFlows'" by="snmpOrder" reverse="snmpReverse"></th>
           </tr>
         </thead>
         <tbody>
@@ -80,6 +81,7 @@
             <td>{{ intf.ifName  || 'N/A' }}</td>
             <td>{{ intf.ifAlias || 'N/A' }}</td>
             <td>{{ intf.ifSpeed || 'N/A' }}</td>
+            <td><span class="badge badge-secondary" ng-if="intf.hasFlows" title="Flows: flow data available"><i class="fa fa-exchange"></i></span></td>
           </tr>
        </tbody>
       </table>
