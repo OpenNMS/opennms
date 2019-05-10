@@ -40,58 +40,60 @@ import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ElasticRestIT extends AbstractEventToIndexTest {
-
+public class ElasticRestIT extends AbstractEventToIndexTest{
+	
 	private static final Logger LOG = LoggerFactory.getLogger(RawEventToIndexTest.class);
 
 	private static final String EVENT_INDEX_TYPE = "eventdata";
 
 	private static final String EVENT_SOURCE_NAME = "AlarmChangeNotifier";
 
-	private static final String NODE_LOST_SERVICE_EVENT = "uei.opennms.org/nodes/nodeLostService";
-
+	private static final String NODE_LOST_SERVICE_EVENT="uei.opennms.org/nodes/nodeLostService";
+	
 	/**
-	 * simple test to create a raw event in the raw event index and test that the
-	 * event is added
+	 * simple test to create a raw event in the raw event index and test that the event is added
 	 */
 	@Test
 	public void jestClientRawEventToESTest() throws Exception {
 		LOG.debug("***************** start of test jestClientRawEventToESTestt");
 
-		final NodeCache nodeCache = new MockNodeCache();
+			final NodeCache nodeCache = new MockNodeCache();
 
-		eventToIndex.setNodeCache(nodeCache);
-		eventToIndex.setIndexStrategy(IndexStrategy.MONTHLY);
-		eventToIndex.setLogEventDescription(true);
-		eventToIndex.seteventIndexName("onms-cert1");
+			eventToIndex.setNodeCache(nodeCache);
+			eventToIndex.setIndexStrategy(IndexStrategy.MONTHLY);
+			eventToIndex.setLogEventDescription(true);
+			eventToIndex.seteventIndexName("onms-cert1");
 
-		EventBuilder eb = new EventBuilder(NODE_LOST_SERVICE_EVENT, EVENT_SOURCE_NAME);
+			EventBuilder eb = new EventBuilder( NODE_LOST_SERVICE_EVENT, EVENT_SOURCE_NAME);
+		
+			eb.setUei("uei.opennms.org/nodes/nodeLostService");
+			eb.setNodeid(36);
+			InetAddress ipAddress = InetAddressUtils.getInetAddress("142.34.5.19");
+			eb.setInterface(ipAddress);
+			eb.setSource("mock event test");
+			eb.setHost("localhost");
+			eb.setLogDest("logndisplay");
+			eb.setLogMessage("this is a test log message");
+			eb.setDescription("this is a test description");
+			eb.setTime(new Date());
+			eb.setUuid("00000000-0000-0000-0000-000000000000");	
+			//eb.addParam("forwarder", "onms-cert1");
 
-		eb.setUei("uei.opennms.org/nodes/nodeLostService");
-		eb.setNodeid(36);
-		InetAddress ipAddress = InetAddressUtils.getInetAddress("142.34.5.19");
-		eb.setInterface(ipAddress);
-		eb.setSource("mock event test");
-		eb.setHost("localhost");
-		eb.setLogDest("logndisplay");
-		eb.setLogMessage("this is a test log message");
-		eb.setDescription("this is a test description");
-		eb.setTime(new Date());
-		eb.setUuid("00000000-0000-0000-0000-000000000000");
+			Event event = eb.getEvent();
+			event.setDbid(101);
+			
+			LOG.debug("ecreated node lost service event:"+event.toString());
 
-		Event event = eb.getEvent();
-		event.setDbid(101);
-
-		LOG.debug("ecreated node lost service event:" + event.toString());
-
-		// forward event to Elasticsearch
-		eventToIndex.forwardEvents(Collections.singletonList(event));
-
-		try {
-			TimeUnit.SECONDS.sleep(5);
-		} catch (InterruptedException e) {
-		}
+			// forward event to Elasticsearch
+			eventToIndex.forwardEvents(Collections.singletonList(event));
+			
+			try {
+				TimeUnit.SECONDS.sleep(5);
+			} catch (InterruptedException e) { }
+			
+			
 
 	}
+		
 
 }
