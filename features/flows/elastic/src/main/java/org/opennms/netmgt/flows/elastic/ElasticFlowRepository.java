@@ -111,9 +111,11 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final int bulkRetryCount;
     
-    private static String eventIndexName = "cert-opennms";
+    private static String eventIndexName = "netflow";
     
-    public static void setEventIndexName(String eventIndexName) {
+    String Modifiedindex = new StringBuffer().append(eventIndexName).append("-").append(TYPE).toString();
+   
+   public static void setEventIndexName(String eventIndexName) {
 		ElasticFlowRepository.eventIndexName = eventIndexName;
 	}
 
@@ -173,7 +175,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.bulkRetryCount = bulkRetryCount;
-        this.indexSelector = new IndexSelector(TYPE, indexStrategy, maxFlowDurationMs);
+        this.indexSelector = new IndexSelector(Modifiedindex, indexStrategy, maxFlowDurationMs);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logConversionTimer = metricRegistry.timer("logConversion");
@@ -225,9 +227,10 @@ public class ElasticFlowRepository implements FlowRepository {
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
-                	final String index = new StringBuffer().append(eventIndexName).append("-")
-							.append(indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(flowDocument.getTimestamp())))
-							.toString();
+                    
+					String index = indexStrategy.getIndex(Modifiedindex, Instant.ofEpochMilli(flowDocument.getTimestamp()));
+				
+                	//final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(flowDocument.getTimestamp()));
                    final Index.Builder indexBuilder = new Index.Builder(flowDocument)
                         .index(index)
                         .type(TYPE);

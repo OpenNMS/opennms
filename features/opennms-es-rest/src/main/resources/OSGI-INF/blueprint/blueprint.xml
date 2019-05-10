@@ -45,7 +45,7 @@
       <cm:property name="archiveNewAlarmValues" value="true" />
       <cm:property name="archiveAssetData" value="true" />
       <cm:property name="groupOidParameters" value="false" />
-      <cm:property name="eventIndexName" value="onms-mefcert" />
+      <cm:property name="eventIndexName" value="opennms" />
 
       <!-- Bulk Action Retry settings -->
       <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->

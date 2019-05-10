@@ -34,7 +34,7 @@
             <cm:property name="nodeCache.maximumSize" value="1000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeCache.expireAfterWrite" value="300"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
-			<cm:property name="eventIndexName" value="cert-opennms" /> <!-- Set value of OpenNMS instance forwarding flow data to elastic -->
+			<cm:property name="eventIndexName" value="netflow" /> <!-- Set value of OpenNMS instance forwarding flow data to elastic -->
             <!-- Bulk Action Retry settings -->
             <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
 

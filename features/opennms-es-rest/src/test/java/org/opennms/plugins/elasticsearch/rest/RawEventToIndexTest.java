@@ -120,7 +120,7 @@ public class RawEventToIndexTest extends AbstractEventToIndexTest {
 
 			Search eventsearch = new Search.Builder(eventquery)
 			// multiple index or types can be added.
-			.addIndex("cert-opennms-*")
+			.addIndex("opennms-*")
 			.build();
 
 			SearchResult eventsresult = jestClient.execute(eventsearch);

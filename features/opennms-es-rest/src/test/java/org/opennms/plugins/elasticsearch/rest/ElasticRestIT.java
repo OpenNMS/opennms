@@ -67,7 +67,7 @@ public class ElasticRestIT extends AbstractEventToIndexTest{
 			eventToIndex.setArchiveAlarmChangeEvents(true);
 			eventToIndex.setArchiveOldAlarmValues(true);
 			eventToIndex.setArchiveNewAlarmValues(true);
-			eventToIndex.seteventIndexName("onms-cert1");
+			eventToIndex.seteventIndexName("opennms");
 
 			EventBuilder eb = new EventBuilder( NODE_LOST_SERVICE_EVENT, EVENT_SOURCE_NAME);
 		

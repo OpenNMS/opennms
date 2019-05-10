@@ -148,7 +148,7 @@ public class EventToIndex implements AutoCloseable {
 	private static final String ALARM_CLEAR_DURATION="alarmclearduration"; //duration from alarm raise to clear
 	private static final String ALARM_DELETED_TIME="alarmdeletedtime";
 
-	private static String eventIndexName = "cert-opennms";
+	private static String eventIndexName = "opennms";
 	
 	private static final int DEFAULT_NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 

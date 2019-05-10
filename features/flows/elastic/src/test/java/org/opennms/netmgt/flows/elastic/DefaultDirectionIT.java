@@ -114,12 +114,12 @@ public class DefaultDirectionIT {
 
             // wait for entries to show up
             with().pollInterval(5, SECONDS).await().atMost(1, MINUTES).until(() -> {
-                final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
+                final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-netflow-*").build());
                 LOG.info("Response: {} {} ", searchResult.isSucceeded() ? "Success" : "Failure", searchResult.getTotal());
                 return searchResult.getTotal() > 0;
             });
 
-            final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
+            final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-netflow-*").build());
             assertNotEquals(new Long(0), searchResult.getTotal());
 
             // check whether the default value is applied
