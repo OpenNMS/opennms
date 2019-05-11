@@ -59,7 +59,6 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -147,9 +146,14 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
     @PreDestroy
     public void destroy() throws Exception {
-        if (jmxReporter != null) {
-            jmxReporter.stop();
-            jmxReporter = null;
+        try {
+            if (jmxReporter != null) {
+                jmxReporter.stop();
+                jmxReporter = null;
+            }
+        }
+        catch (Exception e) {
+            LOG.debug("Error destroying JdbcFilterDao: {}", e.getMessage());
         }
     }
 
