@@ -28,8 +28,10 @@
 package org.opennms.smoketest.utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Objects;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -221,10 +223,7 @@ public class RestClient {
         }
         final WebTarget target = getTarget().path("events");
         final Response response = getBuilder(target).post(Entity.entity(event, MediaType.APPLICATION_XML));
-        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
-            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
-                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
-        }
+        bailOnFailure(response);
     }
 
     public List<OnmsEvent> getEvents() {
@@ -260,5 +259,36 @@ public class RestClient {
 
     private Invocation.Builder getBuilder(final WebTarget target) {
         return target.request().header("Authorization", authorizationHeader);
+    }
+
+    public void sendGraphML(String graphName, InputStream graphMLStream) {
+        Objects.requireNonNull(graphName);
+        Objects.requireNonNull(graphMLStream);
+
+        final WebTarget target = getTarget().path("graphml").path(graphName);
+        final Response response = getBuilder(target).accept(MediaType.APPLICATION_XML).post(Entity.entity(graphMLStream, MediaType.APPLICATION_XML));
+        bailOnFailure(response);
+    }
+
+    public Response getGraphML(String graphName) {
+        Objects.requireNonNull(graphName);
+
+        final WebTarget target = getTarget().path("graphml").path(graphName);
+        final Response response = getBuilder(target).accept(MediaType.APPLICATION_XML).get();
+        return response;
+    }
+
+    public void deleteGraphML(String graphName) {
+        Objects.requireNonNull(graphName);
+        final WebTarget target = getTarget().path("graphml").path(graphName);
+        final Response response = getBuilder(target).delete();
+        bailOnFailure(response);
+    }
+
+    private void bailOnFailure(Response response) {
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
     }
 }

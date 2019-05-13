@@ -10,5 +10,29 @@
     <groupId>org.opennms.features.graph</groupId>
     <artifactId>org.opennms.features.graph.rest</artifactId>
     <name>OpenNMS :: Features :: Graph :: Rest</name>
-    <packaging>pom</packaging>
+    <packaging>bundle</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Private-Package>org.opennms.netmgt.graph.rest.impl*</Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.opennms.features.graph</groupId>
+            <artifactId>org.opennms.features.graph.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-web-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>
