@@ -187,4 +187,18 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
             sendDelete("rest/nodes/test:nodeWith11Interfaces", 202);
         }
     }
+
+    // See NMS-10679
+    @Test
+    public void verifyNodeNotFoundMessageIsShown() {
+        final String NODE_NOT_FOUND = "Node Not Found";
+        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=12345");
+        pageContainsText(NODE_NOT_FOUND);
+
+        final String NODE_ID_NOT_FOUND = "Node ID Not Found";
+        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=abc");
+        pageContainsText(NODE_ID_NOT_FOUND);
+        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=ab:cd");
+        pageContainsText(NODE_ID_NOT_FOUND);
+    }
 }
