@@ -309,6 +309,36 @@ checkLogDir(){
 	return 0
 }
 
+checkConfigured() {
+	if [ ! -f "$OPENNMS_HOME/etc/configured" ]; then
+		cat <<END >&2
+$0: ${install.package.description} not configured.
+$OPENNMS_HOME/etc/configured does not exist.
+
+You need to run the installer to set up the database.  In most
+cases, it is enough to run:
+
+  $OPENNMS_HOME/bin/install -dis
+
+For details, see the install guide at:
+
+http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
+
+END
+
+		case "$COMMAND" in
+			status)
+				# when calling `opennms status` return 3 for "stopped"
+				return 3	# From LSB: 3 - program is stopped
+				;;
+			*)
+				# any other init command should return 6 on error
+				return 6	# From LSB: 6 - program is not configured
+				;;
+		esac
+	fi
+}
+
 runCmd(){
 	if [ "$NOEXECUTE" -eq 1 ]; then
 		__tmp_array=()
@@ -322,9 +352,10 @@ runCmd(){
 }
 
 doStart(){
-	checkXmlFiles || return $?
-	checkRpmFiles || return $?
-	checkLogDir   || return $?
+	checkConfigured || return 1
+	checkXmlFiles   || return 1
+	checkRpmFiles   || return 1
+	checkLogDir     || return 1
 
 	doStatus "$@"
 	status=$?
@@ -823,34 +854,6 @@ fi
 
 if [ x"$VERBOSE_GC" != x"" ]; then
 	MANAGER_OPTIONS+=("-verbose:gc")
-fi
-
-if [ ! -f "$OPENNMS_HOME/etc/configured" ]; then
-	cat <<END >&2
-$0: ${install.package.description} not configured.
-$OPENNMS_HOME/etc/configured does not exist.
-
-You need to run the installer to set up the database.  In most
-cases, it is enough to run:
-
-  $OPENNMS_HOME/bin/install -dis
-
-For details, see the install guide at:
-
-http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
-
-END
-
-	case "$COMMAND" in
-		status)
-			# when calling `opennms status` return 3 for "stopped"
-			exit 3	# From LSB: 3 - program is stopped
-			;;
-		*)
-			# any other init command should return 6 on error
-			exit 6	# From LSB: 6 - program is not configured
-			;;
-	esac
 fi
 
 myuser="$(id -u -n)"

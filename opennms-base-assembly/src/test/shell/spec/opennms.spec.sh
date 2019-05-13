@@ -169,7 +169,7 @@ testRpmnewFailure() {
 	output="$(runOpennms -f start 2>&1)"
 	assertContains "$output" "The format of the original files may have changed since"
 	runOpennms -f start >/dev/null 2>&1
-	assertEquals '"opennms start" should have failed' 6 "$?"
+	assertEquals '"opennms start" should have failed' 1 "$?"
 }
 
 testRpmsaveFailure() {
@@ -178,7 +178,7 @@ testRpmsaveFailure() {
 	output="$(runOpennms -f start 2>&1)"
 	assertContains "$output" "The format of the original files may have changed since"
 	runOpennms -f start >/dev/null 2>&1
-	assertEquals '"opennms start" should have failed' 6 "$?"
+	assertEquals '"opennms start" should have failed' 1 "$?"
 }
 
 testDpkgDistFailure() {
@@ -187,7 +187,7 @@ testDpkgDistFailure() {
 	output="$(runOpennms -f start 2>&1)"
 	assertContains "$output" "The format of the original files may have changed since"
 	runOpennms -f start >/dev/null 2>&1
-	assertEquals '"opennms start" should have failed' 6 "$?"
+	assertEquals '"opennms start" should have failed' 1 "$?"
 }
 
 . ../shunit2
