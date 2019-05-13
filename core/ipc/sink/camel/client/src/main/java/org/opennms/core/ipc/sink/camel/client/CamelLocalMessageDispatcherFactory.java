@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.camel.client;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
+
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager;
@@ -54,7 +56,7 @@ public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatche
 
     @Override
     public String getMetricDomain() {
-        return CamelLocalMessageDispatcherFactory.class.getPackage().getName();
+        return SINK_METRIC_PRODUCER_DOMAIN;
     }
 
     @Override
