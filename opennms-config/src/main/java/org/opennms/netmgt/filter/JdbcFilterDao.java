@@ -62,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -145,6 +146,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     @PreDestroy
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void destroy() throws Exception {
         try {
             if (jmxReporter != null) {
