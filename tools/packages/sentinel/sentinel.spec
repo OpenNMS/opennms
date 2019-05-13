@@ -125,13 +125,30 @@ mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconf
 # sentinel package files
 find %{buildroot}%{sentinelinstprefix} ! -type d | \
     grep -v %{sentinelinstprefix}/bin | \
+    grep -v %{sentinelinstprefix}/etc | \
     grep -v %{sentinelrepoprefix} | \
-    grep -v %{sentinelinstprefix}/etc/featuresBoot.d | \
     sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) |" | \
     sort > %{_tmppath}/files.sentinel
+
+# org.apache.karaf.features.cfg and org.ops4j.pax.logging.cfg should
+# be special-cased to not be replaced by default (and create .rpmnew files)
+find %{buildroot}%{sentinelinstprefix}/etc ! -type d | \
+    grep -E 'etc/(org.apache.karaf.features.cfg|org.ops4j.pax.logging.cfg)$' | \
+    sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) %config(noreplace) |" | \
+    sort >> %{_tmppath}/files.sentinel
+
+# all other etc files should replace by default (and create .rpmsave files)
+find %{buildroot}%{sentinelinstprefix}/etc ! -type d | \
+    grep -v etc/org.apache.karaf.features.cfg | \
+    grep -v etc/org.ops4j.pax.logging.cfg | \
+    grep -v etc/featuresBoot.d | \
+    sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) %config |" | \
+    sort >> %{_tmppath}/files.sentinel
+
 find %{buildroot}%{sentinelinstprefix}/bin ! -type d | \
     sed -e "s|^%{buildroot}|%attr(755,sentinel,sentinel) |" | \
     sort >> %{_tmppath}/files.sentinel
+
 # Exclude subdirs of the repository directory
 find %{buildroot}%{sentinelinstprefix} -type d | \
     grep -v %{sentinelrepoprefix}/ | \
