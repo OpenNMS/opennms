@@ -76,7 +76,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     // Resolve all HealthChecks from the OSGi registry
-    private List<HealthCheck> getHealthChecks() throws InvalidSyntaxException {
+    protected List<HealthCheck> getHealthChecks() throws InvalidSyntaxException {
         final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
         return serviceReferences.stream()
                 .sorted(Comparator.comparingLong(ref -> ref.getBundle().getBundleId()))
