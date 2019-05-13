@@ -38,6 +38,15 @@ public class VertexRefEntity {
     private final String namespace;
     private final String id;
 
+    /*
+    * Default constructor for hibernate. It is not to be used other than from hibernate
+    */
+    private VertexRefEntity() {
+        // trick compiler:
+        this.namespace = null;
+        this.id = null;
+    }
+    
     public VertexRefEntity(String namespace, String id) {
         this.namespace = namespace;
         this.id = id;
