@@ -148,14 +148,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     @PreDestroy
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void destroy() throws Exception {
-        try {
-            if (jmxReporter != null) {
-                jmxReporter.stop();
-                jmxReporter = null;
-            }
-        }
-        catch (Exception e) {
-            LOG.debug("Error destroying JdbcFilterDao: {}", e.getMessage());
+        if (jmxReporter != null) {
+            jmxReporter.stop();
+            jmxReporter = null;
         }
     }
 
