@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.provider.application;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+import static org.opennms.netmgt.graph.provider.application.ApplicationVertex.createVertexId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +67,7 @@ public class ApplicationGraphProviderTest {
 
         for(OnmsApplication app: applications) {
             for(OnmsMonitoredService service : app.getMonitoredServices()) {
-                verifyLinkingBetweenNodes(graph, graph.getVertex(app.getId().toString()), graph.getVertex(service.getId().toString()));
+                verifyLinkingBetweenNodes(graph, graph.getVertex(createVertexId(app)), graph.getVertex(createVertexId(service)));
             }
         }
     }
@@ -84,11 +85,11 @@ public class ApplicationGraphProviderTest {
         app.setId(applicationId);
         app.setName("Application " + applicationId);
         final Set<OnmsMonitoredService> monitoredServices = new HashSet<>();
-        monitoredServices.add(generateMonitoredService(1, new OnmsServiceType("ICMP")));
-        monitoredServices.add(generateMonitoredService(2, new OnmsServiceType("HTTP")));
-        monitoredServices.add(generateMonitoredService(3, new OnmsServiceType("HTTPS")));
-        monitoredServices.add(generateMonitoredService(4, new OnmsServiceType("SNMP")));
-        monitoredServices.add(generateMonitoredService(5, new OnmsServiceType("SSH")));
+        monitoredServices.add(generateMonitoredService(applicationId * 10 + 1, new OnmsServiceType(1, "ICMP")));
+        monitoredServices.add(generateMonitoredService(applicationId * 10 + 2, new OnmsServiceType(2,"HTTP")));
+        monitoredServices.add(generateMonitoredService(applicationId * 10 + 3, new OnmsServiceType(3,"HTTPS")));
+        monitoredServices.add(generateMonitoredService(applicationId * 10 + 4, new OnmsServiceType(4,"SNMP")));
+        monitoredServices.add(generateMonitoredService(applicationId * 10 + 5, new OnmsServiceType(5,"SSH")));
         app.setMonitoredServices(monitoredServices);
         return app;
     }
@@ -105,6 +106,7 @@ public class ApplicationGraphProviderTest {
         final OnmsNode node = new OnmsNode();
         node.setId(123);
         node.addIpInterface(ipInterface);
+        service.setIpInterface(ipInterface);
         return service;
     }
 

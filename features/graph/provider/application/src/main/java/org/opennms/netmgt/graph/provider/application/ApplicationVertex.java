@@ -46,12 +46,12 @@ public class ApplicationVertex extends SimpleVertex {
     }
 
     public ApplicationVertex(OnmsApplication application) {
-        this(application.getId().toString(), application.getName());
+        this(createVertexId(application), application.getName());
         setVertexType(ApplicationVertexType.Application);
     }
 
     public ApplicationVertex(OnmsMonitoredService monitoredService) {
-        this(monitoredService.getId().toString(), monitoredService.getServiceName());
+        this(createVertexId(monitoredService), monitoredService.getServiceName());
         setVertexType(ApplicationVertexType.Service);
         setServiceTypeId(monitoredService.getServiceType().getId());
     }
@@ -114,6 +114,16 @@ public class ApplicationVertex extends SimpleVertex {
     private <T> T getProperty(String key) {
         Objects.requireNonNull(key);
         return delegate.getProperty(key);
+    }
+
+    static String createVertexId(OnmsApplication application) {
+        Objects.requireNonNull(application);
+        return ApplicationVertexType.Application + ":" + application.getId();
+    }
+
+    static String createVertexId(OnmsMonitoredService service) {
+        Objects.requireNonNull(service);
+        return ApplicationVertexType.Service + ":" + service.getId();
     }
 
 }

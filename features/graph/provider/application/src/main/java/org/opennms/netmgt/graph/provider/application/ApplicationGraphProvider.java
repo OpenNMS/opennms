@@ -87,7 +87,7 @@ public class ApplicationGraphProvider implements GraphProvider {
                     serviceVertex.setName(eachMonitoredService.getServiceName());
                     serviceVertex.setServiceTypeId(eachMonitoredService.getServiceType().getId());
                     serviceVertex.setNodeRefString(Integer.toString(eachMonitoredService.getNodeId()));
-                    graph.addVertex(applicationVertex);
+                    graph.addVertex(serviceVertex);
 
                     // connect with application
                     SimpleEdge edge = new SimpleEdge(applicationVertex, serviceVertex);
