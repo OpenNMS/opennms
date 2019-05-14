@@ -297,10 +297,9 @@ public class KafkaOffsetProvider {
     }
 
     public void closeConnection() throws InterruptedException {
-        for (KafkaConsumer consumer : consumerMap.values()) {
-            //TODO Find a replacement for SimpleConsumer.host() for logging
-            LOGGER.info("Closing connection for: <Unknown Consumer Host>");
-            consumer.close();
+        for (Map.Entry<String, KafkaConsumer> consumer : consumerMap.entrySet()) {
+            LOGGER.info("Closing connection for: " + consumer.getKey());
+            consumer.getValue().close();
         }
     }
 
