@@ -88,11 +88,13 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void canExposeGraphML() throws IOException, InterruptedException {
-        karafShell.runCommand("graph:list", output -> output.contains("No GraphContainerProvider registered"));
+        karafShell.runCommand("graph:list", output -> output.contains("1 registered Graph Container(s)"));
 
         importGraph();
 
-        karafShell.runCommand("graph:list", output -> output.contains(LABEL));
+        karafShell.runCommand("graph:list", output -> output.contains("2 registered Graph Container(s)")
+                && output.contains("3 registered Graph(s)")
+                && output.contains(LABEL));
     }
 
     // TODO MVR same code as in GraphMLTopologyIT

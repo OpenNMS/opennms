@@ -55,20 +55,23 @@ public class GraphListCommand implements Action {
     public Object execute() throws Exception {
         final List<GraphContainerInfo> graphContainerInfoList = graphService.getGraphContainerInfos();
         if (!graphContainerInfoList.isEmpty()) {
+            final int containerCount = graphContainerInfoList.size();
+            final int graphCount = graphContainerInfoList.stream().mapToInt(gi -> gi.getNamespaces().size()).sum();
+
             // Print containers
-            System.out.println("Registered Graph Containers:");
+            System.out.println(containerCount + " registered Graph Container(s):");
             final int maxContainerIdLength = graphContainerInfoList.stream().mapToInt(ci -> ci.getId().length()).max().getAsInt();
             final int maxContainerLabelLength = graphContainerInfoList.stream().mapToInt(ci -> ci.getLabel().length()).max().getAsInt();
             final String ContainerRowFormat = String.format(CONTAINER_ROW_TEMPLATE, maxContainerIdLength > "Container ID".length() ? maxContainerIdLength : "Container ID".length(), maxContainerLabelLength, MAX_DESCRIPTION_LENGTH);
             System.out.println(String.format(ContainerRowFormat, "Container ID", "Label", "Description", "Graph Namespaces"));
             for (GraphContainerInfo eachContainerInfo : graphContainerInfoList) {
                 final String description = cutString(eachContainerInfo.getDescription());
-                System.out.println(String.format(ContainerRowFormat, eachContainerInfo.getId(), eachContainerInfo.getLabel(), description, eachContainerInfo.getNamespaces()));
+                System.out.println(String.format(ContainerRowFormat, eachContainerInfo.getId(), eachContainerInfo.getLabel() == null ? "" : eachContainerInfo.getLabel(), description, eachContainerInfo.getNamespaces()));
             }
 
             // Print graphs
             System.out.println();
-            System.out.println("Registered Graphs:");
+            System.out.println(graphCount + " registered Graph(s):");
             final List<GraphInfo> graphInfos = graphContainerInfoList.stream().flatMap(ci -> ci.getGraphInfos().stream()).collect(Collectors.toList());
             final int maxNamespaceLength = graphInfos.stream().mapToInt(gi -> gi.getNamespace().length()).max().getAsInt();
             final int maxGraphLabelLength = graphInfos.stream().mapToInt(gi -> gi.getLabel() != null ? gi.getLabel().length() : 0).max().getAsInt();
@@ -77,7 +80,7 @@ public class GraphListCommand implements Action {
             for (GraphContainerInfo eachContainerInfo : graphContainerInfoList) {
                 for (GraphInfo eachGraphInfo : eachContainerInfo.getGraphInfos()) {
                     final String description = cutString(eachGraphInfo.getDescription());
-                    System.out.println(String.format(GraphRowFormat, eachGraphInfo.getNamespace(), eachGraphInfo.getLabel(), description, eachContainerInfo.getId()));
+                    System.out.println(String.format(GraphRowFormat, eachGraphInfo.getNamespace(), eachGraphInfo.getLabel() == null ? "" : eachGraphInfo.getLabel(), description, eachContainerInfo.getId()));
                 }
             }
         } else {
@@ -89,6 +92,9 @@ public class GraphListCommand implements Action {
     private static String cutString(String input) {
         if (input != null && input.length() > MAX_DESCRIPTION_LENGTH) {
             return input.substring(0, MAX_DESCRIPTION_LENGTH - 3) + "...";
+        }
+        if (input == null) {
+            return "";
         }
         return input;
     }
