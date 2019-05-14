@@ -106,6 +106,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
 
         <configuration>
+          <skip>${skipSurefire}</skip>
           <excludes>
             <!-- prevent tests running in this package. These are manual one off development tests -->
             <exclude>**/manual/*.java</exclude>
