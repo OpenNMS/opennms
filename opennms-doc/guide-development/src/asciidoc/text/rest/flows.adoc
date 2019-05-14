@@ -101,6 +101,8 @@ The `conversations` and `conversations/series` endpoints also supports:
                                    can be repeated for any number of conversations to be included in the query.
 |===
 
+NOTE: Make sure to URL encode the conversation value in your request.
+
 Both endpoints requires one of `N` or `conversation` query parameters to be set and will return an error if neither or
 both are set.
 

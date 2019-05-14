@@ -379,7 +379,7 @@ public class ElasticFlowRepository implements FlowRepository {
     public CompletableFuture<List<TrafficSummary<ConversationKey>>> getConversationSummaries(Set<String> conversations,
                                                                                              boolean includeOther,
                                                                                              List<Filter> filters) {
-        return getTotalBytesFrom(conversations, "netflow.convo_key", null, includeOther,
+        return getTotalBytesFrom(unescapeConversations(conversations), "netflow.convo_key", null, includeOther,
                 filters).thenApply(summaries -> summaries.stream()
                 .map(this::mapFromStringSummary)
                 .collect(Collectors.toList()));
@@ -387,7 +387,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     @Override
     public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
-        return getSeriesFor(conversations, "netflow.convo_key", step, includeOther, filters)
+        return getSeriesFor(unescapeConversations(conversations), "netflow.convo_key", step, includeOther, filters)
                 .thenApply((res) -> mapTable(res, (key) -> ConversationKeyUtils.fromJsonString(key)));
     }
 
@@ -810,6 +810,13 @@ public class ElasticFlowRepository implements FlowRepository {
         final TrafficSummary<ConversationKey> mapped = new TrafficSummary<>(conversationKey);
         mapped.copyBytes(trafficSummary);
         return mapped;
+    }
+    
+    private Set<String> unescapeConversations(Set<String> conversations) {
+        // freemarker template is going to auto-escape the string so we need to remove the explicit escaped quotes first
+        return conversations.stream()
+                .map(conversation -> conversation.replace("\\\"", "\""))
+                .collect(Collectors.toSet());
     }
 
     public Identity getIdentity() {
