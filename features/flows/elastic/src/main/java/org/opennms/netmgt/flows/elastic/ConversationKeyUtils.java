@@ -51,10 +51,6 @@ public class ConversationKeyUtils {
     private static final ConversationKey otherKey = new ConversationKey("Other", -1, "Other", "Other", "Other");
 
     public static ConversationKey fromJsonString(String json) {
-        if(json.equals("Other")) {
-            return forOther();
-        }
-
         final Object[] array = gson.fromJson(json, Object[].class);
         if (array.length != 5) {
             throw new IllegalArgumentException("Invalid conversation key string: " + json);

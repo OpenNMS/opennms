@@ -349,12 +349,12 @@ public class ElasticFlowRepository implements FlowRepository {
                                                             String applicationPattern, long limit,
                                                             List<Filter> filters) {
         // Handle the unquoted null value
-        if(applicationPattern.equals(".*")) {
+        if (applicationPattern.equals(".*")) {
             applicationPattern = String.format("(\\\"%s\\\"|null)", applicationPattern);
         } else if (!applicationPattern.equals("null")) {
-            applicationPattern =String.format("\\\"%s\\\"", applicationPattern);
+            applicationPattern = String.format("\\\"%s\\\"", applicationPattern);
         }
-        
+
         String regex = String.format("\\[\\\"%s\\\",%s,\\\"%s\\\",\\\"%s\\\",%s\\]",
                 locationPattern,
                 protocolPattern,
@@ -371,7 +371,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                                                                                  List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.convo_key", null, includeOther, filters)
                 .thenApply((res) -> res.stream()
-                        .map(this::mapFromStringSummary)
+                        .map(ElasticFlowRepository::mapFromStringSummary)
                         .collect(Collectors.toList()));
     }
 
@@ -381,14 +381,14 @@ public class ElasticFlowRepository implements FlowRepository {
                                                                                              List<Filter> filters) {
         return getTotalBytesFrom(unescapeConversations(conversations), "netflow.convo_key", null, includeOther,
                 filters).thenApply(summaries -> summaries.stream()
-                .map(this::mapFromStringSummary)
+                .map(ElasticFlowRepository::mapFromStringSummary)
                 .collect(Collectors.toList()));
     }
 
     @Override
     public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
         return getSeriesFor(unescapeConversations(conversations), "netflow.convo_key", step, includeOther, filters)
-                .thenApply((res) -> mapTable(res, (key) -> ConversationKeyUtils.fromJsonString(key)));
+                .thenApply((res) -> mapTable(res, ElasticFlowRepository::getConversationKey));
     }
 
     @Override
@@ -397,7 +397,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                                                                                           boolean includeOther,
                                                                                                           List<Filter> filters) {
         return getSeriesFromTopN(N, step, "netflow.convo_key", null, includeOther, filters)
-                .thenApply((res) -> mapTable(res, (key) -> ConversationKeyUtils.fromJsonString(key)));
+                .thenApply((res) -> mapTable(res, ElasticFlowRepository::getConversationKey));
     }
 
     @Override
@@ -523,30 +523,6 @@ public class ElasticFlowRepository implements FlowRepository {
 
         // Sort the table to ensure that the rows as in the same order as the Top N
         return seriesFuture.thenApply(ignored -> TableUtils.sortTableByRowKeys(builder.build(), topN));
-    }
-
-    private Void processOthersResult(SearchResult res,
-                                     ImmutableTable.Builder<Directional<String>, Long, Double> builder) {
-        final MetricAggregation aggs = res.getAggregations();
-        if (aggs == null) {
-            // No results
-            return null;
-        }
-        final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
-        if (directionAgg == null) {
-            // No results
-            return null;
-        }
-        for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
-            final boolean isIngress = isIngress(directionBucket);
-            final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes",
-                    ProportionalSumAggregation.class);
-            for (ProportionalSumAggregation.DateHistogram dateHistogram : sumAgg.getBuckets()) {
-                builder.put(new Directional<>(OTHER_NAME, isIngress), dateHistogram.getTime(),
-                        dateHistogram.getValue());
-            }
-        }
-        return null;
     }
 
     private static void toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResult res) {
@@ -735,7 +711,31 @@ public class ElasticFlowRepository implements FlowRepository {
         return future;
     }
 
-    private List<String> processGroupedByResult(SearchResult searchResult, long limit) {
+    private static Void processOthersResult(SearchResult res,
+                                            ImmutableTable.Builder<Directional<String>, Long, Double> builder) {
+        final MetricAggregation aggs = res.getAggregations();
+        if (aggs == null) {
+            // No results
+            return null;
+        }
+        final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+        if (directionAgg == null) {
+            // No results
+            return null;
+        }
+        for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
+            final boolean isIngress = isIngress(directionBucket);
+            final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes",
+                    ProportionalSumAggregation.class);
+            for (ProportionalSumAggregation.DateHistogram dateHistogram : sumAgg.getBuckets()) {
+                builder.put(new Directional<>(OTHER_NAME, isIngress), dateHistogram.getTime(),
+                        dateHistogram.getValue());
+            }
+        }
+        return null;
+    }
+
+    private static List<String> processGroupedByResult(SearchResult searchResult, long limit) {
         final MetricAggregation aggs = searchResult.getAggregations();
         if (aggs == null) {
             // No results
@@ -798,25 +798,24 @@ public class ElasticFlowRepository implements FlowRepository {
         }
     }
 
-    private TrafficSummary<ConversationKey> mapFromStringSummary(TrafficSummary<String> trafficSummary) {
-        final ConversationKey conversationKey;
-
-        if (trafficSummary.getEntity().equals(OTHER_NAME)) {
-            conversationKey = ConversationKeyUtils.forOther();
-        } else {
-            conversationKey = ConversationKeyUtils.fromJsonString(trafficSummary.getEntity());
-        }
+    private static TrafficSummary<ConversationKey> mapFromStringSummary(TrafficSummary<String> trafficSummary) {
+        final ConversationKey conversationKey = getConversationKey(trafficSummary.getEntity());
 
         final TrafficSummary<ConversationKey> mapped = new TrafficSummary<>(conversationKey);
         mapped.copyBytes(trafficSummary);
         return mapped;
     }
     
-    private Set<String> unescapeConversations(Set<String> conversations) {
+    private static Set<String> unescapeConversations(Set<String> conversations) {
         // freemarker template is going to auto-escape the string so we need to remove the explicit escaped quotes first
         return conversations.stream()
                 .map(conversation -> conversation.replace("\\\"", "\""))
                 .collect(Collectors.toSet());
+    }
+
+    private static ConversationKey getConversationKey(String key) {
+        Objects.requireNonNull(key);
+        return key.equals(OTHER_NAME) ? ConversationKeyUtils.forOther() : ConversationKeyUtils.fromJsonString(key);
     }
 
     public Identity getIdentity() {
