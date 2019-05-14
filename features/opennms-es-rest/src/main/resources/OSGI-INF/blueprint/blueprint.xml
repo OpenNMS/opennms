@@ -201,5 +201,6 @@
 		class="org.opennms.plugins.elasticsearch.rest.archive.OnmsHistoricEventsToEs">
 		<property name="eventForwarder" ref="eventForwarder" />
 	</bean>
+	>>>>>>> 87a4c0e1057a596a213a4fd66840434cb53d1a82
 
 </blueprint>

@@ -63,7 +63,7 @@ public class ElasticRestIT extends AbstractEventToIndexTest{
 			eventToIndex.setIndexStrategy(IndexStrategy.MONTHLY);
 			eventToIndex.setLogEventDescription(true);
 			eventToIndex.seteventIndexName("onms-cert1");
-
+			
 			EventBuilder eb = new EventBuilder( NODE_LOST_SERVICE_EVENT, EVENT_SOURCE_NAME);
 		
 			eb.setUei("uei.opennms.org/nodes/nodeLostService");
