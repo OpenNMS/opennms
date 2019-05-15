@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.common.utils.DnsUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.Throwables;
@@ -115,7 +116,9 @@ public class Inet4Header {
         bsonWriter.writeInt32("length", this.totalLength);
         bsonWriter.writeInt32("protocol", this.protocol);
         bsonWriter.writeString("src_ip", this.srcAddress);
+        bsonWriter.writeString("src_ip_hostname", DnsUtils.hostnameOrIpAddress(this.srcAddress));
         bsonWriter.writeString("dst_ip", this.dstAddress);
+        bsonWriter.writeString("dst_ip_hostname", DnsUtils.hostnameOrIpAddress(this.dstAddress));
 
         if (this.srcPort != null) {
             bsonWriter.writeInt32("src_port", this.srcPort);

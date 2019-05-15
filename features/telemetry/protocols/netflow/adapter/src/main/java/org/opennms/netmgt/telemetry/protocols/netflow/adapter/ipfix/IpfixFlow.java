@@ -86,6 +86,13 @@ class IpfixFlow implements Flow {
     }
 
     @Override
+    public String getDstAddrHostname() {
+        return first(getString(this.document, "destinationIPv6Address_hostname"),
+                getString(this.document, "destinationIPv4Address_hostname"))
+                .orElse(null);
+    }
+
+    @Override
     public Integer getDstAs() {
         return getInt64(this.document, "bgpDestinationAsNumber")
                 .map(Long::intValue)
@@ -346,6 +353,13 @@ class IpfixFlow implements Flow {
     public String getSrcAddr() {
         return first(getString(this.document, "sourceIPv6Address"),
                 getString(this.document, "sourceIPv4Address"))
+                .orElse(null);
+    }
+
+    @Override
+    public String getSrcAddrHostname() {
+        return first(getString(this.document, "sourceIPv6Address_hostname"),
+                getString(this.document, "sourceIPv4Address_hostname"))
                 .orElse(null);
     }
 

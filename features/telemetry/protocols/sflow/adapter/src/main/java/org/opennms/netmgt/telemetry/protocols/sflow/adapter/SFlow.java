@@ -105,6 +105,16 @@ class SFlow implements Flow {
     }
 
     @Override
+    public String getDstAddrHostname() {
+        return first(get(document, "flows", "0:3", "dst_ip_hostname"),
+                get(document, "flows", "0:4", "dst_ip_hostname"),
+                get(document, "flows", "0:1", "ipv4", "dst_ip_hostname"),
+                get(document, "flows", "0:1", "ipv6", "dst_ip_hostname"))
+                .map(v -> v.asString().getValue())
+                .orElse(null);
+    }
+
+    @Override
     public Integer getDstAs() {
         // TODO: Multi-path, any-cast, etc...
         return null;
@@ -233,6 +243,16 @@ class SFlow implements Flow {
                 get(document, "flows", "0:4", "src_ip"),
                 get(document, "flows", "0:1", "ipv4", "src_ip"),
                 get(document, "flows", "0:1", "ipv6", "src_ip"))
+                .map(v -> v.asString().getValue())
+                .orElse(null);
+    }
+
+    @Override
+    public String getSrcAddrHostname() {
+        return first(get(document, "flows", "0:3", "src_ip_hostname"),
+                get(document, "flows", "0:4", "src_ip_hostname"),
+                get(document, "flows", "0:1", "ipv4", "src_ip_hostname"),
+                get(document, "flows", "0:1", "ipv6", "src_ip_hostname"))
                 .map(v -> v.asString().getValue())
                 .orElse(null);
     }

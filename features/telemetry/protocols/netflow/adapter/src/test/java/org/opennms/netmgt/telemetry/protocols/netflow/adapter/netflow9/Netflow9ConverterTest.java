@@ -68,8 +68,10 @@ public class Netflow9ConverterTest {
         // Verify a flow
         Flow flow = flows.get(4);
         assertThat(flow.getSrcAddr(), equalTo("10.1.20.85"));
+        assertThat(flow.getSrcAddrHostname(), equalTo("10.1.20.85"));
         assertThat(flow.getSrcPort(), equalTo(137));
         assertThat(flow.getDstAddr(), equalTo("10.1.20.127"));
+        assertThat(flow.getDstAddrHostname(), equalTo("10.1.20.127"));
         assertThat(flow.getDstPort(), equalTo(137));
         assertThat(flow.getProtocol(), equalTo(17)); // UDP
         assertThat(flow.getBytes(), equalTo(156L));

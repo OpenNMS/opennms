@@ -76,6 +76,11 @@ public interface Flow {
     String getDstAddr();
 
     /**
+     * Destination address hostname.
+     */
+    String getDstAddrHostname();
+
+    /**
      * Destination autonomous system (AS).
      */
     Integer getDstAs();
@@ -166,6 +171,11 @@ public interface Flow {
      * Source address.
      */
     String getSrcAddr();
+
+    /**
+     * Source address hostname.
+     */
+    String getSrcAddrHostname();
 
     /**
      * Source autonomous system (AS).
