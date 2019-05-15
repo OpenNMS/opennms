@@ -28,10 +28,13 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
+import java.net.Inet4Address;
 import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.common.utils.DnsUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -89,10 +92,15 @@ public class SampledIpv4 implements FlowData {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt32("length", (int) this.length);
         bsonWriter.writeInt32("protocol", (int) this.protocol);
+
         bsonWriter.writeName("src_ip");
         this.src_ip.writeBson(bsonWriter);
+        bsonWriter.writeString("src_ip_hostname", DnsUtils.hostnameOrIpAddress(InetAddressUtils.getInetAddress(this.src_ip.ip_v4.value)));
+
         bsonWriter.writeName("dst_ip");
         this.dst_ip.writeBson(bsonWriter);
+        bsonWriter.writeString("dst_ip_hostname", DnsUtils.hostnameOrIpAddress(InetAddressUtils.getInetAddress(this.dst_ip.ip_v4.value)));
+
         bsonWriter.writeInt32("src_port", (int) this.src_port);
         bsonWriter.writeInt32("dst_port", (int) this.dst_port);
         bsonWriter.writeInt32("tcp_flags", (int) this.tcp_flags);

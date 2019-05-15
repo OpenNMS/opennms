@@ -32,7 +32,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.IntFunction;
 
 import org.bson.BsonBinary;
 import org.bson.BsonBinaryWriter;
@@ -40,6 +39,7 @@ import org.bson.BsonWriter;
 import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.common.utils.DnsUtils;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.BooleanValue;
@@ -151,12 +151,14 @@ public class ParserBase {
         public void accept(final IPv4AddressValue value) {
             // TODO: Transport as binary?
             this.writer.writeString(value.getName(), value.getValue().getHostAddress());
+            this.writer.writeString(value.getName()+"_hostname", DnsUtils.hostnameOrIpAddress(value.getValue().getHostAddress()));
         }
 
         @Override
         public void accept(final IPv6AddressValue value) {
             // TODO: Transport as binary?
             this.writer.writeString(value.getName(), value.getValue().getHostAddress());
+            this.writer.writeString(value.getName()+"_hostname", DnsUtils.hostnameOrIpAddress(value.getValue().getHostAddress()));
         }
 
         @Override

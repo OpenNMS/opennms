@@ -1,0 +1,102 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.telemetry.common.utils;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Test;
+import org.minidns.DnsClient;
+
+public class DnsUtilsTest {
+
+    @After
+    public void after() {
+        DnsUtils.setDnsServers();
+    }
+
+    @Test
+    public void setDnsServersTest() {
+        final List<String> addresses1 = DnsClient.findDNS();
+        Assert.assertEquals(true, addresses1.size() > 0);
+
+        DnsUtils.setDnsServers("9.8.7.6", "8.7.6.5");
+        final List<String> addresses2 = DnsClient.findDNS();
+
+        Assert.assertEquals(2, addresses2.size());
+        Assert.assertEquals(true, addresses2.contains("9.8.7.6"));
+        Assert.assertEquals(true, addresses2.contains("9.8.7.6"));
+
+        DnsUtils.setDnsServers("4.3.2.1");
+        final List<String> addresses3 = DnsClient.findDNS();
+
+        Assert.assertEquals(1, addresses3.size());
+        Assert.assertEquals(true, addresses3.contains("4.3.2.1"));
+
+        DnsUtils.setDnsServers();
+
+        final List<String> addresses4 = DnsClient.findDNS();
+        Assert.assertEquals(true, addresses4.size() > 0);
+    }
+
+    @Test
+    public void resolveTest() throws UnknownHostException {
+        final String hostname1 = DnsUtils.reverseLookup(InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
+        Assert.assertEquals("localhost", hostname1);
+
+        final String hostname2 = DnsUtils.reverseLookup("127.0.0.1");
+        Assert.assertEquals("localhost", hostname2);
+    }
+
+    @Test
+    public void resolveFailTest() {
+        // 198.51.100.0/24 should be TEST-NET-2 (see RFC #5737). Should fail...
+        final String hostname = DnsUtils.reverseLookup("198.51.100.1");
+        Assert.assertEquals(null, hostname);
+    }
+
+    @Test
+    public void lookupFailTest() {
+        // 198.51.100.0/24 should be TEST-NET-2 (see RFC #5737). Should fail...
+        final String hostname = DnsUtils.hostnameOrIpAddress("198.51.100.1");
+        Assert.assertEquals("198.51.100.1", hostname);
+    }
+
+    @Test
+    public void lookupTest() throws UnknownHostException {
+        final String hostname1 = DnsUtils.hostnameOrIpAddress(InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
+        Assert.assertEquals("localhost", hostname1);
+
+        final String hostname2 = DnsUtils.hostnameOrIpAddress("127.0.0.1");
+        Assert.assertEquals("localhost", hostname2);
+    }
+}

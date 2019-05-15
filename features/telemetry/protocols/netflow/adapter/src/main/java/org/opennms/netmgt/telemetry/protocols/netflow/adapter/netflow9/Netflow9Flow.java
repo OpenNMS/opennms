@@ -72,6 +72,13 @@ class Netflow9Flow implements Flow {
     }
 
     @Override
+    public String getDstAddrHostname() {
+        return first(getString(this.document, "IPV6_DST_ADDR_hostname"),
+                getString(this.document, "IPV4_DST_ADDR_hostname"))
+                .orElse(null);
+    }
+
+    @Override
     public Integer getDstAs() {
         return getInt64(this.document, "DST_AS")
                 .map(Long::intValue)
@@ -204,6 +211,13 @@ class Netflow9Flow implements Flow {
     public String getSrcAddr() {
         return first(getString(this.document, "IPV6_SRC_ADDR"),
                 getString(this.document, "IPV4_SRC_ADDR"))
+                .orElse(null);
+    }
+
+    @Override
+    public String getSrcAddrHostname() {
+        return first(getString(this.document, "IPV6_SRC_ADDR_hostname"),
+                getString(this.document, "IPV4_SRC_ADDR_hostname"))
                 .orElse(null);
     }
 

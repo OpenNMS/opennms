@@ -1321,6 +1321,7 @@
     <log4j2Version>2.8.2</log4j2Version>
     <mapstructVersion>1.3.0.Final</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
+    <miniDnsVersion>0.4.0-alpha3</miniDnsVersion>
     <mockitoVersion>1.10.19</mockitoVersion>
     <netty4Version>4.1.9.Final</netty4Version>
     <newtsVersion>1.5.1</newtsVersion>
@@ -3738,6 +3739,11 @@
         <groupId>com.jcraft</groupId>
         <artifactId>jsch</artifactId>
         <version>0.1.51</version>
+      </dependency>
+      <dependency>
+        <groupId>org.minidns</groupId>
+        <artifactId>minidns-hla</artifactId>
+        <version>${miniDnsVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>

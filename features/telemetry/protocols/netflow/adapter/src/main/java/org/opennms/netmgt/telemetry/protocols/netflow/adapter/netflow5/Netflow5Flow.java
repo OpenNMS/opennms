@@ -64,6 +64,12 @@ class Netflow5Flow implements Flow {
     }
 
     @Override
+    public String getDstAddrHostname() {
+        // TODO: Implement this
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
     public Integer getDstAs() {
         return this.record.getDstAs();
     }
@@ -158,6 +164,12 @@ class Netflow5Flow implements Flow {
     @Override
     public String getSrcAddr() {
         return this.record.getSrcAddr();
+    }
+
+    @Override
+    public String getSrcAddrHostname() {
+        // TODO: Implement this
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
