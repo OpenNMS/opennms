@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,9 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v1;
+package org.opennms.web.rest.v2;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -66,6 +65,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitTemporaryDatabase
 public class MinionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
+
+    public MinionRestServiceIT() {
+        super(CXF_REST_V2_CONTEXT_PATH);
+    }
+
     @Autowired
     MinionDao m_minionDao;
 
@@ -90,32 +94,41 @@ public class MinionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testMinions() throws Exception {
-        final String xml = sendRequest(GET, "/minions", 200);
-        assertTrue(xml, xml.contains("id=\"12345\""));
-        assertTrue(xml, xml.contains("id=\"23456\""));
-        assertTrue(xml, xml.contains("<key>Foo</key>"));
-        assertTrue(xml, xml.contains("<value>Bar</value>"));
+        final String json = sendRequest(GET, "/minions", 200);
+        assertTrue(json, json.contains("\"id\":\"12345\""));
+        assertTrue(json, json.contains("\"id\":\"23456\""));
+        assertTrue(json, json.contains("\"Foo\":\"Bar\""));
     }
     
     @Test
     public void testGetMinion() throws Exception {
-        String xml = sendRequest(GET, "/minions/12345", 200);
-        assertTrue(xml, xml.contains("id=\"12345\""));
-        assertFalse(xml, xml.contains("id=\"23456\""));
-        assertTrue(xml, xml.contains("<key>Foo</key>"));
-        assertTrue(xml, xml.contains("<value>Bar</value>"));
+        String json = sendRequest(GET, "/minions/12345", 200);
+        assertTrue(json, json.contains("\"id\":\"12345\""));
+        assertFalse(json, json.contains("\"id\":\"23456\""));
+        assertTrue(json, json.contains("\"Foo\":\"Bar\""));
         
-        xml = sendRequest(GET, "/minions/23456", 200);
-        assertFalse(xml, xml.contains("id=\"12345\""));
-        assertTrue(xml, xml.contains("id=\"23456\""));
-        assertFalse(xml, xml.contains("<key>Foo</key>"));
-        assertFalse(xml, xml.contains("<value>Bar</value>"));
+        json = sendRequest(GET, "/minions/23456", 200);
+        assertFalse(json, json.contains("\"id\":\"12345\""));
+        assertTrue(json, json.contains("\"id\":\"23456\""));
+        assertFalse(json, json.contains("\"Foo\":\"Bar\""));
     }
 
     @Test
-    public void testGetProperty() throws Exception {
-        String xml = sendRequest(GET, "/minions/12345/Foo", 200);
-        assertFalse(xml, xml.contains("id=\"12345\""));
-        assertEquals("Bar", xml);
+    public void testSearchString() throws Exception {
+        // search for location
+        String json = sendRequest(GET, "/minions?_s=location==Here&limit=20&offset=0&order=asc&orderBy=label", 200);
+        assertTrue(json, json.contains("\"id\":\"12345\""));
+        assertFalse(json, json.contains("\"id\":\"23456\""));
     }
+
+    // See NMS-10670
+    @Test
+    public void testEmptySearchString() throws Exception {
+        // search for empty string => should give back all minions
+        String json = sendRequest(GET, "/minions?_s=&limit=20&offset=0&order=asc&orderBy=label", 200);
+        assertTrue(json, json.contains("\"id\":\"12345\""));
+        assertTrue(json, json.contains("\"id\":\"23456\""));
+        assertTrue(json, json.contains("\"Foo\":\"Bar\""));
+    }
+
 }
