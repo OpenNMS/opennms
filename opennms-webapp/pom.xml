@@ -60,6 +60,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <!-- Don't specify argLine here or it will override the value from /pom.xml -->
+          <skip>${skipSurefire}</skip>
           <systemProperties>
             <property>
               <name>java.endorsed.dirs</name>

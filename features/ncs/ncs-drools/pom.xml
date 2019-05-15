@@ -68,6 +68,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <!-- Don't specify argLine here or it will override the value from /pom.xml -->
+          <skip>${skipSurefire}</skip>
           <forkMode>pertest</forkMode>
           <includes>
             <include>**/*Test.java</include>
