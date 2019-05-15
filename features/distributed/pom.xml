@@ -22,5 +22,6 @@
     <module>dao</module>
     <module>datasource</module>
     <module>coordination</module>
+    <module>opennms-identity</module>
   </modules>
 </project>

@@ -62,6 +62,7 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
     @Autowired
     private TracerRegistry tracerRegistry;
 
+    @Autowired
     private Identity identity;
 
     public CamelMessageConsumerManager(CamelContext context) throws Exception {

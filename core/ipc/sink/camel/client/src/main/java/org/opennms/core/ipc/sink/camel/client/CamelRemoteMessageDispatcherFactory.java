@@ -83,6 +83,8 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     @Override
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Map<String, Object> headers, T message) {
+
+        byte[] sinkMessageBytes = module.marshal((T) message);
         // Add tracing info to jms headers
         final Tracer tracer = tracerRegistry.getTracer();
         if (tracer.activeSpan() != null) {
@@ -92,12 +94,13 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             if (headers.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER) instanceof String) {
                 tracer.activeSpan().setTag(TracerConstants.TAG_TOPIC, (String) headers.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER));
             }
+            tracer.activeSpan().setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageBytes.length);
             String tracingInfo = TracingInfoCarrier.marshalTracingInfo(tracingInfoCarrier.getTracingInfoMap());
             if (tracingInfo != null) {
                 headers.put(CamelSinkConstants.JMS_SINK_TRACING_INFO, tracingInfo);
             }
         }
-        template.sendBodyAndHeaders(endpoint, module.marshal((T)message), headers);
+        template.sendBodyAndHeaders(endpoint, sinkMessageBytes, headers);
     }
 
     @Override

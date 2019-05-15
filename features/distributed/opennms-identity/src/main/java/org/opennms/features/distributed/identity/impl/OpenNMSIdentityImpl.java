@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.identity.impl;
+package org.opennms.features.distributed.identity.impl;
 
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.Identity;

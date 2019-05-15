@@ -299,8 +299,8 @@
         <bundle>wrap:mvn:org.opennms/opennms-bootstrap/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-identity" version="${project.version}" description="OpenNMS :: Features :: Identity">
-        <bundle>mvn:org.opennms.features/org.opennms.features.opennms-identity/${project.version}</bundle>
+    <feature name="opennms-identity" version="${project.version}" description="OpenNMS :: Features :: OpenNMS Identity">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.opennms-identity/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core" version="${project.version}" description="OpenNMS :: Core">

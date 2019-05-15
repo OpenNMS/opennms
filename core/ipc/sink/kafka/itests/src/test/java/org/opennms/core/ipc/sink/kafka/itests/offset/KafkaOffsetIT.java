@@ -55,7 +55,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/applicationContext-test-ipc-sink-kafka.xml",
-        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"})
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
+        "classpath:/META-INF/opennms/applicationContext-opennms-identity.xml"})
 @JUnitConfigurationEnvironment
 public class KafkaOffsetIT {
 

@@ -107,6 +107,8 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
 
     @Autowired
     private TracerRegistry tracerRegistry;
+
+    @Autowired
     private Identity identity;
 
 

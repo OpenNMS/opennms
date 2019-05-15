@@ -831,8 +831,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.opennms-identity</artifactId>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.opennms-identity</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

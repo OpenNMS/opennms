@@ -31,6 +31,7 @@ package org.opennms.core.ipc.sink.camel.server;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 import static org.opennms.core.ipc.sink.api.MessageConsumerManager.METRIC_DISPATCH_TIME;
 import static org.opennms.core.ipc.sink.api.MessageConsumerManager.METRIC_MESSAGE_SIZE;
+import static org.opennms.core.ipc.sink.camel.CamelSinkConstants.JMS_QUEUE_NAME_HEADER;
 import static org.opennms.core.ipc.sink.camel.CamelSinkConstants.JMS_SINK_TRACING_INFO;
 
 import java.util.HashMap;
@@ -83,14 +84,17 @@ public class CamelSinkServerProcessor implements Processor {
         // build span from message headers and retrieve custom tags into tracing info.
         Map<String, String> tracingInfo = new HashMap<>();
         Tracer.SpanBuilder spanBuilder = buildSpanFromHeaders(exchange.getIn(), tracingInfo);
-
-        final Message message = module.unmarshal(messageBytes);
         // Update metrics.
         messageSize.update(messageBytes.length);
-
         try (Scope scope = spanBuilder.startActive(true);
              Timer.Context context = dispatchTime.time()) {
+            // Set tags for this span.
             scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageBytes.length);
+            if (exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER) instanceof String) {
+                String topic = exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER, String.class);
+                scope.span().setTag(TracerConstants.TAG_TOPIC, topic);
+            }
+            final Message message = module.unmarshal(messageBytes);
             consumerManager.dispatch(module, message);
         }
     }

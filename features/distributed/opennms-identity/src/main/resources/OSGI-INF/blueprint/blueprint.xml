@@ -11,7 +11,7 @@
 ">
 
   <!-- OpenNMS Identity -->
-  <bean id="opennmsIdentity" class="org.opennms.features.identity.impl.OpenNMSIdentityImpl">
+  <bean id="opennmsIdentity" class="org.opennms.features.distributed.identity.impl.OpenNMSIdentityImpl">
   </bean>
 
   <service ref="opennmsIdentity" interface="org.opennms.distributed.core.api.Identity">
