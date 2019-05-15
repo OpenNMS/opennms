@@ -108,16 +108,15 @@ public class ElasticFlowRepository implements FlowRepository {
 	private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
 
 	private final ClassificationEngine classificationEngine;
-
-	private final int bulkRetryCount;
-
+	
 	private static String eventIndexName = "netflow";
 
-	String Modifiedindex = new StringBuffer().append(eventIndexName).append("-").append(TYPE).toString();
-
+	private final int bulkRetryCount;
+	
 	public static void setEventIndexName(String eventIndexName) {
 		ElasticFlowRepository.eventIndexName = eventIndexName;
 	}
+
 
 	/**
 	 * Flows/second throughput
@@ -162,6 +161,8 @@ public class ElasticFlowRepository implements FlowRepository {
 	 * This maps a node ID to a set if snmpInterface IDs.
 	 */
 	private final ConcurrentMap<Integer, Set<Integer>> markerCache = Maps.newConcurrentMap();
+	
+	String ModifiedIndex = new StringBuffer().append(eventIndexName).append("-").append(TYPE).toString();
 
 	public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
 			DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
@@ -175,7 +176,7 @@ public class ElasticFlowRepository implements FlowRepository {
 		this.nodeDao = Objects.requireNonNull(nodeDao);
 		this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
 		this.bulkRetryCount = bulkRetryCount;
-		this.indexSelector = new IndexSelector(Modifiedindex, indexStrategy, maxFlowDurationMs);
+		this.indexSelector = new IndexSelector(ModifiedIndex, indexStrategy, maxFlowDurationMs);
 
 		flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
 		logConversionTimer = metricRegistry.timer("logConversion");
@@ -226,7 +227,7 @@ public class ElasticFlowRepository implements FlowRepository {
 				final Bulk.Builder bulkBuilder = new Bulk.Builder();
 				for (FlowDocument flowDocument : documents) {
 
-					String index = indexStrategy.getIndex(Modifiedindex,
+					String index = indexStrategy.getIndex(ModifiedIndex,
 							Instant.ofEpochMilli(flowDocument.getTimestamp()));
 
 					// final String index = indexStrategy.getIndex(TYPE,

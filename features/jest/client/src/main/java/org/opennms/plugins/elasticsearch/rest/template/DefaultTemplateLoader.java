@@ -63,7 +63,7 @@ public class DefaultTemplateLoader implements TemplateLoader {
                 serverVersion, resource));
     }
     
-    protected String getTemplate(String resource) throws IOException {
+    public String getTemplate(String resource) throws IOException {
 		try (InputStream input = new FileInputStream(ConfigFileConstants.getConfigFileByName(resource))) {
 			final byte[] bytes = new byte[input.available()];
 			ByteStreams.readFully(input, bytes);

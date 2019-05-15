@@ -50,7 +50,7 @@
 			<cm:property name="settings.index.routing_partition_size"
 				value="" />
 			<cm:property name="eventIndexName"
-				value="cerniosscert101" /> <!-- Set value of OpenNMS instance forwarding document to elastic -->
+				value="feedback" /> <!-- Set value of OpenNMS instance forwarding document to elastic -->
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -122,7 +122,7 @@
 		<argument ref="indexStrategy" />
 		<argument value="${bulkRetryCount}" />
 		<argument ref="elasticFeedbackRepositoryInitializer" />
-		<property name="eventIndexname" value="${eventIndexName}" />
+		 <property name="eventIndexname" value="${eventIndexName}" />
 	</bean>
 	<service
 		interface="org.opennms.features.situationfeedback.api.FeedbackRepository"

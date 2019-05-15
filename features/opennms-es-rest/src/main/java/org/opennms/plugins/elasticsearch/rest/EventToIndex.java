@@ -79,19 +79,6 @@ public class EventToIndex implements AutoCloseable {
 	private static final String INDEX_TYPE = "eventdata";
 
 	private static final String NODE_LABEL_PARAM = "nodelabel";
-	private static final String INITIAL_SEVERITY_PARAM = "initialseverity";
-	private static final String INITIAL_SEVERITY_PARAM_TEXT = "initialseverity_text";
-	private static final String SEVERITY_TEXT = "severity_text";
-	private static final String SEVERITY = "severity";
-	private static final String ALARM_SEVERITY_PARAM = "alarmseverity";
-	private static final String FIRST_EVENT_TIME = "firsteventtime";
-	private static final String EVENT_PARAMS = "eventparms";
-	private static final String ALARM_ACK_TIME_PARAM = "alarmacktime";
-	private static final String ALARM_ACK_USER_PARAM = "alarmackuser";
-	private static final String ALARM_ACK_DURATION = "alarmackduration"; // duration from alarm raise to acknowledge
-	private static final String ALARM_CLEAR_TIME = "alarmcleartime";
-	private static final String ALARM_CLEAR_DURATION = "alarmclearduration"; // duration from alarm raise to clear
-	private static final String ALARM_DELETED_TIME = "alarmdeletedtime";
 
 	private static String eventIndexName = "opennms";
 

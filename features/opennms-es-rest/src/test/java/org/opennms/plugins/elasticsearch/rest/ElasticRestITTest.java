@@ -40,7 +40,7 @@ import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ElasticRestIT extends AbstractEventToIndexTest{
+public class ElasticRestITTest extends AbstractEventToIndexTest{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RawEventToIndexTest.class);
 
@@ -62,7 +62,7 @@ public class ElasticRestIT extends AbstractEventToIndexTest{
 			eventToIndex.setNodeCache(nodeCache);
 			eventToIndex.setIndexStrategy(IndexStrategy.MONTHLY);
 			eventToIndex.setLogEventDescription(true);
-			eventToIndex.seteventIndexName("onms-cert1");
+			//eventToIndex.seteventIndexName("onms-cert1");
 			
 			EventBuilder eb = new EventBuilder( NODE_LOST_SERVICE_EVENT, EVENT_SOURCE_NAME);
 		
@@ -77,7 +77,6 @@ public class ElasticRestIT extends AbstractEventToIndexTest{
 			eb.setDescription("this is a test description");
 			eb.setTime(new Date());
 			eb.setUuid("00000000-0000-0000-0000-000000000000");	
-			//eb.addParam("forwarder", "onms-cert1");
 
 			Event event = eb.getEvent();
 			event.setDbid(101);
