@@ -29,65 +29,72 @@
 package org.opennms.netmgt.telemetry.common.utils;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.List;
 
-import org.minidns.DnsClient;
-import org.minidns.dnsserverlookup.AbstractDnsServerLookupMechanism;
-import org.minidns.dnsserverlookup.DnsServerLookupMechanism;
-import org.minidns.hla.ResolverApi;
-import org.minidns.record.PTR;
+import org.xbill.DNS.ExtendedResolver;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.PTRRecord;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.ReverseMap;
+import org.xbill.DNS.Type;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DnsUtils {
     private static final Logger LOG = LoggerFactory.getLogger(DnsUtils.class);
+    private static ExtendedResolver resolver;
 
-    private static DnsServerLookupMechanism dnsServerLookupMechanism;
+    static {
+        try {
+            resolver = new ExtendedResolver();
+        } catch (UnknownHostException e) {
+            LOG.debug("Cannot create resolver: {}", e.getMessage());
+        }
+    }
+
+    public static synchronized void setDnsServers(String ... dnsServers) {
+        try {
+            if (dnsServers == null || dnsServers.length == 0) {
+                resolver = new ExtendedResolver();
+            } else {
+                resolver = new ExtendedResolver(dnsServers);
+            }
+        } catch (UnknownHostException e) {
+            LOG.debug("Cannot create resolver for given servers {}: {}", dnsServers, e.getMessage());
+        }
+    }
+
+    static ExtendedResolver getResolver() {
+        return resolver;
+    }
 
     public static String reverseLookup(final String inetAddress) {
         return reverseLookup(InetAddressUtils.addr(inetAddress));
     }
 
     public static String reverseLookup(final InetAddress inetAddress) {
-        try {
-            final PTR ptr = ResolverApi.INSTANCE.reverseLookup(inetAddress).getAnswers().stream().findFirst().orElseGet(null);
-            if (ptr != null) {
-                return ptr.getTarget().ace;
+        final Lookup lookup = new Lookup(ReverseMap.fromAddress(inetAddress), Type.PTR);
+
+        lookup.setResolver(resolver);
+
+        final Record records[] = lookup.run();
+
+        if (lookup.getResult() == Lookup.SUCCESSFUL) {
+
+            final PTRRecord ptrRecord = (PTRRecord) Arrays.stream(records)
+                    .filter(PTRRecord.class::isInstance)
+                    .findFirst()
+                    .orElseGet(null);
+
+            if (ptrRecord != null && ptrRecord.getTarget() != null) {
+                final String hostname = ptrRecord.getTarget().toString();
+                return hostname.substring(0, hostname.length() - 1);
             }
-        } catch (Exception e) {
-            LOG.debug("Reverse lookup failed for IP-address {}: {}", inetAddress.getHostAddress(), e.getMessage());
         }
+
         return null;
-    }
-
-    public static void setDnsServers(String... servers) {
-        if (dnsServerLookupMechanism != null) {
-            DnsClient.removeDNSServerLookupMechanism(dnsServerLookupMechanism);
-        }
-
-        if (servers.length == 0) {
-            dnsServerLookupMechanism = null;
-            return;
-        }
-
-        dnsServerLookupMechanism = getLookupMechanism(servers);
-        DnsClient.addDnsServerLookupMechanism(dnsServerLookupMechanism);
-    }
-
-    private static DnsServerLookupMechanism getLookupMechanism(String... servers) {
-        return new AbstractDnsServerLookupMechanism("DnsUtils", 0) {
-            @Override
-            public List<String> getDnsServerAddresses() {
-                return Arrays.asList(servers);
-            }
-
-            @Override
-            public boolean isAvailable() {
-                return true;
-            }
-        };
     }
 
     public static String hostnameOrIpAddress(final String inetAddress) {

@@ -29,8 +29,9 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.minidns</groupId>
-      <artifactId>minidns-hla</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>dnsjava-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.telemetry</groupId>

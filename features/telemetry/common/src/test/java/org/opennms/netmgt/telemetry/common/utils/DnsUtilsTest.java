@@ -28,43 +28,61 @@
 
 package org.opennms.netmgt.telemetry.common.utils;
 
+import java.lang.reflect.Field;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.minidns.DnsClient;
+import org.xbill.DNS.ExtendedResolver;
+import org.xbill.DNS.Resolver;
+import org.xbill.DNS.SimpleResolver;
 
 public class DnsUtilsTest {
 
     @After
     public void after() {
-        DnsUtils.setDnsServers();
+        //DnsUtils.setDnsServers();
+    }
+
+    private List<String> getServers(final ExtendedResolver extendedResolver) throws Exception {
+        final List<String> list = new ArrayList<>();
+
+        for(final Resolver resolver : extendedResolver.getResolvers()) {
+            final SimpleResolver simpleResolver = (SimpleResolver) resolver;
+
+            final Field privateAddressField = SimpleResolver.class.getDeclaredField("address");
+            privateAddressField.setAccessible(true);
+            list.add(((InetSocketAddress)privateAddressField.get(simpleResolver)).getAddress().getHostAddress());
+        }
+        return list;
     }
 
     @Test
-    public void setDnsServersTest() {
-        final List<String> addresses1 = DnsClient.findDNS();
+    public void setDnsServersTest() throws Exception{
+        final List<String> addresses1 = getServers(DnsUtils.getResolver());
         Assert.assertEquals(true, addresses1.size() > 0);
 
         DnsUtils.setDnsServers("9.8.7.6", "8.7.6.5");
-        final List<String> addresses2 = DnsClient.findDNS();
+        final List<String> addresses2 = getServers(DnsUtils.getResolver());
 
         Assert.assertEquals(2, addresses2.size());
         Assert.assertEquals(true, addresses2.contains("9.8.7.6"));
         Assert.assertEquals(true, addresses2.contains("9.8.7.6"));
 
         DnsUtils.setDnsServers("4.3.2.1");
-        final List<String> addresses3 = DnsClient.findDNS();
+        final List<String> addresses3 = getServers(DnsUtils.getResolver());
 
         Assert.assertEquals(1, addresses3.size());
         Assert.assertEquals(true, addresses3.contains("4.3.2.1"));
 
         DnsUtils.setDnsServers();
 
-        final List<String> addresses4 = DnsClient.findDNS();
+        final List<String> addresses4 = getServers(DnsUtils.getResolver());
         Assert.assertEquals(true, addresses4.size() > 0);
     }
 
