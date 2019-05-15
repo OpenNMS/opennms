@@ -2718,11 +2718,11 @@ CREATE TABLE graph_elements (
   id bigint NOT NULL,
   type varchar(25) NOT NULL,
   namespace varchar(200) NOT NULL,
-  source_vertex_id bigint,
-  target_vertex_id bigint,
-  CONSTRAINT graph_elements_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_graph_elements_target_vertex_id FOREIGN KEY (source_vertex_id) REFERENCES graph_elements (id) ON DELETE CASCADE,
-  CONSTRAINT fk_graph_elements_source_vertex_id FOREIGN KEY (target_vertex_id) REFERENCES graph_elements (id) ON DELETE CASCADE
+  source_vertex_namespace varchar(200),
+  source_vertex_id text,
+  target_vertex_namespace varchar(200),
+  target_vertex_id text,
+  CONSTRAINT graph_elements_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE graph_attributes (
