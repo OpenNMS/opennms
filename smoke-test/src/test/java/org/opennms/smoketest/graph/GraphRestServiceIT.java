@@ -93,13 +93,20 @@ public class GraphRestServiceIT  extends OpenNMSSeleniumTestCase {
             given().accept(ContentType.JSON).get()
                     .then().statusCode(200)
                     .contentType(ContentType.JSON)
-                    .content("[0].id", Matchers.is(CONTAINER_ID))
-                    .content("[0].label", Matchers.is(GraphMLTopologyIT.LABEL))
-                    .content("[0].graphs.size()", Matchers.is(2))
-                    .content("[0].graphs[0].namespace", Matchers.is("acme:regions"))
-                    .content("[0].graphs[1].namespace", Matchers.is("acme:markets"))
-                    .content("[0].graphs[1].label", Matchers.is("Markets"))
-                    .content("[0].graphs[1].description", Matchers.is("The Markets Layer"));
+                    .content("[0].id", Matchers.is("application"))
+                    .content("[0].label", Matchers.is("Application Graph"))
+                    .content("[0].graphs.size()", Matchers.is(1))
+                    .content("[0].graphs[0].namespace", Matchers.is("application"))
+                    .content("[0].graphs[0].label", Matchers.is("Application Graph"))
+                    .content("[0].graphs[0].description", Matchers.is("This Topology Provider displays all defined Applications and their calculated states."))
+
+                    .content("[1].id", Matchers.is(CONTAINER_ID))
+                    .content("[1].label", Matchers.is(GraphMLTopologyIT.LABEL))
+                    .content("[1].graphs.size()", Matchers.is(2))
+                    .content("[1].graphs[0].namespace", Matchers.is("acme:regions"))
+                    .content("[1].graphs[1].namespace", Matchers.is("acme:markets"))
+                    .content("[1].graphs[1].label", Matchers.is("Markets"))
+                    .content("[1].graphs[1].description", Matchers.is("The Markets Layer"));
         });
     }
 
