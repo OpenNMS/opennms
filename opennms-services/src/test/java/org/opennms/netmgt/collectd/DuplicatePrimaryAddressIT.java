@@ -32,6 +32,7 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -171,7 +172,10 @@ public class DuplicatePrimaryAddressIT {
 
         m_mockUtils = new EasyMockUtils();
 
+        List<InetAddress> m_addrs = new ArrayList<>();
+        m_addrs.add(InetAddressUtils.getInetAddress("192.168.1.1"));
         m_filterDao = m_mockUtils.createMock(FilterDao.class);
+        EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(m_addrs).anyTimes();
         FilterDaoFactory.setInstance(m_filterDao);
 
         Resource resource = new ClassPathResource("etc/poll-outages.xml");
@@ -225,7 +229,6 @@ public class DuplicatePrimaryAddressIT {
         m_filterDao.flushActiveIpAddressListCache();
         EasyMock.expectLastCall().anyTimes();
 
-        EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(Collections.emptyList()).anyTimes();
         EasyMock.expect(m_nodeDao.load(1)).andReturn(n1).anyTimes();
         EasyMock.expect(m_nodeDao.load(3)).andReturn(n2).anyTimes();
 
