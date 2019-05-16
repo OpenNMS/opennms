@@ -93,20 +93,29 @@ public class DnsUtilsTest {
 
         final String hostname2 = DnsUtils.reverseLookup("1.1.1.1");
         Assert.assertEquals("one.one.one.one", hostname2);
+
+        final String hostname3 = DnsUtils.reverseLookup("2606:4700:4700::1111");
+        Assert.assertEquals("one.one.one.one", hostname3);
     }
 
     @Test
     public void resolveFailTest() {
         // 198.51.100.0/24 should be TEST-NET-2 (see RFC #5737). Should fail...
-        final String hostname = DnsUtils.reverseLookup("198.51.100.1");
-        Assert.assertEquals(null, hostname);
+        final String hostname1 = DnsUtils.reverseLookup("198.51.100.1");
+        Assert.assertEquals(null, hostname1);
+
+        final String hostname2 = DnsUtils.reverseLookup("fe80::");
+        Assert.assertEquals(null, hostname2);
     }
 
     @Test
     public void lookupFailTest() {
         // 198.51.100.0/24 should be TEST-NET-2 (see RFC #5737). Should fail...
-        final String hostname = DnsUtils.hostnameOrIpAddress("198.51.100.1");
-        Assert.assertEquals("198.51.100.1", hostname);
+        final String hostname1 = DnsUtils.hostnameOrIpAddress("198.51.100.1");
+        Assert.assertEquals("198.51.100.1", hostname1);
+
+        final String hostname2 = DnsUtils.hostnameOrIpAddress("fe80::");
+        Assert.assertEquals("fe80:0:0:0:0:0:0:0", hostname2);
     }
 
     @Test
@@ -116,5 +125,8 @@ public class DnsUtilsTest {
 
         final String hostname2 = DnsUtils.hostnameOrIpAddress("1.1.1.1");
         Assert.assertEquals("one.one.one.one", hostname2);
+
+        final String hostname3 = DnsUtils.hostnameOrIpAddress("2606:4700:4700::1111");
+        Assert.assertEquals("one.one.one.one", hostname3);
     }
 }
