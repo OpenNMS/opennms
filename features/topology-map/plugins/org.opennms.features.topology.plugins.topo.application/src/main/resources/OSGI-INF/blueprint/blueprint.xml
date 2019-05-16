@@ -2,7 +2,8 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
-	<reference id="applicationDao"  interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
+	<reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
+	<reference id="graphService" interface="org.opennms.netmgt.graph.api.service.GraphService" availability="mandatory" />
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 
 	<!-- TransactionAwareBeanProxyFactory -->
@@ -17,8 +18,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/
 	</bean>
 
 	<!-- Topology Provider -->
-	<bean id="applicationTopologyProvider" scope="prototype" class="org.opennms.features.topology.plugins.topo.application.ApplicationTopologyProvider">
-		<argument ref="applicationDao"/>
+	<bean id="applicationTopologyProvider" scope="prototype" class="org.opennms.features.topology.plugins.topo.application.LegacyApplicationTopologyProvider">
+		<argument ref="graphService"/>
 		<property name="topologyProviderInfo" ref="applicationTopologyProviderInfo"/>
 	</bean>
     <!-- Meta topology provider -->
@@ -33,7 +34,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/
     </service>
 
 	<!-- status provider -->
-	<bean id="statusProvider" class="org.opennms.features.topology.plugins.topo.application.ApplicationStatusProvider">
+	<bean id="statusProvider" class="org.opennms.features.topology.plugins.topo.application.LegacyApplicationStatusProvider">
 		<argument ref="applicationDao" />
 	</bean>
 	<service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="statusProvider" />
@@ -86,7 +87,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/
 	</service>
 
 	<!-- Search Provider -->
-	<bean id="applicationSearchProvider" class="org.opennms.features.topology.plugins.topo.application.ApplicationSearchProvider">
+	<bean id="applicationSearchProvider" class="org.opennms.features.topology.plugins.topo.application.LegacyApplicationSearchProvider">
 		<argument ref="transactionAwareBeanProxyFactory" />
 		<property name="applicationDao" ref="applicationDao" />
 	</bean>

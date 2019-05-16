@@ -26,63 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.provider.application;
 
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.simple.AbstractDomainGraph;
+import org.opennms.netmgt.graph.simple.SimpleEdge;
 
-/**
- * Acts as a domain specific view on a Graph.
- * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own
- * domain graph. It is a final class since it exposes class information about it's associated vertex and edge types.
- * If you need more functionality please extend AbstractDomainGraph.
- */
-public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
+public class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, SimpleEdge> {
 
-
-    public SimpleGraph(String namespace) {
+    public ApplicationGraph(String namespace) {
         super(namespace);
     }
 
-    public static SimpleGraph fromGraphInfo(GraphInfo graphInfo) {
-        // we can't have a constructor SimpleGraph(GraphInfo graphInfo) since it conflicts with SimpleGraph(GenericGraph graph)
-        // that's why we have a factory method instead
-        GenericGraph graph = new GenericGraph();
-        graph.setNamespace(graphInfo.getNamespace());
-        graph.setLabel(graphInfo.getLabel());
-        graph.setDescription(graphInfo.getDescription());
-        return new SimpleGraph(graph);
-    }
-
-    public SimpleGraph(GenericGraph graph) {
+    public ApplicationGraph(GenericGraph graph) {
         super(graph);
     }
 
-    /** copy constructor */
-    public SimpleGraph(SimpleGraph graph) {
-        this(new GenericGraph(graph.asGenericGraph()));
+    protected ApplicationVertex convert(GenericVertex vertex){
+        return new ApplicationVertex(vertex);
     }
 
-    @Override
-    public SimpleVertex convert(GenericVertex vertex) {
-        return new SimpleVertex(vertex);
-    }
 
-    @Override
-    public SimpleEdge convert(GenericEdge edge) {
+    protected SimpleEdge convert(GenericEdge edge){
         return new SimpleEdge(edge);
     }
 
-    @Override
-    protected Graph<SimpleVertex, SimpleEdge> convert(GenericGraph graph) {
-        return new SimpleGraph(graph);
+    protected Graph<ApplicationVertex, SimpleEdge> convert(GenericGraph graph){
+        return new ApplicationGraph(graph);
     }
 
     @Override
     public Class getVertexType() {
-        return SimpleVertex.class;
+        return ApplicationVertex.class;
     }
 }

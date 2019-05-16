@@ -45,6 +45,8 @@ import org.opennms.netmgt.graph.api.context.DefaultGraphContext;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
+import com.google.common.collect.Lists;
+
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 // TODO MVR enforce namespace
@@ -240,6 +242,16 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     public List<GenericVertex> resolveVertices(Collection<String> vertexIds) {
         final List<GenericVertex> collect = vertexIds.stream().map(vid -> vertexToIdMap.get(vid)).filter(v -> v != null).collect(Collectors.toList());
         return collect;
+    }
+
+    @Override
+    public GenericVertex resolveVertex(VertexRef vertexRef) {
+        Objects.requireNonNull(vertexRef);
+        if (getNamespace().equalsIgnoreCase(vertexRef.getNamespace())) {
+            final GenericVertex resolvedVertex = resolveVertices(Lists.newArrayList(vertexRef.getId())).stream().findAny().orElse(null);
+            return resolvedVertex;
+        }
+        return null;
     }
 
     public List<GenericVertex> resolveVertexRefs(Collection<VertexRef> vertexRefs) {

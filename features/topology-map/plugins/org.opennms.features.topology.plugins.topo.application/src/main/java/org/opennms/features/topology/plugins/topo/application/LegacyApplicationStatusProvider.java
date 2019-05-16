@@ -34,24 +34,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
 import org.opennms.netmgt.model.OnmsSeverity;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
-public class ApplicationStatusProvider implements StatusProvider {
+public class LegacyApplicationStatusProvider implements StatusProvider {
 
     private final ApplicationDao applicationDao;
 
-    public ApplicationStatusProvider(ApplicationDao applicationDao) {
+    public LegacyApplicationStatusProvider(ApplicationDao applicationDao) {
         this.applicationDao = applicationDao;
     }
 
@@ -74,7 +73,7 @@ public class ApplicationStatusProvider implements StatusProvider {
 
         // calculate status for children
         for (VertexRef eachVertex : vertexRefs) {
-            ApplicationVertex applicationVertex = (ApplicationVertex) eachVertex;
+            LegacyApplicationVertex applicationVertex = (LegacyApplicationVertex) eachVertex;
             Status alarmStatus = statusMap.get(createKey(applicationVertex));
             if (alarmStatus == null) {
                 alarmStatus = createStatus(OnmsSeverity.NORMAL, 0);
@@ -84,11 +83,11 @@ public class ApplicationStatusProvider implements StatusProvider {
 
         // calculate status for root
         for (VertexRef eachRoot : vertexRefsRoot) {
-            ApplicationVertex eachRootApplication = (ApplicationVertex) eachRoot;
+            LegacyApplicationVertex eachRootApplication = (LegacyApplicationVertex) eachRoot;
             OnmsSeverity maxSeverity = OnmsSeverity.NORMAL;
             int count = 0;
             for (VertexRef eachChild : eachRootApplication.getChildren()) {
-                ApplicationVertex eachChildApplication = (ApplicationVertex) eachChild;
+                LegacyApplicationVertex eachChildApplication = (LegacyApplicationVertex) eachChild;
                 ApplicationStatusEntity.Key childKey = createKey(eachChildApplication);
                 Status childStatus = statusMap.get(childKey);
                 if (childStatus != null && maxSeverity.isLessThan(createSeverity(childStatus.computeStatus()))) {
@@ -111,13 +110,13 @@ public class ApplicationStatusProvider implements StatusProvider {
         return null;
     }
 
-    private ApplicationStatusEntity.Key createKey(ApplicationVertex vertex) {
-        return new ApplicationStatusEntity.Key(String.valueOf(vertex.getNodeID()), String.valueOf(vertex.getServiceType().getId()), vertex.getIpAddress());
+    private ApplicationStatusEntity.Key createKey(LegacyApplicationVertex vertex) {
+        return new ApplicationStatusEntity.Key(String.valueOf(vertex.getNodeID()), String.valueOf(vertex.getServiceTypeId()), vertex.getIpAddress());
     }
 
     @Override
     public String getNamespace() {
-        return ApplicationTopologyProvider.TOPOLOGY_NAMESPACE;
+        return LegacyApplicationTopologyProvider.TOPOLOGY_NAMESPACE;
     }
 
     @Override
@@ -126,12 +125,7 @@ public class ApplicationStatusProvider implements StatusProvider {
     }
 
     private Collection<VertexRef> getRootElements(Collection<VertexRef> vertices) {
-        return Collections2.filter(vertices, new Predicate<VertexRef>() {
-            @Override
-            public boolean apply(VertexRef input) {
-                return ((ApplicationVertex) input).isRoot();
-            }
-        });
+        return Collections2.filter(vertices, input -> ((LegacyApplicationVertex) input).isRoot());
     }
 
     private List<VertexRef> getVertexRefsForNamespace(Collection<VertexRef> vertices) {

@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,39 +30,45 @@ package org.opennms.features.topology.plugins.topo.application;
 
 import org.opennms.features.topology.api.topo.AbstractLevelAwareVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
+import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
+import org.opennms.netmgt.graph.provider.application.ApplicationVertexType;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsServiceType;
 
-public class ApplicationVertex extends AbstractLevelAwareVertex implements LevelAware {
+public class LegacyApplicationVertex extends AbstractLevelAwareVertex implements LevelAware {
 
-    private OnmsServiceType serviceType;
+    private Integer serviceTypeId;
 
-    public ApplicationVertex(OnmsApplication application) {
+    public LegacyApplicationVertex(org.opennms.netmgt.graph.provider.application.ApplicationVertex vertex) {
+        this(vertex.getId(), vertex.getName());
+        final boolean isApplication = (vertex.getVertexType() == ApplicationVertexType.Application);
+        if(isApplication) {
+            setTooltipText(String.format("Application '%s'", vertex.getName()));
+            setIconKey("application.application");
+        } else {
+            setTooltipText(String.format("Service '%s', IP: %s", vertex.getName(), vertex.getIpAddress()));
+            setIpAddress(vertex.getIpAddress());
+            setNodeID(Integer.valueOf(vertex.getNodeRefString())); // TODO MVR ensure that this is actually an id and not fs:fid
+            setServiceTypeId(vertex.getServiceTypeId());
+            setIconKey("application.monitored-service");
+        }
+    }
+
+    public LegacyApplicationVertex(OnmsApplication application) {
         this(application.getId().toString(), application.getName());
         setTooltipText(String.format("Application '%s'", application.getName()));
         setIconKey("application.application");
-    }
-
-    public ApplicationVertex(OnmsMonitoredService monitoredService) {
-        this(monitoredService.getId().toString(), monitoredService.getServiceName());
-        setIpAddress(monitoredService.getIpAddress().toString());
-        setTooltipText(String.format("Service '%s', IP: %s", monitoredService.getServiceName(), monitoredService.getIpAddress().toString()));
-        setNodeID(monitoredService.getNodeId());
-        setServiceType(monitoredService.getServiceType());
-        setIconKey("application.monitored-service");
     }
 
     /**
      * Creates a new {@link ApplicationVertex}.
      * @param id the unique id of this vertex. Must be unique overall the namespace.
      */
-    public ApplicationVertex(String id, String label) {
-        super(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
+    public LegacyApplicationVertex(String id, String label) {
+        super(LegacyApplicationTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
     }
     
-    public void setServiceType(OnmsServiceType serviceType) {
-        this.serviceType = serviceType;
+    public void setServiceTypeId(Integer serviceTypeId) {
+        this.serviceTypeId = serviceTypeId;
     }
 
     public boolean isRoot() {
@@ -73,19 +79,19 @@ public class ApplicationVertex extends AbstractLevelAwareVertex implements Level
         return getChildren().isEmpty();
     }
 
-    public OnmsServiceType getServiceType() {
-        return serviceType;
+    public Integer getServiceTypeId() {
+        return serviceTypeId;
     }
 
     public boolean isPartOf(String applicationId) {
         return applicationId != null && applicationId.equals(getRoot().getId());
     }
 
-    public ApplicationVertex getRoot() {
+    public LegacyApplicationVertex getRoot() {
         if (isRoot()) {
             return this;
         }
-        return ((ApplicationVertex)getParent()).getRoot();
+        return ((LegacyApplicationVertex)getParent()).getRoot();
     }
 
     @Override

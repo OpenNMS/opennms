@@ -83,6 +83,7 @@ public class GenericEdge extends GenericElement implements Edge {
     }
 
     @Override
+    // TODO MVR remove again after endless recursion is fixed
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("source", source)

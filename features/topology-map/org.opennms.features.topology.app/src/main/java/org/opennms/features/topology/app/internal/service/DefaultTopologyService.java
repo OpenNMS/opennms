@@ -234,7 +234,7 @@ public class DefaultTopologyService implements TopologyService {
         // are encapsulated by the meta topology provider. It should be addressed by <metaId>:<namespace>.
         // This is at the moment not the case, therefore we iterate over all meta topology providers and invalidate
         // The cache if the meta topology provider has a graph with the given namespace. In the future this should
-        // Be handled differently.
+        // be handled differently.
         serviceLocator.findServices(MetaTopologyProvider.class, null).stream()
             .filter(metaTopologyProvider -> metaTopologyProvider.getGraphProviderBy(namespace) != null)
             .forEach(metaTopologyProvider ->  {

@@ -26,58 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api;
+package org.opennms.netmgt.graph.provider.application;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
-
-public interface Graph<V extends Vertex, E extends Edge> extends GraphInfo {
-
-    List<V> getVertices();
-
-    List<E> getEdges();
-
-    void addEdges(Collection<E> edges);
-
-    void addVertices(Collection<V> vertices);
-
-    V getVertex(String id);
-
-    E getEdge(String id);
-
-    void addVertex(V vertex);
-
-    void addEdge(E edge);
-
-    void removeEdge(E edge);
-
-    void removeVertex(V vertex);
-
-    List<String> getVertexIds();
-
-    List<String> getEdgeIds();
-
-    // TODO MVR also provide List<String> vertexIds, int szl method
-    Graph<V, E> getSnapshot(Collection<V> verticesInFocus, int szl);
-
-    List<V> resolveVertices(Collection<String> vertexIds);
-
-    V resolveVertex(VertexRef vertexRef);
-
-    List<E> resolveEdges(Collection<String> edgeIds);
-
-    Collection<V> getNeighbors(V eachVertex);
-
-    Collection<E> getConnectingEdges(V eachVertex);
-
-    List<Vertex> getDefaultFocus();
-
-    // TODO MVR
-//    Vertex getVertex(NodeRef nodeRef);
-
-    GenericGraph asGenericGraph();
-
+public enum ApplicationVertexType {
+    Application, Service
 }

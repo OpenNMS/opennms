@@ -72,7 +72,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
     }
 
-    // TODO MVR We may need some kind of caching strategyg implemenetation allowing each provider to deal with reloads individually if they so choose
+    // TODO MVR We may need some kind of caching strategy implementation allowing each provider to deal with reloads individually if they so choose
     @Override
     public Graph<?, ?> loadGraph() {
         // TODO MVR this is not thread safe
