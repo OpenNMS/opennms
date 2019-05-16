@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,8 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.xml.eventconf;
+package org.opennms.core.utils;
 
-public interface EventMatcher {
-	MatchResult matches(org.opennms.netmgt.xml.event.Event matchingEvent);
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+
+import org.junit.Test;
+
+public class RegexUtilsTest {
+
+    @Test
+    public void canParseNamedCaptureGroupsFromPattern() {
+        assertThat(RegexUtils.getNamedCaptureGroupsFromPattern(""), hasSize(0));
+        assertThat(RegexUtils.getNamedCaptureGroupsFromPattern("(?<user>.*)"), contains("user"));
+        assertThat(RegexUtils.getNamedCaptureGroupsFromPattern("Node /(?<poolName>.*?)/(?<poolMember>\\S+) address (?<poolAddr>\\S+) monitor status down. .*\\(slot(?<slotNum>[0-9]+)\\)"),
+                contains("poolName", "poolMember", "poolAddr", "slotNum"));
+    }
 }
