@@ -35,7 +35,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xbill.DNS.ExtendedResolver;
@@ -43,11 +42,6 @@ import org.xbill.DNS.Resolver;
 import org.xbill.DNS.SimpleResolver;
 
 public class DnsUtilsTest {
-
-    @After
-    public void after() {
-        //DnsUtils.setDnsServers();
-    }
 
     private List<String> getServers(final ExtendedResolver extendedResolver) throws Exception {
         final List<String> list = new ArrayList<>();

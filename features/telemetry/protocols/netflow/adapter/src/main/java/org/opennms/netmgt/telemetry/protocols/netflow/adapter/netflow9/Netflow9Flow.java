@@ -275,6 +275,6 @@ class Netflow9Flow implements Flow {
     }
 
     private long getBootTime() {
-        return this.getTimestamp() - getSysUpTime();
+        return this.getTimestamp() - this.getSysUpTime();
     }
 }

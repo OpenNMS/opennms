@@ -28,18 +28,33 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
+import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+
 import java.nio.ByteBuffer;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
-public class Netflow5UdpParser extends ForwardParser implements Dispatchable {
+public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
     public Netflow5UdpParser(final String name, final AsyncDispatcher<TelemetryMessage> dispatcher) {
-        super(name, dispatcher);
+        super(Protocol.NETFLOW5, name, dispatcher);
+    }
+
+    @Override
+    protected RecordProvider parse(Session session, ByteBuffer buffer) throws Exception {
+        final Header header = new Header(slice(buffer, Header.SIZE));
+        final Packet packet = new Packet(header, buffer);
+
+        return packet;
     }
 
     @Override

@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
@@ -50,7 +51,11 @@ public class OctetArrayValue extends Value<byte[]> {
                            final Optional<Semantics> semantics,
                            final byte[] value) {
         super(name, semantics);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public OctetArrayValue(final String name, final byte[] value) {
+        this(name, Optional.empty(), value);
     }
 
     @Override
