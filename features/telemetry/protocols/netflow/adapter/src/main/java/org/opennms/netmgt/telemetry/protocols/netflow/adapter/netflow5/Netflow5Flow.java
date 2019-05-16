@@ -28,39 +28,44 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
 
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getBool;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getInt64;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
+
 import java.util.Objects;
 
+import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.proto.NetflowPacket;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.proto.NetflowRecord;
 
 class Netflow5Flow implements Flow {
-    private final NetflowPacket packet;
-    private final NetflowRecord record;
+    private final BsonDocument document;
 
-    public Netflow5Flow(final NetflowPacket packet, final NetflowRecord record) {
-        this.packet = Objects.requireNonNull(packet);
-        this.record = Objects.requireNonNull(record);
+    public Netflow5Flow(final BsonDocument document) {
+        this.document = Objects.requireNonNull(document);
     }
 
     @Override
     public long getTimestamp() {
-        return this.packet.getUnixSecs() * 1000L + this.packet.getUnixNSecs() / 1000L / 1000L;
+        return getInt64(this.document, "@unixSecs").get() * 1000L
+                + getInt64(this.document, "@unixNSecs").get() / 1000_000L;
     }
 
     @Override
     public Long getBytes() {
-        return this.record.getDOctets();
+        return getInt64(this.document, "dOctets").get();
     }
 
     @Override
     public Direction getDirection() {
-        return this.record.isEgress() ? Direction.EGRESS : Direction.INGRESS;
+        return getBool(this.document, "egress").get()
+                ? Direction.EGRESS
+                : Direction.INGRESS;
     }
 
     @Override
     public String getDstAddr() {
-        return this.record.getDstAddr();
+        return getString(this.document, "dstAddr")
+                .get();
     }
 
     @Override
@@ -71,47 +76,63 @@ class Netflow5Flow implements Flow {
 
     @Override
     public Integer getDstAs() {
-        return this.record.getDstAs();
+        return getInt64(this.document, "dstAs")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Integer getDstMaskLen() {
-        return this.record.getDstMask();
+        return getInt64(this.document, "dstMask")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Integer getDstPort() {
-        return this.record.getDstPort();
+        return getInt64(this.document, "dstPort")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Integer getEngineId() {
-        return this.packet.getEngineId();
+        return getInt64(this.document, "@engineId")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Integer getEngineType() {
-        return this.packet.getEngineType();
+        return getInt64(this.document, "@engineType")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Long getFirstSwitched() {
-        return getSwitched(this.getTimestamp(), this.packet.getSysUptime(), this.record.getFirst());
+        return getInt64(this.document, "first")
+                .map(t -> this.getBootTime() + t)
+                .get();
     }
 
     @Override
     public int getFlowRecords() {
-        return this.packet.getCount();
+        return getInt64(this.document, "@count")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public long getFlowSeqNum() {
-        return this.packet.getFlowSequence();
+        return getInt64(this.document, "@flowSequence").get();
     }
 
     @Override
     public Integer getInputSnmp() {
-        return this.record.getInput();
+        return getInt64(this.document, "input")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
@@ -121,49 +142,63 @@ class Netflow5Flow implements Flow {
 
     @Override
     public Long getLastSwitched() {
-        return getSwitched(this.getTimestamp(), this.packet.getSysUptime(), this.record.getLast());
+        return getInt64(this.document, "last")
+                .map(t -> this.getBootTime() + t)
+                .get();
     }
 
     @Override
     public String getNextHop() {
-        return this.record.getNextHop();
+        return getString(this.document, "nextHop")
+                .get();
     }
 
     @Override
     public Integer getOutputSnmp() {
-        return this.record.getOutput();
+        return getInt64(this.document, "output")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Long getPackets() {
-        return this.record.getDPkts();
+        return getInt64(this.document, "dPkts").get();
     }
 
     @Override
     public Integer getProtocol() {
-        return this.record.getProt();
+        return getInt64(this.document, "proto")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Flow.SamplingAlgorithm getSamplingAlgorithm() {
-        if (this.packet.getSamplingAlgorithm() == 1) {
-            return Flow.SamplingAlgorithm.SystematicCountBasedSampling;
-        }
-        if (this.packet.getSamplingAlgorithm() == 2) {
-            return Flow.SamplingAlgorithm.RandomNoutOfNSampling;
-        }
+        switch (getInt64(this.document, "@samplingAlgorithm")
+                .map(Long::intValue)
+                .get()) {
+            case 1:
+                return Flow.SamplingAlgorithm.SystematicCountBasedSampling;
 
-        return Flow.SamplingAlgorithm.Unassigned;
+            case 2:
+                return Flow.SamplingAlgorithm.RandomNoutOfNSampling;
+
+            default:
+                return Flow.SamplingAlgorithm.Unassigned;
+        }
     }
 
     @Override
     public Double getSamplingInterval() {
-        return (double) this.packet.getSamplingInterval();
+        return getInt64(this.document, "@samplingInterval")
+                .map(Long::doubleValue)
+                .get();
     }
 
     @Override
     public String getSrcAddr() {
-        return this.record.getSrcAddr();
+        return getString(this.document, "srcAddr")
+                .get();
     }
 
     @Override
@@ -174,27 +209,37 @@ class Netflow5Flow implements Flow {
 
     @Override
     public Integer getSrcAs() {
-        return this.record.getSrcAs();
+        return getInt64(this.document, "srcAs")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Integer getSrcMaskLen() {
-        return this.record.getSrcMask();
+        return getInt64(this.document, "srcMask")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Integer getSrcPort() {
-        return this.record.getSrcPort();
+        return getInt64(this.document, "srcPort")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Integer getTcpFlags() {
-        return this.record.getTcpFlags();
+        return getInt64(this.document, "tcpFlags")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
     public Integer getTos() {
-        return this.record.getToS();
+        return getInt64(this.document, "tos")
+                .map(Long::intValue)
+                .get();
     }
 
     @Override
@@ -207,16 +252,11 @@ class Netflow5Flow implements Flow {
         return null;
     }
 
-    /**
-     * @param timestampMs      Current unix timestamp in milliseconds.
-     * @param sysUptimeMs      Current time in milliseconds since the export device booted.
-     * @param switchedUptimeMs System uptime at which the this.packet was switched.
-     * @return Unix timestamp in milliseconds at which the this.packet was switched.
-     */
-    private static long getSwitched(long timestampMs, long sysUptimeMs, long switchedUptimeMs) {
-        // The this.packet was switched deltaMs ago
-        final long deltaMs = sysUptimeMs - switchedUptimeMs;
-        // Substract this duration from the timestamp
-        return timestampMs - deltaMs;
+    private long getSysUpTime() {
+        return getInt64(this.document, "@sysUptime").get();
+    }
+
+    private long getBootTime() {
+        return this.getTimestamp() - this.getSysUpTime();
     }
 }
