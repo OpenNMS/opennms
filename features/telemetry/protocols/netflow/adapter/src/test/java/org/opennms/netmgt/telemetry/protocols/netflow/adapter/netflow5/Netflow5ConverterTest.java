@@ -74,9 +74,11 @@ public class Netflow5ConverterTest {
         assertThat(flow.getSamplingInterval(), is(0.0));
         assertThat(flow.getSamplingAlgorithm(), is(Flow.SamplingAlgorithm.Unassigned));
         MatcherAssert.assertThat(flow.getSrcAddr(), equalTo("10.0.2.2"));
+        MatcherAssert.assertThat(flow.getSrcAddrHostname(), equalTo("10.0.2.2"));
         MatcherAssert.assertThat(flow.getSrcPort(), equalTo(54435));
         MatcherAssert.assertThat(flow.getSrcMaskLen(), equalTo(0));
         MatcherAssert.assertThat(flow.getDstAddr(), equalTo("10.0.2.15"));
+        MatcherAssert.assertThat(flow.getDstAddrHostname(), equalTo("10.0.2.15"));
         MatcherAssert.assertThat(flow.getDstPort(), equalTo(22));
         MatcherAssert.assertThat(flow.getDstMaskLen(), equalTo(0));
         MatcherAssert.assertThat(flow.getTcpFlags(), equalTo(16));
@@ -89,6 +91,7 @@ public class Netflow5ConverterTest {
         MatcherAssert.assertThat(flow.getPackets(), equalTo(5L));
         MatcherAssert.assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
         MatcherAssert.assertThat(flow.getNextHop(), equalTo("0.0.0.0"));
+        MatcherAssert.assertThat(flow.getNextHopHostname(), equalTo("0.0.0.0"));
         MatcherAssert.assertThat(flow.getVlan(), nullValue());
     }
 

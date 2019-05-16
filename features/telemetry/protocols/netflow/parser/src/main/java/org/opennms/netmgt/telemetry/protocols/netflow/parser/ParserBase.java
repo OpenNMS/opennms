@@ -149,16 +149,18 @@ public class ParserBase {
 
         @Override
         public void accept(final IPv4AddressValue value) {
-            // TODO: Transport as binary?
-            this.writer.writeString(value.getName(), value.getValue().getHostAddress());
-            this.writer.writeString(value.getName()+"_hostname", DnsUtils.hostnameOrIpAddress(value.getValue().getHostAddress()));
+            this.writer.writeStartDocument(value.getName());
+            this.writer.writeString("address", value.getValue().getHostAddress());
+            DnsUtils.reverseLookup(value.getValue().getHostAddress()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
+            this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final IPv6AddressValue value) {
-            // TODO: Transport as binary?
-            this.writer.writeString(value.getName(), value.getValue().getHostAddress());
-            this.writer.writeString(value.getName()+"_hostname", DnsUtils.hostnameOrIpAddress(value.getValue().getHostAddress()));
+            this.writer.writeStartDocument(value.getName());
+            this.writer.writeString("address", value.getValue().getHostAddress());
+            DnsUtils.reverseLookup(value.getValue().getHostAddress()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
+            this.writer.writeEndDocument();
         }
 
         @Override

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.api;
 
+import java.util.Optional;
+
 public interface Flow {
     int IPV4_PROTOCOL_VERSION = 4;
     int IPV6_PROTOCOL_VERSION = 6;
@@ -78,7 +80,7 @@ public interface Flow {
     /**
      * Destination address hostname.
      */
-    String getDstAddrHostname();
+    Optional<String> getDstAddrHostname();
 
     /**
      * Destination autonomous system (AS).
@@ -143,6 +145,11 @@ public interface Flow {
     String getNextHop();
 
     /**
+     * Next hop hostname
+     */
+    Optional<String> getNextHopHostname();
+
+    /**
      * SNMP ifIndex
      */
     Integer getOutputSnmp();
@@ -175,7 +182,7 @@ public interface Flow {
     /**
      * Source address hostname.
      */
-    String getSrcAddrHostname();
+    Optional<String> getSrcAddrHostname();
 
     /**
      * Source autonomous system (AS).

@@ -96,22 +96,21 @@ class SFlow implements Flow {
 
     @Override
     public String getDstAddr() {
-        return first(get(document, "flows", "0:3", "dst_ip"),
-                get(document, "flows", "0:4", "dst_ip"),
-                get(document, "flows", "0:1", "ipv4", "dst_ip"),
-                get(document, "flows", "0:1", "ipv6", "dst_ip"))
+        return first(get(document, "flows", "0:3", "dst_ip", "address"),
+                get(document, "flows", "0:4", "dst_ip", "address"),
+                get(document, "flows", "0:1", "ipv4", "dst_ip", "address"),
+                get(document, "flows", "0:1", "ipv6", "dst_ip", "address"))
                 .map(v -> v.asString().getValue())
                 .orElse(null);
     }
 
     @Override
-    public String getDstAddrHostname() {
-        return first(get(document, "flows", "0:3", "dst_ip_hostname"),
-                get(document, "flows", "0:4", "dst_ip_hostname"),
-                get(document, "flows", "0:1", "ipv4", "dst_ip_hostname"),
-                get(document, "flows", "0:1", "ipv6", "dst_ip_hostname"))
-                .map(v -> v.asString().getValue())
-                .orElse(null);
+    public Optional<String> getDstAddrHostname() {
+        return first(get(document, "flows", "0:3", "dst_ip", "hostname"),
+                get(document, "flows", "0:4", "dst_ip", "hostname"),
+                get(document, "flows", "0:1", "ipv4", "dst_ip", "hostname"),
+                get(document, "flows", "0:1", "ipv6", "dst_ip", "hostname"))
+                .map(v -> v.asString().getValue());
     }
 
     @Override
@@ -204,10 +203,17 @@ class SFlow implements Flow {
 
     @Override
     public String getNextHop() {
-        return first(get(document, "flows", "0:1002", "netxhop", "ipv6"),
-                get(document, "flows", "0:1002", "netxhop", "ipv4"))
+        return first(get(document, "flows", "0:1002", "netxhop", "ipv6", "address"),
+                get(document, "flows", "0:1002", "netxhop", "ipv4", "address"))
                 .map(v -> v.asString().getValue())
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<String> getNextHopHostname() {
+        return first(get(document, "flows", "0:1002", "netxhop", "ipv6", "hostname"),
+                get(document, "flows", "0:1002", "netxhop", "ipv4", "hostname"))
+                .map(v -> v.asString().getValue());
     }
 
     @Override
@@ -239,22 +245,21 @@ class SFlow implements Flow {
 
     @Override
     public String getSrcAddr() {
-        return first(get(document, "flows", "0:3", "src_ip"),
-                get(document, "flows", "0:4", "src_ip"),
-                get(document, "flows", "0:1", "ipv4", "src_ip"),
-                get(document, "flows", "0:1", "ipv6", "src_ip"))
+        return first(get(document, "flows", "0:3", "src_ip", "address"),
+                get(document, "flows", "0:4", "src_ip", "address"),
+                get(document, "flows", "0:1", "ipv4", "src_ip", "address"),
+                get(document, "flows", "0:1", "ipv6", "src_ip", "address"))
                 .map(v -> v.asString().getValue())
                 .orElse(null);
     }
 
     @Override
-    public String getSrcAddrHostname() {
-        return first(get(document, "flows", "0:3", "src_ip_hostname"),
-                get(document, "flows", "0:4", "src_ip_hostname"),
-                get(document, "flows", "0:1", "ipv4", "src_ip_hostname"),
-                get(document, "flows", "0:1", "ipv6", "src_ip_hostname"))
-                .map(v -> v.asString().getValue())
-                .orElse(null);
+    public Optional<String> getSrcAddrHostname() {
+        return first(get(document, "flows", "0:3", "src_ip", "hostname"),
+                get(document, "flows", "0:4", "src_ip", "hostname"),
+                get(document, "flows", "0:1", "ipv4", "src_ip", "hostname"),
+                get(document, "flows", "0:1", "ipv6", "src_ip", "hostname"))
+                .map(v -> v.asString().getValue());
     }
 
     @Override

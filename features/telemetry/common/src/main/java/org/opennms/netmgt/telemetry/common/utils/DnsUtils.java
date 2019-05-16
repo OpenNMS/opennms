@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.common.utils;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Lookup;
@@ -41,6 +42,8 @@ import org.xbill.DNS.Type;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jdk.nashorn.internal.runtime.options.Option;
 
 public class DnsUtils {
     private static final Logger LOG = LoggerFactory.getLogger(DnsUtils.class);
@@ -70,11 +73,11 @@ public class DnsUtils {
         return resolver;
     }
 
-    public static String reverseLookup(final String inetAddress) {
+    public static Optional<String> reverseLookup(final String inetAddress) {
         return reverseLookup(InetAddressUtils.addr(inetAddress));
     }
 
-    public static String reverseLookup(final InetAddress inetAddress) {
+    public static Optional<String> reverseLookup(final InetAddress inetAddress) {
         final Lookup lookup = new Lookup(ReverseMap.fromAddress(inetAddress), Type.PTR);
 
         lookup.setResolver(resolver);
@@ -90,19 +93,10 @@ public class DnsUtils {
 
             if (ptrRecord != null && ptrRecord.getTarget() != null) {
                 final String hostname = ptrRecord.getTarget().toString();
-                return hostname.substring(0, hostname.length() - 1);
+                return Optional.of(hostname.substring(0, hostname.length() - 1));
             }
         }
 
-        return null;
-    }
-
-    public static String hostnameOrIpAddress(final String inetAddress) {
-        return hostnameOrIpAddress(InetAddressUtils.addr(inetAddress));
-    }
-
-    public static String hostnameOrIpAddress(final InetAddress inetAddress) {
-        final String hostname = reverseLookup(inetAddress);
-        return hostname != null ? hostname : inetAddress.getHostAddress();
+        return Optional.empty();
     }
 }

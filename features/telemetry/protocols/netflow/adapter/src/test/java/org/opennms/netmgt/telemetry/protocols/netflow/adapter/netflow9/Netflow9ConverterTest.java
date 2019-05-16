@@ -82,6 +82,7 @@ public class Netflow9ConverterTest {
         assertThat(flow.getPackets(), equalTo(2L));
         assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
         assertThat(flow.getNextHop(), equalTo("0.0.0.0"));
+        assertThat(flow.getNextHopHostname(), equalTo("0.0.0.0"));
         assertThat(flow.getVlan(), nullValue());
     }
 

@@ -69,32 +69,44 @@ public class ConversationKeyUtils {
             // This is faster than creating some new object on which we can use gson.toJson or similar
             final StringWriter writer = new StringWriter();
             writer.write("[");
+
             // Use GSON to encode the location, since this may contain characters that need to be escape
             writer.write(gson.toJson(document.getLocation()));
             writer.write(",");
             writer.write(Integer.toString(document.getProtocol()));
-            writer.write(",\"");
+            writer.write(",");
+
             // Write out addresses in canonical format (lower one first)
-            if (Objects.compare(document.getSrcAddr(), document.getDstAddr(), String::compareTo) < 0) {
-                writer.write(document.getSrcAddr());
-                writer.write("\",\"");
-                writer.write(document.getDstAddr());
+            final String srcAddr = getAddressWithHostname(document.getSrcAddr(), document.getSrcAddrHostname());
+            final String dstAddr = getAddressWithHostname(document.getDstAddr(), document.getDstAddrHostname());
+            if (Objects.compare(srcAddr, dstAddr, String::compareTo) < 0) {
+                writer.write(gson.toJson(srcAddr));
+                writer.write(",");
+                writer.write(gson.toJson(dstAddr));
             } else {
-                writer.write(document.getDstAddr());
-                writer.write("\",\"");
-                writer.write(document.getSrcAddr());
+                writer.write(gson.toJson(dstAddr));
+                writer.write(",");
+                writer.write(gson.toJson(srcAddr));
             }
-            writer.write("\",");
+            writer.write(",");
+
             if (document.getApplication() != null) {
-                writer.write("\"");
-                writer.write(document.getApplication());
-                writer.write("\"");
+                writer.write(gson.toJson(document.getApplication()));
             } else {
                 writer.write("null");
             }
+
             writer.write("]");
             return writer.toString();
         }
         return null;
+    }
+
+    public static String getAddressWithHostname(final String address, final String hostname) {
+        if (hostname != null) {
+            return String.format("%s (%s)", address, hostname);
+        } else {
+            return address;
+        }
     }
 }

@@ -35,6 +35,8 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.telemetry.common.utils.DnsUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
@@ -59,7 +61,10 @@ public class IpV4 {
 
     public void writeBson(final BsonWriter bsonWriter) {
         try {
-            bsonWriter.writeString(Inet4Address.getByAddress(this.ip_v4.value).getHostAddress());
+            bsonWriter.writeStartDocument();
+            bsonWriter.writeString("address", Inet4Address.getByAddress(this.ip_v4.value).getHostAddress());
+            DnsUtils.reverseLookup(InetAddressUtils.getInetAddress(this.ip_v4.value)).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
+            bsonWriter.writeEndDocument();
         } catch (UnknownHostException e) {
             Throwables.propagate(e);
         }

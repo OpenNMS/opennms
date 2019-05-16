@@ -94,6 +94,12 @@ public class FlowDocument {
     private String dstAddr;
 
     /**
+     * Destination address hostname.
+     */
+    @SerializedName("netflow.dst_addr_hostname")
+    private String dstAddrHostname;
+
+    /**
      * Destination autonomous system (AS).
      */
     @SerializedName("netflow.dst_as")
@@ -182,6 +188,12 @@ public class FlowDocument {
     private String nextHop;
 
     /**
+     * Next hop hostname
+     */
+    @SerializedName("netflow.next_hop_hostname")
+    private String nextHopHostname;
+
+    /**
      * SNMP ifIndex
      */
     @SerializedName("netflow.output_snmp")
@@ -216,6 +228,12 @@ public class FlowDocument {
      */
     @SerializedName("netflow.src_addr")
     private String srcAddr;
+
+    /**
+     * Source address hostname.
+     */
+    @SerializedName("netflow.src_addr_hostname")
+    private String srcAddrHostname;
 
     /**
      * Source autonomous system (AS).
@@ -355,6 +373,14 @@ public class FlowDocument {
         this.dstAddr = dstAddr;
     }
 
+    public String getDstAddrHostname() {
+        return dstAddrHostname;
+    }
+
+    public void setDstAddrHostname(String dstAddrHostname) {
+        this.dstAddrHostname = dstAddrHostname;
+    }
+
     public Integer getDstAs() {
         return dstAs;
     }
@@ -467,6 +493,14 @@ public class FlowDocument {
         this.nextHop = nextHop;
     }
 
+    public String getNextHopHostname() {
+        return nextHopHostname;
+    }
+
+    public void setNextHopHostname(String nextHopHostname) {
+        this.nextHopHostname = nextHopHostname;
+    }
+
     public Integer getOutputSnmp() {
         return outputSnmp;
     }
@@ -513,6 +547,14 @@ public class FlowDocument {
 
     public void setSrcAddr(String srcAddr) {
         this.srcAddr = srcAddr;
+    }
+
+    public String getSrcAddrHostname() {
+        return srcAddrHostname;
+    }
+
+    public void setSrcAddrHostname(String srcAddrHostname) {
+        this.srcAddrHostname = srcAddrHostname;
     }
 
     public Integer getSrcAs() {
@@ -609,6 +651,7 @@ public class FlowDocument {
         doc.setBytes(flow.getBytes());
         doc.setDirection(Direction.from(flow.getDirection()));
         doc.setDstAddr(flow.getDstAddr());
+        doc.setDstAddrHostname(flow.getDstAddrHostname().orElse(null));
         doc.setDstAs(flow.getDstAs());
         doc.setDstMaskLen(flow.getDstMaskLen());
         doc.setDstPort(flow.getDstPort());
@@ -621,12 +664,14 @@ public class FlowDocument {
         doc.setIpProtocolVersion(flow.getIpProtocolVersion());
         doc.setLastSwitched(flow.getLastSwitched());
         doc.setNextHop(flow.getNextHop());
+        doc.setNextHopHostname(flow.getNextHopHostname().orElse(null));
         doc.setOutputSnmp(flow.getOutputSnmp());
         doc.setPackets(flow.getPackets());
         doc.setProtocol(flow.getProtocol());
         doc.setSamplingAlgorithm(SamplingAlgorithm.from(flow.getSamplingAlgorithm()));
         doc.setSamplingInterval(flow.getSamplingInterval());
         doc.setSrcAddr(flow.getSrcAddr());
+        doc.setSrcAddrHostname(flow.getSrcAddrHostname().orElse(null));
         doc.setSrcAs(flow.getSrcAs());
         doc.setSrcMaskLen(flow.getSrcMaskLen());
         doc.setSrcPort(flow.getSrcPort());

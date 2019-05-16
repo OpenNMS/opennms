@@ -72,4 +72,43 @@ public class ConversationKeyUtilsTest {
         assertThat(actualKey, equalTo(expectedKey));
     }
 
+    @Test
+    public void canCreateAndParseConversationKeyWithHostnames() {
+        FlowDocument flowIn = new FlowDocument();
+        flowIn.setDirection(Direction.INGRESS);
+        flowIn.setLocation("SomeLoc");
+        flowIn.setProtocol(1);
+        flowIn.setSrcAddr("1.1.1.1");
+        flowIn.setSrcAddrHostname("one.one.one.one");
+        flowIn.setDstAddr("2.2.2.2");
+        flowIn.setDstAddrHostname("two.two.two.two");
+        flowIn.setApplication("ulf");
+
+        FlowDocument flowOut = new FlowDocument();
+        flowOut.setDirection(Direction.EGRESS);
+        flowOut.setLocation(flowIn.getLocation());
+        flowOut.setProtocol(flowIn.getProtocol());
+        flowOut.setSrcAddr(flowIn.getDstAddr());
+        flowOut.setSrcAddrHostname(flowIn.getDstAddrHostname());
+        flowOut.setDstAddr(flowIn.getSrcAddr());
+        flowOut.setDstAddrHostname(flowIn.getSrcAddrHostname());
+        flowOut.setApplication(flowIn.getApplication());
+
+        String inKey = ConversationKeyUtils.getConvoKeyAsJsonString(flowIn);
+        String outKey = ConversationKeyUtils.getConvoKeyAsJsonString(flowOut);
+
+        // We should have generated some key, and both should match
+        assertThat(inKey, notNullValue());
+        assertThat(inKey, equalTo(outKey));
+
+        ConversationKey expectedKey = new ConversationKey(
+                flowIn.getLocation(),
+                flowIn.getProtocol(),
+                flowIn.getSrcAddr() + " (" + flowIn.getSrcAddrHostname() + ")",
+                flowIn.getDstAddr() + " (" + flowIn.getDstAddrHostname() + ")",
+                flowIn.getApplication());
+        ConversationKey actualKey = ConversationKeyUtils.fromJsonString(inKey);
+        assertThat(actualKey, equalTo(expectedKey));
+    }
+
 }

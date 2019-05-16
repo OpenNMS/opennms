@@ -33,6 +33,7 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getI
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
@@ -66,16 +67,15 @@ class Netflow9Flow implements Flow {
 
     @Override
     public String getDstAddr() {
-        return first(getString(this.document, "IPV6_DST_ADDR"),
-                getString(this.document, "IPV4_DST_ADDR"))
+        return first(getString(this.document, "IPV6_DST_ADDR", "address"),
+                getString(this.document, "IPV4_DST_ADDR", "address"))
                 .orElse(null);
     }
 
     @Override
-    public String getDstAddrHostname() {
-        return first(getString(this.document, "IPV6_DST_ADDR_hostname"),
-                getString(this.document, "IPV4_DST_ADDR_hostname"))
-                .orElse(null);
+    public Optional<String> getDstAddrHostname() {
+        return first(getString(this.document, "IPV6_DST_ADDR", "hostname"),
+                getString(this.document, "IPV4_DST_ADDR", "hostname"));
     }
 
     @Override
@@ -157,11 +157,19 @@ class Netflow9Flow implements Flow {
 
     @Override
     public String getNextHop() {
-        return first(getString(this.document, "IPV6_NEXT_HOP"),
-                getString(this.document, "IPV4_NEXT_HOP"),
-                getString(this.document, "BPG_IPV6_NEXT_HOP"),
-                getString(this.document, "BPG_IPV4_NEXT_HOP"))
+        return first(getString(this.document, "IPV6_NEXT_HOP", "address"),
+                getString(this.document, "IPV4_NEXT_HOP", "address"),
+                getString(this.document, "BPG_IPV6_NEXT_HOP", "address"),
+                getString(this.document, "BPG_IPV4_NEXT_HOP", "address"))
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<String> getNextHopHostname() {
+        return first(getString(this.document, "IPV6_NEXT_HOP", "hostname"),
+                getString(this.document, "IPV4_NEXT_HOP", "hostname"),
+                getString(this.document, "BPG_IPV6_NEXT_HOP", "hostname"),
+                getString(this.document, "BPG_IPV4_NEXT_HOP", "hostname"));
     }
 
     @Override
@@ -209,16 +217,15 @@ class Netflow9Flow implements Flow {
 
     @Override
     public String getSrcAddr() {
-        return first(getString(this.document, "IPV6_SRC_ADDR"),
-                getString(this.document, "IPV4_SRC_ADDR"))
+        return first(getString(this.document, "IPV6_SRC_ADDR", "address"),
+                getString(this.document, "IPV4_SRC_ADDR", "address"))
                 .orElse(null);
     }
 
     @Override
-    public String getSrcAddrHostname() {
-        return first(getString(this.document, "IPV6_SRC_ADDR_hostname"),
-                getString(this.document, "IPV4_SRC_ADDR_hostname"))
-                .orElse(null);
+    public Optional<String> getSrcAddrHostname() {
+        return first(getString(this.document, "IPV6_SRC_ADDR", "hostname"),
+                getString(this.document, "IPV4_SRC_ADDR", "hostname"));
     }
 
     @Override

@@ -33,6 +33,7 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getI
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
@@ -64,14 +65,13 @@ class Netflow5Flow implements Flow {
 
     @Override
     public String getDstAddr() {
-        return getString(this.document, "dstAddr")
+        return getString(this.document, "dstAddr", "address")
                 .get();
     }
 
     @Override
-    public String getDstAddrHostname() {
-        // TODO: Implement this
-        throw new RuntimeException("Not implemented");
+    public Optional<String> getDstAddrHostname() {
+        return getString(this.document, "dstAddr", "hostname");
     }
 
     @Override
@@ -149,8 +149,13 @@ class Netflow5Flow implements Flow {
 
     @Override
     public String getNextHop() {
-        return getString(this.document, "nextHop")
+        return getString(this.document, "nextHop", "address")
                 .get();
+    }
+
+    @Override
+    public Optional<String> getNextHopHostname() {
+        return getString(this.document, "nextHop", "hostname");
     }
 
     @Override
@@ -197,14 +202,13 @@ class Netflow5Flow implements Flow {
 
     @Override
     public String getSrcAddr() {
-        return getString(this.document, "srcAddr")
+        return getString(this.document, "srcAddr", "address")
                 .get();
     }
 
     @Override
-    public String getSrcAddrHostname() {
-        // TODO: Implement this
-        throw new RuntimeException("Not implemented");
+    public Optional<String> getSrcAddrHostname() {
+        return getString(this.document, "srcAddr", "hostname");
     }
 
     @Override

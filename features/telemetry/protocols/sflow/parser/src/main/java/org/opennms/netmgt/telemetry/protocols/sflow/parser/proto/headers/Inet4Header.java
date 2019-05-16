@@ -115,10 +115,16 @@ public class Inet4Header {
         bsonWriter.writeInt32("tos", this.tos);
         bsonWriter.writeInt32("length", this.totalLength);
         bsonWriter.writeInt32("protocol", this.protocol);
-        bsonWriter.writeString("src_ip", this.srcAddress);
-        bsonWriter.writeString("src_ip_hostname", DnsUtils.hostnameOrIpAddress(this.srcAddress));
-        bsonWriter.writeString("dst_ip", this.dstAddress);
-        bsonWriter.writeString("dst_ip_hostname", DnsUtils.hostnameOrIpAddress(this.dstAddress));
+
+        bsonWriter.writeStartDocument("src_ip");
+        bsonWriter.writeString("address", this.srcAddress);
+        DnsUtils.reverseLookup(this.srcAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
+        bsonWriter.writeEndDocument();
+
+        bsonWriter.writeStartDocument("dst_ip");
+        bsonWriter.writeString("address", this.dstAddress);
+        DnsUtils.reverseLookup(this.dstAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
+        bsonWriter.writeEndDocument();
 
         if (this.srcPort != null) {
             bsonWriter.writeInt32("src_port", this.srcPort);

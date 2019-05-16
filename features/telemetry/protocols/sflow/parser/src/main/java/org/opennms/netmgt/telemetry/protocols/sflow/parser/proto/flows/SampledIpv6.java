@@ -94,11 +94,9 @@ public class SampledIpv6 implements FlowData {
 
         bsonWriter.writeName("src_ip");
         this.src_ip.writeBson(bsonWriter);
-        bsonWriter.writeString("src_ip_hostname", DnsUtils.hostnameOrIpAddress(InetAddressUtils.getInetAddress(this.src_ip.ip_v6.value)));
 
         bsonWriter.writeName("dst_ip");
         this.dst_ip.writeBson(bsonWriter);
-        bsonWriter.writeString("dst_ip_hostname", DnsUtils.hostnameOrIpAddress(InetAddressUtils.getInetAddress(this.dst_ip.ip_v6.value)));
 
         bsonWriter.writeInt32("src_port", (int) this.src_port);
         bsonWriter.writeInt32("dst_port", (int) this.dst_port);
