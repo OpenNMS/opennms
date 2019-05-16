@@ -1,11 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
-<<<<<<< HEAD
  * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
-=======
- * Copyright (C) 2019 The OpenNMS Group, Inc.
->>>>>>> HZN-1521: Edges should allow to contain vertices of different namespaces: introduce VertexRef
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.

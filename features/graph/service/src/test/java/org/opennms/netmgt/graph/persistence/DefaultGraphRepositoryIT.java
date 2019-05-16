@@ -135,8 +135,7 @@ public class DefaultGraphRepositoryIT {
         GenericVertex vertex = new GenericVertex(NAMESPACE, "v1");
         vertex.setProperty("collectionProperty", Arrays.asList("E", "F"));
 
-        final GenericGraph graph = new GenericGraph();
-        graph.setNamespace(NAMESPACE);
+        final GenericGraph graph = new GenericGraph(NAMESPACE);
         graph.setProperty("collectionProperty", Arrays.asList("C", "D"));
         graph.addVertex(vertex);
 
