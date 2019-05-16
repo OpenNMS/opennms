@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.drools.compiler.compiler.DroolsParserException;
@@ -82,8 +83,9 @@ import com.google.common.io.ByteStreams;
  */
 public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
-    public static final boolean PRESERVE_STATE_WHEN_EXCEPTION = Boolean.getBoolean("org.opennms.netmgt.correlation.drools.preserveState");
     private static final Logger LOG = LoggerFactory.getLogger(DroolsCorrelationEngine.class);
+    // If state need to be reloaded in case of engine being reloaded because of exception in rules engine, set this system property to true.
+    public static final String RELOAD_STATE_AFTER_EXCEPTION = "org.opennms.netmgt.correlation.drools.reloadStateAfterException";
 
     private KieBase m_kieBase;
     private KieSession m_kieSession;
@@ -99,6 +101,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private Boolean m_persistState;
     private Resource m_configPath;
     private ApplicationContext m_configContext;
+    private List<Object> factObjects;
     
     public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry, final Resource configPath, final ApplicationContext configContext) {
         this.m_name = name;
@@ -124,7 +127,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     @Override
     public synchronized void correlate(final Event e) {
         if (m_kieSession == null) {
-            LOG.info("No valid session");
+            LOG.info("No valid session, Event with id: {} and UEI: {} will not be added as a fact.", e.getDbid(), e.getUei());
             return;
         }
         LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
@@ -142,7 +145,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     @Override
     protected synchronized void timerExpired(final Integer timerId) {
         if (m_kieSession == null) {
-            LOG.info("No valid session");
+            LOG.info("No valid session, Timer with Id {} will not be added as a fact.", timerId);
             return;
         }
         LOG.info("Begin correlation for Timer {}", timerId);
@@ -231,6 +234,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
             unmarshallStateFromDisk(true);
         }
 
+        if (factObjects != null) {
+            factObjects.forEach(fact -> m_kieSession.insert(fact));
+            factObjects.clear();
+        }
+
         if (m_isStreaming) {
             new Thread(() -> {  
                 Logging.putPrefix(getClass().getSimpleName() + '-' + getName());
@@ -255,6 +263,10 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         EventBuilder reloadEventBldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, getName());
         // Correlator.EngineAdapter uses this pattern for the engine name.
         reloadEventBldr.addParam(EventConstants.PARM_DAEMON_NAME, this.getClass().getSimpleName() + "-" + getName());
+        // By default, no need to persist state after exception, but if this property is set, persist state.
+        if(!Boolean.getBoolean(RELOAD_STATE_AFTER_EXCEPTION)) {
+            reloadEventBldr.addParam("persistState", "false");
+        }
         sendEvent(reloadEventBldr.getEvent());
     }
 
@@ -397,7 +409,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     }
 
     @Override
-    public void reloadConfig() {
+    public void reloadConfig(boolean persistState) {
         EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
         ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "DroolsCorrelationEngine-" + m_name);
         try {
@@ -405,8 +417,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
             EngineConfiguration cfg = JaxbUtils.unmarshal(EngineConfiguration.class, m_configPath);
             Optional<RuleSet> opt = cfg.getRuleSetCollection().stream().filter(rs -> rs.getName().equals(getName())).findFirst();
             if (opt.isPresent()) {
-                if (PRESERVE_STATE_WHEN_EXCEPTION) {
-                   marshallStateToDisk(true);
+                if (persistState) {
+                    saveFacts();
                 } else {
                     shutDownKieSession();
                 }
@@ -423,5 +435,29 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
             sendEvent(ebldr.getEvent());
         }
     }
+
+    void saveFacts( ) {
+        if (m_kieSession == null) {
+            return;
+        }
+        m_kieSession.halt();
+        try {
+            // Capture the current set of facts
+            factObjects  = m_kieSession.getFactHandles().stream()
+                    .map(fact -> m_kieSession.getObject(fact))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            LOG.warn("Failed to save facts", e);
+        }
+        m_kieSession.dispose();
+        m_kieSession.destroy();
+        m_kieSession = null;
+    }
+
+
+    List<Object> getFactObjects() {
+        return factObjects;
+    }
+
 
 }
