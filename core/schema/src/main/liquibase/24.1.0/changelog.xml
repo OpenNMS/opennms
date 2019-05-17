@@ -6,13 +6,9 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
   <changeSet author="jondevit" id="24.1.0-ipnettomedia-on-delete-cascade">
-    <dropForeignKeyConstraint baseTableName="ipNetToMedia" constraintName="fk_ipnettomedia_nodeid"/>
+    <dropForeignKeyConstraint baseTableName="ipnettomedia" constraintName="fk_ipnettomedia_nodeid"/>
     <addForeignKeyConstraint constraintName="fk_ipnettomedia_nodeid"
-                             baseTableName="ipNetToMedia" baseColumnNames="nodeid"
-                             referencedTableName="node" referencedColumnNames="nodeid" onDelete="CASCADE"/>
-    <dropForeignKeyConstraint baseTableName="ipNetToMedia" constraintName="fk_ipnettomedia_sourcenodeid"/>
-    <addForeignKeyConstraint constraintName="fk_ipnettomedia_sourcenodeid"
-                             baseTableName="ipNetToMedia" baseColumnNames="nodeid"
+                             baseTableName="ipnettomedia" baseColumnNames="nodeid"
                              referencedTableName="node" referencedColumnNames="nodeid" onDelete="CASCADE"/>
   </changeSet>
 
