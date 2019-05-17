@@ -37,6 +37,9 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+
 /**
  * A simple {@link MessageDispatcherFactory} that handles all messages with a single consumer.
  *
@@ -74,6 +77,11 @@ public class MockMessageDispatcherFactory<U extends Message, V extends Message> 
     @Override
     public BundleContext getBundleContext() {
         return null;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
     }
 
     public MessageConsumer<U, V> getConsumer() {

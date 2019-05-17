@@ -495,6 +495,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.opennms-identity</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.topologies</groupId>
       <artifactId>org.opennms.features.topologies.service.api</artifactId>
       <version>${project.version}</version>
