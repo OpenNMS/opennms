@@ -398,7 +398,7 @@ doStart(){
 	###########################################################################
 	if [ "$TEST" -gt 0 ]; then
 		echo "- enabling JPDA debugging on port 8001" >&2
-		JPDA=("-agentlib:jdwp=transport=dt_socket,server=y,address=*:8001,suspend=n")
+		JPDA=("-agentlib:jdwp=transport=dt_socket,server=y,address=${JPDA_ADDRESS},suspend=n")
 	fi
 
 	# See: http://www.khelekore.org/jmp/tijmp/
@@ -707,9 +707,11 @@ JAVA_MODULES=(
 	jdk.xml.dom \
 )
 
+JPDA_ADDRESS="*:8001"
 if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
 	# Java 8, use the endorsed directory
 	JAVA_CMD=("${JAVA_CMD[@]}" "-Djava.endorsed.dirs=$OPENNMS_HOME/lib/endorsed")
+	JPDA_ADDRESS="8001"
 else
 	# Java 9+, add required modules
 	OIFS="$IFS"
