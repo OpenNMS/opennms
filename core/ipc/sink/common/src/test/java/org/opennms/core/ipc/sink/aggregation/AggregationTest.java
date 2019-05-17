@@ -58,6 +58,9 @@ import org.osgi.framework.BundleContext;
 
 import com.google.common.util.concurrent.RateLimiter;
 
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+
 public class AggregationTest {
 
     private static final int COMPLETION_SIZE = 10;
@@ -82,6 +85,12 @@ public class AggregationTest {
         public BundleContext getBundleContext() {
             return null;
         }
+
+        @Override
+        public Tracer getTracer() {
+            return GlobalTracer.get();
+        }
+
     };
 
     @Before

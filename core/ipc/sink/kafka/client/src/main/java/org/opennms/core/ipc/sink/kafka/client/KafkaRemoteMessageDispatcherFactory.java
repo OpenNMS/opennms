@@ -57,6 +57,10 @@ import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.ipc.sink.model.SinkMessageProtos;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
+import org.opennms.core.tracing.api.TracerConstants;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
+import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -64,6 +68,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.math.IntMath;
 import com.google.protobuf.ByteString;
+
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.util.GlobalTracer;
 
 public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<String> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRemoteMessageDispatcherFactory.class);
@@ -75,6 +84,10 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     private BundleContext bundleContext;
 
     private KafkaProducer<String, byte[]> producer;
+
+    private TracerRegistry tracerRegistry;
+
+    private MinionIdentity minionIdentity;
 
     private int maxBufferSize;
 
@@ -94,6 +107,12 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             for (int chunk = 0; chunk < totalChunks; chunk++) {
                 byte[] messageInBytes = wrapMessageToProto(messageId, chunk, totalChunks, sinkMessageContent);
                 final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, messageId, messageInBytes);
+                // Add tags to tracer active span.
+                Span activeSpan = getTracer().activeSpan();
+                if (activeSpan != null && (chunk + 1 == totalChunks)) {
+                    activeSpan.setTag(TracerConstants.TAG_TOPIC, topic);
+                    activeSpan.setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageContent.length);
+                }
                 // Keep sending record till it delivers successfully.
                 while (true) {
                     try {
@@ -125,13 +144,25 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         // Calculate remaining bufferSize for each chunk.
         int bufferSize = getRemainingBufferSize(sinkMessageContent.length, chunk);
         ByteString byteString = ByteString.copyFrom(sinkMessageContent, chunk * maxBufferSize, bufferSize);
-        SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.newBuilder()
+        SinkMessageProtos.SinkMessage.Builder sinkMessageBuilder = SinkMessageProtos.SinkMessage.newBuilder()
                 .setMessageId(messageId)
                 .setCurrentChunkNumber(chunk)
                 .setTotalChunks(totalChunks)
-                .setContent(byteString)
-                .build();
-        return sinkMessage.toByteArray();
+                .setContent(byteString);
+        // Add tracing info
+        final Tracer tracer = getTracer();
+        if (tracer.activeSpan() != null && (chunk + 1 == totalChunks)) {
+            TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+            tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+            tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, minionIdentity.getLocation());
+            tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
+                SinkMessageProtos.TracingInfo tracingInfo = SinkMessageProtos.TracingInfo.newBuilder()
+                        .setKey(key).setValue(value).build();
+                sinkMessageBuilder.addTracingInfo(tracingInfo);
+            });
+
+        }
+        return sinkMessageBuilder.build().toByteArray();
     }
 
     public void init() throws IOException {
@@ -146,6 +177,9 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             LOG.info("KafkaRemoteMessageDispatcherFactory: initializing the Kafka producer with: {}", kafkaConfig);
             producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
             maxBufferSize = getMaxBufferSize();
+            if (tracerRegistry != null && minionIdentity != null) {
+                tracerRegistry.init(minionIdentity.getLocation() + "@" + minionIdentity.getId());
+            }
             onInit();
         }
     }
@@ -199,4 +233,27 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         return Math.min(DEFAULT_MAX_BUFFER_SIZE, maxBufferSize);
     }
 
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        this.tracerRegistry = tracerRegistry;
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        if (getTracerRegistry() != null) {
+            return getTracerRegistry().getTracer();
+        }
+        return  GlobalTracer.get();
+    }
+
+    public MinionIdentity getMinionIdentity() {
+        return minionIdentity;
+    }
+
+    public void setMinionIdentity(MinionIdentity minionIdentity) {
+        this.minionIdentity = minionIdentity;
+    }
 }

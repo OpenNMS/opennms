@@ -124,8 +124,11 @@
           init-method="start"
           destroy-method="stop" />
 
+    <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
     <!-- The repository -->
-    <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository">
+    <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
+          init-method="start">
         <argument ref="flowRepositoryMetricRegistry"/>
         <argument ref="jestClient"/>
         <argument ref="indexStrategy"/>
@@ -134,6 +137,8 @@
         <argument ref="transactionOperations"/>
         <argument ref="nodeDao"/>
         <argument ref="snmpInterfaceDao"/>
+        <argument ref="identity"/>
+        <argument ref="tracerRegistry"/>
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
     </bean>

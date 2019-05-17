@@ -28,17 +28,45 @@
 
 package org.opennms.core.ipc.sink.kafka.itests;
 
+import java.util.Dictionary;
+import java.util.Map;
 import java.util.Properties;
 
+import org.apache.camel.util.KeyValueHolder;
 import org.junit.Test;
 import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 
 public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
         return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml,blueprint-empty-camel-context.xml";
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
+        services.put(MinionIdentity.class.getName(),
+                new KeyValueHolder<Object, Dictionary>(new MinionIdentity() {
+                    @Override
+                    public String getId() {
+                        return "0";
+                    }
+
+                    @Override
+                    public String getLocation() {
+                        return "remote";
+                    }
+
+                    @Override
+                    public String getType() {
+                        return SystemType.Minion.name();
+                    }
+                }, new Properties()));
+
     }
 
     @Override
@@ -49,6 +77,6 @@ public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {
 
     @Test
     public void canBlueprintLoadSuccesfully() {
-        
+
     }
 }
