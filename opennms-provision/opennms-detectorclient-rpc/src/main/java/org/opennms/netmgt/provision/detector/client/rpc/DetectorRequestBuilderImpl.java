@@ -150,6 +150,15 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         detectorRequestDTO.setSystemId(systemId);
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
+
+        if (interpolatedAttributes.get("ttl") != null) {
+            String ttl = (String) interpolatedAttributes.get("ttl");
+            try {
+                detectorRequestDTO.setTimeToLiveMs(Long.valueOf("ttl"));
+            } catch (NumberFormatException e) {
+                LOG.warn("ttl provided  `{}` is not a number", ttl);
+            }
+        }
         detectorRequestDTO.addDetectorAttributes(interpolatedAttributes);
         detectorRequestDTO.addTracingInfo(RpcRequest.TAG_CLASS_NAME, className);
         detectorRequestDTO.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(address));

@@ -44,8 +44,12 @@ import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CollectorRequestBuilderImpl.class);
 
     private final LocationAwareCollectorClientImpl client;
 
@@ -136,6 +140,14 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         // fetching class name from proxy won't match with class name in collector registry so prefer clasName if it present.
         final String collectorClassName = className != null ? className : serviceCollector.getClass().getCanonicalName();
         request.setClassName(collectorClassName);
+        if (interpolatedAttributes.get("ttl") != null) {
+            String ttl = (String) interpolatedAttributes.get("ttl");
+            try {
+                ttlInMs = Long.valueOf("ttl");
+            } catch (NumberFormatException e) {
+                LOG.warn("ttl provided  `{}` is not a number", ttl);
+            }
+        }
         request.setTimeToLiveMs(ttlInMs);
         request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(agent.getNodeId()));
         request.addTracingInfo(RpcRequest.TAG_NODE_LABEL, agent.getNodeLabel());
