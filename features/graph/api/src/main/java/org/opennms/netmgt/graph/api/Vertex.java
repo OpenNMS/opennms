@@ -36,9 +36,7 @@ public interface Vertex {
 
     VertexRef getVertexRef();
 
-    // TODO: patrick discuss with mvr: shall we keep is method as a convenient way to say getVertexRef.getNamespace()
     String getNamespace();
 
-    // TODO: patrick discuss with mvr: shall we keep is method as a convenient way to say getVertexRef.getId()
     String getId();
 }
