@@ -194,7 +194,7 @@
     <dependency>
       <groupId>org.opennms.features.jest</groupId>
       <artifactId>org.opennms.features.jest.dependencies</artifactId>
-      <version>${parent.version}</version>
+      <version>${project.parent.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>

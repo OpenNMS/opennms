@@ -989,11 +989,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
-      <artifactId>org.opennms.features.telemetry.protocols.sflow.parser</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.telemetry.protocols.nxos</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.nxos.adapter</artifactId>
       <version>${project.version}</version>
