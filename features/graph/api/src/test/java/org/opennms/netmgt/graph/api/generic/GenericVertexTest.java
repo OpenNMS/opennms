@@ -40,7 +40,6 @@ public class GenericVertexTest {
         assertThrowsException(NullPointerException.class, ()-> new GenericVertex((String)null, (String)null));
         assertThrowsException(NullPointerException.class, ()-> new GenericVertex("not null", null));
         assertThrowsException(NullPointerException.class, ()-> new GenericVertex((String)null, "not null"));
-
     }
 
 }

@@ -184,7 +184,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         Objects.requireNonNull(vertex);
         Objects.requireNonNull(vertex.getId());
         if (jungGraph.containsVertex(vertex)) return; // already added
-        jungGraph.addVertex(vertex);
+        jungGraph.addVertex(vertex.getVertexRef());
         vertexToIdMap.put(vertex.getId(), vertex);
 
 //        if (vertex.getNodeRef() != null) {
@@ -290,8 +290,11 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     @Override
     public Collection<GenericEdge> getConnectingEdges(GenericVertex eachVertex) {
         final Set<GenericEdge> edges = new HashSet<>();
-        edges.addAll(jungGraph.getInEdges(eachVertex));
-        edges.addAll(jungGraph.getOutEdges(eachVertex));
+        if (eachVertex != null) {
+            final GenericVertexRef genericVertexRef = eachVertex.getVertexRef();
+            edges.addAll(jungGraph.getInEdges(genericVertexRef));
+            edges.addAll(jungGraph.getOutEdges(genericVertexRef));
+        }
         return edges;
     }
 
@@ -319,7 +322,6 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(),
                 vertexToIdMap, edgeToIdMap, focusStrategy);
     }

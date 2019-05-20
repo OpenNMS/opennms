@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.aware.LocationAware;
 import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
