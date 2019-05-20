@@ -4095,5 +4095,10 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </pluginRepository>
+    <pluginRepository>
+      <id>sevntu-maven</id>
+      <name>sevntu-maven</name>
+      <url>http://maven.opennms.org/content/repositories/sevntu-maven/</url>
+    </pluginRepository>
   </pluginRepositories>
 </project>
