@@ -61,10 +61,8 @@ goto error
 
 :chkMHome
 set "MAVEN_HOME=%~dp0.."
-if not "%MAVEN_HOME%"=="" goto valMHome
+if not "%MAVEN_HOME%"=="" goto stripMHome
 goto error
-
-:valMHome
 
 :stripMHome
 if not "_%MAVEN_HOME:~-1%"=="_\" goto checkMCmd
@@ -117,7 +115,7 @@ if "%FILE_ARG%" == "" (
   goto findBaseDir
 )
 if not exist "%FILE_ARG%" (
-  echo POM file %FILE_ARG% specified the -f/--file command-line argument does not exist >&2
+  echo POM file "%FILE_ARG%" specified the -f/--file command-line argument does not exist >&2
   goto error
 )
 if exist "%FILE_ARG%\*" (
@@ -126,7 +124,7 @@ if exist "%FILE_ARG%\*" (
   call :get_directory_from_file "%FILE_ARG%"
 )
 if not exist "%POM_DIR%" (
-  echo Directory %POM_DIR% extracted from the -f/--file command-line argument %FILE_ARG% does not exist >&2
+  echo Directory "%POM_DIR%" extracted from the -f/--file command-line argument "%FILE_ARG%" does not exist >&2
   goto error
 )
 set "WDIR=%POM_DIR%"

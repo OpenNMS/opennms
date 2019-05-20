@@ -433,15 +433,16 @@
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
-        <bundle dependency="true">mvn:org.scala-lang/scala-library/2.11.11</bundle>
+        <bundle dependency="true">mvn:org.scala-lang/scala-library/${scalaLibraryVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.10</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.1</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.1</bundle>
+        <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_2.11/${kafkaStreamsBundleVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaStreamsBundleVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
     </feature>
     <feature name="opennms-aws-sqs" version="${project.version}" description="OpenNMS :: Features :: AWS SQS">
         <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/${awsSdkVersion}</bundle>
@@ -891,23 +892,26 @@
         <bundle>mvn:org.opennms.features.alarms.history/org.opennms.features.alarms.history.elastic/${project.version}</bundle>
     </feature>
 
-    <feature name="kafka-streams" description="Kafka Streams" version="${kafkaStreamsVersion}">
+    <feature name="kafka-streams" description="Kafka Streams" version="${kafkaVersion}">
         <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
-        <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaStreamsVersion}$Bundle-Version=${kafkaStreamsVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaStreamsVersion}"</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaStreamsBundleVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafkaStreamsVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaStreamsVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaVersion}$Bundle-Version=${kafkaVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaVersion}"</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafkaVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaVersion}</bundle>
         <bundle dependency="true">mvn:org.lz4/lz4-java/1.4</bundle>
         <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/1.1.4</bundle>
+        <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
         <!-- These are only needed for  servicemix implementation of kafka streams -->
-        <!--       <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.1</bundle>
-              <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0</bundle>
-              <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.1</bundle> -->
-        <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/5.7.3</bundle>
+        <!--
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        -->
+        <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/${rocksdbjniVersion}</bundle>
     </feature>
     <feature name="opennms-kafka-producer" version="${project.version}" description="OpenNMS :: Kafka :: Producer">
         <feature version="${guavaVersion}">guava</feature>
-        <feature version="${kafkaStreamsVersion}">kafka-streams</feature>
+        <feature version="${kafkaVersion}">kafka-streams</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-situation-feedback-api</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf3Version}</bundle>
@@ -1184,26 +1188,31 @@
     </feature>
     <feature name="vaadin" version="${project.version}" description="OpenNMS :: Features :: Vaadin + Dependencies">
         <details>The Vaadin web application framework including some addons and osgi related packages.</details>
+        <!-- Dependencies -->
         <feature>http-whiteboard</feature>
         <bundle>wrap:mvn:com.google.gwt/gwt-elemental/${gwtVersion}</bundle>
         <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
-        <bundle>mvn:com.vaadin/vaadin-context-menu/${vaadinAddonContextMenuVersion}</bundle>
-        <bundle>wrap:mvn:org.vaadin.addon/confirmdialog/${vaadinAddonConfirmDialogVersion}</bundle>
-        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-server/${vaadinVersion}</bundle>
-        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-client-compiled/${vaadinVersion}</bundle>
-        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-client/${vaadinVersion}</bundle>
-        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-themes/${vaadinVersion}</bundle>
-        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-shared/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-server/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-client-compiled/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-client/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-themes/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-shared/${vaadinVersion}</bundle>
         <bundle>mvn:com.vaadin.external/gentyref/1.2.0.vaadin1</bundle>
         <bundle>mvn:org.jsoup/jsoup/1.11.2</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/extender-service/${project.version}</bundle>
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.json/json/${jsonVersion}</bundle>
+        <!-- Vaadin -->
+        <bundle start-level="70">mvn:com.vaadin/vaadin-shared/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-server/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-client/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-client-compiled/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-themes/${vaadinVersion}</bundle>
+        <!-- Vaadin Compatibility -->
+        <bundle>mvn:com.vaadin/vaadin-compatibility-shared/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-compatibility-server/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-compatibility-client-compiled/${vaadinVersion}</bundle>
+        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-client/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-compatibility-themes/${vaadinVersion}</bundle>
+        <!-- Add Ons -->
+        <bundle>mvn:com.vaadin/vaadin-context-menu/${vaadinAddonContextMenuVersion}</bundle>
+        <bundle>mvn:org.vaadin.addon/confirmdialog/${vaadinAddonConfirmDialogVersion}</bundle>
+        <!-- OpenNMS Vaadin -->
+        <bundle>mvn:org.opennms.features.vaadin-components/extender-service/${project.version}</bundle>
         <bundle>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.themes/onms-default-theme/${project.version}</bundle>
     </feature>
