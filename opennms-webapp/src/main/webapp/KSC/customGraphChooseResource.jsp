@@ -108,7 +108,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr name="subresource:{{ resource.typeLabel }}:{{ resource.label }}" ng-class="{success: resource.id == selectedResource.id}" ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                <tr name="subresource:{{ resource.typeLabel }}:{{ resource.label }}" ng-class="{'table-active': resource.id == selectedResource.id}" ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
                   <td>{{ resource.typeLabel }} : {{ resource.label }}</td>
                 </tr>
               </tbody>

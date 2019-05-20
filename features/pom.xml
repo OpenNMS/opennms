@@ -160,20 +160,11 @@
     <module>minion</module>
     <module>scv</module>
 
-    <!-- OpenNMS Plugin Manager -->
-    <module>vaadin-opennms-pluginmanager</module>
-    
     <!-- ReST Elasticsearch Integration -->
     <module>opennms-es-rest</module>
 
     <!-- Correlation Feedback -->
     <module>situation-feedback</module>
-
-    <!-- Alarm Change Notifier -->
-    <module>alarm-change-notifier</module>
-    
-    <!-- Internal Plugins Descriptor -->
-    <module>internal-plugins-descriptor</module>
 
     <!-- Event Integration Facility Adapter -->
     <module>eif-adapter</module>

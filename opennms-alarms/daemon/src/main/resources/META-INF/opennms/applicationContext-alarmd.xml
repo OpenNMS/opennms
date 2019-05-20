@@ -14,7 +14,7 @@
 
   <!-- Drools integration -->
 
-  <bean id="defaultAlarmTicketer" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmService" />
+  <bean id="defaultAlarmService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmService" />
 
   <bean id="defaultAlarmTicketerService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmTicketerService" />
 

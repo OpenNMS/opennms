@@ -533,7 +533,10 @@ public class Event implements Serializable, Comparable<Event> {
         }
     }
 
-    public boolean matches(final org.opennms.netmgt.xml.event.Event matchingEvent) {
+    public MatchResult matches(final org.opennms.netmgt.xml.event.Event matchingEvent) {
+        if (m_matcher == null) {
+            return MatchResult.FALSE;
+        }
         return m_matcher.matches(matchingEvent);
     }
 

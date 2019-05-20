@@ -33,19 +33,23 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Test;
 import org.mapstruct.factory.Mappers;
 import org.opennms.integration.api.v1.config.requisition.SnmpPrimaryType;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionBean;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionInterfaceBean;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionNodeBean;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisition;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionInterface;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionMetaData;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionMonitoredService;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 
@@ -59,9 +63,9 @@ public class RequisitionMapperTest {
         onmsRequisition.setForeignSource("fs");
         onmsRequisition.setDate(new Date(1));
 
-        org.opennms.integration.api.v1.config.requisition.Requisition apiRequisition = RequisitionBean.builder()
-                .foreignSource("fs")
-                .generatedAt(new Date(1))
+        org.opennms.integration.api.v1.config.requisition.Requisition apiRequisition = ImmutableRequisition.newBuilder()
+                .setForeignSource("fs")
+                .setGeneratedAt(new Date(1))
                 .build();
 
         mapAndVerify(onmsRequisition, apiRequisition);
@@ -79,32 +83,54 @@ public class RequisitionMapperTest {
         requisitionNode.setForeignId("fid");
         requisitionNode.setLocation("loc");
         requisitionNode.putAsset(new RequisitionAsset("field", "value"));
-        // Categories are inserted at the begining of the list, so we need to inverse the order here
+        // Categories are inserted at the beginning of the list, so we need to inverse the order here
         requisitionNode.putCategory(new RequisitionCategory("123"));
         requisitionNode.putCategory(new RequisitionCategory("abc"));
+        requisitionNode.setMetaData(Arrays.asList(
+                new RequisitionMetaData("ctx1", "k1", "nv1"),
+                new RequisitionMetaData("ctx2", "k2", "nv2")
+        ));
 
         RequisitionInterface requisitionInterface = new RequisitionInterface();
         requisitionNode.putInterface(requisitionInterface);
         requisitionInterface.setSnmpPrimary(PrimaryType.SECONDARY);
         requisitionInterface.setIpAddr("127.0.0.1");
         requisitionInterface.setDescr("iface descr");
-        requisitionInterface.putMonitoredService(new RequisitionMonitoredService("svc1"));
+        requisitionInterface.setMetaData(Arrays.asList(
+                new RequisitionMetaData("ctx1", "k1", "iv1"),
+                new RequisitionMetaData("ctx2", "k2", "iv2")
+        ));
 
-        org.opennms.integration.api.v1.config.requisition.Requisition apiRequisition = org.opennms.integration.api.v1.config.requisition.beans.RequisitionBean.builder()
-                .foreignSource("fs")
-                .generatedAt(new Date(0))
-                .node(RequisitionNodeBean.builder()
-                        .nodeLabel("n1")
-                        .foreignId("fid")
-                        .location("loc")
-                        .asset("field", "value")
-                        .category("abc")
-                        .category("123")
-                        .iface(RequisitionInterfaceBean.builder()
-                                .ipAddress(InetAddress.getByName("127.0.0.1"))
-                                .snmpPrimary(SnmpPrimaryType.SECONDARY)
-                                .description("iface descr")
-                                .monitoredService("svc1")
+        RequisitionMonitoredService requisitionService = new RequisitionMonitoredService("svc1");
+        requisitionInterface.putMonitoredService(requisitionService);
+        requisitionService.setMetaData(Arrays.asList(
+                new RequisitionMetaData("ctx1", "k1", "sv1"),
+                new RequisitionMetaData("ctx2", "k2", "sv2")
+        ));
+
+        org.opennms.integration.api.v1.config.requisition.Requisition apiRequisition = ImmutableRequisition.newBuilder()
+                .setForeignSource("fs")
+                .setGeneratedAt(new Date(0))
+                .addNode(ImmutableRequisitionNode.newBuilder()
+                        .setNodeLabel("n1")
+                        .setForeignId("fid")
+                        .setLocation("loc")
+                        .addAsset("field", "value")
+                        .addCategory("abc")
+                        .addCategory("123")
+                        .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx1", "k1", "nv1"))
+                        .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx2", "k2", "nv2"))
+                        .addInterface(ImmutableRequisitionInterface.newBuilder()
+                                .setIpAddress(InetAddress.getByName("127.0.0.1"))
+                                .setSnmpPrimary(SnmpPrimaryType.SECONDARY)
+                                .setDescription("iface descr")
+                                .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx1", "k1", "iv1"))
+                                .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx2", "k2", "iv2"))
+                                .addMonitoredService(ImmutableRequisitionMonitoredService.newBuilder()
+                                        .setName("svc1")
+                                        .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx1", "k1", "sv1"))
+                                        .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx2", "k2", "sv2"))
+                                        .build())
                                 .build())
                         .build())
                 .build();

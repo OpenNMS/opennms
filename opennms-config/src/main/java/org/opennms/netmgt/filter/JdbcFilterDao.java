@@ -48,6 +48,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
@@ -61,8 +62,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 /**
  * <p>JdbcFilterDao class.</p>
@@ -82,6 +88,15 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
 	private DataSource m_dataSource;
     private DatabaseSchemaConfig m_databaseSchemaConfigFactory;
+
+    private final static MetricRegistry metricRegistry = new MetricRegistry();
+
+    private JmxReporter jmxReporter;
+    private final Timer getIpListTimer;
+
+    public JdbcFilterDao() {
+        getIpListTimer = metricRegistry.timer("getIPAddressListForFilter");
+    }
 
     /**
      * <p>setDataSource</p>
@@ -126,6 +141,17 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     public void afterPropertiesSet() {
         Assert.state(m_dataSource != null, "property dataSource cannot be null");
         Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
+        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.config.filterdao").build();
+        jmxReporter.start();
+    }
+
+    @PreDestroy
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void destroy() throws Exception {
+        if (jmxReporter != null) {
+            jmxReporter.stop();
+            jmxReporter = null;
+        }
     }
 
     /**
@@ -287,7 +313,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         // get the database connection
         Connection conn = null;
         final DBUtils d = new DBUtils(getClass());
-        try {
+        try (final Timer.Context ctx = getIpListTimer.time()) {
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement(rule);
 

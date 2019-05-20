@@ -51,6 +51,7 @@ import org.opennms.netmgt.xml.event.UpdateField;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
+import org.opennms.netmgt.xml.eventconf.MatchResult;
 import org.opennms.netmgt.xml.eventconf.Parameter;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.slf4j.Logger;
@@ -140,12 +141,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * into an event mask instance. This is used when the incoming event does
      * not have a mask and the information from the configuration object is
      * copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed mask information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Mask transform(org.opennms.netmgt.xml.eventconf.Mask src) {
         org.opennms.netmgt.xml.event.Mask dest = new org.opennms.netmgt.xml.event.Mask();
@@ -168,12 +169,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * into an SNMP event instance. This is used when the incoming event does
      * not have any SNMP information and the information from the configuration
      * object is copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed SNMP information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Snmp transform(org.opennms.netmgt.xml.eventconf.Snmp src) {
         org.opennms.netmgt.xml.event.Snmp dest = new org.opennms.netmgt.xml.event.Snmp();
@@ -193,12 +194,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * instance into a log message event instance. This is used when the
      * incoming event does not have any log message information and the
      * information from the configuration object is copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed log message information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Logmsg transform(org.opennms.netmgt.xml.eventconf.Logmsg src) {
         org.opennms.netmgt.xml.event.Logmsg dest = new org.opennms.netmgt.xml.event.Logmsg();
@@ -215,12 +216,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * instance into a correlation event instance. This is used when the
      * incoming event does not have any correlation information and the
      * information from the configuration object is copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed correlation information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Correlation transform(org.opennms.netmgt.xml.eventconf.Correlation src) {
         org.opennms.netmgt.xml.event.Correlation dest = new org.opennms.netmgt.xml.event.Correlation();
@@ -240,12 +241,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * instance into an auto action event instance. This is used when the
      * incoming event does not have any auto action information and the
      * information from the configuration object is copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed auto action information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Autoaction transform(org.opennms.netmgt.xml.eventconf.Autoaction src) {
         org.opennms.netmgt.xml.event.Autoaction dest = new org.opennms.netmgt.xml.event.Autoaction();
@@ -261,12 +262,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * instance into an operator action event instance. This is used when the
      * incoming event does not have any operator action information and the
      * information from the configuration object is copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed operator action information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Operaction transform(org.opennms.netmgt.xml.eventconf.Operaction src) {
         org.opennms.netmgt.xml.event.Operaction dest = new org.opennms.netmgt.xml.event.Operaction();
@@ -283,12 +284,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * configuration instance into an auto acknowledgement event instance. This
      * is used when the incoming event does not have any auto acknowledgement
      * information and the information from the configuration object is copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed auto acknowledgement information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Autoacknowledge transform(org.opennms.netmgt.xml.eventconf.Autoacknowledge src) {
         org.opennms.netmgt.xml.event.Autoacknowledge dest = new org.opennms.netmgt.xml.event.Autoacknowledge();
@@ -304,12 +305,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * instance into a trouble ticket event instance. This is used when the
      * incoming event does not have any trouble ticket information and the
      * information from the configuration object is copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed trouble ticket information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Tticket transform(org.opennms.netmgt.xml.eventconf.Tticket src) {
         org.opennms.netmgt.xml.event.Tticket dest = new org.opennms.netmgt.xml.event.Tticket();
@@ -325,12 +326,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * into a forward event instance. This is used when the incoming event does
      * not have any forward information and the information from the
      * configuration object is copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed forward information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Forward transform(org.opennms.netmgt.xml.eventconf.Forward src) {
         org.opennms.netmgt.xml.event.Forward dest = new org.opennms.netmgt.xml.event.Forward();
@@ -347,12 +348,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * into a script event instance. This is used when the incoming event does
      * not have any script information and the information from the
      * configuration object is copied.
-     * 
+     *
      * @param src
      *            The configuration source to transform.
-     * 
+     *
      * @return The transformed script information.
-     * 
+     *
      */
     private org.opennms.netmgt.xml.event.Script transform(org.opennms.netmgt.xml.eventconf.Script src) {
         org.opennms.netmgt.xml.event.Script dest = new org.opennms.netmgt.xml.event.Script();
@@ -372,15 +373,15 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * favors SNMP information if available, and then defaults to the event's
      * Universal Event Identifier.
      * </p>
-     * 
+     *
      * @param event
      *            The event to find a configuration for.
-     * 
+     *
      * @return The matching configuration event, if any.
-     * 
+     *
      * @exception java.lang.NullPointerException
      *                Thrown if the event parameter that was passed is null.
-     * 
+     *
      */
     public static org.opennms.netmgt.xml.eventconf.Event lookup(EventConfDao dao, Event event) {
         if (event == null) {
@@ -529,7 +530,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         if (event.getTticket() != null) {
             expandParms(event.getTticket(), event);
         }
-        
+
         // reductionKey
         if (event.getAlarmData() != null) {
             strRet = m_eventUtil.expandParms(event.getAlarmData().getReductionKey(), event);
@@ -718,7 +719,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                 alarmData.setX733AlarmType(econfAlarmData.getX733AlarmType());
                 alarmData.setX733ProbableCause(econfAlarmData.getX733ProbableCause());
                 alarmData.setClearKey(econfAlarmData.getClearKey());
-                
+
                 List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFieldList = econfAlarmData.getUpdateFields();
                 if (updateFieldList.size() > 0) {
                     List<UpdateField> updateFields = new ArrayList<>(updateFieldList.size());
@@ -741,28 +742,24 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                 e.setAlarmData(alarmData);
             }
 
-            if (econf.getParameters() != null && econf.getParameters().size() > 0) {
-                if (e.getParmCollection() == null) {
-                    e.setParmCollection(new ArrayList<>(econf.getParameters().size()));
-                }
+            // Perform the match again in order to retrieve any event parameters that may of been extracted
+            final MatchResult matchResult = econf.matches(e);
+            // The event has changed since we last matched, so we cannot guarantee that we will match again
+            if (matchResult.matched()) {
+                // Add the parms
+                matchResult.getEventParameters().forEach((key, value) -> maybeAddParameterToEvent(e, key, value,
+                        // Don't expand parameters derived from matches for sanity
+                        false));
+            }
+
+            // Add parameters defined in the event definition
+            if (econf.getParameters() != null && !econf.getParameters().isEmpty()) {
                 for (Parameter p : econf.getParameters()) {
-                    if (EventUtils.getParm(e, p.getName()) == null) {
-                        Parm parm = new Parm();
-                        parm.setParmName(p.getName());
-                        Value v = new Value();
-                        v.setContent(p.getValue());
-                        v.setType("string");
-                        v.setEncoding("text");
-                        v.setExpand(p.getExpand());
-                        parm.setValue(v);
-                        e.addParm(parm);
-                    } else {
-                        LOG.warn("expandEvent: the event {} already has a parameter named {}, the original content will be preserved. Check the event definition and rename the optional parameter.", e.getUei(),p.getName());
-                    }
+                    maybeAddParameterToEvent(e, p.getName(), p.getValue(), p.getExpand());
                 }
             }
         }
-        
+
         Map<String, Map<String, String>> decode = new HashMap<String, Map<String,String>>();
         if (econf != null && econf.getVarbindsdecodes().size() > 0) {
            for (final Varbindsdecode element : econf.getVarbindsdecodes()) {
@@ -781,7 +778,32 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     } // end expandEvent()
 
     /**
-     * Event expansion is always synchronous so this method just 
+     * Adds a parameter to the event if one does not already existing for the given name.
+     *
+     * @param event the event on which to add the parameter
+     * @param parmName parameter name
+     * @param parmValue parameter value
+     * @param shouldExpandParm true if the parameters value should be expanded (replacing tokenized variables), false otherwise
+     */
+    private static void maybeAddParameterToEvent(Event event, String parmName, String parmValue, boolean shouldExpandParm) {
+        if (EventUtils.getParm(event, parmName) == null) {
+            Parm parm = new Parm();
+            parm.setParmName(parmName);
+            Value v = new Value();
+            v.setContent(parmValue);
+            v.setType("string");
+            v.setEncoding("text");
+            v.setExpand(shouldExpandParm);
+            parm.setValue(v);
+            event.addParm(parm);
+        } else {
+            LOG.info("expandEvent: the event {} already has a parameter named {}, the original content will be preserved. " +
+                            "Check the event definition and rename the optional parameter.", event.getUei(), parmName);
+        }
+    }
+
+    /**
+     * Event expansion is always synchronous so this method just
      * delegates to {@link #process(Log)}.
      */
     @Override

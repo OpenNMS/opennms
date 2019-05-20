@@ -4,9 +4,9 @@
     </div>
     <div ng-show="groups.length == 0">No groups defined.</div>
     <pagination model="query" ng-show="groups.length > 0" position="bottom" on-change="refresh">
-        <table class="table table-bordered table-striped">
+        <table class="table table-striped">
             <thead>
-            <tr>
+            <tr class="d-flex">
                 <th class="col-md-1 text-nowrap">Priority</th>
                 <th class="col-md-3 text-nowrap">Name</th>
                 <th class="col-md-5 text-nowrap">Description</th>
@@ -15,12 +15,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="group in groups" data-row="{{group.name}}">
-                <td class="text-nowrap">{{group['priority']}}</td>
-                <td class="text-nowrap">{{group['name']}}</td>
-                <td class="text-nowrap">{{group['description']}}</td>
-                <td class="text-nowrap">{{!group['readOnly']}}</td>
-                <td class="text-nowrap">
+            <tr class="d-flex" ng-repeat="group in groups" data-row="{{group.name}}">
+                <td class="col-md-1 text-nowrap">{{group['priority']}}</td>
+                <td class="col-md-3 text-nowrap">{{group['name']}}</td>
+                <td class="col-md-5 text-nowrap">{{group['description']}}</td>
+                <td class="col-md-1 text-nowrap">{{!group['readOnly']}}</td>
+                <td class="col-md-2 text-nowrap">
                     <toggle id="action.{{group.name}}.toggle" size="btn-sm" ng-model="group['enabled']" ng-change="updateGroup(group)"></toggle>
                 </td>
             </tr>

@@ -96,6 +96,7 @@ public class ElasticAlarmIndexerIT {
         MetricRegistry metrics = new MetricRegistry();
         TemplateInitializerForAlarms templateInitializerForAlarms = new TemplateInitializerForAlarms(jestClient);
         elasticAlarmIndexer = new ElasticAlarmIndexer(metrics, jestClient, templateInitializerForAlarms);
+        elasticAlarmIndexer.setUsePseudoClock(true);
         elasticAlarmIndexer.init();
 
         // Wait until ES is up and running - initially there should be no documents
@@ -117,13 +118,18 @@ public class ElasticAlarmIndexerIT {
         issueSnapshotWithPreAndPostCalls(alarms);
 
         // Wait for the alarms to be indexed
-        await().atMost(1, TimeUnit.MINUTES).until(() -> alarmHistoryRepo.getNumActiveAlarmsNow(), equalTo(N));
+        await().atMost(1, TimeUnit.MINUTES).until(() -> alarmHistoryRepo.getNumActiveAlarmsAt(now), equalTo(N));
+
+
+        // Advance the clock
+        PseudoClock.getInstance().advanceTime(1, TimeUnit.MINUTES);
+        final long then = PseudoClock.getInstance().getTime();
 
         // Now trigger another snapshot with an empty list of alarms
         issueSnapshotWithPreAndPostCalls(Collections.emptyList());
 
         // Wait for the deletes to be indexed
-        await().atMost(1, TimeUnit.MINUTES).until(() -> alarmHistoryRepo.getNumActiveAlarmsNow(), equalTo(0L));
+        await().atMost(1, TimeUnit.MINUTES).until(() -> alarmHistoryRepo.getNumActiveAlarmsAt(then), equalTo(0L));
     }
 
     private void issueSnapshotWithPreAndPostCalls(List<OnmsAlarm> alarms) {

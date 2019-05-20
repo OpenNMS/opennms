@@ -17,7 +17,6 @@
       <cm:property name="eventTopic" value="events"/>
       <cm:property name="alarmTopic" value="alarms"/>
       <cm:property name="nodeTopic" value="nodes"/>
-      <cm:property name="topologyProtocols" value="bridge,cdp,isis,lldp,ospf"/>
       <cm:property name="topologyVertexTopic" value="vertices"/>
       <cm:property name="topologyEdgeTopic" value="edges"/>
       <cm:property name="alarmFeedbackTopic" value="alarmFeedback"/>
@@ -38,7 +37,7 @@
   <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" />
   <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" />
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
-  <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" />
+  <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
   <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
   <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" />
@@ -46,14 +45,14 @@
   <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
     <argument ref="eventConfDao"/>
     <argument ref="hwEntityDao"/>
-    <argument ref="transactionOperations"/>
+    <argument ref="sessionUtils"/>
     <argument ref="nodeDao"/>
     <argument value="${nodeIdToCriteriaMaxCacheSize}"/>
   </bean>
 
   <bean id="nodeCache" class="org.opennms.features.kafka.producer.NodeCache">
     <argument ref="nodeDao"/>
-    <argument ref="transactionOperations"/>
+    <argument ref="sessionUtils"/>
     <property name="timeoutInMs" value="${nodeRefreshTimeoutMs}"/>
   </bean>
 
@@ -65,7 +64,6 @@
     <argument ref="eventSubscriptionService"/>
     <argument ref="onmsTopologyDao"/>
 
-    <property name="topologyProtocols" value="${topologyProtocols}"/>
     <property name="topologyVertexTopic" value="${topologyVertexTopic}"/>
     <property name="topologyEdgeTopic" value="${topologyEdgeTopic}"/>
     <property name="eventTopic" value="${eventTopic}"/>
@@ -78,6 +76,12 @@
     <property name="kafkaSendQueueCapacity" value="${kafkaSendQueueCapacity}"/>
     <property name="encoding" value="${encoding}"/>
   </bean>
+
+  <service ref="kafkaProducer" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer">
+    <service-properties>
+      <entry key="type" value="kafkaProducer"/>
+    </service-properties>
+  </service>
 
   <service ref="kafkaProducer" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
     <service-properties>

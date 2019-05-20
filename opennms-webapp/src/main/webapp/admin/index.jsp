@@ -151,6 +151,7 @@
             <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP Address</a></li>
             <li><a href="javascript:addInterfacePost()">Manually Add an Interface</a></li>
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
+            <li><a href="admin/geoservice/index.jsp">Configure Geocoder Service</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->
@@ -364,9 +365,6 @@
 
         <p><b>SNMP MIB Compiler</b>: Compile MIBs in order to generate events definitions from traps or
             data collection groups for performance metrics.</p>
-            
-        <p><b>OpenNMS Plugin Manager</b>: Manage optional OpenNMS OSGi plugins installed in local and remote Karaf Containers.</p>
-
       </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->

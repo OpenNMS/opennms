@@ -41,15 +41,22 @@ test('Controller: NodeResourcesCtrl: Validate loading process', function() {
       resource: [{
         id: 'node[Test%3ANode].nodeSnmp[]',
         label: 'Node-level Performance Data',
-        typeLabel: 'SNMP Node Data'
+        typeLabel: 'SNMP Node Data',
+        externalValueAttributes: {
+          hasFlows: false
+        }
       },{
         id: 'node[Test%3ANode].interfaceSnmp[eth0]',
         label: 'eth0',
-        typeLabel: 'SNMP Interface Data'
+        typeLabel: 'SNMP Interface Data',
+        externalValueAttributes: {
+          hasFlows: true
+        }
       },{
         id: 'node[Test%3ANode].interfaceSnmp[eth1]',
         label: 'eth1',
-        typeLabel: 'SNMP Interface Data'
+        typeLabel: 'SNMP Interface Data',
+        externalValueAttributes: {}
       }]
     }
   });
@@ -64,4 +71,7 @@ test('Controller: NodeResourcesCtrl: Validate loading process', function() {
   expect(scope.resources['SNMP Interface Data'].length).toEqual(2);
   expect(scope.filteredResources['SNMP Node Data'].length).toEqual(1);
   expect(scope.filteredResources['SNMP Interface Data'].length).toEqual(2);
+  expect(scope.filteredResources['SNMP Node Data'][0].hasFlows).toEqual(false);
+  expect(scope.filteredResources['SNMP Interface Data'][0].hasFlows).toEqual(true);
+  expect(scope.filteredResources['SNMP Interface Data'][1].hasFlows).toEqual(false);
 });

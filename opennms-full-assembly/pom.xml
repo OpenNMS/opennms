@@ -566,16 +566,14 @@
                 <feature>org.opennms.features.bsm.shell-commands</feature>
                 <feature>vaadin-adminpage</feature>
                 <feature>opennms-jest</feature>
-                <feature>vaadin-opennms-pluginmanager</feature>
-                <feature>alarm-change-notifier</feature>
                 <feature>opennms-es-rest</feature>
-                <feature>internal-plugins-descriptor</feature>
                 <feature>ifttt-integration</feature>
                 <feature>opennms-flows</feature>
                 <feature>opennms-api-layer</feature>
                 <feature>karaf-extender</feature>
                 <feature>opennms-alarm-history-elastic</feature>
                 <feature>org.opennms.features.topologies.service.api</feature>
+                <feature>opennms-identity</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>

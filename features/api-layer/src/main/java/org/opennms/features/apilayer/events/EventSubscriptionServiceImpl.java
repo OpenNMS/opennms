@@ -39,12 +39,15 @@ import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.integration.api.v1.events.EventListener;
 import org.opennms.integration.api.v1.events.EventSubscriptionService;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An {@link EventSubscriptionService} that accepts EventListener implementations from the API,
  * wraps these in an adapter and delegates them to them to the real service implementation.
  */
 public class EventSubscriptionServiceImpl implements EventSubscriptionService {
+    private static final Logger LOG = LoggerFactory.getLogger(EventSubscriptionServiceImpl.class);
 
     private final org.opennms.netmgt.events.api.EventSubscriptionService delegate;
     private final Map<EventListener, EventListenerAdapter> eventListenerToAdapterMap = new LinkedHashMap<>();
@@ -101,6 +104,8 @@ public class EventSubscriptionServiceImpl implements EventSubscriptionService {
             removal.accept(adapter);
             if (adapter.decrementReferenceCount() <= 0L) {
                 eventListenerToAdapterMap.remove(listener);
+                // Stop the listener thread
+                delegate.removeEventListener(adapter);
             }
         }
     }
@@ -132,7 +137,12 @@ public class EventSubscriptionServiceImpl implements EventSubscriptionService {
             if (event == null || event.getUei() == null) {
                 return;
             }
-            delegate.onEvent(ModelMappers.toEvent(event));
+            try {
+                delegate.onEvent(ModelMappers.toEvent(event));
+            } catch (Exception e) {
+                LOG.error("Error occurred while handling event with UEI='{}' on: {}. Error: {}",
+                        event.getUei(), this, e.getMessage(), e);
+            }
         }
 
         public void incrementReferenceCount() {

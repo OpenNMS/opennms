@@ -54,6 +54,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -624,6 +625,17 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         assertEquals(0, failures.get());
         assertEquals(n, successes.get());
+    }
+
+    @Test
+    public void testIsAcknowledged() throws Exception {
+        final AlarmDao alarmDao = m_databasePopulator.getAlarmDao();
+        final OnmsAlarm alarm = alarmDao.findAll().get(0);
+        alarm.acknowledge("ranger");
+        alarmDao.saveOrUpdate(alarm);
+        alarmDao.flush();
+        executeQueryAndVerify("_s=isAcknowledged==true", 1);
+        executeQueryAndVerify("_s=isAcknowledged==false", 8);
     }
 
     @Test

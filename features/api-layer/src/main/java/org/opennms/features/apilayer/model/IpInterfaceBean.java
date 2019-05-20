@@ -29,23 +29,33 @@
 package org.opennms.features.apilayer.model;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opennms.integration.api.v1.model.IpInterface;
-import org.opennms.integration.api.v1.model.SnmpInterface;
+import org.opennms.integration.api.v1.model.MetaData;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 public class IpInterfaceBean implements IpInterface {
 
     private final OnmsIpInterface ipInterface;
+    private final List<MetaData> metaData;
 
     public IpInterfaceBean(OnmsIpInterface ipInterface) {
         this.ipInterface = Objects.requireNonNull(ipInterface);
+        this.metaData = ipInterface.getMetaData().stream()
+                .map(MetaDataBean::new)
+                .collect(Collectors.toList());
     }
 
     @Override
     public InetAddress getIpAddress() {
         return ipInterface.getIpAddress();
+    }
+
+    @Override
+    public List<MetaData> getMetaData() {
+        return metaData;
     }
 }

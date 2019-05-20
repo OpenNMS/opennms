@@ -242,14 +242,6 @@
          <parameter key="timeout" value="3000"/>
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
       </service>
-      <service name="JMX-Minion" interval="300000" user-defined="false" status="on">
-         <parameter key="port" value="18980"/>
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-         <parameter key="ds-name" value="jmx-minion"/>
-         <parameter key="use-foreign-id-as-system-id" value="true"/>
-      </service>
       <service name="JMX-Kafka" interval="300000" user-defined="false" status="on">
          <parameter key="port" value="9999"/>
          <parameter key="retry" value="2"/>
@@ -276,6 +268,24 @@
          <parameter key="port" value="3389"/>
          <parameter key="timeout" value="3000"/>
       </service>
+      <downtime begin="0" end="300000" interval="30000"/><!-- 30s, 0, 5m -->
+      <downtime begin="300000" end="43200000" interval="300000"/><!-- 5m, 5m, 12h -->
+      <downtime begin="43200000" end="432000000" interval="600000"/><!-- 10m, 12h, 5d -->
+      <downtime begin="432000000" interval="3600000"/><!-- 1h, 5d -->
+   </package>
+
+   <!--
+      This package is defined for Minion nodes. Don't alter/remove this. If minions are not getting used, it is safe to remove below pkg.
+   -->
+   <package name="Minion">
+      <filter>foreignSource == 'Minions' AND IPADDR != '0.0.0.0'</filter>
+      <rrd step="30">
+         <rra>RRA:AVERAGE:0.5:1:2016</rra>
+         <rra>RRA:AVERAGE:0.5:12:1488</rra>
+         <rra>RRA:AVERAGE:0.5:288:366</rra>
+         <rra>RRA:MAX:0.5:288:366</rra>
+         <rra>RRA:MIN:0.5:288:366</rra>
+      </rrd>
       <service name="Minion-Heartbeat" interval="30000" user-defined="false" status="on">
          <parameter key="period" value="30000"/><!-- Service interval should be same as period -->
       </service>
@@ -284,10 +294,16 @@
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
          <parameter key="ds-name" value="minion-rpc"/>
       </service>
-      <downtime begin="0" end="300000" interval="30000"/><!-- 30s, 0, 5m -->
-      <downtime begin="300000" end="43200000" interval="300000"/><!-- 5m, 5m, 12h -->
-      <downtime begin="43200000" end="432000000" interval="600000"/><!-- 10m, 12h, 5d -->
-      <downtime begin="432000000" interval="3600000"/><!-- 1h, 5d -->
+      <service name="JMX-Minion" interval="30000" user-defined="false" status="on">
+         <parameter key="port" value="18980"/>
+         <parameter key="retry" value="2"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
+         <parameter key="ds-name" value="jmx-minion"/>
+         <parameter key="use-foreign-id-as-system-id" value="true"/>
+      </service>
+      <!-- Query every 30secs always -->
+      <downtime begin="0" interval="30000"/><!-- 30s -->
    </package>
    <!--
       Moved StrafePing to its own package.  This allows for more flexible configuration of which interfaces

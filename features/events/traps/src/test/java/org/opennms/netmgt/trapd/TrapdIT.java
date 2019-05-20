@@ -28,33 +28,39 @@
 
 package org.opennms.netmgt.trapd;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.hasSize;
+
 import java.net.InetAddress;
+import java.util.Objects;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.scriptd.helper.EventForwarder;
+import org.opennms.netmgt.scriptd.helper.SnmpTrapHelper;
+import org.opennms.netmgt.scriptd.helper.SnmpV3InformEventForwarder;
+import org.opennms.netmgt.scriptd.helper.SnmpV3TrapEventForwarder;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
+import org.snmp4j.security.SecurityLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-/**
- * TODO: Merge with {@link org.opennms.netmgt.trapd.TrapHandlerITCase}?
- */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -70,7 +76,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class TrapdIT implements InitializingBean {
+public class TrapdIT {
 
     @Autowired
     private TrapdConfigFactory m_trapdConfig;
@@ -81,30 +87,23 @@ public class TrapdIT implements InitializingBean {
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
+    private final InetAddress localAddr = InetAddressUtils.getLocalHostAddress();
+    private final String localhost = InetAddressUtils.toIpAddrString(localAddr);
 
     @Before
-    public void onSetUpInTransactionIfEnabled() throws Exception {
+    public void setUp() {
         m_mockEventIpcManager.setSynchronous(true);
-
         m_trapd.onStart();
     }
 
     @After
-    public void onTearDownInTransactionIfEnabled() throws Exception {
+    public void tearDown() {
         m_trapd.onStop();
-
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated(3000, 0, 0, 0, 0);
     }
 
     @Test
     public void testSnmpV1TrapSend() throws Exception {
-        String localhost = "127.0.0.1";
-        InetAddress localAddr = InetAddressUtils.addr(localhost);
-
         SnmpV1TrapBuilder pdu = SnmpUtils.getV1TrapBuilder();
         pdu.setEnterprise(SnmpObjId.get(".1.3.6.1.4.1.5813"));
         pdu.setGeneric(1);
@@ -123,15 +122,12 @@ public class TrapdIT implements InitializingBean {
 
         pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
-        // Allow time for Trapd and Eventd to do their magic
-        Thread.sleep(5000);
+        // Wait until we received the expected events
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
     }
 
     @Test
     public void testSnmpV2cTrapSend() throws Exception {
-        String localhost = "127.0.0.1";
-        InetAddress localAddr = InetAddressUtils.addr(localhost);
-
         SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
         SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
         SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
@@ -150,8 +146,8 @@ public class TrapdIT implements InitializingBean {
 
         pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
-        // Allow time for Trapd and Eventd to do their magic
-        Thread.sleep(5000);
+        // Wait until we received the expected events
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
     }
 
     /**
@@ -163,7 +159,6 @@ public class TrapdIT implements InitializingBean {
         // Enable the feature (disabled by default)
         m_trapdConfig.getConfig().setUseAddressFromVarbind(true);
 
-        String localhost = "127.0.0.1";
         InetAddress remoteAddr = InetAddress.getByName("10.255.1.1");
 
         SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
@@ -187,7 +182,104 @@ public class TrapdIT implements InitializingBean {
 
         pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
-        // Allow time for Trapd and Eventd to do their magic
-        Thread.sleep(5000);
+        // Wait until we received the expected events
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
     }
+
+    @Test
+    public void testSnmpV3TrapNoAuthNoPriv() {
+        testSnmpV3NotificationWithSecurityLevel(TrapOrInform.TRAP, SecurityLevel.noAuthNoPriv);
+    }
+
+    @Test
+    public void testSnmpV3TrapAuthNoPriv() {
+        testSnmpV3NotificationWithSecurityLevel(TrapOrInform.TRAP, SecurityLevel.authNoPriv);
+    }
+
+    @Test
+    public void testSnmpV3TrapAuthPriv() {
+        testSnmpV3NotificationWithSecurityLevel(TrapOrInform.TRAP, SecurityLevel.authPriv);
+    }
+
+    @Test
+    public void testSnmpV3InformNoAuthNoPriv() {
+        testSnmpV3NotificationWithSecurityLevel(TrapOrInform.INFORM, SecurityLevel.noAuthNoPriv);
+    }
+
+    @Test
+    public void testSnmpV3InformAuthNoPriv() {
+        testSnmpV3NotificationWithSecurityLevel(TrapOrInform.INFORM, SecurityLevel.authNoPriv);
+    }
+
+    @Test
+    public void testSnmpV3InformAuthPriv() {
+        testSnmpV3NotificationWithSecurityLevel(TrapOrInform.INFORM, SecurityLevel.authPriv);
+    }
+
+    private enum TrapOrInform {
+        TRAP,
+        INFORM
+    }
+
+    private void testSnmpV3NotificationWithSecurityLevel(TrapOrInform trapOrInform, SecurityLevel securityLevel) {
+        // Retrieve a v3 user from the configuration
+        final Snmpv3User v3User = m_trapdConfig.getConfig().getSnmpv3UserCollection().stream()
+                .filter(u -> Objects.equals(securityLevel.getSnmpValue(), u.getSecurityLevel()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No existing SNMPv3 user configured with security level: " + securityLevel));
+
+        SnmpTrapHelper snmpTrapHelper = new SnmpTrapHelper();
+        EventForwarder snmpv3EventForwarder;
+        if (trapOrInform == TrapOrInform.TRAP) {
+            snmpv3EventForwarder = new SnmpV3TrapEventForwarder(
+                    localhost,
+                    m_trapdConfig.getSnmpTrapPort(),
+                    v3User.getSecurityLevel(),
+                    v3User.getSecurityName(),
+                    v3User.getAuthPassphrase(),
+                    v3User.getAuthProtocol(),
+                    v3User.getPrivacyPassphrase(),
+                    v3User.getPrivacyProtocol(),
+                    snmpTrapHelper
+            );
+        } else if (trapOrInform == TrapOrInform.INFORM) {
+            snmpv3EventForwarder = new SnmpV3InformEventForwarder(
+                    localhost,
+                    m_trapdConfig.getSnmpTrapPort(),
+                    5000,
+                    3,
+                    v3User.getSecurityLevel(),
+                    v3User.getSecurityName(),
+                    v3User.getAuthPassphrase(),
+                    v3User.getAuthProtocol(),
+                    v3User.getPrivacyPassphrase(),
+                    v3User.getPrivacyProtocol(),
+                    snmpTrapHelper
+            );
+        } else {
+            throw new IllegalArgumentException("Invalid trapOrInform value: " + trapOrInform);
+        }
+
+        // Use the default policy rule that forwards all events - we can manage the filtering ourselves in this script
+        snmpv3EventForwarder.setEventPolicyRule(new org.opennms.netmgt.scriptd.helper.EventPolicyRuleDefaultImpl());
+
+        // Build the event we're going to send as a trap, and expect that same event
+        Event trapEvent = new EventBuilder("uei.opennms.org/default/trap", "trapd")
+                .setInterface(localAddr)
+                .getEvent();
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(trapEvent);
+
+        // Also build a new suspect event that we'll expect
+        Event newSuspectEvent = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd")
+                .setInterface(localAddr)
+                .getEvent();
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectEvent);
+
+        // Send the event via the helper
+        snmpv3EventForwarder.flushEvent(trapEvent);
+
+        // Wait until we received the expected events
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
+    }
+
 }

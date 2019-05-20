@@ -51,7 +51,7 @@ public class ApplicationFactoryServiceTracker extends ServiceTracker<Application
 
         // Alias is no longer supported, use new pattern key
         if (props.get(Constants.ALIAS) != null && props.get(Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN) == null) {
-            logger.warn("{} is deprecated. Please use {} instead. For now I am going to do that for you");
+            logger.warn("{} is deprecated. Please use {} instead. For now I am going to do that for you", Constants.ALIAS, Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN);
             props.put(Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN, props.get(Constants.ALIAS));
         }
 

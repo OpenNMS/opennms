@@ -37,7 +37,7 @@
 
 <form class="form-inline" name="alarm_search" action="alarm/query" method="get" onsubmit="return Blank_TextField_Validator()">
 	<div class="input-group">
-		<input class="form-control" type="text" id="msgmatchany" name="msgmatchany" placeholder="Alarm Text"/>
+		<input class="form-control" type="text" name="alarmtext" placeholder="Alarm Text"/>
 		<select class="form-control custom-select" id="relativetime" name="relativetime">
 			<option value="0" selected><%=AlarmUtil.ANY_RELATIVE_TIMES_OPTION%> Time</option>
 			<option value="1">Last hour</option>

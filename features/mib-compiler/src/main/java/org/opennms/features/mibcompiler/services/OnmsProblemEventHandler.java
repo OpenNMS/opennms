@@ -166,8 +166,31 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
      * @param source the source
      * @return the MIB from source
      */
-    private String getMibFromSource(String source) {
-        return source.split(":")[File.separatorChar == '\\' ? 4 : 3];
+    private String getMibFromSource(final String source) {
+        return getMibFromSource(source, File.separatorChar);
+    }
+
+    /**
+     * Gets the MIB from source.
+     *
+     * @param source the source
+     * @param separatorChar the separatoe character
+     * @return the MIB from source
+     */
+    String getMibFromSource(final String source, final char separatorChar) {
+        final String arr[] = source.split(":");
+
+        if (separatorChar == '\\') {
+            if (arr.length == 5) {
+                return arr[4];
+            }
+        } else {
+            if (arr.length == 4) {
+                return arr[3];
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -178,19 +201,28 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
      * @param location the location
      * @param localizedMessage the localized message
      */
-    private void print(PrintStream stream, String severity, Location location, String localizedMessage) {
+    private void print(final PrintStream stream, final String severity, final Location location, final String localizedMessage) {
         LOG.debug("[{}] Location: {}, Message: {}", severity, location, localizedMessage);
         int n = localizedMessage.indexOf(getPrefix());
         if (n > 0) {
-            String source = localizedMessage.substring(n).replaceAll(getPrefix(), "");
-            String message = localizedMessage.substring(0,n) + getMibFromSource(source);
+            final String source = localizedMessage.substring(n).replaceAll(getPrefix(), "");
+            final String mibFromSource = getMibFromSource(source);
+
+            final String message;
+
+            if (mibFromSource == null) {
+                message = localizedMessage;
+            } else {
+                message = localizedMessage.substring(0, n) + getMibFromSource(source);
+            }
+
             processMessage(stream, severity, source, message);
         } else {
             if (location == null) {
                 stream.println(severity + ": " + localizedMessage);
             } else {
-                String source = location.toString().replaceAll(getPrefix(), "");
-                String message = localizedMessage;
+                final String source = location.toString().replaceAll(getPrefix(), "");
+                final String message = localizedMessage;
                 processMessage(stream, severity, source, message);
             }
         }
@@ -237,16 +269,20 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
      * @param message the message
      */
     // TODO This implementation might be expensive.
-    private void processMessage(PrintStream stream, String severity, String source, String message) {
-        Source src = getSourceData(source);
-        stream.println(severity + ": " + message + ", Source: " + src.file.getName() + ", Row: " + src.row + ", Col: " + src.column);
+    private void processMessage(final PrintStream stream, final String severity, final String source, final String message) {
+        final Source src = getSourceData(source);
+        if (src.row != -1 && src.column != -1) {
+            stream.println(severity + ": " + message + ", Source: " + src.file.getName() + ", Row: " + src.row + ", Col: " + src.column);
+        } else {
+            stream.println(severity + ": " + message + ", Source: " + src.file.getName());
+        }
         try {
             if (!src.file.exists()) {
                 LOG.warn("File {} doesn't exist", src.file);
                 return;
             }
-            FileInputStream fs= new FileInputStream(src.file);
-            BufferedReader br = new BufferedReader(new InputStreamReader(fs));
+            final FileInputStream fs = new FileInputStream(src.file);
+            final BufferedReader br = new BufferedReader(new InputStreamReader(fs));
             for (int i = 1; i < src.row; i++)
                 br.readLine();
             stream.println(br.readLine());

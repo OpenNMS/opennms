@@ -102,23 +102,22 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
 
     // The CamelBlueprintTest should have started the bundle and therefore also started
     // the TrapListener (see blueprint-trapd-listener.xml), which listens to traps.
-    @Test
+    @Test(timeout=30000)
     public void testWiring() throws Exception {
         // No traps received or processed
         Assert.assertEquals(1, messageProcessedLatch.getCount());
 
         // At this point everything should be set up correctly
-        final SnmpTrapBuilder builder = SnmpUtils.getV2TrapBuilder();
-        builder.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
-        builder.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.2")));
-        builder.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813")));
-        builder.send("localhost", m_port.get(), "public");
+        while(messageProcessedLatch.getCount() != 0) {
+            final SnmpTrapBuilder builder = SnmpUtils.getV2TrapBuilder();
+            builder.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+            builder.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.2")));
+            builder.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813")));
+            builder.send("localhost", m_port.get(), "public");
 
-        // Wait before continuing
-        messageProcessedLatch.await(10, TimeUnit.SECONDS);
-
-        // Trap should be received and processed
-        Assert.assertEquals(0, messageProcessedLatch.getCount());
+            // Wait before continuing
+            messageProcessedLatch.await(10, TimeUnit.SECONDS);
+        }
     }
 
     @Override

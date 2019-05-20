@@ -37,21 +37,20 @@
 %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 
-<%
-     ElementNotFoundException enfe = null;
-    
-    if( exception instanceof ElementNotFoundException ) {
-        enfe = (ElementNotFoundException)exception;
+<%!
+    public ElementNotFoundException findElementNotFoundException(Throwable throwable) {
+        if (throwable == null) {
+            return null;
+        }
+        if (throwable instanceof ElementNotFoundException) {
+            return (ElementNotFoundException) throwable;
+        }
+        return findElementNotFoundException(throwable.getCause());
     }
-    else if( exception instanceof ServletException ) {
-        enfe = (ElementNotFoundException)((ServletException)exception).getRootCause();
-    }
-    else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
-    }
-    
 %>
-
+<%
+    final ElementNotFoundException enfe = findElementNotFoundException(exception);
+%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />

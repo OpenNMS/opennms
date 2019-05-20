@@ -71,7 +71,7 @@
 
 	<div class="row">
 	<div class="form-group col-sm-6">
-		<label for="msgsub">Event ID</label>
+		<label for="eventid">Event ID</label>
 		<input class="form-control" type="text" name="eventid" />
 	</div>
 	<div class="form-group col-sm-6">
@@ -82,8 +82,8 @@
 
 	<div class="row">
 	<div class="form-group col-sm-6">
-		<label for="msgsub">Event Text Contains</label>
-		<input class="form-control" type="text" name="msgsub" />
+		<label for="eventtext">Event Text Contains</label>
+		<input class="form-control" type="text" name="eventtext" />
 	</div>
 
 	<div class="form-group col-sm-6">

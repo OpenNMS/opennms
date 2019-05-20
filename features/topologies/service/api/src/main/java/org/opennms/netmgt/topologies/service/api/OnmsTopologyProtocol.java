@@ -32,9 +32,15 @@ import java.util.Objects;
 
 public class OnmsTopologyProtocol {
 
+    private static final OnmsTopologyProtocol ALL_PROTOCOLS = create("ALL");
+
     public static OnmsTopologyProtocol create(String id) {
         Objects.requireNonNull(id, "id is null, cannot create protocol");
         return new OnmsTopologyProtocol(id.toUpperCase());
+    }
+    
+    public static OnmsTopologyProtocol allProtocols() {
+        return ALL_PROTOCOLS;
     }
     
     final private String m_id;

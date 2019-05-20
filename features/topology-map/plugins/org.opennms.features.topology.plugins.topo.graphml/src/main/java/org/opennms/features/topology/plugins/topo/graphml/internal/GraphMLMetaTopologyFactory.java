@@ -136,7 +136,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 				LOG.error("An error occurred while loading GraphMLTopology from file {}. Ignoring...", location, e);
 			}
 		} else {
-			LOG.warn("Service with pid '{}' updated. Updating is not supported. Ignoring...");
+			LOG.warn("Service with pid '{}' updated. Updating is not supported. Ignoring...", pid);
 		}
 	}
 

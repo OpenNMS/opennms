@@ -89,7 +89,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr name="report:{{ report.label }}" ng-class="{'table-info': report.id == reportSelected.id}" ng-click="selectReport(report)" ng-repeat="report in filteredReports | startFrom:(kscCurrentPage-1)*kscPageSize | limitTo:kscPageSize">
+                <tr name="report:{{ report.label }}" ng-class="{'table-active': report.id == reportSelected.id}" ng-click="selectReport(report)" ng-repeat="report in filteredReports | startFrom:(kscCurrentPage-1)*kscPageSize | limitTo:kscPageSize">
                   <td>{{ report.label }}</td>
                 </tr>
              </tbody>
@@ -142,7 +142,7 @@
                   <span class="fa fa-search"></span>
                 </div>
               </div>
-              <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="domainFilter"></input>
+              <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
             </div>
             <table class="table table-sm" name="resources">
               <thead>

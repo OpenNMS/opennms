@@ -35,6 +35,8 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -96,6 +98,8 @@ public class ElasticFeedbackRepositoryIT {
                 .withAlarmKey("alarmKey1")
                 .withFeedbackType(FeedbackType.FALSE_POSITIVE)
                 .withReason("reason")
+                .withRootCause(true)
+                .withTags(Arrays.asList("red", "white", "blue"))
                 .withUser("user")
                 .withTimestamp(now)
                 .build();
@@ -105,6 +109,8 @@ public class ElasticFeedbackRepositoryIT {
                 .withAlarmKey("alarmKey2")
                 .withFeedbackType(FeedbackType.FALSE_POSITIVE)
                 .withReason("reason")
+                .withRootCause(false)
+                .withTags(Arrays.asList("red", "blue", "blue"))
                 .withUser("user")
                 .withTimestamp(now + 1)
                 .build();
@@ -114,14 +120,22 @@ public class ElasticFeedbackRepositoryIT {
                 .withAlarmKey("alarmKey3")
                 .withFeedbackType(FeedbackType.FALSE_POSITIVE)
                 .withReason("reason")
+                .withRootCause(null)
+                .withTags(Arrays.asList("red", "green", "blue"))
                 .withUser("user")
                 .withTimestamp(now + 2)
                 .build();
         final List<AlarmFeedback> feedback = Arrays.asList(feedback1, feedback2, feedback3);
         feedbackRepository.persist(feedback);
 
-        await().until(() -> feedbackRepository.getFeedback("situationKey1"), hasSize(1));
-        await().until(() -> feedbackRepository.getAllFeedback(), equalTo(feedback));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> feedbackRepository.getFeedback("situationKey1"), hasSize(1));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> feedbackRepository.getFeedback("situationKey1").stream().map(AlarmFeedback::getRootCause).collect(Collectors.toList()),
+                                                  equalTo(Arrays.asList(true)));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> feedbackRepository.getFeedback("situationKey3").stream().map(AlarmFeedback::getRootCause).collect(Collectors.toList()),
+                                                  equalTo(Arrays.asList(false)));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> feedbackRepository.getFeedback("situationKey3").stream().map(AlarmFeedback::getTags).collect(Collectors.toList()),
+                                                  equalTo(Arrays.asList(Arrays.asList("red", "green", "blue"))));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> feedbackRepository.getAllFeedback(), equalTo(feedback));
     }
 
 }

@@ -13,8 +13,11 @@
     <name>OpenNMS :: Container :: Karaf (Shared)</name>
 
     <build>
-        <!-- if you want to include resources in the distribution -->
         <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
             <resource>
                 <directory>src/main/filtered-resources</directory>
                 <filtering>true</filtering>

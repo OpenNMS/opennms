@@ -71,11 +71,6 @@ public class RawEventToIndexTest extends AbstractEventToIndexTest {
 			eventToIndex.setNodeCache(nodeCache);
 			eventToIndex.setIndexStrategy(IndexStrategy.MONTHLY);
 			eventToIndex.setLogEventDescription(true);
-			eventToIndex.setArchiveRawEvents(true);
-			eventToIndex.setArchiveAlarms(true);
-			eventToIndex.setArchiveAlarmChangeEvents(true);
-			eventToIndex.setArchiveOldAlarmValues(true);
-			eventToIndex.setArchiveNewAlarmValues(true);
 
 			EventBuilder eb = new EventBuilder( NODE_LOST_SERVICE_EVENT, EVENT_SOURCE_NAME);
 

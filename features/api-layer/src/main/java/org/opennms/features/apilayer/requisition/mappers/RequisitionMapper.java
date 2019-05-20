@@ -28,20 +28,21 @@
 
 package org.opennms.features.apilayer.requisition.mappers;
 
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisition;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
-@Mapper(uses={RequisitionMonitoredServiceMapper.class, RequisitionNodeMapper.class, RequisitionCategoryMapper.class, RequisitionAssetMapper.class, PrimaryTypeMapper.class})
+@Mapper(uses={RequisitionMonitoredServiceMapper.class, RequisitionNodeMapper.class,
+        RequisitionCategoryMapper.class, RequisitionAssetMapper.class,
+        PrimaryTypeMapper.class, RequisitionMetaDataMapper.class})
 public interface RequisitionMapper {
 
     @Mappings({
-            @Mapping(source = "dateStamp", target = "generatedAt"),
-            @Mapping(target = "node", ignore = true)
+            @Mapping(source = "dateStamp", target = "generatedAt")
     })
-    org.opennms.integration.api.v1.config.requisition.beans.RequisitionBean map(Requisition requisition);
+    ImmutableRequisition map(Requisition requisition);
 
     @Mappings({
             @Mapping(source = "generatedAt", target = "date")

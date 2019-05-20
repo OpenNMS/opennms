@@ -31,8 +31,16 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
-            <Embed-Dependency>*;artifactId=geocoder-java|gson|commons-httpclient</Embed-Dependency>
+            <Embed-Dependency>*;artifactId=google-maps-services|gson|okhttp|okio</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
+            <Import-Package>
+              android.os;resolution:=optional,
+              android.util;resolution:=optional,
+              org.conscrypt;resolution:=optional,
+              com.google.appengine.api.urlfetch;resolution:=optional,
+              javax.annotation.meta;resolution:=optional,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -44,10 +52,11 @@
       <groupId>org.opennms.features.geocoder</groupId>
       <artifactId>org.opennms.features.geocoder.api</artifactId>
     </dependency>
+     <!--https://mvnrepository.com/artifact/com.google.maps/google-maps-services-->
     <dependency>
-      <groupId>com.google.code.geocoder-java</groupId>
-      <artifactId>geocoder-java</artifactId>
-      <version>0.16</version>
+      <groupId>com.google.maps</groupId>
+      <artifactId>google-maps-services</artifactId>
+      <version>0.9.3</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>

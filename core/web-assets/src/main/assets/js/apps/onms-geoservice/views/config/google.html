@@ -1,0 +1,90 @@
+<div>
+    <form class="form" name="form">
+        <div class="jumbotron">
+            <p>
+                The Google Geocoding API is a service that provides geocoding and reverse geocoding of addresses.
+            </p>
+            <p>
+                For more information refer to the <a href="https://developers.google.com/maps/documentation/geocoding/start" target="_blank">official documentation</a>.
+            </p>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="googleClientIdAuthentication"
+                        name="googleClientIdAuthentication"
+                        ng-model="geocoder.config.useEnterpriseCredentials"
+                >
+                <label class="form-check-label" for="googleClientIdAuthentication">
+                    Use clientId and signature to authenticate
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group" ng-if="!geocoder.config.useEnterpriseCredentials">
+            <label for="googleApiKey">API Key</label>
+            <input id="googleApiKey"
+                   name="googleApiKey"
+                   class="form-control"
+                   type="text"
+                   ng-required="true"
+                   ng-model="geocoder.config.apiKey"
+                   ng-class="{ 'is-invalid' : form.googleApiKey.$invalid || configError.apiKey }"
+            />
+            <p id="configError.apiKey" class="invalid-feedback">{{configError.apiKey || "Please provide a value"}}</p>
+        </div>
+        <div class="form-group" ng-if="geocoder.config.useEnterpriseCredentials">
+            <label for="googleClientId">Client ID</label>
+            <input id="googleClientId"
+                   name="googleClientId"
+                   class="form-control"
+                   type="text"
+                   ng-required="true"
+                   ng-model="geocoder.config.clientId"
+                   ng-class="{ 'is-invalid' : form.googleClientId.$invalid || configError.clientId }"
+            />
+            <p id="configError.clientId" class="invalid-feedback">{{configError.clientId || "Please provide a value"}}</p>
+        </div>
+        <div class="form-group" ng-if="geocoder.config.useEnterpriseCredentials">
+            <label for="googleClientKey">Signature</label>
+            <input id="googleClientKey"
+                   name="googleClientKey"
+                   class="form-control"
+                   type="text"
+                   ng-required="true"
+                   ng-model="geocoder.config.signature"
+                   ng-class="{ 'is-invalid' : form.googleClientKey.$invalid || configError.signature }"
+            />
+            <p id="configError.signature" class="invalid-feedback">{{configError.signature || "Please provide a value"}}</p>
+        </div>
+        <div class="form-group">
+            <label for="googleTimeout">Timeout (ms)</label>
+            <input id="googleTimeout"
+                   name="googleTimeout"
+                   min="0"
+                   class="form-control"
+                   type="number"
+                   ng-model="geocoder.config.timeout"
+                   ng-class="{ 'is-invalid' : form.googleTimeout.$invalid || configError.timeout }"
+            />
+            <p id="configError.timeout" class="invalid-feedback">{{configError.timeout || "Timeout must be >= 0"}}</p>
+        </div>
+        <div class="form-group">
+            <label class="mr-2" for="googleSystemProxy">Use System Proxy</label>
+            <toggle id="googleSystemProxy" 
+                    name="googleSystemProxy"
+                    ng-model="geocoder.config.useSystemProxy" 
+                    on="Yes" 
+                    off="No"
+                    size="btn-sm"
+                    ng-class="{ 'is-invalid' : form.googleSystemProxy.$invalid || configError.useSystemProxy }"
+            />
+            <p id="configError.useSystemProxy" class="invalid-feedback">{{configError.useSystemProxy}}</p>
+        </div>
+
+        <p class="text-warning" ng-if="form.$dirty">You have unsaved changes</p>
+        <button id="saveButton" class="btn btn-primary" type="button" ng-click="save()" ng-disabled="!form.$dirty || form.$invalid || validateFieldsManually() !== true"><i class="fa fa-save"></i> Save</button>
+    </form>
+</div>

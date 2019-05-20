@@ -105,7 +105,7 @@
       </div>
       <table class="table">
         <tr>
-          <td align="right" class="col-md-4">
+          <td align="right" class="w-25">
             ${resultSet.title}
             <br/>
               <c:if test="${!empty resultSet.resource.parent}">
@@ -134,7 +134,7 @@
             <br/>
             <b>To</b> ${resultSet.end}
           </td>
-          <td align="left" class="col-md-8">
+          <td align="left" class="w-75">
             <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${resultSet.prefabGraph.name}" data-graph-title="${resultSet.prefabGraph.title}" data-graph-start="${resultSet.start.time}" data-graph-end="${resultSet.end.time}"></div>
           </td>
         </tr>

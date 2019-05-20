@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.common.kafka;
 
 public interface KafkaSinkConstants {
+
     String KAFKA_TOPIC_PREFIX = "Sink";
 
     String KAFKA_CONFIG_PID = "org.opennms.core.ipc.sink.kafka";
@@ -37,4 +38,13 @@ public interface KafkaSinkConstants {
 
     String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
 
+    // Configurable max buffer size for kafka that should be less than 900KB.
+    String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
+    //By default, kafka allows 1MB buffer sizes, here message (content in sink-message.proto) is limited to 900KB.
+    int DEFAULT_MAX_BUFFER_SIZE = 921600;
+
+    // Configurable messageId cache config to specify number of messages and time to expire.
+    String MESSAGEID_CACHE_CONFIG = "messageId.cache.config";
+    // Default to 1000 messages (large) in 10 minute interval.
+    String DEFAULT_MESSAGEID_CONFIG = "maximumSize=1000,expireAfterWrite=10m";
 }

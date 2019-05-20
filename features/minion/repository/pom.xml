@@ -59,6 +59,8 @@
                                 <feature>minion-icmp-proxy</feature>
                                 <feature>minion-telemetryd-receivers</feature>
                                 <feature>hawtio-offline</feature>
+				                <feature>cxf-commands/${cxfVersion}</feature>
+                                <feature>opennms-core-tracing-jaeger</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -277,6 +279,16 @@
         <dependency>
             <groupId>org.opennms.core.ipc.sink</groupId>
             <artifactId>org.opennms.core.ipc.sink.offheap</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.jaeger-osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.jaeger-tracer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

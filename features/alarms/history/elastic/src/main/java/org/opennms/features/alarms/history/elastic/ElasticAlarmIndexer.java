@@ -225,7 +225,10 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                         // were in fact deleted. Since any additional inserts will happen *after* this time
                         // we can safely reduce the window size and only evaluate documents that were added
                         // after this time in subsequent queries in order to help reduce the workload
-                        final long includeUpdatesAfter = Math.min(lastbulkDeleteWithNoChanges.get(), Math.max(time - lookbackPeriodMs, 0));
+                        long includeUpdatesAfter = Math.max(time - lookbackPeriodMs, 0);
+                        if (lastbulkDeleteWithNoChanges.get() > 0) {
+                            includeUpdatesAfter = lastbulkDeleteWithNoChanges.get();
+                        }
                         LOG.debug("Marking documents without ids in: {} as deleted for time: {}", alarmIdsToKeep, time);
                         try (final Timer.Context ctx = alarmsToESMetrics.getBulkDeleteTimer().time()) {
                             // Find all of the alarms at time X, excluding ids in Y - handle deletes for each of those

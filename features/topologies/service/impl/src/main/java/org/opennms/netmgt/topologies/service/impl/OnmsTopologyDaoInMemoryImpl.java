@@ -39,12 +39,14 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
 
-    private final Map<OnmsTopologyProtocol, OnmsTopologyUpdater> m_updatersMap = new HashMap<OnmsTopologyProtocol,
-            OnmsTopologyUpdater>();
-    final Set<OnmsTopologyConsumer> m_consumers = new HashSet<OnmsTopologyConsumer>();
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsTopologyDaoInMemoryImpl.class);
+    private final Map<OnmsTopologyProtocol, OnmsTopologyUpdater> m_updatersMap = new HashMap<>();
+    private final Set<OnmsTopologyConsumer> m_consumers = new HashSet<>();
 
     @Override
     public OnmsTopology getTopology(String protocolSupported) {
@@ -56,8 +58,18 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
     }
 
     @Override
+    public Map<OnmsTopologyProtocol, OnmsTopology> getTopologies() {
+        Map<OnmsTopologyProtocol, OnmsTopology> topologies = new HashMap<>();
+        synchronized (m_updatersMap) {
+            m_updatersMap.forEach((key, value) -> topologies.put(key, value.getTopology()));
+        }
+        return topologies;
+    }
+
+    @Override
     public void subscribe(OnmsTopologyConsumer consumer) {
         synchronized (m_consumers) {
+            LOG.debug("Consumer subscribed {}", consumer);
             m_consumers.add(consumer);
         }
     }
@@ -65,6 +77,21 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
     @Override
     public void unsubscribe(OnmsTopologyConsumer consumer) {
         synchronized (m_consumers) {
+            LOG.debug("Consumer unsubscribed {}", consumer);
+            m_consumers.remove(consumer);
+        }
+    }
+
+    public void onBind(OnmsTopologyConsumer consumer, Map<String, String> properties) {
+        synchronized (m_consumers) {
+            LOG.debug("Consumer {} bind with properties {}", consumer, properties);
+            m_consumers.add(consumer);
+        }
+    }
+
+    public void onUnbind(OnmsTopologyConsumer consumer, Map<String, String> properties) {
+        synchronized (m_consumers) {
+            LOG.debug("Consumer {} unbind with properties {}", consumer, properties);
             m_consumers.remove(consumer);
         }
     }
@@ -92,12 +119,8 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
     }
 
     @Override
-    public Set<String> getSupportedProtocols() {
-        final Set<String> protocols = new HashSet<String>();
-        synchronized (m_updatersMap) {
-            m_updatersMap.keySet().stream().forEach(p -> protocols.add(p.getId()));
-        }
-        return protocols;
+    public Set<OnmsTopologyProtocol> getSupportedProtocols() {
+        return m_updatersMap.keySet();
     }
 
     @Override
@@ -117,10 +140,11 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
             m_consumers
                     .stream()
                     .filter(consumer -> {
-                        if (consumer.getProtocols() == null) {
+                        if (consumer.getProtocols() == null || consumer.getProtocols().isEmpty()) {
                             return false;
                         }
-                        return consumer.getProtocols().contains(protocol);
+                        return consumer.getProtocols().contains(OnmsTopologyProtocol.allProtocols()) ||
+                                consumer.getProtocols().contains(protocol);
                     })
                     .forEach(consumer -> consumer.consume(message));
         }

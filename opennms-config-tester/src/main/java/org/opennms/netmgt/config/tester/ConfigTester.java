@@ -36,6 +36,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -46,6 +48,7 @@ import org.apache.commons.cli.PosixParser;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.tester.checks.ConfigCheckValidationException;
 import org.opennms.netmgt.config.tester.checks.PropertiesFileChecker;
 import org.opennms.netmgt.config.tester.checks.XMLFileChecker;
@@ -60,6 +63,7 @@ public class ConfigTester implements ApplicationContextAware {
 
 	private ApplicationContext m_context;
 	private Map<String, String> m_configs;
+	private final static Pattern DIRECTORY_AND_CLASS_PATTERN = Pattern.compile("^directory:(.+)$");
 
 	public Map<String, String> getConfigs() {
 		return m_configs;
@@ -78,15 +82,46 @@ public class ConfigTester implements ApplicationContextAware {
 		m_context = context;
 	}
 
-	public void testConfig(String name, boolean ignoreUnknown) {
+	public void testConfig(final String name, final boolean ignoreUnknown) {
 		checkConfigNameValid(name, ignoreUnknown);
-		String beanName = m_configs.get(name);
-		if("directory".equalsIgnoreCase(beanName)){
+		final String beanName = m_configs.get(name);
+		final Matcher matcher = DIRECTORY_AND_CLASS_PATTERN.matcher(beanName);
+		if (matcher.matches()) {
+			final String xmlModelName = matcher.group(1);
+			checkDirectoryForXmlFiles(name, xmlModelName);
+		} else if("directory".equalsIgnoreCase(beanName)){
 			checkDirectoryForUnKnownFiles(name);
 		} else if ("unknown".equalsIgnoreCase(beanName)){
 			checkFileForSyntax(name);
 		} else {
 			m_context.getBean(beanName);
+		}
+	}
+
+	private void checkDirectoryForXmlFiles(final String name, final String xmlModelName) {
+		final Path directory = Paths.get(ConfigFileConstants.getFilePathString(), name);
+
+		if (!Files.exists(directory)) {
+			return;
+		}
+
+		final Class clazz;
+		try {
+			clazz = Class.forName(xmlModelName);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+
+		try (final DirectoryStream<Path> stream = Files.newDirectoryStream(directory, "*.xml")) {
+			for (final Path entry : stream) {
+				try {
+					JaxbUtils.unmarshal(clazz, entry.toFile(), true);
+				} catch (final Exception e) {
+					throw new ConfigCheckValidationException("File " + entry.toString() + " not valid!", e);
+				}
+			}
+		} catch (final IOException e) {
+			throw new ConfigCheckValidationException(e);
 		}
 	}
 

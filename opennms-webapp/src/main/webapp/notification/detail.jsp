@@ -99,7 +99,7 @@
   </div>
 
   <table class="table table-sm severity">
-  <tr class="severity-<%=eventSeverity.toLowerCase()%>">
+  <tr class="d-flex severity-<%=eventSeverity.toLowerCase()%>">
     <th class="col-md-1">Notification&nbsp;Time</th>
     <td class="col-md-2"><onms:datetime date="<%=notice.getTimeSent()%>" /></td>
     <th class="col-md-1">Time&nbsp;Replied</th>
@@ -127,7 +127,7 @@
       </c:choose>
     </td>
   </tr>
-  <tr class="severity-<%=eventSeverity.toLowerCase()%>">
+  <tr class="d-flex severity-<%=eventSeverity.toLowerCase()%>">
     <th class="col-md-1">Node</th>
     <td class="col-md-2">
       <%if (nodeLabel!=null) { %>
@@ -228,10 +228,10 @@
   </div>
   <table class="table table-sm severity">
     <tr>
-      <th class="col-md-3">Sent To</th>
-      <th class="col-md-3">Sent At</th>
-      <th class="col-md-3">Media</th>
-      <th class="col-md-3">Contact Info</th>
+      <th>Sent To</th>
+      <th>Sent At</th>
+      <th>Media</th>
+      <th>Contact Info</th>
     </tr>
   
   <%  for (NoticeSentTo sentTo : notice.getSentTo()) { %>

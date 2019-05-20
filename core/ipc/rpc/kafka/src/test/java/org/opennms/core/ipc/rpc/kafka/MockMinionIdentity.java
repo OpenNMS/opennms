@@ -42,7 +42,7 @@ public class MockMinionIdentity implements MinionIdentity {
 
     @Override
     public String getId() {
-        return "0";
+        return "minionId";
     }
 
     @Override

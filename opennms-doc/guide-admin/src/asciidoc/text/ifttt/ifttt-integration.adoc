@@ -7,7 +7,7 @@ Each supported service has several triggers that can be used to trigger actions 
 This allows for example to change brightness and color of a smart bulb, send messages or date to IoT devices.
 
 The _{opennms-product-name}_ integration makes uses of the so-called "Webhooks" service, that allows to trigger actions when a specific web-request was received.
-The basic operation is as follows: _{opennms-product-name}_ polls for alarms with associated nodes and matches a given category filter.
+The basic operation is as follows: _{opennms-product-name}_ polls for alarms and matches the alarm reduction key against a given filter and the alarm's associated nodes against a given category filter.
 For the resulting alarm set the maximum severity and total count is computed.
 If one of these values changed compared to the last poll one or more events specified for the computed maximum severity will be sent to _IFTTT_.
 
@@ -35,10 +35,10 @@ The configuration file `ifttt-config.xml` contains so called trigger packages.
 The operation is as follows:
 _{opennms-product-name}_ retrieves all alarms that have a node associated.
 Each trigger package defines whether only acknowledged alarms should be taken into account.
-It then computes the maximum severity and alarm count for each trigger package's category filter.
+It then computes the maximum severity and alarm count for each trigger package's category filter and reduction key filter.
 After that it triggers all events defined in the corresponding trigger sets for the computed maximum severity.
-The category filter accepts Java regular expressions.
-Using an empty category filter will use all unacknowledged alarms with an associated node.
+The category and reduction key filter accepts Java regular expressions.
+Using an empty category filter will use all unacknowledged alarms regardless of whether these alarms have nodes assigned or not.
 
 Each trigger inside a trigger set defines the event name to be triggered and three additional values.
 These values can be used to set additional attributes for the corresponding _IFTTT_ applet action.
@@ -80,7 +80,7 @@ This is useful for sending messages or operating LED displays via _IFTTT_.
 [source, xml]
 ----
 <ifttt-config enabled="true" key="X71dfUZsH4Wkl6cjsLjdV" pollInterval="30">
-    <trigger-package categoryFilter="Routers|Switches" onlyUnacknowledged="true">
+    <trigger-package categoryFilter="Routers|Switches" reductionKeyFilter=".*" onlyUnacknowledged="true">
         <trigger-set name="ON">
             <trigger eventName="on" delay="0">
                 <value1></value1>

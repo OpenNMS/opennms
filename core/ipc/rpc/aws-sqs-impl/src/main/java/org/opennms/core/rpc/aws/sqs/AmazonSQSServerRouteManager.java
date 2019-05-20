@@ -28,6 +28,8 @@
 
 package org.opennms.core.rpc.aws.sqs;
 
+import java.util.Objects;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
@@ -37,37 +39,40 @@ import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.rpc.camel.CamelRpcServerRouteManager;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 public class AmazonSQSServerRouteManager extends CamelRpcServerRouteManager {
     private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerRouteManager.class);
 
     private final AmazonSQSManager sqsManager;
+    private final TracerRegistry tracerRegistry;
 
-    public AmazonSQSServerRouteManager(CamelContext context, MinionIdentity identity, AmazonSQSManager sqsManager) {
+    public AmazonSQSServerRouteManager(CamelContext context, MinionIdentity identity, AmazonSQSManager sqsManager, TracerRegistry tracerRegistry) {
         super(context, identity);
         this.sqsManager = Objects.requireNonNull(sqsManager);
+        this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
     }
 
     @Override
     public RouteBuilder getRouteBuilder(CamelContext context, MinionIdentity identity, RpcModule<RpcRequest, RpcResponse> module) {
-        return new DynamicRpcRouteBuilder(sqsManager, context, identity, module);
+        return new DynamicRpcRouteBuilder(sqsManager, context, identity, module, tracerRegistry);
     }
 
     private static final class DynamicRpcRouteBuilder extends RouteBuilder {
         private final AmazonSQSManager sqsManager;
         private final MinionIdentity identity;
         private final RpcModule<RpcRequest,RpcResponse> module;
+        private final TracerRegistry tracerRegistry;
 
-        private DynamicRpcRouteBuilder(AmazonSQSManager sqsManager, CamelContext context, MinionIdentity identity, RpcModule<RpcRequest,RpcResponse> module) {
+        private DynamicRpcRouteBuilder(AmazonSQSManager sqsManager, CamelContext context, MinionIdentity identity, RpcModule<RpcRequest,RpcResponse> module, TracerRegistry tracerRegistry) {
             super(context);
             this.sqsManager = sqsManager;
             this.identity = identity;
             this.module = module;
+            this.tracerRegistry = tracerRegistry;
         }
 
         @Override
@@ -77,10 +82,10 @@ public class AmazonSQSServerRouteManager extends CamelRpcServerRouteManager {
                             + "&correlationProperty=%s"
                             + "&asyncConsumer=true", requestQueueName,
                     AmazonSQSRPCConstants.AWS_SQS_CORRELATION_ID_HEADER), JmsEndpoint.class);
-
+            tracerRegistry.init(identity.getLocation()+"@"+identity.getId());
             from(endpoint).setExchangePattern(ExchangePattern.InOut)
                     .process(new SystemIdFilterProcessor(identity.getId()))
-                    .process(new AmazonSQSServerProcessor(module))
+                    .process(new AmazonSQSServerProcessor(module, tracerRegistry))
                     .routeId(getRouteId(module));
         }
     }

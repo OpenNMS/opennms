@@ -113,7 +113,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         this.vertexStatusProviderType = getVertexProviderTypeFromGraph(graph);
 
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
-            LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
+            LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", focusStrategy.name(), GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
         }
     }
 
