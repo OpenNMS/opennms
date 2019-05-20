@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,8 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.outage.*,
-		java.text.DateFormat
+		java.text.DateFormat,
+		org.opennms.core.utils.WebSecurityUtils
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -48,7 +49,7 @@
 	Outage outage = (Outage)request.getAttribute("outage");
 
     if( outage == null ) {
-        throw new org.opennms.web.outage.OutageIdNotFoundException( "An outage with this ID was not found.", (String)request.getAttribute("id") );
+        throw new org.opennms.web.outage.OutageIdNotFoundException( "An outage with this ID was not found.", WebSecurityUtils.sanitizeString((String)request.getAttribute("id")) );
     }
 %>
 
