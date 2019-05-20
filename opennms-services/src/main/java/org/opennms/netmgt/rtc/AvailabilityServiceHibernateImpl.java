@@ -196,7 +196,6 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
 
         final long windowStart = start.getTime();
         final long windowEnd = end.getTime();
-        final long windowLength = windowEnd - windowStart;
         Preconditions.checkArgument(0 <= windowStart && windowStart < windowEnd);
 
         long downtimeInWindow = 0;
