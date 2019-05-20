@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -109,5 +109,19 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
         } finally {
             deleteTestRequisition();
         }
+    }
+
+    // See NMS-10679
+    @Test
+    public void verifyNodeNotFoundMessageIsShown() {
+        final String NODE_NOT_FOUND = "Node Not Found";
+        m_driver.get(BASE_URL + "opennms/element/node.jsp?node=12345");
+        pageContainsText(NODE_NOT_FOUND);
+
+        final String NODE_ID_NOT_FOUND = "Node ID Not Found";
+        m_driver.get(BASE_URL + "opennms/element/node.jsp?node=abc");
+        pageContainsText(NODE_ID_NOT_FOUND);
+        m_driver.get(BASE_URL + "opennms/element/node.jsp?node=ab:cd");
+        pageContainsText(NODE_ID_NOT_FOUND);
     }
 }
