@@ -109,6 +109,7 @@ public class FlowDocumentTest {
         when(flow.getSrcAddrHostname()).thenReturn(Optional.empty());
         when(flow.getDstAddr()).thenReturn("192.168.2.2");
         when(flow.getDstAddrHostname()).thenReturn(Optional.of("four.three.two.one"));
+        when(flow.getNextHopHostname()).thenReturn(Optional.empty());
         when(flow.getVlan()).thenReturn(null);
         return flow;
     }

@@ -802,6 +802,9 @@
             "next_hop": {
               "type": "ip"
             },
+            "next_hop_hostname": {
+              "type": "keyword"
+            },
             "output_snmp": {
               "type": "integer"
             },
