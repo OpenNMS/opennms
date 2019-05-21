@@ -218,6 +218,8 @@ public class NetflowPacketTest {
         Arrays.fill(bytes, (byte) 0xFF);
         bytes[0] = 0x00;
         bytes[1] = 0x05;
+        bytes[2] = 0x00;
+        bytes[3] = 0x01;
 
         // Parse and Verify
         final ByteBuffer buffer = ByteBuffer.wrap(bytes);
@@ -226,7 +228,6 @@ public class NetflowPacketTest {
         final Packet packet = new Packet(header, buffer);
 
         // Verify Header
-        assertThat(packet.header.count, is(65536 - 1)); // 2^16-1
         assertThat(packet.header.sysUptime, is(1024L * 1024L * 1024L * 4L - 1)); // 2^32-1
         assertThat(packet.header.unixSecs, is(1024L * 1024L * 1024L * 4L - 1)); // 2^32-1
         assertThat(packet.header.unixNSecs, is(1024L * 1024L * 1024L * 4L - 1)); // 2^32-1
