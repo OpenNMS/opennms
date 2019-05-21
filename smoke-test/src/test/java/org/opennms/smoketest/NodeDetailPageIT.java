@@ -36,13 +36,13 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyNodeNotFoundMessageIsShown() {
         final String NODE_NOT_FOUND = "Node Not Found";
-        m_driver.get(BASE_URL + "opennms/element/node.jsp?node=12345");
+        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=12345");
         pageContainsText(NODE_NOT_FOUND);
 
         final String NODE_ID_NOT_FOUND = "Node ID Not Found";
-        m_driver.get(BASE_URL + "opennms/element/node.jsp?node=abc");
+        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=abc");
         pageContainsText(NODE_ID_NOT_FOUND);
-        m_driver.get(BASE_URL + "opennms/element/node.jsp?node=ab:cd");
+        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=ab:cd");
         pageContainsText(NODE_ID_NOT_FOUND);
     }
 }
