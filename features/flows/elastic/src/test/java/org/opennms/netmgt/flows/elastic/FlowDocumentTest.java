@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -105,7 +106,9 @@ public class FlowDocumentTest {
         when(flow.getDirection()).thenReturn(Flow.Direction.INGRESS);
         when(flow.getIpProtocolVersion()).thenReturn(4);
         when(flow.getSrcAddr()).thenReturn("192.168.1.2");
+        when(flow.getSrcAddrHostname()).thenReturn(Optional.empty());
         when(flow.getDstAddr()).thenReturn("192.168.2.2");
+        when(flow.getDstAddrHostname()).thenReturn(Optional.of("four.three.two.one"));
         when(flow.getVlan()).thenReturn(null);
         return flow;
     }

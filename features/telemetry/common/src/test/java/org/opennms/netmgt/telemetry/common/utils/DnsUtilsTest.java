@@ -38,6 +38,7 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Resolver;
 import org.xbill.DNS.SimpleResolver;
@@ -86,20 +87,20 @@ public class DnsUtilsTest {
         final Optional<String> hostname1 = DnsUtils.reverseLookup(InetAddress.getByAddress(new byte[]{1, 1, 1, 1}));
         Assert.assertEquals("one.one.one.one", hostname1.get());
 
-        final Optional<String> hostname2 = DnsUtils.reverseLookup("1.1.1.1");
+        final Optional<String> hostname2 = DnsUtils.reverseLookup(InetAddressUtils.addr("1.1.1.1"));
         Assert.assertEquals("one.one.one.one", hostname2.get());
 
-        final Optional<String> hostname3 = DnsUtils.reverseLookup("2606:4700:4700::1111");
+        final Optional<String> hostname3 = DnsUtils.reverseLookup(InetAddressUtils.addr("2606:4700:4700::1111"));
         Assert.assertEquals("one.one.one.one", hostname3.get());
     }
 
     @Test
     public void resolveFailTest() {
         // 198.51.100.0/24 should be TEST-NET-2 (see RFC #5737). Should fail...
-        final Optional<String> hostname1 = DnsUtils.reverseLookup("198.51.100.1");
+        final Optional<String> hostname1 = DnsUtils.reverseLookup(InetAddressUtils.addr("198.51.100.1"));
         Assert.assertEquals(Optional.empty(), hostname1);
 
-        final Optional<String> hostname2 = DnsUtils.reverseLookup("fe80::");
+        final Optional<String> hostname2 = DnsUtils.reverseLookup(InetAddressUtils.addr("fe80::"));
         Assert.assertEquals(Optional.empty(), hostname2);
     }
 }

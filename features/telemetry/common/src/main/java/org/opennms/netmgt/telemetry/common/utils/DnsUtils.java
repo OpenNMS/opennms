@@ -73,10 +73,6 @@ public class DnsUtils {
         return resolver;
     }
 
-    public static Optional<String> reverseLookup(final String inetAddress) {
-        return reverseLookup(InetAddressUtils.addr(inetAddress));
-    }
-
     public static Optional<String> reverseLookup(final InetAddress inetAddress) {
         final Lookup lookup = new Lookup(ReverseMap.fromAddress(inetAddress), Type.PTR);
 

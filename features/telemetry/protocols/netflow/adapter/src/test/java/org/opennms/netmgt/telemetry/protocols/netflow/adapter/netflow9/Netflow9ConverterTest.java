@@ -42,6 +42,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.bson.RawBsonDocument;
@@ -68,10 +69,10 @@ public class Netflow9ConverterTest {
         // Verify a flow
         Flow flow = flows.get(4);
         assertThat(flow.getSrcAddr(), equalTo("10.1.20.85"));
-        assertThat(flow.getSrcAddrHostname(), equalTo("10.1.20.85"));
+        assertThat(flow.getSrcAddrHostname(), equalTo(Optional.empty()));
         assertThat(flow.getSrcPort(), equalTo(137));
         assertThat(flow.getDstAddr(), equalTo("10.1.20.127"));
-        assertThat(flow.getDstAddrHostname(), equalTo("10.1.20.127"));
+        assertThat(flow.getDstAddrHostname(), equalTo(Optional.empty()));
         assertThat(flow.getDstPort(), equalTo(137));
         assertThat(flow.getProtocol(), equalTo(17)); // UDP
         assertThat(flow.getBytes(), equalTo(156L));
@@ -82,7 +83,7 @@ public class Netflow9ConverterTest {
         assertThat(flow.getPackets(), equalTo(2L));
         assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
         assertThat(flow.getNextHop(), equalTo("0.0.0.0"));
-        assertThat(flow.getNextHopHostname(), equalTo("0.0.0.0"));
+        assertThat(flow.getNextHopHostname(), equalTo(Optional.empty()));
         assertThat(flow.getVlan(), nullValue());
     }
 

@@ -45,8 +45,8 @@ public class Inet6Header {
     public final int totalLength;
     public final int protocol;
 
-    public final String srcAddress;
-    public final String dstAddress;
+    public final Inet6Address srcAddress;
+    public final Inet6Address dstAddress;
 
     public final Integer srcPort;
     public final Integer dstPort;
@@ -66,10 +66,10 @@ public class Inet6Header {
         BufferUtils.skip(buffer, 1); // Hop limit
 
         try {
-            this.srcAddress = Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16)).getHostAddress();
-            this.dstAddress = Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16)).getHostAddress();
+            this.srcAddress = (Inet6Address) Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16));
+            this.dstAddress = (Inet6Address) Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16));
         } catch (final UnknownHostException e) {
-            // This only happens if byte array length is != 4
+            // This only happens if byte array length is != 16
             throw Throwables.propagate(e);
         }
 
@@ -110,12 +110,12 @@ public class Inet6Header {
         bsonWriter.writeInt32("protocol", this.protocol);
 
         bsonWriter.writeStartDocument("src_ip");
-        bsonWriter.writeString("address", this.srcAddress);
+        bsonWriter.writeString("address", this.srcAddress.getHostAddress());
         DnsUtils.reverseLookup(this.srcAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
         bsonWriter.writeEndDocument();
 
         bsonWriter.writeStartDocument("dst_ip");
-        bsonWriter.writeString("address", this.dstAddress);
+        bsonWriter.writeString("address", this.dstAddress.getHostAddress());
         DnsUtils.reverseLookup(this.dstAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
         bsonWriter.writeEndDocument();
 
