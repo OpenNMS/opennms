@@ -69,5 +69,5 @@ public interface CorrelationEngine {
 	/**
          * <p>reloadConfig</p>
          */
-	void reloadConfig();
+	void reloadConfig(boolean persistState);
 }
