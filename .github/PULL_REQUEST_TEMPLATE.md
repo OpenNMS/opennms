@@ -1,12 +1,30 @@
+### All Contributors
+
+* [ ] Have you read and followed our [Contribution Guidelines](https://github.com/OpenNMS/opennms/blob/develop/CONTRIBUTING.md)?
+* [ ] Have you [made an issue in the OpenNMS issue tracker](https://issues.opennms.org)?<br>
+  If so, you should:
+  1. update the title of this PR to be of the format: `${JIRA-ISSUE-NUMBER}: subject of pull request`
+  2. update the JIRA link at the bottom of this comment to refer to the real issue number
+* [ ] Have you made a comment in that issue which points back to this PR?
+* [ ] Have you updated the JIRA link at the bottom of this comment to link to your issue?
+* [ ] If this is a new or updated feature, is there documentation for the new behavior?
+* [ ] If this is new code, are there unit and/or integration tests?
+
+### Pull Request Process
+
+One or more reviewers should be assigned to each PR.
+
+If you know that a particular person is subject matter expert in the area your PR affects, feel free to assign one or more reviewers when you create this PR, otherwise reviewers will be assigned for you.
+
+Once the reviewer(s) accept the PR and the branch passes continuous integration in Bamboo, the PR is eligible for merge.
+
+At that time, if you have commit access (are an OpenNMS Group employee or a member of the Order of the Green Polo) you are welcome to merge the PR.
+Otherwise, a reviewer can merge it for you.
 
 Thanks for taking time to contribute!
 
-Please read our [Contribution Guidelines](https://github.com/OpenNMS/opennms/blob/develop/CONTRIBUTING.md) and format the title of the pull request in the format of:
+### External References
 
-${JIRA-ISSUE-NUMBER}: a-short-subject-title
+* JIRA (Issue Tracker): http://issues.opennms.org/browse/${JIRA-ISSUE-NUMBER}
+* Bamboo (Continuous Integration): https://bamboo.opennms.org/
 
-Please use the [JIRA](https://issues.opennms.org) issue number and create a link in the JIRA issue back to this pull request so we have a quick reference from the issue to the pull request.
-
-* JIRA: http://issues.opennms.org/browse/${JIRA-ISSUE-NUMBER}
-
-Our [continuous integration system](http://bamboo.internal.opennms.com:8085) will test and verify your changes.
