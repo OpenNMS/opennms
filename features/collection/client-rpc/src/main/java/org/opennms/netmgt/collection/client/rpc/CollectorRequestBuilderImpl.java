@@ -35,9 +35,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
+import org.opennms.core.rpc.utils.MetadataConstants;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
@@ -140,14 +142,8 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         // fetching class name from proxy won't match with class name in collector registry so prefer clasName if it present.
         final String collectorClassName = className != null ? className : serviceCollector.getClass().getCanonicalName();
         request.setClassName(collectorClassName);
-        if (interpolatedAttributes.get("ttl") != null) {
-            String ttl = (String) interpolatedAttributes.get("ttl");
-            try {
-                ttlInMs = Long.valueOf("ttl");
-            } catch (NumberFormatException e) {
-                LOG.warn("ttl provided  `{}` is not a number", ttl);
-            }
-        }
+        // Overwrite if ttl exists in metadata.
+        ttlInMs = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), ttlInMs);
         request.setTimeToLiveMs(ttlInMs);
         request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(agent.getNodeId()));
         request.addTracingInfo(RpcRequest.TAG_NODE_LABEL, agent.getNodeLabel());
@@ -162,6 +158,10 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         allAttributes.putAll(interpolatedAttributes);
         allAttributes.putAll(runtimeAttributes);
 
+        // For SNMP, ttl should be passed as parameter.
+        if(ttlInMs != null) {
+            allAttributes.put("SERVICE_INTERVAL", ttlInMs);
+        }
         // The runtime attributes may include objects which need to be marshaled.
         // Only marshal these if the request is being executed at another location.
         if (MonitoringLocationUtils.isDefaultLocationName(request.getLocation())) {

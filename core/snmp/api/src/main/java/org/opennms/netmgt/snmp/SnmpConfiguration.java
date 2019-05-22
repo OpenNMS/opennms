@@ -107,6 +107,7 @@ public class SnmpConfiguration {
     private String m_contextEngineId;
     private String m_contextName;
     private String m_enterpriseId;
+    private Long m_ttl;
     
     public SnmpConfiguration() {
         this(DEFAULTS);
@@ -230,6 +231,14 @@ public class SnmpConfiguration {
 
     public final void setWriteCommunity(String community) {
         m_writeCommunity = community;
+    }
+
+    public Long getTTL() {
+        return m_ttl;
+    }
+
+    public void setTTL(Long ttl) {
+        this.m_ttl = m_ttl;
     }
 
     public static String versionToString(int version) {

@@ -36,21 +36,19 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
+import org.opennms.core.rpc.utils.MetadataConstants;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PollerRequestBuilderImpl.class);
 
     private MonitoredService service;
 
@@ -129,7 +127,6 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitored service is required.");
         }
 
-
         final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new FallbackScope(
             this.client.getEntityScopeProvider().getScopeForNode(service.getNodeId()),
             this.client.getEntityScopeProvider().getScopeForInterface(service.getNodeId(), service.getIpAddr()),
@@ -154,14 +151,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         request.setNodeId(service.getNodeId());
         request.setNodeLabel(service.getNodeLabel());
         request.setNodeLocation(service.getNodeLocation());
-        if (interpolatedAttributes.get("ttl") != null) {
-            String ttl = (String) interpolatedAttributes.get("ttl");
-            try {
-                ttlInMs = Long.valueOf("ttl");
-            } catch (NumberFormatException e) {
-                LOG.warn("ttl provided `{}` is not a number", ttl);
-            }
-        }
+        //Overwrite if ttl exists in metadata
+        ttlInMs = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), ttlInMs);
         request.setTimeToLiveMs(ttlInMs);
         request.addAttributes(interpolatedAttributes);
         request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(service.getNodeId()));
