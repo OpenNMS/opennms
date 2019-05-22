@@ -73,7 +73,8 @@ function populateOptGroupFromList(elementName, list) {
 		optgroupElem.remove(0);
 	}
 	
-	for (const nodeSpec of list) {
+	for (var i=0, len=list.length, nodeSpec; i < len; i++) {
+		nodeSpec = list[i];
 		var optionElem = document.createElement("option");
 		optionElem.value = nodeSpec["id"];
 		optionElem.textContent = nodeSpec["label"];
