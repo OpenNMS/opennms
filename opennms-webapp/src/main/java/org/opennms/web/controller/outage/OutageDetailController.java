@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,7 +67,7 @@ public class OutageDetailController extends AbstractController implements Initia
             outageId = WebSecurityUtils.safeParseInt(WebSecurityUtils.sanitizeString(outageIdString, false));
         }
         catch( NumberFormatException e ) {
-            throw new OutageIdNotFoundException("The outage id must be an integer.", outageIdString);
+            throw new OutageIdNotFoundException("The outage id must be an integer.", WebSecurityUtils.sanitizeString(outageIdString));
         }        
 
         Outage outage = m_webOutageRepository.getOutage(outageId);
