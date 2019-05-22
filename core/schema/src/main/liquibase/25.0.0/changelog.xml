@@ -17,17 +17,12 @@
         <constraints nullable="false"/>
       </column>
       <!-- TODO MVR this should be designed differently -->
-      <column name="source_vertex_id" type="bigint"></column>
-      <column name="target_vertex_id" type="bigint"></column>
+      <column name="source_vertex_namespace" type="varchar(200)"></column>
+      <column name="source_vertex_id" type="text"></column>
+      <column name="target_vertex_namespace" type="varchar(200)"></column>
+      <column name="target_vertex_id" type="text"></column>
     </createTable>
     <addPrimaryKey tableName="graph_elements" columnNames="id" constraintName="graph_elements_pkey" />
-    <!-- TODO MVR decide if we need foreign keys for these -->
-    <addForeignKeyConstraint constraintName="fk_graph_elements_source_vertex_id"
-                             baseTableName="graph_elements" baseColumnNames="source_vertex_id"
-                             referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
-    <addForeignKeyConstraint constraintName="fk_graph_elements_target_vertex_id"
-                             baseTableName="graph_elements" baseColumnNames="target_vertex_id"
-                             referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
 
     <createTable tableName="graph_attributes" remarks="attributes for each graph_element">
       <column name="id" type="bigint">

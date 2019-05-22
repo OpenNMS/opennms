@@ -61,7 +61,7 @@ public class TestObjectCreator {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(sourceVertex);
         Objects.requireNonNull(targetVertex);
-        GenericEdge edge = new GenericEdge(sourceVertex, targetVertex);
+        GenericEdge edge = new GenericEdge(namespace, sourceVertex.getVertexRef(), targetVertex.getVertexRef());
         edge.setLabel("GenericEdge-" + namespace + "-" + edge.getId());
         return edge;
     }
@@ -73,11 +73,10 @@ public class TestObjectCreator {
         GenericEdge edge1 = createEdge(vertex1, vertex2);
         GenericEdge edge2 = createEdge(vertex1, vertex3);
 
-        GenericGraph graph = new GenericGraph();
-        graph.setNamespace(NAMESPACE);
+        GenericGraph graph = new GenericGraph(NAMESPACE);
+        graph.setId("GraphId" + UUID.randomUUID().toString());
         graph.setDescription("GraphDescription" + UUID.randomUUID().toString());
         graph.setLabel("GraphLabel" + UUID.randomUUID().toString());
-        graph.setId("GraphId" + UUID.randomUUID().toString());
         graph.setFocusStrategy(FocusStrategy.FIRST);
         graph.setProperty("someProperty", "someProperty" + UUID.randomUUID().toString());
         graph.addVertex(vertex1);

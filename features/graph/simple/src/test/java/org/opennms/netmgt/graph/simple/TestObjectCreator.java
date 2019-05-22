@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-/** */
 public class TestObjectCreator {
 
     public final static String NAMESPACE = TestObjectCreator.class.getSimpleName();
@@ -73,7 +72,7 @@ public class TestObjectCreator {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(sourceVertex);
         Objects.requireNonNull(targetVertex);
-        SimpleEdge edge = new SimpleEdge(sourceVertex, targetVertex);
+        SimpleEdge edge = new SimpleEdge(namespace, sourceVertex, targetVertex);
         edge.setLabel("SimpleEdge-" + namespace + "-" + edge.getId());
         return edge;
     }

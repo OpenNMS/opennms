@@ -90,7 +90,7 @@ public class ApplicationGraphProvider implements GraphProvider {
                     graph.addVertex(serviceVertex);
 
                     // connect with application
-                    SimpleEdge edge = new SimpleEdge(applicationVertex, serviceVertex);
+                    final SimpleEdge edge = new SimpleEdge(TOPOLOGY_NAMESPACE, applicationVertex, serviceVertex);
                     graph.addEdge(edge);
                 }
             }

@@ -28,27 +28,24 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 
-public class GenericElement {
+public abstract class GenericElement {
     protected final Map<String, Object> properties;
 
-    public GenericElement() {
-        this(new HashMap<>());
-    }
-
     public GenericElement(String namespace, String id) {
-        this(new HashMap<>());
-        setNamespace(namespace);
-        setId(id);
+        this(new MapBuilder<String, Object>()
+                .withProperty(GenericProperties.NAMESPACE, namespace)
+                .withProperty(GenericProperties.ID, id).build());
     }
 
     protected GenericElement (Map<String, Object> properties) {
+        // assumption is that this constructor is only called by children who cloned already the Map
         this.properties = Objects.requireNonNull(properties);
+        Objects.requireNonNull(getNamespace(), "namespace cannot be null");
     }
 
     public void setProperty(String key, Object value) {
@@ -63,21 +60,12 @@ public class GenericElement {
         return (T) properties.getOrDefault(key, defaultValue);
     }
 
-    public void setProperties(Map<String, Object> properties) {
-        this.properties.clear();
-        this.properties.putAll(properties);
-    }
-
     public Map<String, Object> getProperties() {
         return properties;
     }
 
     public String getNamespace() {
         return getProperty(GenericProperties.NAMESPACE);
-    }
-
-    public void setNamespace(String namespace) {
-        setProperty(GenericProperties.NAMESPACE, namespace);
     }
 
     public void setLabel(String label){

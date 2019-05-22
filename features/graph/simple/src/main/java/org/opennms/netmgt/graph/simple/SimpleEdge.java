@@ -34,18 +34,24 @@ import java.util.Objects;
 import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericVertexRef;
 
 /**
  * Acts as a domain specific view on a Edge.
- * Can be extended by domain specific edge classes.
+ * Can be extended by domain specific Edge classes.
  * It contains no data of it's own but operates on the data of it's wrapped GenericEdge.
  */
 public class SimpleEdge implements Edge {
 
     protected GenericEdge delegate;
 
-    public SimpleEdge(SimpleVertex source, SimpleVertex target) {
-        delegate = new GenericEdge(source.asGenericVertex(), target.asGenericVertex());
+    public SimpleEdge(String namespace, VertexRef source, VertexRef target) {
+        delegate = new GenericEdge(namespace, new GenericVertexRef(source.getNamespace(), source.getId()),
+                new GenericVertexRef(target.getNamespace(), target.getId()));
+    }
+
+    public SimpleEdge(String namespace, SimpleVertex source, SimpleVertex target) {
+        delegate = new GenericEdge(namespace, source.asGenericVertex().getVertexRef(), target.asGenericVertex().getVertexRef());
     }
 
     public SimpleEdge(GenericEdge genericEdge) {
@@ -55,19 +61,11 @@ public class SimpleEdge implements Edge {
     public SimpleEdge(SimpleEdge copyMe) {
         // copy the delegate to have a clone down to the properties maps
         this(new GenericEdge(copyMe.asGenericEdge()));
-
-        // TODO: patrick, mvr rework when we support edges that connect to other namespaces
-        // We must copy the source and target as well, otherwise changing it's properties will change
-        // the "copyMe" properties as well
     }
 
     @Override
     public String getNamespace() {
         return delegate.getNamespace();
-    }
-
-    public void setNamespace(String namespace) {
-        delegate.setNamespace(namespace);
     }
 
     @Override
@@ -98,13 +96,6 @@ public class SimpleEdge implements Edge {
         return delegate.getLabel();
     }
 
-    private static VertexRef copyVertex(VertexRef ref) {
-        if (ref instanceof SimpleVertex) {
-            return new SimpleVertex((SimpleVertex) ref);
-        }
-        return new SimpleVertexRef(ref);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,7 +106,6 @@ public class SimpleEdge implements Edge {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(delegate);
     }
 }

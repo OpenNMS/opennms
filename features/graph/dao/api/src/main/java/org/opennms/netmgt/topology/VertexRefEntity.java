@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.generic;
+package org.opennms.netmgt.topology;
 
-import org.opennms.netmgt.graph.api.VertexRef;
 
-import com.google.common.base.MoreObjects;
+import javax.persistence.Embeddable;
+
 import com.google.common.base.Objects;
 
-/**
- * An immutable composite key to reference a vertex.
- */
-public class GenericVertexRef implements VertexRef {
-
+@Embeddable
+public class VertexRefEntity {
     private final String namespace;
     private final String id;
 
-    public GenericVertexRef(String namespace, String id) {
+    /*
+    * Default constructor for hibernate. It is not to be used other than from hibernate
+    */
+    private VertexRefEntity() {
+        // trick compiler:
+        this.namespace = null;
+        this.id = null;
+    }
+    
+    public VertexRefEntity(String namespace, String id) {
         this.namespace = namespace;
         this.id = id;
     }
 
-    @Override
+    /** Copy constructor */
+    public VertexRefEntity(VertexRefEntity genericVertexRef){
+        this(genericVertexRef.namespace, genericVertexRef.id);
+    }
+
     public String getNamespace() {
         return this.namespace;
     }
 
-    @Override
     public String getId() {
         return this.id;
     }
@@ -60,7 +69,7 @@ public class GenericVertexRef implements VertexRef {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GenericVertexRef that = (GenericVertexRef) o;
+        VertexRefEntity that = (VertexRefEntity) o;
         return Objects.equal(namespace, that.namespace) &&
                 Objects.equal(id, that.id);
     }
@@ -72,9 +81,6 @@ public class GenericVertexRef implements VertexRef {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("namespace", namespace)
-                .add("id", id)
-                .toString();
+        return namespace + ":" + id;
     }
 }

@@ -39,24 +39,47 @@ import com.google.common.base.MoreObjects;
 
 public class GenericEdge extends GenericElement implements Edge {
 
-    private final GenericVertex source;
-    private final GenericVertex target;
+    private final GenericVertexRef source;
+    private final GenericVertexRef target;
 
-    public GenericEdge(GenericVertex source, GenericVertex target) {
-        this(source, target, new HashMap<>());
+    public GenericEdge(String namespace, GenericVertexRef source, GenericVertexRef target) {
+        this(source, target, new MapBuilder<String, Object>()
+                .withProperty(GenericProperties.NAMESPACE, namespace)
+                .build());
     }
 
-    public GenericEdge(GenericVertex source, GenericVertex target, Map<String, Object> properties) {
+    public GenericEdge(String namespace, GenericVertexRef source, GenericVertexRef target, Map<String, Object> properties) {
+        this(source, target, new MapBuilder<String, Object>()
+                .withProperties(properties)
+                .withProperty(GenericProperties.NAMESPACE, namespace)
+                .build());
+    }
+
+    private GenericEdge(GenericVertexRef source, GenericVertexRef target, Map<String, Object> properties) {
         super(properties);
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
-        this.setNamespace(source.getNamespace());
-        this.setId(source.getId() + "->" + target.getId());
+        if(!source.getNamespace().equals(getNamespace()) && !target.getNamespace().equals(getNamespace())) {
+            throw new IllegalArgumentException(
+                    String.format("Neither the namespace of the source VertexRef(namespace=%s) nor the target VertexRef(%s) matches our namespace=%s",
+                            source.getNamespace(), target.getNamespace(), getNamespace()));
+        }
+        this.setId(source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId());
     }
 
-    /** Copy constructor */
+    /** Copy constructor with same namespace */
     public GenericEdge(GenericEdge copyMe) {
-        this(new GenericVertex(copyMe.source), new GenericVertex(copyMe.target), new HashMap<>(copyMe.properties));
+        this(copyMe, copyMe.getNamespace());
+    }
+
+    /** Copy constructor with new namespace */
+    public GenericEdge(GenericEdge copyMe, String newNamespace) {
+        this(new GenericVertexRef(newNamespace, copyMe.source.getId()),
+                new GenericVertexRef(newNamespace, copyMe.target.getId()),
+                new MapBuilder<String, Object>()
+                .withProperties(copyMe.getProperties())
+                .withProperty(GenericProperties.NAMESPACE, newNamespace)
+                .build());
     }
 
     public Map<String, Object> getProperties() {
@@ -75,11 +98,7 @@ public class GenericEdge extends GenericElement implements Edge {
 
     @Override
     public GenericEdge asGenericEdge() {
-        final GenericEdge genericEdge = new GenericEdge(source, target);
-        genericEdge.setLabel(getLabel());
-        genericEdge.setId(getId());
-        genericEdge.setNamespace(getNamespace());
-        return genericEdge;
+        return this;
     }
 
     @Override
@@ -104,7 +123,6 @@ public class GenericEdge extends GenericElement implements Edge {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), source, target);
     }
 }

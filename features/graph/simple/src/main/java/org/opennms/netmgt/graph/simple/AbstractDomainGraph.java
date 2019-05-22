@@ -48,7 +48,6 @@ import com.google.common.base.MoreObjects;
  * Can be extended by a domain specific graph class.
  * It contains no data of it's own but operates on the data of it's wrapped Graph.
  */
-// TODO MVR enforce namespace
 // TODO MVR implement duplication detection (e.g. adding same vertex twice
 // and as well as adding different edges with different source/target vertices, should add each vertex only once,
 // maybe not here, but at some point that check should be implemented)
@@ -57,8 +56,7 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     private final GenericGraph delegate;
 
     public AbstractDomainGraph(String namespace) {
-        this.delegate = new GenericGraph();
-        this.delegate.setNamespace(namespace);
+        this.delegate = new GenericGraph(namespace);
     }
 
     public AbstractDomainGraph(GenericGraph genericGraph) {
@@ -192,10 +190,6 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     @Override
     public String getNamespace() {
         return delegate.getNamespace();
-    }
-
-    public void setNamespace(String namespace) {
-        delegate.setNamespace(namespace);
     }
 
     public void setDescription(String description) {

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,31 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.api.generic;
 
-import org.opennms.netmgt.graph.api.VertexRef;
+import java.util.HashMap;
+import java.util.Map;
 
-public class SimpleVertexRef implements VertexRef {
+class MapBuilder<K,V> {
 
-    private final String namespace;
-    private final String id;
+    private final Map<K,V> map;
 
-    public SimpleVertexRef(VertexRef ref) {
-        this(ref.getNamespace(), ref.getId());
+    MapBuilder() {
+        map = new HashMap<>();
     }
 
-    public SimpleVertexRef(String namespace, String id) {
-        this.namespace = namespace;
-        this.id = id;
+    public MapBuilder<K,V> withProperties(Map<K, V> properties){
+        this.map.putAll(properties);
+        return this;
     }
 
-    @Override
-    public String getNamespace() {
-        return namespace;
+    public MapBuilder<K,V> withProperty(K key, V value){
+        this.map.put(key, value);
+        return this;
     }
 
-    @Override
-    public String getId() {
-        return id;
+    public Map<K,V> build(){
+        return map;
     }
 }

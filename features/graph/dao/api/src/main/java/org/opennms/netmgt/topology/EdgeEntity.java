@@ -28,39 +28,60 @@
 
 package org.opennms.netmgt.topology;
 
-import javax.persistence.CascadeType;
+import java.util.Objects;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Entity
 @DiscriminatorValue("edge")
 public class EdgeEntity extends AbstractGraphEntity {
 
-    // TODO MVR we don't need this. This could be a property instead (due to vertex-ref), so source or target may not exist in the table
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name="source_vertex_id", referencedColumnName = "id", nullable = false, updatable = true)
-    private VertexEntity source;
+    @Embedded
+    @AttributeOverrides(value = {
+            @AttributeOverride(name = "namespace", column = @Column(name = "source_vertex_namespace")),
+            @AttributeOverride(name = "id", column = @Column(name = "source_vertex_id"))
+    })
+    private VertexRefEntity source;
 
-    // TODO MVR we don't need this. This could be a property instead (due to vertex-ref)
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name="target_vertex_id", referencedColumnName = "id", nullable = false, updatable = true)
-    private VertexEntity target;
+    @Embedded
+    @AttributeOverrides(value = {
+            @AttributeOverride(name = "namespace", column = @Column(name = "target_vertex_namespace")),
+            @AttributeOverride(name = "id", column = @Column(name = "target_vertex_id"))
+    })
+    private VertexRefEntity target;
 
-    public VertexEntity getSource() {
+    public VertexRefEntity getSource() {
         return source;
     }
 
-    public void setSource(VertexEntity source) {
+    public void setSource(String namespace, String id) {
+        Objects.requireNonNull(namespace);
+        Objects.requireNonNull(id);
+        setSource(new VertexRefEntity(namespace, id));
+    }
+
+    public void setSource(VertexRefEntity source) {
+        Objects.requireNonNull(source, "source can not be null");
         this.source = source;
     }
 
-    public VertexEntity getTarget() {
+    public VertexRefEntity getTarget() {
         return target;
     }
 
-    public void setTarget(VertexEntity target) {
+    public void setTarget(String namespace, String id) {
+        Objects.requireNonNull(namespace);
+        Objects.requireNonNull(id);
+        setTarget(new VertexRefEntity(namespace, id));
+    }
+
+    public void setTarget(VertexRefEntity target) {
+        Objects.requireNonNull(target, "target can not be null");
         this.target = target;
     }
 }

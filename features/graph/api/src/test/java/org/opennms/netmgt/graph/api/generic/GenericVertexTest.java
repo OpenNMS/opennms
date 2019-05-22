@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,28 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph.api.generic;
 
-import java.util.Objects;
+import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import org.junit.Test;
 
-import org.opennms.netmgt.graph.dao.api.EntityProperties;
+public class GenericVertexTest {
 
-@Entity
-@DiscriminatorValue("vertex")
-public class VertexEntity extends AbstractGraphEntity {
-
-    /** returns the business id of the VertexEntity. For the database id call VertexEntity#getDbId. */
-    public String getId() {
-        return this.getPropertyValue(EntityProperties.ID);
-    }
-
-    /** returns the business id of the VertexEntity. For the database id call VertexEntity#getDbId. */
-    public void setId(String id) {
-        Objects.requireNonNull(id);
-        this.setProperty(EntityProperties.ID, String.class, id);
+    @Test
+    public void genericVertexMustHaveANamespaceAndId() {
+        new GenericVertex("not null", "not null"); // should throw no exception
+        assertThrowsException(NullPointerException.class, ()-> new GenericVertex((String)null, (String)null));
+        assertThrowsException(NullPointerException.class, ()-> new GenericVertex("not null", null));
+        assertThrowsException(NullPointerException.class, ()-> new GenericVertex((String)null, "not null"));
     }
 
 }

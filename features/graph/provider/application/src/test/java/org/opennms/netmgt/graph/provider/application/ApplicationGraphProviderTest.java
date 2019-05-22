@@ -64,6 +64,7 @@ public class ApplicationGraphProviderTest {
         final ApplicationGraphProvider provider = new ApplicationGraphProvider(new MockSessionUtils(), dao);
         final Graph<ApplicationVertex, SimpleEdge> graph = provider.loadGraph();
         assertEquals(30, graph.getVertices().size());
+        assertEquals(25, graph.getEdges().size());
 
         for(OnmsApplication app: applications) {
             for(OnmsMonitoredService service : app.getMonitoredServices()) {

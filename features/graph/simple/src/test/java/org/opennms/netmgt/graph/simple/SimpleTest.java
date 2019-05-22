@@ -47,7 +47,7 @@ public class SimpleTest {
 
     @Test
     public void verifyEdgeCopyConstructor() {
-        final SimpleEdge original = new SimpleEdge(createVertex("dummy", "1"), createVertex("dummy", "2"));
+        final SimpleEdge original = new SimpleEdge("dummy", createVertex("dummy", "1"), createVertex("dummy", "2"));
         original.setLabel("label");
         final SimpleEdge copy = new SimpleEdge(original);
         Assert.assertEquals(original.getId(), copy.getId());
@@ -55,9 +55,6 @@ public class SimpleTest {
         Assert.assertEquals(original.getSource(), copy.getSource());
         Assert.assertEquals(original.getTarget(), copy.getTarget());
         Assert.assertEquals(original, copy);
-        Assert.assertNotSame(original.getSource(), copy.getSource());
-        Assert.assertNotSame(original.getTarget(), copy.getTarget());
     }
-
 
 }

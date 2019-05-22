@@ -41,7 +41,7 @@ public class GraphEntityTest {
 
         final VertexEntity vertex = new VertexEntity();
         vertex.setNamespace(graph.getNamespace());
-        vertex.setProperty(EntityProperties.ID, String.class, "v1");
+        vertex.setId("v1");
         graph.addVertex(vertex);
 
         Assert.assertSame(vertex, graph.getVertexByVertexId("v1"));

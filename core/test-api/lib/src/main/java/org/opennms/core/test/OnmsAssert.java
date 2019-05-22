@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
+import static org.junit.Assert.fail;
 
 public abstract class OnmsAssert {
 
@@ -39,6 +40,18 @@ public abstract class OnmsAssert {
         final List<?> aList = Arrays.asList(a);
         final List<?> bList = Arrays.asList(b);
         Assert.assertTrue(aList.containsAll(bList) && bList.containsAll(aList));
+    }
+
+    public static void assertThrowsException(Class<? extends Throwable> expectedException, Runnable function) {
+        try {
+            function.run();
+        } catch(Exception e) {
+            if(!expectedException.isAssignableFrom(e.getClass())) {
+                fail(String.format("Expected exception: %s but was %s", expectedException.getName(), e.getClass().getName()));
+            }
+            return;
+        }
+        fail(String.format("Expected exception: %s but none was thrown.", expectedException.getName()));
     }
 
 }

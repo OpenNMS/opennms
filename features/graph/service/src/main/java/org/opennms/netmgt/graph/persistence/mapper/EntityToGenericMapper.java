@@ -33,7 +33,9 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.generic.GenericVertexRef;
 import org.opennms.netmgt.graph.persistence.converter.ConverterService;
+import org.opennms.netmgt.topology.EdgeEntity;
 import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.PropertyEntity;
@@ -56,14 +58,14 @@ public class EntityToGenericMapper {
     }
 
     public GenericGraph fromEntity(final GraphEntity graphEntity) {
-        final GenericGraph genericGraph = new GenericGraph();
+        final GenericGraph genericGraph = new GenericGraph(graphEntity.getNamespace());
         graphEntity.getProperties().forEach(property -> { // will set id and namespace
             final Object value = convert(property);
             genericGraph.setProperty(property.getName(), value);
         });
 
         graphEntity.getVertices().stream().forEach(vertexEntity -> {
-            final GenericVertex genericVertex = new GenericVertex();
+            final GenericVertex genericVertex = new GenericVertex(graphEntity.getNamespace(), vertexEntity.getProperty(GenericProperties.ID).getValue());
             vertexEntity.getProperties().forEach(property -> {  // will set id and namespace
                 final Object value = convert(property);
                 genericVertex.setProperty(property.getName(), value);
@@ -73,9 +75,11 @@ public class EntityToGenericMapper {
 
         graphEntity.getEdges().stream().forEach(edgeEntity -> {
             final GenericEdge genericEdge = new GenericEdge(
-                    genericGraph.getVertex(edgeEntity.getSource().getProperty(GenericProperties.ID).getValue()),
-                    genericGraph.getVertex(edgeEntity.getTarget().getProperty(GenericProperties.ID).getValue()));
-            edgeEntity.getProperties().forEach(property -> {
+                    edgeEntity.getNamespace(),
+                    new GenericVertexRef(edgeEntity.getSource().getNamespace(), edgeEntity.getSource().getId()),
+                    new GenericVertexRef(edgeEntity.getTarget().getNamespace(), edgeEntity.getTarget().getId()));
+            edgeEntity.getProperties().stream()
+                    .forEach(property -> {
                 final Object value = convert(property);
                 genericEdge.setProperty(property.getName(), value);
             });

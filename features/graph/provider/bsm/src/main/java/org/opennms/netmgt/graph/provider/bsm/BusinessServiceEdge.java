@@ -39,7 +39,7 @@ public class BusinessServiceEdge extends SimpleEdge {
     private final static String PROPERTY_WEIGHT = "weight";
 
     public BusinessServiceEdge(GraphEdge graphEdge, AbstractBusinessServiceVertex source, AbstractBusinessServiceVertex target) {
-        super(source, target);
+        super(BusinessServiceGraphProvider.NAMESPACE, source, target);
         setMapFunction(graphEdge.getMapFunction());
         setWeight(graphEdge.getWeight());
         // TODO MVR ToolTips are not yet supported
