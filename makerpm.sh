@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+exit 1
+
 MYDIR=`dirname $0`
 TOPDIR=`cd $MYDIR; pwd`
 
