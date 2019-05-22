@@ -38,8 +38,9 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,6 +48,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -71,8 +73,11 @@ public class SnmpProxyIT {
 
     @Autowired
     private LocationAwareSnmpClient locationAwareSnmpClient;
-    private ExecutorService executorService;
+
     private File tmpFile;
+    private int port;
+
+    private MockSnmpAgent mockSnmpAgent;
 
     @BeforeClass
     public static void setup() {
@@ -80,13 +85,16 @@ public class SnmpProxyIT {
     }
 
     @Before
-    public void setUp() {
-        executorService = Executors.newFixedThreadPool(1);
+    public void setUp() throws IOException, InterruptedException {
+        port = SocketUtils.findAvailableUdpPort();
+        mockSnmpAgent = MockSnmpAgent
+                .createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties").getURL(),
+                        "127.0.0.1/"+port);
     }
 
     @After
-    public void tearDown() {
-        executorService.shutdown();
+    public void tearDown() throws InterruptedException {
+        mockSnmpAgent.shutDownAndWait();
         tmpFile.delete();
     }
 
@@ -96,26 +104,40 @@ public class SnmpProxyIT {
      */
     @Test
     public void agentShouldUseConfiguredProxy() throws Exception {
-        int port = SocketUtils.findAvailableUdpPort();
-        UDPListener udpListener = new UDPListener(port);
-        executorService.submit(udpListener);
 
-        final List<SnmpObjId> snmpObjIds = Collections.singletonList(SnmpObjId.get(new int[]{port}));
+        final List<SnmpObjId> snmpObjIds = Collections.singletonList(SnmpObjId.get(".1.3.6.1.2.1.1.2"));
         Resource configuration = createConfiguration(port);
         SnmpPeerFactory snmpAgentConfigFactory = new SnmpPeerFactory(configuration);
 
         String targetHost = "169.254.1.1";
         final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(targetHost));
-        locationAwareSnmpClient.walk(agent, snmpObjIds)
+        final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
                 .withDescription("snmp:walk")
                 .execute();
 
-        assertTrue(udpListener.wasCalled);
+        boolean answerReceived = false;
+
+
+        while (true) {
+            try {
+                future.get(1, TimeUnit.SECONDS)
+                        .forEach(res -> {
+                            LOG.info("[{}].[{}] = {}", res.getBase(), res.getInstance(), res.getValue());
+                        });
+                answerReceived = true;
+                break;
+            } catch (TimeoutException e) {
+                // pass
+            }
+            System.out.print(".");
+        }
+
+        assertTrue(answerReceived);
     }
 
     /** Create a temp file with the configuration and the given port. */
     private PathResource createConfiguration(int port) throws IOException {
-        ClassPathResource resource = new ClassPathResource("org/netmgt/snmp/SnmpProxyIT.xml");
+        ClassPathResource resource = new ClassPathResource("org/opennms/netmgt/snmp/SnmpProxyIT.xml");
         String xml = new String ( Files.readAllBytes(resource.getFile().toPath()));
         xml = xml.replace("${port}", Integer.toString(port));
         File configFile = File.createTempFile(this.getClass().getSimpleName(), ".xml");
@@ -124,36 +146,6 @@ public class SnmpProxyIT {
 
         LOG.info("Configuration from org/netmgt/snmp/SnmpProxyIT.xml:\n" + xml);
         return new PathResource(configFile.toPath());
-    }
-
-    /**
-     * Simple UDP Listener. Listens to the given port until it receives a package, afterwards it terminates.
-     */
-    private static class UDPListener implements Runnable {
-
-        private static final Logger LOG = LoggerFactory.getLogger(SnmpProxyIT.class);
-
-        private boolean wasCalled = false;
-        private int port;
-
-        UDPListener(int port) {
-            this.port = port;
-        }
-
-        public void run() {
-            try {
-                LOG.info("Listening on UDP Port " + port);
-                byte[] buf = new byte[256];
-                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                DatagramSocket udpSocket = new DatagramSocket(port);
-                udpSocket.receive(packet);
-                String msg = new String(packet.getData()).trim();
-                LOG.info("Message from " + packet.getAddress().getHostAddress() + ": " + msg);
-                this.wasCalled = true;
-            } catch (IOException e) {
-                LOG.error("An exception occurred on socket for port " + port, e);
-            }
-        }
     }
 
 }

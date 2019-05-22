@@ -70,7 +70,7 @@
 
       <attribute name="proxy-host" type="string" use="optional">
         <annotation>
-          <documentation>The proxy host to use when communiciating with this
+          <documentation>The proxy host to use when communicating with this
           agent</documentation>
         </annotation>
       </attribute>
