@@ -1,0 +1,153 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.endpoints.grafana.service;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.endpoints.grafana.api.GrafanaClient;
+import org.opennms.netmgt.endpoints.grafana.api.GrafanaClientFactory;
+import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint;
+import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpointException;
+import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpointService;
+import org.opennms.netmgt.endpoints.grafana.persistence.api.GrafanaEndpointDao;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+
+public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
+
+    private final GrafanaEndpointDao endpointDao;
+    private final GrafanaClientFactory clientFactory;
+    private final SessionUtils sessionUtils;
+
+    public GrafanaEndpointServiceImpl(final GrafanaEndpointDao endpointDao, final GrafanaClientFactory clientFactory, final SessionUtils sessionUtils) {
+        this.endpointDao = Objects.requireNonNull(endpointDao);
+        this.clientFactory = Objects.requireNonNull(clientFactory);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
+    }
+
+    @Override
+    public List<GrafanaEndpoint> findEndpoints() {
+        return sessionUtils.withReadOnlyTransaction(() -> Lists.newArrayList(endpointDao.findAll()));
+    }
+
+    @Override
+    public void updateEndpoint(GrafanaEndpoint endpoint) throws NoSuchElementException {
+        sessionUtils.withTransaction(() -> {
+            final GrafanaEndpoint persistedEndpoint = findEndpoint(endpoint.getId());
+            persistedEndpoint.merge(endpoint);
+            validate(endpoint);
+            endpointDao.update(persistedEndpoint);
+            return null;
+        });
+    }
+
+    @Override
+    public void saveEndpoint(GrafanaEndpoint newGrafanaEndpoint) throws NoSuchElementException {
+        sessionUtils.withTransaction(() -> {
+            validate(newGrafanaEndpoint);
+            endpointDao.save(newGrafanaEndpoint);
+            return null;
+        });
+    }
+
+    @Override
+    public void deleteEndpoint(GrafanaEndpoint grafanaEndpoint) throws NoSuchElementException {
+        sessionUtils.withTransaction(() -> {
+            GrafanaEndpoint endpoint = findEndpoint(grafanaEndpoint.getId());
+            endpointDao.delete(endpoint);
+            return true;
+        });
+    }
+
+    @Override
+    public GrafanaEndpoint getEndpointById(Long endpointId) {
+        return sessionUtils.withReadOnlyTransaction(() -> findEndpoint(endpointId));
+    }
+
+    @Override
+    public GrafanaEndpoint getEndpointByUid(String uid) {
+        return sessionUtils.withReadOnlyTransaction(() -> findEndpoint(uid));
+    }
+
+    @Override
+    public GrafanaClient getClient(GrafanaEndpoint grafanaEndpoint) {
+        return clientFactory.createClient(grafanaEndpoint);
+    }
+
+    @Override
+    public GrafanaClient getClient(String uid) throws NoSuchElementException {
+        return clientFactory.createClient(findEndpoint(uid));
+    }
+
+    private GrafanaEndpoint findEndpoint(Long endpointId) throws NoSuchElementException {
+        final GrafanaEndpoint grafanaEndpoint = endpointDao.get(endpointId);
+        if (grafanaEndpoint == null) {
+            new NoSuchElementException("Could not find grafana endpoint with id '" + endpointId + "'");
+        }
+        return grafanaEndpoint;
+    }
+
+    private GrafanaEndpoint findEndpoint(String uid) throws NoSuchElementException {
+        final GrafanaEndpoint grafanaEndpoint = endpointDao.getByUid(uid);
+        if (grafanaEndpoint == null) {
+            new NoSuchElementException("Could not find grafana endpoint with uid '" + uid + "'");
+        }
+        return grafanaEndpoint;
+    }
+
+    // TODO MVR verify uniqueness of UID
+    private static void validate(GrafanaEndpoint endpoint) {
+        if (Strings.isNullOrEmpty(endpoint.getUrl())) {
+            throw new GrafanaEndpointException("url", "Url must be provided"); // TODO MVR generify text
+        }
+        try {
+            new URL(endpoint.getUrl());
+        } catch (MalformedURLException e) {
+            throw new GrafanaEndpointException("url", "Not a valid url");
+        }
+        if (Strings.isNullOrEmpty(endpoint.getApiKey())) {
+            throw new GrafanaEndpointException("apiKey", "apiKey must be provided"); // TODO MVR generify text
+        }
+        if (Strings.isNullOrEmpty(endpoint.getUid())) {
+            throw new GrafanaEndpointException("uid", "Uid must be provided"); // TODO MVR generify text
+        }
+        if (endpoint.getConnectTimeout() != null && endpoint.getConnectTimeout() < 0) {
+            throw new GrafanaEndpointException("connectTimeout", "Value must be >= 0");
+        }
+        if (endpoint.getReadTimeout() != null && endpoint.getReadTimeout() < 0) {
+            throw new GrafanaEndpointException("readTimeout", "Value must be >= 0");
+        }
+    }
+}

@@ -178,6 +178,7 @@
                             org.opennms.netmgt.dao.stats,
                             org.opennms.netmgt.flows.classification.persistence.impl
                         </Private-Package>
+                        <!-- TODO MVR add grafana endpoint persistence here -->
                     </instructions>
                 </configuration>
             </plugin>
