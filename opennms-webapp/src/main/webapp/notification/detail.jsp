@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,7 +60,7 @@
     }
     catch( NumberFormatException e ) {
         throw new NoticeIdNotFoundException("The notice ID must be an integer.",
-					     noticeIdString );
+					     WebSecurityUtils.sanitizeString(noticeIdString) );
     }
     
     Notification notice = repository.getNotification(noticeID);
