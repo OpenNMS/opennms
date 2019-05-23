@@ -301,9 +301,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
+        <version>2.10.4</version>
         <configuration>
-          <maxmemory>2g</maxmemory>
+          <maxmemory>3g</maxmemory>
           <additionalparam>-Xdoclint:none</additionalparam>
           <failOnError>false</failOnError>
           <tags>
