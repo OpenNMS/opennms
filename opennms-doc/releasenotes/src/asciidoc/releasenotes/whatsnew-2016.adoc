@@ -141,6 +141,22 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.21]
+
+==== Release Meridian-2016.1.21
+
+Release 2016.1.21 is a small update to 2016.1.20 that has a few UI fixes and security updates, as well as a fix for a memory leak
+in WS-Man monitoring.
+
+The codename for 2016.1.21 is _North Pole Gnomonic_.
+
+===== Bug
+
+* Node detail page renders with no content when invalid node ID specified (Issue http://issues.opennms.org/browse/NMS-10679[NMS-10679])
+* CVE-2018-20433: XXE Vulnerability in c3p0 < 0.9.5.3 (Issue http://issues.opennms.org/browse/NMS-10694[NMS-10694])
+* Memory leak in WS-Man (Issue http://issues.opennms.org/browse/NMS-10696[NMS-10696])
+* Reflected XSS vulnerability in notification/detail.jsp and outage/detail.htm (Issue http://issues.opennms.org/browse/NMS-10707[NMS-10707])
+
 [releasenotes-changelog-Meridian-2016.1.20]
 
 ==== Release Meridian-2016.1.20
