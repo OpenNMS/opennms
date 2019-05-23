@@ -28,19 +28,15 @@
 
 package org.opennms.netmgt.snmp;
 
-import static junit.framework.TestCase.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -75,9 +71,10 @@ public class SnmpProxyIT {
     private LocationAwareSnmpClient locationAwareSnmpClient;
 
     private File tmpFile;
-    private int port;
+    private int port1;
+    private int port2;
 
-    private MockSnmpAgent mockSnmpAgent;
+    private List<MockSnmpAgent> mockSnmpAgents = new ArrayList<>();
 
     @BeforeClass
     public static void setup() {
@@ -86,65 +83,68 @@ public class SnmpProxyIT {
 
     @Before
     public void setUp() throws IOException, InterruptedException {
-        port = SocketUtils.findAvailableUdpPort();
-        mockSnmpAgent = MockSnmpAgent
+        port1 = setupPortAndStartAgent();
+        port2 = setupPortAndStartAgent();
+    }
+
+    private int setupPortAndStartAgent() throws IOException, InterruptedException {
+        int port = SocketUtils.findAvailableUdpPort();
+        MockSnmpAgent mockSnmpAgent = MockSnmpAgent
                 .createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties").getURL(),
-                        "127.0.0.1/"+port);
+                        "127.0.0.1/" + port);
+        mockSnmpAgents.add(mockSnmpAgent);
+        return port;
     }
 
     @After
     public void tearDown() throws InterruptedException {
-        mockSnmpAgent.shutDownAndWait();
+        for (MockSnmpAgent mockSnmpAgent : mockSnmpAgents) {
+            mockSnmpAgent.shutDownAndWait();
+        }
         tmpFile.delete();
     }
 
-    /**
-     * We want to make sure that the SnmpClient calls the configured proxy host and not the target destination. Therefor
-     * we set up an UDP socket listener and check if 127.0.0.1 (the proxy host) is called.
-     */
     @Test
     public void agentShouldUseConfiguredProxy() throws Exception {
 
-        final List<SnmpObjId> snmpObjIds = Collections.singletonList(SnmpObjId.get(".1.3.6.1.2.1.1.2"));
-        Resource configuration = createConfiguration(port);
+        Resource configuration = createConfiguration();
         SnmpPeerFactory snmpAgentConfigFactory = new SnmpPeerFactory(configuration);
 
-        String targetHost = "169.254.1.1";
+        agentShouldUseConfiguredProxy(snmpAgentConfigFactory, "169.254.1.1"); // proxy1
+        agentShouldUseConfiguredProxy(snmpAgentConfigFactory, "169.254.1.2"); // proxy2
+    }
+
+    public void agentShouldUseConfiguredProxy(final SnmpPeerFactory snmpAgentConfigFactory,
+                                              final String targetHost) throws Exception {
+
+        final List<SnmpObjId> snmpObjIds = Collections.singletonList(SnmpObjId.get(".1.3.6.1.2.1.1.2"));
+
         final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(targetHost));
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
                 .withDescription("snmp:walk")
                 .execute();
 
-        boolean answerReceived = false;
-
-
-        while (true) {
-            try {
-                future.get(1, TimeUnit.SECONDS)
-                        .forEach(res -> {
-                            LOG.info("[{}].[{}] = {}", res.getBase(), res.getInstance(), res.getValue());
-                        });
-                answerReceived = true;
-                break;
-            } catch (TimeoutException e) {
-                // pass
-            }
-            System.out.print(".");
-        }
-
-        assertTrue(answerReceived);
+        future.get(1, TimeUnit.SECONDS)
+                .forEach(res -> {
+                    LOG.info("[{}].[{}] = {}", res.getBase(), res.getInstance(), res.getValue());
+                });
+        // if we get to here all is good, test passed => we have received an answer from the proxy, otherwise a
+        // TimeoutException is thrown.
     }
 
-    /** Create a temp file with the configuration and the given port. */
-    private PathResource createConfiguration(int port) throws IOException {
+    /**
+     * Create a temp file with the configuration and the given ports.
+     */
+    private PathResource createConfiguration() throws IOException {
         ClassPathResource resource = new ClassPathResource("org/opennms/netmgt/snmp/SnmpProxyIT.xml");
-        String xml = new String ( Files.readAllBytes(resource.getFile().toPath()));
-        xml = xml.replace("${port}", Integer.toString(port));
+        String xml = new String(Files.readAllBytes(resource.getFile().toPath()));
+        xml = xml.replace("${port1}", Integer.toString(port1));
+        xml = xml.replace("${port2}", Integer.toString(port2));
         File configFile = File.createTempFile(this.getClass().getSimpleName(), ".xml");
         tmpFile = configFile; // to be deleted later
         Files.write(configFile.toPath(), xml.getBytes());
 
-        LOG.info("Configuration from org/netmgt/snmp/SnmpProxyIT.xml:\n" + xml);
+        LOG.info("Configuration from org/opennms/netmgt/snmp/SnmpProxyIT.xml:\n" + xml);
         return new PathResource(configFile.toPath());
     }
 
