@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,7 +55,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @author nalvarez
  */
 public class JettyUserIdentityFilter implements Filter {
-
     private static final Logger LOG = LoggerFactory.getLogger(JettyUserIdentityFilter.class);
 
     @Override
@@ -109,20 +108,29 @@ public class JettyUserIdentityFilter implements Filter {
             this.authentication = authentication;
         }
 
+        @Override
         public String getAuthMethod() {
             return null;
         }
 
+        @Override
         public UserIdentity getUserIdentity() {
             return new UserIdentityStub(authentication);
         }
 
+        @Override
         public boolean isUserInRole(UserIdentity.Scope scope, String role) {
             return false;
         }
 
+        @Override
         public void logout() {
             // pass
+        }
+
+        @Override
+        public org.eclipse.jetty.server.Authentication logout(final ServletRequest request) {
+            return null;
         }
     }
 
