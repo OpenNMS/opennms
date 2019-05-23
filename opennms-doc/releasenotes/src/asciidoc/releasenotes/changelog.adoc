@@ -2,6 +2,49 @@
 
 === Changelog
 
+[releasenotes-changelog-24.1.0]
+
+==== Release 24.1.0
+
+Release 24.1.0 is the latest stable release of OpenNMS.
+It contains a bunch of bug fixes and a few enhancements, including support for OpenTracing in the sink API and a rework of geocoding services.
+
+For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.0/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
+
+The codename for 24.1.0 is _link:https://marvel-movies.fandom.com/wiki/J.A.R.V.I.S.[J.A.R.V.I.S.]_.
+
+===== Bug
+
+* Thresholds should work without restart when putting nodes into categories (Issue http://issues.opennms.org/browse/NMS-9811[NMS-9811])
+* When editing a surveillance category from Admin flow, lists of nodes are not sorted by node label (Issue http://issues.opennms.org/browse/NMS-10654[NMS-10654])
+* health:check command times out when a health check command gets stuck (Issue http://issues.opennms.org/browse/NMS-10667[NMS-10667])
+* Vaadin bundles stuck intermittently stuck in "Waiting" state (Issue http://issues.opennms.org/browse/NMS-10668[NMS-10668])
+* Table in "Manage Minions" page fails to load (Issue http://issues.opennms.org/browse/NMS-10670[NMS-10670])
+* Default load threshold contains caluculation error (Issue http://issues.opennms.org/browse/NMS-10671[NMS-10671])
+* Can not delete node due to database table constraint (Issue http://issues.opennms.org/browse/NMS-10674[NMS-10674])
+* Missing Indication of Sync Needed for Requisitions (Issue http://issues.opennms.org/browse/NMS-10675[NMS-10675])
+* `.rpmnew`, `.rpmsave`, and `.dpkg-dist` files not erroring out properly (Issue http://issues.opennms.org/browse/NMS-10676[NMS-10676])
+* Some config files should be marked `%config` (rather than `%config(noreplace)`) in RPMs (Issue http://issues.opennms.org/browse/NMS-10677[NMS-10677])
+* Memory Leak on Drools while reloading config (Issue http://issues.opennms.org/browse/NMS-10678[NMS-10678])
+* Node detail page renders with no content when invalid node ID specified (Issue http://issues.opennms.org/browse/NMS-10679[NMS-10679])
+* Installing the opennms package installs Oracle JDK 8 instead of OpenJDK 11 on Ubuntu (Issue http://issues.opennms.org/browse/NMS-10680[NMS-10680])
+* Apparent memory leak in JMX collector, possibly restricted to "weird" JMX transports (Issue http://issues.opennms.org/browse/NMS-10684[NMS-10684])
+* Install guide for Java versions is misleading (Issue http://issues.opennms.org/browse/NMS-10688[NMS-10688])
+* Java configuration is ignored on Ubuntu/Debian (Issue http://issues.opennms.org/browse/NMS-10693[NMS-10693])
+* CVE-2018-20433: XXE Vulnerability in c3p0 < 0.9.5.3 (Issue http://issues.opennms.org/browse/NMS-10694[NMS-10694])
+* Memory leak in WS-Man (Issue http://issues.opennms.org/browse/NMS-10696[NMS-10696])
+* EditInRequisitionIT flapping (Issue http://issues.opennms.org/browse/NMS-10698[NMS-10698])
+* Jetty HTTPS selectors can become unresponsive following CancelledKeyException (Issue http://issues.opennms.org/browse/NMS-10701[NMS-10701])
+* Reflected XSS vulnerability in notification/detail.jsp and outage/detail.htm (Issue http://issues.opennms.org/browse/NMS-10707[NMS-10707])
+
+===== Enhancement
+
+* Enable extraction of match groups from regex matches in Event.Mask.Varbind.Vbvalue (Issue http://issues.opennms.org/browse/NMS-10626[NMS-10626])
+* Tag "root cause" alarm when providing feedback (Issue http://issues.opennms.org/browse/HZN-1492[HZN-1492])
+* Rework the GeocoderService-Implementations (Issue http://issues.opennms.org/browse/HZN-1520[HZN-1520])
+* Meta-Data Documentation Format Wrong (Issue http://issues.opennms.org/browse/HZN-1557[HZN-1557])
+* Add OpenTracing support for Sink API (Issue http://issues.opennms.org/browse/HZN-1558[HZN-1558])
+
 [releasenotes-changelog-24.0.0]
 
 ==== Release 24.0.0
