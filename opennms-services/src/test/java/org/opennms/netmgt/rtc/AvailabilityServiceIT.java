@@ -31,6 +31,7 @@ package org.opennms.netmgt.rtc;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
+import java.util.List;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -54,7 +55,7 @@ import org.opennms.netmgt.xml.rtc.Node;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 
@@ -80,9 +81,6 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
 
     @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
-
-    @Autowired
-    private TransactionTemplate m_transactionTemplate;
 
     private MockDatabase m_mockDatabase;
 
@@ -166,7 +164,60 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
         assertEquals(2, category.getNode().size());
     }
 
+    // See NMS-10458
+    @Test
+    @Transactional
+    public void verifyAvailabilityIfEverythingIsDown() {
+        final MockNetwork mockNetwork = new MockNetwork();
+        mockNetwork.createStandardNetwork();
+        m_mockDatabase.populate(mockNetwork);
+
+        final RTCCategory rtcCat = EasyMock.createNiceMock(RTCCategory.class);
+        EasyMock.expect(rtcCat.getLabel()).andReturn("TEST").anyTimes();
+        EasyMock.expect(rtcCat.getNodes()).andReturn(Lists.newArrayList(1, 2, 3)).anyTimes();
+        EasyMock.replay(rtcCat);
+
+        final long now = System.currentTimeMillis();
+        final long oneDayAgo = now - (1000 * 60 * 60 * 24);
+
+        // Create Outage for Node 1
+        createOutage(mockNetwork.getService(1, "192.168.1.1", "ICMP"), oneDayAgo);
+
+        // Create Outages for Node 2
+        createOutage(mockNetwork.getService(2, "192.168.1.3", "ICMP"), oneDayAgo);
+        createOutage(mockNetwork.getService(2, "192.168.1.3", "HTTP"), oneDayAgo);
+
+        // Calculate Availability for category
+        final EuiLevel euiLevel = m_availabilityService.getEuiLevel(rtcCat);
+        assertEquals(1, euiLevel.getCategory().size());
+
+        // Verify Category Availability
+        final Category category = euiLevel.getCategory().get(0);
+        assertEquals("TEST", category.getCatlabel());
+        assertEquals(70.0f, category.getCatvalue(), 0.0001);
+
+        // Verify Nodes
+        final List<Node> nodes = category.getNode();
+        assertEquals(3, nodes.size());
+        verifyNode(nodes.get(0), 1, 75.0f);
+        verifyNode(nodes.get(1), 2, 0.0f);
+        verifyNode(nodes.get(2), 3, 100.0f);
+    }
+
     private OnmsMonitoredService toMonitoredService(MockService svc) {
         return m_monitoredServiceDao.get(svc.getNodeId(), svc.getAddress(), svc.getSvcName());
+    }
+
+    private void createOutage(MockService mockService, long oneDayAgo) {
+        final OnmsMonitoredService monitoredService = toMonitoredService(mockService);
+        final OnmsOutage outage = new OnmsOutage();
+        outage.setMonitoredService(monitoredService);
+        outage.setIfLostService(new Date(oneDayAgo));
+        m_outageDao.save(outage);
+    }
+
+    private static void verifyNode(Node node, long nodeId, float availability) {
+        assertEquals(nodeId, node.getNodeid());
+        assertEquals(availability, node.getNodevalue(), 0.0001);
     }
 }

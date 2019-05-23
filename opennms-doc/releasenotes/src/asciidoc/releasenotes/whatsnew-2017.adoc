@@ -174,6 +174,23 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.17]
+
+==== Release Meridian-2017.1.17
+
+Release 2017.1.17 is a small update to 2017.1.16 that has a few UI fixes and security updates, as well as a fix for memory leaks
+in WS-Man monitoring and the JMX collector.
+
+The codename for 2017.1.17 is _Old Naval Observatory meridian_.
+
+===== Bug
+
+* Node detail page renders with no content when invalid node ID specified (Issue http://issues.opennms.org/browse/NMS-10679[NMS-10679])
+* Apparent memory leak in JMX collector, possibly restricted to "weird" JMX transports (Issue http://issues.opennms.org/browse/NMS-10684[NMS-10684])
+* CVE-2018-20433: XXE Vulnerability in c3p0 < 0.9.5.3 (Issue http://issues.opennms.org/browse/NMS-10694[NMS-10694])
+* Memory leak in WS-Man (Issue http://issues.opennms.org/browse/NMS-10696[NMS-10696])
+* Reflected XSS vulnerability in notification/detail.jsp and outage/detail.htm (Issue http://issues.opennms.org/browse/NMS-10707[NMS-10707])
+
 [releasenotes-changelog-Meridian-2017.1.16]
 
 ==== Release Meridian-2017.1.16
