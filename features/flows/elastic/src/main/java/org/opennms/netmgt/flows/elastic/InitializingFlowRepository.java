@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.elastic;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
@@ -82,23 +83,90 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters) {
-        return delegate.getTopNApplications(N, includeOther, filters);
+    public CompletableFuture<List<String>> getApplications(String matchingPrefix, long limit, List<Filter> filters) {
+        return delegate.getApplications(matchingPrefix, limit, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return delegate.getTopNApplicationsSeries(N, step, includeOther, filters);
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications,
+                                                                                            long step,
+                                                                                            boolean includeOther,
+                                                                                            List<Filter> filters) {
+        return delegate.getApplicationSeries(applications, step, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters) {
-        return delegate.getTopNConversations(N, filters);
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNApplicationSummaries(N, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
-        return delegate.getTopNConversationsSeries(N, step, filters);
+    public CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications,
+                                                                                   boolean includeOther,
+                                                                                   List<Filter> filters) {
+        return delegate.getApplicationSummaries(applications, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNApplicationSeries(N, step, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getConversations(String locationPattern, String protocolPattern,
+                                                            String lowerIPPattern, String upperIPPattern,
+                                                            String applicationPattern, long limit,
+                                                            List<Filter> filters) {
+        return delegate.getConversations(locationPattern, protocolPattern, lowerIPPattern, upperIPPattern,
+                applicationPattern, limit, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversationSummaries(int N, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNConversationSummaries(N, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getConversationSummaries(Set<String> conversations, boolean includeOther, List<Filter> filters) {
+        return delegate.getConversationSummaries(conversations, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
+        return delegate.getConversationSeries(conversations, step, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNConversationSeries(N, step, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getHosts(String regex, long limit, List<Filter> filters) {
+        return delegate.getHosts(regex, limit, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther,
+                                                                                List<Filter> filters) {
+        return delegate.getTopNHostSummaries(N, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters) {
+        return delegate.getHostSummaries(hosts, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step,
+                                                                                     boolean includeOther,
+                                                                                     List<Filter> filters) {
+        return delegate.getHostSeries(hosts, step, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNHostSeries(N, step, includeOther, filters);
     }
 
     private void ensureInitialized() {

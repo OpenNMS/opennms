@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.opennms.netmgt.flows.api.Flow;
 
 import com.google.gson.annotations.SerializedName;
@@ -55,6 +58,13 @@ public class FlowDocument {
      */
     @SerializedName("host")
     private String host;
+
+    /**
+     * The set of all hosts that are involved in this flow. This should include at a minimum the src and dst IP
+     * addresses and may also include host names for those IPs.
+     */
+    @SerializedName("hosts")
+    private Set<String> hosts = new LinkedHashSet<>();
 
     /**
      * Exported location.
@@ -282,6 +292,10 @@ public class FlowDocument {
      */
     @SerializedName("node_src")
     private NodeDocument nodeSrc;
+    
+    public void addHost(String host) {
+        hosts.add(host);
+    }
 
     public long getTimestamp() {
         return timestamp;
@@ -305,6 +319,14 @@ public class FlowDocument {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public Set<String> getHosts() {
+        return hosts;
+    }
+
+    public void setHosts(Set<String> hosts) {
+        this.hosts = hosts;
     }
 
     public String getLocation() {
@@ -352,6 +374,7 @@ public class FlowDocument {
     }
 
     public void setDstAddr(String dstAddr) {
+        addHost(dstAddr);
         this.dstAddr = dstAddr;
     }
 
@@ -512,6 +535,7 @@ public class FlowDocument {
     }
 
     public void setSrcAddr(String srcAddr) {
+        addHost(srcAddr);
         this.srcAddr = srcAddr;
     }
 

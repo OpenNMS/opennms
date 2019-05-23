@@ -33,7 +33,6 @@ import java.util.Objects;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -49,6 +48,7 @@ import com.google.gson.GsonBuilder;
  */
 public class ConversationKeyUtils {
     private static final Gson gson = new GsonBuilder().create();
+    private static final ConversationKey otherKey = new ConversationKey("Other", -1, "Other", "Other", "Other");
 
     public static ConversationKey fromJsonString(String json) {
         final Object[] array = gson.fromJson(json, Object[].class);
@@ -57,6 +57,10 @@ public class ConversationKeyUtils {
         }
         return new ConversationKey((String)array[0], ((Number)array[1]).intValue(),
                 (String)array[2], (String)array[3], (String)array[4]);
+    }
+    
+    public static ConversationKey forOther() {
+        return otherKey;
     }
 
     public static String getConvoKeyAsJsonString(FlowDocument document) {

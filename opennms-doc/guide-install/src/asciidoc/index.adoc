@@ -14,8 +14,6 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
-include::text/java-environment.adoc[]
-
 // Basic Setup OpenNMS
 include::text/basic-setup-opennms/setting-up-opennms.adoc[]
 

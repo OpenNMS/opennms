@@ -62,4 +62,10 @@ public class TrafficSummary<T> {
     public void setBytesOut(long bytesOut) {
         this.bytesOut = bytesOut;
     }
+    
+    public void copyBytes(TrafficSummary trafficSummary) {
+        Objects.requireNonNull(trafficSummary);
+        bytesIn = trafficSummary.getBytesIn();
+        bytesOut = trafficSummary.getBytesOut();
+    }
 }
