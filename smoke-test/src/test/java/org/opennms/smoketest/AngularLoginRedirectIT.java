@@ -45,15 +45,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
-public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
+public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
 
     private static final int SLEEP_TIME = 2000;
 
@@ -89,9 +87,9 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
                         sleep(SLEEP_TIME); // encounter for UI Delay
                         findElementById("refresh-requisitions").click();
                         sleep(SLEEP_TIME); // encounter for UI Delay
-                        m_driver.findElement(By.xpath("//button[@data-bb-handler='reloadAll']")).click();
+                        driver.findElement(By.xpath("//button[@data-bb-handler='reloadAll']")).click();
                         sleep(SLEEP_TIME); // encounter for UI Delay
-                        m_driver.findElement(By.xpath("//button[@data-bb-handler='confirm']")).click();
+                        driver.findElement(By.xpath("//button[@data-bb-handler='confirm']")).click();
                         sleep(SLEEP_TIME); // encounter for UI Delay
                     }),
             new Check(
@@ -119,7 +117,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
 
             // Go to Page
             login();
-            m_driver.get(getBaseUrl() + "opennms/" + eachCheck.url);
+            driver.get(getBaseUrlInternal() + "opennms/" + eachCheck.url);
 
             // Verify Page loaded
             LOG.info("{}: Verify that page loaded", eachCheck.url);
@@ -153,21 +151,20 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
             sleep(SLEEP_TIME);
 
             // Verify we have been forwarded to the login page
-            new WebDriverWait(m_driver, 5).until(
-                    (Predicate<WebDriver>) input -> {
-                        LOG.info("{}: Verify redirect to login.jsp occurred", eachCheck.url);
-                        return Objects.equals(getBaseUrl() + "opennms/login.jsp?session_expired=true", m_driver.getCurrentUrl());
-                    }
+            new WebDriverWait(driver, 5).until(input -> {
+                    LOG.info("{}: Verify redirect to login.jsp occurred", eachCheck.url);
+                    return Objects.equals(getBaseUrlInternal() + "opennms/login.jsp?session_expired=true", driver.getCurrentUrl());
+                }
             );
             LOG.info("{}: Test passed", eachCheck.url);
         }
     }
 
     private void simulateSessionTimeout() throws IOException {
-        final Set<Cookie> cookies = m_driver.manage().getCookies();
+        final Set<Cookie> cookies = driver.manage().getCookies();
         for (Cookie eachCookie : cookies) {
             if (eachCookie.getName().equalsIgnoreCase("JSESSIONID")) {
-                final HttpGet httpGet = new HttpGet(getBaseUrl() + "opennms/j_spring_security_logout");
+                final HttpGet httpGet = new HttpGet(getBaseUrlExternal() + "opennms/j_spring_security_logout");
                 httpGet.addHeader("Cookie", eachCookie.getName() + "=" + eachCookie.getValue());
 
                 try (CloseableHttpClient client = HttpClientBuilder.create().disableRedirectHandling().build();
@@ -177,6 +174,6 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
                 }
             }
         }
-        m_driver.manage().deleteAllCookies();
+        driver.manage().deleteAllCookies();
     }
 }

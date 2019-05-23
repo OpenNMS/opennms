@@ -5,13 +5,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class FocusedVertexIT {
+public class FocusedVertexIT extends OpenNMSSeleniumIT {
 
     private TopologyIT.TopologyUIPage topologyUIPage;
 
     @Before
     public void setUp() {
-        topologyUIPage = new TopologyIT.TopologyUIPage(new OpenNMSSeleniumTestCase(), "");
+        topologyUIPage = new TopologyIT.TopologyUIPage(this, "");
     }
 
     @Test

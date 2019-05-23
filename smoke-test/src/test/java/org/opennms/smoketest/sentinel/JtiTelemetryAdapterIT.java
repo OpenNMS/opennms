@@ -32,12 +32,9 @@ import static org.opennms.smoketest.minion.JtiTelemetryIT.sendJtiTelemetryMessag
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.file.Path;
 import java.util.function.Function;
 
-import org.opennms.smoketest.utils.TargetRoot;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.smoketest.stacks.NetworkProtocol;
 
 /**
  * Verifies that JTI messages are persisted to newts if set up correctly.
@@ -45,25 +42,8 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
 public class JtiTelemetryAdapterIT extends AbstractAdapterIT {
 
     @Override
-    protected void customizeTestEnvironment(TestEnvironmentBuilder builder) {
-        // Enable JTI Adapter
-        final Path opennmsSourceEtcDirectory = new TargetRoot(getClass()).getPath("system-test-resources", "etc");
-        builder.withSentinelEnvironment()
-                .addFile(getClass().getResource("/sentinel/features-newts-jti.xml"), "deploy/features.xml")
-                .addFile(opennmsSourceEtcDirectory.resolve("telemetryd-adapters/junos-telemetry-interface.groovy"), "etc/junos-telemetry-interface.groovy")
-                .addFiles(opennmsSourceEtcDirectory.resolve("resource-types.d"), "etc/resource-types.d")
-                .addFiles(opennmsSourceEtcDirectory.resolve("datacollection"), "etc/datacollection")
-                .addFile(opennmsSourceEtcDirectory.resolve("datacollection-config.xml"), "etc/datacollection-config.xml");
-
-        // Enable JTI-Listener
-        builder.withMinionEnvironment()
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000-jti.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-jti.cfg")
-        ;
-    }
-
-    @Override
     protected void sendTelemetryMessage() throws IOException {
-        final InetSocketAddress minionListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 50000, "udp");
+        final InetSocketAddress minionListenerAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.JTI);
         sendJtiTelemetryMessage(minionListenerAddress);
     }
 

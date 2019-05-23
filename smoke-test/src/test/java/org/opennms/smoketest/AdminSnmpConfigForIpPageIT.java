@@ -41,12 +41,13 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.smoketest.selenium.ResponseData;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
+public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() throws Exception {
@@ -62,7 +63,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     public void verifyLocationDropdown() throws IOException, InterruptedException {
         boolean created = false;
         try {
-            HttpGet httpGet = new HttpGet(buildUrl("/api/v2/monitoringLocations/count"));
+            HttpGet httpGet = new HttpGet(buildUrlExternal("/api/v2/monitoringLocations/count"));
             ResponseData response = getRequest(httpGet);
             long locationCount = Long.parseLong(response.getResponseText());
 
@@ -273,7 +274,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         findElementByName("cancelButton").click();
         // this takes you to the admin page
         findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");
-        assertTrue(m_driver.getCurrentUrl().endsWith("/admin/index.jsp"));
+        assertTrue(driver.getCurrentUrl().endsWith("/admin/index.jsp"));
     }
 
     /**

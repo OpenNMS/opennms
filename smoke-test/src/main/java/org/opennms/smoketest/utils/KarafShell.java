@@ -37,8 +37,6 @@ import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.function.Function;
 
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +53,7 @@ public class KarafShell {
     private final String password;
 
     public KarafShell(InetSocketAddress sshAddress) {
-        this(sshAddress, OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME, OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD);
+        this(sshAddress, "admin", "admin");
     }
 
     public KarafShell(InetSocketAddress sshAddress, String username, String password) {

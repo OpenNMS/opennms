@@ -38,24 +38,29 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 
-public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
+public class ClassificationRestIT {
+
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = getBaseUrl();
-        RestAssured.port = getServerHttpPort();
+        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+        RestAssured.port = stack.opennms().getWebPort();
         RestAssured.basePath = "/opennms/rest/classifications";
-        RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+        RestAssured.authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
         setEnabled(1, true);
         setEnabled(2, true);
     }

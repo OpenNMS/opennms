@@ -37,7 +37,7 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class NotificationsPageIT extends OpenNMSSeleniumTestCase {
+public class NotificationsPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         notificationsPage();
@@ -52,20 +52,20 @@ public class NotificationsPageIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void testAllLinksArePresent() {
         findElementByLink("Your outstanding notices");
         findElementByLink("All outstanding notices");
         findElementByLink("All acknowledged notices");
     }
 
-    @Test 
-    public void testAllFormsArePresent() throws InterruptedException {
+    @Test
+    public void testAllFormsArePresent() {
         findElementByXpath("//button[@id='btn_search_by_notice' and @type='submit']");
         findElementByXpath("//button[@id='btn_search_by_user' and @type='submit']");
     }
 
     @Test
-    public void testAllLinks() throws InterruptedException {
+    public void testAllLinks() {
         findElementByLink("Your outstanding notices").click();
         findElementByXpath("//span[@class='label label-default' and contains(text(), 'admin was notified')]");
         findElementByLink("[Remove all]");

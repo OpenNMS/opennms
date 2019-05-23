@@ -3,7 +3,7 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: opennms/build-env:jdk8_1.2
+      - image: opennms/build-env:8-11_1.3
   integration-test-executor:
     machine: true
   smoke-test-executor:
@@ -77,6 +77,55 @@ commands:
           command: |
             docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
 
+  run-smoke-tests:
+    description: "Run the smoke tests"
+    parameters:
+      minimal:
+        default: false
+        type: boolean
+    steps:
+      - run:
+          name: Load Horizon OCI image
+          command: |
+            cd opennms-container/horizon
+            docker image load -i images/container.oci
+      - run:
+          name: Load Minion OCI image
+          command: |
+            cd opennms-container/minion
+            docker image load -i images/container.oci
+      - run:
+          name: Load Sentinel OCI image
+          command: |
+            cd opennms-container/sentinel
+            docker image load -i images/container.oci
+      - run:
+          name: Smoke Tests
+          no_output_timeout: 30m
+          command: |
+            .circleci/scripts/smoke.sh << parameters.minimal >>
+      - run:
+          name: Gather test artifacts
+          when: always
+          command: |
+            mkdir -p ~/test-results
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/ \;
+            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/ \;
+            mkdir -p ~/test-artifacts/recordings
+            cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings || true
+            cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
+            cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results
+          destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-artifacts
+          destination: test-artifacts
+
 workflows:
   build-deploy:
     jobs:
@@ -96,7 +145,21 @@ workflows:
       - integration-test:
           requires:
             - build
-      - smoke-test:
+      - smoke-test-full:
+          requires:
+            - build-horizon-oci
+            - build-minion-oci
+            - build-sentinel-oci
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+      - smoke-test-minimal:
           requires:
             - build-horizon-oci
             - build-minion-oci
@@ -109,7 +172,6 @@ workflows:
               only:
                 - master
                 - develop
-
       - publish-minion-oci:
           requires:
             - build-minion-oci
@@ -139,10 +201,18 @@ jobs:
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
-          name: Compile
+          name: Compile OpenNMS
           command: |
             mvn clean -DskipTests=true
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true
+      - run:
+          name: Compile smoke tests
+          # Compile the smoke tests, but don't run them yet
+          # We want to make sure that they compile and also leverage the caching that is setup here
+          # so that the artifacts required to run the smoke tests are cached as well without the need
+          # to maintain another cache
+          command: |
+            cd smoke-test && mvn install -DskipTests=true -DskipITs=true
       - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:
@@ -156,11 +226,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: Install OpenJDK 11
-          command: |
-            echo 'skip_if_unavailable=True' >> /etc/yum.conf
-            yum install -y java-11-openjdk java-11-openjdk-devel
       - run:
           name: Build RPMs
           command: |
@@ -301,38 +366,27 @@ jobs:
             find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/ \;
       - store_test_results:
           path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results
+          destination: test-results
 
-  smoke-test:
+  smoke-test-full:
     executor: smoke-test-executor
-    parallelism: 2
+    parallelism: 4
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: Load Horizon OCI image
-          command: |
-            cd opennms-container/horizon
-            docker image load -i images/container.oci
-      - run:
-          name: Load Minion OCI image
-          command: |
-            cd opennms-container/minion
-            docker image load -i images/container.oci
-      - run:
-          name: Load Sentinel OCI image
-          command: |
-            cd opennms-container/sentinel
-            docker image load -i images/container.oci
-      - run:
-          name: Smoke Tests
-          command: |
-            .circleci/scripts/smoke.sh
-      - run:
-          name: Gather test results
-          when: always
-          command: |
-            mkdir -p ~/test-results
-            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/ \;
-            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/ \;
-      - store_test_results:
-          path: ~/test-results
+      - run-smoke-tests
+
+  smoke-test-minimal:
+    executor: smoke-test-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          minimal: true
+

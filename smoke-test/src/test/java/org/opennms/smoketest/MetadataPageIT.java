@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class MetadataPageIT extends OpenNMSSeleniumTestCase {
+public class MetadataPageIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(MetadataPageIT.class);
     private static final String UNPRIVILEDGED_USERNAME = "foo";
     private static final String UNPRIVILEDGED_PASSWORD = "bar";
@@ -53,15 +53,15 @@ public class MetadataPageIT extends OpenNMSSeleniumTestCase {
         LOG.debug("Creating node...");
         final String node =
                 "<node type=\"A\" label=\"TestNode\" foreignSource=\"SmokeTests\" foreignId=\"TestNode\">" +
-                "<labelSource>H</labelSource>" +
-                "<sysContact>Me</sysContact>" +
-                "<sysDescription>PDP-8</sysDescription>" +
-                "<sysLocation>German DevJam 2019</sysLocation>" +
-                "<sysName>TestNode</sysName>" +
-                "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
-                "<createTime>2019-02-05T13:25:00.123-04:00</createTime>" +
-                "<lastCapsdPoll>2019-02-05T13:20:00.456-04:00</lastCapsdPoll>" +
-                "</node>";
+                        "<labelSource>H</labelSource>" +
+                        "<sysContact>Me</sysContact>" +
+                        "<sysDescription>PDP-8</sysDescription>" +
+                        "<sysLocation>German DevJam 2019</sysLocation>" +
+                        "<sysName>TestNode</sysName>" +
+                        "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+                        "<createTime>2019-02-05T13:25:00.123-04:00</createTime>" +
+                        "<lastCapsdPoll>2019-02-05T13:20:00.456-04:00</lastCapsdPoll>" +
+                        "</node>";
         sendPost("rest/nodes", node, 201);
         LOG.debug("Node created!");
         LOG.debug("Creating an interface...");
@@ -111,7 +111,7 @@ public class MetadataPageIT extends OpenNMSSeleniumTestCase {
         LOG.debug("handleAlerm: expectedText={}", expectedText);
 
         try {
-            Alert alert = this.m_driver.switchTo().alert();
+            Alert alert = this.driver.switchTo().alert();
             String alertText = alert.getText();
             if (expectedText != null) {
                 Assert.assertEquals(expectedText, alertText);
@@ -172,7 +172,7 @@ public class MetadataPageIT extends OpenNMSSeleniumTestCase {
 
     private void loginUnpriviledgedUser() {
         logout();
-        this.m_driver.get(this.getBaseUrl() + "opennms/login.jsp");
+        this.driver.get(this.getBaseUrlInternal() + "opennms/login.jsp");
         this.enterText(By.name("j_username"), UNPRIVILEDGED_USERNAME);
         this.enterText(By.name("j_password"), UNPRIVILEDGED_PASSWORD);
         this.findElementByName("Login").click();
@@ -186,7 +186,7 @@ public class MetadataPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testAssetPage() throws Exception {
         // visit the node's page
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
 
         // go to the metadata page
         findElementByLink("Meta-Data").click();
@@ -219,7 +219,7 @@ public class MetadataPageIT extends OpenNMSSeleniumTestCase {
         waitUntil(pageContainsText("valueC3"));
 
         // visit the node's page to click the interface 10.10.10.10
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
         findElementByLink("10.10.10.10").click();
         // go to the metadata page
         findElementByLink("Meta-Data").click();
@@ -229,7 +229,7 @@ public class MetadataPageIT extends OpenNMSSeleniumTestCase {
         waitUntil(pageContainsText("valueD1"));
 
         // visit the node's page to click the service ICMP
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
         findElementByLink("ICMP").click();
         // go to the metadata page
         findElementByLink("Meta-Data").click();
@@ -242,7 +242,7 @@ public class MetadataPageIT extends OpenNMSSeleniumTestCase {
         loginUnpriviledgedUser();
 
         // visit the node's page
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
 
         // go to the metadata page
         findElementByLink("Meta-Data").click();

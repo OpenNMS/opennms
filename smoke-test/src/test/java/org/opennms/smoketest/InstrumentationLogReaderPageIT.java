@@ -37,7 +37,7 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class InstrumentationLogReaderPageIT extends OpenNMSSeleniumTestCase {
+public class InstrumentationLogReaderPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         adminPage();
@@ -45,7 +45,7 @@ public class InstrumentationLogReaderPageIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testInstrumentationLogReaderPage() throws Exception {
+    public void testInstrumentationLogReaderPage() {
         enterText(By.name("searchString"), "test");
         assertEquals("test", findElementByName("searchString").getAttribute("value"));
         findElementByXpath("//button[@type='submit' and text()='Submit']").click();
@@ -54,7 +54,7 @@ public class InstrumentationLogReaderPageIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testSortingLinks() throws InterruptedException {
+    public void testSortingLinks() {
         findElementByLink("Collections").click();
         findElementByXpath("//a[text()='Collections ^']").click();
         findElementByXpath("//a[text()='Collections v']").click();

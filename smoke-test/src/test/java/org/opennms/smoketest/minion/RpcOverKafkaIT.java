@@ -34,113 +34,98 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.containsString;
 
 import java.io.PrintStream;
-import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.StackModel;
+import org.opennms.smoketest.utils.CommandTestUtils;
 import org.opennms.smoketest.utils.RestClient;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
-import org.opennms.test.system.api.utils.SshClient;
+import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class RpcOverKafkaIT {
-    
-    private static final String LOCALHOST = "127.0.0.1";
-    private static TestEnvironment m_testEnvironment;
-    private static RestClient restClient;
-    private InetSocketAddress opennmsKarafSshAddr;
     private static final Logger LOG = LoggerFactory.getLogger(RpcOverKafkaIT.class);
-    
+
     @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().all().kafka();
-            builder.withOpenNMSEnvironment().addFile(
-                    RpcOverKafkaIT.class.getResource("/opennms.properties.d/kafka-rpc.properties"),
-                    "etc/opennms.properties.d/kafka-rpc.properties");
-            builder.withMinionEnvironment()
-                   .addFile(RpcOverKafkaIT.class.getResource("/featuresBoot.d/kafka-rpc.boot"), "etc/featuresBoot.d/kafka.boot");
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            m_testEnvironment = builder.build();
-            return m_testEnvironment;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
+    public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withIpcStrategy(IpcStrategy.KAFKA)
+            .build());
 
-    @Before
-    public void checkForDockerAndLoadExecutor() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-        if (m_testEnvironment == null) {
-            return;
-        }
-        final InetSocketAddress opennmsHttp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
-        restClient = new RestClient(opennmsHttp);
-        opennmsKarafSshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
-    }
-    
+    private static final String LOCALHOST = "127.0.0.1";
+
     @Test
-    public void verifyKafkaRpcWithIcmpServiceDetection() throws Exception {
+    public void verifyKafkaRpcWithTcpServiceDetection() {
         // Add node and interface with minion location.
-        DetectorsOnMinionIT.addRequisition(restClient, "MINION", LOCALHOST);
+        addRequisition(stack.opennms().getRestClient(), stack.minion().getLocation(), LOCALHOST);
         await().atMost(3, MINUTES).pollInterval(15, SECONDS)
-        .until(this::detectIcmpAtLocationMinion, containsString("'ICMP' WAS detected on 127.0.0.1"));
-
-
+                .until(this::detectTcpAtLocationMinion, containsString("'TCP' WAS detected on 127.0.0.1"));
     }
 
-    private String detectIcmpAtLocationMinion() throws Exception {
-
-        try (final SshClient sshClient = new SshClient(opennmsKarafSshAddr, "admin", "admin")) {
+    private String detectTcpAtLocationMinion() throws Exception {
+        try (final SshClient sshClient = new SshClient(stack.opennms().getSshAddress(), "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
-            pipe.println("detect -l MINION ICMP 127.0.0.1");
+            pipe.println(String.format("detect -l %s TCP 127.0.0.1 port=8201", stack.minion().getLocation()));
             pipe.println("logout");
             await().atMost(90, SECONDS).until(sshClient.isShellClosedCallable());
             String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
-            shellOutput = StringUtils.substringAfter(shellOutput, "detect -l MINION ICMP 127.0.0.1");
+            shellOutput = StringUtils.substringAfter(shellOutput, "detect -l");
             LOG.info("Detect output: {}", shellOutput);
             return shellOutput;
         }
     }
 
     @Test
-    public void verifyKafkaRpcWithJdbcServiceDetection() throws Exception {
-
+    public void verifyKafkaRpcWithJdbcServiceDetection() {
         await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
                 .until(this::detectJdbcAtLocationMinion, containsString("'JDBC' WAS detected"));
     }
-    
 
     private String detectJdbcAtLocationMinion() throws Exception {
-        // Retrieve Postgres address and add form an url.
-        String postgresAddress = m_testEnvironment.getContainerInfo(NewTestEnvironment.ContainerAlias.POSTGRES).networkSettings().ipAddress();
-        String jdbcUrl = String.format("url=jdbc:postgresql://%s:5432/opennms", postgresAddress);
-        try (final SshClient sshClient = new SshClient(opennmsKarafSshAddr, "admin", "admin")) {
+        // Retrieve Postgres address and add form a URL
+        String jdbcUrl = String.format("jdbc:postgresql://%s:5432/opennms", OpenNMSContainer.DB_ALIAS);
+        try (final SshClient sshClient = stack.opennms().ssh()) {
             // Perform JDBC service detection on Minion
             final PrintStream pipe = sshClient.openShell();
-            pipe.println("detect -l MINION JDBC "+ postgresAddress + " " + jdbcUrl);
+            pipe.println(String.format("detect -l %s JDBC 127.0.0.1 url=%s user=opennms password=opennms", stack.minion().getLocation(), jdbcUrl));
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
             // Sanitize the output
             String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
-            shellOutput = StringUtils.substringAfter(shellOutput, "detect -l MINION JDBC");
+            shellOutput = StringUtils.substringAfter(shellOutput, "detect -l");
             LOG.info("Detect output: {}", shellOutput);
             return shellOutput;
         }
     }
 
+    public static void addRequisition(RestClient client, String location, String ipAddress) {
+        Requisition requisition = new Requisition("foreignSource");
+        List<RequisitionInterface> interfaces = new ArrayList<>();
+        RequisitionInterface requisitionInterface = new RequisitionInterface();
+        requisitionInterface.setIpAddr(ipAddress);
+        requisitionInterface.setManaged(true);
+        requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
+        interfaces.add(requisitionInterface);
+        RequisitionNode node = new RequisitionNode();
+        node.setNodeLabel(ipAddress);
+        node.setLocation(location);
+        node.setInterfaces(interfaces);
+        node.setForeignId("foreignId");
+        requisition.insertNode(node);
+
+        client.addOrReplaceRequisition(requisition);
+        client.importRequisition("foreignSource");
+    }
 
 }

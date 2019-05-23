@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AdminDataCollectionSnmpInterfacesIT extends OpenNMSSeleniumTestCase {
+public class AdminDataCollectionSnmpInterfacesIT extends OpenNMSSeleniumIT {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(AdminDataCollectionSnmpInterfacesIT.class);
@@ -103,7 +103,7 @@ public class AdminDataCollectionSnmpInterfacesIT extends OpenNMSSeleniumTestCase
             LOG.debug("interface created!");
         }
 
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
     }
 
     /**
@@ -126,11 +126,11 @@ public class AdminDataCollectionSnmpInterfacesIT extends OpenNMSSeleniumTestCase
         findElementByLink("Admin").click();
         findElementByLink("Configure SNMP Data Collection per Interface").click();
         // 5 columns: ifIndex, ifType, ifDescr, ifName, ifAlias
-        List<WebElement> interfaces = m_driver.findElements(By.cssSelector("onms-interfaces-config td.ng-binding"));
+        List<WebElement> interfaces = driver.findElements(By.cssSelector("onms-interfaces-config td.ng-binding"));
         Assert.assertNotNull(interfaces);
         Assert.assertEquals(20, interfaces.size());
         // 1 column: collect
-        List<WebElement> collect = m_driver.findElements(By.cssSelector("onms-interfaces-config td input"));
+        List<WebElement> collect = driver.findElements(By.cssSelector("onms-interfaces-config td input"));
         Assert.assertNotNull(collect);
         Assert.assertEquals(4, collect.size());
         // 1st Row: collection enabled

@@ -36,80 +36,43 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.PrintStream;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
+import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EventSinkIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventSinkIT.class);
-    private static final String SENDER_IP = "192.168.1.1";
-    protected static TestEnvironment m_testEnvironment;
 
     @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms().minion().kafka();
-            builder.withOpenNMSEnvironment()
-                    // Switch sink to Kafka using opennms-properties.d file
-                    .addFile(MinionHeartbeatOutageKafkaIT.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
-            builder.withMinionEnvironment()
-                    // Switch sink to Kafka using features.boot file
-                    .addFile(MinionHeartbeatOutageKafkaIT.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            m_testEnvironment = builder.build();
-            return m_testEnvironment;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDockerAndLoadExecutor() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
+    public static final OpenNMSStack stack = OpenNMSStack.MINION;
 
     @Test
-    public void canReceiveEvents() throws UnknownHostException {
+    public void canReceiveEvents() {
         Date startOfTest = new Date();
-        InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
-        assertTrue("failed to send event from Minion", sendEventsFromMinion(sshAddr));
-        InetSocketAddress pgsql = m_testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
-        HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
+        assertTrue("failed to send event from Minion", sendEventFromMinion());
+        HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
         final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(eventDao, new CriteriaBuilder(OnmsEvent.class).eq("eventUei", "uei.opennms.org/alarms/trigger")
                         .eq("eventSource", "karaf-shell").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
 
         assertNotNull("The event sent is not received at OpenNMS", onmsEvent);
-
     }
 
-
-    private boolean sendEventsFromMinion(InetSocketAddress sshAddr) {
-        try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
+    private boolean sendEventFromMinion() {
+        try (final SshClient sshClient = stack.minion().ssh()) {
             // Issue events:send command
             PrintStream pipe = sshClient.openShell();
             pipe.println("events:send -u 'uei.opennms.org/alarms/trigger'");

@@ -28,27 +28,14 @@
 
 package org.opennms.smoketest.sentinel;
 
-import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.smoketest.stacks.IpcStrategy;
 
 // Verifies that flows can be processed by a sentinel and are persisted to Elastic communicating via kafka
 public class FlowStackKafkaIT extends AbstractFlowIT {
 
     @Override
-    protected void customizeTestEnvironment(TestEnvironmentBuilder builder) {
-            builder
-                .minion()
-                .opennms()
-                .kafka()
-                .es6()
-                .sentinel();
-
-            // Enable Netflow 5 Adapter
-            builder.withSentinelEnvironment()
-                    .addFile(getClass().getResource("/sentinel/features-kafka.xml"), "deploy/features.xml");
-
-            // Enable Netflow 5 Listener
-            builder.withMinionEnvironment()
-                    .addFile(getClass().getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
+    protected IpcStrategy getIpcStrategy() {
+        return IpcStrategy.KAFKA;
     }
 
     @Override
