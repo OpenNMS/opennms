@@ -10,9 +10,11 @@
 target
 .classpath
 .externalToolBuilders
+.factorypath
 .project
 .settings
 .springBeans
+.vscode
 .DS_Store
 build.properties
 *.iml
