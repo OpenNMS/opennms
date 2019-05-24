@@ -29,7 +29,7 @@
 /**
  * @author ms043660 (Malatesh.Sudarshan@cerner.com)
  */
-package org.opennms.netmgt.eventd.sink;
+package org.opennms.features.events.sink.module;
 
 import java.util.Objects;
 
@@ -43,13 +43,13 @@ import org.opennms.netmgt.xml.event.Log;
 /**
  * @author Malatesh Sudarshan
  */
-public class EventModule extends AbstractXmlSinkModule<Event, Log> {
+public class EventSinkModule extends AbstractXmlSinkModule<Event, Log> {
 
     public static final String MODULE_ID = "Events";
 
     private final EventdConfig m_config;
 
-    public EventModule(EventdConfig config) {
+    public EventSinkModule(EventdConfig config) {
         super(Log.class);
         this.m_config = config;
     }

@@ -574,6 +574,7 @@
                 <feature>opennms-alarm-history-elastic</feature>
                 <feature>org.opennms.features.topologies.service.api</feature>
                 <feature>opennms-identity</feature>
+                <feature>opennms-send-event-command</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>

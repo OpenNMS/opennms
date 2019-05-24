@@ -37,6 +37,7 @@ import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
+import org.opennms.features.events.sink.module.EventSinkModule;
 import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -65,7 +66,7 @@ public class EventSinkConsumer implements MessageConsumer<Event, Log> {
 
     @Override
     public SinkModule<Event, Log> getModule() {
-        return new EventModule(m_config);
+        return new EventSinkModule(m_config);
     }
 
     @Override
