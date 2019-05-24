@@ -34,7 +34,6 @@ import java.util.Objects;
 import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
-import org.opennms.netmgt.graph.api.generic.GenericVertexRef;
 
 /**
  * Acts as a domain specific view on a Edge.
@@ -46,8 +45,8 @@ public class SimpleEdge implements Edge {
     protected GenericEdge delegate;
 
     public SimpleEdge(String namespace, VertexRef source, VertexRef target) {
-        delegate = new GenericEdge(namespace, new GenericVertexRef(source.getNamespace(), source.getId()),
-                new GenericVertexRef(target.getNamespace(), target.getId()));
+        delegate = new GenericEdge(namespace, new VertexRef(source.getNamespace(), source.getId()),
+                new VertexRef(target.getNamespace(), target.getId()));
     }
 
     public SimpleEdge(String namespace, SimpleVertex source, SimpleVertex target) {

@@ -30,7 +30,6 @@ package org.opennms.netmgt.graph.provider.bsm;
 
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
-import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 
 public class BusinessServiceEdge extends SimpleEdge {
@@ -48,14 +47,6 @@ public class BusinessServiceEdge extends SimpleEdge {
 
     private BusinessServiceEdge(BusinessServiceEdge edgeToClone) {
         super(edgeToClone);
-    }
-
-    public AbstractBusinessServiceVertex getBusinessServiceSource() {
-        return (AbstractBusinessServiceVertex) getSource();
-    }
-
-    public AbstractBusinessServiceVertex getBusinessServiceTarget() {
-        return (AbstractBusinessServiceVertex) getTarget();
     }
 
     private void setMapFunction(MapFunction mapFunction){

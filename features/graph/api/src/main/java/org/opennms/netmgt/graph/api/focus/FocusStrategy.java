@@ -31,11 +31,11 @@ package org.opennms.netmgt.graph.api.focus;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.Vertex;
-import org.opennms.netmgt.graph.api.VertexRef;
 
 import com.google.common.collect.Lists;
 
@@ -51,13 +51,15 @@ public class FocusStrategy {
             return new ArrayList<>();
         }
         final Vertex vertex = g.getVertices().get(0);
-        return Lists.newArrayList(vertex);
+        return Lists.newArrayList(vertex.getVertexRef());
     };
 
     public static final Focus SPECIFIC(Collection<String> vertexIds) {
         return graphContext -> {
-            final List<VertexRef> list = graphContext.getGraph().resolveVertices(vertexIds);
-            return list;
+            final List<Vertex> list = graphContext.getGraph().resolveVertices(vertexIds);
+            return list.stream()
+                    .map(Vertex::getVertexRef)
+                    .collect(Collectors.toList());
         };
     }
 }

@@ -30,7 +30,13 @@ package org.opennms.netmgt.graph.api;
 
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
-public interface Vertex extends VertexRef {
+public interface Vertex {
 
     GenericVertex asGenericVertex();
+
+    VertexRef getVertexRef();
+
+    String getNamespace();
+
+    String getId();
 }
