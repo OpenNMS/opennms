@@ -31,8 +31,12 @@ package org.opennms.netmgt.telemetry.common.utils;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.PTRRecord;
@@ -43,11 +47,16 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jdk.nashorn.internal.runtime.options.Option;
-
 public class DnsUtils {
     private static final Logger LOG = LoggerFactory.getLogger(DnsUtils.class);
+    public static final String DNS_PRIMARY_SERVER = "org.opennms.features.telemetry.dns.primaryServer";
+    public static final String DNS_SECONDARY_SERVER = "org.opennms.features.telemetry.dns.secondaryServer";
+    public static final String DNS_ENABLED = "org.opennms.features.telemetry.dns.enabled";
     private static ExtendedResolver resolver;
+
+    private static String primaryServer = null, secondaryServer = null;
+    private static boolean enabled = false;
+    static BundleContext bundleContext;
 
     static {
         try {
@@ -55,14 +64,47 @@ public class DnsUtils {
         } catch (UnknownHostException e) {
             LOG.debug("Cannot create resolver: {}", e.getMessage());
         }
+
+        try {
+            bundleContext = FrameworkUtil.getBundle(DnsUtils.class).getBundleContext();
+        } catch (NullPointerException e) {
+            LOG.debug("BundleContext not available: {}", e.getMessage());
+        }
     }
 
-    public static synchronized void setDnsServers(String ... dnsServers) {
+
+    private static void checkSystemProperties() {
+        if (bundleContext == null) {
+            return;
+        }
+
+        final String primaryServer = bundleContext.getProperty(DNS_PRIMARY_SERVER);
+        final String secondaryServer = bundleContext.getProperty(DNS_SECONDARY_SERVER);
+        final boolean enabled = Boolean.parseBoolean(bundleContext.getProperty(DNS_ENABLED));
+
+        if (enabled != DnsUtils.enabled || !Objects.equals(primaryServer, DnsUtils.primaryServer) || !Objects.equals(secondaryServer, DnsUtils.secondaryServer)) {
+            DnsUtils.enabled = enabled;
+            DnsUtils.primaryServer = primaryServer;
+            DnsUtils.secondaryServer = secondaryServer;
+            if (DnsUtils.enabled) {
+                setDnsServers(DnsUtils.primaryServer, DnsUtils.secondaryServer);
+            } else {
+                setDnsServers();
+            }
+        }
+    }
+
+    public static synchronized void setDnsServers(String... dnsServers) {
         try {
             if (dnsServers == null || dnsServers.length == 0) {
                 resolver = new ExtendedResolver();
             } else {
-                resolver = new ExtendedResolver(dnsServers);
+                final String [] notNullDnsServers = Arrays.stream(dnsServers)
+                        .filter(e -> e != null)
+                        .collect(Collectors.toList())
+                        .toArray(new String[]{});
+
+                resolver = new ExtendedResolver(notNullDnsServers);
             }
         } catch (UnknownHostException e) {
             LOG.debug("Cannot create resolver for given servers {}: {}", dnsServers, e.getMessage());
@@ -78,6 +120,8 @@ public class DnsUtils {
     }
 
     public static Optional<String> reverseLookup(final InetAddress inetAddress) {
+        checkSystemProperties();
+
         final Lookup lookup = new Lookup(ReverseMap.fromAddress(inetAddress), Type.PTR);
 
         lookup.setResolver(resolver);
