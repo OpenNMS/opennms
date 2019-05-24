@@ -230,10 +230,10 @@ public class FlowRestServiceImpl implements FlowRestService {
 
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String flowUrl = getFlowGraphUrl();
-        final String formattedGraphUrl = flowUrl.replaceAll("\\$nodeId", queryParams.getFirst("exporterNode"))
-                .replaceAll("\\$ifIndex", queryParams.getFirst("ifIndex"))
-                .replaceAll("\\$start", queryParams.getFirst("start"))
-                .replaceAll("\\$end", queryParams.getFirst("end"));
+        final String formattedGraphUrl = flowUrl.replaceAll("\\$nodeId", getFirstNonNull(queryParams, "exporterNode"))
+                .replaceAll("\\$ifIndex",  getFirstNonNull(queryParams, "ifIndex"))
+                .replaceAll("\\$start",  getFirstNonNull(queryParams, "start"))
+                .replaceAll("\\$end",  getFirstNonNull(queryParams, "end"));
         graphUrlInfo.setFlowGraphUrl(formattedGraphUrl);
         graphUrlInfo.setFlowCount(flowCount);
         return graphUrlInfo;
@@ -417,6 +417,19 @@ public class FlowRestServiceImpl implements FlowRestService {
 
         response.setTimestamps(timestamps);
         response.setValues(values);
+    }
+  
+    /**
+     * Retrieve the first value from the map for the given key and convert this to a blank string
+     * if the resulting value is null, or does not exist in the map.
+     *
+     * @param map multivalued map
+     * @param key key to lookup
+     * @return non-null string
+     */
+    private static String getFirstNonNull(MultivaluedMap<String, String> map, String key) {
+        final String value = map.getFirst(key);
+        return value != null ? value : "";
     }
 
     private static boolean isNullOrEmptyOrContainsNullOrEmpty(Collection<String> collection) {

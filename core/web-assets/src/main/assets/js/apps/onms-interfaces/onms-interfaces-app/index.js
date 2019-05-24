@@ -146,6 +146,7 @@ angular.module('onms-interfaces', [
       $scope.snmpIfLoaded = true;
       $scope.snmpInterfaces = response.data.snmpInterface;
       $scope.setStylesForSnmpInterfaces();
+      $scope.updateFlowUrlsForSnmpInterfaces();
       $scope.filteredSnmpInterfaces = $scope.snmpInterfaces;
       $scope.updateFilteredSnmpInterfaces();
     }, function errorCallback(response) {
@@ -157,6 +158,29 @@ angular.module('onms-interfaces', [
     $scope.snmpInterfacesCurrentPage = 1;
     $scope.snmpInterfacesTotalItems = $scope.filteredSnmpInterfaces.length;
     $scope.snmpInterfacesNumPages = Math.ceil($scope.snmpInterfacesTotalItems / $scope.snmpInterfacesPageSize);
+  };
+
+  $scope.updateFlowUrlsForSnmpInterfaces = function() {
+    angular.forEach($scope.snmpInterfaces, function(intf) {
+      if (!intf.hasFlows) {
+        // No flows - nothing to do
+        return;
+      }
+
+      $http({
+        url: 'rest/flows/flowGraphUrl',
+        method: 'GET',
+        params: {
+          exporterNode: $scope.nodeId,
+          ifIndex: intf.ifIndex
+        }
+      }).then(function succeeded(response) {
+        // Update the flowGraphUrl on the associated interface
+        intf.flowGraphUrl = response.data.flowGraphUrl;
+      }, function errorCallback(response) {
+        // pass
+      });
+    });
   };
 
   $scope.setStylesForSnmpInterfaces = function() {
