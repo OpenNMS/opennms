@@ -777,7 +777,7 @@
                         "dst_addr": {
                             "type": "ip"
                         },
-                        "dest_addr_hostname": {
+                        "dst_addr_hostname": {
                             "type": "keyword"
                         },
                         "dst_mask_len": {

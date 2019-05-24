@@ -151,7 +151,7 @@ public class ParserBase {
         public void accept(final IPv4AddressValue value) {
             this.writer.writeStartDocument(value.getName());
             this.writer.writeString("address", value.getValue().getHostAddress());
-            DnsUtils.reverseLookup(value.getValue().getHostAddress()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
+            DnsUtils.reverseLookup(value.getValue()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
             this.writer.writeEndDocument();
         }
 
@@ -159,7 +159,7 @@ public class ParserBase {
         public void accept(final IPv6AddressValue value) {
             this.writer.writeStartDocument(value.getName());
             this.writer.writeString("address", value.getValue().getHostAddress());
-            DnsUtils.reverseLookup(value.getValue().getHostAddress()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
+            DnsUtils.reverseLookup(value.getValue()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
             this.writer.writeEndDocument();
         }
 

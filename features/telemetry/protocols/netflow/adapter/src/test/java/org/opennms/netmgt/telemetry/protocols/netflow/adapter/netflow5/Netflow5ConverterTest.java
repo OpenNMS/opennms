@@ -43,6 +43,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.bson.RawBsonDocument;
@@ -60,7 +61,7 @@ public class Netflow5ConverterTest {
     private Netflow5Converter nf5Converter = new Netflow5Converter();
 
     @Test
-    public void canParseNetflow9Flows() {
+    public void canParseNetflow5Flows() {
         // Generate flows from existing packet payloads
         List<Flow> flows = getFlowsForPayloadsInSession("/flows/netflow5.dat");
         MatcherAssert.assertThat(flows, hasSize(2));
@@ -74,11 +75,11 @@ public class Netflow5ConverterTest {
         assertThat(flow.getSamplingInterval(), is(0.0));
         assertThat(flow.getSamplingAlgorithm(), is(Flow.SamplingAlgorithm.Unassigned));
         MatcherAssert.assertThat(flow.getSrcAddr(), equalTo("10.0.2.2"));
-        MatcherAssert.assertThat(flow.getSrcAddrHostname(), equalTo("10.0.2.2"));
+        MatcherAssert.assertThat(flow.getSrcAddrHostname(), equalTo(Optional.empty()));
         MatcherAssert.assertThat(flow.getSrcPort(), equalTo(54435));
         MatcherAssert.assertThat(flow.getSrcMaskLen(), equalTo(0));
         MatcherAssert.assertThat(flow.getDstAddr(), equalTo("10.0.2.15"));
-        MatcherAssert.assertThat(flow.getDstAddrHostname(), equalTo("10.0.2.15"));
+        MatcherAssert.assertThat(flow.getDstAddrHostname(), equalTo(Optional.empty()));
         MatcherAssert.assertThat(flow.getDstPort(), equalTo(22));
         MatcherAssert.assertThat(flow.getDstMaskLen(), equalTo(0));
         MatcherAssert.assertThat(flow.getTcpFlags(), equalTo(16));
@@ -91,7 +92,7 @@ public class Netflow5ConverterTest {
         MatcherAssert.assertThat(flow.getPackets(), equalTo(5L));
         MatcherAssert.assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
         MatcherAssert.assertThat(flow.getNextHop(), equalTo("0.0.0.0"));
-        MatcherAssert.assertThat(flow.getNextHopHostname(), equalTo("0.0.0.0"));
+        MatcherAssert.assertThat(flow.getNextHopHostname(), equalTo(Optional.empty()));
         MatcherAssert.assertThat(flow.getVlan(), nullValue());
     }
 
