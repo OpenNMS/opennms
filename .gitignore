@@ -10,6 +10,7 @@
 target
 .classpath
 .externalToolBuilders
+.factorypath
 .project
 .settings
 .springBeans
