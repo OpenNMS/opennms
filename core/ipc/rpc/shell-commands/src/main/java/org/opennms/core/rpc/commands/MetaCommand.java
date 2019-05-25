@@ -47,8 +47,8 @@ import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.base.Strings;
 
@@ -57,7 +57,7 @@ import com.google.common.base.Strings;
 public class MetaCommand implements Action {
 
     @Reference
-    private TransactionOperations transactionOperations;
+    private SessionUtils sessionUtils;
 
     @Reference
     public NodeDao nodeDao;
@@ -66,7 +66,7 @@ public class MetaCommand implements Action {
     public EntityScopeProvider entityScopeProvider;
 
     @Option(name = "-n", aliases = "--node", description = "Node ID or FS:FID", required = true, multiValued = false)
-    private String node;
+    private String nodeRef;
 
     @Option(name = "-i", aliases = "--interface-address", description = "IP Interface Address", required = false, multiValued = false)
     private String interfaceAddress;
@@ -84,7 +84,7 @@ public class MetaCommand implements Action {
         for (final Map.Entry<String, Set<ContextKey>> group : grouped.entrySet()) {
             System.out.printf("%s:\n", group.getKey());
             for (final ContextKey contextKey : group.getValue()) {
-                System.out.printf("  %s='%s'\n", contextKey.getKey(), scope.get(contextKey).isPresent() ? scope.get(contextKey).get() : "");
+                System.out.printf("  %s='%s'\n", contextKey.getKey(), scope.get(contextKey).orElse(""));
             }
         }
     }
@@ -92,11 +92,11 @@ public class MetaCommand implements Action {
     @Override
     public Object execute() throws Exception {
 
-        transactionOperations.execute(status -> {
+        sessionUtils.withReadOnlyTransaction(() -> {
         try {
-                final OnmsNode onmsNode = this.nodeDao.get(this.node);
+                final OnmsNode onmsNode = this.nodeDao.get(this.nodeRef);
                 if (onmsNode == null) {
-                    System.out.printf("Cannot find node with ID/FS:FID=%s.\n", this.node);
+                    System.out.printf("Cannot find node with ID/FS:FID=%s.\n", this.nodeRef);
                     return null;
                 }
 

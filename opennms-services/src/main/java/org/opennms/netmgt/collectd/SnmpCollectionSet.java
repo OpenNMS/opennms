@@ -373,7 +373,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             CompletableFuture<CollectionTracker> future = m_client.walk(getAgentConfig(), getTracker())
                 .withDescription("SnmpCollectors for " + agent.getHostAddress())
                 .withLocation(getCollectionAgent().getLocationName())
-                .withTimeToLive(m_snmpCollection.getServiceParameters().getServiceInterval())
+                .withTimeToLive(m_snmpCollection.getServiceParameters().getTTL())
                 .execute();
 
             // wait for collection to finish

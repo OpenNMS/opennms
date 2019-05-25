@@ -290,7 +290,7 @@
          <parameter key="period" value="30000"/><!-- Service interval should be same as period -->
       </service>
       <service name="Minion-RPC" interval="30000" user-defined="false" status="on">
-         <parameter key="ttl" value="${service:ttl|interface:ttl|node:ttl|30000}"/><!-- TTL should be same as period -->
+         <parameter key="ttl" value="30000"/><!-- TTL should be same as period -->
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
          <parameter key="ds-name" value="minion-rpc"/>
       </service>

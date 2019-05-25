@@ -250,7 +250,10 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         map.put("enterprise-id", getEnterpriseId());
         map.put("read-community", getReadCommunity());
         map.put("write-community", getWriteCommunity());
-        map.put("ttl", Long.toString(getTTL()));
+        // No default value for ttl.
+        if(getTTL() != null) {
+            map.put("ttl", Long.toString(getTTL()));
+        }
         return map;
     }
 
@@ -277,7 +280,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         if (map.get("enterprise-id") != null) config.setEnterpriseId(map.get("enterprise-id"));
         if (map.get("read-community") != null) config.setReadCommunity(map.get("read-community"));
         if (map.get("write-community") != null) config.setWriteCommunity(map.get("write-community"));
-        if (map.get("ttl") != null) config.setTTL(Long.parseLong("ttl"));
+        if (map.get("ttl") != null) config.setTTL(Long.parseLong(map.get("ttl")));
         return config;
     }
 }

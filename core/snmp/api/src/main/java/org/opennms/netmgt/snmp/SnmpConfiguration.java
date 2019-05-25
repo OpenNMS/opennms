@@ -238,7 +238,7 @@ public class SnmpConfiguration {
     }
 
     public void setTTL(Long ttl) {
-        this.m_ttl = m_ttl;
+        m_ttl = ttl;
     }
 
     public static String versionToString(int version) {

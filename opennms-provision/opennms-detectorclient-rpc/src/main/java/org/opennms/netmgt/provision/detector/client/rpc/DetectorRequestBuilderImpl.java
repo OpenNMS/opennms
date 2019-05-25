@@ -52,8 +52,6 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     private static final String PORT = "port";
 
-    private static final Long  DEFAULT_VALUE = -1L;
-
     private String location;
 
     private String systemId;

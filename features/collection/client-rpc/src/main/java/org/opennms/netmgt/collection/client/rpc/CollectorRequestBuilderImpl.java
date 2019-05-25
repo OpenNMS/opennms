@@ -158,10 +158,6 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         allAttributes.putAll(interpolatedAttributes);
         allAttributes.putAll(runtimeAttributes);
 
-        // For SNMP, ttl should be passed as parameter.
-        if(ttlInMs != null) {
-            allAttributes.put("SERVICE_INTERVAL", ttlInMs);
-        }
         // The runtime attributes may include objects which need to be marshaled.
         // Only marshal these if the request is being executed at another location.
         if (MonitoringLocationUtils.isDefaultLocationName(request.getLocation())) {
