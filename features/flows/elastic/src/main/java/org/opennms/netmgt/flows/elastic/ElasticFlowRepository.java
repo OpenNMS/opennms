@@ -37,11 +37,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -53,9 +55,6 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.model.OnmsNode;
@@ -74,10 +73,13 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
@@ -301,23 +303,51 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversations(int N, List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.convo_key", null, false, filters)
-                .thenApply((res) -> res.stream()
-                .map(summary -> {
-                    final ConversationKey conversation = ConversationKeyUtils.fromJsonString(summary.getEntity());
-                    final TrafficSummary<ConversationKey> out = new TrafficSummary<>(conversation);
-                    out.setBytesIn(summary.getBytesIn());
-                    out.setBytesOut(summary.getBytesOut());
-                    return out;
-                })
-                .collect(Collectors.toList()));
+                .thenCompose((res) -> transpose(res.stream()
+                        .map(summary -> this.resolveHostnames(summary.getEntity(), filters)
+                                .thenApply(conversation -> {
+                                    final TrafficSummary<Conversation> out = new TrafficSummary<>(conversation);
+                                    out.setBytesIn(summary.getBytesIn());
+                                    out.setBytesOut(summary.getBytesOut());
+                                    return out;
+                                }))
+                        .collect(Collectors.toList())));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
+    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
         return getSeriesFromTopN(N, step, "netflow.convo_key", null, false, filters)
-                .thenApply((res) -> mapTable(res, (key) -> ConversationKeyUtils.fromJsonString(key)));
+                .thenApply((res) -> mapTable(res, (key) -> Conversation.from(ConversationKeyUtils.fromJsonString(key))));
+    }
+
+    public CompletableFuture<Conversation> resolveHostnames(final String convoKey, List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
+
+        final Conversation conversation = Conversation.from(ConversationKeyUtils.fromJsonString(convoKey));
+
+        final String hostnameQuery = searchQueryProvider.getHostnameQuery(convoKey, filters);
+        return searchAsync(hostnameQuery, timeRangeFilter)
+                .thenApply(res ->  {
+                    final Optional<String> lowerHostname;
+                    final Optional<String> upperHostname;
+
+                    final JsonObject hit = res.getFirstHit(JsonObject.class).source;
+                    if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), conversation.lowerIp)) {
+                        lowerHostname = Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString);
+                        upperHostname = Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString);
+
+                    } else if (Objects.equals(hit.getAsJsonPrimitive("netflow.dst_addr").getAsString(), conversation.lowerIp)) {
+                        lowerHostname = Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString);
+                        upperHostname = Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString);
+                    } else {
+                        lowerHostname = Optional.empty();
+                        upperHostname = Optional.empty();
+                    }
+
+                    return conversation.withHostnames(lowerHostname, upperHostname);
+                });
     }
 
     private CompletableFuture<List<String>> getTopN(int N, String groupByTerm, String keyForMissingTerm, List<Filter> filters) {
@@ -640,5 +670,12 @@ public class ElasticFlowRepository implements FlowRepository {
         } else {
             throw new IllegalArgumentException("Unknown direction value: " + directionAsString);
         }
+    }
+
+    private static <E> CompletableFuture<List<E>> transpose(final List<CompletableFuture<E>> futures) {
+        return CompletableFuture.allOf(Iterables.toArray(futures, CompletableFuture.class))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList()));
     }
 }

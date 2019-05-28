@@ -77,8 +77,8 @@ public class ConversationKeyUtils {
             writer.write(",");
 
             // Write out addresses in canonical format (lower one first)
-            final String srcAddr = getAddressWithHostname(document.getSrcAddr(), document.getSrcAddrHostname());
-            final String dstAddr = getAddressWithHostname(document.getDstAddr(), document.getDstAddrHostname());
+            final String srcAddr = document.getSrcAddr();
+            final String dstAddr = document.getDstAddr();
             if (Objects.compare(srcAddr, dstAddr, String::compareTo) < 0) {
                 writer.write(gson.toJson(srcAddr));
                 writer.write(",");
@@ -100,13 +100,5 @@ public class ConversationKeyUtils {
             return writer.toString();
         }
         return null;
-    }
-
-    public static String getAddressWithHostname(final String address, final String hostname) {
-        if (hostname != null) {
-            return String.format("%s (%s)", address, hostname);
-        } else {
-            return address;
-        }
     }
 }

@@ -160,19 +160,22 @@ public class FlowRestServiceImpl implements FlowRestService {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
 
-        final List<TrafficSummary<ConversationKey>> summary =
+        final List<TrafficSummary<FlowRepository.Conversation>> summary =
                 waitForFuture(flowRepository.getTopNConversations(N, filters));
 
         final FlowSummaryResponse response = new FlowSummaryResponse();
         response.setStart(timeRangeFilter.getStart());
         response.setEnd(timeRangeFilter.getEnd());
         response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source IP",
-                "Dest. IP", "Application", "Bytes In", "Bytes Out"));
+                "Dest. IP", "Source Hostname", "Dest. Hostname", "Application", "Bytes In", "Bytes Out"));
         response.setRows(summary.stream()
                 .map(sum -> {
-                    final ConversationKey key = sum.getEntity();
-                    return Lists.newArrayList((Object)key.getLocation(), key.getProtocol(),
-                            key.getLowerIp(), key.getUpperIp(), key.getApplication(), sum.getBytesIn(), sum.getBytesOut());
+                    final FlowRepository.Conversation key = sum.getEntity();
+                    return Lists.newArrayList((Object)key.location, key.protocol,
+                            key.lowerIp, key.upperIp,
+                            key.lowerHostname, key.upperHostname,
+                            key.application,
+                            sum.getBytesIn(), sum.getBytesOut());
                 })
                 .collect(Collectors.toList()));
         return response;
@@ -182,7 +185,7 @@ public class FlowRestServiceImpl implements FlowRestService {
     public FlowSeriesResponse getTopNConversationsSeries(long step, int N, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-        final Table<Directional<ConversationKey>, Long, Double> series =
+        final Table<Directional<FlowRepository.Conversation>, Long, Double> series =
                 waitForFuture(flowRepository.getTopNConversationsSeries(N, step, filters));
 
         final FlowSeriesResponse response = new FlowSeriesResponse();
@@ -190,10 +193,10 @@ public class FlowRestServiceImpl implements FlowRestService {
         response.setEnd(timeRangeFilter.getEnd());
         response.setColumns(series.rowKeySet().stream()
                 .map(d -> {
-                    final ConversationKey key = d.getValue();
-                    final String applicationTag = key.getApplication() != null ? String.format(" [%s]", key.getApplication()) : "";
+                    final FlowRepository.Conversation key = d.getValue();
+                    final String applicationTag = key.application != null ? String.format(" [%s]", key.application) : "";
                     final FlowSeriesColumn column = new FlowSeriesColumn();
-                    column.setLabel(String.format("%s <-> %s%s", key.getLowerIp(), key.getUpperIp(), applicationTag));
+                    column.setLabel(String.format("%s <-> %s%s", key.lowerIp, key.upperIp, applicationTag));
                     column.setIngress(d.isIngress());
                     return column;
                 })

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class FlowBuilder {
 
@@ -41,6 +42,8 @@ public class FlowBuilder {
     private Integer snmpInterfaceId;
     private String application = null;
     private Direction direction = Direction.INGRESS;
+    private String srcHostname;
+    private String dstHostname;
 
     public FlowBuilder withExporter(String fs, String fid, int nodeId) {
         exporterNode = new NodeDocument();
@@ -65,6 +68,12 @@ public class FlowBuilder {
         return this;
     }
 
+    public FlowBuilder withHostnames(final String srcHostname, final String dstHostname) {
+        this.srcHostname = srcHostname;
+        this.dstHostname = dstHostname;
+        return this;
+    }
+
     public FlowBuilder withFlow(Date date, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
         return withFlow(date, date, sourceIp, sourcePort, destIp, destPort, numBytes);
     }
@@ -76,8 +85,10 @@ public class FlowBuilder {
         flow.setLastSwitched(lastSwitched.getTime());
         flow.setSrcAddr(sourceIp);
         flow.setSrcPort(sourcePort);
+        flow.setSrcAddrHostname(this.srcHostname);
         flow.setDstAddr(destIp);
         flow.setDstPort(destPort);
+        flow.setDstAddrHostname(this.dstHostname);
         flow.setBytes(numBytes);
         flow.setProtocol(6); // TCP
         if (exporterNode !=  null) {

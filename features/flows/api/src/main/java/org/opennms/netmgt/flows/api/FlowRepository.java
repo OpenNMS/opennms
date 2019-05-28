@@ -30,7 +30,8 @@ package org.opennms.netmgt.flows.api;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -47,8 +48,55 @@ public interface FlowRepository {
 
     CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters);
+    CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversations(int N, List<Filter> filters);
 
-    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters);
+    CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters);
+
+    class Conversation {
+        public final String location;
+        public final Integer protocol;
+        public final String lowerIp;
+        public final String upperIp;
+        public final Optional<String> lowerHostname;
+        public final Optional<String> upperHostname;
+        public final String application;
+
+        public Conversation(final String location,
+                            final Integer protocol,
+                            final String lowerIp,
+                            final String upperIp,
+                            final Optional<String> lowerHostname,
+                            final Optional<String> upperHostname,
+                            final String application) {
+            this.location = Objects.requireNonNull(location);
+            this.protocol = Objects.requireNonNull(protocol);
+            this.lowerIp = Objects.requireNonNull(lowerIp);
+            this.upperIp = Objects.requireNonNull(upperIp);
+            this.lowerHostname = Objects.requireNonNull(lowerHostname);
+            this.upperHostname = Objects.requireNonNull(upperHostname);
+            this.application = Objects.requireNonNull(application);
+        }
+
+        public Conversation withHostnames(final Optional<String> lowerHostname,
+                                          final Optional<String> upperHostname) {
+            return new Conversation(this.location,
+                    this.protocol,
+                    this.lowerIp,
+                    this.upperIp,
+                    lowerHostname,
+                    upperHostname,
+                    this.application);
+        }
+
+        public static Conversation from(final ConversationKey key) {
+            return new Conversation(key.getLocation(),
+                    key.getProtocol(),
+                    key.getLowerIp(),
+                    key.getUpperIp(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    key.getApplication());
+        }
+    }
 
 }

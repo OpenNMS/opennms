@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -62,6 +63,7 @@ import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
@@ -199,21 +201,25 @@ public class FlowQueryIT {
     @Test
     public void canGetTopNConversations() throws ExecutionException, InterruptedException {
         // Retrieve the Top N conversation over the entire time range
-        final List<TrafficSummary<ConversationKey>> convoTrafficSummary = flowRepository.getTopNConversations(2, getFilters()).get();
+        final List<TrafficSummary<FlowRepository.Conversation>> convoTrafficSummary = flowRepository.getTopNConversations(2, getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(2));
 
         // Expect the conversations, with the sum of all the bytes from all the flows
-        TrafficSummary<ConversationKey> convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.101"));
-        assertThat(convo.getEntity().getApplication(), equalTo("https"));
+        TrafficSummary<FlowRepository.Conversation> convo = convoTrafficSummary.get(0);
+        assertThat(convo.getEntity().lowerIp, equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().upperIp, equalTo("192.168.1.101"));
+        assertThat(convo.getEntity().lowerHostname, equalTo(Optional.of("la.le.lu")));
+        assertThat(convo.getEntity().upperHostname, equalTo(Optional.of("ingress.only")));
+        assertThat(convo.getEntity().application, equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(110L));
         assertThat(convo.getBytesOut(), equalTo(1100L));
 
         convo = convoTrafficSummary.get(1);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
-        assertThat(convo.getEntity().getApplication(), equalTo("https"));
+        assertThat(convo.getEntity().lowerIp, equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().upperIp, equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().lowerHostname, equalTo(Optional.of("la.le.lu")));
+        assertThat(convo.getEntity().upperHostname, equalTo(Optional.empty()));
+        assertThat(convo.getEntity().application, equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(100L));
         assertThat(convo.getBytesOut(), equalTo(1000L));
     }
@@ -286,7 +292,7 @@ public class FlowQueryIT {
 
     @Test
     public void canRetrieveTopNConversationsSeries() throws ExecutionException, InterruptedException {
-        final Table<Directional<ConversationKey>, Long, Double> convoTraffic = flowRepository.getTopNConversationsSeries(10, 10, getFilters()).get();
+        final Table<Directional<FlowRepository.Conversation>, Long, Double> convoTraffic = flowRepository.getTopNConversationsSeries(10, 10, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(8));
     }
 
@@ -301,13 +307,17 @@ public class FlowQueryIT {
                 .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
                 // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
                 .withDirection(Direction.INGRESS)
+                .withHostnames(null, "la.le.lu")
                 .withFlow(new Date(13), new Date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100)
                 .withDirection(Direction.EGRESS)
+                .withHostnames("la.le.lu", null)
                 .withFlow(new Date(13), new Date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
                 // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
                 .withDirection(Direction.INGRESS)
+                .withHostnames("ingress.only", "la.le.lu")
                 .withFlow(new Date(14), new Date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
                 .withDirection(Direction.EGRESS)
+                .withHostnames("la.le.lu", null)
                 .withFlow(new Date(14), new Date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
                 // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
                 .withDirection(Direction.INGRESS)
