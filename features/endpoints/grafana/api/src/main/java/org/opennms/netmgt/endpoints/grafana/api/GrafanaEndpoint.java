@@ -60,10 +60,10 @@ public class GrafanaEndpoint {
     private String description;
 
     @Column(name="connect_timeout")
-    private Integer connectTimeout = 120; // TODO MVR find a better place for this
+    private Integer connectTimeout;
 
     @Column(name="read_timeout")
-    private Integer readTimeout = 120; // TODO MVR find a better place for this
+    private Integer readTimeout;
 
     public GrafanaEndpoint() {
 

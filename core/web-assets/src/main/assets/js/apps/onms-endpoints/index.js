@@ -7,7 +7,6 @@ const confirmPopoverTemplate = require('../onms-classifications//views/modals/po
 const indexTemplate  = require('./index.html');
 const grafanaTemplate  = require('./grafana/grafana.html');
 const grafanaModalTemplate = require('./grafana/grafana-modal.html');
-const elasticTemplate  = require('./elastic/elastic.html');
 
 
 (function() {
@@ -42,11 +41,7 @@ const elasticTemplate  = require('./elastic/elastic.html');
                     controller: 'GrafanaEndpointsController',
                     templateUrl: grafanaTemplate
                 })
-                // TODO MVR remove later
-                .state('endpoints.elastic', {
-                    url: '/eastic',
-                    templateUrl: elasticTemplate,
-                });
+                ;
             $urlRouterProvider.otherwise('endpoints/grafana');
         }])
         .factory('GrafanaEndpointsService', function($resource) {
@@ -62,34 +57,30 @@ const elasticTemplate  = require('./elastic/elastic.html');
             );
         })
         .controller('EndpointsController', ['$scope', function($scope) {
+            $scope.globalError = undefined;
             $scope.types = [
                 {id: 'grafana', label: 'Grafana'},
-                // {id: 'elastic', label: 'ElasticSearch'}
-            ]
-            // TODO MVR handle error
-            $scope.globalError = undefined;
+            ];
 
-            $scope.handleGlobalError = function() {
-                // TODO MVR implement me
-            }
+            $scope.handleGlobalError = function(errorResponse) {
+                console.log("An unexpected error occurred", errorResponse);
+                $scope.globalError = "An unexpected error occurred: " + errorResponse.statusText + "(" + errorResponse.status + ")";
+                $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
+            };
         }])
         .controller('GrafanaEndpointsController', ['$scope', '$http', '$uibModal', 'GrafanaEndpointsService', function($scope, $http, $uibModal, GrafanaEndpointsService) {
             $scope.refresh = function() {
                 $scope.endpoints = [];
 
-
                 GrafanaEndpointsService.list(function(response) {
-                    console.log("SUCCESS", response);
                     if (response && Array.isArray(response)) {
                         $scope.endpoints = response;
                         $scope.endpoints.forEach(function(item) {
                            item.revealApiKey = false;
                         });
                     }
-
                 }, function(response) {
-                    // TODO MVR handle error
-                    console.log("ERROR", response);
+                    $scope.handleGlobalError(response);
                 });
             };
 
@@ -108,16 +99,14 @@ const elasticTemplate  = require('./elastic/elastic.html');
             };
 
             $scope.deleteEndpoint = function(deleteMe) {
-                GrafanaEndpointsService.delete(deleteMe, function(response) {
+                GrafanaEndpointsService.delete({id: deleteMe.id} /* we only need the id */, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    // TODO MVR handle error
-                   console.log("ERROR", response);
+                    $scope.handleGlobalError(response);
                 });
             };
 
             $scope.editEndpoint = function(endpoint) {
-                // TODO MVR editing should actually be cancellable, etc.
                 var modalInstance = $scope.openModal(endpoint);
                 modalInstance.result.then(function () {
                     $scope.refresh();
@@ -127,22 +116,10 @@ const elasticTemplate  = require('./elastic/elastic.html');
                 });
             };
 
-            $scope.verifyEndpoint = function(endpoint) {
-                $scope.xxx = undefined;
-                $scope.yyy = true;
-                GrafanaEndpointsService.verify({uid: endpoint.uid}, function(response) {
-                    $scope.xxx = true;
-                    $scope.yyy = false;
-                }, function(response) {
-                    $scope.xxx = false;
-                    $scope.yyy = false;
-                });
-            };
-
             $scope.addNewEndpoint = function() {
                 var modalInstance = $scope.openModal();
                 modalInstance.closed.then(function () {
-                    $scope.refresh(); // TODO MVR success??
+                    $scope.refresh(); // Success
                 }, function() {
                     $scope.refresh(); // Failure
                 });
@@ -150,10 +127,13 @@ const elasticTemplate  = require('./elastic/elastic.html');
 
             $scope.refresh();
         }])
-        .controller('GrafanaEndpointModalController', ['$scope', '$uibModalInstance', 'GrafanaEndpointsService', 'endpoint', function($scope, $uibModalInstance, GrafanaEndpointsService, endpoint) {
+        .controller('GrafanaEndpointModalController', ['$scope', '$uibModalInstance', '$sce', 'GrafanaEndpointsService', 'endpoint', function($scope, $uibModalInstance, $sce, GrafanaEndpointsService, endpoint) {
             $scope.endpoint = endpoint || {revealApiKey: false};
             $scope.buttonName = $scope.endpoint.id ? 'Update' : 'Create';
-            $scope.verifyResult = undefined;
+            $scope.verification = {
+                state: undefined,
+                result: undefined
+            };
             $scope.error = {};
 
             var handleErrorResponse = function(response) {
@@ -164,7 +144,7 @@ const elasticTemplate  = require('./elastic/elastic.html');
                     } else if (errorObject.context) {
                         $scope.error[errorObject.context] = 'Invalid value';
                     } else {
-                        growl.error('The configuration is not valid. Details were not provided');
+                        $scope.error['entity'] = 'The endpoint is not valid. Details were not provided';
                     }
                 } else {
                     $scope.handleGlobalError(response);
@@ -172,18 +152,27 @@ const elasticTemplate  = require('./elastic/elastic.html');
             };
 
             $scope.verify = function() {
-                $scope.verifyResult = undefined;
+                $scope.verification = {
+                    state: 'running',
+                    result: undefined
+                };
+
                 GrafanaEndpointsService.verify({apiKey: $scope.endpoint.apiKey, url: $scope.endpoint.url}, function(response) {
-                    $scope.verifyResult = { type: 'success', message: 'Everything is awesome \\o/'};
+                    $scope.verification.state = 'success';
                 }, function(response) {
-                    // TODO MVR add error handling
-                    console.log("ERROR. OH NO", response);
-                    $scope.verifyResult = { type: 'danger', message: 'Something went wrong'};
+                    $scope.verification.state = 'failure';
+                    if (response.status === 400 && response.data && response.data.message) {
+                        $scope.verification.result = $sce.trustAsHtml(response.data.message);
+                    } else {
+                        $scope.verification.result = 'Something went wrong';
+                    }
                 });
             };
 
             $scope.save = function() {
                 $scope.error = {};
+                $scope.verification.state = undefined;
+                $scope.verification.result = undefined;
 
                 // Close modal afterwards
                 var closeCallback = function() {

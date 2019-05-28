@@ -72,9 +72,6 @@ public class GrafanaEndpointRestServiceImpl implements GrafanaEndpointRestServic
             final GrafanaEndpoint endpointToUse = new GrafanaEndpoint();
             endpointToUse.setApiKey(grafanaEndpoint.getApiKey());
             endpointToUse.setUrl(grafanaEndpoint.getUrl());
-            endpointToUse.setReadTimeout(120); // TODO MVR this should probably be applied automatically
-            endpointToUse.setConnectTimeout(120);// TODO MVR this should probably be applied automatically
-            // TODO MVR verify endpoint definition
             client = grafanaEndpointService.getClient(endpointToUse);
         } else {
             client = grafanaEndpointService.getClient(grafanaEndpoint.getUid());
@@ -133,17 +130,14 @@ public class GrafanaEndpointRestServiceImpl implements GrafanaEndpointRestServic
         }
     }
 
-    // TODO MVR this is identical to what is used in geocoderservice...
     private static JSONObject createErrorObject(Exception ex) {
         return createErrorObject(ex.getMessage(), "entity");
     }
 
-    // TODO MVR this is identical to what is used in geocoderservice...
     private static JSONObject createErrorObject(GrafanaEndpointException ex) {
         return createErrorObject(ex.getRawMessage(), ex.getContext());
     }
 
-    // TODO MVR this is identical to what is used in geocoderservice...
     private static JSONObject createErrorObject(String message, String context) {
         final JSONObject errorObject = new JSONObject()
                 .put("message", message)

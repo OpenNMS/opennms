@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-// TODO MVR verify Connection
 public interface GrafanaClient {
 
     List<Dashboard> getDashboards() throws IOException;

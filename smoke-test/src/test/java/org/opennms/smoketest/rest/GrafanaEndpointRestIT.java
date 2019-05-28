@@ -26,24 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.endpoints.grafana.api;
+package org.opennms.smoketest.rest;
 
-import java.util.List;
-
-public interface GrafanaEndpointService {
-    List<GrafanaEndpoint> findEndpoints();
-
-    void updateEndpoint(GrafanaEndpoint endpoint);
-
-    void saveEndpoint(GrafanaEndpoint newGrafanaEndpoint);
-
-    void deleteEndpoint(GrafanaEndpoint grafanaEndpoint);
-
-    GrafanaEndpoint getEndpointById(Long endpointId);
-
-    GrafanaEndpoint getEndpointByUid(String uid);
-
-    GrafanaClient getClient(String uid);
-
-    GrafanaClient getClient(GrafanaEndpoint grafanaEndpoint);
+public class GrafanaEndpointRestIT {
 }

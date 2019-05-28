@@ -30,6 +30,7 @@
                             org.opennms.netmgt.bsm.persistence.api.functions,
                             org.opennms.netmgt.bsm.persistence.api.functions.reduce,
                             org.opennms.netmgt.bsm.persistence.api.functions.map,
+                            org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api
                         </Export-Package>
                         <Import-Package>
@@ -75,6 +76,7 @@
                             org.opennms.netmgt.config.tl1d,
                             org.opennms.netmgt.dao.api,
                             org.opennms.netmgt.dao.util,
+                            org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.events.api,
                             org.opennms.netmgt.flows.classification.persistence.api,
                             org.opennms.netmgt.model,
@@ -93,9 +95,9 @@
                             org.opennms.netmgt.bsm.persistence.api,
                             org.opennms.netmgt.bsm.persistence.api.functions.reduce,
                             org.opennms.netmgt.bsm.persistence.api.functions.map,
+                            org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api
                         </Private-Package>
-                        <!-- TODO MVR add grafana endpoint persistence here -->
                     </instructions>
                 </configuration>
             </plugin>
@@ -115,6 +117,7 @@
                                     <include>org.opennms:opennms-dao-api</include>
                                     <include>org.opennms.features.bsm:org.opennms.features.bsm.persistence.api</include>
                                     <include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.api</include>
+                                    <include>org.opennms.features.endpoints.grafana.persistence:org.opennms.features.endpoints.persistence.grafana.api</include>
                                 </includes>
                             </artifactSet>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
@@ -152,6 +155,11 @@
         <dependency>
             <groupId>org.opennms.features.flows.classification.persistence</groupId>
             <artifactId>org.opennms.features.flows.classification.persistence.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.endpoints.grafana.persistence</groupId>
+            <artifactId>org.opennms.features.endpoints.grafana.persistence.api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

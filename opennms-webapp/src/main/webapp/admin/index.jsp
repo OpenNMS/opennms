@@ -133,7 +133,7 @@
         <ul class="list-unstyled mb-0">
             <li><a href="admin/sysconfig.jsp">System Configuration</a></li>
             <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
-            <li><a href="admin/endpoint/index.jsp">Configure Endpoints</a></li>
+            <li><a href="admin/endpoint/index.jsp">Configure Grafana Endpoints (Reports only)</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->

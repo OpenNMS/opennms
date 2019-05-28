@@ -30,6 +30,8 @@ package org.opennms.netmgt.endpoints.grafana.service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -43,9 +45,12 @@ import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpointService;
 import org.opennms.netmgt.endpoints.grafana.persistence.api.GrafanaEndpointDao;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
+
+    private static final String PROVIDE_A_VALUE_TEXT = "Please provide a value";
+    private static final String URL_NOT_VALID_TEMPLATE = "The provided URL ''{0}'' is not valid: ''{1}''";
+    private static final String PROVIDED_VALUE_GREATER_ZERO_TEXT = "The provided value must be >= 0";
 
     private final GrafanaEndpointDao endpointDao;
     private final GrafanaClientFactory clientFactory;
@@ -59,15 +64,17 @@ public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
 
     @Override
     public List<GrafanaEndpoint> findEndpoints() {
-        return sessionUtils.withReadOnlyTransaction(() -> Lists.newArrayList(endpointDao.findAll()));
+        final List<GrafanaEndpoint> endpoints = sessionUtils.withReadOnlyTransaction(() -> endpointDao.findAll());
+        Collections.sort(endpoints, Comparator.comparing(GrafanaEndpoint::getId));
+        return endpoints;
     }
 
     @Override
     public void updateEndpoint(GrafanaEndpoint endpoint) throws NoSuchElementException {
         sessionUtils.withTransaction(() -> {
+            validate(endpoint);
             final GrafanaEndpoint persistedEndpoint = findEndpoint(endpoint.getId());
             persistedEndpoint.merge(endpoint);
-            validate(endpoint);
             endpointDao.update(persistedEndpoint);
             return null;
         });
@@ -127,27 +134,32 @@ public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
         return grafanaEndpoint;
     }
 
-    // TODO MVR verify uniqueness of UID
-    private static void validate(GrafanaEndpoint endpoint) {
+    private void validate(GrafanaEndpoint endpoint) {
         if (Strings.isNullOrEmpty(endpoint.getUrl())) {
-            throw new GrafanaEndpointException("url", "Url must be provided"); // TODO MVR generify text
+            throw new GrafanaEndpointException("url", PROVIDE_A_VALUE_TEXT);
         }
         try {
             new URL(endpoint.getUrl());
         } catch (MalformedURLException e) {
-            throw new GrafanaEndpointException("url", "Not a valid url");
+            throw new GrafanaEndpointException("url", URL_NOT_VALID_TEMPLATE, e.getMessage());
         }
         if (Strings.isNullOrEmpty(endpoint.getApiKey())) {
-            throw new GrafanaEndpointException("apiKey", "apiKey must be provided"); // TODO MVR generify text
+            throw new GrafanaEndpointException("apiKey", PROVIDE_A_VALUE_TEXT);
         }
         if (Strings.isNullOrEmpty(endpoint.getUid())) {
-            throw new GrafanaEndpointException("uid", "Uid must be provided"); // TODO MVR generify text
+            throw new GrafanaEndpointException("uid", PROVIDE_A_VALUE_TEXT);
         }
         if (endpoint.getConnectTimeout() != null && endpoint.getConnectTimeout() < 0) {
-            throw new GrafanaEndpointException("connectTimeout", "Value must be >= 0");
+            throw new GrafanaEndpointException("connectTimeout", PROVIDED_VALUE_GREATER_ZERO_TEXT);
         }
         if (endpoint.getReadTimeout() != null && endpoint.getReadTimeout() < 0) {
-            throw new GrafanaEndpointException("readTimeout", "Value must be >= 0");
+            throw new GrafanaEndpointException("readTimeout", PROVIDED_VALUE_GREATER_ZERO_TEXT);
+        }
+        // Verify that only one GrafanaEndpoint per UID exists.
+        // If an endpoint already exists, ensure it is the same object
+        final GrafanaEndpoint byUid = endpointDao.getByUid(endpoint.getUid());
+        if (byUid != null && !(byUid.getId().equals(endpoint.getId()))) {
+            throw new GrafanaEndpointException("uid", "An endpoint with uid ''{0}'' already exists.", endpoint.getUid());
         }
     }
 }

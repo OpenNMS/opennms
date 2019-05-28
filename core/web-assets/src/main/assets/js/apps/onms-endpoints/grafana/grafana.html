@@ -4,21 +4,20 @@
         <button class="btn btn-sm btn-primary" title="Reload Page" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
     </div>
     <div>
-        <span ng-if="endpoints.length == 0" class="ml-2 text-muted">No Data available</span>
+        <span ng-if="endpoints.length == 0" class="ml-2 text-muted">No data available</span>
         <table ng-if="endpoints.length > 0" class="table table-sm table-striped">
             <thead>
             <tr>
                 <th>Unique ID</th>
-                <th>Description</th>
                 <th>URL</th>
                 <th>API Key</th>
+                <th>Description</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="endpoint in endpoints">
                 <td>{{endpoint.uid}}</td>
-                <td>{{endpoint.description}}</td>
                 <td>{{endpoint.url}}</td>
                 <td>
                     <span ng-show="endpoint.revealApiKey === true">{{endpoint.apiKey}}</span>
@@ -27,13 +26,13 @@
                         <i ng-class="{'fa-eye': endpoint.revealApiKey === false, 'fa-eye-slash': endpoint.revealApiKey === true}" class="fa" ng-click="endpoint.revealApiKey = !endpoint.revealApiKey"></i>
                     </button>
                 </td>
-                <!-- TODO MVR add confirmation dialog? -->
+                <td>{{endpoint.description}}</td>
                 <td>
                     <button id="action.delete.{{endpoint.id}}"
                             class="btn btn-danger btn-sm"
                             mwl-confirm
                             title="Delete Endpoint"
-                            message="Do you want to delete graphana endpoint with url '{{endpoint.url}}' and UID '{{endpoint.uid}}'?"
+                            message="Do you want to delete the Grafana Endpoint with url '{{endpoint.url}}' and UID '{{endpoint.uid}}'?"
                             on-confirm="deleteEndpoint(endpoint)"
                             placement="left"
                             confirm-button-type="danger"
@@ -41,19 +40,12 @@
                             confirm-text="Yes"
                             cancel-text="No"><i class="fa fa-trash-o"></i></button>
                     <button id="action.edit.{{endpoint.id}}"   class="btn btn-secondary btn-sm" ng-click="editEndpoint(endpoint)"   title="Edit Endpoint"   ><i class="fa fa-pencil"></i></button>
-
-                    <button id="action.verify.{{endpoint.id}}" class="btn btn-secondary btn-sm" ng-click="verifyEndpoint(endpoint)" title="Verify Endpoint's Connectivity"><i class="fa fa-plug"></i></button>
-                    <span class="spinner-border spinner-border-sm"></span>
-                    <span class="" ng-if="yyy === true"><i class="fa fa-spinner"></i> Checking...</span>
-                    <span class="text-success" ng-if="yyy === false && xxx === true"><i class="fa fa-check"></i> \o/</span>
-                    <span class="text-danger" ng-if="yyy === false && xxx === false"><i class="fa fa-exclamation-triangle"></i> OH NO</span>
                 </td>
             </tr>
             </tbody>
         </table>
-        <span ng-if="endpoints.length > 0" class="text-muted">{{endpoints.length}} Grafana Endpoint(s)</span>
+        <div class="mt-2">
+            <span ng-if="endpoints.length > 0" class="text-muted">{{endpoints.length}} Grafana Endpoint(s)</span>
+        </div>
     </div>
-
-
-
 </div>

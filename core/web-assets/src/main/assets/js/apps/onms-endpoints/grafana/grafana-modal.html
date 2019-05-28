@@ -1,11 +1,27 @@
+<style type="text/css">
+  .rotate {
+    -webkit-animation: rotation 2s infinite linear;
+  }
+
+  @-webkit-keyframes rotation {
+    from {
+      -webkit-transform: rotate(0deg);
+    }
+    to {
+      -webkit-transform: rotate(359deg);
+    }
+  }
+</style>
+
+
 <div id="ruleModal">
   <div class="modal-header">
-    <h5 class="modal-title">{{endpoint.id === undefined ? "Add" : "Edit"}} Endpoint</h5> <span class="badge badge-primary" ng-if="endpoint.type">{{endpoint.type}}</span>
+    <h5 class="modal-title">{{endpoint.id === undefined ? "Add" : "Edit"}} Grafana Endpoint</h5>
   </div>
   <div class="modal-body">
     <form name="endpointForm" novalidate>
       <div class="form-group">
-        <div ng-show="error.entity" class="form-text text-muted">{{error.entity}}</div>
+        <div ng-show="error.entity" class="form-text text-danger">{{error.entity}}</div>
       </div>
       <div class="form-group form-row">
         <label class="col-form-label" for="endpoint.uid">Grafana ID</label>
@@ -35,15 +51,19 @@
         <div ng-show="error.url" class="invalid-feedback">{{error.url}}</div>
       </div>
     </form>
-    <div ng-if="verifyResult" class="alert alert-{{verifyResult.type}}">
-      <span>{{verifyResult.message}}</span>
+
+    <button type="button" class="btn btn-warning btn-sm" id="verify-endpoint" ng-click="verify()" ng-disabled="endpointForm.$invalid" title="Verify Connectivity"><i class="fa fa-plug"></i> Test Connection</button>
+    <span class="spinner-border spinner-border-sm"></span>
+    <span class="" ng-if="verification.state === 'running'"><i class="fa fa-spinner rotate"></i> Connecting ...</span>
+    <span class="text-success" ng-if="verification.state ==='success'"><i class="fa fa-check"></i> Connected</span>
+    <span class="text-danger" ng-if="verification.state === 'failure'"><i class="fa fa-exclamation-triangle"></i> Could not connect</span>
+    <div ng-if="verification.result && verification.state === 'failure'" class="alert mt-2" ng-class="{'alert-danger': verification.state === 'failure'}">
+      {{verification.result}}
     </div>
-    <button type="button" class="btn btn-warning btn-sm" id="verify-endpoint" ng-click="verify()" ng-disabled="endpointForm.$invalid">Test Connection</button>
   </div>
   <div class="modal-footer">
     <div>
-<!--      <button type="button" class="btn btn-primary" id="save-endpoint" ng-click="save()" ng-disabled="endpointForm.$invalid">{{buttonName}}</button>-->
-      <button type="button" class="btn btn-primary" id="save-endpoint" ng-click="save()">{{buttonName}}</button>
+      <button type="button" class="btn btn-primary" id="save-endpoint" ng-click="save()" ng-disabled="endpointForm.$invalid">{{buttonName}}</button>
       <button type="button" class="btn btn-secondary" id="cancel-endpoint" ng-click="cancel()">Cancel</button>
     </div>
   </div>

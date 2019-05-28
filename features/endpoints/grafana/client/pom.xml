@@ -40,13 +40,11 @@
       <artifactId>org.opennms.features.endpoints.grafana.api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- TODO MVR rework dependencies -->
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
       <version>3.10.0</version>
     </dependency>
-    <!-- TODO MVR rework dependencies -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
