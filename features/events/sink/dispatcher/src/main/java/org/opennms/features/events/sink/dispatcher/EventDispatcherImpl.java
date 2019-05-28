@@ -45,16 +45,22 @@ public class EventDispatcherImpl implements EventForwarder {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventDispatcherImpl.class);
 
-    private final AsyncDispatcher<Event> asyncDispatcher;
+    private MessageDispatcherFactory messageDispatcherFactory;
+
+    private AsyncDispatcher<Event> asyncDispatcher;
+
+    private EventdConfig eventdConfig;
+
 
     public EventDispatcherImpl(MessageDispatcherFactory messageDispatcherFactory, EventdConfig eventdConfig) {
-        this.asyncDispatcher = messageDispatcherFactory.createAsyncDispatcher(new EventSinkModule(eventdConfig));
+        this.messageDispatcherFactory = messageDispatcherFactory;
+        this.eventdConfig = eventdConfig;
     }
 
     @Override
     public void sendNow(Event event) {
         try {
-            asyncDispatcher.send(event).whenComplete((t, ex) -> {
+            getAsyncDispatcher().send(event).whenComplete((t, ex) -> {
                 if (ex != null) {
                     LOG.error("Failed to sent Event with uei = {}", event.getUei(), ex);
                 }
@@ -79,5 +85,10 @@ public class EventDispatcherImpl implements EventForwarder {
         sendNow(eventLog);
     }
 
-
+    public AsyncDispatcher<Event> getAsyncDispatcher() {
+        if (asyncDispatcher == null) {
+            asyncDispatcher = messageDispatcherFactory.createAsyncDispatcher(new EventSinkModule(eventdConfig));
+        }
+        return asyncDispatcher;
+    }
 }
