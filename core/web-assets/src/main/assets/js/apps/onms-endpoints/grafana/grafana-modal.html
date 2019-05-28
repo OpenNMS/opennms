@@ -51,17 +51,28 @@
         <div ng-show="error.url" class="invalid-feedback">{{error.url}}</div>
       </div>
       <div class="form-group form-row">
-        <!-- TODO MVR add explanation -->
         <label class="col-form-label" for="endpoint.connectTimeout">Grafana Connect Timeout</label>
+        <!-- TODO MVR apply default value -->
+        <button class="btn btn-link"
+                popover-trigger="'mouseenter'"
+                uib-popover="The connect timeout in seconds for this endpoint. If omitted a the the default timeout of TODO MVR seconds is applied.'"><i class="fa fa-question-circle"/>
+        </button>
         <input class="form-control" type="number" id="endpoint.connectTimeout" name="connectTimeout" min="0" max="9999" ng-model="endpoint.connectTimeout"
                ng-class="{ 'is-invalid' : endpointForm.connectTimeout.$invalid || error.connectTimeout}"/>
+        <div ng-show="endpointForm.connectTimeout.$invalid" class="invalid-feedback">Please provide a valid number > 0.</div>
         <div ng-show="error.connectTimeout" class="invalid-feedback">{{error.connectTimeout}}</div>
       </div>
       <div class="form-group form-row">
-        <!-- TODO MVR add explanation -->
         <label class="col-form-label" for="endpoint.readTimeout">Grafana Read Timeout</label>
+        <!-- TODO MVR apply default value -->
+        <button class="btn btn-link"
+                popover-trigger="'mouseenter'"
+                uib-popover="The read timeout in seconds for this endpoint. If omitted a the the default timeout of TODO MVR seconds is applied."><i class="fa fa-question-circle"/>
+        </button>
+
         <input class="form-control" type="number" id="endpoint.readTimeout" name="readTimeout" min="0" max="9999" ng-model="endpoint.readTimeout"
                ng-class="{ 'is-invalid' : endpointForm.readTimeout.$invalid || error.readTimeout}"/>
+        <div ng-show="endpointForm.readTimeout.$invalid" class="invalid-feedback">Please provide a valid number > 0.</div>
         <div ng-show="error.readTimeout" class="invalid-feedback">{{error.readTimeout}}</div>
       </div>
     </form>
