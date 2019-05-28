@@ -45,6 +45,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         // OpenNMS System
         new String[] { "System Configuration", "//span[text()='OpenNMS Configuration']" },
         new String[] { "Configure Users, Groups and On-Call Roles", "//span[text()='Users and Groups']" },
+        new String[] { "Configure Grafana Endpoints (Reports only)", "//div/ul/li/a[contains(text(),'Grafana Endpoints')]" },
 
         // Provisioning
         new String[] { "Manage Provisioning Requisitions", "//h4[contains(text(), 'Requisitions (')]" },
