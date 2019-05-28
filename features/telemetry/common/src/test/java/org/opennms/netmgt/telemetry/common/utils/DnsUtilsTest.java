@@ -44,6 +44,7 @@ import java.util.Properties;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -56,85 +57,22 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.opennms.core.utils.InetAddressUtils;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Resolver;
 import org.xbill.DNS.SimpleResolver;
 
 public class DnsUtilsTest {
 
+    private Properties systemProperties;
+
     @Before
     public void before() {
-        DnsUtils.bundleContext = null;
-    }
-
-    private List<String> getServers(final ExtendedResolver extendedResolver) throws Exception {
-        final List<String> list = new ArrayList<>();
-
-        for(final Resolver resolver : extendedResolver.getResolvers()) {
-            final SimpleResolver simpleResolver = (SimpleResolver) resolver;
-
-            final Field privateAddressField = SimpleResolver.class.getDeclaredField("address");
-            privateAddressField.setAccessible(true);
-            list.add(((InetSocketAddress)privateAddressField.get(simpleResolver)).getAddress().getHostAddress());
-        }
-        return list;
-    }
-
-    @Test
-    public void setDnsServersTest() throws Exception{
-        final List<String> addresses1 = getServers(DnsUtils.getResolver());
-        Assert.assertEquals(true, addresses1.size() > 0);
-
-        DnsUtils.setDnsServers("9.8.7.6", "8.7.6.5");
-        final List<String> addresses2 = getServers(DnsUtils.getResolver());
-
-        Assert.assertEquals(2, addresses2.size());
-        Assert.assertEquals(true, addresses2.contains("9.8.7.6"));
-        Assert.assertEquals(true, addresses2.contains("8.7.6.5"));
-
-        DnsUtils.setDnsServers("4.3.2.1");
-        final List<String> addresses3 = getServers(DnsUtils.getResolver());
-
-        Assert.assertEquals(1, addresses3.size());
-        Assert.assertEquals(true, addresses3.contains("4.3.2.1"));
-
-        DnsUtils.setDnsServers();
-
-        final List<String> addresses4 = getServers(DnsUtils.getResolver());
-        Assert.assertEquals(true, addresses4.size() > 0);
-    }
-
-    @Test
-    public void resolveTest() throws UnknownHostException {
-        final Optional<String> hostname1 = DnsUtils.reverseLookup(InetAddress.getByAddress(new byte[]{1, 1, 1, 1}));
-        Assert.assertEquals("one.one.one.one", hostname1.get());
-
-        final Optional<String> hostname2 = DnsUtils.reverseLookup(InetAddressUtils.addr("1.1.1.1"));
-        Assert.assertEquals("one.one.one.one", hostname2.get());
-
-        final Optional<String> hostname3 = DnsUtils.reverseLookup(InetAddressUtils.addr("2606:4700:4700::1111"));
-        Assert.assertEquals("one.one.one.one", hostname3.get());
-    }
-
-    @Test
-    public void resolveFailTest() {
-        // 198.51.100.0/24 should be TEST-NET-2 (see RFC #5737). Should fail...
-        final Optional<String> hostname1 = DnsUtils.reverseLookup(InetAddressUtils.addr("198.51.100.1"));
-        Assert.assertEquals(Optional.empty(), hostname1);
-
-        final Optional<String> hostname2 = DnsUtils.reverseLookup(InetAddressUtils.addr("fe80::"));
-        Assert.assertEquals(Optional.empty(), hostname2);
-    }
-
-    @Test
-    public void setSystemProperties() throws Exception {
-        final Properties p = new Properties();
+        this.systemProperties = new Properties();
 
         DnsUtils.bundleContext = new BundleContext() {
             @Override
             public String getProperty(String key) {
-                return (String) p.get(key);
+                return (String) DnsUtilsTest.this.systemProperties.get(key);
             }
 
             @Override
@@ -272,13 +210,93 @@ public class DnsUtilsTest {
                 return null;
             }
         };
+    }
 
+    private List<String> getServers(final ExtendedResolver extendedResolver) throws Exception {
+        final List<String> list = new ArrayList<>();
+
+        for (final Resolver resolver : extendedResolver.getResolvers()) {
+            final SimpleResolver simpleResolver = (SimpleResolver) resolver;
+
+            final Field privateAddressField = SimpleResolver.class.getDeclaredField("address");
+            privateAddressField.setAccessible(true);
+            list.add(((InetSocketAddress) privateAddressField.get(simpleResolver)).getAddress().getHostAddress());
+        }
+        return list;
+    }
+
+    @Test
+    public void setDnsServersTest() throws Exception {
         final List<String> addresses1 = getServers(DnsUtils.getResolver());
         Assert.assertEquals(true, addresses1.size() > 0);
 
-        p.setProperty(DnsUtils.DNS_ENABLED, "true");
-        p.setProperty(DnsUtils.DNS_PRIMARY_SERVER, "1.1.1.1");
-        p.setProperty(DnsUtils.DNS_SECONDARY_SERVER, "8.8.8.8");
+        DnsUtils.setDnsServers("9.8.7.6", "8.7.6.5");
+        final List<String> addresses2 = getServers(DnsUtils.getResolver());
+
+        Assert.assertEquals(2, addresses2.size());
+        Assert.assertEquals(true, addresses2.contains("9.8.7.6"));
+        Assert.assertEquals(true, addresses2.contains("8.7.6.5"));
+
+        DnsUtils.setDnsServers("4.3.2.1");
+        final List<String> addresses3 = getServers(DnsUtils.getResolver());
+
+        Assert.assertEquals(1, addresses3.size());
+        Assert.assertEquals(true, addresses3.contains("4.3.2.1"));
+
+        DnsUtils.setDnsServers();
+
+        final List<String> addresses4 = getServers(DnsUtils.getResolver());
+        Assert.assertEquals(true, addresses4.size() > 0);
+    }
+
+    @Test
+    public void enableDisableTest() throws UnknownHostException {
+        final Optional<String> hostname1 = DnsUtils.reverseLookup(InetAddressUtils.addr("1.1.1.1"));
+        Assert.assertEquals(false, hostname1.isPresent());
+
+        this.systemProperties.put(DnsUtils.DNS_ENABLED, "true");
+
+        final Optional<String> hostname2 = DnsUtils.reverseLookup(InetAddressUtils.addr("1.1.1.1"));
+        Assert.assertEquals("one.one.one.one", hostname2.get());
+
+        this.systemProperties.put(DnsUtils.DNS_ENABLED, "false");
+
+        final Optional<String> hostname3 = DnsUtils.reverseLookup(InetAddressUtils.addr("1.1.1.1"));
+        Assert.assertEquals(false, hostname3.isPresent());
+    }
+
+    @Test
+    public void resolveTest() throws UnknownHostException {
+        this.systemProperties.put(DnsUtils.DNS_ENABLED, "true");
+
+        final Optional<String> hostname1 = DnsUtils.reverseLookup(InetAddress.getByAddress(new byte[]{1, 1, 1, 1}));
+        Assert.assertEquals("one.one.one.one", hostname1.get());
+
+        final Optional<String> hostname2 = DnsUtils.reverseLookup(InetAddressUtils.addr("1.1.1.1"));
+        Assert.assertEquals("one.one.one.one", hostname2.get());
+
+        final Optional<String> hostname3 = DnsUtils.reverseLookup(InetAddressUtils.addr("2606:4700:4700::1111"));
+        Assert.assertEquals("one.one.one.one", hostname3.get());
+    }
+
+    @Test
+    public void resolveFailTest() {
+        // 198.51.100.0/24 should be TEST-NET-2 (see RFC #5737). Should fail...
+        final Optional<String> hostname1 = DnsUtils.reverseLookup(InetAddressUtils.addr("198.51.100.1"));
+        Assert.assertEquals(Optional.empty(), hostname1);
+
+        final Optional<String> hostname2 = DnsUtils.reverseLookup(InetAddressUtils.addr("fe80::"));
+        Assert.assertEquals(Optional.empty(), hostname2);
+    }
+
+    @Test
+    public void setSystemPropertiesTest() throws Exception {
+        final List<String> addresses1 = getServers(DnsUtils.getResolver());
+        Assert.assertEquals(true, addresses1.size() > 0);
+
+        this.systemProperties.setProperty(DnsUtils.DNS_ENABLED, "true");
+        this.systemProperties.setProperty(DnsUtils.DNS_PRIMARY_SERVER, "1.1.1.1");
+        this.systemProperties.setProperty(DnsUtils.DNS_SECONDARY_SERVER, "8.8.8.8");
         DnsUtils.reverseLookup("1.1.1.1");
 
         final List<String> addresses2 = getServers(DnsUtils.getResolver());
@@ -286,17 +304,17 @@ public class DnsUtilsTest {
         Assert.assertEquals(true, addresses2.contains("1.1.1.1"));
         Assert.assertEquals(true, addresses2.contains("8.8.8.8"));
 
-        p.clear();
-        p.setProperty(DnsUtils.DNS_ENABLED, "true");
-        p.setProperty(DnsUtils.DNS_PRIMARY_SERVER, "8.8.4.4");
+        this.systemProperties.clear();
+        this.systemProperties.setProperty(DnsUtils.DNS_ENABLED, "true");
+        this.systemProperties.setProperty(DnsUtils.DNS_PRIMARY_SERVER, "8.8.4.4");
         DnsUtils.reverseLookup("1.1.1.1");
 
         final List<String> addresses3 = getServers(DnsUtils.getResolver());
         Assert.assertEquals(1, addresses3.size());
         Assert.assertEquals(true, addresses3.contains("8.8.4.4"));
 
-        p.clear();
-        p.setProperty(DnsUtils.DNS_ENABLED, "false");
+        this.systemProperties.clear();
+        this.systemProperties.setProperty(DnsUtils.DNS_ENABLED, "false");
         DnsUtils.reverseLookup("1.1.1.1");
 
         final List<String> addresses4 = getServers(DnsUtils.getResolver());

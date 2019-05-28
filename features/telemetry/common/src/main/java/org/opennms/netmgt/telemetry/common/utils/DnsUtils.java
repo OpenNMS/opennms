@@ -35,17 +35,19 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.ReverseMap;
 import org.xbill.DNS.Type;
-import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public class DnsUtils {
     private static final Logger LOG = LoggerFactory.getLogger(DnsUtils.class);
@@ -86,24 +88,21 @@ public class DnsUtils {
             DnsUtils.enabled = enabled;
             DnsUtils.primaryServer = primaryServer;
             DnsUtils.secondaryServer = secondaryServer;
-            if (DnsUtils.enabled) {
-                setDnsServers(DnsUtils.primaryServer, DnsUtils.secondaryServer);
-            } else {
-                setDnsServers();
-            }
+            setDnsServers(DnsUtils.primaryServer, DnsUtils.secondaryServer);
         }
     }
 
     public static synchronized void setDnsServers(String... dnsServers) {
+        final String[] notNullDnsServers = (dnsServers == null ? new String[]{} : Arrays.stream(dnsServers)
+                .filter(e -> !Strings.isNullOrEmpty(e))
+                .collect(Collectors.toList())
+                .toArray(new String[]{})
+        );
+
         try {
-            if (dnsServers == null || dnsServers.length == 0) {
+            if (notNullDnsServers.length == 0) {
                 resolver = new ExtendedResolver();
             } else {
-                final String [] notNullDnsServers = Arrays.stream(dnsServers)
-                        .filter(e -> e != null)
-                        .collect(Collectors.toList())
-                        .toArray(new String[]{});
-
                 resolver = new ExtendedResolver(notNullDnsServers);
             }
         } catch (UnknownHostException e) {
@@ -121,6 +120,10 @@ public class DnsUtils {
 
     public static Optional<String> reverseLookup(final InetAddress inetAddress) {
         checkSystemProperties();
+
+        if (!DnsUtils.enabled) {
+            return Optional.empty();
+        }
 
         final Lookup lookup = new Lookup(ReverseMap.fromAddress(inetAddress), Type.PTR);
 
