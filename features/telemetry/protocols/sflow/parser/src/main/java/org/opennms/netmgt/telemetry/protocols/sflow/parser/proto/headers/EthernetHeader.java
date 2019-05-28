@@ -79,7 +79,7 @@ public class EthernetHeader {
     public void writeBson(final BsonWriter bsonWriter) {
         bsonWriter.writeStartDocument();
         if (this.vlan != null) {
-            bsonWriter.writeInt32("vlan", this.vlan);
+            bsonWriter.writeInt64("vlan", this.vlan);
         }
 
         bsonWriter.writeEndDocument();
