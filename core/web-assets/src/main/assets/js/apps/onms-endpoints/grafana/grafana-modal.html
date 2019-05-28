@@ -14,7 +14,7 @@
 </style>
 
 
-<div id="ruleModal">
+<div id="endpointModal">
   <div class="modal-header">
     <h5 class="modal-title">{{endpoint.id === undefined ? "Add" : "Edit"}} Grafana Endpoint</h5>
   </div>
@@ -49,6 +49,20 @@
                ng-class="{ 'is-invalid' : endpointForm.url.$invalid || error.url}" required/>
         <div ng-show="endpointForm.url.$invalid" class="invalid-feedback">The url is required.</div>
         <div ng-show="error.url" class="invalid-feedback">{{error.url}}</div>
+      </div>
+      <div class="form-group form-row">
+        <!-- TODO MVR add explanation -->
+        <label class="col-form-label" for="endpoint.connectTimeout">Grafana Connect Timeout</label>
+        <input class="form-control" type="number" id="endpoint.connectTimeout" name="connectTimeout" min="0" max="9999" ng-model="endpoint.connectTimeout"
+               ng-class="{ 'is-invalid' : endpointForm.connectTimeout.$invalid || error.connectTimeout}"/>
+        <div ng-show="error.connectTimeout" class="invalid-feedback">{{error.connectTimeout}}</div>
+      </div>
+      <div class="form-group form-row">
+        <!-- TODO MVR add explanation -->
+        <label class="col-form-label" for="endpoint.readTimeout">Grafana Read Timeout</label>
+        <input class="form-control" type="number" id="endpoint.readTimeout" name="readTimeout" min="0" max="9999" ng-model="endpoint.readTimeout"
+               ng-class="{ 'is-invalid' : endpointForm.readTimeout.$invalid || error.readTimeout}"/>
+        <div ng-show="error.readTimeout" class="invalid-feedback">{{error.readTimeout}}</div>
       </div>
     </form>
 

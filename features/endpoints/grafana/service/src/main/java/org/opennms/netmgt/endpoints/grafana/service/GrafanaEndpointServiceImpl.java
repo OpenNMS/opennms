@@ -141,7 +141,7 @@ public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
         try {
             new URL(endpoint.getUrl());
         } catch (MalformedURLException e) {
-            throw new GrafanaEndpointException("url", URL_NOT_VALID_TEMPLATE, e.getMessage());
+            throw new GrafanaEndpointException("url", URL_NOT_VALID_TEMPLATE, endpoint.getUrl(), e.getMessage());
         }
         if (Strings.isNullOrEmpty(endpoint.getApiKey())) {
             throw new GrafanaEndpointException("apiKey", PROVIDE_A_VALUE_TEXT);

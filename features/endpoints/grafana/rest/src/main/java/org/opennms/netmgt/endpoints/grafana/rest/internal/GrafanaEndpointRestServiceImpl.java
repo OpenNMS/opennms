@@ -87,7 +87,7 @@ public class GrafanaEndpointRestServiceImpl implements GrafanaEndpointRestServic
     @Override
     public Response getEndpoint(Long endpointId) {
         final GrafanaEndpoint grafanaEndpoint = grafanaEndpointService.getEndpointById(endpointId);
-        return Response.ok().entity(new JSONArray(grafanaEndpoint).toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
+        return Response.ok().entity(new JSONObject(grafanaEndpoint).toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
     @Override

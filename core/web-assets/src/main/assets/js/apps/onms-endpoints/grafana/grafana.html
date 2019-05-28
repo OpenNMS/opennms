@@ -1,7 +1,7 @@
 <div class="card-body">
     <div class="pull-right mb-2">
-        <button class="btn btn-sm btn-primary" title="Add new endpoint" ng-click="addNewEndpoint()"><i class="fa fa-plus"></i></button>
-        <button class="btn btn-sm btn-primary" title="Reload Page" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
+        <button id="action.addGrafanaEndpoint" class="btn btn-sm btn-primary" title="Add new endpoint" ng-click="addNewEndpoint()"><i class="fa fa-plus"></i></button>
+        <button id="action.refreshGrafanaEndpoints" class="btn btn-sm btn-primary" title="Reload Page" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
     </div>
     <div>
         <span ng-if="endpoints.length == 0" class="ml-2 text-muted">No data available</span>
@@ -12,21 +12,25 @@
                 <th>URL</th>
                 <th>API Key</th>
                 <th>Description</th>
+                <th>Connect Timeout</th>
+                <th>Read Timeout</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="endpoint in endpoints">
+            <tr ng-repeat="endpoint in endpoints" data-id="{{endpoint.id}}">
                 <td>{{endpoint.uid}}</td>
                 <td>{{endpoint.url}}</td>
                 <td>
                     <span ng-show="endpoint.revealApiKey === true">{{endpoint.apiKey}}</span>
                     <span ng-show="endpoint.revealApiKey === false">**********</span>
-                    <button class="btn btn-link">
+                    <button id="action.revealApiKey.{{endpoint.id}}" class="btn btn-link">
                         <i ng-class="{'fa-eye': endpoint.revealApiKey === false, 'fa-eye-slash': endpoint.revealApiKey === true}" class="fa" ng-click="endpoint.revealApiKey = !endpoint.revealApiKey"></i>
                     </button>
                 </td>
                 <td>{{endpoint.description}}</td>
+                <td>{{endpoint.connectTimeout}}</td>
+                <td>{{endpoint.readTimeout}}</td>
                 <td>
                     <button id="action.delete.{{endpoint.id}}"
                             class="btn btn-danger btn-sm"

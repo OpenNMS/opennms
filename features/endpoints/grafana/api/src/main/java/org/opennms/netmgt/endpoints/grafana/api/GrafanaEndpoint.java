@@ -144,15 +144,18 @@ public class GrafanaEndpoint {
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
-        final GrafanaEndpoint that = (GrafanaEndpoint) other;
-        return Objects.equals(id, that.id)
-                && Objects.equals(uid, that.uid)
-                && Objects.equals(url, that.url)
-                && Objects.equals(apiKey, that.apiKey)
-                && Objects.equals(description, that.description)
-                && Objects.equals(connectTimeout, that.connectTimeout)
-                && Objects.equals(readTimeout, that.readTimeout);
+        if (other == null) return false;
+        if (other instanceof GrafanaEndpoint) {
+            final GrafanaEndpoint that = (GrafanaEndpoint) other;
+            return Objects.equals(id, that.id)
+                    && Objects.equals(uid, that.uid)
+                    && Objects.equals(url, that.url)
+                    && Objects.equals(apiKey, that.apiKey)
+                    && Objects.equals(description, that.description)
+                    && Objects.equals(connectTimeout, that.connectTimeout)
+                    && Objects.equals(readTimeout, that.readTimeout);
+        }
+        return false;
     }
 
     @Override

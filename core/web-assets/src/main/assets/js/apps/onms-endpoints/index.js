@@ -183,7 +183,9 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
                     uid: $scope.endpoint.uid,
                     url: $scope.endpoint.url,
                     apiKey: $scope.endpoint.apiKey,
-                    description: $scope.endpoint.description
+                    description: $scope.endpoint.description,
+                    connectTimeout: $scope.endpoint.connectTimeout,
+                    readTimeout: $scope.endpoint.readTimeout
                 };
                 if ($scope.endpoint.id) {
                     GrafanaEndpointsService.update(object, closeCallback, handleErrorResponse);
