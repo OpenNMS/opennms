@@ -28,11 +28,6 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features.endpoints</groupId>
-      <artifactId>org.opennms.features.endpoints.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
