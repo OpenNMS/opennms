@@ -96,6 +96,10 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
         snmpRequestDTO.setDescription(description);
         snmpRequestDTO.setGetRequests(gets);
         snmpRequestDTO.setWalkRequests(walks);
+        // TTL specified in agent configuration overwrites any previous ttls specified.
+        if (agent.getTTL() != null) {
+            timeToLiveInMilliseconds = agent.getTTL();
+        }
         snmpRequestDTO.setTimeToLive(timeToLiveInMilliseconds);
         snmpRequestDTO.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(agent.getAddress()));
         snmpRequestDTO.addTracingInfo(RpcRequest.TAG_DESCRIPTION, description);
