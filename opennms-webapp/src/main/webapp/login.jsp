@@ -91,6 +91,12 @@
             <input type="password" class="form-control input-underline form-control-lg" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" required>
           </div>
 
+          <c:if test="${not empty param.session_expired}">
+            <div class="alert alert-warning">
+              <strong>Session expired</strong> Please log back in.
+            </div>
+          </c:if>
+
           <c:if test="${not empty param.login_error}">
             <div id="login-attempt-failed" class="alert alert-danger">
               Your log-in attempt failed, please try again.
