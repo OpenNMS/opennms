@@ -31,7 +31,6 @@ package org.opennms.smoketest;
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -65,9 +64,12 @@ public class EditInRequisitionIT extends OpenNMSSeleniumTestCase {
         LOG.debug("Check whether the 'Edit in Requisition' link appear for nodes in database without requisition...");
 
         m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=my-foreign-source:my-foreign-id");
+        final WebElement viewEvents = waitForElement(By.linkText("View Events"));
+        Assert.assertNotNull("Link 'View Events' should appear on the node page.", viewEvents);
 
-        final List<WebElement> webElement = m_driver.findElements(By.linkText("Edit in Requisition"));
-        Assert.assertTrue("Link 'Edit in Requisition' was found in page!", webElement.isEmpty());
+        m_driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+        final WebElement editInRequisition = getElementWithoutWaiting(By.linkText("Edit in Requisition"));
+        Assert.assertNull("Link 'Edit in Requisition' should not appear on the node page!", editInRequisition);
     }
 
     @Test
@@ -75,14 +77,12 @@ public class EditInRequisitionIT extends OpenNMSSeleniumTestCase {
         LOG.debug("Check whether the 'Edit in Requisition' link appear for nodes in database and requisition...");
 
         m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=" + OpenNMSSeleniumTestCase.REQUISITION_NAME + ":my-foreign-id-1");
-        m_driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 
-        final WebElement webElement = m_driver.findElement(By.linkText("Edit in Requisition"));
-        Assert.assertNotNull("Link 'Edit in Requisition' not found in page!", webElement);
+        final WebElement webElement = waitForElement(By.linkText("Edit in Requisition"));
+        Assert.assertNotNull("Link 'Edit in Requisition' should appear on the node page.", webElement);
         webElement.click();
 
-        Assert.assertEquals("Node my-node-1 at " + OpenNMSSeleniumTestCase.REQUISITION_NAME,
-                m_driver.findElement(By.cssSelector("#content > div.ng-scope > div > form > div:nth-child(1) > div:nth-child(1) > h4")).getText());
+        waitUntil(pageContainsText("Node my-node-1 at " + OpenNMSSeleniumTestCase.REQUISITION_NAME));
     }
 
     @Test
@@ -91,8 +91,11 @@ public class EditInRequisitionIT extends OpenNMSSeleniumTestCase {
 
         m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=" + OpenNMSSeleniumTestCase.REQUISITION_NAME + ":my-foreign-id-2");
 
-        final List<WebElement> webElement = m_driver.findElements(By.linkText("Edit in Requisition"));
-        Assert.assertTrue("Link 'Edit in Requisition' was found in page!", webElement.isEmpty());
+        final WebElement viewEvents = waitForElement(By.linkText("View Events"));
+        Assert.assertNotNull("Link 'View Events' should appear on the node page.", viewEvents);
+
+        final WebElement editInRequisition = getElementWithoutWaiting(By.linkText("Edit in Requisition"));
+        Assert.assertNull("Link 'Edit in Requisition' should not appear on the node page!", editInRequisition);
     }
 
     private void deleteRequisition() throws Exception {

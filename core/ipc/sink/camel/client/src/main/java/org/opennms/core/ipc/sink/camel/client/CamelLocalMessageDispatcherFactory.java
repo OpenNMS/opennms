@@ -34,10 +34,14 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * Message producer that dispatches the messages directly the consumers.
@@ -48,6 +52,9 @@ public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatche
 
     @Autowired
     private CamelMessageConsumerManager messageConsumerManager;
+
+    @Autowired
+    private TracerRegistry tracerRegistry;
 
     @Override
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
@@ -62,6 +69,22 @@ public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatche
     @Override
     public BundleContext getBundleContext() {
         return null;
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        this.tracerRegistry = tracerRegistry;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        if (getTracerRegistry() != null) {
+            return getTracerRegistry().getTracer();
+        }
+        return GlobalTracer.get();
     }
 
     @Override

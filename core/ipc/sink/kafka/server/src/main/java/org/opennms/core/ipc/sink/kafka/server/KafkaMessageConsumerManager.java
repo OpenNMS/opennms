@@ -28,14 +28,13 @@
 
 package org.opennms.core.ipc.sink.kafka.server;
 
-
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.DEFAULT_MESSAGEID_CONFIG;
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MESSAGEID_CACHE_CONFIG;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -63,19 +62,31 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
 import org.opennms.core.ipc.sink.model.SinkMessageProtos;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.tracing.api.TracerConstants;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+
+import io.opentracing.References;
+import io.opentracing.Scope;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.util.GlobalTracer;
 
 public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
 
@@ -94,16 +105,38 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     // Cache that stores chunks in large message.
     private Cache<String, ByteString> largeMessageCache;
 
+    @Autowired
+    private TracerRegistry tracerRegistry;
+
+    @Autowired
+    private Identity identity;
+
+
+    public KafkaMessageConsumerManager() {
+        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
+    }
+
+    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider, Identity identity, TracerRegistry tracerRegistry) {
+        this.configProvider = Objects.requireNonNull(configProvider);
+        this.identity = identity;
+        this.tracerRegistry = tracerRegistry;
+    }
+    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider) {
+        this.configProvider = Objects.requireNonNull(configProvider);
+    }
+
+
     private class KafkaConsumerRunner implements Runnable {
         private final SinkModule<?, Message> module;
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final KafkaConsumer<String, byte[]> consumer;
         private final String topic;
+
         private final MetricRegistry metricRegistry = new MetricRegistry();
         private JmxReporter jmxReporter = null;
         private Histogram messageSize;
         private Timer dispatchTime;
-        
+
         public KafkaConsumerRunner(SinkModule<?, Message> module) {
             this.module = module;
             
@@ -153,10 +186,15 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                             }
                             // Update metrics.
                             messageSize.update(messageInBytes.length);
-                            // dispatchTime is a metric which measures time taken to dispatch
-                            try (Timer.Context context = dispatchTime.time()) {
+                            Tracer.SpanBuilder spanBuilder = buildSpanFromSinkMessage(sinkMessage);
+                            // Tracing scope and Metrics Timer context will measure the time to dispatch.
+                            try(Scope scope = spanBuilder.startActive(true);
+                                Timer.Context context = dispatchTime.time()) {
+                                scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageInBytes.length);
+                                scope.span().setTag(TracerConstants.TAG_TOPIC, topic);
                                 dispatch(module, module.unmarshal(messageInBytes));
                             }
+
                         } catch (RuntimeException e) {
                             LOG.warn("Unexpected exception while dispatching message", e);
                         } catch (InvalidProtocolBufferException e) {
@@ -175,6 +213,24 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             }
         }
 
+        private Tracer.SpanBuilder buildSpanFromSinkMessage(SinkMessageProtos.SinkMessage sinkMessage) {
+
+            Tracer tracer = getTracer();
+            Tracer.SpanBuilder spanBuilder;
+            Map<String, String> tracingInfoMap = new HashMap<>();
+            sinkMessage.getTracingInfoList().forEach(tracingInfo -> {
+                tracingInfoMap.put(tracingInfo.getKey(), tracingInfo.getValue());
+            });
+            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
+            if (context != null) {
+                // Span on consumer side will follow the span from producer (minion).
+                spanBuilder = tracer.buildSpan(module.getId()).addReference(References.FOLLOWS_FROM, context);
+            } else {
+                spanBuilder = tracer.buildSpan(module.getId());
+            }
+            return spanBuilder;
+        }
+
         // Shutdown hook which can be called from a separate thread
         public void shutdown() {
             closed.set(true);
@@ -185,13 +241,6 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         }
     }
 
-    public KafkaMessageConsumerManager() {
-        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
-    }
-
-    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider) {
-        this.configProvider = Objects.requireNonNull(configProvider);
-    }
 
     @Override
     protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
@@ -233,5 +282,31 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         LOG.info("KafkaMessageConsumerManager: consuming from Kafka using: {}", kafkaConfig);
         String cacheConfig = kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG, DEFAULT_MESSAGEID_CONFIG);
         largeMessageCache =  CacheBuilder.from(cacheConfig).build();
+        if (identity != null && tracerRegistry != null) {
+            tracerRegistry.init(identity.getId());
+        }
+    }
+
+    public Identity getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        this.tracerRegistry = tracerRegistry;
+    }
+
+    public Tracer getTracer() {
+        if (tracerRegistry != null) {
+            return tracerRegistry.getTracer();
+        }
+        return GlobalTracer.get();
     }
 }

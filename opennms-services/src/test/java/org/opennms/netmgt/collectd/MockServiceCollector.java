@@ -56,7 +56,12 @@ public class MockServiceCollector implements ServiceCollector {
             CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
         }
         s_collectCount++;
-        return new CollectionSetBuilder(agent).build();
+
+        if (s_delegate != null) {
+            return s_delegate.collect(agent, parameters);
+        } else {
+            return new CollectionSetBuilder(agent).build();
+        }
     }
 
     public int getCollectCount() {

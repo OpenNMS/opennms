@@ -171,13 +171,13 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - bash-alpine
       - run:
           name: Fetch RPM artifacts and build Horizon container image
           command: |
             cd opennms-container/horizon
-            ./fetch-rpms.sh
             ./build_container_image.sh
       - store_artifacts:
           path: ~/project/opennms-container/horizon/images/container.oci
@@ -192,13 +192,13 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - bash-alpine
       - run:
           name: Fetch RPM artifacts and build Minion container image
           command: |
             cd opennms-container/minion
-            ./fetch-rpms.sh
             ./build_container_image.sh
       - store_artifacts:
           path: ~/project/opennms-container/minion/images/container.oci
@@ -213,13 +213,13 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - bash-alpine
       - run:
           name: Fetch RPM artifacts and build Sentinel container image
           command: |
             cd opennms-container/sentinel
-            ./fetch-rpms.sh
             ./build_container_image.sh
       - store_artifacts:
           path: ~/project/opennms-container/sentinel/images/container.oci

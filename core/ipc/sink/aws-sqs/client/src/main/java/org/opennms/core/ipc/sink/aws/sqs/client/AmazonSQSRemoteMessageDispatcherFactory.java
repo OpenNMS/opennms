@@ -47,6 +47,9 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
 
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+
 /**
  * A factory for creating AwsRemoteMessageDispatcher objects.
  * 
@@ -116,6 +119,12 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     @Override
     public BundleContext getBundleContext() {
         return bundleContext;
+    }
+
+
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
     }
 
     /**

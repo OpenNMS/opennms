@@ -96,6 +96,7 @@ The following properties in `etc/org.opennms.features.geocoder.mapquest.cfg` are
 | `false`
 | Should the system wide proxy settings be used?
   The system proxy settings can be configured in link:#ga-opennms-system-properties[opennms.conf]
+|===
 
 ==== Nominatim
 

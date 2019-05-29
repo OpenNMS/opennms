@@ -30,6 +30,7 @@ package org.opennms.netmgt.flows.api;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -44,13 +45,37 @@ public interface FlowRepository {
 
     CompletableFuture<Long> getFlowCount(List<Filter> filters);
 
-    CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters);
+    CompletableFuture<List<String>> getApplications(String matchingPrefix, long limit, List<Filter> filters);
 
-    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters);
+    CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversations(int N, List<Filter> filters);
+    CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters);
+    CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications, long step, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<List<String>> getConversations(String locationPattern, String protocolPattern,
+                                                     String lowerIPPattern, String upperIPPattern,
+                                                     String applicationPattern, long limit, List<Filter> filters);
+
+    CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<List<TrafficSummary<Conversation>>> getConversationSummaries(Set<String> conversations, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<Table<Directional<Conversation>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationSeries(int N, long step, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<List<String>> getHosts(String regex, long limit, List<Filter> filters);
+
+    CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
     class Conversation {
         public final String location;
@@ -98,5 +123,4 @@ public interface FlowRepository {
                     key.getApplication());
         }
     }
-
 }

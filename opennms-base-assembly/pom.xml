@@ -614,11 +614,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>net.simon04.jelementtree</groupId>
-      <artifactId>jelementtree</artifactId>
-      <version>20100506</version>
-    </dependency>
-    <dependency>
       <groupId>opensymphony</groupId>
       <artifactId>ognl</artifactId>
     </dependency>
@@ -831,6 +826,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.opennms-identity</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
@@ -976,11 +976,6 @@
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.netflow.parser</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
-      <artifactId>org.opennms.features.telemetry.protocols.sflow.parser</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

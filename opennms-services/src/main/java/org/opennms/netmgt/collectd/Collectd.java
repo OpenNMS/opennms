@@ -980,22 +980,24 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     /**
-     * This method is responsible for handling nodeDeleted events.
+     * This method is responsible for handling NodeCategoryMembershipChanged events.
      * 
      * @param event
      *            The event to process.
-     * @throws InsufficientInformationException
+     * @throws InsufficientInformationException if the event does not have a nodeId
      */
     private void handleNodeCategoryMembershipChanged(Event event) throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
-        
+
         Long nodeId = event.getNodeid();
 
         unscheduleNodeAndMarkForDeletion(nodeId);
 
         LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
         
-        m_filterDao.flushActiveIpAddressListCache();
+        // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
+        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+
         scheduleNode(nodeId.intValue(), true);
     }
 
@@ -1085,8 +1087,11 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
         EventUtils.checkService(event);
+
+        // Before scheduling, update Thrshd packages
+        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+
         // Schedule the interface
-        //
         scheduleForCollection(event);
     }
     

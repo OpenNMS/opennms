@@ -101,17 +101,54 @@ angular.module('onms-resources', [
       $scope.loaded = true;
       $scope.hasResources = data.children.resource.length > 0;
       var reduced = _.map(data.children.resource, function(obj) {
-        return { id: obj.id, label: obj.label, typeLabel: obj.typeLabel, checked: false, hasFlows: typeof obj.externalValueAttributes.hasFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasFlows) };
+	var resource = {
+          id: obj.id,
+          label: obj.label,
+          typeLabel: obj.typeLabel,
+          checked: false,
+          ifIndex: parseInt(obj.externalValueAttributes.ifIndex, 10), // will return NaN if not set
+          hasFlows: typeof obj.externalValueAttributes.hasFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasFlows)
+        };
+        $scope.updateFlowUrlForResource(nodeCriteria, resource);
+        return resource;
       });
       $scope.resources = _.groupBy(_.sortBy(reduced, function(r) {
         var type = r['typeLabel'];
         return (type === 'SNMP Node Data' || type === 'SNMP Interface Data') ? Infinity : type;
       }), 'typeLabel');
-      angular.copy($scope.resources, $scope.filteredResources);
+      // Perform a shallow copy of the resource map - the resources may be updated asynchronously
+      // with additional attributes
+      $scope.filteredResources = {};
+      for (var k in $scope.resources) {
+        if (Object.prototype.hasOwnProperty.call($scope.resources, k)) {
+          $scope.filteredResources[k] = $scope.resources[k];
+        }
+      }
     }, function errorCallback(response) {
        $scope.loaded = true;
        growl.error('There was a problem in retrieving resources through ReST', {ttl: 10000});
     });
+  };
+
+  $scope.updateFlowUrlForResource = function(nodeCriteria, resource) {
+    if (!resource.hasFlows || isNaN(resource.ifIndex)) {
+      // No flows, or not an interface, nothing to do
+      return;
+    }
+
+    $http({
+      url: 'rest/flows/flowGraphUrl',
+      method: 'GET',
+      params: {
+        exporterNode: nodeCriteria,
+        ifIndex: resource.ifIndex,
+      }
+      }).then(function succeeded(response) {
+        // Update the flowGraphUrl on the associated resource
+        resource.flowGraphUrl = response.data.flowGraphUrl;
+      }, function errorCallback(response) {
+        // pass
+      });
   };
 
   $scope.checkAll = function(check) {
