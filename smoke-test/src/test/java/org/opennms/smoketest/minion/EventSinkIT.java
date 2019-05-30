@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,79 +26,87 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest;
+package org.opennms.smoketest.minion;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertTrue;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
-import static org.testcontainers.containers.PostgreSQLContainer.POSTGRESQL_PORT;
+import static org.junit.Assert.assertTrue;
 
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.smoketest.containers.MinionContainer;
-import org.opennms.smoketest.containers.OpenNMSContainer;
-import org.opennms.smoketest.containers.PostgreSQLContainer;
+import org.opennms.smoketest.NullTestEnvironment;
+import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
-import org.opennms.smoketest.utils.SshClient;
+import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
+import org.opennms.test.system.api.TestEnvironment;
+import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EventSinkIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventSinkIT.class);
-
-    private static final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer();
-
-    private static final OpenNMSContainer opennmsContainer = new OpenNMSContainer();
-
-    private static final MinionContainer minionContainer = new MinionContainer();
-
-    private static HibernateDaoFactory daoFactory;
+    private static final String SENDER_IP = "192.168.1.1";
+    protected static TestEnvironment m_testEnvironment;
 
     @ClassRule
-    public static TestRule chain = RuleChain
-            .outerRule(postgreSQLContainer)
-            .around(opennmsContainer)
-            .around(minionContainer);
-
-    protected HibernateDaoFactory getDaoFactory() {
-        if (daoFactory == null) {
-            // Connect to the postgresql container
-            final InetSocketAddress pgsql = new InetSocketAddress(postgreSQLContainer.getContainerIpAddress(),
-                    postgreSQLContainer.getMappedPort(POSTGRESQL_PORT));
-            daoFactory = new HibernateDaoFactory(pgsql);
+    public static final TestEnvironment getTestEnvironment() {
+        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
+            return new NullTestEnvironment();
         }
-        return daoFactory;
+        try {
+            final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms().minion().kafka();
+            builder.withOpenNMSEnvironment()
+                    // Switch sink to Kafka using opennms-properties.d file
+                    .addFile(MinionHeartbeatOutageKafkaIT.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
+            builder.withMinionEnvironment()
+                    // Switch sink to Kafka using features.boot file
+                    .addFile(MinionHeartbeatOutageKafkaIT.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
+            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
+            m_testEnvironment = builder.build();
+            return m_testEnvironment;
+        } catch (final Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
+    @Before
+    public void checkForDockerAndLoadExecutor() {
+        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
+    }
 
     @Test
-    public void canReceiveEvents() throws Exception {
+    public void canReceiveEvents() throws UnknownHostException {
         Date startOfTest = new Date();
-        final InetSocketAddress sshAddr = minionContainer.getSshAddress();
-        assertTrue("failed to send event from minion", sendEventsFromMinion(sshAddr));
-
-        EventDao eventDao = getDaoFactory().getDao(EventDaoHibernate.class);
+        InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
+        assertTrue("failed to send event from Minion", sendEventsFromMinion(sshAddr));
+        InetSocketAddress pgsql = m_testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
+        HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
+        EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
         final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(eventDao, new CriteriaBuilder(OnmsEvent.class).eq("eventUei", "uei.opennms.org/alarms/trigger")
                         .eq("eventSource", "karaf-shell").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
 
-        assertNotNull(onmsEvent);
+        assertNotNull("The event sent is not received at OpenNMS", onmsEvent);
+
     }
+
 
     private boolean sendEventsFromMinion(InetSocketAddress sshAddr) {
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
@@ -118,4 +126,5 @@ public class EventSinkIT {
         }
         return false;
     }
+
 }
