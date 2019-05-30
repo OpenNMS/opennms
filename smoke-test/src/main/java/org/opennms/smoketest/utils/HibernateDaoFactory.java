@@ -57,7 +57,7 @@ public class HibernateDaoFactory {
 
         AnnotationSessionFactoryBean sfb = new AnnotationSessionFactoryBean();
         sfb.setDataSource(dataSource);
-        sfb.setPackagesToScan("org.opennms.netmgt.model", "org.opennms.netmgt.endpoints");
+        sfb.setPackagesToScan("org.opennms.netmgt.model");
         try {
             sfb.afterPropertiesSet();
         } catch (Exception e) {

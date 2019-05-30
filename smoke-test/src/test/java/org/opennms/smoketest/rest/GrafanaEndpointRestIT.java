@@ -34,15 +34,12 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
-import java.net.InetSocketAddress;
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint;
-import org.opennms.netmgt.endpoints.grafana.persistence.api.GrafanaEndpointDao;
-import org.opennms.netmgt.endpoints.grafana.persistence.impl.GrafanaEndpointDaoImpl;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.smoketest.utils.HibernateDaoFactory;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -50,20 +47,15 @@ import io.restassured.http.ContentType;
 public class GrafanaEndpointRestIT extends OpenNMSSeleniumTestCase {
 
     @Before
-    public void before() {
+    public void before() throws IOException, InterruptedException {
         System.out.println("before");
         RestAssured.baseURI = getBaseUrl();
         RestAssured.port = getServerHttpPort();
         RestAssured.basePath = "/opennms/rest/endpoints/grafana";
         RestAssured.authentication = RestAssured.preemptive().basic(OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME, OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD);
 
-        deleteAllEndpoints();
-    }
-
-    public static void deleteAllEndpoints() {
         // Delete all endpoints
-        final GrafanaEndpointDao endpointDao = new HibernateDaoFactory(new InetSocketAddress("localhost", 5432)).getDao(GrafanaEndpointDaoImpl.class);
-        endpointDao.findAll().forEach(endpoint -> endpointDao.delete(endpoint));
+        sendDelete("rest/endpoints/grafana");
     }
 
     @Test

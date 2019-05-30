@@ -32,8 +32,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.opennms.smoketest.rest.GrafanaEndpointRestIT.deleteAllEndpoints;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -53,8 +53,9 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
     private Page uiPage;
 
     @Before
-    public void setUp() {
-        deleteAllEndpoints();
+    public void setUp() throws IOException, InterruptedException {
+        // Delete all endpoints
+        sendDelete("rest/endpoints/grafana");
 
         uiPage = new Page(getBaseUrl());
         uiPage.open();

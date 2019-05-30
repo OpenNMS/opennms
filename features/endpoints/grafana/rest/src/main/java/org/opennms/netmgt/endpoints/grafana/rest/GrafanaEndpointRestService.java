@@ -50,6 +50,9 @@ public interface GrafanaEndpointRestService {
     @GET
     Response listEndpoints();
 
+    @DELETE
+    Response deleteAllEndpoints();
+
     @POST
     @Path("/verify")
     Response verifyEndpoint(final GrafanaEndpoint grafanaEndpoint);

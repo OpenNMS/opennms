@@ -66,6 +66,12 @@ public class GrafanaEndpointRestServiceImpl implements GrafanaEndpointRestServic
     }
 
     @Override
+    public Response deleteAllEndpoints() {
+        grafanaEndpointService.deleteAllEndpoints();
+        return Response.status(Response.Status.ACCEPTED).build();
+    }
+
+    @Override
     public Response verifyEndpoint(GrafanaEndpoint grafanaEndpoint) {
         GrafanaClient client;
         if (Strings.isNullOrEmpty(grafanaEndpoint.getUid())) {

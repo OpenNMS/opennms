@@ -70,6 +70,14 @@ public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
     }
 
     @Override
+    public void deleteAllEndpoints() {
+        sessionUtils.withTransaction(() -> {
+            endpointDao.findAll().forEach(endpoint -> endpointDao.delete(endpoint));
+            return null;
+        });
+    }
+
+    @Override
     public void updateEndpoint(GrafanaEndpoint endpoint) throws NoSuchElementException {
         sessionUtils.withTransaction(() -> {
             validate(endpoint);

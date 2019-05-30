@@ -51,7 +51,7 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
                     'create':       { method: 'POST' },
                     'update':       { method: 'PUT' },
                     'list':         { method: 'GET', isArray: true },
-                    'delete':       { method: 'DELETE'},
+                    'delete':       { method: 'DELETE', params: {id: -1 /* force to -1 to prevent accidentally deleting all endpoints */ } },
                     'verify':       { method: 'POST', params: {} /* resets id */, url: 'rest/endpoints/grafana/verify'},
                 }
             );

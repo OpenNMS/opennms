@@ -33,6 +33,8 @@ import java.util.List;
 public interface GrafanaEndpointService {
     List<GrafanaEndpoint> findEndpoints();
 
+    void deleteAllEndpoints();
+
     void updateEndpoint(GrafanaEndpoint endpoint);
 
     void saveEndpoint(GrafanaEndpoint newGrafanaEndpoint);
