@@ -1518,7 +1518,7 @@
           <plugin>
             <groupId>com.sun.tools.jxc.maven2</groupId>
             <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-            <version>[1.2,2.0)</version>
+            <version>1.2</version>
             <dependencies>
               <dependency>
               <groupId>com.sun</groupId>
