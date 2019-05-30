@@ -122,6 +122,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
 
             // Logout (via HttpGet, so we are still on the page)
             simulateSessionTimeout();
+            sleep(2000);
 
             // Verify we are still on the page
             eachCheck.verifyPageLoaded.run();
