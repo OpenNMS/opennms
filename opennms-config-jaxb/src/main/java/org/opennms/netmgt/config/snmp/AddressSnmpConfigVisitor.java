@@ -370,6 +370,12 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
             ret.setSecurityLevel(securityLevel);
         }
 
+        if(sourceConfig.hasTTL()) {
+            ret.setTTL(sourceConfig.getTTL());
+        } else if (m_currentConfig.hasTTL()) {
+            ret.setTTL(m_currentConfig.getTTL());
+        }
+
         //LOG.debug("generated: {}", ret);
         m_generatedDefinition = ret;
     }
