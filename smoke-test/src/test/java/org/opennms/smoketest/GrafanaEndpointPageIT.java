@@ -98,7 +98,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         assertEquals(modifiedEndpoint, uiPage.getEndpoints().get(0));
 
         // Delete endpoint
-        uiPage.deleteEndpoint(uiEndpoint.getId());
+        uiPage.deleteEndpoint(uiEndpoint);
         assertThat(uiPage.getEndpoints(), hasSize(0));
     }
 
@@ -131,6 +131,27 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         assertThat(findElementById("endpointModal").isDisplayed(), is(true));
         pageContainsText("An endpoint with uid '" + dummyEndpoint.getUid() + "' already exists.");
         modal.cancel();
+    }
+
+    @Test
+    public void verifyOnlyOneEndpointIsDeleted() {
+        // Create first dummy
+        final GrafanaEndpoint dummyEndpoint = GrafanaEndpointRestIT.createDummyEndpoint();
+        uiPage.newModal().setInput(dummyEndpoint).save();
+
+        // Create 2nd dummy
+        dummyEndpoint.setUid("ANOTHER_UID");
+        uiPage.newModal().setInput(dummyEndpoint).save();
+
+        // Verify creation
+        assertThat(uiPage.getEndpoints(), hasSize(2));
+
+        // Now delete second element
+        final GrafanaEndpoint uiEndpoint = uiPage.getEndpoints().get(1);
+        uiPage.deleteEndpoint(uiEndpoint);
+
+        // Verify deletion
+        assertThat(uiPage.getEndpoints(), hasSize(1));
     }
 
     private class Page {
@@ -194,18 +215,20 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             });
         }
 
-        public void deleteEndpoint(Long endpointId) {
+        public void deleteEndpoint(GrafanaEndpoint endpoint) {
             execute(() -> {
                 // Click Delete
-                findElementById("action.delete." + endpointId).click();
+                findElementById("action.delete." + endpoint.getId()).click();
                 // Wait for confirm popover
                 new WebDriverWait(m_driver, 5).until(pageContainsText("Delete Endpoint"));
                 // Click Yes in popover
-                findElementByXpath("//div[@class='popover-content']//button[text() = 'Yes']").click();
+                final String confirmButtonXpath = String.format("//div[@class='popover-content']//p[contains(text(), \"UID '%s'\")]/..//button[text() = 'Yes']", endpoint.getUid());
+                final WebElement confirmElement = findElementByXpath(confirmButtonXpath);
+                assertThat(confirmElement.isDisplayed(), is(true));
+                confirmElement.click();
                 return null;
             });
-
-            verifyElementNotPresent(By.xpath("//table/tbody/tr[@data-id='" + endpointId + "']"));
+            verifyElementNotPresent(By.xpath("//table/tbody/tr[@data-id='" + endpoint.getId() + "']"));
         }
     }
 
