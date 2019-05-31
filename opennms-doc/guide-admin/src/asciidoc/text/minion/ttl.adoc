@@ -3,16 +3,22 @@
 
 [[ga-minion-ttl]]
 
-=== Time to Live (ttl) for RPCs
+=== Time to Live (TTL) for RPCs
 
-RPC calls between _{opennms-product-name}_ and _Minion_ have certain time limit after which the requests are discarded.
+Remote procedure calls (RPCs) between _{opennms-product-name}_ and _Minion_ have certain time limit after which the requests are discarded.
+We call this limit the time-to-live or TTL.
+We make an effort to use logical values where possible and provide means to configure the TTLs for circumstances where the default values are not suitable.
 
-For Service Monitors and Service Collectors the `interval` for the specific service will be the default ttl.
+In the context of pollerd, or collectd the RPCs for the respective service monitors and service collectors default to the `interval` at which these are scheduled.
+This can be overwritten by adding a parameter named `ttl` to the corresponding service definitions.
+The link:#ga-meta-data[meta-data] feature can be leverage to customize these values on a per node/interface/service basis.
 
-This can also be overwritten by specifying `ttl` as one of the parameters for the Service Monitors and Service Collectors.
-The parameters can also specified as metadata which allows it to be populated per node/interface/service.
+For SNMP communication (i.e. provisiond) the TTL can also be specified in the SNMP agent configuration (snmp-config.xml).
+The SNMP agent configuration will overrride any other TTL specified through parameters.
+For example, if the SNMP collector is configured to use a TTL of 5 minutes, but the agent being queried has a TTL of 10 minutes, then the later will win.
 
-For SNMP services in provisioning and SNMP collector, `ttl` can also be specified in snmp config (snmp-config.xml)
-Note that this overwrites any other ttl specified through parameters.
+If no TTL is found in any of the ways specified above, a default TTL of `20000` msec (20 sec) will be used.
+The default TTL can also be configured.
+When using the JMS-based RPC implementation, set value of the `org.opennms.jms.timeout` system property to the desired number of milliseconds.
+When using the Kafka-based RPC implementation, set the value of the `org.opennms.core.ipc.rpc.kafka.ttl` system property to the desired number of milliseconds.
 
-If no `ttl` is found in any of the ways specified above, default ttl for the RPC requests is `20000` msec (20 sec).
