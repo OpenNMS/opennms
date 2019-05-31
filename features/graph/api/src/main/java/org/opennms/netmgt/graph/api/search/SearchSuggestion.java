@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.graph.api.search;
 
+import java.util.Comparator;
 import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * A {@link SearchSuggestion} is provided to the user and was created from a (partial) search query.
@@ -36,13 +39,15 @@ import java.util.Objects;
  * The main idea is, that a {@link SearchSuggestion} represents an item a user can select, which
  * afterwards is resolved to a List of vertices/edges.
  */
-public class SearchSuggestion {
+public class SearchSuggestion implements Comparable<SearchSuggestion> {
 
     // The context of the suggestion, e.g. category, attribute, node, etc. to allow for a more fine grain suggestion
     // This may be achieved later by sub-classing
     private String context;
     // The user-friendly label for the suggestion, which is shown to the user
     private String label;
+    // TODO: Patrick discuss with mvr: maybe we will need later also a technical identifier (instead of just a user
+    // friendly label)
     // The provider from which the suggestion is. This is required to resolve later on
     // This ensures that the originating SearchProvider can actually resolve it
     private String provider;
@@ -79,5 +84,39 @@ public class SearchSuggestion {
 
     public void setProvider(String provider) {
         this.provider = provider;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SearchSuggestion that = (SearchSuggestion) o;
+        return com.google.common.base.Objects.equal(context, that.context) &&
+                com.google.common.base.Objects.equal(label, that.label) &&
+                com.google.common.base.Objects.equal(provider, that.provider);
+    }
+
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(context, label, provider);
+    }
+
+
+    @Override
+    public int compareTo(SearchSuggestion that) {
+        return Objects.compare(this, that,
+                Comparator.comparing(SearchSuggestion::getLabel)
+                        .thenComparing(SearchSuggestion::getProvider)
+                        .thenComparing(SearchSuggestion::getContext)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("context", context)
+                .add("label", label)
+                .add("provider", provider)
+                .toString();
     }
 }

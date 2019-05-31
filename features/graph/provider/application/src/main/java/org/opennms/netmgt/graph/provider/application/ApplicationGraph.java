@@ -37,6 +37,8 @@ import org.opennms.netmgt.graph.simple.SimpleEdge;
 
 public class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, SimpleEdge> {
 
+    public static final String TOPOLOGY_NAMESPACE = "application";
+
     public ApplicationGraph(String namespace) {
         super(namespace);
     }

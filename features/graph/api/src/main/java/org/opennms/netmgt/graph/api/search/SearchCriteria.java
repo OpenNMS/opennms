@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.graph.api.search;
 
+import java.util.Objects;
+
 /**
  * After the user selected a Suggestion, this is converted to a {@link SearchCriteria}.
  * Theoretically they are identically, but differ only by name in order to distinguish the different use-cases.
@@ -43,18 +45,21 @@ public class SearchCriteria {
     // The search criteria, usually the label of the SearchSuggestion
     private String criteria;
 
-    // The context
     private String context;
 
     public SearchCriteria() {
 
     }
 
+    public SearchCriteria(String providerId, String namespace, final String criteria, String context) {
+        this.providerId = Objects.requireNonNull(providerId);
+        this.namespace = Objects.requireNonNull(namespace);
+        this.criteria = Objects.requireNonNull(criteria);
+        this.context = Objects.requireNonNull(context);
+    }
+
     public SearchCriteria(final SearchSuggestion suggestion, final String namespace) {
-        this.providerId = suggestion.getProvider();
-        this.context = suggestion.getContext();
-        this.criteria = suggestion.getLabel();
-        this.namespace = namespace;
+        this(suggestion.getProvider(), namespace, suggestion.getLabel(), suggestion.getContext());
     }
 
     public String getProviderId() {

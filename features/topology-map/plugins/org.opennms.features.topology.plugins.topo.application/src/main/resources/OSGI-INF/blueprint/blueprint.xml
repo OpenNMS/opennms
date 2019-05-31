@@ -88,8 +88,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/
 
 	<!-- Search Provider -->
 	<bean id="applicationSearchProvider" class="org.opennms.features.topology.plugins.topo.application.LegacyApplicationSearchProvider">
-		<argument ref="transactionAwareBeanProxyFactory" />
-		<property name="applicationDao" ref="applicationDao" />
+		<property name="graphSearchService" ref="graphSearchService" />
 	</bean>
 	<service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="applicationSearchProvider" />
 

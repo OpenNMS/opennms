@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
@@ -44,6 +42,11 @@ import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.search.GraphSearchService;
+import org.opennms.netmgt.graph.api.search.SearchCriteria;
+import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
+import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
@@ -52,16 +55,16 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+/**
+ * We call here the new search implementation and use it in the legacy world. This class will disappear eventually and the
+ * new search will be used directly.
+ */
+
 public class LegacyApplicationSearchProvider extends AbstractSearchProvider implements SearchProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(LegacyApplicationSearchProvider.class);
-    private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
 
-    private ApplicationDao applicationDao;
-
-    public LegacyApplicationSearchProvider(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
-        this.transactionAwareBeanProxyFactory = Objects.requireNonNull(transactionAwareBeanProxyFactory);
-    }
+    private GraphSearchService graphSearchService;
     
     @Override
     public String getSearchProviderNamespace() {
@@ -81,21 +84,21 @@ public class LegacyApplicationSearchProvider extends AbstractSearchProvider impl
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer container) {
         LOG.info("ApplicationServiceSearchProvider->query: called with search query: '{}'", searchQuery);
+
+        // we skip the suggest phase since the old search doesn't distinguish between suggesting and searching.
+
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setNamespace(ApplicationGraph.TOPOLOGY_NAMESPACE);
+        // context shouldn't matter: searchCriteria.setContext();
+        searchCriteria.setCriteria(searchQuery.getQueryString());
+        List<GenericVertex> vertices = graphSearchService.search(searchCriteria);
+
         List<SearchResult> results = Lists.newArrayList();
 
-        String queryString = searchQuery.getQueryString();
-        CriteriaBuilder bldr = new CriteriaBuilder(OnmsApplication.class);
-        if (queryString != null && queryString.length() > 0) {
-            bldr.ilike("name", String.format("%%%s%%", queryString));
-        }
-        bldr.orderBy("name", true);
-        bldr.limit(10);
-        Criteria dbQueryCriteria = bldr.toCriteria();
-
-        // TODO: patrick do we want to replace the dao call also with a call to GraphService?
-        for (OnmsApplication application : applicationDao.findMatching(dbQueryCriteria)) {
-            final LegacyApplicationVertex applicationVertex = new LegacyApplicationVertex(application);
-            SearchResult searchResult = new SearchResult(applicationVertex, true, false);
+        for (GenericVertex genericVertex : vertices) {
+            ApplicationVertex applicationVertex = new ApplicationVertex(genericVertex);
+            final LegacyApplicationVertex legacyApplicationVertex = new LegacyApplicationVertex(applicationVertex);
+            SearchResult searchResult = new SearchResult(legacyApplicationVertex, true, false);
             results.add(searchResult);
         }
 
@@ -130,8 +133,8 @@ public class LegacyApplicationSearchProvider extends AbstractSearchProvider impl
         LOG.debug("ApplicationServiceSearchProvider->removeVertexHopCriteria: current criteria {}.", Arrays.toString(container.getCriteria()));
     }
 
-    public void setApplicationDao(ApplicationDao applicationDao) {
-        this.applicationDao = transactionAwareBeanProxyFactory.createProxy(applicationDao);
+    public void setGraphSearchService(GraphSearchService graphSearchService) {
+        this.graphSearchService = graphSearchService;
     }
 }
 

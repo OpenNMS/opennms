@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.search;
+package org.opennms.netmgt.graph.rest.impl;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.search.GraphSearchService;
+import org.opennms.netmgt.graph.api.search.SearchCriteria;
+import org.opennms.netmgt.graph.api.search.SearchSuggestion;
+import org.opennms.netmgt.graph.rest.api.GraphSearchRestService;
+import org.springframework.stereotype.Service;
 
-/**
- * Service to search all graphs
- */
-public interface GraphSearchService {
+@Service
+public class GraphSearchRestServiceImpl implements GraphSearchRestService {
 
-    /**
-     * Returns a list of suggestions for the given namespace and input, where input may only be a
-     * snippet of the whole data, e.g. for type ahead support.
-     *
-     * @param namespace The namespace to search in
-     * @param input The "thing" to search
-     * @return A list of results, the user may select from
-     */
-    List<SearchSuggestion> getSuggestions(String namespace, String input);
+    private GraphSearchService graphSearchService;
 
-    List<GenericVertex> search(SearchCriteria searchCriteria);
+    public GraphSearchRestServiceImpl(GraphSearchService graphSearchService) {
+        this.graphSearchService = Objects.requireNonNull(graphSearchService);
+    }
+
+    @Override
+    public List<SearchSuggestion> getSuggestions(String namespace, String input) {
+        return graphSearchService.getSuggestions(namespace, input);
+    }
+
+    @Override
+    public List<GenericVertex> search(String namespace, String providerId, String criteria, String context) {
+        SearchCriteria searchCriteria = new SearchCriteria(providerId, namespace, criteria, context);
+        return graphSearchService.search(searchCriteria);
+    }
 }

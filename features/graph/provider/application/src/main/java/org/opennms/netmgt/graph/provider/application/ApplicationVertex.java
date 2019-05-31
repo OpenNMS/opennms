@@ -65,7 +65,7 @@ public class ApplicationVertex extends SimpleVertex {
      * @param id the unique id of this vertex. Must be unique overall the namespace.
      */
     private ApplicationVertex(String id, String name) {
-        super(ApplicationGraphProvider.TOPOLOGY_NAMESPACE, id);
+        super(ApplicationGraph.TOPOLOGY_NAMESPACE, id);
         this.setName(name);
     }
 
