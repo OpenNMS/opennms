@@ -36,9 +36,7 @@ import org.opennms.netmgt.graph.api.search.GraphSearchService;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.rest.api.GraphSearchRestService;
-import org.springframework.stereotype.Service;
 
-@Service
 public class GraphSearchRestServiceImpl implements GraphSearchRestService {
 
     private GraphSearchService graphSearchService;

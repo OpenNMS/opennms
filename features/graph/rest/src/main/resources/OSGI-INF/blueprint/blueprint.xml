@@ -18,4 +18,13 @@
             <entry key="application-path" value="/api/v2" />
         </service-properties>
     </service>
+
+    <bean id="graphSearchRestService" class="org.opennms.netmgt.graph.rest.impl.GraphSearchRestServiceImpl">
+        <argument ref="graphService" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.rest.api.GraphSearchRestService" ref="graphSearchRestService">
+        <service-properties>
+            <entry key="application-path" value="/api/v2" />
+        </service-properties>
+    </service>
 </blueprint>
