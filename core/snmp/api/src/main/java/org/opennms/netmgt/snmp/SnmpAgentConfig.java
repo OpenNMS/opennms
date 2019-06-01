@@ -119,6 +119,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         buff.append(", MaxRepetitions: " + getMaxRepetitions());
         buff.append(", MaxRequestSize: " + getMaxRequestSize());
         buff.append(", Version: " + versionToString(getVersion()));
+        buff.append(", TTL: " + getTTL());
         if (isVersion3()) {
             buff.append(", SecurityLevel: " + getSecurityLevel());
             buff.append(", SecurityName: " + getSecurityName());

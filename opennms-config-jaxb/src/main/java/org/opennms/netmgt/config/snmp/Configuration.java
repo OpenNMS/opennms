@@ -164,6 +164,10 @@ public class Configuration implements Serializable {
     @XmlAttribute(name="port")
     private Integer m_port;
 
+
+    @XmlAttribute(name="ttl")
+    private Long m_ttl;
+
     public Configuration() {
         super();
     }
@@ -513,6 +517,15 @@ public class Configuration implements Serializable {
         return m_timeout != null;
     }
 
+
+    /**
+     *
+     * @return true if there is ttl defined
+     */
+    public boolean hasTTL() {
+        return m_ttl != null;
+    }
+
     /**
      * Sets the value of field 'authPassphrase'. The field 'authPassphrase' has
      * the following description: SNMPv3
@@ -740,6 +753,14 @@ public class Configuration implements Serializable {
      */
     public final void setWriteCommunity(final String writeCommunity) {
         m_writeCommunity = writeCommunity == null? null : writeCommunity.intern();
+    }
+
+    public Long getTTL() {
+        return m_ttl;
+    }
+
+    public void setTTL(Long ttl) {
+        m_ttl = ttl;
     }
 
     @Override
