@@ -70,6 +70,17 @@ public class SampledIpv4 implements FlowData {
         this.tos = BufferUtils.uint32(buffer);
     }
 
+    public SampledIpv4(final long length, final long protocol, final IpV4 src_ip, final IpV4 dst_ip, final long src_port, final long dst_port, final long tcp_flags, final long tos) {
+        this.length = length;
+        this.protocol = protocol;
+        this.src_ip = src_ip;
+        this.dst_ip = dst_ip;
+        this.src_port = src_port;
+        this.dst_port = dst_port;
+        this.tcp_flags = tcp_flags;
+        this.tos = tos;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

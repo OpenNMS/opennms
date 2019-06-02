@@ -56,6 +56,13 @@ public class ExtendedSwitch implements FlowData {
         this.dst_priority = BufferUtils.uint32(buffer);
     }
 
+    public ExtendedSwitch(final long src_vlan, final long src_priority, final long dst_vlan, final long dst_priority) {
+        this.src_vlan = src_vlan;
+        this.src_priority = src_priority;
+        this.dst_vlan = dst_vlan;
+        this.dst_priority = dst_priority;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

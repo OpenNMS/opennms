@@ -122,6 +122,11 @@ public abstract class Record<T> {
         }
     }
 
+    public Record(final DataFormat dataFormat, final Opaque<T> data) {
+        this.dataFormat = dataFormat;
+        this.data = data;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

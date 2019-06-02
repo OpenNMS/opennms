@@ -45,6 +45,10 @@ public class Interface {
         this.iface = BufferUtils.uint32(buffer);
     }
 
+    public Interface(final long iface) {
+        this.iface = iface;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

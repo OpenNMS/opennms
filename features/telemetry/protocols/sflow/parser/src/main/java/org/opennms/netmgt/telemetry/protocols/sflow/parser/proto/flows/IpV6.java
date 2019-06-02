@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -51,6 +50,10 @@ public class IpV6 {
         return MoreObjects.toStringHelper(this)
                 .add("ip_v6", this.ip_v6)
                 .toString();
+    }
+
+    public IpV6(final Opaque<byte[]> ip_v6) {
+        this.ip_v6 = ip_v6;
     }
 
     public IpV6(final ByteBuffer buffer) throws InvalidPacketException {
