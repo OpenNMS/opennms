@@ -56,6 +56,11 @@ public class Opaque<T> {
         BufferUtils.skip(buffer, (4 - (this.length % 4)) % 4);
     }
 
+    public Opaque(final int length, final T t) {
+        this.length = length;
+        this.value = t;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
