@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.graph.api;
 
+import java.util.Objects;
+
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 /** immutable composite key that is unique over all graphs / graph containers */
@@ -62,14 +63,14 @@ public final class VertexRef {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        VertexRef that = (VertexRef) o;
-        return Objects.equal(namespace, that.namespace) &&
-                Objects.equal(id, that.id);
+        VertexRef vertexRef = (VertexRef) o;
+        return Objects.equals(namespace, vertexRef.namespace) &&
+                Objects.equals(id, vertexRef.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(namespace, id);
+        return Objects.hash(namespace, id);
     }
 
     @Override

@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.graph.persistence.converter.collection;
 
+import java.util.Objects;
+
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
+
 
 /**
  * Represents a serialized entry of an original {@link java.util.Collection}.
@@ -58,14 +60,14 @@ public class SerializedCollectionEntry<T> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final SerializedCollectionEntry<?> that = (SerializedCollectionEntry<?>) o;
-        return Objects.equal(type, that.type) &&
-                Objects.equal(value, that.value);
+        SerializedCollectionEntry<?> that = (SerializedCollectionEntry<?>) o;
+        return Objects.equals(type, that.type) &&
+                Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(type, value);
+        return Objects.hash(type, value);
     }
 
     @Override

@@ -29,9 +29,10 @@
 package org.opennms.netmgt.topology;
 
 
+import java.util.Objects;
+
 import javax.persistence.Embeddable;
 
-import com.google.common.base.Objects;
 
 @Embeddable
 public class VertexRefEntity {
@@ -70,13 +71,14 @@ public class VertexRefEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VertexRefEntity that = (VertexRefEntity) o;
-        return Objects.equal(namespace, that.namespace) &&
-                Objects.equal(id, that.id);
+        return Objects.equals(namespace, that.namespace) &&
+                Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(namespace, id);
+
+        return Objects.hash(namespace, id);
     }
 
     @Override

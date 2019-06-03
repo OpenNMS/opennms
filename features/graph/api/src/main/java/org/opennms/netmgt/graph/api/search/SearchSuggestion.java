@@ -91,16 +91,15 @@ public class SearchSuggestion implements Comparable<SearchSuggestion> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SearchSuggestion that = (SearchSuggestion) o;
-        return com.google.common.base.Objects.equal(context, that.context) &&
-                com.google.common.base.Objects.equal(label, that.label) &&
-                com.google.common.base.Objects.equal(provider, that.provider);
+        return Objects.equals(context, that.context) &&
+                Objects.equals(label, that.label) &&
+                Objects.equals(provider, that.provider);
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(context, label, provider);
+        return Objects.hash(context, label, provider);
     }
-
 
     @Override
     public int compareTo(SearchSuggestion that) {
