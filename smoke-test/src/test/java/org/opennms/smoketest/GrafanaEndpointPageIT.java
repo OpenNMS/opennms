@@ -84,7 +84,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         modifiedEndpoint.setReadTimeout(2000);
         modifiedEndpoint.setDescription("New Description");
         modifiedEndpoint.setUrl("https://url.new.org");
-        modifiedEndpoint.setUid("NEW UID");
+        modifiedEndpoint.setUid("NEW_UID");
         uiPage.editModal(uiEndpoint.getId()).setInput(modifiedEndpoint).save();
 
         // Verify edit worked
@@ -98,7 +98,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         assertEquals(modifiedEndpoint, uiPage.getEndpoints().get(0));
 
         // Delete endpoint
-        uiPage.deleteEndpoint(uiEndpoint);
+        uiPage.deleteEndpoint(modifiedEndpoint);
         assertThat(uiPage.getEndpoints(), hasSize(0));
     }
 
