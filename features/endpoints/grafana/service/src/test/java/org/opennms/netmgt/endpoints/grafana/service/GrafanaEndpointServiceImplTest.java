@@ -36,6 +36,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.UUID;
+
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -178,5 +180,28 @@ public class GrafanaEndpointServiceImplTest {
             assertEquals("uid", ex.getContext());
             assertEquals(GrafanaEndpointServiceImpl.PROVIDE_A_VALUE_TEXT, ex.getRawMessage());
         }
+
+        // Ensure it can not start with - or _
+        try {
+            endpoint.setUid("-");
+            endpointService.validate(endpoint);
+            fail("Expected exception was not thrown");
+        } catch (GrafanaEndpointException ex) {
+            assertEquals("uid", ex.getContext());
+        }
+        try {
+            endpoint.setUid("_");
+            endpointService.validate(endpoint);
+            fail("Expected exception was not thrown");
+        } catch (GrafanaEndpointException ex) {
+            assertEquals("uid", ex.getContext());
+            assertThat(ex.getMessage(), allOf(containsString("provided Grafana ID"),
+                                                containsString("is not valid"),
+                                                containsString(GrafanaEndpointServiceImpl.UID_PATTERN.pattern())));
+        }
+
+        // Ensure UUID works
+        endpoint.setUid(UUID.randomUUID().toString());
+        endpointService.validate(endpoint);
     }
 }

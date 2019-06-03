@@ -129,6 +129,7 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
             $scope.refresh();
         }])
         .controller('GrafanaEndpointModalController', ['$scope', '$uibModalInstance', '$sce', 'GrafanaEndpointsService', 'endpoint', function($scope, $uibModalInstance, $sce, GrafanaEndpointsService, endpoint) {
+            $scope.uidRegex = '[a-zA-Z0-9]+[a-zA-Z0-9_-]*';
             $scope.endpoint = endpoint || {revealApiKey: false};
             $scope.buttonName = $scope.endpoint.id ? 'Update' : 'Create';
             $scope.verification = {

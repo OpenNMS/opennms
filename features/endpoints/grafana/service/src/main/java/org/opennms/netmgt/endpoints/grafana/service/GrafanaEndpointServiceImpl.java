@@ -35,6 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaClient;
@@ -48,9 +49,12 @@ import com.google.common.base.Strings;
 
 public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
 
+    static final Pattern UID_PATTERN = Pattern.compile("^[a-zA-Z0-9]+[a-zA-Z0-9_-]*$");
+
     static final String PROVIDE_A_VALUE_TEXT = "Please provide a value";
     static final String URL_NOT_VALID_TEMPLATE = "The provided URL ''{0}'' is not valid: ''{1}''";
     static final String PROVIDED_VALUE_GREATER_ZERO_TEXT = "The provided value must be >= 0";
+    static final String UID_INVALID_TEMPLATE = "The provided Grafana ID ''{0}'' is not valid. It does not match the regular expression ''{1}''";
 
     private final GrafanaEndpointDao endpointDao;
     private final GrafanaClientFactory clientFactory;
@@ -162,6 +166,10 @@ public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
         }
         if (endpoint.getReadTimeout() != null && endpoint.getReadTimeout() < 0) {
             throw new GrafanaEndpointException("readTimeout", PROVIDED_VALUE_GREATER_ZERO_TEXT);
+        }
+        // Ensure UID is defined correctly
+        if (!UID_PATTERN.matcher(endpoint.getUid()).matches()) {
+            throw new GrafanaEndpointException("uid", UID_INVALID_TEMPLATE, endpoint.getUid(), UID_PATTERN.pattern());
         }
         // Verify that only one GrafanaEndpoint per UID exists.
         // If an endpoint already exists, ensure it is the same object
