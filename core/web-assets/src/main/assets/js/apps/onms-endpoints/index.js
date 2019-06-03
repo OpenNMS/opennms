@@ -107,7 +107,8 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
             };
 
             $scope.editEndpoint = function(endpoint) {
-                var modalInstance = $scope.openModal(endpoint);
+                var clone = angular.copy(endpoint);
+                var modalInstance = $scope.openModal(clone);
                 modalInstance.result.then(function () {
                     $scope.refresh();
                 },
