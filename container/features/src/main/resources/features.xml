@@ -591,7 +591,7 @@
     <!--This feature lives both on minion and OpenNMS is the reason it needs separate feature.-->
     <feature name="opennms-send-event-command" version="${project.version}" description="OpenNMS :: Events :: Send :: Command">
         <feature>opennms-events-api</feature>
-        <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
+        <feature>opennms-model</feature>
         <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.command/${project.version}</bundle>
     </feature>
 
