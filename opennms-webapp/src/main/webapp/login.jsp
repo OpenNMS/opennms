@@ -69,6 +69,17 @@
 
 </style>
 
+<%
+  // Spring Security remembers the requested URL and redirects after a successful login.
+  // If the session_expired parameter is set, it is known that this is a Javascript redirect.
+  // In this case, we remove the remembered request attribute so the user is forwarded to the login page instead.
+  if (request.getParameter("session_expired") != null
+          && request.getParameter("session_expired").equals("true")
+          && session != null) {
+      session.removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
+  }
+%>
+
 <div class="login-page">
   <div class="" style=""> <!-- this way it appears a bit above center which feels more natural -->
     <div class="card login-form rounded">
