@@ -44,14 +44,6 @@ import org.opennms.netmgt.graph.api.search.SearchCriteria;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
-/**
- * Exposes the vertex search as karaf command.
- *
- * Log into console via: ssh -p 8101 admin@localhost
- * Install: feature:install opennms-graph-shell
- * Usage: type 'graph:search --namespace application --search something' in karaf console
- * Autocomplete is supported
- */
 @Command(scope = "graph", name = "search", description="Searches vertices in a given namespace (graph)")
 @Service
 public class GraphSearchCommand implements Action {
