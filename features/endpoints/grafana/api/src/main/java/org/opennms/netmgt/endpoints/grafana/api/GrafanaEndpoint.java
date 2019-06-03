@@ -37,6 +37,8 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.google.common.base.MoreObjects;
+
 @Entity
 @Table(name="endpoints_grafana")
 public class GrafanaEndpoint {
@@ -161,5 +163,18 @@ public class GrafanaEndpoint {
     @Override
     public int hashCode() {
         return Objects.hash(id, uid, url, apiKey, description, connectTimeout, readTimeout);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("uid", uid)
+                .add("url", url)
+                .add("apiKey", apiKey)
+                .add("description", description)
+                .add("connectTimeout", connectTimeout)
+                .add("readTimeout", readTimeout)
+                .toString();
     }
 }
