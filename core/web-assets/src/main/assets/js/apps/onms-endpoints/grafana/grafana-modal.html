@@ -29,11 +29,11 @@
                 popover-trigger="'mouseenter'"
                 uib-popover="A unique identifier of this endpoint. The identifier can only contain alpha numeric values as well as  - and _ but may not start with those. The full regular expression to match is: {{uidRegex}}"><i class="fa fa-question-circle"/>
         </button>
-        <input class="form-control" type="text" id="endpoint.uid" name="uid" placeholder="Unique ID" ng-model="endpoint.uid"
+        <input class="form-control" type="text" id="endpoint.uid" name="uid" placeholder="Unique Grafana ID" ng-model="endpoint.uid"
                ng-class="{ 'is-invalid' : endpointForm.uid.$invalid || error.uid }"
                ng-pattern="uidRegex"
                required />
-        <div ng-show="endpointForm.uid.$invalid" class="invalid-feedback">Please provide a valid Unique ID.</div>
+        <div ng-show="endpointForm.uid.$invalid" class="invalid-feedback">Please provide a valid Grafana ID.</div>
         <div ng-show="error.uid" class="invalid-feedback">{{error.uid}}</div>
       </div>
       <div class="form-group form-row">
