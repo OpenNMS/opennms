@@ -51,6 +51,8 @@ import com.google.common.collect.Lists;
 
 public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
 
+    private static final int SLEEP_TIME = 5000;
+
     private static class Check {
         private String url;
         private Runnable verifyPageLoaded;
@@ -78,12 +80,13 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
                     "admin/ng-requisitions/index.jsp#/requisitions",
                     () -> pageContainsText("There are no requisitions"),
                     () -> {
+                        sleep(SLEEP_TIME); // encounter for UI Delay
                         findElementById("refresh-requisitions").click();
-                        sleep(2000); // encounter for UI Delay
+                        sleep(SLEEP_TIME); // encounter for UI Delay
                         m_driver.findElement(By.xpath("//button[@data-bb-handler='reloadAll']")).click();
-                        sleep(2000); // encounter for UI Delay
+                        sleep(SLEEP_TIME); // encounter for UI Delay
                         m_driver.findElement(By.xpath("//button[@data-bb-handler='confirm']")).click();
-                        sleep(2000); // encounter for UI Delay
+                        sleep(SLEEP_TIME); // encounter for UI Delay
                     }),
             new Check(
                     "admin/geoservice/index.jsp",
@@ -118,11 +121,11 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
 
             // Wait before logging out as the http request may be still in progress
             // and may result in a pre-mature redirect, causing the test to fail
-            sleep(2000);
+            sleep(SLEEP_TIME);
 
             // Logout (via HttpGet, so we are still on the page)
             simulateSessionTimeout();
-            sleep(2000);
+            sleep(SLEEP_TIME);
 
             // Verify we are still on the page
             eachCheck.verifyPageLoaded.run();
