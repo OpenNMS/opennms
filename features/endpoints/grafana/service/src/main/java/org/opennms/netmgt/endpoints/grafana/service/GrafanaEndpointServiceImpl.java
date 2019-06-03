@@ -48,9 +48,9 @@ import com.google.common.base.Strings;
 
 public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
 
-    private static final String PROVIDE_A_VALUE_TEXT = "Please provide a value";
-    private static final String URL_NOT_VALID_TEMPLATE = "The provided URL ''{0}'' is not valid: ''{1}''";
-    private static final String PROVIDED_VALUE_GREATER_ZERO_TEXT = "The provided value must be >= 0";
+    static final String PROVIDE_A_VALUE_TEXT = "Please provide a value";
+    static final String URL_NOT_VALID_TEMPLATE = "The provided URL ''{0}'' is not valid: ''{1}''";
+    static final String PROVIDED_VALUE_GREATER_ZERO_TEXT = "The provided value must be >= 0";
 
     private final GrafanaEndpointDao endpointDao;
     private final GrafanaClientFactory clientFactory;
@@ -142,7 +142,7 @@ public class GrafanaEndpointServiceImpl implements GrafanaEndpointService {
         return grafanaEndpoint;
     }
 
-    private void validate(GrafanaEndpoint endpoint) {
+    void validate(GrafanaEndpoint endpoint) {
         if (Strings.isNullOrEmpty(endpoint.getUrl())) {
             throw new GrafanaEndpointException("url", PROVIDE_A_VALUE_TEXT);
         }

@@ -32,5 +32,10 @@
       <artifactId>org.opennms.features.endpoints.grafana.persistence.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
