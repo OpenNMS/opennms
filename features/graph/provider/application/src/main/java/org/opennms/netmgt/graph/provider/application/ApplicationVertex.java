@@ -75,6 +75,7 @@ public class ApplicationVertex extends SimpleVertex {
 
     public void setName(String name) {
         setProperty(Property.NAME, name);
+        setLabel(name);
     }
 
     public ApplicationVertexType getVertexType() {
@@ -93,7 +94,6 @@ public class ApplicationVertex extends SimpleVertex {
         setProperty(Property.IP_ADDRESS, ipAddress);
     }
 
-    // TODO MVR this is a duplicat eand should probably be removed, as a vertex is already a vertexref, there is no need to have a `getVertexRef` method
     public VertexRef getVertexRef(){
         return delegate.getVertexRef();
     }
