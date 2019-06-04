@@ -82,24 +82,24 @@ public interface FlowRepository {
         public final Integer protocol;
         public final String lowerIp;
         public final String upperIp;
-        public final Optional<String> lowerHostname;
-        public final Optional<String> upperHostname;
+        public final String lowerHostname;
+        public final String upperHostname;
         public final String application;
 
         public Conversation(final String location,
                             final Integer protocol,
                             final String lowerIp,
                             final String upperIp,
-                            final Optional<String> lowerHostname,
-                            final Optional<String> upperHostname,
+                            final String lowerHostname,
+                            final String upperHostname,
                             final String application) {
-            this.location = Objects.requireNonNull(location);
-            this.protocol = Objects.requireNonNull(protocol);
-            this.lowerIp = Objects.requireNonNull(lowerIp);
-            this.upperIp = Objects.requireNonNull(upperIp);
-            this.lowerHostname = Objects.requireNonNull(lowerHostname);
-            this.upperHostname = Objects.requireNonNull(upperHostname);
-            this.application = Objects.requireNonNull(application);
+            this.location = location;
+            this.protocol = protocol;
+            this.lowerIp = lowerIp;
+            this.upperIp = upperIp;
+            this.lowerHostname = lowerHostname;
+            this.upperHostname = upperHostname;
+            this.application = application;
         }
 
         public Conversation withHostnames(final Optional<String> lowerHostname,
@@ -108,8 +108,8 @@ public interface FlowRepository {
                     this.protocol,
                     this.lowerIp,
                     this.upperIp,
-                    lowerHostname,
-                    upperHostname,
+                    lowerHostname.orElse(null),
+                    upperHostname.orElse(null),
                     this.application);
         }
 
@@ -118,8 +118,8 @@ public interface FlowRepository {
                     key.getProtocol(),
                     key.getLowerIp(),
                     key.getUpperIp(),
-                    Optional.empty(),
-                    Optional.empty(),
+                    null,
+                    null,
                     key.getApplication());
         }
     }

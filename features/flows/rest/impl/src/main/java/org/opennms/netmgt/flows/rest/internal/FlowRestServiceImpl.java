@@ -54,7 +54,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.TrafficSummary;
@@ -179,18 +178,20 @@ public class FlowRestServiceImpl implements FlowRestService {
     @Override
     public FlowSummaryResponse getConversationSummary(Integer N, Set<String> conversations, boolean includeOther,
                                                       UriInfo uriInfo) {
+        final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
+
         return getSummary(N, conversations, uriInfo, "conversation",
                 filters -> flowRepository.getTopNConversationSummaries(N, includeOther, filters),
                 filters -> flowRepository.getConversationSummaries(conversations, includeOther, filters),
                 response -> (label, summary) -> {
-                    response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source IP",
-                            "Dest. IP", "Source Hostname", "Dest. Hostname", "Application", "Bytes In", "Bytes Out"));
+                    response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source",
+                            "Dest.", "Application", "Bytes In", "Bytes Out"));
                     response.setRows(summary.stream()
                             .map(sum -> {
                                 final FlowRepository.Conversation key = sum.getEntity();
                                 return Lists.newArrayList((Object) key.location, key.protocol,
-                                        key.lowerIp, key.upperIp,
-                                        key.lowerHostname, key.upperHostname,
+                                        hostnameMode.schwurbel(key.lowerIp, key.lowerHostname),
+                                        hostnameMode.schwurbel(key.upperIp, key.upperHostname),
                                         key.application,
                                         sum.getBytesIn(), sum.getBytesOut());
                             })
@@ -201,6 +202,7 @@ public class FlowRestServiceImpl implements FlowRestService {
     @Override
     public FlowSeriesResponse getConversationSeries(long step, Integer N, Set<String> conversations,
                                                     boolean includeOther, UriInfo uriInfo) {
+        final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
 
         return getSeries(N, conversations, uriInfo, "conversation",
                 filters -> flowRepository.getTopNConversationSeries(N, step, includeOther, filters),
@@ -209,9 +211,12 @@ public class FlowRestServiceImpl implements FlowRestService {
                     response.setColumns(series.rowKeySet().stream()
                             .map(d -> {
                                 final FlowRepository.Conversation key = d.getValue();
-                                final String applicationTag = key.application != null ? String.format(" [%s]", key.application) : "";
+                                final String applicationTag = key.application != null ? String.format(" : %s", key.application) : "";
                                 final FlowSeriesColumn column = new FlowSeriesColumn();
-                                column.setLabel(String.format("%s <-> %s%s", key.lowerIp, key.upperIp, applicationTag));
+                                column.setLabel(String.format("%s <-> %s%s",
+                                        hostnameMode.schwurbel(key.lowerIp, key.lowerHostname),
+                                        hostnameMode.schwurbel(key.upperIp, key.upperHostname),
+                                        applicationTag));
                                 column.setIngress(d.isIngress());
                                 return column;
                             })
@@ -261,8 +266,7 @@ public class FlowRestServiceImpl implements FlowRestService {
     private <T> FlowSummaryResponse getSummary(Integer N, Set<String> entities, UriInfo uriInfo, String entitiesLabel,
                                                Function<List<Filter>, CompletableFuture<List<TrafficSummary<T>>>> topNSummaryProviderFunction,
                                                Function<List<Filter>, CompletableFuture<List<TrafficSummary<T>>>> specificEntitiesSummaryProviderFunction,
-                                               Function<FlowSummaryResponse, BiConsumer<String,
-                                                       List<TrafficSummary<T>>>> responseConsumer) {
+                                               Function<FlowSummaryResponse, BiConsumer<String, List<TrafficSummary<T>>>> responseConsumer) {
         final FlowSummaryResponse response = new FlowSummaryResponse();
         withValidationAndFilters(N, entities, entitiesLabel, uriInfo, (filters, timeRangeFilter) -> {
             final List<TrafficSummary<T>> summary;
@@ -389,6 +393,52 @@ public class FlowRestServiceImpl implements FlowRestService {
     private static long getEffectiveEnd(long end) {
         // If end is not strictly positive, use the current timestamp
         return end > 0 ? end : new Date().getTime();
+    }
+
+    enum HostnameMode {
+        HIDE {
+            @Override
+            public String schwurbel(final String ip, final String hostname) {
+                return ip;
+            }
+        },
+
+        APPEND {
+            @Override
+            public String schwurbel(final String ip, final String hostname) {
+                if (!Strings.isNullOrEmpty(hostname)) {
+                    return String.format("%s [%s]", ip, hostname);
+                } else {
+                    return ip;
+                }
+            }
+        },
+
+        REPLACE {
+            @Override
+            public String schwurbel(final String ip, final String hostname) {
+                if (!Strings.isNullOrEmpty(hostname)) {
+                    return hostname;
+                } else {
+                    return ip;
+                }
+            }
+        };
+
+        public abstract String schwurbel(final String ip, final String hostname);
+    }
+
+    private static HostnameMode getHostnameModeFromQueryString(final MultivaluedMap<String, String> queryParams) {
+        final String hostname_mode = Strings.nullToEmpty(queryParams.getFirst("hostname_mode")).toLowerCase();
+        switch (hostname_mode) {
+            case "hide":
+                return HostnameMode.HIDE;
+            case "append":
+                return HostnameMode.APPEND;
+            case "replace":
+            default:
+                return HostnameMode.REPLACE;
+        }
     }
 
     private static <T> T waitForFuture(CompletableFuture<T> future) {
