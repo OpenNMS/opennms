@@ -58,6 +58,8 @@ public class DefaultGraphSearchService implements GraphSearchService {
                 suggestions.addAll(provider.getSuggestions(graphService, namespace, input));
             }
         }
+        // TODO: Patrick: do we need to make the suggestions somehow unique? E.g. the ApplicationSearchProvider offers similar
+        // suggestions as the LabelSearchProvider for Application Vertices
         suggestions.sort(Comparator.naturalOrder());
         return suggestions;
     }

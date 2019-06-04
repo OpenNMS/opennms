@@ -43,4 +43,8 @@
     <reference-list interface="org.opennms.netmgt.graph.api.search.SearchProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultGraphSearchService" />
     </reference-list>
+
+    <!-- LabelSearchProvider -->
+    <bean id="labelSearchProvider" class="org.opennms.netmgt.graph.search.LabelSearchProvider" />
+    <service interface="org.opennms.netmgt.graph.api.search.SearchProvider" ref="labelSearchProvider"/>
 </blueprint>
