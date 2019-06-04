@@ -12,7 +12,7 @@
     <packaging>bundle</packaging>
     <name>${bundle.symbolicName}</name>
     <properties>
-        <bundle.symbolicName>${groupId}.${artifactId}</bundle.symbolicName>
+        <bundle.symbolicName>${project.groupId}.${project.artifactId}</bundle.symbolicName>
         <bundle.namespace>${bundle.symbolicName}</bundle.namespace>
     </properties>
     <build>

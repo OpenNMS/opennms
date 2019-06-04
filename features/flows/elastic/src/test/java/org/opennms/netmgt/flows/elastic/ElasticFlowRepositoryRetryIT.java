@@ -108,7 +108,8 @@ public class ElasticFlowRepositoryRetryIT {
 
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
-                            classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(), 3, 12000), client);
+                            classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
+                            new MockIdentity(), new MockTracerRegistry(),3, 12000), client);
 
             consumer.accept(elasticFlowRepository);
 

@@ -72,7 +72,7 @@ public class MetadataPageIT extends OpenNMSSeleniumTestCase {
         sendPost("rest/nodes/SmokeTests:TestNode/ipinterfaces", ipInterface, 201);
         LOG.debug("Interface created!");
         LOG.debug("Creating a service...");
-        final String service = "<service down=\"false\" status=\"A\" statusLong=\"Managed\">\n" +
+        final String service = "<service status=\"A\">\n" +
                 "<applications/>\n" +
                 "<serviceType id=\"1\">\n" +
                 "<name>ICMP</name>\n" +

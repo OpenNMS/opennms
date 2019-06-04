@@ -318,12 +318,6 @@
             <artifactId>org.opennms.protocols.xml</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.cxf.karaf</groupId>
-            <artifactId>cxf-karaf-commands</artifactId>
-            <version>${cxfVersion}</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <repositories>

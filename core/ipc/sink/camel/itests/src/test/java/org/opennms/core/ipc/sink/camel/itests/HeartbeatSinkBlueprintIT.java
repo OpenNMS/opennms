@@ -70,7 +70,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-server.xml",
-        "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml"
+        "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
+        "classpath:/META-INF/opennms/applicationContext-opennms-identity.xml"
 })
 @JUnitConfigurationEnvironment
 @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")

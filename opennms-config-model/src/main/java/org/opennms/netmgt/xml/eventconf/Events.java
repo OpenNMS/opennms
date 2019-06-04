@@ -296,7 +296,7 @@ public class Events implements Serializable {
         }
 
         for (final Event event : potentialMatches) {
-            if (event.matches(matchingEvent)) {
+            if (event.matches(matchingEvent).matched()) {
                 return event;
             }
         }
@@ -436,7 +436,7 @@ public class Events implements Serializable {
                     org.opennms.netmgt.xml.event.Event eventToMatch = new org.opennms.netmgt.xml.event.Event();
                     // The UEI is the only field the matcher should check
                     eventToMatch.setUei(entry.getKey());
-                    if (matcher.matches(eventToMatch)) {
+                    if (matcher.matches(eventToMatch).matched()) {
                         // We got a match, remove this event definition from the index
                         it.remove();
                         continue events;

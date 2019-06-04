@@ -366,9 +366,9 @@ angular-bootstrap-confirm@^2.5.1:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/angular-bootstrap-confirm/-/angular-bootstrap-confirm-2.5.1.tgz#4aabaf19a9f27f87ab07b23a42e1119449b31941"
 
-angular-bootstrap-toggle@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/angular-bootstrap-toggle/-/angular-bootstrap-toggle-0.1.2.tgz#93767f3056d5330ab6c6ced3ac4e645b741a4d6b"
+angular-bootstrap-toggle@0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/angular-bootstrap-toggle/-/angular-bootstrap-toggle-0.4.2.tgz#62b188190c7d93976bfd8697958186266e7c546a"
 
 angular-cookies@1.5.11:
   version "1.5.11"

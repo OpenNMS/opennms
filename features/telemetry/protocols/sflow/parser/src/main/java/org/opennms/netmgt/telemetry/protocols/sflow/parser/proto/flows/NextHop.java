@@ -44,6 +44,10 @@ public class NextHop {
         this.next_hop = new Address(buffer);
     }
 
+    public NextHop(final Address next_hop) {
+        this.next_hop = next_hop;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

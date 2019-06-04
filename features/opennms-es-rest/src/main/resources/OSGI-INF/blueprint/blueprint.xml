@@ -38,11 +38,6 @@
       <cm:property name="cache_max_size" value="10000" /> <!-- Set to zero to disable max size -->
       <cm:property name="logEventDescription" value="true" />
       <cm:property name="logAllEvents" value="false" />
-      <cm:property name="archiveRawEvents" value="true" />
-      <cm:property name="archiveAlarms" value="true" />
-      <cm:property name="archiveAlarmChangeEvents" value="true" />
-      <cm:property name="archiveOldAlarmValues" value="true" />
-      <cm:property name="archiveNewAlarmValues" value="true" />
       <cm:property name="archiveAssetData" value="true" />
       <cm:property name="groupOidParameters" value="false" />
 
@@ -132,11 +127,6 @@
     <property name="logEventDescription" value="${logEventDescription}" />
     <property name="logAllEvents" value="${logAllEvents}" />
     <property name="threads" value="${threads}" />
-    <property name="archiveRawEvents" value="${archiveRawEvents}" />
-    <property name="archiveAlarms" value="${archiveAlarms}" />
-    <property name="archiveAlarmChangeEvents" value="${archiveAlarmChangeEvents}" />
-    <property name="archiveOldAlarmValues" value="${archiveOldAlarmValues}" />
-    <property name="archiveNewAlarmValues" value="${archiveNewAlarmValues}" />
     <property name="groupOidParameters" value="${groupOidParameters}" />
   </bean>
 

@@ -82,7 +82,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-class="{danger: requisition.isModified()}" ng-repeat="requisition in filteredRequisitions | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+          <tr ng-class="{'table-danger': requisition.isModified()}" ng-repeat="requisition in filteredRequisitions | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
             <td>{{ requisition.foreignSource }}</td>
             <td>{{ requisition.dateStamp | onmsDate }}</td>
             <td>{{ requisition.lastImport | onmsDate:'Never' }}</td>

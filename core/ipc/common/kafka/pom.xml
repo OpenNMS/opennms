@@ -51,7 +51,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
-        <version>${kafkaStreamsBundleVersion}</version>
+        <version>${kafkaBundleVersion}</version>
         <exclusions>
           <exclusion>
             <artifactId>log4j</artifactId>
@@ -65,8 +65,8 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.kafka_2.11</artifactId>
-        <version>${kafkaStreamsBundleVersion}</version>
+        <artifactId>org.apache.servicemix.bundles.kafka_${scalaVersion}</artifactId>
+        <version>${kafkaBundleVersion}</version>
         <exclusions>
           <exclusion>
             <artifactId>log4j</artifactId>
@@ -76,12 +76,16 @@
             <artifactId>slf4j-log4j12</artifactId>
             <groupId>org.slf4j</groupId>
           </exclusion>
+          <exclusion>
+            <artifactId>kafka-clients</artifactId>
+            <groupId>org.apache.kafka</groupId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.scala-lang</groupId>
         <artifactId>scala-library</artifactId>
-        <version>2.11.11</version>
+        <version>${scalaLibraryVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.health</groupId>

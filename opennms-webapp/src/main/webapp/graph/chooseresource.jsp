@@ -120,6 +120,7 @@
           </uib-accordion-heading>
             <div class="checkbox" ng-repeat="resource in group | orderBy:'label'">
               <label><input type="checkbox" class="mr-1" ng-model="resource.selected"/>{{ resource.label }}</label>
+              <a ng-if="resource.hasFlows===true" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: flow data available"><i class="fa fa-exchange"></i>&nbsp;flow data</span></a>
             </div>
         </div>
       </uib-accordion>

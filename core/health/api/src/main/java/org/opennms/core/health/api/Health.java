@@ -76,4 +76,8 @@ public class Health {
     public String getErrorMessage() {
         return errorMessage;
     }
+
+    public List<Response> getResponses() {
+        return new ArrayList<>(responses);
+    }
 }

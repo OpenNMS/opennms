@@ -11,7 +11,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.opennms-es-rest</artifactId>
   <name>OpenNMS :: Features :: ElasticSearch Rest</name>
-  <description>${name}</description>
+  <description>${project.name}</description>
   <packaging>bundle</packaging>
 
   <properties>
@@ -47,6 +47,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
 
         <configuration>
+          <skip>${skipSurefire}</skip>
           <excludes>
             <!-- prevent tests running in this package. These are manual one off development tests -->
             <exclude>**/manual/*.java</exclude>

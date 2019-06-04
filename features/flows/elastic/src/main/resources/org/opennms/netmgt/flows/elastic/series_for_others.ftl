@@ -14,7 +14,7 @@
       ],
       "must_not": {
         "terms": {
-          "${groupByTerm?json_string}": [<#list topN as topNTerm>"${topNTerm?json_string}"<#sep>,</#list>]
+          "${groupByTerm?json_string}": [<#list from as fromValue>"${fromValue?json_string}"<#sep>,</#list>]
         }
       }
     }

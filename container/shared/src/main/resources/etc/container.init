@@ -90,6 +90,35 @@ run_as() {
 	fi
 }
 
+check_upgrade_files() {
+	for EXTENSION in rpmnew rpmsave dpkg-dist; do
+		if [ "$(find "$CONTAINER_HOME" -name \*."$EXTENSION" 2>/dev/null | wc -l)" -gt 0 ]; then
+			cat <<END >&2
+
+WARNING!  You have files that end in .$EXTENSION in your
+$CONTAINER_HOME directory.
+
+The format of the original files may have changed since
+you modified them before installing a new version.
+Please double-check that your configuration files are
+up-to-date and delete any leftover .$EXTENSION files or
+$DESC will not start.
+
+END
+			case "$COMMAND" in
+				status)
+					# when calling with `status` return 3 for "stopped"
+					return 3	# From LSB: 3 - program is stopped
+					;;
+				*)
+					# any other init command should return 6 on error
+					return 6	# From LSB: 6 - program is not configured
+					;;
+			esac
+		fi
+	done
+}
+
 get_root_pid() {
 	ROOT_INSTANCE_PID=0
 	if [ -f "$CONTAINER_HOME/instances/instance.properties" ];
@@ -132,6 +161,10 @@ case "$COMMAND" in
 		if is_running; then
 			echo "$DESC is running."
 			exit 0
+		fi
+
+		if ! check_upgrade_files; then
+			exit $?
 		fi
 
 		case "$PING_REQUIRED" in
@@ -192,6 +225,10 @@ case "$COMMAND" in
 		;;
 
 	restart)
+		if ! check_upgrade_files; then
+			exit $?
+		fi
+
 		$0 stop >/dev/null 2>&1
 		sleep 2
 		$0 start

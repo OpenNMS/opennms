@@ -88,7 +88,8 @@ public class ServiceParameters {
 
         // Service level parameters set by collectd
         SERVICE("SERVICE"),
-        SERVICE_INTERVAL("SERVICE_INTERVAL");
+        SERVICE_INTERVAL("SERVICE_INTERVAL"),
+        TTL("ttl");
 
         private final String m_value;
 
@@ -302,6 +303,14 @@ public class ServiceParameters {
 
     public String getPackageName() {
         return ParameterMap.getKeyedString(getParameters(), ParameterName.PACKAGE_NAME.toString(), "unknown");
+    }
+
+    public Long getTTL() {
+        Long ttl = ParameterMap.getLongValue(ParameterName.TTL.toString(), getParameters().get(ParameterName.TTL.toString()), null);
+        if (ttl == null) {
+            ttl = getServiceInterval();
+        }
+        return ttl;
     }
 
     public Long getServiceInterval() {

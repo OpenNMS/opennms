@@ -93,6 +93,7 @@ public class SnmpConfigManager {
 		if (areEquals(m_config.getSecurityLevel(), def.getSecurityLevel())) def.setSecurityLevel(null);
 		if (areEquals(m_config.getRetry(), def.getRetry())) def.setRetry(null);
 		if (areEquals(m_config.getReadCommunity(), def.getReadCommunity())) def.setReadCommunity(null);
+		if (areEquals(m_config.getTTL(), def.getTTL())) def.setTTL(null);
 	}
 
 	/**
@@ -177,8 +178,8 @@ public class SnmpConfigManager {
 	 * This method purges specifics and ranges from definitions that don't match
 	 * the attributes specified in the event (the updateDef)
 	 * 
-	 * @param updatedDef
-	 * @param eventDef
+	 *
+	 * @param eventDefinition
 	 */
 	private void purgeRangesFromDefinitions(MergeableDefinition eventDefinition) {
 		for (MergeableDefinition def : getDefinitions()) {

@@ -35,4 +35,7 @@ package org.opennms.core.ipc.sink.api;
  */
 public interface Message {
 
+    static final String SINK_METRIC_PRODUCER_DOMAIN = "org.opennms.core.ipc.sink.producer";
+
+    static final String SINK_METRIC_CONSUMER_DOMAIN = "org.opennms.core.ipc.sink.consumer";
 }

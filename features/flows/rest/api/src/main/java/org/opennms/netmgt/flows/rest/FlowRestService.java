@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.rest;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -90,11 +91,28 @@ public interface FlowRestService {
     @Produces(MediaType.APPLICATION_JSON)
     FlowNodeDetails getFlowExporter(@PathParam("nodeId") final Integer nodeId);
 
+    /**
+     * Retrieve the list of applications.
+     *
+     * Supports filtering.
+     *
+     * @param matchingPrefix a string prefix that can be used to further filter the results
+     * @param limit the maximum number of applications to return
+     * @return the list of applications
+     */
+    @GET
+    @Path("applications/enumerate")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<String> getApplications(@DefaultValue("") @QueryParam("prefix") final String matchingPrefix,
+                                 @DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
+                                 @Context UriInfo uriInfo);
+
     @GET
     @Path("applications")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSummaryResponse getTopNApplications(
-            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N,
+    FlowSummaryResponse getApplicationSummary(
+            @QueryParam("N") final Integer N,
+            @QueryParam("application") final Set<String> applications,
             @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
             @Context UriInfo uriInfo
     );
@@ -102,27 +120,93 @@ public interface FlowRestService {
     @GET
     @Path("applications/series")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSeriesResponse getTopNApplicationSeries(
+    FlowSeriesResponse getApplicationSeries(
             @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
-            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N,
+            @QueryParam("N") final Integer N,
+            @QueryParam("application") final Set<String> applications,
             @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
             @Context final UriInfo uriInfo
     );
 
+    /**
+     * Retrieve the list of hosts.
+     *
+     * Supports filtering.
+     *
+     * @param prefix a string prefix that can be used to further filter the results
+     * @param limit the maximum number of hosts to return
+     * @return the list of hosts
+     */
+    @GET
+    @Path("hosts/enumerate")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<String> getHosts(@DefaultValue(".*") @QueryParam("pattern") final String regex,
+                          @DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
+                          @Context UriInfo uriInfo);
+
+    @GET
+    @Path("hosts")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSummaryResponse getHostSummary(
+            @QueryParam("N") final Integer N,
+            @QueryParam("host") final Set<String> hosts,
+            @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
+            @Context UriInfo uriInfo
+    );
+
+    @GET
+    @Path("hosts/series")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSeriesResponse getHostSeries(
+            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+            @QueryParam("N") final Integer N,
+            @QueryParam("host") final Set<String> hosts,
+            @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
+            @Context final UriInfo uriInfo
+    );
+
+    /**
+     * Retrieve the list of conversations.
+     *
+     * Supports filtering.
+     * 
+     * @param locationPattern the regex pattern for the location field
+     * @param protocolPattern the regex pattern for the protocol field
+     * @param lowerIPPattern the regex pattern for the lower IP field
+     * @param upperIPPattern the regex pattern for the upper IP field
+     * @param applicationPattern the regex pattern for the application field
+     * @param limit limit for how many conversations to return
+     * @return the list of conversations
+     */
+    @GET
+    @Path("conversations/enumerate")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<String> getConversations(@DefaultValue(".*") @QueryParam("location") final String locationPattern,
+                                  @DefaultValue(".*") @QueryParam("protocol") final String protocolPattern,
+                                  @DefaultValue(".*") @QueryParam("lower") final String lowerIPPattern,
+                                  @DefaultValue(".*") @QueryParam("upper") final String upperIPPattern,
+                                  @DefaultValue(".*") @QueryParam("application") final String applicationPattern,
+                                  @DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
+                                  @Context UriInfo uriInfo);
+    
     @GET
     @Path("conversations")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSummaryResponse getTopNConversations(
-            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N,
+    FlowSummaryResponse getConversationSummary(
+            @QueryParam("N") final Integer N,
+            @QueryParam("conversation") final Set<String> conversations,
+            @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
             @Context final UriInfo uriInfo
     );
 
     @GET
     @Path("conversations/series")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSeriesResponse getTopNConversationsSeries(
+    FlowSeriesResponse getConversationSeries(
             @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
-            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N,
+            @QueryParam("N") final Integer N,
+            @QueryParam("conversation") final Set<String> conversations,
+            @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
             @Context final UriInfo uriInfo
     );
 

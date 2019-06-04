@@ -78,7 +78,7 @@ final class MergeableDefinition {
      * that has the same attributes as the params in the configureSNMP event and
      * the IP specific/range needs to be merged into the definition.
      *
-     * @param eventDefefinition a {@link org.opennms.netmgt.config.MergeableDefinition} object.
+     * @param eventDefinition a {@link org.opennms.netmgt.config.MergeableDefinition} object.
      */
     protected void mergeMatchingAttributeDef(MergeableDefinition eventDefinition)  {
         
@@ -133,7 +133,8 @@ final class MergeableDefinition {
         		&& areEquals(getConfigDef().getProxyHost(), other.getConfigDef().getProxyHost())
         		&& areEquals(getConfigDef().getSecurityLevel(), other.getConfigDef().getSecurityLevel())
         		&& areEquals(getConfigDef().getSecurityName(), other.getConfigDef().getSecurityName()) 
-        		&& areEquals(getConfigDef().getWriteCommunity(), other.getConfigDef().getWriteCommunity());
+        		&& areEquals(getConfigDef().getWriteCommunity(), other.getConfigDef().getWriteCommunity())
+                && areEquals(getConfigDef().getTTL(), other.getConfigDef().getTTL());
     }
     
     boolean isEmpty(String s) {
@@ -166,7 +167,8 @@ final class MergeableDefinition {
         && !getConfigDef().hasMaxRepetitions()
         && !getConfigDef().hasMaxRequestSize()
         && !getConfigDef().hasMaxVarsPerPdu()
-        && !getConfigDef().hasSecurityLevel();
+        && !getConfigDef().hasSecurityLevel()
+        && !getConfigDef().hasTTL();
     }
 
 

@@ -84,6 +84,14 @@ public class SampleDatagramV5 {
                 .toString();
     }
 
+    public SampleDatagramV5(final Address agent_address, final long sub_agent_id, final long sequence_number, final long uptime, final Array<SampleRecord> samples) {
+        this.agent_address = agent_address;
+        this.sub_agent_id = sub_agent_id;
+        this.sequence_number = sequence_number;
+        this.uptime = uptime;
+        this.samples = samples;
+    }
+
     public void writeBson(final BsonWriter bsonWriter) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("agent_address");

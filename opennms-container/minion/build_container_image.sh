@@ -6,23 +6,28 @@ set -o errexit
 # Use the error status of the first failure, rather than that of the last item in a pipeline.
 set -o pipefail
 
-# shellcheck source=minion/config.sh
-source ./config.sh
-
 # shellcheck source=registry-config.sh
 source ../registry-config.sh
 
+# shellcheck source=opennms-container/version-n-tags.sh
+source ../version-tags.sh
+
+# OpenNMS Minion packages
+MINION_PACKAGES="opennms-minion opennms-minion-container opennms-minion-features-core opennms-minion-features-default"
+
+for PKG in ${MINION_PACKAGES}; do 
+  cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
+done
+
 docker build -t minion \
-  --build-arg BUILD_DATE="${BUILD_DATE}" \
-  --build-arg BASE_IMAGE="${BASE_IMAGE}" \
-  --build-arg BASE_IMAGE_VERSION="${BASE_IMAGE_VERSION}" \
-  --build-arg REPO_HOST="${REPO_HOST}" \
-  --build-arg REPO_RELEASE="${REPO_RELEASE}" \
-  --build-arg REPO_RPM="${REPO_RPM}" \
-  --build-arg REPO_KEY_URL="${REPO_KEY_URL}" \
+  --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \
+  --build-arg BASE_IMAGE="opennms/openjdk" \
+  --build-arg BASE_IMAGE_VERSION="11.0.3.7-b1" \
   --build-arg VERSION="${VERSION}" \
-  --build-arg PACKAGES="${PACKAGES}" \
-  --build-arg MINION_PACKAGES="${MINION_PACKAGES}" \
+  --build-arg BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+  --build-arg BUILD_URL="${CIRCLE_BUILD_URL}" \
+  --build-arg BUILD_BRANCH="${CIRCLE_BRANCH}" \
+  --build-arg BUILD_SHA1="${CIRCLE_SHA1}" \
   .
 
 docker image save minion -o images/container.oci
