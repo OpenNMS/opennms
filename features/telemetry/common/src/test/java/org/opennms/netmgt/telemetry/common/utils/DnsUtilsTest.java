@@ -254,12 +254,12 @@ public class DnsUtilsTest {
         final Optional<String> hostname1 = DnsUtils.reverseLookup(InetAddressUtils.addr("1.1.1.1"));
         Assert.assertEquals(false, hostname1.isPresent());
 
-        this.systemProperties.put(DnsUtils.DNS_ENABLED, "true");
+        this.systemProperties.put(DnsUtils.DNS_ENABLE, "true");
 
         final Optional<String> hostname2 = DnsUtils.reverseLookup(InetAddressUtils.addr("1.1.1.1"));
         Assert.assertEquals("one.one.one.one", hostname2.get());
 
-        this.systemProperties.put(DnsUtils.DNS_ENABLED, "false");
+        this.systemProperties.put(DnsUtils.DNS_ENABLE, "false");
 
         final Optional<String> hostname3 = DnsUtils.reverseLookup(InetAddressUtils.addr("1.1.1.1"));
         Assert.assertEquals(false, hostname3.isPresent());
@@ -267,7 +267,7 @@ public class DnsUtilsTest {
 
     @Test
     public void resolveTest() throws UnknownHostException {
-        this.systemProperties.put(DnsUtils.DNS_ENABLED, "true");
+        this.systemProperties.put(DnsUtils.DNS_ENABLE, "true");
 
         final Optional<String> hostname1 = DnsUtils.reverseLookup(InetAddress.getByAddress(new byte[]{1, 1, 1, 1}));
         Assert.assertEquals("one.one.one.one", hostname1.get());
@@ -294,7 +294,7 @@ public class DnsUtilsTest {
         final List<String> addresses1 = getServers(DnsUtils.getResolver());
         Assert.assertEquals(true, addresses1.size() > 0);
 
-        this.systemProperties.setProperty(DnsUtils.DNS_ENABLED, "true");
+        this.systemProperties.setProperty(DnsUtils.DNS_ENABLE, "true");
         this.systemProperties.setProperty(DnsUtils.DNS_PRIMARY_SERVER, "1.1.1.1");
         this.systemProperties.setProperty(DnsUtils.DNS_SECONDARY_SERVER, "8.8.8.8");
         DnsUtils.reverseLookup("1.1.1.1");
@@ -305,7 +305,7 @@ public class DnsUtilsTest {
         Assert.assertEquals(true, addresses2.contains("8.8.8.8"));
 
         this.systemProperties.clear();
-        this.systemProperties.setProperty(DnsUtils.DNS_ENABLED, "true");
+        this.systemProperties.setProperty(DnsUtils.DNS_ENABLE, "true");
         this.systemProperties.setProperty(DnsUtils.DNS_PRIMARY_SERVER, "8.8.4.4");
         DnsUtils.reverseLookup("1.1.1.1");
 
@@ -314,7 +314,7 @@ public class DnsUtilsTest {
         Assert.assertEquals(true, addresses3.contains("8.8.4.4"));
 
         this.systemProperties.clear();
-        this.systemProperties.setProperty(DnsUtils.DNS_ENABLED, "false");
+        this.systemProperties.setProperty(DnsUtils.DNS_ENABLE, "false");
         DnsUtils.reverseLookup("1.1.1.1");
 
         final List<String> addresses4 = getServers(DnsUtils.getResolver());

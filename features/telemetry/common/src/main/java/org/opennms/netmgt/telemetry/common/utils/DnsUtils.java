@@ -53,11 +53,11 @@ public class DnsUtils {
     private static final Logger LOG = LoggerFactory.getLogger(DnsUtils.class);
     public static final String DNS_PRIMARY_SERVER = "org.opennms.features.telemetry.dns.primaryServer";
     public static final String DNS_SECONDARY_SERVER = "org.opennms.features.telemetry.dns.secondaryServer";
-    public static final String DNS_ENABLED = "org.opennms.features.telemetry.dns.enabled";
+    public static final String DNS_ENABLE = "org.opennms.features.telemetry.dns.enable";
     private static ExtendedResolver resolver;
 
     private static String primaryServer = null, secondaryServer = null;
-    private static boolean enabled = false;
+    private static boolean enable = false;
     static BundleContext bundleContext;
 
     static {
@@ -82,10 +82,10 @@ public class DnsUtils {
 
         final String primaryServer = bundleContext.getProperty(DNS_PRIMARY_SERVER);
         final String secondaryServer = bundleContext.getProperty(DNS_SECONDARY_SERVER);
-        final boolean enabled = Boolean.parseBoolean(bundleContext.getProperty(DNS_ENABLED));
+        final boolean enable = Boolean.parseBoolean(bundleContext.getProperty(DNS_ENABLE));
 
-        if (enabled != DnsUtils.enabled || !Objects.equals(primaryServer, DnsUtils.primaryServer) || !Objects.equals(secondaryServer, DnsUtils.secondaryServer)) {
-            DnsUtils.enabled = enabled;
+        if (enable != DnsUtils.enable || !Objects.equals(primaryServer, DnsUtils.primaryServer) || !Objects.equals(secondaryServer, DnsUtils.secondaryServer)) {
+            DnsUtils.enable = enable;
             DnsUtils.primaryServer = primaryServer;
             DnsUtils.secondaryServer = secondaryServer;
             setDnsServers(DnsUtils.primaryServer, DnsUtils.secondaryServer);
@@ -121,7 +121,7 @@ public class DnsUtils {
     public static Optional<String> reverseLookup(final InetAddress inetAddress) {
         checkSystemProperties();
 
-        if (!DnsUtils.enabled) {
+        if (!DnsUtils.enable) {
             return Optional.empty();
         }
 
