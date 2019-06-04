@@ -44,9 +44,12 @@ import org.junit.Test;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint;
 import org.opennms.smoketest.rest.GrafanaEndpointRestIT;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.google.common.base.Predicate;
 
 public class GrafanaEndpointPageIT extends UiPageTest  {
 
@@ -181,6 +184,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
                         // Click reveal to get the API KEY and afterwards click again to hide
                         new Button("action.revealApiKey." + id).click();
+                        new WebDriverWait(m_driver, 5).until((Predicate<WebDriver>) webDriver -> !row.findElements(By.xpath("./td")).get(2).getText().contains("****"));
                         final String apiKey = columns.get(2).getText();
                         new Button("action.revealApiKey." + id).click();
 
