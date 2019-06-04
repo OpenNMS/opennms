@@ -55,6 +55,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   </bean>
   <!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao"/>
+  <onmsgi:service interface="org.opennms.web.svclayer.dao.CategoryConfigDao" ref="categoryConfigDao"/>
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao"/>
   <bean id="eventProxy" class="org.opennms.web.api.Util" factory-method="createEventProxy"/>
   <bean id="troubleTicketProxy" class="org.opennms.web.svclayer.support.DefaultTroubleTicketProxy">
@@ -160,6 +161,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">
     <property name="globalReportRepository" ref="defaultGlobalReportRepository"/>
   </bean>
+  <onmsgi:service interface="org.opennms.web.svclayer.DatabaseReportListService" ref="databaseReportListService" />
   <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
     <property name="scheduler" ref="schedulerFactory"/>
     <property name="jobDetail" ref="batchReportJobDetail"/>

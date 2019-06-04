@@ -1424,4 +1424,8 @@
         <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.api/${project.version}</bundle>-->
         <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.impl/${project.version}</bundle>-->
     </feature>
+    <feature name="opennms-reporting" version="${project.version}" description="OpenNMS :: Features :: Reporting">
+        <!-- All other dependencies are wired in through custom.properties -->
+        <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.rest/${project.version}</bundle>
+    </feature>
 </features>
