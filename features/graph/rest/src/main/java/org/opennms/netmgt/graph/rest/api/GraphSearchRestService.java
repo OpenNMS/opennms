@@ -35,11 +35,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Path("graphs/search")
 @Produces({MediaType.APPLICATION_JSON})
@@ -50,15 +50,15 @@ public interface GraphSearchRestService {
     @Path("/suggestions/{namespace}/")
     List<SearchSuggestion> getSuggestions(
             @PathParam("namespace") String namespace,
-            @RequestParam("s") String input);
+            @QueryParam("s") String input);
 
     @GET
     @Path("/results/{namespace}/")
     List<GenericVertex> search(
             @PathParam("namespace") String namespace,
-            @RequestParam("providerId") String providerId,
+            @QueryParam("providerId") String providerId,
             // The search criteria, usually the label of the SearchSuggestion
-            @RequestParam("criteria") String criteria,
-            @RequestParam("context") String context
+            @QueryParam("criteria") String criteria,
+            @QueryParam("context") String context
     );
 }
