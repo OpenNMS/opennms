@@ -69,6 +69,16 @@ public class ExtendedGateway implements FlowData {
         this.localpref = BufferUtils.uint32(buffer);
     }
 
+    public ExtendedGateway(final NextHop nexthop, final long as, final long src_as, final long src_peer_as, final Array<AsPathType> dst_as_path, final Array<UnsignedInteger> communities, final long localpref) {
+        this.nexthop = nexthop;
+        this.as = as;
+        this.src_as = src_as;
+        this.src_peer_as = src_peer_as;
+        this.dst_as_path = dst_as_path;
+        this.communities = communities;
+        this.localpref = localpref;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
