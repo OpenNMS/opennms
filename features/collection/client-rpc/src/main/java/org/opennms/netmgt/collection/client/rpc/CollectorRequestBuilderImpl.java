@@ -35,17 +35,23 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
+import org.opennms.core.rpc.utils.MetadataConstants;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CollectorRequestBuilderImpl.class);
 
     private final LocationAwareCollectorClientImpl client;
 
@@ -136,6 +142,8 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         // fetching class name from proxy won't match with class name in collector registry so prefer clasName if it present.
         final String collectorClassName = className != null ? className : serviceCollector.getClass().getCanonicalName();
         request.setClassName(collectorClassName);
+        // Overwrite if ttl exists in metadata.
+        ttlInMs = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), ttlInMs);
         request.setTimeToLiveMs(ttlInMs);
         request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(agent.getNodeId()));
         request.addTracingInfo(RpcRequest.TAG_NODE_LABEL, agent.getNodeLabel());

@@ -67,6 +67,9 @@ public class ShowConfigCommand implements Action {
         System.out.println("MaxRepetitions: " + agent.getMaxRepetitions());
         System.out.println("MaxRequestSize: " + agent.getMaxRequestSize());
         System.out.println("Version: " + agent.getVersionAsString());
+        if(agent.getTTL() != null) {
+            System.out.println("TTL: " + agent.getTTL());
+        }
         // The Karaf shell requires the ADMIN role, so we can safely display
         // the credentials in this context
         if (agent.isVersion3()) {

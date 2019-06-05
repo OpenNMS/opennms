@@ -196,7 +196,6 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
 
         final long windowStart = start.getTime();
         final long windowEnd = end.getTime();
-        final long windowLength = windowEnd - windowStart;
         Preconditions.checkArgument(0 <= windowStart && windowStart < windowEnd);
 
         long downtimeInWindow = 0;
@@ -218,8 +217,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
             downtimeInWindow += (regainedAt - lostAt);
         }
 
-        // Bound the downtime by the length of the window
-        return Math.min(downtimeInWindow, windowLength);
+        return downtimeInWindow;
     }
 
     private int getNumServices(int nodeId, List<String> serviceNames) {

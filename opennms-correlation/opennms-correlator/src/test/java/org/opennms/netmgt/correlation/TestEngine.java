@@ -89,7 +89,7 @@ public class TestEngine extends AbstractCorrelationEngine implements Initializin
     }
 
     @Override
-    public void reloadConfig() {
+    public void reloadConfig(boolean persistState) {
     }
 
     @Override

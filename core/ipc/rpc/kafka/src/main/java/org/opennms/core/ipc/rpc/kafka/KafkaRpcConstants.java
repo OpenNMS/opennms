@@ -46,7 +46,7 @@ public interface KafkaRpcConstants {
     public static final String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
     //Configurable buffer size in system properties but it should always be less than MAX_BUFFER_SIZE_CONFIGURED
     public static final Integer MAX_BUFFER_SIZE = Math.min(MAX_BUFFER_SIZE_CONFIGURED, SystemProperties.getInteger(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
-    public static final long DEFAULT_TTL_CONFIGURED = 30000;
+    public static final long DEFAULT_TTL_CONFIGURED = 20000;
     public static final String DEFAULT_TTL_PROPERTY = "ttl";
     public static final long DEFAULT_TTL = SystemProperties.getLong(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
             DEFAULT_TTL_CONFIGURED);

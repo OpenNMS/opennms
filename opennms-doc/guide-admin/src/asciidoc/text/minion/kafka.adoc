@@ -84,7 +84,7 @@ org.opennms.core.ipc.rpc.kafka.bootstrap.servers=127.0.0.1:9092' >> "$OPENNMS_HO
 Restart _{opennms-product-name}_ to apply the changes.
 Additional _Kafka_ producer/consumer options can be set by defining additional system properties prefixed with `org.opennms.core.ipc.rpc.kafka`.
 
-NOTE: Default time to live (time at which request will expire) is 30000 msecs (30sec). It can be changed by configuring system property `org.opennms.core.ipc.rpc.kafka.ttl` (in msec).
+NOTE: Default time to live (time at which request will expire) is 20000 msecs (20sec). It can be changed by configuring system property `org.opennms.core.ipc.rpc.kafka.ttl` (in msec).
 
 
 ==== Server(Minion) configuration

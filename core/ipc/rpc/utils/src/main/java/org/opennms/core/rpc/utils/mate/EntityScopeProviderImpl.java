@@ -38,16 +38,15 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 
 public class EntityScopeProviderImpl implements EntityScopeProvider {
 
@@ -61,7 +60,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
     private MonitoredServiceDao monitoredServiceDao;
 
     @Autowired
-    private TransactionTemplate transactions;
+    private SessionUtils sessionUtils;
 
     @Override
     public Scope getScopeForNode(final Integer nodeId) {
@@ -69,7 +68,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             return EmptyScope.EMPTY;
         }
 
-        final Scope metaDataScope = this.transactions.execute((tx) -> {
+        final Scope metaDataScope = this.sessionUtils.withReadOnlyTransaction(() -> {
             final OnmsNode node = nodeDao.get(nodeId);
             if (node == null) {
                 return EmptyScope.EMPTY;
@@ -101,7 +100,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             return EmptyScope.EMPTY;
         }
 
-        final Scope metaDataScope = this.transactions.execute((tx) -> {
+        final Scope metaDataScope = this.sessionUtils.withReadOnlyTransaction(() -> {
             final OnmsIpInterface ipInterface = this.ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
             if (ipInterface == null) {
                 return EmptyScope.EMPTY;
@@ -129,7 +128,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             return EmptyScope.EMPTY;
         }
 
-        final Scope metaDataScope = this.transactions.execute((tx) -> {
+        final Scope metaDataScope = this.sessionUtils.withReadOnlyTransaction(() -> {
             final OnmsMonitoredService monitoredService = this.monitoredServiceDao.get(nodeId, ipAddress, serviceName);
             if (monitoredService == null) {
                 return EmptyScope.EMPTY;

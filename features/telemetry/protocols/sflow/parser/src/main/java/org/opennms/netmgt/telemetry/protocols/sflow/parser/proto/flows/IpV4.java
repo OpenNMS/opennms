@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Optional;
@@ -48,6 +47,10 @@ public class IpV4 {
 
     public IpV4(final ByteBuffer buffer) throws InvalidPacketException {
         this.ip_v4 = new Opaque(buffer, Optional.of(4), Opaque::parseBytes);
+    }
+
+    public IpV4(final Opaque<byte[]> ip_v4) {
+        this.ip_v4 = ip_v4;
     }
 
     @Override
