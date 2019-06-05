@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.graph.rest.api;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,9 +35,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.search.SearchSuggestion;
+import javax.ws.rs.core.Response;
 
 @Path("graphs/search")
 @Produces({MediaType.APPLICATION_JSON})
@@ -48,13 +44,13 @@ public interface GraphSearchRestService {
 
     @GET
     @Path("/suggestions/{namespace}/")
-    List<SearchSuggestion> getSuggestions(
+    Response getSuggestions(
             @PathParam("namespace") String namespace,
             @QueryParam("s") String input);
 
     @GET
     @Path("/results/{namespace}/")
-    List<GenericVertex> search(
+    Response search(
             @PathParam("namespace") String namespace,
             @QueryParam("providerId") String providerId,
             // The search criteria, usually the label of the SearchSuggestion

@@ -31,6 +31,9 @@ package org.opennms.netmgt.graph.rest.impl;
 import java.util.List;
 import java.util.Objects;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.GraphSearchService;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
@@ -46,13 +49,21 @@ public class GraphSearchRestServiceImpl implements GraphSearchRestService {
     }
 
     @Override
-    public List<SearchSuggestion> getSuggestions(String namespace, String input) {
-        return graphSearchService.getSuggestions(namespace, input);
+    public Response getSuggestions(String namespace, String input) {
+        List<SearchSuggestion> result = graphSearchService.getSuggestions(namespace, input);
+        if(result.size() < 1) {
+            return Response.noContent().build();
+        }
+        return Response.ok(result).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
     @Override
-    public List<GenericVertex> search(String namespace, String providerId, String criteria, String context) {
+    public Response search(String namespace, String providerId, String criteria, String context) {
         SearchCriteria searchCriteria = new SearchCriteria(providerId, namespace, criteria, context);
-        return graphSearchService.search(searchCriteria);
+        List<GenericVertex> result = graphSearchService.search(searchCriteria);
+        if(result.size() < 1) {
+            return Response.noContent().build();
+        }
+        return Response.ok(result).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 }

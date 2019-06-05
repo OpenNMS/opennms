@@ -58,6 +58,7 @@ public class LabelSearchProvider implements SearchProvider {
                 .parallelStream()
                 .filter(v -> (v.getLabel() != null && v.getLabel().contains(input)))
                 .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), v.getLabel()))
+                .limit(searchContext.getSuggestionsLimit())
                 .collect(Collectors.toList());
     }
 
