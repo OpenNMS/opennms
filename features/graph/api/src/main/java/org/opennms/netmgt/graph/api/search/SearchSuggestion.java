@@ -46,8 +46,6 @@ public class SearchSuggestion implements Comparable<SearchSuggestion> {
     private String context;
     // The user-friendly label for the suggestion, which is shown to the user
     private String label;
-    // TODO: Patrick discuss with mvr: maybe we will need later also a technical identifier (instead of just a user
-    // friendly label)
     // The provider from which the suggestion is. This is required to resolve later on
     // This ensures that the originating SearchProvider can actually resolve it
     private String provider;

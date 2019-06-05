@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.graph.search;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
 import org.opennms.netmgt.graph.api.search.SearchProvider;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
@@ -43,34 +46,38 @@ import org.slf4j.LoggerFactory;
 public class LabelSearchProvider implements SearchProvider {
     private static final Logger LOG = LoggerFactory.getLogger(LabelSearchProvider.class);
 
-    public final static String PROVIDER_ID = LabelSearchProvider.class.getSimpleName();
-
     @Override
     public boolean canSuggest(GraphService graphService, String namespace) {
         return true; // every vertex has a label, therefor we can search any graph
     }
 
     @Override
-    public List<SearchSuggestion> getSuggestions(GraphService graphService, String namespace, String input) {
-        GenericGraph graph = graphService.getGraph(namespace);
-        return graph.getVertices()
+    public List<SearchSuggestion> getSuggestions(SearchContext searchContext, String namespace, String input) {
+        Objects.requireNonNull(input);
+        return getVerticesOfGraph(searchContext.getGraphService(), namespace)
                 .parallelStream()
                 .filter(v -> (v.getLabel() != null && v.getLabel().contains(input)))
-                .map(v -> new SearchSuggestion(PROVIDER_ID, GenericVertex.class.getSimpleName(), v.getLabel()))
+                .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), v.getLabel()))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean canResolve(String providerId) {
-        return PROVIDER_ID.equals(providerId);
     }
 
     @Override
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
-        GenericGraph graph = graphService.getGraph(searchCriteria.getNamespace());
-        return graph.getVertices()
+        return getVerticesOfGraph(graphService, searchCriteria.getNamespace())
                 .parallelStream()
                 .filter(v -> (searchCriteria.getCriteria().equals(v.getLabel())))
                 .collect(Collectors.toList());
+    }
+
+    private List<GenericVertex> getVerticesOfGraph(GraphService graphService, String namespace) {
+        GenericGraph graph = graphService.getGraph(namespace);
+        List<GenericVertex> result;
+        if (graph != null) {
+            result = graph.getVertices();
+        } else {
+            LOG.warn("Could not find graph for namespace {}", namespace);
+            result = Collections.emptyList();
+        }
+        return result;
     }
 }

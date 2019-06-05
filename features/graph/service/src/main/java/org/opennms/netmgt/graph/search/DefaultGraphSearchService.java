@@ -29,20 +29,32 @@
 package org.opennms.netmgt.graph.search;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.GraphSearchService;
+import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
 import org.opennms.netmgt.graph.api.search.SearchProvider;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultGraphSearchService implements GraphSearchService {
 
-    private List<SearchProvider> graphSearchProviders = new ArrayList<>();
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultGraphSearchService.class);
+
+    private final static int MIN_CHAR_FOR_SEARCH = 3;
+
+    private Map<String, SearchProvider> graphSearchProviders = new HashMap<>();
     private GraphService graphService;
 
     public DefaultGraphSearchService(GraphService graphService) {
@@ -52,36 +64,44 @@ public class DefaultGraphSearchService implements GraphSearchService {
     @Override
     public List<SearchSuggestion> getSuggestions(String namespace, String input) {
 
-        List<SearchSuggestion> suggestions = new ArrayList<>();
-        for(SearchProvider provider : graphSearchProviders){
+        if(input == null || input.length() < MIN_CHAR_FOR_SEARCH) {
+            return Collections.emptyList();
+        }
+
+        SearchContext context = SearchContext.builder()
+                .graphService(graphService)
+                .suggestionsLimit(10)
+                .build();
+
+        // Remove duplicates (same label and same context but different provider):
+        Set<SearchSuggestion> suggestions = new TreeSet<>(Comparator.comparing(SearchSuggestion::getLabel)
+                .thenComparing(SearchSuggestion::getContext));
+
+        for(SearchProvider provider : graphSearchProviders.values()){
             if (provider.canSuggest(graphService, namespace)){
-                suggestions.addAll(provider.getSuggestions(graphService, namespace, input));
+                List<SearchSuggestion> suggestionsOfProvider = provider.getSuggestions(context, namespace, input);
+                if(suggestionsOfProvider == null) {
+                    LOG.warn("Provider {} does not work properly, received null suggestion list.", provider.getProviderId());
+                } else {
+                    suggestions.addAll(suggestionsOfProvider);
+                }
             }
         }
-        // TODO: Patrick: do we need to make the suggestions somehow unique? E.g. the ApplicationSearchProvider offers similar
-        // suggestions as the LabelSearchProvider for Application Vertices
-        suggestions.sort(Comparator.naturalOrder());
-        return suggestions;
+        return new ArrayList<>(suggestions);
     }
 
     @Override
     public List<GenericVertex> search(SearchCriteria searchCriteria) {
-        List<GenericVertex> results = new ArrayList<>();
-        for(SearchProvider provider : graphSearchProviders) {
-            // on a logical level there should be only one provider which can resolve the SearchCriteria but the code
-            // allows for more than one:
-            if (provider.canResolve(searchCriteria.getProviderId())) {
-                results.addAll(provider.resolve(graphService, searchCriteria));
-            }
-        }
-        return results;
+        SearchProvider provider = graphSearchProviders.get(searchCriteria.getProviderId());
+        Objects.requireNonNull(provider, "Could not find provider with id=" + searchCriteria.getProviderId());
+        return provider.resolve(graphService, searchCriteria);
     }
 
     public void onBind(SearchProvider graphSearchProvider, Map<String, String> props) {
-        graphSearchProviders.add(graphSearchProvider);
+        graphSearchProviders.put(graphSearchProvider.getProviderId(), graphSearchProvider);
     }
 
     public void onUnbind(SearchProvider graphSearchProvider, Map<String, String> props) {
-        graphSearchProviders.remove(graphSearchProvider);
+        graphSearchProviders.remove(graphSearchProvider.getProviderId());
     }
 }

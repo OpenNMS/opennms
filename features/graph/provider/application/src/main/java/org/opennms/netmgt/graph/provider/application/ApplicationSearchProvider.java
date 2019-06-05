@@ -29,6 +29,7 @@
 package org.opennms.netmgt.graph.provider.application;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,6 +39,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
 import org.opennms.netmgt.graph.api.search.SearchProvider;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
@@ -52,8 +54,6 @@ public class ApplicationSearchProvider implements SearchProvider {
 
     private final ApplicationDao applicationDao;
 
-    public final static String PROVIDER_ID = ApplicationSearchProvider.class.getSimpleName();
-
     public ApplicationSearchProvider(ApplicationDao applicationDao) {
         Objects.requireNonNull(applicationDao);
         this.applicationDao = applicationDao;
@@ -66,43 +66,35 @@ public class ApplicationSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchSuggestion> getSuggestions(final GraphService graphService,
+    public List<SearchSuggestion> getSuggestions(final SearchContext searchContext,
                                                  final String namespace, final String input) {
-        Objects.requireNonNull(graphService);
+        Objects.requireNonNull(searchContext);
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(input);
 
-        LOG.info("ApplicationSearchProvider->getSuggestions: called with search query: '{}'", input);
+        LOG.debug("ApplicationSearchProvider->getSuggestions: called with search query: '{}'", input);
 
         CriteriaBuilder bldr = new CriteriaBuilder(OnmsApplication.class);
-        if (input.length() > 0) {
-            bldr.ilike("name", String.format("%%%s%%", input));
-        }
+        bldr.ilike("name", String.format("%%%s%%", input));
         bldr.orderBy("name", true);
-        bldr.limit(10);
+        bldr.limit(searchContext.getSuggestionsLimit());
         Criteria dbQueryCriteria = bldr.toCriteria();
 
         List<SearchSuggestion> suggestions = new ArrayList<>();
         for (OnmsApplication application : applicationDao.findMatching(dbQueryCriteria)) {
-            SearchSuggestion suggestion = new SearchSuggestion(PROVIDER_ID,
+            SearchSuggestion suggestion = new SearchSuggestion(getProviderId(),
                     OnmsApplication.class.getSimpleName(),
                     application.getName());
             suggestions.add(suggestion);
         }
-        LOG.info("ApplicationServiceSearchProvider->getSuggestions: found {} results: {}", suggestions.size(), suggestions);
+        LOG.debug("ApplicationServiceSearchProvider->getSuggestions: found {} results: {}", suggestions.size(), suggestions);
         return suggestions;
-    }
-
-    @Override
-    public boolean canResolve(String providerId) {
-        return PROVIDER_ID.equals(providerId);
     }
 
     @Override
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
 
-        GenericGraph graph = graphService.getGraph(searchCriteria.getNamespace());
-        return graph.getVertices()
+        return getVerticesOfGraph(graphService, searchCriteria.getNamespace())
                 .stream()
                 .map(ApplicationVertex::new)
                 .filter(v -> filter(v, searchCriteria.getCriteria()))
@@ -115,5 +107,17 @@ public class ApplicationSearchProvider implements SearchProvider {
             return vertex.getName().contains(input);
         }
         return false;
+    }
+
+    private List<GenericVertex> getVerticesOfGraph(GraphService graphService, String namespace) {
+        GenericGraph graph = graphService.getGraph(namespace);
+        List<GenericVertex> result;
+        if (graph != null) {
+            result = graph.getVertices();
+        } else {
+            LOG.warn("Could not find graph for namespace {}", namespace);
+            result = Collections.emptyList();
+        }
+        return result;
     }
 }

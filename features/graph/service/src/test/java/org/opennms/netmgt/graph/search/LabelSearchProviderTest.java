@@ -40,6 +40,7 @@ import org.mockito.Mockito;
 import org.opennms.core.test.OnmsAssert;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
@@ -47,6 +48,8 @@ public class LabelSearchProviderTest {
 
     private final String TOPOLOGY_NAMESPACE = LabelSearchProviderTest.class.getSimpleName();
     private int id;
+
+    private String providerId = new LabelSearchProvider().getProviderId();
 
     @Test
     public void shouldReturnEmptyListForEmptySearchResult() {
@@ -75,7 +78,7 @@ public class LabelSearchProviderTest {
 
         List<SearchSuggestion> expectations = new ArrayList<>();
         for (GenericVertex vertex : matchingVertices) {
-            SearchSuggestion suggestion = new SearchSuggestion(LabelSearchProvider.PROVIDER_ID,
+            SearchSuggestion suggestion = new SearchSuggestion(providerId,
                     GenericVertex.class.getSimpleName(), vertex.getLabel());
             expectations.add(suggestion);
         }
@@ -94,7 +97,8 @@ public class LabelSearchProviderTest {
         graph.addVertices(vertices);
         when(graphService.getGraph(any())).thenReturn(graph);
         LabelSearchProvider provider = new LabelSearchProvider();
-        List<SearchSuggestion> results = provider.getSuggestions(graphService,
+        List<SearchSuggestion> results = provider.getSuggestions(
+                SearchContext.builder().graphService(graphService).build(),
                 TOPOLOGY_NAMESPACE, input);
         assertEquals(expectations, results);
     }

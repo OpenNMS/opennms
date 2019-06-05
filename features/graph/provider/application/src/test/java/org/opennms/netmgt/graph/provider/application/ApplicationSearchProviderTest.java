@@ -41,11 +41,15 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.test.OnmsAssert;
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.model.OnmsApplication;
 
 public class ApplicationSearchProviderTest {
+
+
+    private String providerId = new ApplicationSearchProvider(Mockito.mock(ApplicationDao.class)).getProviderId();
 
     @Test
     public void shouldReturnEmptyListForEmptySearchResult() {
@@ -64,7 +68,7 @@ public class ApplicationSearchProviderTest {
         List<OnmsApplication> applications = createOnmsApplications(3);
         List<SearchSuggestion> expectations = new ArrayList<>();
         for(OnmsApplication app : applications) {
-            SearchSuggestion suggestion = new SearchSuggestion(ApplicationSearchProvider.PROVIDER_ID, OnmsApplication.class.getSimpleName(),
+            SearchSuggestion suggestion = new SearchSuggestion(providerId, OnmsApplication.class.getSimpleName(),
                     app.getName());
             expectations.add(suggestion);
         }
@@ -75,7 +79,8 @@ public class ApplicationSearchProviderTest {
         ApplicationDao dao = Mockito.mock(ApplicationDao.class);
         when(dao.findMatching(any())).thenReturn(applications);
         ApplicationSearchProvider provider = new ApplicationSearchProvider(dao);
-        List<SearchSuggestion> results = provider.getSuggestions(Mockito.mock(GraphService.class),
+        SearchContext context = SearchContext.builder().graphService(Mockito.mock(GraphService.class)).build();
+        List<SearchSuggestion> results = provider.getSuggestions(context,
                 ApplicationGraph.TOPOLOGY_NAMESPACE, input);
         assertEquals(expectations, results);
     }

@@ -39,8 +39,8 @@ public class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, Sim
 
     public static final String TOPOLOGY_NAMESPACE = "application";
 
-    public ApplicationGraph(String namespace) {
-        super(namespace);
+    public ApplicationGraph() {
+        super(ApplicationGraph.TOPOLOGY_NAMESPACE);
     }
 
     public ApplicationGraph(GenericGraph graph) {

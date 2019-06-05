@@ -45,26 +45,23 @@ public interface SearchProvider {
     /**
      * Provide suggestions for the given namespace, given the input.
      * Be aware that the input may only contain snippets of the actual input, e.g. `Rout` instead of `Routers` (type ahead).
-     * @param graphService The GraphService to allow access to graphs
+     * @param searchContext The SearchContext to allow access to graphs and other configuration
      * @param namespace The namespace of the current selected provider to make mappings
-     * @param input The current input, may be a snippet of the final input for type ahead support
+     * @param input The current input, may be a snippet of the final input for type ahead support. It is never null or empty.
      * @return A list of suggestions the SearchProvider can use later to resolve to actual Vertices. Be aware, that this should only return actual results, e.g. "Routers" when input was "Rout".
      */
-    List<SearchSuggestion> getSuggestions(GraphService graphService, String namespace, String input);
-
+    List<SearchSuggestion> getSuggestions(SearchContext searchContext, String namespace, String input);
 
     /**
-     * Returns true if this provider can resolve for the given <code>providerId</code>.
+     * Returns the unique <code>providerId</code>.
      * This is required as there is a 1:n relationship between search provider and namespace, meaning multiple providers may provide
      * suggestions for the same namespace. In order to resolve from the correct suggestion, a 1:1 mapping backwards is required.
-     * For this the providerId is usesd, which in return must be unique over all {@link SearchProvider}.
+     * For this the providerId is used, which in return must be unique over all {@link SearchProvider}.
      *
-     * @param providerId
-     * @return
      */
-    // TODO MVR maybe just return the ProviderId instead of a canResolve method
-    boolean canResolve(String providerId);
-
+    default String getProviderId() {
+        return this.getClass().getSimpleName();
+    }
 
     /**
      * Resolves the given SearchCriteria to a list of vertices.

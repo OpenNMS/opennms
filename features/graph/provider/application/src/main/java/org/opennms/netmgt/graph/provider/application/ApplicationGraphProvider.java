@@ -70,7 +70,7 @@ public class ApplicationGraphProvider implements GraphProvider {
     @Override
     public Graph<ApplicationVertex, SimpleEdge> loadGraph() {
         return sessionUtils.withReadOnlyTransaction(() -> {
-            final ApplicationGraph graph = new ApplicationGraph(ApplicationGraph.TOPOLOGY_NAMESPACE);
+            final ApplicationGraph graph = new ApplicationGraph();
             graph.setLabel(GRAPH_LABEL);
             graph.setDescription(GRAPH_DESCRIPTION);
 
