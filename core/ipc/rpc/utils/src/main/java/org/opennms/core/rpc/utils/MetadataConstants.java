@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,36 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
+package org.opennms.core.rpc.utils;
 
-import java.nio.ByteBuffer;
+public interface MetadataConstants {
 
-import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
-
-import com.google.common.base.MoreObjects;
-
-// typedef address next_hop;
-
-public class NextHop {
-    public final Address next_hop;
-
-    public NextHop(final ByteBuffer buffer) throws InvalidPacketException {
-        this.next_hop = new Address(buffer);
-    }
-
-    public NextHop(final Address next_hop) {
-        this.next_hop = next_hop;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("next_hop", this.next_hop)
-                .toString();
-    }
-
-    public void writeBson(final BsonWriter bsonWriter) {
-        this.next_hop.writeBson(bsonWriter);
-    }
+    String NODE = "node";
+    String TTL = "ttl";
 }

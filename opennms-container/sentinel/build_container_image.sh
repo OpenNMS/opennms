@@ -9,8 +9,8 @@ set -o pipefail
 # shellcheck source=registry-config.sh
 source ../registry-config.sh
 
-# shellcheck source=version-tags.sh
-source ./version-tags.sh
+# shellcheck source=opennms-container/version-n-tags.sh
+source ../version-tags.sh
 
 # OpenNMS Minion packages
 SENTINEL_PACKAGES="opennms-sentinel"

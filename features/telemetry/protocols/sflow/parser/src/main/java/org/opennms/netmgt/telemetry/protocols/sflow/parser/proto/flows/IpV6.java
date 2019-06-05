@@ -45,7 +45,7 @@ import com.google.common.base.Throwables;
 public class IpV6 {
     public final Inet6Address ip_v6;
 
-    public IpV6(final ByteBuffer buffer) throws InvalidPacketException {
+    public IpV6(final ByteBuffer buffer) {
         try {
             this.ip_v6 = (Inet6Address) Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16));
         } catch (final UnknownHostException e) {

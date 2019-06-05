@@ -103,6 +103,17 @@ public class Inet6Header {
         }
     }
 
+    public Inet6Header(final int tos, final int totalLength, final int protocol, final Inet6Address srcAddress, final Inet6Address dstAddress, final Integer srcPort, final Integer dstPort, final Integer tcpFlags) {
+        this.tos = tos;
+        this.totalLength = totalLength;
+        this.protocol = protocol;
+        this.srcAddress = srcAddress;
+        this.dstAddress = dstAddress;
+        this.srcPort = srcPort;
+        this.dstPort = dstPort;
+        this.tcpFlags = tcpFlags;
+    }
+
     public void writeBson(final BsonWriter bsonWriter) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt32("tos", this.tos);

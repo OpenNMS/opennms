@@ -3,10 +3,7 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: opennms/build-env:1.0-b6
-  docker-executor:
-    docker:
-      - image: docker:18
+      - image: opennms/build-env:jdk8_1.2
   integration-test-executor:
     machine: true
   smoke-test-executor:
@@ -80,14 +77,6 @@ commands:
           command: |
             docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
 
-  bash-alpine:
-    description: "Add bash support in Alpine based images"
-    steps:
-      - run:
-          name: Add bash support
-          command: |
-            apk add --no-cache bash
-
 workflows:
   build-deploy:
     jobs:
@@ -112,15 +101,32 @@ workflows:
             - build-horizon-oci
             - build-minion-oci
             - build-sentinel-oci
-           #- publish-horizon-oci:
-           #    requires:
-           #      - build-horizon-oci
-           #- publish-minion-oci:
-           #    requires:
-           #      - build-minion-oci
-           #- publish-sentinel-oci:
-           #    requires:
-           #      - build-sentinel-oci
+      - publish-horizon-oci:
+          requires:
+            - build-horizon-oci
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+
+      - publish-minion-oci:
+          requires:
+            - build-minion-oci
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+
+      - publish-sentinel-oci:
+          requires:
+            - build-sentinel-oci
+          filters:
+            branches:
+              only:
+                - master
+                - develop
 
 jobs:
   build:
@@ -167,13 +173,12 @@ jobs:
             - project/target/rpm/RPMS/noarch
 
   build-horizon-oci:
-    executor: docker-executor
+    executor: build-executor
     steps:
       - attach_workspace:
           at: ~/
       - setup_remote_docker:
           docker_layer_caching: true
-      - bash-alpine
       - run:
           name: Fetch RPM artifacts and build Horizon container image
           command: |
@@ -188,13 +193,12 @@ jobs:
             - project/opennms-container/horizon/images/
 
   build-minion-oci:
-    executor: docker-executor
+    executor: build-executor
     steps:
       - attach_workspace:
           at: ~/
       - setup_remote_docker:
           docker_layer_caching: true
-      - bash-alpine
       - run:
           name: Fetch RPM artifacts and build Minion container image
           command: |
@@ -209,13 +213,12 @@ jobs:
             - project/opennms-container/minion/images/
 
   build-sentinel-oci:
-    executor: docker-executor
+    executor: build-executor
     steps:
       - attach_workspace:
           at: ~/
       - setup_remote_docker:
           docker_layer_caching: true
-      - bash-alpine
       - run:
           name: Fetch RPM artifacts and build Sentinel container image
           command: |
@@ -228,6 +231,54 @@ jobs:
           root: ~/
           paths:
             - project/opennms-container/sentinel/images/
+
+  publish-horizon-oci:
+    executor: build-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - dockerhub-login
+      - run:
+          name: Load Horizon OCI image, tag it and publish to registry
+          command: |
+            cd opennms-container/horizon
+            docker image load -i images/container.oci
+            ./tag.sh
+            ./publish.sh
+
+  publish-minion-oci:
+    executor: build-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - dockerhub-login
+      - run:
+          name: Load Minion OCI image, tag it and publish to registry
+          command: |
+            cd opennms-container/minion
+            docker image load -i images/container.oci
+            ./tag.sh
+            ./publish.sh
+
+  publish-sentinel-oci:
+    executor: build-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - dockerhub-login
+      - run:
+          name: Load Sentinel OCI image, tag it and publish to registry
+          command: |
+            cd opennms-container/sentinel
+            docker image load -i images/container.oci
+            ./tag.sh
+            ./publish.sh 
 
   integration-test:
     executor: integration-test-executor
@@ -284,51 +335,3 @@ jobs:
             find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/ \;
       - store_test_results:
           path: ~/test-results
-
-  publish-horizon-oci:
-    executor: docker-executor
-    steps:
-      - attach_workspace:
-          at: ~/
-      - setup_remote_docker
-      - bash-alpine
-      - dockerhub-login
-      - run:
-          name: Load Horizon OCI image, tag it and publish to registry
-          command: |
-            cd opennms-container/horizon
-            docker image load -i images/container.oci
-            ./tag.sh
-            ./publish.sh
-
-  publish-minion-oci:
-    executor: docker-executor
-    steps:
-      - attach_workspace:
-          at: ~/
-      - setup_remote_docker
-      - bash-alpine
-      - dockerhub-login
-      - run:
-          name: Load Minion OCI image, tag it and publish to registry
-          command: |
-            cd opennms-container/minion
-            docker image load -i images/container.oci
-            ./tag.sh
-            ./publish.sh
-
-  publish-sentinel-oci:
-    executor: docker-executor
-    steps:
-      - attach_workspace:
-          at: ~/
-      - setup_remote_docker
-      - bash-alpine
-      - dockerhub-login
-      - run:
-          name: Load Sentinel OCI image, tag it and publish to registry
-          command: |
-            cd opennms-container/sentinel
-            docker image load -i images/container.oci
-            ./tag.sh
-            ./publish.sh

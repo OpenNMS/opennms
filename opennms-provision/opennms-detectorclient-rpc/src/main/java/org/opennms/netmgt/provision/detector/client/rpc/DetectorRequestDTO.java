@@ -70,6 +70,8 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
     @XmlElement(name = "runtime-attribute")
     private List<DetectorAttributeDTO> runtimeAttributes = new ArrayList<>();
 
+    private Long timeToLiveMs;
+
     private Map<String, String> tracingInfo = new HashMap<>();
 
     @Override
@@ -152,7 +154,11 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
 
     @Override
     public Long getTimeToLiveMs() {
-        return null;
+        return this.timeToLiveMs;
+    }
+
+    public void setTimeToLiveMs(Long timeToLive) {
+        this.timeToLiveMs = timeToLive;
     }
 
     @Override

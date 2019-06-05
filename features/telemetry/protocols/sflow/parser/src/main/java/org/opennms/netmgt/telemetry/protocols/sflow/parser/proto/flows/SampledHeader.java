@@ -128,6 +128,16 @@ public class SampledHeader implements FlowData {
         }
     }
 
+    public SampledHeader(final HeaderProtocol protocol, final long frame_length, final long stripped, final EthernetHeader ethernetHeader, final Inet4Header inet4Header, final Inet6Header inet6Header, final byte[] rawHeader) {
+        this.protocol = protocol;
+        this.frame_length = frame_length;
+        this.stripped = stripped;
+        this.ethernetHeader = ethernetHeader;
+        this.inet4Header = inet4Header;
+        this.inet6Header = inet6Header;
+        this.rawHeader = rawHeader;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
