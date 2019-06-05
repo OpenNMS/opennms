@@ -26,6 +26,7 @@
 		</property>
         <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
 	</bean>
+	<onmsgi:service interface="org.opennms.reporting.core.svclayer.ReportStoreService" ref="reportStoreService"/>
 
 	<bean id="parameterConversionService" class="org.opennms.reporting.core.svclayer.support.DefaultParameterConversionService" />
 </beans>

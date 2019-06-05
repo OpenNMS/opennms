@@ -1,28 +1,28 @@
-<div class="">
-    <div class="alert alert-danger" ng-if="globalError">
-        {{globalError}}
-    </div>
-    <span ng-if="reports.length == 0">No Data available</span>
-    <table class="table table-sm table-striped" ng-if="reports.length > 0">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="report in reports">
-                <td>{{report.name}}</td>
-                <td>{{report.description}}</td>
-                <td class="text-right">
-                    <button ui-sref="online({'id':report.id})" class="btn btn-sm btn-secondary" ng-if="report.online === true" title="Execute this report instantly"><i class="fa fa-play"></i></button>
-                    <button class="btn btn-sm btn-secondary" title="Deliver report to file system or via e-mail"><i class="fa fa-share"></i></button>
-                    <button class="btn btn-sm btn-secondary" title="Create a schedule for this report"><i class="fa fa-clock-o"></i></button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <span class="text-muted">{{reports.length}} Report(s)</span>
+<div class="alert alert-danger" ng-if="globalError">
+    <span>{{globalError}}</span>
+    <pre ng-show="globalErrorDetails">{{globalErrorDetails}}</pre>
 </div>
-<div class=""></div>
+
+<!-- TODO MVR replace later -->
+<label>User selection</label>
+<select ng-change="onChange()" ng-model="currentUser" ng-options="user.label for user in users">
+</select>
+
+<div class="w-100" ng-if="!globalError">
+    <ul id="tabs" class="nav nav-tabs">
+        <li role="presentation" class="nav-item">
+            <a ui-sref-active="active" ui-sref="report.templates" data-name="report-templates" class="nav-link">Report Templates</a>
+        </li>
+
+        <li role="presentation" class="nav-item">
+            <a ui-sref-active="active" ui-sref="report.schedules" data-name="report-schedules" class="nav-link">Report Schedules</a>
+        </li>
+
+        <li role="presentation" class="nav-item">
+            <a ui-sref-active="active" ui-sref="report.persisted" data-name="report-persisted" class="nav-link">Persisted Reports</a>
+        </li>
+    </ul>
+    <div class="card border-top-0" ui-view>
+
+    </div>
+</div>

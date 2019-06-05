@@ -1,0 +1,34 @@
+<span ng-if="persistedReports.length == 0">No Data available</span>
+
+<div class="pull-right" ng-if="persistedReports.length > 0">
+    <button class="btn btn-secondary" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
+    <button class="btn btn-secondary" ng-click="deleteAll()" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" title="Delete All"><i class="fa fa-trash"></i></button>
+</div>
+
+<table class="table table-sm table-striped" ng-if="persistedReports.length > 0">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Report ID</th>
+        <th>Run Date</th>
+        <th>View Report</th>
+        <th ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="report in persistedReports">
+        <td>{{report.title}}</td>
+        <td>{{report.reportId}}</td>
+        <td>{{report.date}}</td>
+        <td>
+            <!-- TODO MVR migrate to rest endpoint or similar -->
+            <a href="report/database/downloadReport.htm?locatorId={{report.id}}&amp;format=PDF"><i class="fa fa-file-pdf-o"></i> PDF</a>
+            <a href="report/database/downloadReport.htm?locatorId={{report.id}}&amp;format=CSV"><i class="fa fa-file-text-o"></i> CSV</a>
+        </td>
+        <td ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" class="text-right">
+            <button class="btn btn-danger" ng-click="delete(report)"><i class="fa fa-trash"></i></button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<span class="text-muted">{{persistedReports.length}} persisted Report(s)</span>

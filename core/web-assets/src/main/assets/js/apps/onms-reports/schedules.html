@@ -1,0 +1,55 @@
+<span ng-if="scheduledReports.length == 0">No Data available</span>
+
+<div class="pull-right" ng-if="scheduledReports.length > 0">
+    <button class="btn btn-secondary" ng-click="refresh()" title="Refresh"><i class="fa fa-refresh"></i></button>
+    <button class="btn btn-secondary" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" ng-click="deleteAll()" title="Delete all"><i class="fa fa-trash"></i></button>
+</div>
+<table class="table table-sm table-striped" ng-if="scheduledReports.length > 0">
+    <thead>
+    <tr>
+        <th>Trigger Name</th>
+        <th>Next fire time</th>
+        <th>Report Parameters</th>
+        <th ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="schedule in scheduledReports">
+        <td>{{schedule.triggerName}}</td>
+        <td>{{schedule.nextFireTime}}</td>
+        <td>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-2"><strong>Report ID:</strong></div>
+                        <div class="col-md-6">{{schedule.reportId}}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2"><strong>Format:</strong></div>
+                        <div class="col-md-6">{{schedule.deliveryOptions.format}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2"><strong>Persist:</strong></div>
+                        <div class="col-md-6">{{schedule.deliveryOptions.persist}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2"><strong>Mail:</strong></div>
+                        <div class="col-md-6">
+                            {{schedule.deliveryOptions.mailTo || false}}
+                        </div>
+                    </div>
+                    <div class="row" ng-repeat="(key, value) in schedule.reportParameters">
+                        <div class="col-md-2"><strong>{{key}}:</strong></div>
+                        <div class="col-md-6">{{value}}</div>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <td ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" class="text-right">
+            <button class="btn btn-danger" ng-click="delete(schedule)"><i class="fa fa-trash"></i></button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<span class="text-muted">{{scheduledReports.length}} Scheduled Report(s)</span>

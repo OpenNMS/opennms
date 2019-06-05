@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,11 +59,15 @@ import org.opennms.features.reporting.rest.ReportRestService;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.ReportCatalogEntry;
+import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.web.svclayer.DatabaseReportListService;
+import org.opennms.web.svclayer.SchedulerService;
 import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.model.DatabaseReportDescription;
 import org.opennms.web.svclayer.model.ReportRepositoryDescription;
+import org.opennms.web.svclayer.model.TriggerDescription;
 
 public class ReportRestServiceImpl implements ReportRestService {
 
@@ -70,16 +75,21 @@ public class ReportRestServiceImpl implements ReportRestService {
     private final ReportWrapperService reportWrapperService;
     private final CategoryDao categoryDao;
     private final CategoryConfigDao categoryConfigDao;
+    private final ReportStoreService reportStoreService;
+    private final SchedulerService schedulerService;
 
-    public ReportRestServiceImpl(DatabaseReportListService databaseReportListService, ReportWrapperService reportWrapperService, CategoryDao categoryDao, CategoryConfigDao categoryConfigDao) {
+    public ReportRestServiceImpl(DatabaseReportListService databaseReportListService, ReportWrapperService reportWrapperService, CategoryDao categoryDao, CategoryConfigDao categoryConfigDao, ReportStoreService reportStoreService, SchedulerService schedulerService) {
         this.databaseReportListService = Objects.requireNonNull(databaseReportListService);
         this.reportWrapperService = Objects.requireNonNull(reportWrapperService);
         this.categoryDao = Objects.requireNonNull(categoryDao);
         this.categoryConfigDao = Objects.requireNonNull(categoryConfigDao);
+        this.reportStoreService = Objects.requireNonNull(reportStoreService);
+        this.schedulerService = Objects.requireNonNull(schedulerService);
     }
 
     @Override
     public Response listReports() {
+        // TODO MVR return no content if empty
         final List<ReportRepositoryDescription> activeRepositories = databaseReportListService.getActiveRepositories();
         final List<DatabaseReportDescription> collect = activeRepositories.stream()
                 .flatMap(repositoryDescriptor -> databaseReportListService.getReportsByRepositoryId(repositoryDescriptor.getId()).stream())
@@ -283,6 +293,71 @@ public class ReportRestServiceImpl implements ReportRestService {
         } finally {
             IOUtils.closeQuietly(outputStream);
         }
+    }
+
+    @Override
+    public Response listPersistedReports() {
+        final List<ReportCatalogEntry> persistedReports = reportStoreService.getAll();
+        if (persistedReports.isEmpty()) {
+            return Response.noContent().build();
+        }
+        final Map<String, Object> formatMap = reportStoreService.getFormatMap();
+        final JSONArray jsonArray = new JSONArray();
+        for (ReportCatalogEntry eachEntry : persistedReports) {
+            final JSONObject jsonObject = new JSONObject(eachEntry);
+            final List<ReportFormat> formats = (List<ReportFormat>)formatMap.get(eachEntry.getReportId());
+            if (formats != null && !formats.isEmpty()) {
+                jsonObject.put("formats", new JSONArray(formats));
+            }
+            jsonArray.put(jsonObject);
+        }
+        return Response.ok().entity(jsonArray.toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
+    }
+
+    @Override
+    public Response deletePersistedReports() {
+        final Integer[] reportIdsToDelete = reportStoreService.getAll().stream().map(ReportCatalogEntry::getId).toArray(Integer[]::new);
+        reportStoreService.delete(reportIdsToDelete);
+        return Response.accepted().build();
+    }
+
+    @Override
+    public Response deletePersistedReport(int id) {
+        final Optional<ReportCatalogEntry> any = reportStoreService.getAll().stream().filter(r -> r.getId() != null && r.getId() == id).findAny();
+        if (any.isPresent()) {
+            reportStoreService.delete(any.get().getId());
+            return Response.accepted().build();
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @Override
+    public Response listScheduledReports() {
+        final List<TriggerDescription> triggerDescriptions = schedulerService.getTriggerDescriptions();
+        if (triggerDescriptions.isEmpty()) {
+            return Response.noContent().build();
+        }
+        final JSONArray scheduledReports = new JSONArray();
+        for (TriggerDescription eachDescription : triggerDescriptions) {
+            scheduledReports.put(new JSONObject(eachDescription));
+        }
+        return Response.ok().entity(scheduledReports.toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
+    }
+
+    @Override
+    public Response deleteScheduledReports() {
+        final String[] triggersToDelete = schedulerService.getTriggerDescriptions().stream().map(TriggerDescription::getTriggerName).toArray(String[]::new);
+        schedulerService.removeTriggers(triggersToDelete);
+        return Response.accepted().build();
+    }
+
+    @Override
+    public Response deleteScheduledReport(String triggerName) {
+        if (schedulerService.exists(triggerName)) {
+            schedulerService.removeTrigger(triggerName);
+            return Response.accepted().build();
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     private static <T> List<T> parseParameters(JSONArray inputParameters, String type, Function<JSONObject, T> converter) {

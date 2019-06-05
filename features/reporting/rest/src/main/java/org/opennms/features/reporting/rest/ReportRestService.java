@@ -31,6 +31,7 @@ package org.opennms.features.reporting.rest;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -53,4 +54,28 @@ public interface ReportRestService {
     @POST
     @Path("/{id}")
     Response runReport(@PathParam("id") String reportId, Map<String, Object> inputParameters);
+
+    @GET
+    @Path("/persisted")
+    Response listPersistedReports();
+
+    @DELETE
+    @Path("/persisted")
+    Response deletePersistedReports();
+
+    @DELETE
+    @Path("/persisted/{id}")
+    Response deletePersistedReport(@PathParam("id") final int id);
+
+    @GET
+    @Path("/scheduled")
+    Response listScheduledReports();
+
+    @DELETE
+    @Path("/scheduled")
+    Response deleteScheduledReports();
+
+    @DELETE
+    @Path("/scheduled/{id}")
+    Response deleteScheduledReport(@PathParam("id") final String triggerName);
 }

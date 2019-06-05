@@ -81,6 +81,7 @@ public final class Authentication extends Object {
     public static final String ROLE_MOBILE = "ROLE_MOBILE";
     public static final String ROLE_JMX = "ROLE_JMX";
     public static final String ROLE_MINION = "ROLE_MINION";
+    public static final String ROLE_REPORT_DESIGNER = "ROLE_REPORT_DESIGNER";
 
     private static List<String> s_availableRoles = new ArrayList<>();
     private static long lastModified = 0;
@@ -99,6 +100,7 @@ public final class Authentication extends Object {
         s_availableRoles.add(ROLE_MOBILE);
         s_availableRoles.add(ROLE_JMX);
         s_availableRoles.add(ROLE_MINION);
+        s_availableRoles.add(ROLE_REPORT_DESIGNER);
     }
 
     /** Private, empty constructor so this class cannot be instantiated. */
