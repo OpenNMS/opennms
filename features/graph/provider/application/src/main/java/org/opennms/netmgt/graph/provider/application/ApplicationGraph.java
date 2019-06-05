@@ -51,7 +51,6 @@ public class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, Sim
         return new ApplicationVertex(vertex);
     }
 
-
     protected SimpleEdge convert(GenericEdge edge){
         return new SimpleEdge(edge);
     }
