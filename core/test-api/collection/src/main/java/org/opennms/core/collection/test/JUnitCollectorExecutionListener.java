@@ -154,7 +154,16 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             }
         }
 
-        FileUtils.deleteDirectory(m_snmpRrdDirectory);
+        try {
+            FileUtils.deleteDirectory(m_snmpRrdDirectory);
+        } catch (Exception deletionException) {
+            // Windows is failing tests due to spurious cleanup errors
+            deletionException.printStackTrace();
+            String os = System.getProperty("os.name");
+            if (os == null || !os.contains("Windows")) {
+                throw deletionException;
+            }
+        }
 
         m_fileAnticipator.tearDown();
 
