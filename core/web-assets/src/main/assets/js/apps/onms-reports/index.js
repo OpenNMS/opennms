@@ -35,8 +35,8 @@ const schedulesTemplate  = require('./schedules.html');
                     controller: 'ReportTemplatesController',
                     templateUrl: templatesTemplate
                 })
-                .state('report.templates.online', {
-                    url: ':id/online',
+                .state('report.online', {
+                    url: '/:id/online',
                     controller: 'ReportOnlineController',
                     templateUrl: onlineTemplate
                 })
