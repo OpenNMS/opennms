@@ -62,7 +62,7 @@ To enable reverse hostname resolution, the following command can be used:
 ----
 $ ssh -p 8201 admin@localhost
 ...
-admin@minion()> system:property -p org.opennms.features.telemetry.enable true
+admin@minion()> system:property -p org.opennms.features.telemetry.dns.enable true
 admin@minion()> system:property -p org.opennms.features.telemetry.primaryServer
 admin@minion()> system:property -p org.opennms.features.telemetry.secondaryServer
 ----
