@@ -312,7 +312,9 @@ public class FlowDocument {
     private NodeDocument nodeSrc;
     
     public void addHost(String host) {
-        hosts.add(host);
+        if (host != null) {
+            hosts.add(host);
+        }
     }
 
     public long getTimestamp() {
