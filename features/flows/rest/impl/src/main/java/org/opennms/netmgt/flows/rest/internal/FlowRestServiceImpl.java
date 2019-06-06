@@ -54,6 +54,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.TrafficSummary;
@@ -188,7 +189,7 @@ public class FlowRestServiceImpl implements FlowRestService {
                             "Dest.", "Application", "Bytes In", "Bytes Out"));
                     response.setRows(summary.stream()
                             .map(sum -> {
-                                final FlowRepository.Conversation key = sum.getEntity();
+                                final Conversation key = sum.getEntity();
                                 return Lists.newArrayList((Object) key.location, key.protocol,
                                         hostnameMode.schwurbel(key.lowerIp, key.lowerHostname),
                                         hostnameMode.schwurbel(key.upperIp, key.upperHostname),
@@ -210,7 +211,7 @@ public class FlowRestServiceImpl implements FlowRestService {
                 (response, series) ->
                     response.setColumns(series.rowKeySet().stream()
                             .map(d -> {
-                                final FlowRepository.Conversation key = d.getValue();
+                                final Conversation key = d.getValue();
                                 final String applicationTag = key.application != null ? String.format(" : %s", key.application) : "";
                                 final FlowSeriesColumn column = new FlowSeriesColumn();
                                 column.setLabel(String.format("%s <-> %s%s",

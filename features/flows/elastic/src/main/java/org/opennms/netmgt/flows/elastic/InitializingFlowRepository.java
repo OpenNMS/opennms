@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;

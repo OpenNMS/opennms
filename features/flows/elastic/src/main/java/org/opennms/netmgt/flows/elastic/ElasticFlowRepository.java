@@ -44,14 +44,13 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;

@@ -63,10 +63,10 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockTransactionManager;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
@@ -467,11 +467,11 @@ public class FlowQueryIT {
     @Test
     public void canGetTopNConversationSummaries() throws ExecutionException, InterruptedException {
         // Retrieve the Top N conversation over the entire time range
-        List<TrafficSummary<FlowRepository.Conversation>> convoTrafficSummary = flowRepository.getTopNConversationSummaries(2, false, getFilters()).get();
+        List<TrafficSummary<Conversation>> convoTrafficSummary = flowRepository.getTopNConversationSummaries(2, false, getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(2));
 
         // Expect the conversations, with the sum of all the bytes from all the flows
-        TrafficSummary<FlowRepository.Conversation> convo = convoTrafficSummary.get(0);
+        TrafficSummary<Conversation> convo = convoTrafficSummary.get(0);
         assertThat(convo.getEntity().lowerIp, equalTo("10.1.1.12"));
         assertThat(convo.getEntity().upperIp, equalTo("192.168.1.101"));
         assertThat(convo.getEntity().lowerHostname, equalTo(Optional.of("la.le.lu")));
@@ -509,11 +509,11 @@ public class FlowQueryIT {
     @Test
     public void canGetConversationSummaries() throws ExecutionException, InterruptedException {
         // Get a specific conversation
-        List<TrafficSummary<FlowRepository.Conversation>> convoTrafficSummary =
+        List<TrafficSummary<Conversation>> convoTrafficSummary =
                 flowRepository.getConversationSummaries(ImmutableSet.of("[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]"),
                         false, getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(1));
-        TrafficSummary<FlowRepository.Conversation> convo = convoTrafficSummary.get(0);
+        TrafficSummary<Conversation> convo = convoTrafficSummary.get(0);
         assertThat(convo.getEntity().lowerIp, equalTo("10.1.1.11"));
         assertThat(convo.getEntity().upperIp, equalTo("192.168.1.100"));
         assertThat(convo.getEntity().application, equalTo("http"));
@@ -544,7 +544,7 @@ public class FlowQueryIT {
     @Test
     public void canGetConversationSeries() throws ExecutionException, InterruptedException {
         // Get series for specific host
-        Table<Directional<FlowRepository.Conversation>, Long, Double> convoTraffic = flowRepository.getConversationSeries(ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, false, getFilters()).get();
+        Table<Directional<Conversation>, Long, Double> convoTraffic = flowRepository.getConversationSeries(ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, false, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(2));
         verifyHttpsSeries(convoTraffic, ConversationKeyUtils.fromJsonString("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"));
 
@@ -556,7 +556,7 @@ public class FlowQueryIT {
     @Test
     public void canRetrieveTopNConversationsSeries() throws ExecutionException, InterruptedException {
         // Top 10
-        Table<Directional<FlowRepository.Conversation>, Long, Double> convoTraffic = flowRepository.getTopNConversationSeries(10, 10, false, getFilters()).get();
+        Table<Directional<Conversation>, Long, Double> convoTraffic = flowRepository.getTopNConversationSeries(10, 10, false, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(8));
 
         // Top 2 with others
@@ -590,7 +590,7 @@ public class FlowQueryIT {
                 177.41935483870967));
     }
 
-    private void verifyHttpsSeries(Table<Directional<FlowRepository.Conversation>, Long, Double> convoTraffic, ConversationKey label) {
+    private void verifyHttpsSeries(Table<Directional<Conversation>, Long, Double> convoTraffic, ConversationKey label) {
         // Pull the values from the table into arrays for easy comparision and validate
         List<Long> timestamps = getTimestampsFrom(convoTraffic);
         List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), convoTraffic);

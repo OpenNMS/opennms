@@ -31,8 +31,6 @@ package org.opennms.netmgt.flows.api;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -77,50 +75,4 @@ public interface FlowRepository {
 
     CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
-    class Conversation {
-        public final String location;
-        public final Integer protocol;
-        public final String lowerIp;
-        public final String upperIp;
-        public final String lowerHostname;
-        public final String upperHostname;
-        public final String application;
-
-        public Conversation(final String location,
-                            final Integer protocol,
-                            final String lowerIp,
-                            final String upperIp,
-                            final String lowerHostname,
-                            final String upperHostname,
-                            final String application) {
-            this.location = location;
-            this.protocol = protocol;
-            this.lowerIp = lowerIp;
-            this.upperIp = upperIp;
-            this.lowerHostname = lowerHostname;
-            this.upperHostname = upperHostname;
-            this.application = application;
-        }
-
-        public Conversation withHostnames(final Optional<String> lowerHostname,
-                                          final Optional<String> upperHostname) {
-            return new Conversation(this.location,
-                    this.protocol,
-                    this.lowerIp,
-                    this.upperIp,
-                    lowerHostname.orElse(null),
-                    upperHostname.orElse(null),
-                    this.application);
-        }
-
-        public static Conversation from(final ConversationKey key) {
-            return new Conversation(key.getLocation(),
-                    key.getProtocol(),
-                    key.getLowerIp(),
-                    key.getUpperIp(),
-                    null,
-                    null,
-                    key.getApplication());
-        }
-    }
 }
