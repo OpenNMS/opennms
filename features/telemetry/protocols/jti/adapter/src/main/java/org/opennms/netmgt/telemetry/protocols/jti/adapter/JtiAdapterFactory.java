@@ -60,6 +60,7 @@ public class JtiAdapterFactory extends AbstractCollectionAdapterFactory {
         adapter.setTransactionTemplate(getTransactionTemplate());
         adapter.setFilterDao(getFilterDao());
         adapter.setPersisterFactory(getPersisterFactory());
+        adapter.setThresholdingService(getThresholdingService());
         adapter.setBundleContext(getBundleContext());
 
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);

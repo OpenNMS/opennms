@@ -29,22 +29,22 @@
 package org.opennms.netmgt.telemetry.itests;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,10 +55,17 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
 import org.opennms.netmgt.telemetry.config.model.ListenerConfig;
@@ -70,12 +77,14 @@ import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.telemetry.daemon.Telemetryd;
 import org.opennms.netmgt.telemetry.listeners.UdpListener;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop;
+import org.opennms.netmgt.threshd.ThresholdingService;
+import org.opennms.netmgt.threshd.ThresholdingServiceImpl;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.google.common.io.Resources;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -88,6 +97,7 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-server.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
@@ -97,7 +107,9 @@ import com.google.common.io.Resources;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
-public class JtiIT {
+public class ThresholdingIT {
+
+    private static int sequence_no = 49103;
 
     @Autowired
     private TelemetrydConfigDao telemetrydConfigDao;
@@ -111,12 +123,20 @@ public class JtiIT {
     @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
+    @Autowired
+    private MockEventIpcManager mockEventIpcManager;
+
+    @Autowired
+    private ThresholdingService thresholdingService;
+
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     public File scriptFile;
 
     private File rrdBaseDir;
+
+    private int port = 50001;
 
     @Before
     public void setUp() throws IOException {
@@ -138,70 +158,112 @@ public class JtiIT {
     }
 
     @Test
-    public void canReceivedAndPersistJtiMessages() throws Exception {
-        final int port = 50001;
-
+    public void canTriggerThresholds() throws Exception {
         // Use our custom configuration
         updateDaoWithConfig(getConfig(port));
 
         // Start the daemon
         telemetryd.start();
 
-        // Send a JTI payload via a UDP socket
-        final byte[] jtiMsgBytes = Resources.toByteArray(Resources.getResource("jti_15.1F4_ifd_ae_40000.raw"));
-        InetAddress address = InetAddressUtils.getLocalHostAddress();
-        DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, address, port);
-        try (DatagramSocket socket = new DatagramSocket();) {
-            socket.send(packet);
-        }
+        long ifInOctets = 124827820;
+        long ifOutOctets = 194503622;
 
-        // Wait until the JRB archive is created
-        await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
+        // Load custom threshd configuration
+        initThreshdFactories("/threshd-configuration.xml", "/thresholds.xml");
+        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        mockEventIpcManager.addEventListener((EventListener) thresholdingService, ThresholdingServiceImpl.UEI_LIST);
+
+        EventAnticipator eventAnticipator = mockEventIpcManager.getEventAnticipator();
+
+        // Send an initial message
+        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 0);
+
+        // There should be no thresholding Events
+        assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
+
+        // Send another message
+        ifInOctets += 10000000;
+        ifOutOctets += 10000000;
+        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 5);
+        // There should still be no thresholding Events
+        assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
+
+        EventBuilder threshBldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "Test");
+        threshBldr.setNodeid(1);
+        threshBldr.setInterface(addr("192.0.2.1"));
+        threshBldr.setService("JTI-GBP");
+        eventAnticipator.anticipateEvent(threshBldr.getEvent());
+
+        // Send another message - this time with ifIn1SecPkts > threshold
+        ifInOctets += 10000000;
+        ifOutOctets += 10000000;
+        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 20);
+
+        // Wait until our threshold was triggered - the anticipator will remove the event from the list once received
+        await().atMost(60, TimeUnit.SECONDS).until(eventAnticipator::getAnticipatedEvents, hasSize(0));
+
+        // There should be no unexpected Thresholding Events
+        assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
+
     }
 
-    @Test
-    public void testScriptFileReload() throws Exception {
-        final int port = 50001;
-
-        // Use our custom configuration
-        updateDaoWithConfig(getConfig(port));
-
-        // Start the daemon
-        telemetryd.start();
-
-        String content = new String(Files.readAllBytes(scriptFile.toPath()), StandardCharsets.UTF_8);
-        Assert.assertThat(content, containsString("ifOutOctets"));
-
+    private void sendTelemetryMessage(String ipAddress, String ifName, long ifInOctets, long ifOutOctets, long ifIn1SecPkts) throws IOException {
         // Send a JTI payload via a UDP socket
-        final byte[] jtiMsgBytes = Resources.toByteArray(Resources.getResource("jti_15.1F4_ifd_ae_40000.raw"));
+        final TelemetryTop.TelemetryStream jtiMsg = buildJtiMessage(ipAddress, ifName, ifInOctets, ifOutOctets, ifIn1SecPkts);
+        final byte[] jtiMsgBytes = jtiMsg.toByteArray();
         InetAddress address = InetAddressUtils.getLocalHostAddress();
         DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, address, port);
         try (DatagramSocket socket = new DatagramSocket();) {
             socket.send(packet);
         }
+    }
 
-        // Wait until the JRB archive is created
-        await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
+    private static TelemetryTop.TelemetryStream buildJtiMessage(String ipAddress, String ifName, long ifInOctets, long ifOutOctets, long ifIn1SecPkts) {
+        final Port.GPort port = Port.GPort.newBuilder()
+                .addInterfaceStats(Port.InterfaceInfos.newBuilder()
+                        .setIfName(ifName)
+                        .setInitTime(1457647123)
+                        .setSnmpIfIndex(517)
+                        .setParentAeName("ae0")
+                        .setIngressStats(Port.InterfaceStats.newBuilder()
+                                .setIfOctets(ifInOctets)
+                                .setIfPkts(1)
+                                .setIf1SecPkts(ifIn1SecPkts)
+                                .setIf1SecOctets(1)
+                                .setIfUcPkts(1)
+                                .setIfMcPkts(1)
+                                .setIfBcPkts(1)
+                                .build())
+                        .setEgressStats(Port.InterfaceStats.newBuilder()
+                                .setIfOctets(ifOutOctets)
+                                .setIfPkts(1)
+                                .setIf1SecPkts(1)
+                                .setIf1SecOctets(1)
+                                .setIfUcPkts(1)
+                                .setIfMcPkts(1)
+                                .setIfBcPkts(1)
+                                .build())
+                        .build())
+                .build();
 
-        // now change script file
-        content = content.replaceAll("ifOutOctets", "FooBar");
-        Files.write(scriptFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
-        //Files.setLastModifiedTime(newFile.toPath(), FileTime.fromMillis(System.currentTimeMillis()));
+        final TelemetryTop.JuniperNetworksSensors juniperNetworksSensors = TelemetryTop.JuniperNetworksSensors.newBuilder()
+                .setExtension(Port.jnprInterfaceExt, port)
+                .build();
 
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(30, TimeUnit.SECONDS).until(() -> {
-            final InetAddress newAddress = InetAddressUtils.getLocalHostAddress();
-            final DatagramPacket newPacket = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, newAddress, port);
-            try (final DatagramSocket newSocket = new DatagramSocket();) {
-                newSocket.send(newPacket);
-            }
+        final TelemetryTop.EnterpriseSensors sensors = TelemetryTop.EnterpriseSensors.newBuilder()
+                .setExtension(TelemetryTop.juniperNetworks, juniperNetworksSensors)
+                .build();
 
-            return rrdBaseDir.toPath()
-                    .resolve(Paths.get("1", "ge_0_0_3", "FooBar.jrb"))
-                    .toFile()
-                    .canRead();
-        }, equalTo(true));
+        final TelemetryTop.TelemetryStream jtiMsg = TelemetryTop.TelemetryStream.newBuilder()
+                .setSystemId(ipAddress)
+                .setComponentId(0)
+                .setSensorName("ge_0_0_3")
+                .setSequenceNumber(sequence_no++)
+                .setTimestamp(new Date().getTime())
+                .setEnterprise(sensors)
+                .build();
+
+        return jtiMsg;
     }
 
     private void updateDaoWithConfig(TelemetrydConfig config) throws IOException {
@@ -262,4 +324,10 @@ public class JtiIT {
 
         return telemetrydConfig;
     }
+
+    private void initThreshdFactories(String threshd, String thresholds) throws Exception {
+        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
+        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
+    }
+
 }

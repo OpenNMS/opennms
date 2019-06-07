@@ -51,17 +51,21 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
-import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
+import org.opennms.netmgt.threshd.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.ThresholdingService;
+import org.opennms.netmgt.threshd.ThresholdingSession;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -76,6 +80,14 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     @Autowired
     private PersisterFactory persisterFactory;
+
+    @Autowired(required = false)
+    private ThresholdingService thresholdingService;
+
+    // Default TTL for ThresholdingSessions is one day.
+    private Integer thresholdingSessionTtlMinutes = SystemProperties.getInteger("org.opennms.netmgt.telemetry.protocols.collection.thresholdingSessionTtlminutes", 1440);
+
+    private Cache<String, ThresholdingSession> agentThresholdingSessions = CacheBuilder.newBuilder().expireAfterAccess(thresholdingSessionTtlMinutes, TimeUnit.MINUTES).build();
 
     private AdapterDefinition adapterConfig;
 
@@ -188,8 +200,39 @@ public abstract class AbstractPersistingAdapter implements Adapter {
                 LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
                 final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
                 collectionSet.visit(persister);
+
+                // Thresholding
+                try {
+                    ThresholdingSession session = getSessionForAgent(result.getAgent(), repository);
+                    session.accept(collectionSet);
+                } catch (ThresholdInitializationException e) {
+                    LOG.warn("Failed Thresholding of CollectionSet: {} : {}", e.getMessage(), collectionSet);
+                }
             });
         }
+    }
+
+    private ThresholdingSession getSessionForAgent(CollectionAgent agent, RrdRepository repository) throws ThresholdInitializationException {
+        // Make ThresholdingService nullable so that it will not blow up on Sentinals
+        if (thresholdingService == null) {
+            throw new ThresholdInitializationException("No ThresholdingService available.");
+        }
+        // Map of sessions keyed by agent
+        int nodeId = agent.getNodeId();
+        String hostAddress = agent.getHostAddress();
+        String serviceName = adapterConfig.getName();
+        String sessionKey = getSessionKey(nodeId, hostAddress, serviceName);
+
+        ThresholdingSession session = agentThresholdingSessions.asMap().get(sessionKey);
+        if (session == null) {
+            session = thresholdingService.createSession(nodeId, hostAddress, serviceName, repository, EMPTY_SERVICE_PARAMETERS);
+            agentThresholdingSessions.put(sessionKey, session);
+        }
+        return session;
+    }
+
+    private String getSessionKey(int nodeId, String hostAddress, String serviceName) {
+        return new StringBuilder(String.valueOf(nodeId)).append(hostAddress).append(serviceName).toString();
     }
 
     @Override
@@ -213,6 +256,14 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         this.persisterFactory = persisterFactory;
+    }
+
+    public ThresholdingService getThresholdingService() {
+        return thresholdingService;
+    }
+
+    public void setThresholdingService(ThresholdingService thresholdingService) {
+        this.thresholdingService = thresholdingService;
     }
 
     private static class CacheKey {
