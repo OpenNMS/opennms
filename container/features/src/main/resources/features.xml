@@ -712,6 +712,15 @@
         <feature>opennms-syslogd</feature>
         <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-camel-netty</bundle>
     </feature>
+    <feature name="opennms-thresholding-api" version="${project.version}" description="OpenNMS :: Thresholding :: API">
+        <feature>opennms-config</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-collection-api</feature>
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.api/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-thresholding-impl" version="${project.version}" description="OpenNMS :: Thresholding :: IMPL">
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.impl/${project.version}</bundle>
+    </feature>
     <feature name="opennms-trapd" version="${project.version}" description="OpenNMS :: Trapd">
         <feature version="[4.2,4.3)">spring</feature>
         <feature>camel-core</feature>
@@ -931,6 +940,7 @@
         <feature>guava</feature>
         <feature>camel-netty4</feature>
         <feature>opennms-collection-api</feature>
+        <feature>opennms-thresholding-api</feature>
         <feature>opennms-osgi-jsr223</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>

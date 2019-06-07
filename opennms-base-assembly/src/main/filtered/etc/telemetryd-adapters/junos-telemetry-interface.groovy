@@ -57,6 +57,10 @@ class CollectionSetGenerator {
             // Store the ifInOctets and ifOutOctets in a familar fashion, allowing the existing graph definitions to be used
             builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifInOctets", interfaceInfos.getIngressStats().getIfOctets(), AttributeType.COUNTER);
             builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifOutOctets", interfaceInfos.getEgressStats().getIfOctets(), AttributeType.COUNTER);
+
+            // Store if1SecPkts
+            builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifIn1SecPkts", interfaceInfos.getIngressStats().getIf1SecPkts(), AttributeType.GAUGE);
+            builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifOut1SecPkts", interfaceInfos.getEgressStats().getIf1SecPkts(), AttributeType.GAUGE);
         }
     }
 }

@@ -26,16 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.netmgt.threshd.api;
 
-public interface ThresholdingSetPersister {
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.xml.event.Event;
 
-    void persistSet(ThresholdingSession session, ThresholdingSet set);
+public interface ThresholdingSession extends AutoCloseable {
 
-    ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException;
-
-    void reinitializeThresholdingSets();
-
-    void clear(ThresholdingSession session);
+    /**
+     * Accepts a {@link CollectionSet} for threshold evaluation. The service will send {@link Event}s if Thresholds are triggered or re-armed.
+     * 
+     * @param collectionSet
+     * @throws ThresholdInitializationException
+     *             if the Thresholding Configuration has not yet been initialized ot there is an error initializing it. 
+     *             I.E. reading as parsing the configuration files.
+     */
+    void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
 
 }

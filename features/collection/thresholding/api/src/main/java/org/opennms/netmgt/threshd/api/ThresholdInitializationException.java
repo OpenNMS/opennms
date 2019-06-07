@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.netmgt.threshd.api;
 
-import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.xml.event.Event;
+public class ThresholdInitializationException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-/**
- * <p>ThresholdingEventProxy class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public interface ThresholdingEventProxy extends EventProxy {
-    
-    public void sendEvent(Event event);
+    public ThresholdInitializationException() {
+        super();
+    }
+
+    public ThresholdInitializationException(final String message) {
+        super(message);
+    }
+
+    public ThresholdInitializationException(final Throwable cause) {
+        super(cause);
+    }
+
+    public ThresholdInitializationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
+    public ThresholdInitializationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 
 }

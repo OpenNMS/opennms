@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.netmgt.threshd.api;
 
-public class ThresholdInitializationException extends Exception {
-    private static final long serialVersionUID = 1L;
+public interface ThresholdingSetPersister {
 
-    public ThresholdInitializationException() {
-        super();
-    }
+    void persistSet(ThresholdingSession session, ThresholdingSet set);
 
-    public ThresholdInitializationException(final String message) {
-        super(message);
-    }
+    ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException;
 
-    public ThresholdInitializationException(final Throwable cause) {
-        super(cause);
-    }
+    void reinitializeThresholdingSets();
 
-    public ThresholdInitializationException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public ThresholdInitializationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+    void clear(ThresholdingSession session);
 
 }

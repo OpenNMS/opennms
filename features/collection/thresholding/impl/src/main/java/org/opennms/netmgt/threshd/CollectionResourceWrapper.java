@@ -361,7 +361,7 @@ public class CollectionResourceWrapper {
     public boolean isValidInterfaceResource() {
         try {
             if(m_ifindex == null) {
-                return false;
+                return true; // allowing null is required for Telemetry Resources
             } else if(Integer.parseInt(m_ifindex) < 0) {
                 return false;
             }

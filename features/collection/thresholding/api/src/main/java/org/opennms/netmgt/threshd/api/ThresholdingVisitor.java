@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.netmgt.threshd.api;
 
 import java.util.Date;
 import java.util.List;
