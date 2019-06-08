@@ -164,7 +164,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
    * @propertyOf RequisitionNode
    * @returns {object} The meta-data entries
    */
-  self.metaData = new RequisitionMetaData(node['meta-data']);
+  self.metaData = new RequisitionMetaData(node);
 
   angular.forEach(node['interface'], function(intf) {
       self.interfaces.push(new RequisitionInterface(intf));
@@ -228,23 +228,6 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
       value: ''
     });
     return self.assets.length -1;
-  };
-
-  /**
-   * @description Adds a new meta-data entry to the node
-   *
-   * @name RequisitionNode:addNewMetaData
-   * @ngdoc method
-   * @methodOf RequisitionNode
-   * @returns {object} the new meta-data Object
-   */
-  self.addNewMetaData = function() {
-    let entry = {
-        key: '',
-        value: ''
-    };
-    self.requisitionMetaData.push(entry);
-    return entry;
   };
 
   /**
@@ -321,7 +304,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
       'parent-foreign-id': self.parentForeignId,
       'parent-node-label': self.parentNodeLabel,
       'asset': [],
-      'meta-data': self.metaData.getOnmsMetaData(),
+      'meta-data': self.metaData.getOnmsMetaDataForNode(),
       'category': []
     };
 
@@ -331,16 +314,15 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
         'descr': intf.description,
         'snmp-primary': intf.snmpPrimary,
         'status': (intf.status || intf.status === 'managed') ? '1' : '3',
-        'meta-data': intf.metaData.getOnmsMetaData(),
+        'meta-data': self.metaData.getOnmsMetaDataForInterface(intf),
         'monitored-service': []
       };
 
       angular.forEach(intf.services, function(service) {
         var serviceObject = {
           'service-name': service.name,
-          'meta-data': service.metaData.getOnmsMetaData()
+          'meta-data': self.metaData.getOnmsMetaDataForService(intf, service)
         };
-
         interfaceObject['monitored-service'].push(serviceObject);
       });
 
@@ -361,6 +343,6 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
   self.className = 'RequisitionNode';
 
   return self;
-}
+};
 
 module.exports = RequisitionNode;

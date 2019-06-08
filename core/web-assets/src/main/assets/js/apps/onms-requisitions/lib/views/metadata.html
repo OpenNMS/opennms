@@ -1,0 +1,58 @@
+<div>
+
+<div class="modal-header">
+  <h3 class="modal-title">Meta-Data Entry</h3>
+</div>
+
+<div class="modal-body">
+  <form name="metaDataForm">
+    <div class="form-group">
+      <div class="form-group">
+        <label class="control-label" for="metadata-context">Scope</label>
+        <select class="form-control" id="metadata-context" ng-model="entry.scope" required>
+          <option ng-repeat="(scope, displayString) in availableScopes" value="{{ scope }}">{{ displayString }}</option>
+        </select>
+      </div>
+      <div ng-if="entry.scope == 'interface'">
+        <div class="form-group">
+          <label class="control-label" for="metadata-interface">Interface</label>
+          <select class="form-control" id="metadata-interface" ng-model="entry.interface_idx" required>
+            <option ng-repeat="iff in node.interfaces" value="{{ $index }}">{{ iff.ipAddress }}</option>
+          </select>
+        </div>
+      </div>
+      <div ng-if="entry.scope == 'service'">
+        <div>
+          <label class="control-label" for="metadata-service-interface">Interface</label>
+          <select class="form-control" id="metadata-service-interface" ng-model="entry.interface_idx" required>
+            <!-- Only show the interfaces with services here -->
+            <option ng-repeat="iff in interfacesWithServices" value="{{ $index }}">{{ iff.ipAddress }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="metadata-service-service">Service</label>
+          <select class="form-control" id="metadata-service-service" ng-model="entry.service_idx" required>
+            <option ng-repeat="svc in interfacesWithServices[entry.interface_idx].services" value="{{ $index }}">{{ svc.name }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" ng-class="{ 'has-error' : metaDataForm.value.$invalid }">
+        <label class="control-label" for="metadata-key">Key</label>
+        <input class="form-control" type="text" id="metadata-key" name="key" placeholder="Key" ng-model="entry.key" required valid-meta-data-key="entry"/>
+        <p ng-show="metaDataForm.key.$invalid" class="help-block">A unique key is required.</p>
+      </div>
+      <div class="form-group" ng-class="{ 'has-error' : metaDataForm.value.$invalid }">
+        <label class="control-label" for="metadata-value">Value</label>
+        <input class="form-control" type="text" id="metadata-value" name="value" placeholder="Value" ng-model="entry.value" required/>
+        <p ng-show="metaDataForm.value.$invalid" class="help-block">A non empty value is required.</p>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" id="save-metadata" ng-click="save()" ng-disabled="metaDataForm.$invalid">Save</button>
+  <button type="button" class="btn btn-default" id="cancel-metadata" ng-click="cancel()" >Cancel</button>
+</div>
+
+</div>
