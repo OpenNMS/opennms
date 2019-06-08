@@ -159,6 +159,7 @@ jobs:
       - run:
           name: Install OpenJDK 11
           command: |
+            echo 'skip_if_unavailable=True' >> /etc/yum.conf
             yum install -y java-11-openjdk java-11-openjdk-devel
       - run:
           name: Build RPMs
