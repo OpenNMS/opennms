@@ -23,7 +23,6 @@ commands:
             key: source-v1-{{ .Branch }}-{{ .Revision }}
             paths:
               - ".git"
-
   restore-maven-cache:
       description: "Maven: Calculate cache key and restore cache"
       steps:
@@ -39,7 +38,6 @@ commands:
             name: Remove OpenNMS artifacts from cache
             command: |
               rm -rf ~/.m2/repository/org/opennms
-
   save-maven-cache:
     description: "Maven: Save cache"
     steps:
@@ -47,7 +45,6 @@ commands:
           key: maven-dependencies-v2-{{ checksum "maven-dependency-cache.key" }}
           paths:
             - ~/.m2
-
   restore-nodejs-cache:
       description: "NodeJS: Calculate cache key and restore cache"
       steps:
@@ -60,7 +57,6 @@ commands:
             keys:
               - nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
               - nodejs-dependencies-v1-
-
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
@@ -68,7 +64,6 @@ commands:
           key: nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
           paths:
             - core/web-assets/node_modules
-
   dockerhub-login:
     description: "Connect to DockerHub"
     steps:
@@ -76,7 +71,6 @@ commands:
           name: Login to DockerHub
           command: |
             docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
-
   run-smoke-tests:
     description: "Run the smoke tests"
     parameters:
@@ -108,9 +102,9 @@ commands:
           name: Gather test artifacts
           when: always
           command: |
-            mkdir -p ~/test-results
-            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/ \;
-            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/ \;
+            mkdir -p ~/test-results/junit
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
             mkdir -p ~/test-artifacts/recordings
             cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
@@ -125,31 +119,103 @@ commands:
           when: always
           path: ~/test-artifacts
           destination: test-artifacts
+  run-build:
+    description: "Run the main build"
+    parameters:
+      number-vcpu:
+        default: 8
+        type: integer
+      node-memory:
+        default: echo "NODE_OPTIONS Not Set"
+        type: string
+      vaadin-javamaxmem:
+        default: 1g
+        type: string
+    steps:
+      - cached-checkout
+      - restore-maven-cache
+      - restore-nodejs-cache
+      - run:
+          name: Compile OpenNMS
+          command: |
+            mvn clean -DskipTests=true
+            << parameters.node-memory >>
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              install --builder smart --threads << parameters.number-vcpu >>
+      - run:
+          name: Compile smoke tests
+            # Compile the smoke tests, but don't run them yet
+            # We want to make sure that they compile and also leverage the caching that is setup here
+            # so that the artifacts required to run the smoke tests are cached as well without the need
+            # to maintain another cache
+          command: |
+            cd smoke-test && mvn install -DskipTests=true -DskipITs=true
+      - save-maven-cache
+      - save-nodejs-cache
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project
+            - .m2
+  run-integration-tests:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Integration Tests
+          no_output_timeout: 1.0h
+          command: |
+            .circleci/scripts/itest.sh
+      - run:
+          name: Gather test results
+          when: always
+          command: |
+            mkdir -p ~/test-results/junit
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+      - run:
+          name: Gather tests
+          when: always
+          command: |
+            mkdir -p ~/generated-tests
+            cp ./surefire_classname* ~/generated-tests/
+            cp ./failsafe_classname* ~/generated-tests/
+            cp ./projects_with_path ~/generated-tests/
+            cp /tmp/this_node* ~/generated-tests/
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results
+          destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/generated-tests
+          destination: generated-tests
 
 workflows:
   build-deploy:
     jobs:
       - build
-      - package:
+      - package-build-horizon:
           requires:
             - build
-      - build-horizon-oci:
+      - package-build-minion:
           requires:
-            - package
-      - build-minion-oci:
+            - build
+      - package-build-sentinel:
           requires:
-            - package
-      - build-sentinel-oci:
-          requires:
-            - package
+            - build
       - integration-test:
           requires:
             - build
       - smoke-test-full:
           requires:
-            - build-horizon-oci
-            - build-minion-oci
-            - build-sentinel-oci
+            - package-build-horizon
+            - package-build-minion
+            - package-build-sentinel
           filters:
             branches:
               only:
@@ -161,12 +227,21 @@ workflows:
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
-            - build-horizon-oci
-            - build-minion-oci
-            - build-sentinel-oci
+            - package-build-horizon
+            - package-build-minion
+            - package-build-sentinel
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
       - publish-horizon-oci:
           requires:
-            - build-horizon-oci
+            - package-build-horizon
           filters:
             branches:
               only:
@@ -174,16 +249,15 @@ workflows:
                 - develop
       - publish-minion-oci:
           requires:
-            - build-minion-oci
+            - package-build-minion
           filters:
             branches:
               only:
                 - master
                 - develop
-
       - publish-sentinel-oci:
           requires:
-            - build-sentinel-oci
+            - package-build-sentinel
           filters:
             branches:
               only:
@@ -197,31 +271,11 @@ jobs:
     # in the core/web-assets module to complete reliably
     resource_class: xlarge
     steps:
-      - cached-checkout
-      - restore-maven-cache
-      - restore-nodejs-cache
-      - run:
-          name: Compile OpenNMS
-          command: |
-            mvn clean -DskipTests=true
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true
-      - run:
-          name: Compile smoke tests
-          # Compile the smoke tests, but don't run them yet
-          # We want to make sure that they compile and also leverage the caching that is setup here
-          # so that the artifacts required to run the smoke tests are cached as well without the need
-          # to maintain another cache
-          command: |
-            cd smoke-test && mvn install -DskipTests=true -DskipITs=true
-      - save-maven-cache
-      - save-nodejs-cache
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project
-            - .m2
-  package:
+      - run-build:
+          number-vcpu: 8
+  package-build-horizon:
     executor: build-executor
+    # Larger memory footprint required to speed up builds using Takari smartbuilder
     resource_class: large
     steps:
       - attach_workspace:
@@ -229,20 +283,8 @@ jobs:
       - run:
           name: Build RPMs
           command: |
-            ./makerpm.sh -a -d
-      - store_artifacts:
-          path: ~/project/target/rpm/RPMS/noarch
-          destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/rpm/RPMS/noarch
-
-  build-horizon-oci:
-    executor: build-executor
-    steps:
-      - attach_workspace:
-          at: ~/
+            export NODE_OPTIONS=--max_old_space_size=1024
+            ./makerpm.sh -a -d -S tools/packages/opennms/opennms.spec
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -253,16 +295,26 @@ jobs:
       - store_artifacts:
           path: ~/project/opennms-container/horizon/images/container.oci
           destination: horizon.oci
+      - store_artifacts:
+          path: ~/project/target/rpm/RPMS/noarch
+          destination: rpms
       - persist_to_workspace:
           root: ~/
           paths:
             - project/opennms-container/horizon/images/
-
-  build-minion-oci:
+  package-build-minion:
     executor: build-executor
+    # Larger memory footprint required to speed up builds using Takari smartbuilder
+    # Will need to increase resource class if package-build-horizon is under 15 min
+    resource_class: medium+
     steps:
       - attach_workspace:
           at: ~/
+      - run:
+          name: Build RPMs
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            ./makerpm.sh -a -d -S tools/packages/minion/minion.spec
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -273,16 +325,26 @@ jobs:
       - store_artifacts:
           path: ~/project/opennms-container/minion/images/container.oci
           destination: minion.oci
+      - store_artifacts:
+          path: ~/project/target/rpm/RPMS/noarch
+          destination: rpms
       - persist_to_workspace:
           root: ~/
           paths:
             - project/opennms-container/minion/images/
-
-  build-sentinel-oci:
+  package-build-sentinel:
     executor: build-executor
+    # Larger memory footprint required to speed up builds using Takari smartbuilder
+    # Will need to increase resource class if package-build-horizon is under 19 min
+    resource_class: medium+
     steps:
       - attach_workspace:
           at: ~/
+      - run:
+          name: Build RPMs
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            ./makerpm.sh -a -d -S tools/packages/sentinel/sentinel.spec
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -293,11 +355,13 @@ jobs:
       - store_artifacts:
           path: ~/project/opennms-container/sentinel/images/container.oci
           destination: sentinel.oci
+      - store_artifacts:
+          path: ~/project/target/rpm/RPMS/noarch
+          destination: rpms
       - persist_to_workspace:
           root: ~/
           paths:
             - project/opennms-container/sentinel/images/
-
   publish-horizon-oci:
     executor: build-executor
     steps:
@@ -313,7 +377,6 @@ jobs:
             docker image load -i images/container.oci
             ./tag.sh
             ./publish.sh
-
   publish-minion-oci:
     executor: build-executor
     steps:
@@ -329,7 +392,6 @@ jobs:
             docker image load -i images/container.oci
             ./tag.sh
             ./publish.sh
-
   publish-sentinel-oci:
     executor: build-executor
     steps:
@@ -345,35 +407,14 @@ jobs:
             docker image load -i images/container.oci
             ./tag.sh
             ./publish.sh 
-
   integration-test:
     executor: integration-test-executor
-    parallelism: 6
+    parallelism: 12
     steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Integration Tests
-          no_output_timeout: 1.0h
-          command: |
-            .circleci/scripts/itest.sh
-      - run:
-          name: Gather test results
-          when: always
-          command: |
-            mkdir -p ~/test-results
-            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/ \;
-            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/ \;
-      - store_test_results:
-          path: ~/test-results
-      - store_artifacts:
-          when: always
-          path: ~/test-results
-          destination: test-results
-
+      - run-integration-tests
   smoke-test-full:
     executor: smoke-test-executor
-    parallelism: 4
+    parallelism: 12
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -381,7 +422,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - run-smoke-tests
-
   smoke-test-minimal:
     executor: smoke-test-executor
     steps:
