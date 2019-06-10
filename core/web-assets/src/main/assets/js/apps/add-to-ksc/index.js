@@ -19,7 +19,6 @@ angular.module('onms-ksc', [
   growlProvider.globalTimeToLive(5000);
   growlProvider.globalPosition('bottom-center');
 }])
-
 .controller('AddToKscModalInstanceCtrl', ['$scope', '$http', '$uibModalInstance', 'resourceLabel', 'graphTitle', function ($scope, $http, $uibModalInstance, resourceLabel, graphTitle) {
 
   $scope.resourceLabel = resourceLabel;
@@ -137,6 +136,30 @@ angular.module('onms-ksc', [
 
   return resources;
 })
+.factory('graphSearchFactory', function ($rootScope) {
+  var graphSearch = {};
+  // Update search query and broadcast an update to controllers.
+  graphSearch.updateSearchQuery = function(searchItem) {
+      this.searchQuery = searchItem;
+      this.updateGraphsWithSearchItem();
+  };
+
+  graphSearch.updateGraphsWithSearchItem = function() {
+    $rootScope.$broadcast('handleSearchQuery');
+  }
+
+  return graphSearch;
+})
+.controller('graphSearchBoxCtrl', ['$scope', 'graphSearchFactory', function($scope, graphSearchFactory) {
+ 
+  // Update search query in service.
+  $scope.$watch('searchQuery', function () {
+    if (!angular.isUndefined($scope.searchQuery)) {
+      graphSearchFactory.updateSearchQuery($scope.searchQuery);
+    }
+  });
+  
+}])
 .controller('checkFlowsCtrl', ['$scope', '$http', '$filter', 'flowsRestFactory', function($scope, $http, $filter, flowsRestFactory) {
 
   $scope.flowCount = 0;
@@ -159,7 +182,25 @@ angular.module('onms-ksc', [
               $scope.flowGraphUrl = null;
             }
         }
-
       });
   };
+
+}])
+.controller('graphSearchCtrl', ['$scope', '$filter', '$attrs', 'graphSearchFactory', function($scope,  $filter, $attrs, graphSearchFactory) {
+
+  let graphName = $attrs.graphname;
+  let graphTitle = $attrs.graphtitle;
+  $scope.enableGraph = true;
+  // Handle search query update and enable graphs with matching search query.
+  $scope.$on('handleSearchQuery', function () {
+    let searchQuery = graphSearchFactory.searchQuery;
+    // Filter on graphName or graphTitle.
+    let matchingElements = $filter('filter')([graphName, graphTitle], searchQuery);
+    if (matchingElements && matchingElements.length) {
+      $scope.enableGraph = true;
+    } else {
+      $scope.enableGraph = false;
+    }
+  });
+
 }]);

@@ -165,6 +165,26 @@
 
 <div class="row" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
 
+    <div class="col-md-10" ng-controller="graphSearchBoxCtrl" id="search-graphs">
+        <form class="form-inline pull-right mb-4">
+            <div class="input-group mr-4">
+                <div class="input-group" class="col-md-auto">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="fa fa-search"></span>
+                        </div>
+                    </div>
+                    <input type="search" id="graphsearch" placeholder="Filter Graphs" ng-model="searchQuery" name="filter">
+                    <div class="input-group-prepend" ng-show="searchQuery.length > 0">
+                        <div class="input-group-text">
+                            <span class="fa fa-remove" ng-click="searchQuery = ''"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
 	<div class="col-md-10">
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
     <div class="card text-center" id="panel-resource${resultSet.index}">
@@ -237,8 +257,8 @@
                         <c:param name="report" value="${graph.name}"/>
                         <c:param name="resourceId" value="${resultSet.resource.id}"/>
                     </c:url>
-
-                    <div>
+                    <!-- graph-search div should be immediate parent to graph-container as search depends on this. -->
+                    <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" graphname="${graph.name}" graphtitle = "${graph.title}">
 	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
                             <a style="padding-right: 3px" title="Add ${graph.title} to KSC Report">
                                 <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
@@ -263,7 +283,7 @@
                               </a>
                             </div>
 	                    </div> <!-- graph-aux-controls -->
-	                    <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
+                        <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
                     </div>
                     <br/><br/>
                 </c:forEach>
@@ -310,6 +330,7 @@
         <c:param name="reports" value="${report}"/>
     </c:forEach>
 </c:url>
+
 
 <script type="text/javascript">
 

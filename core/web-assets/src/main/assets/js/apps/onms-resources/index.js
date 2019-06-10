@@ -196,7 +196,7 @@ angular.module('onms-resources', [
   };
 
   $scope.$watch('searchQuery', function() {
-    $scope.filteredResurces = {};
+    $scope.filteredResources = {};
     for (var key in $scope.resources) {
       if ($scope.resources.hasOwnProperty(key)) {
         $scope.filteredResources[key] = $filter('filter')($scope.resources[key], $scope.searchQuery);
