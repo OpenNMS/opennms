@@ -113,18 +113,18 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyRedirectToLogin() throws IOException {
         for (Check eachCheck : checks) {
-            LOG.debug("{}: Run test for page", eachCheck.url);
+            LOG.info("{}: Run test for page", eachCheck.url);
 
             // Go to Page
             login();
             m_driver.get(getBaseUrl() + "opennms/" + eachCheck.url);
 
             // Verify Page loaded
-            LOG.debug("{}: Verify that page loaded", eachCheck.url);
+            LOG.info("{}: Verify that page loaded", eachCheck.url);
             eachCheck.verifyPageLoaded.run();
 
             // Run action
-            LOG.debug("{}: Perform action", eachCheck.url);
+            LOG.info("{}: Perform action", eachCheck.url);
             eachCheck.actionToPerform.run();
 
             // Wait before logging out as the http request may be still in progress
@@ -132,16 +132,16 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
             sleep(SLEEP_TIME);
 
             // Logout (via HttpGet, so we are still on the page)
-            LOG.debug("{}: Simulate session timeout", eachCheck.url);
+            LOG.info("{}: Simulate session timeout", eachCheck.url);
             simulateSessionTimeout();
             sleep(SLEEP_TIME);
 
             // Verify we are still on the page
-            LOG.debug("{}: Verify that page is still loaded", eachCheck.url);
+            LOG.info("{}: Verify that page is still loaded", eachCheck.url);
             eachCheck.verifyPageLoaded.run();
 
             // Run action (again or an individual one), which should still pass
-            LOG.debug("{}: Perform action again. Should redirect to login page.", eachCheck.url);
+            LOG.info("{}: Perform action again. Should redirect to login page.", eachCheck.url);
             if (eachCheck.actionToPerformAfterLogout != null) {
                 eachCheck.actionToPerformAfterLogout.run();
             } else {
@@ -151,11 +151,11 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
             // Verify we have been forwarded to the login page
             new WebDriverWait(m_driver, 5).until(
                     (Predicate<WebDriver>) input -> {
-                        LOG.debug("{}: Verify redirect to login.jsp occurred", eachCheck.url);
+                        LOG.info("{}: Verify redirect to login.jsp occurred", eachCheck.url);
                         return Objects.equals(getBaseUrl() + "opennms/login.jsp?session_expired=true", m_driver.getCurrentUrl());
                     }
             );
-            LOG.debug("{}: Test passed", eachCheck.url);
+            LOG.info("{}: Test passed", eachCheck.url);
         }
     }
 
