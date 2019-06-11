@@ -34,7 +34,8 @@
 
     <jsp:param name="title" value="Database Reports" />
     <jsp:param name="headTitle" value="Database Reports" />
-    <jsp:param name="breadcrumb" value="Database Reports" />
+    <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+    <jsp:param name="breadcrumb" value="Database" />
 </jsp:include>
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
