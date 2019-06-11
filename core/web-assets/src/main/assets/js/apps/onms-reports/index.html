@@ -3,11 +3,6 @@
     <pre ng-show="globalErrorDetails">{{globalErrorDetails}}</pre>
 </div>
 
-<!-- TODO MVR replace later -->
-<label>User selection</label>
-<select ng-change="onChange()" ng-model="currentUser" ng-options="user.label for user in users">
-</select>
-
 <div class="w-100" ng-if="!globalError">
     <ul id="tabs" class="nav nav-tabs">
         <li role="presentation" class="nav-item">

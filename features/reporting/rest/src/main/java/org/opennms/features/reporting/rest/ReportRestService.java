@@ -37,6 +37,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 @Path("/reports")
@@ -49,7 +50,7 @@ public interface ReportRestService {
 
     @GET
     @Path("/{id}")
-    Response getReportDetails(@PathParam("id") String reportId);
+    Response getReportDetails(@PathParam("id") String reportId, @QueryParam("adhoc") String adhoc, @QueryParam("userId") String userId);
 
     @POST
     @Path("/{id}")
@@ -63,6 +64,10 @@ public interface ReportRestService {
     @Path("/persisted")
     Response deletePersistedReports();
 
+    @POST
+    @Path("/persisted")
+    Response deliverReport(Map<String, Object> parameters);
+
     @DELETE
     @Path("/persisted/{id}")
     Response deletePersistedReport(@PathParam("id") final int id);
@@ -74,6 +79,10 @@ public interface ReportRestService {
     @DELETE
     @Path("/scheduled")
     Response deleteScheduledReports();
+
+    @POST
+    @Path("/scheduled")
+    Response scheduleReport(Map<String, Object> parameters);
 
     @DELETE
     @Path("/scheduled/{id}")

@@ -87,7 +87,7 @@
                         <li><a href="graph/index.jsp">Resource Graphs</a></li>
                         <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domains</a></li>
                         <!-- TODO MVR find a new place for this -->
-                        <li><a href="index2.jsp">Database Reports (new)</a></li>
+                        <li><a href="report/index2.jsp">Database Reports (2019)</a></li>
                         <li><a href="report/database/index.htm">Database Reports (Legacy)</a></li>
                         <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
                         <li><a href="inventory/rancidReport.htm">Inventory</a></li>

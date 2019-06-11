@@ -3,10 +3,10 @@ require('../../lib/onms-http');
 require('angular-ui-router');
 
 const indexTemplate  = require('./index.html');
-const onlineTemplate  = require('./online-report.html');
 const templatesTemplate  = require('./templates.html');
 const persistedtTemplate  = require('./persisted.html');
 const schedulesTemplate  = require('./schedules.html');
+const detailsTemplate  = require('./details.html');
 
 (function() {
     'use strict';
@@ -35,10 +35,13 @@ const schedulesTemplate  = require('./schedules.html');
                     controller: 'ReportTemplatesController',
                     templateUrl: templatesTemplate
                 })
-                .state('report.online', {
-                    url: '/:id/online',
-                    controller: 'ReportOnlineController',
-                    templateUrl: onlineTemplate
+                .state('report.details', {
+                    url: '/:id?type',
+                    controller: 'ReportDetailController',
+                    templateUrl: detailsTemplate,
+                    resolve: {
+
+                    }
                 })
                 .state('report.schedules', {
                     url: '/schedules',
@@ -109,38 +112,11 @@ const schedulesTemplate  = require('./schedules.html');
             };
         })
         .controller('ReportsController', ['$scope', '$http', 'UserService', function($scope, $http, UserService) {
-            $scope.users =  [{id: 'admin', label:'Administrator'}, {id:'user', label:'Normal User'}, {id: 'report_designer', label:'Report Designer'}];
             UserService.whoami(function(user) {
-                console.log("User has been loaded", user);
                 $scope.userInfo = user;
-                $scope.currentUser = $scope.users[0];
-                $scope.onChange();
             });
-
-            $scope.onChange = function() {
-                console.log("onChange invoked...");
-
-                $scope.userInfo.id = $scope.currentUser.id;
-                $scope.userInfo.name = $scope.currentUser.label;
-                $scope.userInfo.comment = undefined;
-                $scope.userInfo.email = $scope.currentUser.id + "@opennms.org";
-                $scope.userInfo.roles = [];
-
-                if ($scope.currentUser.id === "admin") {
-                    $scope.userInfo.roles.push("ROLE_ADMIN");
-                }
-                if ($scope.currentUser.id === "user") {
-                    $scope.userInfo.roles.push("ROLE_USER");
-                }
-                if ($scope.currentUser.id === "report_designer") {
-                    $scope.userInfo.roles.push("ROLE_USER");
-                    $scope.userInfo.roles.push("ROLE_REPORT_DESIGNER");
-                }
-                console.log("user changed", $scope.userInfo);
-            };
         }])
         .controller('ReportTemplatesController', ['$scope', '$http', 'ReportsService', function($scope, $http, ReportsService) {
-
             $scope.refresh = function() {
                 $scope.reports = [];
                 $scope.globalError = undefined;
@@ -159,7 +135,11 @@ const schedulesTemplate  = require('./schedules.html');
             $scope.refresh();
 
         }])
-        .controller('ReportOnlineController', ['$scope', '$http', '$window', '$stateParams', 'ReportsService', function($scope, $http, $window, $stateParams, ReportsService) {
+        .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', 'ReportsService', function($scope, $http, $window, $state, $stateParams, ReportsService) {
+            $scope.type = $stateParams.type;
+            $scope.reportId = $stateParams.id;
+
+            // TODO MVR this is a duplicate of ReportOnlineController
             $scope.loadDetails = function() {
                 $scope.loading = true;
                 $scope.loading = false;
@@ -170,13 +150,27 @@ const schedulesTemplate  = require('./schedules.html');
                 $scope.parameters = [];
                 $scope.endpoints = [];
                 $scope.dashboards = [];
+                $scope.deliveryOptions = undefined;
+                $scope.cronExpression = "0 */5 * * * ?";
 
-                ReportsService.get({id:$stateParams.id}, function(response) {
+                // TODO MVR when invoking the page without navigating properly, the userInfo is not set :(
+
+                var requestParameters = {
+                    id: $scope.reportId,
+                    adhoc: $scope.type === 'online',
+                    userId: $scope.type !== 'online' ? $scope.userInfo.id : undefined
+                };
+
+                ReportsService.get(requestParameters, function(response) {
                     $scope.loading = false;
                     $scope.surveillanceCategories = response.surveillanceCategories;
                     $scope.categories = response.categories;
                     $scope.formats = response.formats;
                     $scope.parameters = response.parameters;
+                    $scope.deliveryOptions = response.deliveryOptions || {};
+                    $scope.deliveryOptions.format = $scope.reportFormat;
+
+                    console.log("XXXX", $scope.deliveryOptions);
 
                     // In order to have the ui look the same as before, just order the parameters
                     var order = ['string', 'integer', 'float', 'double', 'date'];
@@ -192,38 +186,90 @@ const schedulesTemplate  = require('./schedules.html');
             };
 
             // TODO MVR use ReportsService for this, but somehow only $http works :-/
+            // TODO MVR it seems always pdf is generated even if csv was selected
             $scope.runReport = function() {
                 $http({
                     method: 'POST',
                     url: 'rest/reports/' + $stateParams.id,
-                    data:  {id:$stateParams.id, parameters: $scope.parameters, format: $scope.reportFormat},
+                    data:  {id:$scope.reportId, parameters: $scope.parameters, format: $scope.reportFormat},
                     responseType:  'arraybuffer'
                 }).then(function (response) {
-                    console.log("SUCCESS", response);
-                    var data = response.data;
-                    var fileBlob = new Blob([data], {type: $scope.reportFormat === 'PDF' ? 'application/pdf' : 'text/csv'});
-                    var fileURL = URL.createObjectURL(fileBlob);
-                    var contentDisposition = response.headers("Content-Disposition");
-                    // var filename = (contentDisposition.split(';')[1].trim().split('=')[1]).replace(/"/g, '');
-                    console.log(contentDisposition);
-                    var filename = $stateParams.id + '.' + $scope.reportFormat.toLowerCase();
+                        console.log("SUCCESS", response);
+                        var data = response.data;
+                        var fileBlob = new Blob([data], {type: $scope.reportFormat === 'PDF' ? 'application/pdf' : 'text/csv'});
+                        var fileURL = URL.createObjectURL(fileBlob);
+                        var contentDisposition = response.headers("Content-Disposition");
+                        // var filename = (contentDisposition.split(';')[1].trim().split('=')[1]).replace(/"/g, '');
+                        console.log(contentDisposition);
+                        var filename = $stateParams.id + '.' + $scope.reportFormat.toLowerCase();
 
-                    var a = document.createElement('a');
-                    document.body.appendChild(a);
-                    a.style = 'display: none';
-                    a.href = fileURL;
-                    a.download = filename;
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                },
-                function(error) {
-                    console.log("ERROR", error);
-                });
+                        var a = document.createElement('a');
+                        document.body.appendChild(a);
+                        a.style = 'display: none';
+                        a.href = fileURL;
+                        a.download = filename;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    },
+                    function(error) {
+                        console.log("ERROR", error);
+                    });
+            };
+
+            $scope.deliverReport = function() {
+                // TODO MVR this is probably not the most elegant way of doing this (-:
+                // $scope.deliveryOptions.format = $scope.reportFormat;
+                $http({
+                    method: 'POST',
+                    url: 'rest/reports/persisted',
+                    data: {
+                        id: $scope.reportId,
+                        parameters: $scope.parameters,
+                        format: $scope.reportFormat,
+                        deliveryOptions: $scope.deliveryOptions
+                    }
+                }).then(function(response) {
+                    console.log("SUCCESS", response);
+                }, function(response) {
+                    console.log("ERROR", response);
+                })
+            };
+
+            $scope.scheduleReport = function() {
+                // TODO MVR this is probably not the most elegant way of doing this (-:
+                // $scope.deliveryOptions.format = $scope.reportFormat;
+                $http({
+                    method: 'POST',
+                    url: 'rest/reports/scheduled',
+                    data: {
+                        id: $scope.reportId,
+                        parameters: $scope.parameters,
+                        format: $scope.reportFormat,
+                        deliveryOptions: $scope.deliveryOptions,
+                        cronExpression: $scope.cronExpression
+                    }
+                }).then(function(response) {
+                    console.log("SUCCESS", response);
+                }, function(response) {
+                    console.log("ERROR", response);
+                })
+            };
+
+            $scope.execute = function() {
+                console.log("EXECUTING ... :)", $scope);
+                if ($scope.type === 'online') {
+                    $scope.runReport();
+                }
+                if ($scope.type === 'schedule') {
+                    $scope.scheduleReport();
+                }
+                if ($scope.type === 'deliver') {
+                    $scope.deliverReport();
+                }
             };
 
             $scope.loadDetails();
-
         }])
         .controller('ReportSchedulesController', ['$scope', '$http', '$window', '$stateParams', 'ReportScheduleService', function($scope, $http, $window, $stateParams, ReportScheduleService) {
             $scope.scheduledReports = [];

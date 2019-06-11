@@ -42,7 +42,7 @@ public class DeliveryOptions implements Serializable {
     protected String m_mailTo;
     protected Boolean m_persist;
     protected Boolean m_sendMail;
-    protected ReportFormat m_format;
+    protected ReportFormat m_format; // TODO MVR this is probably not used anymore
     protected String m_instanceId;
 
     /**

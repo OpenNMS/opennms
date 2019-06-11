@@ -1,0 +1,154 @@
+
+<!-- TODO MVR this is more or less a copy of online-report.html -->
+<div class="alert alert-danger" ng-if="errorMessage">
+    <span>{{errorMessage}}</span>
+</div>
+
+<form class="form" role="form">
+    <div class="card" ng-if="parameters && parameters.length > 0">
+        <div class="card-header">
+            <span>Report Parameters</span>
+        </div>
+        <div class="card-body">
+            <div ng-if="parameter.type === 'string'" class="form-group" ng-repeat="parameter in parameters">
+                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+
+                <!--String -->
+                <select id="{{parameter.name}}" ng-if="parameter.inputType === 'reportCategorySelector'" class="form-control custom-select" >
+                    <option ng-repeat="option in surveillanceCategories">{{option}}</option>
+                </select>
+                <select id="{{parameter.name}}" ng-if="parameter.inputType === 'onmsCategorySelector'" class="form-control custom-select" >
+                    <option ng-repeat="option in categories">{{option}}</option>
+                </select>
+                <input id="{{parameter.name}}"
+                       ng-if="parameter.inputType !== 'reportCategorySelector' && parameter.inputType !== 'onmsCategorySelector'"
+                       class="form-control" type="text" value="{{parameter.value}}"/>
+            </div>
+            <!-- INT -->
+            <div  ng-if="parameter.type === 'integer'" class="form-group" ng-repeat="parameter in parameters">
+                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+                <input id="{{parameter.name}}" class="form-control" type="text" value="{{parameter.value}}"/>
+            </div>
+            <!-- FLOAT -->
+            <div ng-if="parameter.type === 'float'" class="form-group" ng-repeat="parameter in parameters">
+                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+                <input id="{{parameter.name}}" class="form-control" type="text" value="{{parameter.value}}"/>
+            </div>
+            <!-- DOUBLE -->
+            <div ng-if="parameter.type === 'double'" class="form-group" ng-repeat="parameter in parameters">
+                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+                <input id="{{parameter.name}}" class="form-control" type="text" value="{{parameter.value}}"/>
+            </div>
+            <!-- TODO MVR absolute vs relative dates -->
+            <!-- DATE -->
+            <div ng-if="parameter.type === 'date'" class="form-group" ng-repeat="parameter in parameters">
+                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+                <div class="input-group">
+                    <span ng-if="type === 'schedule' && parameter.useAbsoluteDate === false">
+                        <input type="number" min="0" max="31" class="form-control" ng-model="parameter.count" />
+                        <select class="form-control custom-select" ng-model="parameter.interval">
+                            <option value="day">day</option>
+                            <option value="month">month</option>
+                            <option value="year">year</option>
+                        </select>
+                        <div class="pull-left">
+                            <label style="margin-top: 13%; margin-left:5px; margin-right:5px;"> ago, at </label>
+                        </div>
+                    </span>
+                    <input ng-if="type !== 'schedule' || parameter.useAbsoluteDate === true" id="{{parameter.name}}" class="form-control" type="text" value="{{parameter.date}}" />
+                    <input class="form-control" type="number" min="0" max="23" value="{{parameter.hours}}" />
+                    <input class="form-control" type="number" min="0" max="59" value="{{parameter.minutes}}" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODO MVR only online Report -->
+    <!-- FORMAT -->
+    <div class="form-group" ng-if="type === 'online'">
+        <span class="">Report Format</span>
+        <select class="form-control custom-select" ng-model="reportFormat">
+            <option ng-repeat="format in formats">{{format.name}}</option>
+        </select>
+    </div>
+
+    <div class="card" ng-if="type !== 'online' && deliveryOptions">
+        <div class="card-header">
+            <span>Report Delivery Options</span>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <div class="col-md-6">
+                    <label for="instanceId">Unique name</label>
+                    <!-- TODO MVR tooltip? -->
+                    <input id="instanceId" ng-model="deliveryOptions.instanceId" class="form-control" data-toggle="tooltip" data-placement="right" title="A name to identify this report. Must be unique overall reports."/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <label for="format" class="">Format</label>
+                    <!-- TODO MVR tooltip? -->
+                    <select id="format" name="format" class="form-control custom-select" ng-model="reportFormat" data-toggle="tooltip" data-placement="right" title="The output format of the generated report.">
+                        <option ng-repeat="format in formats">{{format.name}}</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <div class="col-md-6 ml-4">
+                    <input type="checkbox" id="sendMailToggle" ng-model="deliveryOptions.sendMail" class="form-check-input"/>
+                    <!-- TODO MVR tooltip? -->
+                    <label class="form-check-label" for="sendMailToggle" data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
+                        Email report
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-6">
+                    <!-- TODO MVR tooltip? -->
+                    <label path="mailTo" for="mailRecipipent">Recipient</label>
+                    <input id="mailRecipipent" ng-model="deliveryOptions.mailTo" type="email" class="form-control" data-toggle="tooltip" data-placement="right" title="The recipient of the generated report if 'Email report' is enabled."/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-6 ml-4">
+                    <input type="checkbox" id="persistToggle" ng-model="deliveryOptions.persist" class="form-check-input"/>
+                    <!-- TODO MVR tooltip? -->
+                    <label class="form-check-label"
+                           data-toggle="tooltip"
+                           data-placement="right"
+                           title="Indicates whether a copy of the generated report is stored on disk."
+                           for="persistToggle" >
+                        Save a copy of this report
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" ng-if="type === 'schedule'">
+        <div class="card-header">
+            <span>Cron Expression</span>
+        </div>
+        <div class="card-body">
+            <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger" target="_blank">here</a>.</p>
+                <div class="form-group">
+                    <label for="cronExpression" path="cronExpression" class="form-check-label">
+                        Cron Expression
+                    </label>
+                    <input id="cronExpression" class="form-control" ng-model="cronExpression"/>
+                </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button class="btn btn-danger" name="cancel" id="cancel" ui-sref="report.templates">
+            <i class="fa fa-times"></i> Cancel
+        </button>
+        <button class="btn btn-primary" name="run" id="execute" ng-click="execute()">
+            <i class="fa fa-play"></i> Proceed
+        </button>
+    </div>
+</form>

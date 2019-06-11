@@ -12,9 +12,9 @@
         <td>{{report.name}}</td>
         <td>{{report.description}}</td>
         <td class="text-right">
-            <button ui-sref="report.online({'id':report.id})" class="btn btn-sm btn-secondary" ng-if="report.online === true" title="Execute this report instantly"><i class="fa fa-play"></i></button>
-            <button class="btn btn-sm btn-secondary" title="Deliver report to file system or via e-mail"><i class="fa fa-share"></i></button>
-            <button class="btn btn-sm btn-secondary" title="Create a schedule for this report"><i class="fa fa-clock-o"></i></button>
+            <button ui-sref="report.details({'id': report.id, 'type': 'online'})" class="btn btn-sm btn-secondary" title="Execute this report instantly" ng-if="report.online === true"><i class="fa fa-play"></i></button>
+            <button ui-sref="report.details({'id': report.id, 'type': 'deliver'})" class="btn btn-sm btn-secondary" title="Deliver report to file system or via e-mail"><i class="fa fa-share"></i></button>
+            <button ui-sref="report.details({'id': report.id, 'type': 'schedule'})" class="btn btn-sm btn-secondary" title="Create a schedule for this report"><i class="fa fa-clock-o"></i></button>
         </td>
     </tr>
     </tbody>
