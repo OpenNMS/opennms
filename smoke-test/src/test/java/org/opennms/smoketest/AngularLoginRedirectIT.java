@@ -139,6 +139,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
             // Verify we are still on the page
             LOG.info("{}: Verify that page is still loaded", eachCheck.url);
             eachCheck.verifyPageLoaded.run();
+            sleep(SLEEP_TIME);
 
             // Run action (again or an individual one), which should still pass
             LOG.info("{}: Perform action again. Should redirect to login page.", eachCheck.url);
@@ -147,6 +148,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
             } else {
                 eachCheck.actionToPerform.run();
             }
+            sleep(SLEEP_TIME);
 
             // Verify we have been forwarded to the login page
             new WebDriverWait(m_driver, 5).until(
