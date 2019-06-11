@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -43,6 +44,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -162,13 +164,19 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
     }
 
     private void simulateSessionTimeout() throws IOException {
-        final HttpGet httpGet = new HttpGet(getBaseUrl() + "opennms/j_spring_security_logout");
-        httpGet.addHeader("Cookie", "JSESSIONID="+m_driver.manage().getCookieNamed("JSESSIONID").getValue());
+        final Set<Cookie> cookies = m_driver.manage().getCookies();
+        for (Cookie eachCookie : cookies) {
+            if (eachCookie.getName().equalsIgnoreCase("JSESSIONID")) {
+                final HttpGet httpGet = new HttpGet(getBaseUrl() + "opennms/j_spring_security_logout");
+                httpGet.addHeader("Cookie", eachCookie.getName() + "=" + eachCookie.getValue());
 
-        try (CloseableHttpClient client = HttpClientBuilder.create().disableRedirectHandling().build();
-             CloseableHttpResponse response = client.execute(httpGet)
-        ) {
-            assertEquals(302, response.getStatusLine().getStatusCode());
+                try (CloseableHttpClient client = HttpClientBuilder.create().disableRedirectHandling().build();
+                     CloseableHttpResponse response = client.execute(httpGet)
+                ) {
+                    assertEquals(302, response.getStatusLine().getStatusCode());
+                }
+            }
         }
+        m_driver.manage().deleteAllCookies();
     }
 }
