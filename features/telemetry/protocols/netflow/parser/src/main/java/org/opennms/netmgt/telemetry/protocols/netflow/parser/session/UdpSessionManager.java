@@ -76,7 +76,7 @@ public class UdpSessionManager {
 
             @Override
             public List<Value<?>> lookupOptions(final List<Value<?>> values) {
-                final LinkedHashMap<String, Value<?>> options = new LinkedHashMap();
+                final LinkedHashMap<String, Value<?>> options = new LinkedHashMap<>();
 
                 final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
@@ -100,7 +100,7 @@ public class UdpSessionManager {
                     }
                 }
 
-                return new ArrayList(options.values());
+                return new ArrayList<>(options.values());
             }
         }
 
@@ -132,12 +132,8 @@ public class UdpSessionManager {
                                final int templateId,
                                final Collection<Value<?>> scopes,
                                final List<Value<?>> values) {
-            if (scopes.isEmpty()) {
-                return;
-            }
-
             final Key key = new Key(this.sessionKey, observationDomainId, templateId);
-            UdpSessionManager.this.options.computeIfAbsent(key, (k) -> new HashMap()).put(new HashSet(scopes), values);
+            UdpSessionManager.this.options.computeIfAbsent(key, (k) -> new HashMap<>()).put(new HashSet<>(scopes), values);
         }
 
         @Override
