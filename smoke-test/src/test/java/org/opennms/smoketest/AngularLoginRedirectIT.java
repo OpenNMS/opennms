@@ -55,7 +55,7 @@ import com.google.common.collect.Lists;
 
 public class AngularLoginRedirectIT extends OpenNMSSeleniumTestCase {
 
-    private static final int SLEEP_TIME = 5000;
+    private static final int SLEEP_TIME = 2000;
 
     private static final Logger LOG = LoggerFactory.getLogger(AngularLoginRedirectIT.class);
 
