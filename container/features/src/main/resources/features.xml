@@ -1415,4 +1415,13 @@
         <bundle>wrap:mvn:net.sf.jung/jung-api/${jungVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
     </feature>
+    <feature name="opennms-endpoints-grafana" version="${project.version}" description="OpenNMS :: Features :: Endpoints :: Grafana">
+        <bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.client/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.service/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.rest/${project.version}</bundle>
+        <!-- These are pulled in via lib directory -->
+        <!--<bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.api/${project.version}</bundle>-->
+        <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.api/${project.version}</bundle>-->
+        <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.impl/${project.version}</bundle>-->
+    </feature>
 </features>

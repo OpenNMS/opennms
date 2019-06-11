@@ -741,6 +741,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.endpoints.grafana.persistence</groupId>
+      <artifactId>org.opennms.features.endpoints.grafana.persistence.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.timeformat</groupId>
       <artifactId>org.opennms.features.timeformat.api</artifactId>
       <version>${project.version}</version>

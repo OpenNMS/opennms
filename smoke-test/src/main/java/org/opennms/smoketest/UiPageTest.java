@@ -33,14 +33,29 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.junit.After;
+import org.junit.Before;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.base.Function;
 
 public class UiPageTest extends OpenNMSSeleniumTestCase {
+
+    @Before
+    public void before() {
+        setImplicitWait(5, TimeUnit.SECONDS);
+    }
+
+    @After
+    public void after() {
+        setImplicitWait();
+    }
 
     protected <X> X execute(Supplier<X> supplier) {
         return execute(supplier, 1);
@@ -53,6 +68,19 @@ public class UiPageTest extends OpenNMSSeleniumTestCase {
         } finally {
             this.setImplicitWait();
         }
+    }
+
+    protected void verifyElementNotPresent(final By by) {
+        new WebDriverWait(m_driver, 7 /* seconds */).until(
+                ExpectedConditions.not((ExpectedCondition<Boolean>) input -> execute(() -> {
+                    try {
+                        WebElement elementFound = input.findElement(by);
+                        return elementFound != null;
+                    } catch (NoSuchElementException ex) {
+                        return false;
+                    }
+                }, 5 /* seconds */))
+        );
     }
 
     protected class TextInput {
@@ -70,6 +98,25 @@ public class UiPageTest extends OpenNMSSeleniumTestCase {
                     element.sendKeys(newInput);
                 }
             }
+        }
+
+        public void setInput(Integer newInput) {
+            if (newInput == null) {
+                setInput("");
+            }
+            setInput(newInput.toString());
+        }
+    }
+
+    protected class Button {
+        private final String id;
+
+        public Button(String id) {
+            this.id = Objects.requireNonNull(id);
+        }
+
+        public void click() {
+            execute(() -> m_driver.findElement(By.id(id))).click();
         }
     }
 
