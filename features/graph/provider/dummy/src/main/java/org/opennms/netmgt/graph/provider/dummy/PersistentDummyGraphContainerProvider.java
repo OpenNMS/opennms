@@ -72,7 +72,6 @@ public class PersistentDummyGraphContainerProvider implements GraphContainerProv
         final DefaultGraphInfo graphInfo = new DefaultGraphInfo(CONTAINER_ID + ".graph", SimpleVertex.class);
         graphInfo.setDescription("The only graph of the container");
         graphInfo.setLabel("Graph");
-
         info.getGraphInfos().add(graphInfo);
 
         return info;

@@ -44,8 +44,6 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationGraphProvider implements GraphProvider {
 
-    public static final String TOPOLOGY_NAMESPACE = "application";
-
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationGraphProvider.class);
     private static final String GRAPH_LABEL = "Application Graph";
     private static final String GRAPH_DESCRIPTION = "This Topology Provider displays all defined Applications and their calculated states.";
@@ -58,12 +56,12 @@ public class ApplicationGraphProvider implements GraphProvider {
         Objects.requireNonNull(sessionUtils);
         this.applicationDao = applicationDao;
         this.sessionUtils = sessionUtils;
-        LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), TOPOLOGY_NAMESPACE);
+        LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), ApplicationGraph.TOPOLOGY_NAMESPACE);
     }
 
     @Override
     public GraphInfo<?> getGraphInfo() {
-        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(TOPOLOGY_NAMESPACE, ApplicationVertex.class);
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(ApplicationGraph.TOPOLOGY_NAMESPACE, ApplicationVertex.class);
         graphInfo.setLabel(GRAPH_LABEL);
         graphInfo.setDescription(GRAPH_DESCRIPTION);
         return graphInfo;
@@ -72,7 +70,7 @@ public class ApplicationGraphProvider implements GraphProvider {
     @Override
     public Graph<ApplicationVertex, SimpleEdge> loadGraph() {
         return sessionUtils.withReadOnlyTransaction(() -> {
-            final ApplicationGraph graph = new ApplicationGraph(TOPOLOGY_NAMESPACE);
+            final ApplicationGraph graph = new ApplicationGraph();
             graph.setLabel(GRAPH_LABEL);
             graph.setDescription(GRAPH_DESCRIPTION);
 
@@ -90,7 +88,7 @@ public class ApplicationGraphProvider implements GraphProvider {
                     graph.addVertex(serviceVertex);
 
                     // connect with application
-                    final SimpleEdge edge = new SimpleEdge(TOPOLOGY_NAMESPACE, applicationVertex, serviceVertex);
+                    final SimpleEdge edge = new SimpleEdge(ApplicationGraph.TOPOLOGY_NAMESPACE, applicationVertex, serviceVertex);
                     graph.addEdge(edge);
                 }
             }

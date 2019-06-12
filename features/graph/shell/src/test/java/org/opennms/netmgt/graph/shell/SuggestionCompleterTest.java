@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.search;
 
-import java.util.List;
+package org.opennms.netmgt.graph.shell;
 
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import static org.junit.Assert.*;
 
-/**
- * Service to search all graphs
- */
-public interface GraphSearchService {
+import org.junit.Test;
 
-    /**
-     * Returns a list of suggestions for the given namespace and input, where input may only be a
-     * snippet of the whole data, e.g. for type ahead support.
-     *
-     * @param namespace The namespace to search in
-     * @param input The "thing" to search
-     * @return A list of results, the user may select from
-     */
-    List<SearchSuggestion> getSuggestions(String namespace, String input);
+public class SuggestionCompleterTest {
 
-    List<GenericVertex> search(SearchCriteria searchCriteria);
+    @Test
+    public void shouldExtractNamespace() {
+        extract("application", "graph:search --namespace application --search Blah");
+        extract("", "graph:search --search Blah");
+    }
+
+
+    private void extract(String expectation, String input) {
+        String result = new SuggestionCompleter().extractNamespace(input);
+        assertEquals(expectation, result);
+    }
 }

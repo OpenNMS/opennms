@@ -17,4 +17,10 @@
         <argument ref="applicationDao" />
     </bean>
     <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="applicationGraphProvider"/>
+
+    <bean id="applicationSearchProvider" class="org.opennms.netmgt.graph.provider.application.ApplicationSearchProvider">
+        <argument ref="applicationDao" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.search.SearchProvider" ref="applicationSearchProvider"/>
+
 </blueprint>

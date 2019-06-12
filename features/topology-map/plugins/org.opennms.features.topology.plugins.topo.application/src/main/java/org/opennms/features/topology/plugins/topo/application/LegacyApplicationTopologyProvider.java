@@ -48,7 +48,6 @@ import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
-import org.opennms.netmgt.graph.provider.application.ApplicationGraphProvider;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertexType;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
@@ -70,7 +69,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
     private void load() {
         graph.resetContainer();
 
-        final GenericGraph genericGraph = graphService.getGraph(ApplicationGraphProvider.TOPOLOGY_NAMESPACE);
+        final GenericGraph genericGraph = graphService.getGraph(ApplicationGraph.TOPOLOGY_NAMESPACE);
         final ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph);
         for (ApplicationVertex eachApplicationVertex : applicationGraph.getVertices()) {
             LegacyApplicationVertex applicationVertex = new LegacyApplicationVertex(eachApplicationVertex);
@@ -119,7 +118,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
                 .withPreferredLayout("Hierarchy Layout")
                 .withCriteria(() -> {
                     // Only show the first application by default
-                    Graph genericGraph = graphService.getGraph(ApplicationGraphProvider.TOPOLOGY_NAMESPACE);
+                    Graph genericGraph = graphService.getGraph(ApplicationGraph.TOPOLOGY_NAMESPACE);
                     ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph.asGenericGraph());
                     Optional<ApplicationVertex> firstVertex = applicationGraph.getVertices().stream()
                             .filter( v -> v.getVertexType() == ApplicationVertexType.Application)

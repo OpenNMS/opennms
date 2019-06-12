@@ -9,11 +9,21 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
     <reference id="graphService" interface="org.opennms.netmgt.graph.api.service.GraphService" availability="mandatory" />
+    <reference id="graphSearchService" interface="org.opennms.netmgt.graph.api.search.GraphSearchService" availability="mandatory" />
 
     <bean id="graphRestService" class="org.opennms.netmgt.graph.rest.impl.GraphRestServiceImpl">
         <argument ref="graphService" />
     </bean>
     <service interface="org.opennms.netmgt.graph.rest.api.GraphRestService" ref="graphRestService">
+        <service-properties>
+            <entry key="application-path" value="/api/v2" />
+        </service-properties>
+    </service>
+
+    <bean id="graphSearchRestService" class="org.opennms.netmgt.graph.rest.impl.GraphSearchRestServiceImpl">
+        <argument ref="graphSearchService" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.rest.api.GraphSearchRestService" ref="graphSearchRestService">
         <service-properties>
             <entry key="application-path" value="/api/v2" />
         </service-properties>

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.search;
+package org.opennms.netmgt.graph.rest.api;
 
-import java.util.List;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
+@Path("graphs/search")
+@Produces({MediaType.APPLICATION_JSON})
+@Consumes({MediaType.APPLICATION_JSON})
+public interface GraphSearchRestService {
 
-/**
- * Service to search all graphs
- */
-public interface GraphSearchService {
+    @GET
+    @Path("/suggestions/{namespace}/")
+    Response getSuggestions(
+            @PathParam("namespace") String namespace,
+            @QueryParam("s") String input);
 
-    /**
-     * Returns a list of suggestions for the given namespace and input, where input may only be a
-     * snippet of the whole data, e.g. for type ahead support.
-     *
-     * @param namespace The namespace to search in
-     * @param input The "thing" to search
-     * @return A list of results, the user may select from
-     */
-    List<SearchSuggestion> getSuggestions(String namespace, String input);
-
-    List<GenericVertex> search(SearchCriteria searchCriteria);
+    @GET
+    @Path("/results/{namespace}/")
+    Response search(
+            @PathParam("namespace") String namespace,
+            @QueryParam("providerId") String providerId,
+            // The search criteria, usually the label of the SearchSuggestion
+            @QueryParam("criteria") String criteria,
+            @QueryParam("context") String context
+    );
 }

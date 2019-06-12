@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.graph.api.search;
 
+import java.util.Comparator;
 import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * A {@link SearchSuggestion} is provided to the user and was created from a (partial) search query.
@@ -36,7 +39,7 @@ import java.util.Objects;
  * The main idea is, that a {@link SearchSuggestion} represents an item a user can select, which
  * afterwards is resolved to a List of vertices/edges.
  */
-public class SearchSuggestion {
+public class SearchSuggestion implements Comparable<SearchSuggestion> {
 
     // The context of the suggestion, e.g. category, attribute, node, etc. to allow for a more fine grain suggestion
     // This may be achieved later by sub-classing
@@ -79,5 +82,38 @@ public class SearchSuggestion {
 
     public void setProvider(String provider) {
         this.provider = provider;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SearchSuggestion that = (SearchSuggestion) o;
+        return Objects.equals(context, that.context) &&
+                Objects.equals(label, that.label) &&
+                Objects.equals(provider, that.provider);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(context, label, provider);
+    }
+
+    @Override
+    public int compareTo(SearchSuggestion that) {
+        return Objects.compare(this, that,
+                Comparator.comparing(SearchSuggestion::getLabel)
+                        .thenComparing(SearchSuggestion::getProvider)
+                        .thenComparing(SearchSuggestion::getContext)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("context", context)
+                .add("label", label)
+                .add("provider", provider)
+                .toString();
     }
 }

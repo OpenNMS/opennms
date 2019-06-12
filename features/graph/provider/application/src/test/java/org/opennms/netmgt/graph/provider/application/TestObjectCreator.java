@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.search;
+package org.opennms.netmgt.graph.provider.application;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.model.OnmsApplication;
 
-/**
- * Service to search all graphs
- */
-public interface GraphSearchService {
+public class TestObjectCreator {
 
-    /**
-     * Returns a list of suggestions for the given namespace and input, where input may only be a
-     * snippet of the whole data, e.g. for type ahead support.
-     *
-     * @param namespace The namespace to search in
-     * @param input The "thing" to search
-     * @return A list of results, the user may select from
-     */
-    List<SearchSuggestion> getSuggestions(String namespace, String input);
+    private static int ids = 0;
 
-    List<GenericVertex> search(SearchCriteria searchCriteria);
+    public static OnmsApplication createOnmsApplication() {
+        OnmsApplication app = new OnmsApplication();
+        app.setId(ids++);
+        app.setName(UUID.randomUUID().toString());
+        return app;
+    }
+
+    public static List<OnmsApplication> createOnmsApplications(int amount) {
+        List<OnmsApplication> applications = new ArrayList<>();
+        for(int i=0; i<amount; i++) {
+            applications.add(createOnmsApplication());
+        }
+        return applications;
+    }
 }

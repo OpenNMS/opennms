@@ -5,6 +5,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/
 	<reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
 	<reference id="graphService" interface="org.opennms.netmgt.graph.api.service.GraphService" availability="mandatory" />
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+	<reference id="graphSearchService" interface="org.opennms.netmgt.graph.api.search.GraphSearchService" availability="mandatory" />
 
 	<!-- TransactionAwareBeanProxyFactory -->
 	<bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
@@ -88,8 +89,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/
 
 	<!-- Search Provider -->
 	<bean id="applicationSearchProvider" class="org.opennms.features.topology.plugins.topo.application.LegacyApplicationSearchProvider">
-		<argument ref="transactionAwareBeanProxyFactory" />
-		<property name="applicationDao" ref="applicationDao" />
+		<property name="graphSearchService" ref="graphSearchService" />
 	</bean>
 	<service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="applicationSearchProvider" />
 
