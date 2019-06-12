@@ -1,0 +1,11 @@
+<div class="modal-header">
+    <h3>Oh No, Something went wrong!</h3>
+</div>
+<div class="modal-body">
+    <div class="alert alert-danger">
+        The report could not be {{type === 'schedule' ? 'scheduled' : 'delivered'}}.
+        <p class="mt-2" ng-show="errorMessage"><strong>Reason: </strong>{{errorMessage}}</p>
+    </div>
+    <button class="btn btn-sm btn-secondary" ng-click="$close()">Okay</button>
+</div>
+

@@ -7,6 +7,8 @@ const templatesTemplate  = require('./templates.html');
 const persistedtTemplate  = require('./persisted.html');
 const schedulesTemplate  = require('./schedules.html');
 const detailsTemplate  = require('./details.html');
+const successModalTemplate  = require('./modals/success-modal.html');
+const errorModalTemplate  = require('./modals/error-modal.html');
 
 (function() {
     'use strict';
@@ -56,7 +58,7 @@ const detailsTemplate  = require('./details.html');
             ;
             $urlRouterProvider.otherwise('/report/templates');
         }])
-        .factory('ReportsService', function($resource) {
+        .factory('ReportTemplateResource', function($resource) {
             return $resource('rest/reports/:id', {id: '@id'},
                 {
                     'list':             { method: 'GET', isArray: true },
@@ -65,7 +67,7 @@ const detailsTemplate  = require('./details.html');
                 }
             );
         })
-        .factory('ReportScheduleService', function($resource) {
+        .factory('ReportScheduleResource', function($resource) {
             return $resource('rest/reports/scheduled/:id', {id: '@id'},
                 {
                     'list':             { method: 'GET', isArray: true },
@@ -75,7 +77,7 @@ const detailsTemplate  = require('./details.html');
                 }
             );
         })
-        .factory('ReportStorageService', function($resource) {
+        .factory('ReportStorageResource', function($resource) {
             return $resource('rest/reports/persisted/:id', {id: '@id'},
                 {
                     'list':             { method: 'GET', isArray: true },
@@ -85,12 +87,14 @@ const detailsTemplate  = require('./details.html');
                 }
             );
         })
-        .factory('UserService', function($resource) {
-            var userResource = $resource('rest/users/whoami', {}, {'whoami': {method: 'GET' }});
+        .factory('UserResource', function($resource) {
+            return $resource('rest/users/whoami', {}, {'whoami': {method: 'GET'}});
+        })
+        .factory('UserService', function(UserResource) {
             return {
-                whoami: function(callback) {
-                    return userResource.whoami(function(data) {
-                       var user = {
+                whoami: function(successCallback, errorCallback) {
+                    return UserResource.whoami(function(data) {
+                        var user = {
                             id: data['user-id'],
                             name: data['full-name'],
                             email: data['email'],
@@ -104,45 +108,61 @@ const detailsTemplate  = require('./details.html');
                                 return this.roles.indexOf("ROLE_REPORT_DESIGNER") >= 0;
                             }
                         };
-                       callback(user);
+                        if (successCallback) {
+                            successCallback(user);
+                        }
                     }, function(error) {
-                        console.log("GLOBAL ERROR", error);
+                        if (errorCallback) {
+                            errorCallback(error);
+                        }
                     });
                 }
-            };
+            };  
         })
+        // TODO MVR verify global error handling is the way to go here for all error responses. Maybe we need a little bit more differentiated
         .controller('ReportsController', ['$scope', '$http', 'UserService', function($scope, $http, UserService) {
-            UserService.whoami(function(user) {
-                $scope.userInfo = user;
-            });
+            $scope.fetchUserInfo = function() {
+                UserService.whoami(function(user) {
+                    $scope.userInfo = user;
+                }, function(error) {
+                    $scope.handleGlobalError(error);
+                });
+            };
+
+            $scope.handleGlobalError = function(errorResponse) {
+                console.log("An unexpected error occurred", errorResponse);
+                $scope.globalError = "An unexpected error occurred: " + errorResponse.statusText + "(" + errorResponse.status + ")";
+                $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
+            };
+
+            $scope.fetchUserInfo();
         }])
-        .controller('ReportTemplatesController', ['$scope', '$http', 'ReportsService', function($scope, $http, ReportsService) {
+        .controller('ReportTemplatesController', ['$scope', '$http', 'ReportTemplateResource', function($scope, $http, ReportTemplateResource) {
             $scope.refresh = function() {
                 $scope.reports = [];
                 $scope.globalError = undefined;
 
-                ReportsService.list(function(response) {
-                    console.log("RESULT", response);
+                ReportTemplateResource.list(function(response) {
                     if (response && Array.isArray(response)) {
                         $scope.reports = response;
                     }
                 }, function(errorResponse) {
-                    console.log("ERROR", errorResponse);
-                    $scope.globalError = "ERROR OCCURRED :(";
+                    $scope.handleGlobalError(errorResponse);
                 })
             };
 
             $scope.refresh();
 
         }])
-        .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', 'ReportsService', function($scope, $http, $window, $state, $stateParams, ReportsService) {
+        .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', '$uibModal', 'ReportTemplateResource', function($scope, $http, $window, $state, $stateParams, $uibModal, ReportTemplateResource) {
             $scope.type = $stateParams.type;
             $scope.reportId = $stateParams.id;
+            $scope.cron = {
+                expression :  "0 */5 * * * ?"
+            }; // TODO MVR ???
 
-            // TODO MVR this is a duplicate of ReportOnlineController
             $scope.loadDetails = function() {
                 $scope.loading = true;
-                $scope.loading = false;
                 $scope.surveillanceCategories = [];
                 $scope.categories = [];
                 $scope.formats = [];
@@ -151,9 +171,6 @@ const detailsTemplate  = require('./details.html');
                 $scope.endpoints = [];
                 $scope.dashboards = [];
                 $scope.deliveryOptions = undefined;
-                $scope.cronExpression = "0 */5 * * * ?";
-
-                // TODO MVR when invoking the page without navigating properly, the userInfo is not set :(
 
                 var requestParameters = {
                     id: $scope.reportId,
@@ -161,7 +178,7 @@ const detailsTemplate  = require('./details.html');
                     userId: $scope.type !== 'online' ? $scope.userInfo.id : undefined
                 };
 
-                ReportsService.get(requestParameters, function(response) {
+                ReportTemplateResource.get(requestParameters, function(response) {
                     $scope.loading = false;
                     $scope.surveillanceCategories = response.surveillanceCategories;
                     $scope.categories = response.categories;
@@ -170,22 +187,28 @@ const detailsTemplate  = require('./details.html');
                     $scope.deliveryOptions = response.deliveryOptions || {};
                     $scope.deliveryOptions.format = $scope.reportFormat;
 
-                    console.log("XXXX", $scope.deliveryOptions);
-
                     // In order to have the ui look the same as before, just order the parameters
                     var order = ['string', 'integer', 'float', 'double', 'date'];
                     $scope.parameters.sort(function(left, right) {
                         return order.indexOf(left.type) - order.indexOf(right.type);
                     });
 
-                    console.log("SUCCESS", response);
+                    // Apply default values for categories
+                    $scope.parameters.forEach(function(item) {
+                        if (item.inputType === 'reportCategorySelector') {
+                            item.value = $scope.surveillanceCategories[0];
+                        }
+                        if (item.inputType === 'onmsCategorySelector') {
+                            item.value = $scope.categories[0];
+                        }
+                    })
                 }, function(response) {
                     $scope.loading = false;
-                    console.log("ERROR", response);
+                    $scope.handleGlobalError(response);
                 });
             };
 
-            // TODO MVR use ReportsService for this, but somehow only $http works :-/
+            // TODO MVR use ReportTemplateResource for this, but somehow only $http works :-/
             // TODO MVR it seems always pdf is generated even if csv was selected
             $scope.runReport = function() {
                 $http({
@@ -217,9 +240,56 @@ const detailsTemplate  = require('./details.html');
                     });
             };
 
+            $scope.showSuccessModal = function(scope) {
+                return $uibModal.open({
+                    templateUrl: successModalTemplate,
+                    backdrop: 'static',
+                    keyboard: false,
+                    size: 'md',
+                    controller: function($scope, type) {
+                        $scope.type = type;
+                        $scope.goToSchedules = function() {
+                            $scope.$close();
+                            $state.go('report.schedules');
+                        };
+                        $scope.goToPersisted = function() {
+                            $scope.$close();
+                            $state.go('report.persisted');
+                        }
+                    },
+                    resolve: {
+                        type: function() {
+                            return scope.type;
+                        }
+                    },
+                });
+            };
+
+            $scope.showErrorModal = function(scope, errorResponse) {
+                var modal = $uibModal.open({
+                    templateUrl: errorModalTemplate,
+                    backdrop: 'static',
+                    keyboard: false,
+                    size: 'md',
+                    controller: function($scope, errorResponse, type) {
+                        $scope.type = type;
+                        if (errorResponse && errorResponse.data && errorResponse.data.message) {
+                            $scope.errorMessage = errorResponse.data.message;
+                        }
+                    },
+                    resolve: {
+                        type: function() {
+                            return scope.type;
+                        },
+                        errorResponse: function() {
+                            return errorResponse;
+                        }
+                    },
+                });
+                return modal;
+            };
+
             $scope.deliverReport = function() {
-                // TODO MVR this is probably not the most elegant way of doing this (-:
-                // $scope.deliveryOptions.format = $scope.reportFormat;
                 $http({
                     method: 'POST',
                     url: 'rest/reports/persisted',
@@ -230,15 +300,13 @@ const detailsTemplate  = require('./details.html');
                         deliveryOptions: $scope.deliveryOptions
                     }
                 }).then(function(response) {
-                    console.log("SUCCESS", response);
-                }, function(response) {
-                    console.log("ERROR", response);
+                    $scope.showSuccessModal($scope);
+                }, function(errorResponse) {
+                    $scope.showErrorModal($scope, errorResponse);
                 })
             };
 
             $scope.scheduleReport = function() {
-                // TODO MVR this is probably not the most elegant way of doing this (-:
-                // $scope.deliveryOptions.format = $scope.reportFormat;
                 $http({
                     method: 'POST',
                     url: 'rest/reports/scheduled',
@@ -247,17 +315,16 @@ const detailsTemplate  = require('./details.html');
                         parameters: $scope.parameters,
                         format: $scope.reportFormat,
                         deliveryOptions: $scope.deliveryOptions,
-                        cronExpression: $scope.cronExpression
+                        cronExpression: $scope.cron.expression
                     }
                 }).then(function(response) {
-                    console.log("SUCCESS", response);
-                }, function(response) {
-                    console.log("ERROR", response);
+                    $scope.showSuccessModal($scope);
+                }, function(errorResponse) {
+                    $scope.showErrorModal($scope, errorResponse);
                 })
             };
 
             $scope.execute = function() {
-                console.log("EXECUTING ... :)", $scope);
                 if ($scope.type === 'online') {
                     $scope.runReport();
                 }
@@ -269,66 +336,67 @@ const detailsTemplate  = require('./details.html');
                 }
             };
 
-            $scope.loadDetails();
+            // We wait for the userInfo to be set, otherwise loading
+            // cannot be performed as we don't have a user id
+            $scope.$watch("userInfo", function(newVal, oldVal) {
+                if (newVal) {
+                    $scope.loadDetails();
+                }
+            });
         }])
-        .controller('ReportSchedulesController', ['$scope', '$http', '$window', '$stateParams', 'ReportScheduleService', function($scope, $http, $window, $stateParams, ReportScheduleService) {
+        .controller('ReportSchedulesController', ['$scope', '$http', '$window', '$stateParams', 'ReportScheduleResource', function($scope, $http, $window, $stateParams, ReportScheduleResource) {
             $scope.scheduledReports = [];
-
-            console.log("schedule controller");
             $scope.refresh = function() {
-                ReportScheduleService.list(function(data) {
+                ReportScheduleResource.list(function(data) {
                     $scope.scheduledReports = data;
                 }, function(response) {
-                    console.log("ERROR", response);
+                    $scope.handleGlobalError(response);
                 });
             };
 
             $scope.deleteAll = function() {
-                ReportScheduleService.deleteAll({}, function(response) {
+                ReportScheduleResource.deleteAll({}, function(response) {
                    $scope.refresh();
                 }, function(response) {
-                    console.log("ERROR", response);
+                    $scope.handleGlobalError(response);
                 });
             };
 
             $scope.delete = function(schedule) {
-                ReportScheduleService.delete({id: schedule.triggerName || -1}, function(response) {
+                ReportScheduleResource.delete({id: schedule.triggerName || -1}, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    console.log("ERROR", response);
+                    $scope.handleGlobalError(response);
                 })
             };
 
             $scope.refresh();
         }])
-        .controller('ReportStorageController', ['$scope', '$http', '$window', '$stateParams', 'ReportStorageService', function($scope, $http, $window, $stateParams, ReportStorageService) {
+        .controller('ReportStorageController', ['$scope', '$http', '$window', '$stateParams', 'ReportStorageResource', function($scope, $http, $window, $stateParams, ReportStorageResource) {
             $scope.persistedReports = [];
-
-            console.log("persisted controller");
             $scope.refresh = function() {
-                ReportStorageService.list(function(data) {
+                ReportStorageResource.list(function(data) {
                     $scope.persistedReports = data;
                 }, function(response) {
-                    console.log("ERROR", response);
+                    $scope.handleGlobalError(response);
                 });
             };
 
             $scope.deleteAll = function() {
-                ReportStorageService.deleteAll({}, function(response) {
+                ReportStorageResource.deleteAll({}, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    console.log("ERROR", response);
+                    $scope.handleGlobalError(response);
                 });
             };
 
             $scope.delete = function(report) {
-                ReportStorageService.delete({id: report.id || -1}, function(response) {
+                ReportStorageResource.delete({id: report.id || -1}, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    console.log("ERROR", response);
+                    $scope.handleGlobalError(response);
                 })
             };
-
 
             $scope.refresh();
         }])

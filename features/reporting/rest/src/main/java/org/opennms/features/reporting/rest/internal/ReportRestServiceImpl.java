@@ -134,67 +134,77 @@ public class ReportRestServiceImpl implements ReportRestService {
 
         // Convert parameters
         final JSONArray jsonParameters = new JSONArray();
-        for (ReportDateParm dateParm : parameters.getDateParms()) {
-            final JSONObject jsonDateParm = new JSONObject();
-            jsonDateParm.put("type", "date");
-            jsonDateParm.put("name", dateParm.getName());
-            jsonDateParm.put("displayName", dateParm.getDisplayName());
-            jsonDateParm.put("count", dateParm.getCount());
-            jsonDateParm.put("date", new SimpleDateFormat("yyyy-MM-dd").format(dateParm.getDate()));
-            jsonDateParm.put("value", dateParm.getValue(adhocReport ? ReportMode.IMMEDIATE : ReportMode.SCHEDULED));
-            jsonDateParm.put("hours", dateParm.getHours());
-            jsonDateParm.put("interval", dateParm.getInterval());
-            jsonDateParm.put("minutes", dateParm.getMinutes());
-            jsonDateParm.put("useAbsoluteDate", dateParm.getUseAbsoluteDate());
-            jsonParameters.put(jsonDateParm);
+        if (parameters.getDateParms() != null) {
+            for (ReportDateParm dateParm : parameters.getDateParms()) {
+                final JSONObject jsonDateParm = new JSONObject();
+                jsonDateParm.put("type", "date");
+                jsonDateParm.put("name", dateParm.getName());
+                jsonDateParm.put("displayName", dateParm.getDisplayName());
+                jsonDateParm.put("count", dateParm.getCount());
+                jsonDateParm.put("date", new SimpleDateFormat("yyyy-MM-dd").format(dateParm.getDate()));
+                jsonDateParm.put("value", dateParm.getValue(adhocReport ? ReportMode.IMMEDIATE : ReportMode.SCHEDULED));
+                jsonDateParm.put("hours", dateParm.getHours());
+                jsonDateParm.put("interval", dateParm.getInterval());
+                jsonDateParm.put("minutes", dateParm.getMinutes());
+                jsonDateParm.put("useAbsoluteDate", dateParm.getUseAbsoluteDate());
+                jsonParameters.put(jsonDateParm);
+            }
         }
-        for (ReportDoubleParm doubleParm : parameters.getDoubleParms()) {
-            final JSONObject jsonDoubleParm = new JSONObject();
-            jsonDoubleParm.put("type", "double");
-            jsonDoubleParm.put("name", doubleParm.getName());
-            jsonDoubleParm.put("displayName", doubleParm.getDisplayName());
-            jsonDoubleParm.put("value", doubleParm.getValue());
-            jsonDoubleParm.put("inputType", doubleParm.getInputType());
-            jsonParameters.put(jsonDoubleParm);
+        if (parameters.getDoubleParms() != null) {
+            for (ReportDoubleParm doubleParm : parameters.getDoubleParms()) {
+                final JSONObject jsonDoubleParm = new JSONObject();
+                jsonDoubleParm.put("type", "double");
+                jsonDoubleParm.put("name", doubleParm.getName());
+                jsonDoubleParm.put("displayName", doubleParm.getDisplayName());
+                jsonDoubleParm.put("value", doubleParm.getValue());
+                jsonDoubleParm.put("inputType", doubleParm.getInputType());
+                jsonParameters.put(jsonDoubleParm);
+            }
         }
-        for (ReportFloatParm floatParm : parameters.getFloatParms()) {
-            final JSONObject jsonFloatParm = new JSONObject();
-            jsonFloatParm.put("type", "float");
-            jsonFloatParm.put("name", floatParm.getName());
-            jsonFloatParm.put("displayName", floatParm.getDisplayName());
-            jsonFloatParm.put("value", floatParm.getValue());
-            jsonFloatParm.put("inputType", floatParm.getInputType());
-            jsonParameters.put(jsonFloatParm);
+        if (parameters.getFloatParms() != null) {
+            for (ReportFloatParm floatParm : parameters.getFloatParms()) {
+                final JSONObject jsonFloatParm = new JSONObject();
+                jsonFloatParm.put("type", "float");
+                jsonFloatParm.put("name", floatParm.getName());
+                jsonFloatParm.put("displayName", floatParm.getDisplayName());
+                jsonFloatParm.put("value", floatParm.getValue());
+                jsonFloatParm.put("inputType", floatParm.getInputType());
+                jsonParameters.put(jsonFloatParm);
+            }
         }
-        for (ReportIntParm intParm : parameters.getIntParms()) {
-            final JSONObject jsonIntParm = new JSONObject();
-            jsonIntParm.put("type", "integer");
-            jsonIntParm.put("name", intParm.getName());
-            jsonIntParm.put("displayName", intParm.getDisplayName());
-            jsonIntParm.put("value", intParm.getValue());
-            jsonIntParm.put("inputType", intParm.getInputType());
-            jsonParameters.put(jsonIntParm);
+        if (parameters.getIntParms() != null) {
+            for (ReportIntParm intParm : parameters.getIntParms()) {
+                final JSONObject jsonIntParm = new JSONObject();
+                jsonIntParm.put("type", "integer");
+                jsonIntParm.put("name", intParm.getName());
+                jsonIntParm.put("displayName", intParm.getDisplayName());
+                jsonIntParm.put("value", intParm.getValue());
+                jsonIntParm.put("inputType", intParm.getInputType());
+                jsonParameters.put(jsonIntParm);
+            }
         }
-        for (ReportStringParm stringParm : parameters.getStringParms()) {
-            final JSONObject jsonStringParm = new JSONObject();
-            jsonStringParm.put("type", "string");
-            jsonStringParm.put("name", stringParm.getName());
-            jsonStringParm.put("displayName", stringParm.getDisplayName());
-            jsonStringParm.put("value", stringParm.getValue());
-            jsonStringParm.put("inputType", stringParm.getInputType());
-            jsonParameters.put(jsonStringParm);
+        if (parameters.getStringParms() != null) {
+            for (ReportStringParm stringParm : parameters.getStringParms()) {
+                final JSONObject jsonStringParm = new JSONObject();
+                jsonStringParm.put("type", "string");
+                jsonStringParm.put("name", stringParm.getName());
+                jsonStringParm.put("displayName", stringParm.getDisplayName());
+                jsonStringParm.put("value", stringParm.getValue());
+                jsonStringParm.put("inputType", stringParm.getInputType());
+                jsonParameters.put(jsonStringParm);
+            }
         }
 
         // Convert categories
         final JSONArray jsonCategories = new JSONArray();
-        for (Category eachCategory : categories) {
-            jsonCategories.put(eachCategory.getLabel());
+        for (OnmsCategory eachCategory : surveillanceCategories) {
+            jsonCategories.put(eachCategory.getName());
         }
 
         // Convert surveillanceCategories
         final JSONArray jsonSurveillanceCategories = new JSONArray();
-        for (OnmsCategory eachCategory : surveillanceCategories) {
-            jsonSurveillanceCategories.put(eachCategory.getName());
+        for (Category eachCategory : categories) {
+            jsonSurveillanceCategories.put(eachCategory.getLabel());
         }
 
         // Create return object
@@ -223,7 +233,7 @@ public class ReportRestServiceImpl implements ReportRestService {
         schedulerService.addCronTrigger(reportParameters.getReportId(), reportParameters, deliveryOptions, (String) parameters.get("cronExpression"), requestContext);
         final Message errorMessage = extractErrorMessage(requestContext);
         if (errorMessage != null) {
-            return Response.status(Response.Status.BAD_REQUEST).build(); // TODO MVR add entity
+            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
         }
 
         return Response.accepted().build();
@@ -237,7 +247,7 @@ public class ReportRestServiceImpl implements ReportRestService {
         schedulerService.execute(reportParameters.getReportId(), reportParameters, deliveryOptions, requestContext);
         final Message errorMessage = extractErrorMessage(requestContext);
         if (errorMessage != null) {
-            return Response.status(Response.Status.BAD_REQUEST).build(); // TODO MVR add entity
+            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
         }
         return Response.accepted().build();
     }
@@ -354,6 +364,14 @@ public class ReportRestServiceImpl implements ReportRestService {
             }
         }
         return parsedParameters;
+    }
+
+    private JSONObject convert(Message message) {
+        final JSONObject errorMessage = new JSONObject();
+        errorMessage.put("severity", message.getSeverity().name());
+        errorMessage.put("message", message.getText());
+        errorMessage.put("source", message.getSource() != null ? message.getSource().getClass().getSimpleName() : null);
+        return errorMessage;
     }
 
     private ReportParameters convertParameters(Map<String, Object> inputParameters) {
