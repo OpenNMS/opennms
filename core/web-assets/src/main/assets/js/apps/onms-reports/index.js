@@ -90,6 +90,14 @@ const errorModalTemplate  = require('./modals/error-modal.html');
         .factory('UserResource', function($resource) {
             return $resource('rest/users/whoami', {}, {'whoami': {method: 'GET'}});
         })
+        .factory('GrafanaResource', function($resource) {
+            return $resource('rest/endpoints/grafana/:id', {id: '@id'},
+                {
+                    'get':          { method: 'GET' },
+                    'list':         { method: 'GET', isArray:true },
+                    'dashboards':   { method: 'GET', isArray:true, url: 'rest/endpoints/grafana/:uid/dashboards', params: {uid: '@uid'} },
+                });
+        })
         .factory('UserService', function(UserResource) {
             return {
                 whoami: function(successCallback, errorCallback) {
@@ -154,12 +162,13 @@ const errorModalTemplate  = require('./modals/error-modal.html');
             $scope.refresh();
 
         }])
-        .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', '$uibModal', 'ReportTemplateResource', function($scope, $http, $window, $state, $stateParams, $uibModal, ReportTemplateResource) {
+        .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', '$uibModal', 'ReportTemplateResource', 'GrafanaResource', function($scope, $http, $window, $state, $stateParams, $uibModal, ReportTemplateResource, GrafanaResource) {
             $scope.type = $stateParams.type;
             $scope.reportId = $stateParams.id;
             $scope.cron = {
                 expression :  "0 */5 * * * ?"
             }; // TODO MVR ???
+            $scope.parametersByName = {};
 
             $scope.loadDetails = function() {
                 $scope.loading = true;
@@ -168,9 +177,14 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                 $scope.formats = [];
                 $scope.reportFormat = "PDF";
                 $scope.parameters = [];
+                $scope.parametersByName = {};
                 $scope.endpoints = [];
                 $scope.dashboards = [];
                 $scope.deliveryOptions = undefined;
+                $scope.selected = {
+                    endpoint: undefined,
+                    dashboard: undefined
+                };
 
                 var requestParameters = {
                     id: $scope.reportId,
@@ -193,19 +207,68 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                         return order.indexOf(left.type) - order.indexOf(right.type);
                     });
 
-                    // Apply default values for categories
-                    $scope.parameters.forEach(function(item) {
-                        if (item.inputType === 'reportCategorySelector') {
-                            item.value = $scope.surveillanceCategories[0];
+                    // Pre processing of parameters
+                    $scope.parameters.forEach(function(parameter) {
+                        // Apply default values for categories
+                        if (parameter.inputType === 'reportCategorySelector') {
+                            parameter.value = $scope.surveillanceCategories[0];
                         }
-                        if (item.inputType === 'onmsCategorySelector') {
-                            item.value = $scope.categories[0];
+                        if (parameter.inputType === 'onmsCategorySelector') {
+                            parameter.value = $scope.categories[0];
                         }
-                    })
+
+                        // Hide certain items
+                        parameter.hidden = parameter.name === 'GRAFANA_ENDPOINT_UID' || parameter.name === 'GRAFANA_DASHBOARD_UID';
+
+                        // index parameters
+                        $scope.parametersByName[parameter.name] = parameter;
+                    });
+
+                    if ($scope.parametersByName['GRAFANA_ENDPOINT_UID']) {
+                        GrafanaResource.list(function(endpoints) {
+                            $scope.endpoints = endpoints;
+                            $scope.endpoints.forEach(function(item) {
+                                item.label = item.uid;
+                                if (item.description) {
+                                    item.label += " - " + item.description;
+                                }
+                            });
+                            if ($scope.endpoints.length > 0) {
+                                $scope.selected.endpoint = $scope.endpoints[0];
+                                $scope.endpointChanged();
+                            }
+                        }, function(errorResponse) {
+                            $scope.handleGlobalError(errorResponse);
+                        });
+                    }
                 }, function(response) {
                     $scope.loading = false;
                     $scope.handleGlobalError(response);
                 });
+            };
+
+            $scope.endpointChanged = function() {
+                $scope.dashboards = [];
+                $scope.selected.dashboard = undefined;
+                GrafanaResource.dashboards({uid: $scope.selected.endpoint.uid}, function(dashboards) {
+                   $scope.dashboards = dashboards;
+                   if ($scope.dashboards.length > 0) {
+                       $scope.selected.dashboard = $scope.dashboards[0];
+                   }
+                }, function(errorResponse) {
+                    $scope.handleGlobalError(errorResponse);
+                });
+            };
+
+            $scope.isGrafanaReport = function() {
+                return $scope.parametersByName['GRAFANA_ENDPOINT_UID'] || $scope.parametersByName['GRAFANA_DASHBOARD_UID'];
+            };
+
+            $scope.fillParameters = function() {
+                if ($scope.isGrafanaReport) {
+                    $scope.parametersByName['GRAFANA_ENDPOINT_UID'].value = $scope.selected.endpoint.uid;
+                    $scope.parametersByName['GRAFANA_DASHBOARD_UID'].value = $scope.selected.dashboard.uid;
+                }
             };
 
             // TODO MVR use ReportTemplateResource for this, but somehow only $http works :-/
@@ -325,6 +388,9 @@ const errorModalTemplate  = require('./modals/error-modal.html');
             };
 
             $scope.execute = function() {
+                // Before sending the report we must replace the values of some parameters
+                // e.g. the Endpoint UID or Dashboard UID
+                $scope.fillParameters();
                 if ($scope.type === 'online') {
                     $scope.runReport();
                 }
@@ -334,6 +400,10 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                 if ($scope.type === 'deliver') {
                     $scope.deliverReport();
                 }
+            };
+
+            $scope.isGrafanaReady = function() {
+                return $scope.selected && $scope.selected.endpoint && $scope.selected.dashboard;
             };
 
             // We wait for the userInfo to be set, otherwise loading

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,58 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.endpoints.grafana.api;
+package org.opennms.netmgt.jasper;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.query.JRQueryExecuterFactoryBundle;
+import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 
-// TODO MVR add tags, isStarred, etc.
-public class Dashboard implements PanelContainer {
-
-    private String uid;
-    private String title;
-    private String uri;
-    private String url;
-    private List<Panel> panels = new ArrayList<>();
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
+public class QueryExecutorFactoryBundle implements JRQueryExecuterFactoryBundle {
+    
+    @Override
+    public String[] getLanguages() {
+        return SupportedLanguage.names();
     }
 
     @Override
-    public List<Panel> getPanels() {
-        return panels;
-    }
-
-    public void setPanels(List<Panel> panels) {
-        this.panels = panels;
+    public QueryExecuterFactory getQueryExecuterFactory(String language) throws JRException {
+        SupportedLanguage supportedLanguage = SupportedLanguage.createFrom(language);
+        if (supportedLanguage != null) {
+            return supportedLanguage.getExecutorFactory();
+        }
+        return null;
     }
 }

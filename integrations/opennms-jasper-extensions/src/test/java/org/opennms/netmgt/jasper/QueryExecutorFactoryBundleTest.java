@@ -35,7 +35,7 @@ import org.opennms.netmgt.jasper.measurement.MeasurementExecutorFactory;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 
-public class OnmsQueryExecutorFactoryBundleTest {
+public class QueryExecutorFactoryBundleTest {
 
     @Test
     public void verifyJrobinNotSupported() throws JRException {
@@ -63,7 +63,7 @@ public class OnmsQueryExecutorFactoryBundleTest {
     }
 
     private static void verifyLanguage(String language, boolean supported, Class<?> expectedFactoryClass) throws JRException {
-        final OnmsQueryExecutorFactoryBundle executorBundle = new OnmsQueryExecutorFactoryBundle();
+        final QueryExecutorFactoryBundle executorBundle = new QueryExecutorFactoryBundle();
         final QueryExecuterFactory factory = executorBundle.getQueryExecuterFactory(language);
         Assert.assertEquals(supported, factory != null);
         if (supported) {

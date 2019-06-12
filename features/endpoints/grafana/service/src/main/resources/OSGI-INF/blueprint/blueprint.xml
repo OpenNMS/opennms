@@ -17,5 +17,9 @@
         <argument ref="grafanaClientFactory" />
         <argument ref="sessionUtils" />
     </bean>
-    <service interface="org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpointService" ref="grafanaEndpointRestService" />
+    <service interface="org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpointService" ref="grafanaEndpointRestService" >
+        <service-properties>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
 </blueprint>

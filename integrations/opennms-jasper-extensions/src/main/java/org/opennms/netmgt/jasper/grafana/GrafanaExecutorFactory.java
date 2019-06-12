@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper;
+package org.opennms.netmgt.jasper.grafana;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.query.JRQueryExecuterFactoryBundle;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.query.JRQueryExecuter;
 import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 
-public class OnmsQueryExecutorFactoryBundle implements JRQueryExecuterFactoryBundle {
-    
+public class GrafanaExecutorFactory implements QueryExecuterFactory {
+
     @Override
-    public String[] getLanguages() {
-        return SupportedLanguage.names();
+    public Object[] getBuiltinParameters() {
+        return new Object[]{};
     }
 
     @Override
-    public QueryExecuterFactory getQueryExecuterFactory(String language) throws JRException {
-        SupportedLanguage supportedLanguage = SupportedLanguage.createFrom(language);
-        if (supportedLanguage != null) {
-            return supportedLanguage.getExecutorFactory();
-        }
-        return null;
+    public JRQueryExecuter createQueryExecuter(JasperReportsContext jasperReportsContext, JRDataset dataset, Map<String, ? extends JRValueParameter> parameters) {
+        return new GrafanaQueryExecutor(jasperReportsContext, dataset, parameters);
+    }
+
+    @Override
+    public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String, ? extends JRValueParameter> parameters) {
+        return createQueryExecuter(DefaultJasperReportsContext.getInstance(), dataset, parameters);
+    }
+
+    @Override
+    public boolean supportsQueryParameterType(String className) {
+        return true;
     }
 }

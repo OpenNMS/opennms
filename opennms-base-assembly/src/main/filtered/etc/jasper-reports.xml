@@ -18,4 +18,5 @@
         <report id="Event-Analysis" template="EventAnalysis.jrxml" engine="jdbc" />
         <report id="DiskUsageForCTX" template="DiskUsageForCTX.jrxml" engine="jdbc" />
         <report id="Top20-IOWait" template="TopIOWait.jrxml" engine="jdbc" />
+        <report id="Grafana-Dashboard-Report" template="Grafana-Dashboard-Report.jrxml" engine="jdbc" />
 </jasper-reports>

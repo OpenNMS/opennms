@@ -8,7 +8,10 @@
                 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
-    <service interface="org.opennms.netmgt.endpoints.grafana.api.GrafanaClientFactory" >
-        <bean class="org.opennms.netmgt.endpoints.grafana.client.GrafanaClientFactoryImpl" />
+    <bean id="grafanaClientFactory" class="org.opennms.netmgt.endpoints.grafana.client.GrafanaClientFactoryImpl" />
+    <service ref="grafanaClientFactory" interface="org.opennms.netmgt.endpoints.grafana.api.GrafanaClientFactory" >
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
     </service>
 </blueprint>

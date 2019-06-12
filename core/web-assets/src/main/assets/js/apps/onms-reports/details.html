@@ -10,7 +10,33 @@
             <span>Report Parameters</span>
         </div>
         <div class="card-body">
-            <div ng-if="parameter.type === 'string'" class="form-group" ng-repeat="parameter in parameters">
+            <div ng-show="parametersByName['GRAFANA_ENDPOINT_UID']" class="form-group">
+                <label>Grafana Endpoint</label> <a ng-if="endpoints.length > 0" href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"><i class="fa fa-plug"></i></a>
+                <select class="form-control custom-select"
+                        ng-model="selected.endpoint"
+                        ng-show="endpoints.length > 0"
+                        ng-change="endpointChanged()"
+                        ng-options="endpoint as endpoint.label for endpoint in endpoints"
+                        >
+                </select>
+                <p class="alert alert-warning" ng-if="endpoints.length == 0">
+                    There is no Grafana Endpoint defined.
+                    Please <a href="/opennms/admin/endpoint/index.jsp">add a Grafana Endpoint</a>.
+                </p>
+            </div>
+            <div ng-show="parametersByName['GRAFANA_DASHBOARD_UID'] && selected.endpoint" class="form-group">
+                <label>Grafana Dashboard</label> <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dasbhoard" target="_blank"><i class="fa fa-dashboard"></i></a>
+                <select class="form-control custom-select"
+                        ng-model="selected.dashboard"
+                        ng-show="dashboards.length > 0"
+                        ng-options="dashboard as dashboard.title for dashboard in dashboards">
+                </select>
+                <p class="alert alert-warning" ng-if="dashboards.length == 0">
+                    There is no Grafana Dashboard defined.
+                    Please <a href="{{selected.endpoint.url}}/dashboards" target="_blank">add a Dashboard</a>.
+                </p>
+            </div>
+            <div ng-if="parameter.type === 'string' && parameter.hidden === false" class="form-group" ng-repeat="parameter in parameters">
                 <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
 
                 <!--String -->
@@ -167,11 +193,14 @@
         </div>
     </div>
 
+    <div class="alert alert-warning" ng-if="isGrafanaReport() && !isGrafanaReady()">
+        Please select a Grafana Endpoint and Grafana Dashboard in order to continue.
+    </div>
     <div class="form-group">
         <button class="btn btn-danger" name="cancel" id="cancel" ui-sref="report.templates">
             <i class="fa fa-times"></i> Cancel
         </button>
-        <button class="btn btn-primary" name="run" id="execute" ng-click="execute()" ng-disabled="reportForm.$invalid">
+        <button class="btn btn-primary" name="run" id="execute" ng-click="execute()" ng-disabled="reportForm.$invalid || (isGrafanaReport && !isGrafanaReady())">
             <i class="fa fa-play"></i> Proceed
         </button>
     </div>
