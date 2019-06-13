@@ -72,6 +72,13 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
     private final int bulkRetryCount;
 
     private IndexStrategy indexStrategy;
+    
+    private static String eventIndexName = "situation";
+    
+    public static void setEventIndexName(String eventIndexName) {
+    	ElasticFeedbackRepository.eventIndexName = eventIndexName;
+	}
+    
 
     /**
      * The collection of listeners interested in alarm feedback, populated via runtime binding.
@@ -98,7 +105,8 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (FeedbackDocument document : documents) {
-                final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(document.getTimestamp()));
+            	String ModifiedIndex = new StringBuffer().append(eventIndexName).append("-").append(TYPE).toString();
+            	final String index = indexStrategy.getIndex(ModifiedIndex, Instant.ofEpochMilli(document.getTimestamp()));
                 final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
                 bulkBuilder.addAction(indexBuilder.build());
             }

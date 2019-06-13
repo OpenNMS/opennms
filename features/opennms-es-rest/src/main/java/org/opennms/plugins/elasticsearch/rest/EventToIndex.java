@@ -97,6 +97,8 @@ public class EventToIndex implements AutoCloseable {
 	private int threads = DEFAULT_NUMBER_OF_THREADS;
 
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
+	
+	private static String eventIndexName = "opennms";
 
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 			threads,
@@ -152,6 +154,10 @@ public class EventToIndex implements AutoCloseable {
 
 	public void setGroupOidParameters(boolean groupOidParameters) {
 		this.groupOidParameters = groupOidParameters;
+	}
+	
+	public void seteventIndexName(String eventIndexName) {
+		this.eventIndexName = eventIndexName;
 	}
 
 	@Override
@@ -270,6 +276,7 @@ public class EventToIndex implements AutoCloseable {
 		// Parse event parameters
 		handleParameters(event, body);
 
+		body.put("EventForwarder", eventIndexName);
 		body.put("interface", event.getInterface());
 		body.put("logmsg", ( event.getLogmsg()!=null ? event.getLogmsg().getContent() : null ));
 		body.put("logmsgdest", ( event.getLogmsg()!=null ? event.getLogmsg().getDest() : null ));
@@ -293,7 +300,9 @@ public class EventToIndex implements AutoCloseable {
 			}
 		}
 
-		String completeIndexName = indexStrategy.getIndex(INDEX_PREFIX, cal.toInstant());
+		String Modifiedindex = new StringBuffer().append(eventIndexName).append("-").append(INDEX_PREFIX).toString();
+				
+		String completeIndexName = indexStrategy.getIndex(Modifiedindex, cal.toInstant());
 
 		if (LOG.isDebugEnabled()){
 			String str = "populateEventIndexBodyFromEvent - index:"
