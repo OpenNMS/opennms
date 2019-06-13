@@ -338,7 +338,7 @@
                 <feature>eventadmin</feature>
                 <feature>feature</feature>
                 <feature>framework-security</feature>
-                <feature>httplite</feature>
+                <feature>felix-httplite</feature>
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
                 <feature>instance</feature>
@@ -348,6 +348,8 @@
                 <!-- TODO: Should we import both versions of Jetty? -->
                 <feature>jetty/8.1.14.v20131031</feature>
                 <feature>jetty/9.3.9.v20160517</feature>
+                <!-- TODO: Needed? -->
+                <feature>jetty/9.4.18.v20190429</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
@@ -407,7 +409,7 @@
                 <feature>eventadmin</feature>
                 <feature>feature</feature>
                 <feature>framework-security</feature>
-                <feature>httplite</feature>
+                <feature>felix-httplite</feature>
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
                 <feature>instance</feature>
@@ -416,6 +418,8 @@
                 <feature>jasypt-encryption</feature>
                 <feature version="8.1.14.v20131031">jetty</feature>
                 <feature version="9.3.9.v20160517">jetty</feature>
+                <!--TODO: Needed?-->
+                <feature version="9.4.18.v20190429">jetty</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
