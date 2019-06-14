@@ -276,3 +276,19 @@ This can be achieved using the following attribute definition:
 ----
 <attrib name="OtherIdentifyingInfo" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" alias="serviceTag" type="String"/>
 ----
+
+[[ga-performance-mgmt-collectors-wsman-special-attributes]]
+====== Special Attributes
+
+A group can contain the placeholder attribute `##ElementCount##` that, during collection, will be populated with the total number of results returned for that group. 
+This can be used to threshold on the number results returned by an enumeration. 
+[source, xml]
+----
+    <group name="Event-1234"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"
+           dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+           filter="select * from Win32_NTLogEvent where LogFile = 'Some-Application-Specific-Logfile/Operational' AND EventCode = '1234'"
+           resource-type="node">
+        <attrib name="##ElementCount##" alias="elementCount" type="Gauge"/>
+    </group>
+----
