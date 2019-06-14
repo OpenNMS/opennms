@@ -97,6 +97,8 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
             new SimpleEntry<>(WSMAN_GROUPS_KEY, Groups.class))
             .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
 
+    static final String ELEMENT_COUNT_ATTRIB_NAME = "##ElementCount##";
+
     private WSManClientFactory m_factory = new CXFWSManClientFactory();
 
     private WSManDataCollectionConfigDao m_wsManDataCollectionConfigDao;
@@ -239,20 +241,24 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
                 }
 
                 String valueAsString = null;
-                final List<String> attributeValues = elementValues.get(attrib.getName());
-                if (attributeValues.size() > 1 && attrib.getIndexOf() != null) {
-                    try {
-                        int index = ResponseHandlingUtils.getMatchingIndex(attrib.getIndexOf(), elementValues);
-                        valueAsString = attributeValues.get(index);
-                    } catch (NoSuchElementException e) {
-                        LOG.warn("No index was matched by index-of rule '{}' for attribute {} with values: {}.",
-                                attrib.getIndexOf(), attrib.getName(), elementValues);
-                    }
+                if (ELEMENT_COUNT_ATTRIB_NAME.equals(attrib.getName())) {
+                    valueAsString = Integer.toString(nodes.size());
+                    LOG.debug("Found {} attribute, setting value to {}", attrib.getName(), valueAsString);
                 } else {
-                    // Grab the first value, defaulting to null is there are no values
-                    valueAsString = Iterables.getFirst(elementValues.get(attrib.getName()), null);
+                    final List<String> attributeValues = elementValues.get(attrib.getName());
+                    if (attributeValues.size() > 1 && attrib.getIndexOf() != null) {
+                        try {
+                            int index = ResponseHandlingUtils.getMatchingIndex(attrib.getIndexOf(), elementValues);
+                            valueAsString = attributeValues.get(index);
+                        } catch (NoSuchElementException e) {
+                            LOG.warn("No index was matched by index-of rule '{}' for attribute {} with values: {}.",
+                                    attrib.getIndexOf(), attrib.getName(), elementValues);
+                        }
+                    } else {
+                        // Grab the first value, defaulting to null is there are no values
+                        valueAsString = Iterables.getFirst(elementValues.get(attrib.getName()), null);
+                    }
                 }
-
                 if (valueAsString == null) {
                     LOG.warn("No value found for attribute: {} in group: {}", attrib.getName(), group.getName());
                     continue;
