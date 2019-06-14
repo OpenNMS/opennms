@@ -36,10 +36,13 @@ import static org.opennms.netmgt.events.api.EventConstants.NODE_CATEGORY_MEMBERS
 import static org.opennms.netmgt.events.api.EventConstants.NODE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_UPDATED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_IP_HOSTNAME;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_CURRENT_LOCATION;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL_SOURCE;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_PREV_LOCATION;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSDESCRIPTION;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSNAME;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_RESCAN_EXISTING;
@@ -362,6 +365,26 @@ public abstract class EventUtils {
         if (rescanExisting != null) {
             bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
         }
+        return bldr.getEvent();
+    }
+
+    /**
+     * <p>createNodeLocationChangedEvent</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param prevLocation a {@link java.lang.String} object.
+     * @param currentLocation a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    public static Event createNodeLocationChangedEvent(String source, Integer nodeId, String nodeLabel, String prevLocation, String currentLocation) {
+        debug("createNodeLocationChangedEvent: nodedId: %d", nodeId);
+        EventBuilder bldr = new EventBuilder(NODE_LOCATION_CHANGED_EVENT_UEI, source);
+        bldr.setNodeid(nodeId);
+        bldr.addParam(PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(PARM_NODE_PREV_LOCATION, prevLocation);
+        bldr.addParam(PARM_NODE_CURRENT_LOCATION, currentLocation);
         return bldr.getEvent();
     }
 

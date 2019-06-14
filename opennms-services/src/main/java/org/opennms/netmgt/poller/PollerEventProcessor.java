@@ -165,6 +165,9 @@ final class PollerEventProcessor implements EventListener {
         // categories updated
         ueiList.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
 
+        // node location change
+        ueiList.add(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI);
+
         // for reloading poller configuration and re-scheduling pollers
         ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
 
@@ -613,6 +616,11 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
             if (event.getNodeid() > 0) { 
                 serviceReschedule(event, false);
+            }
+        } else if (event.getUei().equals(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI)) {
+            if (event.getNodeid() > 0) {
+                // Reschedule existing so that they can be polled at new location.
+                serviceReschedule(event, true);
             }
         } else if (event.getUei().equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)) {
             if (event.getNodeid() > 0) {

@@ -238,6 +238,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public void updateNode(final OnmsNode node, String rescanExisting) {
         updateLocation(node);
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
+        String prevLocation = dbNode.getLocation().getLocationName();
+        String currentLocation = node.getLocation().getLocationName();
 
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
         node.setCategories(dbNode.getCategories());
@@ -249,6 +251,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
 
+        if(!prevLocation.equals(currentLocation)) {
+            accumulator.sendNow(EventUtils.createNodeLocationChangedEvent("Provisiond", dbNode.getId(), dbNode.getLabel(), prevLocation, currentLocation));
+        }
         accumulator.flush();
         final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting);
         dbNode.visit(eventAccumlator);
@@ -1011,7 +1016,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doUpdate(final OnmsNode dbNode) {
-                dbNode.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
+                // If there is no monitoring location object, update location with existing location.
+                if (dbNode.getLocation() == null) {
+                    dbNode.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
+                }
                 LOG.debug("Associating node {}/{}/{} with location: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), dbNode.getLocation());
 
                 final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
@@ -1032,7 +1040,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 } else {
                     LOG.debug("Node {}/{}/{} categories unchanged: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), getCategoriesForNode(dbNode));
                 }
-
+                // If location updated, send node location changed event
+                if (dbNode.getLocation() != null && node.getLocation() != null
+                        && !node.getLocation().getLocationName().equals(dbNode.getLocation().getLocationName())) {
+                    accumulator.sendNow(EventUtils.createNodeLocationChangedEvent("Provisiond",
+                            ret.getId(), ret.getLabel(), ret.getLocation().getLocationName(), node.getLocation().getLocationName()));
+                }
                 accumulator.flush();
                 return ret;
             }
