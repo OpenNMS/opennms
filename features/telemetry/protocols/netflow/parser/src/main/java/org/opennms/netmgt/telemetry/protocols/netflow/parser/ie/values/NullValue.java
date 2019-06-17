@@ -46,6 +46,10 @@ public class NullValue extends Value<Void> {
         super(name, semantics);
     }
 
+    public NullValue(final String name) {
+        this(name, Optional.empty());
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

@@ -1343,6 +1343,7 @@
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <quartzVersion>2.2.3</quartzVersion>
+    <rancidApiVersion>1.0.4</rancidApiVersion>
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <rocksdbjniVersion>5.15.10</rocksdbjniVersion>
     <scalaLibraryVersion>2.12.8</scalaLibraryVersion>
