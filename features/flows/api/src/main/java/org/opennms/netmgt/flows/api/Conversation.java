@@ -28,51 +28,125 @@
 
 package org.opennms.netmgt.flows.api;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class Conversation {
-    public final String location;
-    public final Integer protocol;
-    public final String lowerIp;
-    public final String upperIp;
-    public final String lowerHostname;
-    public final String upperHostname;
-    public final String application;
+    private final String location;
+    private final Integer protocol;
+    private final String lowerIp;
+    private final String upperIp;
+    private final Optional<String> lowerHostname;
+    private final Optional<String> upperHostname;
+    private final String application;
 
-    public Conversation(final String location,
+    private Conversation(final String location,
                         final Integer protocol,
                         final String lowerIp,
                         final String upperIp,
-                        final String lowerHostname,
-                        final String upperHostname,
+                        final Optional<String> lowerHostname,
+                        final Optional<String> upperHostname,
                         final String application) {
-        this.location = location;
-        this.protocol = protocol;
-        this.lowerIp = lowerIp;
-        this.upperIp = upperIp;
-        this.lowerHostname = lowerHostname;
-        this.upperHostname = upperHostname;
-        this.application = application;
+        this.location = Objects.requireNonNull(location);
+        this.protocol = Objects.requireNonNull(protocol);
+        this.lowerIp = Objects.requireNonNull(lowerIp);
+        this.upperIp = Objects.requireNonNull(upperIp);
+        this.lowerHostname = Objects.requireNonNull(lowerHostname);
+        this.upperHostname = Objects.requireNonNull(upperHostname);
+        this.application = Objects.requireNonNull(application);
     }
 
-    public Conversation withHostnames(final Optional<String> lowerHostname,
-                                      final Optional<String> upperHostname) {
-        return new Conversation(this.location,
-                this.protocol,
-                this.lowerIp,
-                this.upperIp,
-                lowerHostname.orElse(null),
-                upperHostname.orElse(null),
-                this.application);
+    public String getLocation() {
+        return this.location;
     }
 
-    public static Conversation from(final ConversationKey key) {
-        return new Conversation(key.getLocation(),
-                key.getProtocol(),
-                key.getLowerIp(),
-                key.getUpperIp(),
-                null,
-                null,
-                key.getApplication());
+    public Integer getProtocol() {
+        return this.protocol;
+    }
+
+    public String getLowerIp() {
+        return this.lowerIp;
+    }
+
+    public String getUpperIp() {
+        return this.upperIp;
+    }
+
+    public Optional<String> getLowerHostname() {
+        return this.lowerHostname;
+    }
+
+    public Optional<String> getUpperHostname() {
+        return this.upperHostname;
+    }
+
+    public String getApplication() {
+        return this.application;
+    }
+
+    public static class Builder {
+        private String location;
+        private Integer protocol;
+        private String lowerIp;
+        private String upperIp;
+        private Optional<String> lowerHostname;
+        private Optional<String> upperHostname;
+        private String application;
+
+        private Builder() {}
+
+        public Builder withLocation(final String location) {
+            this.location = Objects.requireNonNull(location);
+            return this;
+        }
+
+        public Builder withProtocol(final Integer protocol) {
+            this.protocol = Objects.requireNonNull(protocol);
+            return this;
+        }
+
+        public Builder withLowerIp(final String lowerIp) {
+            this.lowerIp = Objects.requireNonNull(lowerIp);
+            return this;
+        }
+
+        public Builder withUpperIp(final String upperIp) {
+            this.upperIp = Objects.requireNonNull(upperIp);
+            return this;
+        }
+
+        public Builder withLowerHostname(final String hostname) {
+            this.lowerHostname = Optional.of(hostname);
+            return this;
+        }
+
+        public Builder withUpperHostname(final String hostname) {
+            this.upperHostname = Optional.of(hostname);
+            return this;
+        }
+
+        public Builder withApplication(final String application) {
+            this.application = Objects.requireNonNull(application);
+            return this;
+        }
+
+        public Conversation build() {
+            return new Conversation(this.location,
+                    this.protocol,
+                    this.lowerIp,
+                    this.upperIp,
+                    this.lowerHostname,
+                    this.upperHostname,
+                    this.application);
+        }
+    }
+
+    public static Conversation.Builder from(final ConversationKey key) {
+        return new Conversation.Builder()
+                .withLocation(key.getLocation())
+                .withProtocol(key.getProtocol())
+                .withLowerIp(key.getLowerIp())
+                .withUpperIp(key.getUpperIp())
+                .withApplication(key.getApplication());
     }
 }

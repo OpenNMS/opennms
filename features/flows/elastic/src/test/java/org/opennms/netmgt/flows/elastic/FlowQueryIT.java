@@ -472,20 +472,20 @@ public class FlowQueryIT {
 
         // Expect the conversations, with the sum of all the bytes from all the flows
         TrafficSummary<Conversation> convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().lowerIp, equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().upperIp, equalTo("192.168.1.101"));
-        assertThat(convo.getEntity().lowerHostname, equalTo(Optional.of("la.le.lu")));
-        assertThat(convo.getEntity().upperHostname, equalTo(Optional.of("ingress.only")));
-        assertThat(convo.getEntity().application, equalTo("https"));
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.101"));
+        assertThat(convo.getEntity().getLowerHostname(), equalTo(Optional.of("la.le.lu")));
+        assertThat(convo.getEntity().getUpperHostname(), equalTo(Optional.of("ingress.only")));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(110L));
         assertThat(convo.getBytesOut(), equalTo(1100L));
 
         convo = convoTrafficSummary.get(1);
-        assertThat(convo.getEntity().lowerIp, equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().upperIp, equalTo("192.168.1.100"));
-        assertThat(convo.getEntity().lowerHostname, equalTo(Optional.of("la.le.lu")));
-        assertThat(convo.getEntity().upperHostname, equalTo(Optional.empty()));
-        assertThat(convo.getEntity().application, equalTo("https"));
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getLowerHostname(), equalTo(Optional.of("la.le.lu")));
+        assertThat(convo.getEntity().getUpperHostname(), equalTo(Optional.empty()));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(100L));
         assertThat(convo.getBytesOut(), equalTo(1000L));
 
@@ -494,9 +494,9 @@ public class FlowQueryIT {
         assertThat(convoTrafficSummary, hasSize(2));
 
         convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().lowerIp, equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().upperIp, equalTo("192.168.1.101"));
-        assertThat(convo.getEntity().application, equalTo("https"));
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.101"));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(110L));
         assertThat(convo.getBytesOut(), equalTo(1100L));
 
@@ -514,9 +514,9 @@ public class FlowQueryIT {
                         false, getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(1));
         TrafficSummary<Conversation> convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().lowerIp, equalTo("10.1.1.11"));
-        assertThat(convo.getEntity().upperIp, equalTo("192.168.1.100"));
-        assertThat(convo.getEntity().application, equalTo("http"));
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.11"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getApplication(), equalTo("http"));
         assertThat(convo.getBytesIn(), equalTo(10L));
         assertThat(convo.getBytesOut(), equalTo(100L));
 
@@ -526,16 +526,16 @@ public class FlowQueryIT {
                 getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(2));
         convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().lowerIp, equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().upperIp, equalTo("192.168.1.100"));
-        assertThat(convo.getEntity().application, equalTo("https"));
+        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(100L));
         assertThat(convo.getBytesOut(), equalTo(1000L));
 
         convo = convoTrafficSummary.get(1);
-        assertThat(convo.getEntity().lowerIp, equalTo("Other"));
-        assertThat(convo.getEntity().upperIp, equalTo("Other"));
-        assertThat(convo.getEntity().application, equalTo("Other"));
+        assertThat(convo.getEntity().getLowerIp(), equalTo("Other"));
+        assertThat(convo.getEntity().getUpperIp(), equalTo("Other"));
+        assertThat(convo.getEntity().getApplication(), equalTo("Other"));
         assertThat(convo.getBytesIn(), equalTo(320L));
         assertThat(convo.getBytesOut(), equalTo(1300L));
 

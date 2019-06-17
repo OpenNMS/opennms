@@ -189,11 +189,11 @@ public class FlowRestServiceImpl implements FlowRestService {
                             "Dest.", "Application", "Bytes In", "Bytes Out"));
                     response.setRows(summary.stream()
                             .map(sum -> {
-                                final Conversation key = sum.getEntity();
-                                return Lists.newArrayList((Object) key.location, key.protocol,
-                                        hostnameMode.buildDisplayName(key.lowerIp, key.lowerHostname),
-                                        hostnameMode.buildDisplayName(key.upperIp, key.upperHostname),
-                                        key.application,
+                                final Conversation conversation = sum.getEntity();
+                                return Lists.newArrayList((Object) conversation.getLocation(), conversation.getProtocol(),
+                                        hostnameMode.buildDisplayName(conversation.getLowerIp(), conversation.getLowerHostname()),
+                                        hostnameMode.buildDisplayName(conversation.getUpperIp(), conversation.getUpperHostname()),
+                                        conversation.getApplication(),
                                         sum.getBytesIn(), sum.getBytesOut());
                             })
                             .collect(Collectors.toList()));
@@ -211,12 +211,12 @@ public class FlowRestServiceImpl implements FlowRestService {
                 (response, series) ->
                     response.setColumns(series.rowKeySet().stream()
                             .map(d -> {
-                                final Conversation key = d.getValue();
-                                final String applicationTag = key.application != null ? String.format(" : %s", key.application) : "";
+                                final Conversation conversation = d.getValue();
+                                final String applicationTag = conversation.getApplication() != null ? String.format(" : %s", conversation.getApplication()) : "";
                                 final FlowSeriesColumn column = new FlowSeriesColumn();
                                 column.setLabel(String.format("%s <-> %s%s",
-                                        hostnameMode.buildDisplayName(key.lowerIp, key.lowerHostname),
-                                        hostnameMode.buildDisplayName(key.upperIp, key.upperHostname),
+                                        hostnameMode.buildDisplayName(conversation.getLowerIp(), conversation.getLowerHostname()),
+                                        hostnameMode.buildDisplayName(conversation.getUpperIp(), conversation.getUpperHostname()),
                                         applicationTag));
                                 column.setIngress(d.isIngress());
                                 return column;
@@ -399,34 +399,28 @@ public class FlowRestServiceImpl implements FlowRestService {
     enum HostnameMode {
         HIDE {
             @Override
-            public String buildDisplayName(final String ip, final String hostname) {
+            public String buildDisplayName(final String ip, final Optional<String> hostname) {
                 return ip;
             }
         },
 
         APPEND {
             @Override
-            public String buildDisplayName(final String ip, final String hostname) {
-                if (!Strings.isNullOrEmpty(hostname)) {
-                    return String.format("%s [%s]", ip, hostname);
-                } else {
-                    return ip;
-                }
+            public String buildDisplayName(final String ip, final Optional<String> hostname) {
+                return hostname
+                        .map(name -> String.format("%s [%s]", ip, name))
+                        .orElse(ip);
             }
         },
 
         REPLACE {
             @Override
-            public String buildDisplayName(final String ip, final String hostname) {
-                if (!Strings.isNullOrEmpty(hostname)) {
-                    return hostname;
-                } else {
-                    return ip;
-                }
+            public String buildDisplayName(final String ip, final Optional<String> hostname) {
+                return hostname.orElse(ip);
             }
         };
 
-        public abstract String buildDisplayName(final String ip, final String hostname);
+        public abstract String buildDisplayName(final String ip, final Optional<String> hostname);
     }
 
     private static HostnameMode getHostnameModeFromQueryString(final MultivaluedMap<String, String> queryParams) {

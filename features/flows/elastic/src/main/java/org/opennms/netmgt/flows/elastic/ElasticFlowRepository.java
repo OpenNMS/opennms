@@ -51,6 +51,7 @@ import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Conversation;
+import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
@@ -414,28 +415,23 @@ public class ElasticFlowRepository implements FlowRepository {
     public CompletableFuture<Conversation> resolveHostnames(final String convoKey, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
 
-        final Conversation conversation = ElasticFlowRepository.getConversationKey(convoKey);
+        final ConversationKey key = ElasticFlowRepository.getConversationKey(convoKey);
+        final Conversation.Builder conversation = Conversation.from(key);
 
         final String hostnameQuery = searchQueryProvider.getHostnameQuery(convoKey, filters);
         return searchAsync(hostnameQuery, timeRangeFilter)
                 .thenApply(res ->  {
-                    final Optional<String> lowerHostname;
-                    final Optional<String> upperHostname;
-
                     final JsonObject hit = res.getFirstHit(JsonObject.class).source;
-                    if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), conversation.lowerIp)) {
-                        lowerHostname = Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString);
-                        upperHostname = Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString);
+                    if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), key.getLowerIp())) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(conversation::withLowerHostname);
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(conversation::withUpperHostname);
 
-                    } else if (Objects.equals(hit.getAsJsonPrimitive("netflow.dst_addr").getAsString(), conversation.lowerIp)) {
-                        lowerHostname = Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString);
-                        upperHostname = Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString);
-                    } else {
-                        lowerHostname = Optional.empty();
-                        upperHostname = Optional.empty();
+                    } else if (Objects.equals(hit.getAsJsonPrimitive("netflow.dst_addr").getAsString(), key.getLowerIp())) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(conversation::withLowerHostname);
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(conversation::withUpperHostname);
                     }
 
-                    return conversation.withHostnames(lowerHostname, upperHostname);
+                    return conversation.build();
                 });
     }
 
@@ -853,9 +849,9 @@ public class ElasticFlowRepository implements FlowRepository {
                 .collect(Collectors.toSet());
     }
 
-    private static Conversation getConversationKey(String key) {
+    private static ConversationKey getConversationKey(String key) {
         Objects.requireNonNull(key);
-        return Conversation.from(key.equals(OTHER_NAME) ? ConversationKeyUtils.forOther() : ConversationKeyUtils.fromJsonString(key));
+        return key.equals(OTHER_NAME) ? ConversationKeyUtils.forOther() : ConversationKeyUtils.fromJsonString(key);
     }
 
     public Identity getIdentity() {
