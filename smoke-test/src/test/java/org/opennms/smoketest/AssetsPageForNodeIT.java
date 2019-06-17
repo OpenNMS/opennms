@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AssetsPageForNodeIT extends OpenNMSSeleniumTestCase {
+public class AssetsPageForNodeIT extends OpenNMSSeleniumIT {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(AssetsPageForNodeIT.class);
@@ -79,7 +79,7 @@ public class AssetsPageForNodeIT extends OpenNMSSeleniumTestCase {
         sendPut("rest/nodes/SmokeTests:TestMachine1/assetRecord", "description=Right here, Right now", 204);
         LOG.debug("asset updated!");
 
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
     }
 
     /**
@@ -100,7 +100,7 @@ public class AssetsPageForNodeIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testAssetPage() throws Exception {
         findElementByLink("Asset Info").click();
-        Alert alert = m_driver.switchTo().alert();
+        Alert alert = driver.switchTo().alert();
         alert.accept();
 
         final String descriptionXpath = "(//input[@ng-model='asset[field.model]'])[1]";

@@ -32,12 +32,10 @@ import static org.opennms.smoketest.minion.NxosTelemetryIT.sendNxosTelemetryMess
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.file.Path;
 import java.util.function.Function;
 
-import org.opennms.smoketest.utils.TargetRoot;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.smoketest.stacks.NetworkProtocol;
+
 
 /**
  * Verifies that NXOS messages are persisted to newts if set up correctly.
@@ -45,25 +43,8 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
 public class NxosTelemetryAdapterIT extends AbstractAdapterIT {
 
     @Override
-    protected void customizeTestEnvironment(TestEnvironmentBuilder builder) {
-        // Enable NXOS Adapter
-        final Path opennmsSourceEtcDirectory = new TargetRoot(getClass()).getPath("system-test-resources", "etc");
-        builder.withSentinelEnvironment()
-                .addFile(getClass().getResource("/sentinel/features-newts-nxos.xml"), "deploy/features.xml")
-                .addFile(opennmsSourceEtcDirectory.resolve("telemetryd-adapters/cisco-nxos-telemetry-interface.groovy"), "etc/cisco-nxos-telemetry-interface.groovy")
-                .addFiles(opennmsSourceEtcDirectory.resolve("resource-types.d"), "etc/resource-types.d")
-                .addFiles(opennmsSourceEtcDirectory.resolve("datacollection"), "etc/datacollection")
-                .addFile(opennmsSourceEtcDirectory.resolve("datacollection-config.xml"), "etc/datacollection-config.xml");
-
-        // Enable NXOS-Listener
-        builder.withMinionEnvironment()
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000-nxos.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-nxos.cfg")
-        ;
-    }
-
-    @Override
     protected void sendTelemetryMessage() throws IOException {
-        final InetSocketAddress minionListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 50000, "udp");
+        final InetSocketAddress minionListenerAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.NXOS);
         sendNxosTelemetryMessage(minionListenerAddress);
     }
 

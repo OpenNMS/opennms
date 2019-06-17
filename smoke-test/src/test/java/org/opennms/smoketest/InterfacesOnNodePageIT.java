@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class InterfacesOnNodePageIT extends OpenNMSSeleniumTestCase {
+public class InterfacesOnNodePageIT extends OpenNMSSeleniumIT {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(InterfacesOnNodePageIT.class);
@@ -106,7 +106,7 @@ public class InterfacesOnNodePageIT extends OpenNMSSeleniumTestCase {
             LOG.debug("interface created!");
         }
 
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
     }
 
     /**
@@ -130,7 +130,7 @@ public class InterfacesOnNodePageIT extends OpenNMSSeleniumTestCase {
         Assert.assertEquals("TestMachine1", findElementByCss("h5 div.NPnode strong").getText());
 
         // Verify IP Interfaces
-        List<WebElement> elements = m_driver.findElements(By.cssSelector("div.tab-pane.ng-scope.active td.ng-binding"));
+        List<WebElement> elements = driver.findElements(By.cssSelector("div.tab-pane.ng-scope.active td.ng-binding"));
         Assert.assertEquals("10.10.10.10", elements.get(0).getText());
         Assert.assertEquals("test-machine1.local", elements.get(1).getText());
 
@@ -138,7 +138,7 @@ public class InterfacesOnNodePageIT extends OpenNMSSeleniumTestCase {
         findElementByLink("SNMP Interfaces").click();
 
         // Verify SNMP Interfaces
-        elements = m_driver.findElements(By.cssSelector("div.tab-pane.ng-scope.active td.ng-binding"));
+        elements = driver.findElements(By.cssSelector("div.tab-pane.ng-scope.active td.ng-binding"));
         Assert.assertEquals("1", elements.get(0).getText());
         Assert.assertEquals("eth1", elements.get(1).getText());
         Assert.assertEquals("eth1", elements.get(2).getText());

@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AdminPageIT extends OpenNMSSeleniumTestCase {
+public class AdminPageIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(AdminPageIT.class);
 
     private final String[][] m_adminPageEntries = new String[][] {

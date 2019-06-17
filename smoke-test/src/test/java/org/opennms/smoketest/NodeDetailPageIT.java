@@ -42,32 +42,33 @@ import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.smoketest.selenium.ResponseData;
 import org.openqa.selenium.By;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
+public class NodeDetailPageIT extends OpenNMSSeleniumIT {
 
     public static class NodeDetailPage {
 
-        private final OpenNMSSeleniumTestCase testCase;
+        private final OpenNMSSeleniumIT testCase;
         private final String url;
 
-        public NodeDetailPage(OpenNMSSeleniumTestCase testCase, int nodeId) {
+        public NodeDetailPage(OpenNMSSeleniumIT testCase, int nodeId) {
             this.testCase = Objects.requireNonNull(testCase);
-            this.url = Objects.requireNonNull(testCase.getBaseUrl()) + "opennms/element/node.jsp?node=" + nodeId;
+            this.url = Objects.requireNonNull(testCase.getBaseUrlInternal()) + "opennms/element/node.jsp?node=" + nodeId;
         }
 
         public NodeDetailPage open() {
-            testCase.m_driver.get(url);
+            testCase.getDriver().get(url);
             return this;
         }
 
         public TopologyIT.TopologyUIPage viewInTopology() {
-            testCase.m_driver.findElement(By.linkText("View in Topology")).click();
-            final TopologyIT.TopologyUIPage topologyUIPage = new TopologyIT.TopologyUIPage(testCase, testCase.getBaseUrl());
+            testCase.getDriver().findElement(By.linkText("View in Topology")).click();
+            final TopologyIT.TopologyUIPage topologyUIPage = new TopologyIT.TopologyUIPage(testCase, testCase.getBaseUrlInternal());
             topologyUIPage.open();
             return topologyUIPage;
         }
@@ -92,7 +93,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
             sendPost("/rest/nodes", node, 201);
 
             // Get the node Id
-            final HttpGet httpGet = new HttpGet(getBaseUrl() + "opennms/rest/nodes?label=TestMachine&foreignSource=SeleniumTestGroup");
+            final HttpGet httpGet = new HttpGet(getBaseUrlExternal() + "opennms/rest/nodes?label=TestMachine&foreignSource=SeleniumTestGroup");
             final ResponseData responseData = getRequest(httpGet);
             Assert.assertNotNull(responseData.getResponseText());
             final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -105,9 +106,8 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
 
             //force loading topology
             final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
-            eventBuilder.setTime(new Date());
             eventBuilder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
-            sendPost("/rest/events", JaxbUtils.marshal(eventBuilder.getEvent()), 202);
+            stack.opennms().getRestClient().sendEvent(eventBuilder.getEvent());
             Thread.sleep(5000); // Wait to allow the event to be processed
 
             // Navigate to the node details page
@@ -151,37 +151,37 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
             createNodeWithInterfaces("nodeWith10Interfaces", 10);
             createNodeWithInterfaces("nodeWith11Interfaces", 11);
             
-            m_driver.get(getBaseUrl()+"opennms/element/node.jsp?node=test:nodeWith10Interfaces");
+            getDriver().get(getBaseUrlInternal()+"opennms/element/node.jsp?node=test:nodeWith10Interfaces");
 
             setImplicitWait(1, TimeUnit.SECONDS);
 
-            Assert.assertEquals(1, m_driver.findElements(By.id("availability-box")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.1")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.2")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.3")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.4")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.5")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.6")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.7")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.8")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.9")).size());
-            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.10")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.11")).size());
+            Assert.assertEquals(1, driver.findElements(By.id("availability-box")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.1")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.2")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.3")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.4")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.5")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.6")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.7")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.8")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.9")).size());
+            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.10")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.11")).size());
 
-            m_driver.get(getBaseUrl()+"opennms/element/node.jsp?node=test:nodeWith11Interfaces");
+            driver.get(getBaseUrlInternal()+"opennms/element/node.jsp?node=test:nodeWith11Interfaces");
 
-            Assert.assertEquals(0, m_driver.findElements(By.id("availability-box")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.1")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.2")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.3")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.4")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.5")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.6")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.7")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.8")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.9")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.10")).size());
-            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.11")).size());
+            Assert.assertEquals(0, driver.findElements(By.id("availability-box")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.1")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.2")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.3")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.4")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.5")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.6")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.7")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.8")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.9")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.10")).size());
+            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.11")).size());
         } finally {
             sendDelete("rest/nodes/test:nodeWith10Interfaces", 202);
             sendDelete("rest/nodes/test:nodeWith11Interfaces", 202);
@@ -192,13 +192,13 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyNodeNotFoundMessageIsShown() {
         final String NODE_NOT_FOUND = "Node Not Found";
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=12345");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=12345");
         pageContainsText(NODE_NOT_FOUND);
 
         final String NODE_ID_NOT_FOUND = "Node ID Not Found";
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=abc");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=abc");
         pageContainsText(NODE_ID_NOT_FOUND);
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=ab:cd");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=ab:cd");
         pageContainsText(NODE_ID_NOT_FOUND);
     }
 }

@@ -26,8 +26,8 @@ RUN rpm --import "${REPO_KEY_URL}" && \
 ##
 FROM horizon-base
 
-# A default which installs the minimum required OpenNMS Horizon packages
-ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-hawtio"
+# A default which installs the required OpenNMS Horizon packages
+ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting opennms-webapp-hawtio"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
