@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Name;
 import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.ReverseMap;
@@ -126,22 +127,21 @@ public class DnsUtils {
         }
 
         final Lookup lookup = new Lookup(ReverseMap.fromAddress(inetAddress), Type.PTR);
-
         lookup.setResolver(resolver);
 
         final Record records[] = lookup.run();
-
         if (lookup.getResult() == Lookup.SUCCESSFUL) {
-
-            final PTRRecord ptrRecord = (PTRRecord) Arrays.stream(records)
+            return Arrays.stream(records)
                     .filter(PTRRecord.class::isInstance)
-                    .findFirst()
-                    .orElseGet(null);
-
-            if (ptrRecord != null && ptrRecord.getTarget() != null) {
-                final String hostname = ptrRecord.getTarget().toString();
-                return Optional.of(hostname.substring(0, hostname.length() - 1));
-            }
+                    .reduce((first, other) -> {
+                        LOG.warn("Reverse lookup of hostname got multiple results: {}", inetAddress);
+                        return first;
+                    })
+                    .map(rr -> ((PTRRecord) rr).getTarget().toString())
+                    // Strip of the trailing dot
+                    .map(hostname -> hostname.substring(0, hostname.length() - 1));
+        } else {
+            LOG.warn("Reverse lookup of hostname failed: {}", inetAddress);
         }
 
         return Optional.empty();
