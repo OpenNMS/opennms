@@ -52,6 +52,7 @@ import java.util.stream.Stream;
 import com.google.common.io.ByteSink;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.opennms.smoketest.stacks.OverlayFile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.springframework.core.io.FileSystemResource;
 
@@ -68,14 +69,14 @@ import com.hubspot.jinjava.Jinjava;
  */
 public class OverlayUtils {
 
-    public static void copyFiles(Map<URL, String> files, Path overlayRoot) {
+    public static void copyFiles(List<OverlayFile> files, Path overlayRoot) {
         try {
-            for (Map.Entry<URL, String> entry : files.entrySet()) {
-                final Path target = overlayRoot.resolve(entry.getValue());
+            for (OverlayFile file : files) {
+                final Path target = overlayRoot.resolve(file.getTarget());
                 final File targetFile = target.toFile();
                 java.nio.file.Files.createDirectories(target.getParent());
 
-                final URL sourceUrl = entry.getKey();
+                final URL sourceUrl = file.getSource();
                 final File sourceFile = toFile(sourceUrl);
 
                 if (sourceFile != null) {
@@ -91,9 +92,14 @@ public class OverlayUtils {
                 } else {
                     // Copy the bytes from the URL
                     final ByteSink sink = com.google.common.io.Files.asByteSink(targetFile);
-                    try (InputStream is = entry.getKey().openStream()) {
+                    try (InputStream is = sourceUrl.openStream()) {
                         sink.writeFrom(is);
                     }
+                }
+
+                // Update the permissions if any are set
+                if (!file.getPermissions().isEmpty()) {
+                    java.nio.file.Files.setPosixFilePermissions(target, file.getPermissions());
                 }
             }
         } catch (IOException e) {

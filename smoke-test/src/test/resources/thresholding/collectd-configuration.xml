@@ -1,0 +1,17 @@
+<collectd-configuration xmlns="http://xmlns.opennms.org/xsd/config/collectd" threads="50">
+    <package name="thresholding-test">
+        <filter>catincThresholdingTest</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+        <service name="SvcToThreshold" interval="5000" user-defined="false" status="on">
+            <parameter key="collection" value="SvcToThreshold"/>
+            <parameter key="thresholding-enabled" value="true"/>
+            <parameter key="driver" value="org.postgresql.Driver"/>
+            <parameter key="user" value="opennms"/>
+            <parameter key="password" value="opennms"/>
+            <!-- "db" matches the alias used by the PostgreSQL container in the test stack -->
+            <parameter key="url" value="jdbc:postgresql://db:5432/opennms"/>
+        </service>
+    </package>
+    <collector service="SvcToThreshold" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
+</collectd-configuration>
