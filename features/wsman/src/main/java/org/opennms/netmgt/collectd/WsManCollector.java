@@ -55,6 +55,7 @@ import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
@@ -265,6 +266,12 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
                 }
 
                 builder.withAttribute(resource, group.getName(), attrib.getAlias(), valueAsString, attrib.getType());
+            }
+
+            if (CollectionResource.RESOURCE_TYPE_NODE.equals(resource.getTypeName())) {
+                // Only process the first element when dealing with node-level resources, otherwise the element
+                // will overwrite the first, and so on...
+                break;
             }
         }
     }
