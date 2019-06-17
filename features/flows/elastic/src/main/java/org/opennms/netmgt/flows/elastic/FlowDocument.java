@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.netmgt.flows.api.Flow;
@@ -312,9 +313,8 @@ public class FlowDocument {
     private NodeDocument nodeSrc;
     
     public void addHost(String host) {
-        if (host != null) {
-            hosts.add(host);
-        }
+        Objects.requireNonNull(host);
+        hosts.add(host);
     }
 
     public long getTimestamp() {
@@ -679,7 +679,7 @@ public class FlowDocument {
         doc.setBytes(flow.getBytes());
         doc.setDirection(Direction.from(flow.getDirection()));
         doc.setDstAddr(flow.getDstAddr());
-        doc.setDstAddrHostname(flow.getDstAddrHostname().orElse(null));
+        flow.getDstAddrHostname().ifPresent(doc::setDstAddrHostname);
         doc.setDstAs(flow.getDstAs());
         doc.setDstMaskLen(flow.getDstMaskLen());
         doc.setDstPort(flow.getDstPort());
@@ -692,14 +692,14 @@ public class FlowDocument {
         doc.setIpProtocolVersion(flow.getIpProtocolVersion());
         doc.setLastSwitched(flow.getLastSwitched());
         doc.setNextHop(flow.getNextHop());
-        doc.setNextHopHostname(flow.getNextHopHostname().orElse(null));
+        flow.getNextHopHostname().ifPresent(doc::setNextHopHostname);
         doc.setOutputSnmp(flow.getOutputSnmp());
         doc.setPackets(flow.getPackets());
         doc.setProtocol(flow.getProtocol());
         doc.setSamplingAlgorithm(SamplingAlgorithm.from(flow.getSamplingAlgorithm()));
         doc.setSamplingInterval(flow.getSamplingInterval());
         doc.setSrcAddr(flow.getSrcAddr());
-        doc.setSrcAddrHostname(flow.getSrcAddrHostname().orElse(null));
+        flow.getSrcAddrHostname().ifPresent(doc::setSrcAddrHostname);
         doc.setSrcAs(flow.getSrcAs());
         doc.setSrcMaskLen(flow.getSrcMaskLen());
         doc.setSrcPort(flow.getSrcPort());

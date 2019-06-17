@@ -55,7 +55,7 @@ image::telemetryd/telemetryd-minion.png[]
 === Enabling reverse hostname resolution
 Some _Parsers_ support reverse hostname resolution to annotate IP addresses with the actual hostname.
 If enabled, the reverse name lookup will be done on the _Minion_ while parsing the protocol data.
-The resolved hostname, if found, is attached to the address information and both will be send the the _Adapter_ for further processing.
+The resolved hostname, if found, is attached to the address information and both will be sent to the _Adapter_ for further processing.
 
 To enable reverse hostname resolution, the following command can be used:
 [source]

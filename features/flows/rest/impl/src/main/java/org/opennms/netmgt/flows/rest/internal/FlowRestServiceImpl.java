@@ -191,8 +191,8 @@ public class FlowRestServiceImpl implements FlowRestService {
                             .map(sum -> {
                                 final Conversation key = sum.getEntity();
                                 return Lists.newArrayList((Object) key.location, key.protocol,
-                                        hostnameMode.schwurbel(key.lowerIp, key.lowerHostname),
-                                        hostnameMode.schwurbel(key.upperIp, key.upperHostname),
+                                        hostnameMode.buildDisplayName(key.lowerIp, key.lowerHostname),
+                                        hostnameMode.buildDisplayName(key.upperIp, key.upperHostname),
                                         key.application,
                                         sum.getBytesIn(), sum.getBytesOut());
                             })
@@ -215,8 +215,8 @@ public class FlowRestServiceImpl implements FlowRestService {
                                 final String applicationTag = key.application != null ? String.format(" : %s", key.application) : "";
                                 final FlowSeriesColumn column = new FlowSeriesColumn();
                                 column.setLabel(String.format("%s <-> %s%s",
-                                        hostnameMode.schwurbel(key.lowerIp, key.lowerHostname),
-                                        hostnameMode.schwurbel(key.upperIp, key.upperHostname),
+                                        hostnameMode.buildDisplayName(key.lowerIp, key.lowerHostname),
+                                        hostnameMode.buildDisplayName(key.upperIp, key.upperHostname),
                                         applicationTag));
                                 column.setIngress(d.isIngress());
                                 return column;
@@ -399,14 +399,14 @@ public class FlowRestServiceImpl implements FlowRestService {
     enum HostnameMode {
         HIDE {
             @Override
-            public String schwurbel(final String ip, final String hostname) {
+            public String buildDisplayName(final String ip, final String hostname) {
                 return ip;
             }
         },
 
         APPEND {
             @Override
-            public String schwurbel(final String ip, final String hostname) {
+            public String buildDisplayName(final String ip, final String hostname) {
                 if (!Strings.isNullOrEmpty(hostname)) {
                     return String.format("%s [%s]", ip, hostname);
                 } else {
@@ -417,7 +417,7 @@ public class FlowRestServiceImpl implements FlowRestService {
 
         REPLACE {
             @Override
-            public String schwurbel(final String ip, final String hostname) {
+            public String buildDisplayName(final String ip, final String hostname) {
                 if (!Strings.isNullOrEmpty(hostname)) {
                     return hostname;
                 } else {
@@ -426,7 +426,7 @@ public class FlowRestServiceImpl implements FlowRestService {
             }
         };
 
-        public abstract String schwurbel(final String ip, final String hostname);
+        public abstract String buildDisplayName(final String ip, final String hostname);
     }
 
     private static HostnameMode getHostnameModeFromQueryString(final MultivaluedMap<String, String> queryParams) {
