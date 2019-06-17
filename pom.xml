@@ -1295,6 +1295,7 @@
     <jackson2Version>2.6.6</jackson2Version>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <jaxwsRiVersion>2.3.2</jaxwsRiVersion>
     <jcifsVersion>1.3.14</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.18.v20190429</jettyVersion>

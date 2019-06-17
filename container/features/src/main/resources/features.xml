@@ -752,6 +752,7 @@
         <feature>opennms-poller-monitors-core</feature>
         <feature>opennms-provisioning-api</feature>
         <feature>opennms-dao-api</feature>
+	<bundle>mvn:com.sun.xml.ws/jaxws-ri/${jaxwsRiVersion}/pom</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/5.2_4</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/2.7.2_3</bundle>

@@ -109,6 +109,12 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-ri</artifactId>
+      <version>${jaxwsRiVersion}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>cxf-dependencies</artifactId>
       <type>pom</type>
