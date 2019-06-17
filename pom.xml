@@ -1383,9 +1383,9 @@
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.6</frontendPluginVersion>
-    <nodeVersion>v8.11.3</nodeVersion>
-    <npmVersion>5.6.0</npmVersion>
-    <yarnVersion>v1.7.0</yarnVersion>
+    <nodeVersion>v8.15.1</nodeVersion>
+    <npmVersion>6.4.1</npmVersion>
+    <yarnVersion>v1.16.0</yarnVersion>
   </properties>
 
   <profiles>
