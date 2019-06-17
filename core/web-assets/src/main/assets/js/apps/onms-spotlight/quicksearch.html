@@ -1,0 +1,26 @@
+<form class="form">
+    <label for="query">Search</label>
+    <input type="text" ng-model="query" id="query"/>
+    <button class="btn btn-small btn-primary" ng-click="search()"><i class="fa fa-search"></i></button>
+</form>
+
+<div>
+    <div>
+        <div class="card" ng-repeat="(context, result) in results">
+            <h5 class="card-header">
+                {{context}}
+            </h5>
+            <div class="card-body">
+                <div ng-repeat="item in result">
+                    <span><a href="{{item.url}}">{{item.label}}</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4">
+        <span ng-if="searchExecutedOnce && emptyResult === true" class="alert alert-warning">
+            No Results for '{{query}}'
+        </span>
+    </div>
+</div>
+

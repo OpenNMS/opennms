@@ -1,9 +1,8 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,22 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="norequirejs" value="true" />
+package org.opennms.netmgt.spotlight.api;
 
-    <jsp:param name="title" value="Flow Classification" />
-    <jsp:param name="headTitle" value="Flow Classification" />
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Flow Classification" />
-</jsp:include>
-
-<jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="onms-spotlight" />
-</jsp:include>
-
-<div ng-app="onms.spotlight" ui-view>
-
-</div>
-
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+// TODO MVR implement (max result, min input, etc.)
+public class SearchContext {
+}

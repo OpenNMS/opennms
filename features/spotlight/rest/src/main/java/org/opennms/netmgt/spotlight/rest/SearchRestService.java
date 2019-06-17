@@ -1,9 +1,8 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,22 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="norequirejs" value="true" />
+package org.opennms.netmgt.spotlight.rest;
 
-    <jsp:param name="title" value="Flow Classification" />
-    <jsp:param name="headTitle" value="Flow Classification" />
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Flow Classification" />
-</jsp:include>
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-<jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="onms-spotlight" />
-</jsp:include>
+@Path("spotlight")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public interface SearchRestService {
 
-<div ng-app="onms.spotlight" ui-view>
-
-</div>
-
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+    @GET
+    Response query(@QueryParam("_s") final String query);
+}
