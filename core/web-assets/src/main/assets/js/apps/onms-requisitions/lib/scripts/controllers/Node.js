@@ -304,6 +304,19 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     };
 
     /**
+     * @description Should be called when the meta-data tab is selected
+     *
+     * @name NodeController:onMetadataTabSelect
+     * @ngdoc method
+     * @methodOf NodeController
+     */
+    $scope.onMetadataTabSelect = function() {
+      // Before switching over to the tab, let's delete any entries that reference entities which no longer exist
+      // i.e. in the case that meta-data was associated with an interface, and that interface is now deleted
+      $scope.node.metaData.removeEntriesForMissingScopedEntities();
+    };
+
+    /**
      * @description Shows the dialog for add/edit an metaData entry
      *
      * @name NodeController:editMetaData

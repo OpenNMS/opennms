@@ -26,8 +26,10 @@
     <tbody>
       <tr ng-repeat="entry in node.metaData.requisition | orderBy:['scope','scoped_interface','scoped_service','key']">
         <td>{{ entry.displayScope() }}</td>
-        <td>{{ entry.displayInterface() }}</td>
-        <td>{{ entry.displayService() }}</td>
+        <td ng-if="entry.displayInterface() != null">{{ entry.displayInterface() }}</td>
+        <td ng-if="entry.displayInterface() == null" class="text-muted">*</td>
+        <td ng-if="entry.displayService() != null">{{ entry.displayService() }}</td>
+        <td ng-if="entry.displayService() == null" class="text-muted">*</td>
         <td>{{ entry.key }}</td>
         <td>{{ entry.value }}</td>
         <td>

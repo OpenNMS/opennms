@@ -157,15 +157,6 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
    */
   self.assets = [];
 
-  /**
-   * @description The meta-data entries
-   * @ngdoc property
-   * @name RequisitionNode#metaData
-   * @propertyOf RequisitionNode
-   * @returns {object} The meta-data entries
-   */
-  self.metaData = new RequisitionMetaData(node);
-
   angular.forEach(node['interface'], function(intf) {
       self.interfaces.push(new RequisitionInterface(intf));
   });
@@ -177,6 +168,17 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
   angular.forEach(node['category'], function(category) {
     self.categories.push(category);
   });
+
+  /**
+   * Initialize the meta-data *after* the interfaces are set.
+   *
+   * @description The meta-data entries
+   * @ngdoc property
+   * @name RequisitionNode#metaData
+   * @propertyOf RequisitionNode
+   * @returns {object} The meta-data entries
+   */
+  self.metaData = new RequisitionMetaData(node, this);
 
   /**
   * @description Check if the node has been changed

@@ -15,9 +15,10 @@ const Scope = MetaDataConstants.Scope;
 * @name RequisitionMetaData
 * @module onms-requisitions
 * @param {Object} node an OpenNMS node JSON object
+* @param {Object} requisitionNode RequisitionNode object
 * @constructor
 */
-const RequisitionMetaData = function RequisitionMetaData(node) {
+const RequisitionMetaData = function RequisitionMetaData(node, requisitionNode) {
   'use strict';
 
   const self = this;
@@ -72,6 +73,41 @@ const RequisitionMetaData = function RequisitionMetaData(node) {
     });
   });
 
+  /**
+   * Remove meta-data entries for any referenced entities
+   * that no longer exist.
+   */
+  self.removeEntriesForMissingScopedEntities = function() {
+    _.remove(self.requisition, function(entry) {
+      return !self.doesReferencedEntityExist(entry);
+    });
+    _.remove(self.other, function(entry) {
+      return !self.doesReferencedEntityExist(entry);
+    });
+  };
+
+  /**
+   * @param entry meta-data entry to verify
+   */
+  self.doesReferencedEntityExist = function(entry) {
+    if (entry.scope === Scope.INTERFACE || entry.scope === Scope.SERVICE) {
+      // Does an interface exist with the given IP address
+      let iff = _.find(requisitionNode.interfaces, function(iff) { return iff.ipAddress === entry.scoped_interface.ipAddress; });
+      if (iff === undefined) {
+        return false;
+      }
+
+      if (entry.scope === Scope.SERVICE) {
+        // Does a service exist with the given name?
+        let svc = _.find(iff.services, function(svc) { return svc.name === entry.scoped_service.name; });
+        if (svc === undefined) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   self.addEntry = function(entry) {
     if (entry.context === MetaDataConstants.RequisitionContext) {
       self.requisition.push(entry);
@@ -123,20 +159,20 @@ const RequisitionMetaData = function RequisitionMetaData(node) {
 
   self.getOnmsMetaDataForNode = function() {
     return self.getOnmsMetaData(function(entry) {
-      return entry.scope === 'node';
+      return entry.scope === Scope.NODE;
     });
   };
 
   self.getOnmsMetaDataForInterface = function(intf) {
     return self.getOnmsMetaData(function(entry) {
-      return entry.scope === 'interface'
+      return entry.scope === Scope.INTERFACE
           && entry.scoped_interface.ipAddress === intf.ipAddress;
     });
   };
 
   self.getOnmsMetaDataForService = function(intf, svc) {
     return self.getOnmsMetaData(function(entry) {
-      return entry.scope === 'service'
+      return entry.scope === Scope.SERVICE
           && entry.scoped_interface.ipAddress === intf.ipAddress
           && entry.scoped_service.name === svc.name
     });

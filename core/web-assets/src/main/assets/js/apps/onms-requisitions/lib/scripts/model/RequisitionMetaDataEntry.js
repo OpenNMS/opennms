@@ -45,14 +45,14 @@ const RequisitionMetaDataEntry = function RequisitionMetaDataEntry() {
     if (self.scoped_interface !== null) {
       return self.scoped_interface.ipAddress;
     }
-    return 'N/A';
+    return null;
   };
 
   self.displayService = function() {
     if (self.scoped_service !== null) {
       return self.scoped_service.name;
     }
-    return 'N/A';
+    return null;
   };
 
   self.className = 'RequisitionMetaDataEntry';
