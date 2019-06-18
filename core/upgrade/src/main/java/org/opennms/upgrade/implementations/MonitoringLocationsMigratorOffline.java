@@ -30,7 +30,6 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Types;
@@ -74,8 +73,6 @@ public class MonitoringLocationsMigratorOffline extends AbstractOnmsUpgrade {
         } catch (FileNotFoundException e) {
             log("No monitoring-locations.xml file found, skipping migration to database\n");
             monitoringLocationsConfig = null;
-        } catch (IOException e) {
-            throw new OnmsUpgradeException("Unexpected exception while reading monitoring-locations.xml", e);
         }
     }
 

@@ -28,12 +28,16 @@
 
 package org.opennms.core.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -695,19 +699,10 @@ public abstract class ConfigFileConstants {
      * @return The File handle to the passed identifier.
      * @throws java.io.FileNotFoundException
      *             Thrown if the file cannot be located.
-     * @throws java.io.IOException
-     *             Thrown if an error occurs accessing the file system.
      */
-    public static File getFile(int id) throws IOException {
+    public static File getFile(int id) throws FileNotFoundException {
         // Recover the home directory from the system properties.
-        String home = getHome();
-
-        // Check to make sure that the home directory exists
-        File fhome = new File(home);
-        if (!fhome.exists()) {
-        	LOG.debug("The specified home directory does not exist.");
-            throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist");
-        }
+        String home = getHomeDirectory();
 
         String rfile = getFileName(id);
         File frfile = new File(home + File.separator + "etc" + File.separator + rfile);
@@ -747,21 +742,9 @@ public abstract class ConfigFileConstants {
      * @return The File handle to the named file.
      * @throws java.io.FileNotFoundException
      *             Thrown if the file cannot be located.
-     * @throws java.io.IOException
-     *             Thrown if an error occurs accessing the file system.
      */
-    public static File getConfigFileByName(String fname) throws IOException {
-        // Recover the home directory from the system properties.
-        //
-        String home = getHome();
-
-        // Check to make sure that the home directory exists
-        //
-        File fhome = new File(home);
-        if (!fhome.exists()) {
-        	LOG.debug("The specified home directory does not exist.");
-            throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist.");
-        }
+    public static File getConfigFileByName(String fname) throws FileNotFoundException {
+        String home = getHomeDirectory();
 
         File frfile = new File(home + File.separator + "etc" + File.separator + fname);
         if (!frfile.exists()) {
@@ -772,6 +755,56 @@ public abstract class ConfigFileConstants {
         }
 
         return frfile;
+    }
+
+    /**
+     * Retrieves the string representation of the home directory path.
+     *
+     * @return the String path to the home directory
+     * @throws FileNotFoundException if the home directory does not exist
+     */
+    private static String getHomeDirectory() throws FileNotFoundException {
+        // Recover the home directory from the system properties.
+        //
+        String home = getHome();
+
+        // Check to make sure that the home directory exists
+        //
+        File fhome = new File(home);
+        if (!fhome.exists()) {
+            LOG.debug("The specified home directory does not exist.");
+            throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist.");
+        }
+
+        return home;
+    }
+
+    /**
+     * Gets the full path to the given relative file name by first searching the home/etc directory then the home
+     * directory.
+     *
+     * @param fileName the relative file name
+     * @return An optional containing the full path of the file or empty in the case the file was not found
+     */
+    public static Optional<Path> getConfigFilePathByName(String fileName) {
+        Objects.requireNonNull(fileName);
+
+        try {
+            String home = getHomeDirectory();
+
+            // First check the etc path, then check the home path
+            Path etcPath = Paths.get(home, "etc", fileName);
+            if (Files.exists(etcPath)) {
+                return Optional.of(etcPath);
+            }
+
+            Path homePath = Paths.get(home, fileName);
+            if (Files.exists(homePath)) {
+                return Optional.of(homePath);
+            }
+        } catch (FileNotFoundException ignore) {
+        }
+        return Optional.empty();
     }
 
     /**
