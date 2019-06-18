@@ -164,10 +164,13 @@ const errorModalTemplate  = require('./modals/error-modal.html');
         }])
         .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', '$uibModal', 'ReportTemplateResource', 'GrafanaResource', function($scope, $http, $window, $state, $stateParams, $uibModal, ReportTemplateResource, GrafanaResource) {
             $scope.type = $stateParams.type;
-            $scope.reportId = $stateParams.id;
+            $scope.report = {
+                id : $stateParams.id,
+                format: 'PDF'
+            };
             $scope.cron = {
-                expression :  "0 */5 * * * ?"
-            }; // TODO MVR ???
+                expression :  "0 */5 * * * ?"  // TODO MVR default value for this should be what ???
+            };
             $scope.parametersByName = {};
 
             $scope.loadDetails = function() {
@@ -175,7 +178,7 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                 $scope.surveillanceCategories = [];
                 $scope.categories = [];
                 $scope.formats = [];
-                $scope.reportFormat = "PDF";
+                $scope.report.format = "PDF";
                 $scope.parameters = [];
                 $scope.parametersByName = {};
                 $scope.endpoints = [];
@@ -187,7 +190,7 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                 };
 
                 var requestParameters = {
-                    id: $scope.reportId,
+                    id: $scope.report.id,
                     adhoc: $scope.type === 'online',
                     userId: $scope.type !== 'online' ? $scope.userInfo.id : undefined
                 };
@@ -196,10 +199,12 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                     $scope.loading = false;
                     $scope.surveillanceCategories = response.surveillanceCategories;
                     $scope.categories = response.categories;
-                    $scope.formats = response.formats;
+                    $scope.formats = response.formats.map(function(item) {
+                        return item.name
+                    });
                     $scope.parameters = response.parameters;
                     $scope.deliveryOptions = response.deliveryOptions || {};
-                    $scope.deliveryOptions.format = $scope.reportFormat;
+                    $scope.deliveryOptions.format = $scope.report.format;
 
                     // In order to have the ui look the same as before, just order the parameters
                     var order = ['string', 'integer', 'float', 'double', 'date'];
@@ -224,22 +229,8 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                         $scope.parametersByName[parameter.name] = parameter;
                     });
 
-                    if ($scope.parametersByName['GRAFANA_ENDPOINT_UID']) {
-                        GrafanaResource.list(function(endpoints) {
-                            $scope.endpoints = endpoints;
-                            $scope.endpoints.forEach(function(item) {
-                                item.label = item.uid;
-                                if (item.description) {
-                                    item.label += " - " + item.description;
-                                }
-                            });
-                            if ($scope.endpoints.length > 0) {
-                                $scope.selected.endpoint = $scope.endpoints[0];
-                                $scope.endpointChanged();
-                            }
-                        }, function(errorResponse) {
-                            $scope.handleGlobalError(errorResponse);
-                        });
+                    if ($scope.isGrafanaReport()) {
+                        $scope.loadEndpoints();
                     }
                 }, function(response) {
                     $scope.loading = false;
@@ -260,34 +251,55 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                 });
             };
 
+            $scope.loadEndpoints = function() {
+                GrafanaResource.list(function(endpoints) {
+                    $scope.endpoints = endpoints;
+                    $scope.endpoints.forEach(function(item) {
+                        item.label = item.uid;
+                        if (item.description) {
+                            item.label += " - " + item.description;
+                        }
+                    });
+                    if ($scope.endpoints.length > 0) {
+                        $scope.selected.endpoint = $scope.endpoints[0];
+                        $scope.endpointChanged();
+                    }
+                }, function(errorResponse) {
+                    $scope.handleGlobalError(errorResponse);
+                });
+            };
+
             $scope.isGrafanaReport = function() {
-                return $scope.parametersByName['GRAFANA_ENDPOINT_UID'] || $scope.parametersByName['GRAFANA_DASHBOARD_UID'];
+                return $scope.parametersByName['GRAFANA_ENDPOINT_UID'] && $scope.parametersByName['GRAFANA_DASHBOARD_UID'] || false;
+            };
+
+            $scope.isGrafanaReady = function() {
+                return $scope.selected && $scope.selected.endpoint && $scope.selected.dashboard || false;
             };
 
             $scope.fillParameters = function() {
-                if ($scope.isGrafanaReport) {
+                if ($scope.isGrafanaReport()) {
                     $scope.parametersByName['GRAFANA_ENDPOINT_UID'].value = $scope.selected.endpoint.uid;
                     $scope.parametersByName['GRAFANA_DASHBOARD_UID'].value = $scope.selected.dashboard.uid;
                 }
             };
 
             // TODO MVR use ReportTemplateResource for this, but somehow only $http works :-/
-            // TODO MVR it seems always pdf is generated even if csv was selected
             $scope.runReport = function() {
                 $http({
                     method: 'POST',
                     url: 'rest/reports/' + $stateParams.id,
-                    data:  {id:$scope.reportId, parameters: $scope.parameters, format: $scope.reportFormat},
+                    data:  {id:$scope.report.id, parameters: $scope.parameters, format: $scope.report.format},
                     responseType:  'arraybuffer'
                 }).then(function (response) {
                         console.log("SUCCESS", response);
                         var data = response.data;
-                        var fileBlob = new Blob([data], {type: $scope.reportFormat === 'PDF' ? 'application/pdf' : 'text/csv'});
+                        var fileBlob = new Blob([data], {type: $scope.report.format === 'PDF' ? 'application/pdf' : 'text/csv'});
                         var fileURL = URL.createObjectURL(fileBlob);
                         var contentDisposition = response.headers("Content-Disposition");
                         // var filename = (contentDisposition.split(';')[1].trim().split('=')[1]).replace(/"/g, '');
                         console.log(contentDisposition);
-                        var filename = $stateParams.id + '.' + $scope.reportFormat.toLowerCase();
+                        var filename = $stateParams.id + '.' + $scope.report.format.toLowerCase();
 
                         var a = document.createElement('a');
                         document.body.appendChild(a);
@@ -357,9 +369,9 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                     method: 'POST',
                     url: 'rest/reports/persisted',
                     data: {
-                        id: $scope.reportId,
+                        id: $scope.report.id,
                         parameters: $scope.parameters,
-                        format: $scope.reportFormat,
+                        format: $scope.report.format,
                         deliveryOptions: $scope.deliveryOptions
                     }
                 }).then(function(response) {
@@ -374,9 +386,9 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                     method: 'POST',
                     url: 'rest/reports/scheduled',
                     data: {
-                        id: $scope.reportId,
+                        id: $scope.report.id,
                         parameters: $scope.parameters,
-                        format: $scope.reportFormat,
+                        format: $scope.report.format,
                         deliveryOptions: $scope.deliveryOptions,
                         cronExpression: $scope.cron.expression
                     }
@@ -400,10 +412,6 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                 if ($scope.type === 'deliver') {
                     $scope.deliverReport();
                 }
-            };
-
-            $scope.isGrafanaReady = function() {
-                return $scope.selected && $scope.selected.endpoint && $scope.selected.dashboard;
             };
 
             // We wait for the userInfo to be set, otherwise loading

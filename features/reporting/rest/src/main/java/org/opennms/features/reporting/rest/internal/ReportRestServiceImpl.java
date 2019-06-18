@@ -96,13 +96,15 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response listReports() {
-        // TODO MVR return no content if empty
         final List<ReportRepositoryDescription> activeRepositories = databaseReportListService.getActiveRepositories();
-        final List<DatabaseReportDescription> collect = activeRepositories.stream()
+        final List<DatabaseReportDescription> reportDescriptions = activeRepositories.stream()
                 .flatMap(repositoryDescriptor -> databaseReportListService.getReportsByRepositoryId(repositoryDescriptor.getId()).stream())
                 .collect(Collectors.toList());
+        if (reportDescriptions.isEmpty()) {
+            return Response.noContent().build();
+        }
         final JSONArray jsonArray = new JSONArray();
-        for (DatabaseReportDescription description : collect) {
+        for (DatabaseReportDescription description : reportDescriptions) {
             final JSONObject json = new JSONObject();
             json.put("id", description.getId());
             json.put("name", description.getDisplayName());

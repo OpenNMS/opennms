@@ -46,7 +46,7 @@ public class GrafanaServerConfiguration {
     private final int readTimeoutSeconds;
 
     public static GrafanaServerConfiguration fromEnv() {
-        final File configFile = Paths.get(System.getProperty("user.home"), ".grafana", "server.properties").toFile(); // TODO MVr this is bäh
+        final File configFile = Paths.get(System.getProperty("user.home"), ".grafana", "server.properties").toFile(); // TODO MVR this is bäh
 
         try (InputStream input = new FileInputStream(configFile)) {
             final Properties prop = new Properties();
