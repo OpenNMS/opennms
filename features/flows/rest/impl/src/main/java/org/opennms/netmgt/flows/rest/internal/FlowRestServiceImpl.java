@@ -42,6 +42,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,7 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -132,7 +134,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         return getSummary(N, applications, uriInfo, "application",
                 filters -> flowRepository.getTopNApplicationSummaries(N, includeOther, filters),
                 filters -> flowRepository.getApplicationSummaries(applications, includeOther, filters),
-                this::defaultSummaryResponseConsumer);
+                this.defaultSummaryResponseConsumer("Application", Function.identity()));
     }
 
     @Override
@@ -141,7 +143,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         return getSeries(N, applications, uriInfo, "application",
                 filters -> flowRepository.getTopNApplicationSeries(N, step, includeOther, filters),
                 filters -> flowRepository.getApplicationSeries(applications, step, includeOther, filters),
-                this::defaultSeriesReponseConsumer);
+                this.defaultSeriesReponseConsumer(Function.identity()));
     }
 
     @Override
@@ -152,19 +154,23 @@ public class FlowRestServiceImpl implements FlowRestService {
 
     @Override
     public FlowSummaryResponse getHostSummary(Integer N, Set<String> hosts, boolean includeOther, UriInfo uriInfo) {
+        final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
+
         return getSummary(N, hosts, uriInfo, "host",
                 filters -> flowRepository.getTopNHostSummaries(N, includeOther, filters),
                 filters -> flowRepository.getHostSummaries(hosts, includeOther, filters),
-                this::defaultSummaryResponseConsumer);
+                this.defaultSummaryResponseConsumer("Host", hostnameMode::buildDisplayName));
     }
 
     @Override
     public FlowSeriesResponse getHostSeries(long step, Integer N, Set<String> hosts, boolean includeOther,
                                             UriInfo uriInfo) {
+        final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
+
         return getSeries(N, hosts, uriInfo, "host",
                 filters -> flowRepository.getTopNHostSeries(N, step, includeOther, filters),
                 filters -> flowRepository.getHostSeries(hosts, step, includeOther, filters),
-                this::defaultSeriesReponseConsumer);
+                this.defaultSeriesReponseConsumer(hostnameMode::buildDisplayName));
     }
 
     @Override
@@ -184,15 +190,15 @@ public class FlowRestServiceImpl implements FlowRestService {
         return getSummary(N, conversations, uriInfo, "conversation",
                 filters -> flowRepository.getTopNConversationSummaries(N, includeOther, filters),
                 filters -> flowRepository.getConversationSummaries(conversations, includeOther, filters),
-                response -> (label, summary) -> {
+                response -> (summary) -> {
                     response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source",
                             "Dest.", "Application", "Bytes In", "Bytes Out"));
                     response.setRows(summary.stream()
                             .map(sum -> {
                                 final Conversation conversation = sum.getEntity();
                                 return Lists.newArrayList((Object) conversation.getLocation(), conversation.getProtocol(),
-                                        hostnameMode.buildDisplayName(conversation.getLowerIp(), conversation.getLowerHostname()),
-                                        hostnameMode.buildDisplayName(conversation.getUpperIp(), conversation.getUpperHostname()),
+                                        hostnameMode.buildDisplayName(conversation.getLowerHost()),
+                                        hostnameMode.buildDisplayName(conversation.getUpperHost()),
                                         conversation.getApplication(),
                                         sum.getBytesIn(), sum.getBytesOut());
                             })
@@ -208,15 +214,15 @@ public class FlowRestServiceImpl implements FlowRestService {
         return getSeries(N, conversations, uriInfo, "conversation",
                 filters -> flowRepository.getTopNConversationSeries(N, step, includeOther, filters),
                 filters -> flowRepository.getConversationSeries(conversations, step, includeOther, filters),
-                (response, series) ->
+                response -> series ->
                     response.setColumns(series.rowKeySet().stream()
                             .map(d -> {
                                 final Conversation conversation = d.getValue();
                                 final String applicationTag = conversation.getApplication() != null ? String.format(" : %s", conversation.getApplication()) : "";
                                 final FlowSeriesColumn column = new FlowSeriesColumn();
                                 column.setLabel(String.format("%s <-> %s%s",
-                                        hostnameMode.buildDisplayName(conversation.getLowerIp(), conversation.getLowerHostname()),
-                                        hostnameMode.buildDisplayName(conversation.getUpperIp(), conversation.getUpperHostname()),
+                                        hostnameMode.buildDisplayName(conversation.getLowerHost()),
+                                        hostnameMode.buildDisplayName(conversation.getUpperHost()),
                                         applicationTag));
                                 column.setIngress(d.isIngress());
                                 return column;
@@ -267,7 +273,7 @@ public class FlowRestServiceImpl implements FlowRestService {
     private <T> FlowSummaryResponse getSummary(Integer N, Set<String> entities, UriInfo uriInfo, String entitiesLabel,
                                                Function<List<Filter>, CompletableFuture<List<TrafficSummary<T>>>> topNSummaryProviderFunction,
                                                Function<List<Filter>, CompletableFuture<List<TrafficSummary<T>>>> specificEntitiesSummaryProviderFunction,
-                                               Function<FlowSummaryResponse, BiConsumer<String, List<TrafficSummary<T>>>> responseConsumer) {
+                                               Function<FlowSummaryResponse, Consumer<List<TrafficSummary<T>>>> responseConsumer) {
         final FlowSummaryResponse response = new FlowSummaryResponse();
         withValidationAndFilters(N, entities, entitiesLabel, uriInfo, (filters, timeRangeFilter) -> {
             final List<TrafficSummary<T>> summary;
@@ -280,7 +286,7 @@ public class FlowRestServiceImpl implements FlowRestService {
 
             response.setStart(timeRangeFilter.getStart());
             response.setEnd(timeRangeFilter.getEnd());
-            responseConsumer.apply(response).accept(entitiesLabel, summary);
+            responseConsumer.apply(response).accept(summary);
         });
         return response;
     }
@@ -290,7 +296,7 @@ public class FlowRestServiceImpl implements FlowRestService {
                                                      Double>>> topNSeriesFutureFunction,
                                              Function<List<Filter>, CompletableFuture<Table<Directional<T>, Long,
                                                      Double>>> specificEntitiesSeriesFutureFunction,
-                                             BiConsumer<FlowSeriesResponse, Table<Directional<T>, Long, Double>> seriesResponseConsumer) {
+                                             Function<FlowSeriesResponse, Consumer<Table<Directional<T>, Long, Double>>> seriesResponseConsumer) {
         final FlowSeriesResponse response = new FlowSeriesResponse();
         withValidationAndFilters(N, entities, entitiesLabel, uriInfo, (filters, timeRangeFilter) -> {
             final Table<Directional<T>, Long, Double> series;
@@ -303,31 +309,32 @@ public class FlowRestServiceImpl implements FlowRestService {
 
             response.setStart(timeRangeFilter.getStart());
             response.setEnd(timeRangeFilter.getEnd());
-            seriesResponseConsumer.accept(response, series);
+            seriesResponseConsumer.apply(response).accept(series);
             populateResponseFromTable(series, response);
         });
         return response;
     }
 
-    private BiConsumer<String, List<TrafficSummary<String>>> defaultSummaryResponseConsumer(FlowSummaryResponse response) {
-        return (entitiesLabel, summary) -> {
-            response.setHeaders(Lists.newArrayList(entitiesLabel, "Bytes In", "Bytes Out"));
+    private <K> Function<FlowSummaryResponse, Consumer<List<TrafficSummary<K>>>> defaultSummaryResponseConsumer(final String entitiesHeader, final Function<K, String> entityLabel) {
+        return response -> summary -> {
+            response.setHeaders(Lists.newArrayList(entitiesHeader, "Bytes In", "Bytes Out"));
             response.setRows(summary.stream()
-                    .map(sum -> Arrays.asList((Object) sum.getEntity(), sum.getBytesIn(), sum.getBytesOut()))
+                    .map(sum -> Arrays.asList((Object) entityLabel.apply(sum.getEntity()), sum.getBytesIn(), sum.getBytesOut()))
                     .collect(Collectors.toList()));
         };
     }
 
-    private void defaultSeriesReponseConsumer(FlowSeriesResponse response,
-                                              Table<Directional<String>, Long, Double> series) {
-        response.setColumns(series.rowKeySet().stream()
-                .map(d -> {
-                    final FlowSeriesColumn column = new FlowSeriesColumn();
-                    column.setLabel(d.getValue());
-                    column.setIngress(d.isIngress());
-                    return column;
-                })
-                .collect(Collectors.toList()));
+    private <K> Function<FlowSeriesResponse, Consumer<Table<Directional<K>, Long, Double>>> defaultSeriesReponseConsumer(final Function<K, String> entityLabel) {
+        return response -> series -> {
+            response.setColumns(series.rowKeySet().stream()
+                    .map(d -> {
+                        final FlowSeriesColumn column = new FlowSeriesColumn();
+                        column.setLabel(entityLabel.apply(d.getValue()));
+                        column.setIngress(d.isIngress());
+                        return column;
+                    })
+                    .collect(Collectors.toList()));
+        };
     }
 
     protected static List<Filter> getFiltersFromQueryString(MultivaluedMap<String, String> queryParams) {
@@ -399,28 +406,28 @@ public class FlowRestServiceImpl implements FlowRestService {
     enum HostnameMode {
         HIDE {
             @Override
-            public String buildDisplayName(final String ip, final Optional<String> hostname) {
-                return ip;
+            public String buildDisplayName(final Host host) {
+                return host.getIp();
             }
         },
 
         APPEND {
             @Override
-            public String buildDisplayName(final String ip, final Optional<String> hostname) {
-                return hostname
-                        .map(name -> String.format("%s [%s]", ip, name))
-                        .orElse(ip);
+            public String buildDisplayName(final Host host) {
+                return host.getHostname()
+                        .map(name -> String.format("%s [%s]", host.getIp(), name))
+                        .orElse(host.getIp());
             }
         },
 
         REPLACE {
             @Override
-            public String buildDisplayName(final String ip, final Optional<String> hostname) {
-                return hostname.orElse(ip);
+            public String buildDisplayName(final Host host) {
+                return host.getHostname().orElse(host.getIp());
             }
         };
 
-        public abstract String buildDisplayName(final String ip, final Optional<String> hostname);
+        public abstract String buildDisplayName(final Host host);
     }
 
     private static HostnameMode getHostnameModeFromQueryString(final MultivaluedMap<String, String> queryParams) {

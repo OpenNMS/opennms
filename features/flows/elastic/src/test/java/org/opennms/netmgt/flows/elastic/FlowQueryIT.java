@@ -68,6 +68,7 @@ import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -314,16 +315,16 @@ public class FlowQueryIT {
     @Test
     public void canGetTopNHostSummaries() throws ExecutionException, InterruptedException {
         // Retrieve the Top N applications over the entire time range
-        List<TrafficSummary<String>> hostTrafficSummary = flowRepository.getTopNHostSummaries(10, false, getFilters()).get();
+        List<TrafficSummary<Host>> hostTrafficSummary = flowRepository.getTopNHostSummaries(10, false, getFilters()).get();
 
         // Expect all of the hosts, with the sum of all the bytes from all the flows
         assertThat(hostTrafficSummary, hasSize(6));
-        TrafficSummary<String> top = hostTrafficSummary.get(0);
+        TrafficSummary<Host> top = hostTrafficSummary.get(0);
         assertThat(top.getEntity(), equalTo("10.1.1.12"));
         assertThat(top.getBytesIn(), equalTo(210L));
         assertThat(top.getBytesOut(), equalTo(2100L));
 
-        TrafficSummary<String> bottom = hostTrafficSummary.get(5);
+        TrafficSummary<Host> bottom = hostTrafficSummary.get(5);
         assertThat(bottom.getEntity(), equalTo("10.1.1.11"));
         assertThat(bottom.getBytesIn(), equalTo(10L));
         assertThat(bottom.getBytesOut(), equalTo(100L));
@@ -338,7 +339,7 @@ public class FlowQueryIT {
         assertThat(top.getBytesIn(), equalTo(210L));
         assertThat(top.getBytesOut(), equalTo(2100L));
 
-        TrafficSummary<String> other = hostTrafficSummary.get(1);
+        TrafficSummary<Host> other = hostTrafficSummary.get(1);
         assertThat(other.getEntity(), equalTo("Other"));
         assertThat(other.getBytesIn(), equalTo(210L));
         assertThat(other.getBytesOut(), equalTo(200L));
@@ -359,7 +360,7 @@ public class FlowQueryIT {
     @Test
     public void canGetHostSummaries() throws ExecutionException, InterruptedException {
         // Get one specific host and no others
-        List<TrafficSummary<String>> hostTrafficSummary =
+        List<TrafficSummary<Host>> hostTrafficSummary =
                 flowRepository.getHostSummaries(Collections.singleton("10.1.1.12"), false, getFilters()).get();
         assertThat(hostTrafficSummary, hasSize(1));
 
@@ -368,12 +369,12 @@ public class FlowQueryIT {
                 flowRepository.getHostSummaries(ImmutableSet.of("10.1.1.11", "10.1.1.12"), false, getFilters()).get();
 
         assertThat(hostTrafficSummary, hasSize(2));
-        TrafficSummary<String> first = hostTrafficSummary.get(0);
+        TrafficSummary<Host> first = hostTrafficSummary.get(0);
         assertThat(first.getEntity(), equalTo("10.1.1.11"));
         assertThat(first.getBytesIn(), equalTo(10L));
         assertThat(first.getBytesOut(), equalTo(100L));
 
-        TrafficSummary<String> second = hostTrafficSummary.get(1);
+        TrafficSummary<Host> second = hostTrafficSummary.get(1);
         assertThat(second.getEntity(), equalTo("10.1.1.12"));
         assertThat(second.getBytesIn(), equalTo(210L));
         assertThat(second.getBytesOut(), equalTo(2100L));
@@ -396,7 +397,7 @@ public class FlowQueryIT {
     @Test
     public void canGetTopNHostSeries() throws ExecutionException, InterruptedException {
         // Top 10
-        Table<Directional<String>, Long, Double> hostTraffic = flowRepository.getTopNHostSeries(10, 10, false,
+        Table<Directional<Host>, Long, Double> hostTraffic = flowRepository.getTopNHostSeries(10, 10, false,
                 getFilters()).get();
         // 6 hosts in two directions should yield 12 rows
         assertThat(hostTraffic.rowKeySet(), hasSize(12));
@@ -416,7 +417,7 @@ public class FlowQueryIT {
     @Test
     public void canGetHostSeries() throws ExecutionException, InterruptedException {
         // Get just https
-        Table<Directional<String>, Long, Double> hostTraffic =
+        Table<Directional<Host>, Long, Double> hostTraffic =
                 flowRepository.getHostSeries(Collections.singleton("10.1.1.12"), 10,
                         false, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(2));
@@ -564,7 +565,7 @@ public class FlowQueryIT {
         assertThat(convoTraffic.rowKeySet(), hasSize(6));
     }
 
-    private void verifyHttpsSeries(Table<Directional<String>, Long, Double> appTraffic, String label) {
+    private void verifyHttpsSeries(Table<? extends Directional<?>, Long, Double> appTraffic, String label) {
         // Pull the values from the table into arrays for easy comparision and validate
         List<Long> timestamps = getTimestampsFrom(appTraffic);
         List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), appTraffic);

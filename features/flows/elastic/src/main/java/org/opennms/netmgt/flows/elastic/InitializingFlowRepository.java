@@ -40,6 +40,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
@@ -147,25 +148,25 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther,
-                                                                                List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther,
+                                                                              List<Filter> filters) {
         return delegate.getTopNHostSummaries(N, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Host>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters) {
         return delegate.getHostSummaries(hosts, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step,
+    public CompletableFuture<Table<Directional<Host>, Long, Double>> getHostSeries(Set<String> hosts, long step,
                                                                                      boolean includeOther,
                                                                                      List<Filter> filters) {
         return delegate.getHostSeries(hosts, step, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters) {
         return delegate.getTopNHostSeries(N, step, includeOther, filters);
     }
 

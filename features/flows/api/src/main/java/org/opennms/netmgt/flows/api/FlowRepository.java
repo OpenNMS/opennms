@@ -67,12 +67,12 @@ public interface FlowRepository {
 
     CompletableFuture<List<String>> getHosts(String regex, long limit, List<Filter> filters);
 
-    CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther, List<Filter> filters);
+    CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters);
+    CompletableFuture<List<TrafficSummary<Host>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step, boolean includeOther, List<Filter> filters);
+    CompletableFuture<Table<Directional<Host>, Long, Double>> getHostSeries(Set<String> hosts, long step, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters);
+    CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
 }

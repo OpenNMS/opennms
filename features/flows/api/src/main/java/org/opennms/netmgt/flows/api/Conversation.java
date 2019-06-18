@@ -34,19 +34,15 @@ import java.util.Optional;
 public class Conversation {
     private final String location;
     private final Integer protocol;
-    private final String lowerIp;
-    private final String upperIp;
-    private final Optional<String> lowerHostname;
-    private final Optional<String> upperHostname;
+    private final Host lowerHost;
+    private final Host upperHost;
     private final String application;
 
     private Conversation(final Builder builder) {
         this.location = Objects.requireNonNull(builder.location);
         this.protocol = Objects.requireNonNull(builder.protocol);
-        this.lowerIp = Objects.requireNonNull(builder.lowerIp);
-        this.upperIp = Objects.requireNonNull(builder.upperIp);
-        this.lowerHostname = Optional.ofNullable(builder.lowerHostname);
-        this.upperHostname = Optional.ofNullable(builder.upperHostname);
+        this.lowerHost = new Host(builder.lowerIp, Optional.ofNullable(builder.lowerHostname));
+        this.upperHost = new Host(builder.upperIp, Optional.ofNullable(builder.upperHostname));
         this.application = Objects.requireNonNull(builder.application);
     }
 
@@ -58,20 +54,28 @@ public class Conversation {
         return this.protocol;
     }
 
-    public String getLowerIp() {
-        return this.lowerIp;
+    public Host getLowerHost() {
+        return this.lowerHost;
     }
 
-    public String getUpperIp() {
-        return this.upperIp;
+    public String getLowerIp() {
+        return this.lowerHost.getIp();
     }
 
     public Optional<String> getLowerHostname() {
-        return this.lowerHostname;
+        return this.lowerHost.getHostname();
+    }
+
+    public Host getUpperHost() {
+        return this.upperHost;
+    }
+
+    public String getUpperIp() {
+        return this.upperHost.getIp();
     }
 
     public Optional<String> getUpperHostname() {
-        return this.upperHostname;
+        return this.upperHost.getHostname();
     }
 
     public String getApplication() {
@@ -87,7 +91,8 @@ public class Conversation {
         private String upperHostname;
         private String application;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         public Builder withLocation(final String location) {
             this.location = Objects.requireNonNull(location);
