@@ -10,6 +10,7 @@
 * [ ] Have you updated the JIRA link at the bottom of this comment to link to your issue?
 * [ ] If this is a new or updated feature, is there documentation for the new behavior?
 * [ ] If this is new code, are there unit and/or integration tests?
+* [ ] If this PR targets a `foundation-*` branch, does it avoid changing files in `$OPENNMS_HOME/etc/`?
 
 ### Pull Request Process
 
