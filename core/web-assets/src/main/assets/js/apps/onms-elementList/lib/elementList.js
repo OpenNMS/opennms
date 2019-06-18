@@ -239,7 +239,7 @@ angular.module('onmsListFilters', [])
 // List module
 angular.module(MODULE_NAME, [])
 
-.config(function($locationProvider) {
+.config(/* @ngInject */ function($locationProvider) {
 	$locationProvider.html5Mode({
 		// Use HTML5 
 		enabled: true,
@@ -248,7 +248,7 @@ angular.module(MODULE_NAME, [])
 	});
 })
 
-.directive('onmsListEditInPlace', function() {
+.directive('onmsListEditInPlace', /* @ngInject */ function() {
 	return {
 		controller: function($scope) {
 			$scope.editing = false;
@@ -301,7 +301,7 @@ angular.module(MODULE_NAME, [])
 	};
 })
 
-.directive('onmsListEditListInPlace', function($window) {
+.directive('onmsListEditListInPlace', /* @ngInject */ function($window) {
 	return {
 		controller: function($scope) {
 			$scope.editing = false;
@@ -359,7 +359,7 @@ angular.module(MODULE_NAME, [])
 	};
 })
 
-.directive('onmsListEditMapInPlace', function($window) {
+.directive('onmsListEditMapInPlace', /* @ngInject */ function($window) {
 	return {
 		controller: function($scope) {
 			$scope.editing = false;

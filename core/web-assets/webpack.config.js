@@ -14,7 +14,6 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var StringReplacePlugin = require('string-replace-webpack-plugin');
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-var WebpackMd5Hash = require('webpack-md5-hash');
 var createVariants = require('parallel-webpack').createVariants;
 var clonedeep = require('lodash.clonedeep');
 
@@ -75,7 +74,7 @@ if (isProduction) {
   }
 }
 
-var getLatest = function getLatest(searchPath, latest = 0) {
+var getLatest = function getLatest(searchPath, latest = 0, recurse = true) {
   var ret = latest;
 //  console.log('getLatest(' + searchPath + ')');
   if (!fs.existsSync(searchPath)) {
@@ -89,7 +88,9 @@ var getLatest = function getLatest(searchPath, latest = 0) {
     }
     var stat = fs.statSync(entryPath);
     if (stat.isDirectory()) {
-      ret = Math.max(ret, getLatest(entryPath));
+      if (recurse) {
+        ret = Math.max(ret, getLatest(entryPath));
+      }
     } else if (fs.existsSync(entryPath)) {
       ret = Math.max(ret, stat.ctimeMs);
     }
@@ -97,7 +98,7 @@ var getLatest = function getLatest(searchPath, latest = 0) {
   return ret;
 };
 
-var srcModified = getLatest(path.join(__dirname, 'src'));
+var srcModified = Math.max(getLatest(__dirname, 0, false), getLatest(path.join(__dirname, 'src')));
 var targetModified = getLatest(path.join(__dirname, 'target'));
 
 if (targetModified > srcModified) {
@@ -390,44 +391,22 @@ var config = {
       },
       {
         /* translate javascript to es2015 */
-        test: /(\.jsx?)$/,
+        test: /(\.[jt]sx?)$/,
         exclude: [/node_modules/],
         use: [
+          /*
           {
             loader: 'cache-loader',
             options: {
               cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
             }
           },
+          */
           {
             loader: 'babel-loader',
             options: {
-              compact: false
-            }
-          }
-        ]
-      },
-      {
-        /* translate typescript to es2015 */
-        test: /(\.tsx?)$/,
-        exclude: [/node_modules/],
-        use: [
-          {
-            loader: 'cache-loader',
-            options: {
-              cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
-            }
-          },
-          {
-            loader: 'babel-loader',
-            options: {
-              compact: false
-            }
-          },
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true
+              compact: false,
+              cacheDirectory: true,
             }
           }
         ]
@@ -445,13 +424,6 @@ var config = {
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
   plugins: [
-    /*
-    new webpack.ProvidePlugin({
-      jQuery: 'vendor/jquery-js',
-      $: 'vendor/jquery-js'
-    }),
-    */
-    new WebpackMd5Hash(),
     new StringReplacePlugin()
   ]
 };
@@ -469,7 +441,6 @@ function getFile(name, options) {
 
 function createConfig(options) {
   var myconf = clonedeep(config);
-  //myconf.devtool = options.production? 'source-map' : 'eval-source-map';
   myconf.devtool = 'source-map';
 
   myconf.mode = options.production? 'production':'development';
@@ -494,7 +465,6 @@ function createConfig(options) {
       delete myconf.entry[key];
     }
   }
-  //console.log('Production=' + options.production + ', entry=', myconf.entry);
 
   myconf.plugins.push(new webpack.DefinePlugin(defs));
   myconf.plugins.push(new webpack.LoaderOptionsPlugin({
@@ -594,7 +564,7 @@ function createConfig(options) {
   //console.log(myconf);
 
   const smp = new SpeedMeasurePlugin({
-    outputTarget: 'target/smp-' + myconf.mode + '.log'
+    outputTarget: 'target/smp-' + (options.production === 'vaadin' ? 'vaadin' : myconf.mode) + '.log'
   });
   
   return smp.wrap( myconf );

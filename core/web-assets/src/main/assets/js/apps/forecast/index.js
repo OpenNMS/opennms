@@ -49,7 +49,7 @@ app.directive('greaterThanZero', function() {
     };
   });
 
-app.controller('forecastCtrl', function($scope) {
+app.controller('forecastCtrl', /* @ngInject */ function($scope) {
     // Use the first div we find with the data-graph-report attribute
     $scope.graphElement = $('div[data-graph-report]').first();
 
