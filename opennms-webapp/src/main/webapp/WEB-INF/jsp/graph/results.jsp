@@ -258,7 +258,7 @@
                         <c:param name="resourceId" value="${resultSet.resource.id}"/>
                     </c:url>
                     <!-- graph-search div should be immediate parent to graph-container as search depends on this. -->
-                    <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" graphname="${graph.name}" graphtitle = "${graph.title}">
+                    <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" resourceid ="${resultSet.resource.id}" graphname="${graph.name}" graphtitle = "${graph.title}">
 	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
                             <a style="padding-right: 3px" title="Add ${graph.title} to KSC Report">
                                 <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
@@ -284,15 +284,20 @@
                             </div>
 	                    </div> <!-- graph-aux-controls -->
                         <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
+                        <br/><br/>
                     </div>
-                    <br/><br/>
                 </c:forEach>
+                <div ng-show="nomatchingGraphs">
+                    <p>
+                        <b>No matching graphs found for this resource.</b>
+                    </p>
+                </div>
               </div>
             </c:when>
 
             <c:otherwise>
                 <p>
-                    There is no data for this resource.
+                    <b>There is no data for this resource.</b>
                 </p>
             </c:otherwise>
         </c:choose>

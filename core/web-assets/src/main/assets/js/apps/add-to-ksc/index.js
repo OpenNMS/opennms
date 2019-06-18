@@ -136,16 +136,32 @@ angular.module('onms-ksc', [
 
   return resources;
 })
-.factory('graphSearchFactory', function ($rootScope) {
+.factory('graphSearchFactory', function ($rootScope, $filter) {
   var graphSearch = {};
+  graphSearch.graphs = new Array();
+  graphSearch.noMatchingGraphs = false;
   // Update search query and broadcast an update to controllers.
   graphSearch.updateSearchQuery = function(searchItem) {
       this.searchQuery = searchItem;
       this.updateGraphsWithSearchItem();
   };
+   
+  graphSearch.initialize = function(graphName, graphTitle) {
+      graphSearch.graphs.push(graphName);
+      graphSearch.graphs.push(graphTitle);
+  }
 
   graphSearch.updateGraphsWithSearchItem = function() {
     $rootScope.$broadcast('handleSearchQuery');
+    // Check if there is atleast one matching graph else update correponding controller.
+    let matchingGraphs = $filter('filter')(graphSearch.graphs, graphSearch.searchQuery);
+    if (!(matchingGraphs && matchingGraphs.length)) {
+      graphSearch.noMatchingGraphs = true;
+      $rootScope.$broadcast('handleNoMatchingGraphsFound');
+    } else if(graphSearch.noMatchingGraphs){
+      graphSearch.noMatchingGraphs = false;
+      $rootScope.$broadcast('handleNoMatchingGraphsFound');
+    }
   }
 
   return graphSearch;
@@ -160,11 +176,13 @@ angular.module('onms-ksc', [
   });
   
 }])
-.controller('checkFlowsCtrl', ['$scope', '$http', '$filter', 'flowsRestFactory', function($scope, $http, $filter, flowsRestFactory) {
+.controller('checkFlowsCtrl', ['$scope', '$http', '$filter', 'flowsRestFactory', 'graphSearchFactory', function($scope, $http, $filter, flowsRestFactory ,
+   graphSearchFactory) {
 
   $scope.flowCount = 0;
   $scope.flowsEnabled = false;
   $scope.hasFlows = false;
+  $scope.nomatchingGraphs = false;
   $scope.flowGraphUrl = '';
   $scope.getFlowInfo = function(nodeId, ifIndex , start, end) {
     if (nodeId === 0 || ifIndex === 0) {
@@ -180,16 +198,21 @@ angular.module('onms-ksc', [
                      $scope.hasFlows = true;
             } else {
               $scope.flowGraphUrl = null;
-            }
+            } 
         }
       });
   };
-
+  $scope.$on('handleNoMatchingGraphsFound', function () {
+      $scope.nomatchingGraphs = graphSearchFactory.noMatchingGraphs;
+  });
 }])
-.controller('graphSearchCtrl', ['$scope', '$filter', '$attrs', 'graphSearchFactory', function($scope,  $filter, $attrs, graphSearchFactory) {
+.controller('graphSearchCtrl', ['$scope', '$filter', '$attrs',  'graphSearchFactory', function($scope,  $filter, $attrs, graphSearchFactory) {
 
+  let resourceId = $attrs.resourceid;
   let graphName = $attrs.graphname;
   let graphTitle = $attrs.graphtitle;
+  // Update service with graphname and graphtitle.
+  graphSearchFactory.initialize(graphName, graphTitle);
   $scope.enableGraph = true;
   // Handle search query update and enable graphs with matching search query.
   $scope.$on('handleSearchQuery', function () {
@@ -198,6 +221,7 @@ angular.module('onms-ksc', [
     let matchingElements = $filter('filter')([graphName, graphTitle], searchQuery);
     if (matchingElements && matchingElements.length) {
       $scope.enableGraph = true;
+      $(window).scroll();
     } else {
       $scope.enableGraph = false;
     }
