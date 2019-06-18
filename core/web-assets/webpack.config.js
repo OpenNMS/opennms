@@ -6,6 +6,8 @@ var path = require('path');
 var file = require('file');
 var fs = require('fs');
 
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+
 var AssetsPlugin = require('assets-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -35,6 +37,36 @@ var distdir = path.join(__dirname, 'target', 'dist', 'assets');
 var variants = {
   production: [ false ]
 };
+
+const scssUse = [
+  {
+    loader: 'cache-loader',
+    options: {
+      cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
+    }
+  },
+  {
+    loader: 'css-loader',
+    options: {
+      modules: 'global'
+    }
+  },
+  {
+    loader: 'postcss-loader',
+    options: {
+      plugins: () => {
+        const ret = [ require('autoprefixer')() ];
+        if (isProduction) {
+          ret.push(require('cssnano')());
+        }
+        return ret;
+      }
+    }
+  },
+  {
+    loader: 'sass-loader'
+  }
+];
 
 if (isProduction) {
   variants.production = [ true, false ];
@@ -311,48 +343,32 @@ var config = {
         }]
       },
       {
-        test: /\.scss$/,
+        // special case, vaadin-theme.scss needs string-replace-webpack-plugin to fix up header include stuff
+        test: /vaadin-theme\.scss$/,
+        include: [ styleroot ],
         use: extractText.extract({
           fallback: 'style-loader',
-          use: [
-            {
-              loader: 'cache-loader',
-              options: {
-                cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
-              }
-            },
-            {
-              loader: StringReplacePlugin.replace({
-                replacements: [
-                  {
-                    pattern: /\/\*! string-replace-webpack-plugin:\s*(.+?)\s*\*\//,
-                    replacement: function(match, p1, offset, string) {
-                      return p1;
-                    }
+          use: [ {
+            loader: StringReplacePlugin.replace({
+              replacements: [
+                {
+                  pattern: /\/\*! string-replace-webpack-plugin:\s*(.+?)\s*\*\//,
+                  replacement: function(match, p1, offset, string) {
+                    return p1;
                   }
-                ]
-              })
-            },
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: true
-              }
-            },
-            {
-                loader: 'postcss-loader',
-                options: {
-                    plugins: function () {
-                        return [
-                            require('autoprefixer')
-                        ];
-                    }
                 }
-            },
-            {
-              loader: 'sass-loader'
-            }
-          ]
+              ]
+            })
+          } ].concat(scssUse)
+        })
+      },
+      {
+        test: /\.scss$/,
+        include: [ styleroot ],
+        exclude: [ path.join(styleroot, 'vaadin-theme.scss') ],
+        use: extractText.extract({
+          fallback: 'style-loader',
+          use: scssUse
         })
       },
       {
@@ -577,7 +593,11 @@ function createConfig(options) {
   console.log('Building variant: production=' + options.production);
   //console.log(myconf);
 
-  return myconf;
+  const smp = new SpeedMeasurePlugin({
+    outputTarget: 'target/smp-' + myconf.mode + '.log'
+  });
+  
+  return smp.wrap( myconf );
 }
 
 module.exports = createVariants({}, variants, createConfig);
