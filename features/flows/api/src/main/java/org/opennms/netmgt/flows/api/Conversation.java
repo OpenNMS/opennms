@@ -40,20 +40,14 @@ public class Conversation {
     private final Optional<String> upperHostname;
     private final String application;
 
-    private Conversation(final String location,
-                        final Integer protocol,
-                        final String lowerIp,
-                        final String upperIp,
-                        final Optional<String> lowerHostname,
-                        final Optional<String> upperHostname,
-                        final String application) {
-        this.location = Objects.requireNonNull(location);
-        this.protocol = Objects.requireNonNull(protocol);
-        this.lowerIp = Objects.requireNonNull(lowerIp);
-        this.upperIp = Objects.requireNonNull(upperIp);
-        this.lowerHostname = Objects.requireNonNull(lowerHostname);
-        this.upperHostname = Objects.requireNonNull(upperHostname);
-        this.application = Objects.requireNonNull(application);
+    private Conversation(final Builder builder) {
+        this.location = Objects.requireNonNull(builder.location);
+        this.protocol = Objects.requireNonNull(builder.protocol);
+        this.lowerIp = Objects.requireNonNull(builder.lowerIp);
+        this.upperIp = Objects.requireNonNull(builder.upperIp);
+        this.lowerHostname = Optional.ofNullable(builder.lowerHostname);
+        this.upperHostname = Optional.ofNullable(builder.upperHostname);
+        this.application = Objects.requireNonNull(builder.application);
     }
 
     public String getLocation() {
@@ -89,8 +83,8 @@ public class Conversation {
         private Integer protocol;
         private String lowerIp;
         private String upperIp;
-        private Optional<String> lowerHostname;
-        private Optional<String> upperHostname;
+        private String lowerHostname;
+        private String upperHostname;
         private String application;
 
         private Builder() {}
@@ -116,12 +110,12 @@ public class Conversation {
         }
 
         public Builder withLowerHostname(final String hostname) {
-            this.lowerHostname = Optional.of(hostname);
+            this.lowerHostname = hostname;
             return this;
         }
 
         public Builder withUpperHostname(final String hostname) {
-            this.upperHostname = Optional.of(hostname);
+            this.upperHostname = hostname;
             return this;
         }
 
@@ -131,13 +125,7 @@ public class Conversation {
         }
 
         public Conversation build() {
-            return new Conversation(this.location,
-                    this.protocol,
-                    this.lowerIp,
-                    this.upperIp,
-                    this.lowerHostname,
-                    this.upperHostname,
-                    this.application);
+            return new Conversation(this);
         }
     }
 
