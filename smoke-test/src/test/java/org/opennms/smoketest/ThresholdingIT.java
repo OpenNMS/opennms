@@ -101,7 +101,7 @@ public class ThresholdingIT {
 
     @Before
     public void setUp() {
-        restClient = RestClient.forLocalhost(); // stack.opennms().getRestClient();
+        restClient = stack.opennms().getRestClient();
         // Delete the test node from a possible previous run
         restClient.deleteNode(TEST_NODE_CRITERIA);
     }
