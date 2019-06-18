@@ -38,7 +38,9 @@
     <!-- Allow certain actions for the REPORT_DESIGNER role -->
     <!-- TODO MVR adjust if necessary -->
     <intercept-url pattern="/rest/reports/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
-    <intercept-url pattern="/rest/reports/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
+    <intercept-url pattern="/rest/reports/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER,ROLE_USER"/>
+    <intercept-url pattern="/rest/reports/scheduled/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
+    <intercept-url pattern="/rest/reports/persisted/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
     <intercept-url pattern="/rest/reports/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
 
     <!-- read-only calls should be allowed for any user -->
