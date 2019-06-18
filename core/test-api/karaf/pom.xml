@@ -116,8 +116,6 @@
                 <!-- TODO: Should we import both versions of Jetty? -->
                 <feature>jetty/8.1.14.v20131031</feature>
                 <feature>jetty/9.3.9.v20160517</feature>
-                <!-- TODO: Needed? -->
-                <feature>jetty/9.4.18.v20190429</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
