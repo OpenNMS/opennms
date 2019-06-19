@@ -300,7 +300,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         EasyMock.expect(m_ifLabelDao.getInterfaceInfoFromIfLabel(EasyMock.anyInt(), EasyMock.anyString())).andReturn(mockIfInfo).anyTimes();
         EasyMock.replay(m_ifLabelDao);
 
-        LatencyCollectionResource resource = new LatencyCollectionResource(m_svcName, m_ipAddress, null, IfLabel.NO_IFLABEL, Collections.emptyMap());
+        LatencyCollectionResource resource = new LatencyCollectionResource(m_svcName, m_ipAddress, null);
         LatencyCollectionAttributeType type = new LatencyCollectionAttributeType();
         CollectionAttribute collectionAttribute = new LatencyCollectionAttribute(resource, type, "http", 200.0);
         resource.addAttribute(collectionAttribute);
@@ -585,7 +585,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
                 ifInfo.putAll(m_ifLabelDao.getInterfaceInfoFromIfLabel(nodeId, ifLabel));
             }
         }
-        LatencyCollectionResource latencyResource = new LatencyCollectionResource(svcName, ipAddr, location, ifLabel, ifInfo);
+        LatencyCollectionResource latencyResource = new LatencyCollectionResource(svcName, ipAddr, location);
         for (final Entry<String, Double> entry : attributes.entrySet()) {
             final String ds = entry.getKey();
             final Number value = entry.getValue() != null ? entry.getValue() : Double.NaN;

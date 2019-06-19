@@ -43,7 +43,6 @@ import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
@@ -86,7 +85,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */
     public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
-            ThresholdingService thresholdingService, ResourceStorageDao resourceStorageDao, LocationAwarePollerClient locationAwarePollerClient, IfLabel ifLabelDao) {
+            ThresholdingService thresholdingService, ResourceStorageDao resourceStorageDao, LocationAwarePollerClient locationAwarePollerClient) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
         m_pollOutagesConfig = pollOutagesConfig;
@@ -94,7 +93,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_timer = timer;
         m_configService = findService(pkg);
         m_locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
-        m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, thresholdingService, ifLabelDao);
+        m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, thresholdingService);
         m_serviceMonitor = pollerConfig.getServiceMonitor(svc.getSvcName());
     }
 

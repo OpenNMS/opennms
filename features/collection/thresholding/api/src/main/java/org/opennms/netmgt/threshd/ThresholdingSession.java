@@ -38,6 +38,8 @@ public interface ThresholdingSession extends AutoCloseable {
      * 
      * @param collectionSet
      * @throws ThresholdInitializationException
+     *             if the Thresholding Configuration has not yet been initialized ot there is an error initializing it. 
+     *             I.E. reading as parsing the configuration files.
      */
     void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
 

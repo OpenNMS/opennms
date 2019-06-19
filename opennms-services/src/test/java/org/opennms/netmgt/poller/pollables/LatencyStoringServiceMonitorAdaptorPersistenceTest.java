@@ -44,7 +44,6 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -131,7 +130,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         pollerConfig.setRRAList(pkg, Lists.newArrayList("RRA:AVERAGE:0.5:1:2016"));
 
         LatencyStoringServiceMonitorAdaptor lssma = new LatencyStoringServiceMonitorAdaptor(
-                pollerConfig, pkg, m_persisterFactory, new MockThresholdingService(), null);
+                pollerConfig, pkg, m_persisterFactory, new MockThresholdingService());
 
         MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", locationName,
                 InetAddress.getByName("192.168.1.5"), "SMTP");

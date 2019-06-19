@@ -31,12 +31,10 @@ package org.opennms.netmgt.poller.pollables;
 import java.io.File;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
@@ -49,8 +47,6 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.dao.api.IfLabel;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
@@ -82,14 +78,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
 
     private ThresholdingSession m_thresholdingSession;
 
-    private final IfLabel m_ifLabelDao;
-
-    public LatencyStoringServiceMonitorAdaptor(PollerConfig config, Package pkg, PersisterFactory persisterFactory, ThresholdingService thresholdingService, IfLabel ifLabelDao) {
+    public LatencyStoringServiceMonitorAdaptor(PollerConfig config, Package pkg, PersisterFactory persisterFactory, ThresholdingService thresholdingService) {
         m_pollerConfig = config;
         m_pkg = pkg;
         m_persisterFactory = persisterFactory;
         m_thresholdingService = thresholdingService;
-        m_ifLabelDao = ifLabelDao;
     }
 
     @Override
@@ -167,16 +160,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         //     This happens whether or not storeByGroup is enabled.
         // 2) If multiple entries are present, the DSs are created in the same order that they
         //    appear in the map
-
-        String ifLabel = "";
-        Map<String, String> ifInfo = new HashMap<>();
-        if (m_ifLabelDao != null) {
-            ifLabel = m_ifLabelDao.getIfLabel(service.getNodeId(), InetAddressUtils.addr(service.getIpAddr()));
-            if (ifLabel != null) {
-                ifInfo.putAll(m_ifLabelDao.getInterfaceInfoFromIfLabel(service.getNodeId(), ifLabel));
-            }
-        }
-        LatencyCollectionResource latencyResource = new LatencyCollectionResource(service.getSvcName(), service.getIpAddr(), service.getNodeLocation(), ifLabel, ifInfo);
+        LatencyCollectionResource latencyResource = new LatencyCollectionResource(service.getSvcName(), service.getIpAddr(), service.getNodeLocation());
         for (final Entry<String, Number> entry : entries.entrySet()) {
             final String ds = entry.getKey();
             final Number value = entry.getValue() != null ? entry.getValue() : Double.NaN;

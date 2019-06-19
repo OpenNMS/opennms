@@ -59,7 +59,6 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
-import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -109,9 +108,6 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
 
     @Autowired
     private ThresholdingService m_thresholdingService;
-
-    @Autowired
-    private IfLabel m_ifLabelDao;
 
     @Override
     public void setTemporaryDatabase(MockDatabase database) {
@@ -253,8 +249,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(m_pollerConfig, 
                                                                                               pkg, 
                                                                                               m_persisterFactory, 
-                                                                                              m_thresholdingService, 
-                                                                                              m_ifLabelDao);
+                                                                                              m_thresholdingService);
         // Make sure that the ThresholdingSet initializes with test settings
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();

@@ -36,15 +36,12 @@
 
     <bean name="thresholdingService" class="org.opennms.netmgt.threshd.ThresholdingServiceImpl" />
 
-    <bean name="ifLabel" class="org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"/>
-
     <bean name="daemon" class="org.opennms.netmgt.poller.Poller">
       <property name="network" ref="pollableNetwork" />
       <property name="pollerConfig" ref="pollerConfig" />
       <property name="pollOutagesConfig" ref="pollOutagesConfig" />
       <property name="eventIpcManager" ref="eventIpcManager"/>
       <property name="thresholdingService" ref="thresholdingService"/>
-      <property name="ifLabelDao" ref="ifLabel"/>
     </bean>
     
 </beans>

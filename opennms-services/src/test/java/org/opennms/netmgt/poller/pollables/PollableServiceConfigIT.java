@@ -54,7 +54,6 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -110,10 +109,9 @@ public class PollableServiceConfigIT {
         final Package pkg = factory.getPackage("MapQuest");
         final Timer timer = mock(Timer.class);
         final ThresholdingService thresholdingService = mock(ThresholdingService.class);
-        IfLabel ifLabelDao = mock(IfLabel.class);
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
                                                                     persisterFactory, thresholdingService, resourceStorageDao,
-                                                                    m_locationAwarePollerClient, ifLabelDao);
+                                                                    m_locationAwarePollerClient);
         PollStatus pollStatus = psc.poll();
         assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
     }
@@ -161,11 +159,9 @@ public class PollableServiceConfigIT {
         Timer timer = mock(Timer.class);
         PersisterFactory persisterFactory = mock(PersisterFactory.class);
         ThresholdingService thresholdingService = mock(ThresholdingService.class);
-        IfLabel ifLabelDao = mock(IfLabel.class);
 
         final PollableServiceConfig psc = new PollableServiceConfig(pollableSvc, pollerConfig,
-                pollOutagesConfig, pkg, timer, persisterFactory, thresholdingService,
-                resourceStorageDao, client, ifLabelDao);
+                pollOutagesConfig, pkg, timer, persisterFactory, thresholdingService, resourceStorageDao, client);
 
         // Trigger the poll
         PollStatus pollStatus = psc.poll();
