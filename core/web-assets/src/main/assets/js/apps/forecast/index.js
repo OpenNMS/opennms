@@ -138,7 +138,7 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
             });
 
             // Render the graph using the pristine model
-            renderGraph(rrdGraphConverter.model);
+            renderGraph(rrdGraphConverter.model); // eslint-disable-line @typescript-eslint/no-use-before-define
 
             // Pull the list of named series from the model
             $scope.series = _.filter(rrdGraphConverter.model.series, function(series){ return !_.isEmpty(series.name); });

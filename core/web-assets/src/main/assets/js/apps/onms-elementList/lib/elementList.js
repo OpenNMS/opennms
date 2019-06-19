@@ -22,6 +22,43 @@ const appendTransform = (defaultTransform, transform) => {
 };
 
 /**
+ * Escape FIQL reserved characters by URL-encoding them. Reserved characters are:
+ * <ul>
+ * <li>!</li>
+ * <li>$</li>
+ * <li>'</li>
+ * <li>(</li>
+ * <li>)</li>
+ * <li>*</li>
+ * <li>+</li>
+ * <li>,</li>
+ * <li>;</li>
+ * <li>=</li>
+ * </ul>
+ * @param value
+ * @returns String with reserved characters URL-encoded
+ */
+const escapeSearchValue = (value) => {
+	if (typeof value === 'string') {
+			return value
+					.replace('!', '%21')
+					.replace('$', '%24')
+					.replace('\'', '%27')
+					.replace('(', '%28')
+					.replace(')', '%29')
+					// People are going to type this in as a wildcard, so I
+					// guess they'll have to type in '%2A' if they want to
+					// match an asterisk...
+					//.replace('*', '%2A')
+					.replace('+', '%2B')
+					.replace(',', '%2C')
+					.replace(';', '%3B')
+					.replace('=', '%3D');
+	}
+	return value;
+};
+
+/**
  * Convert from a clause into a FIQL query string.
  */
 const toFiql = (clauses) => {
@@ -135,43 +172,6 @@ const parseContentRange = (contentRange) => {
 		end: Number(contentRange.replace(pattern, '$2')),
 		total: Number(contentRange.replace(pattern, '$3'))
 	};
-};
-
-/**
- * Escape FIQL reserved characters by URL-encoding them. Reserved characters are:
- * <ul>
- * <li>!</li>
- * <li>$</li>
- * <li>'</li>
- * <li>(</li>
- * <li>)</li>
- * <li>*</li>
- * <li>+</li>
- * <li>,</li>
- * <li>;</li>
- * <li>=</li>
- * </ul>
- * @param value
- * @returns String with reserved characters URL-encoded
- */
- const escapeSearchValue = (value) => {
-    if (typeof value === 'string') {
-        return value
-            .replace('!', '%21')
-            .replace('$', '%24')
-            .replace('\'', '%27')
-            .replace('(', '%28')
-            .replace(')', '%29')
-            // People are going to type this in as a wildcard, so I
-            // guess they'll have to type in '%2A' if they want to
-            // match an asterisk...
-            //.replace('*', '%2A')
-            .replace('+', '%2B')
-            .replace(',', '%2C')
-            .replace(';', '%3B')
-            .replace('=', '%3D');
-    }
-    return value;
 };
 
 const normalizeOffset = (offset, maxOffset, limit) => {

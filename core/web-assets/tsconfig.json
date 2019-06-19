@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"downlevelIteration": true,
+		"allowJs": true,
+		"target": "ES5",
+		"lib": [
+			"dom",
+			"es2015",
+			"es5",
+			"es6"
+		]
+	},
+	"include": [
+		"src/main/**/*.js",
+		"src/main/**/*.ts"
+	]
+}
