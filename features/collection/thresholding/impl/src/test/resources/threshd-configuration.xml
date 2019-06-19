@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<threshd-configuration 
+   threads="5">
+   
+   <package name="thresholding-visitor-test">
+       <filter>IPADDR != '0.0.0.0'</filter>
+       <include-range begin="1.1.1.1" end="254.254.254.254"/>
+       <specific>fe80:0000:0000:0000:ffff:eeee:dddd:cccc</specific>
+       <service name="SNMP" interval="300000" user-defined="false" status="on">
+           <parameter key="thresholding-group" value="generic-snmp"/>
+       </service>       
+       <service name="HTTP" interval="300000" user-defined="false" status="on">
+           <parameter key="thresholding-group" value="http-latency"/>
+       </service>       
+       <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+   </package>
+
+</threshd-configuration>
