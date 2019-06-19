@@ -575,6 +575,7 @@
                 <feature>org.opennms.features.topologies.service.api</feature>
                 <feature>opennms-identity</feature>
                 <feature>opennms-endpoints-grafana</feature>
+                <feature>opennms-reporting</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
