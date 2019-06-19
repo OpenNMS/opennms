@@ -221,7 +221,6 @@ public class ReportRestIT extends AbstractRestIT {
         given().get(REPORT_ID).then().statusCode(200);
 
         // Verify render report works
-        // Verify render report works
         given().body(reportParameters.toString())
                 .contentType(ContentType.JSON)
                 .log().all()
@@ -240,7 +239,8 @@ public class ReportRestIT extends AbstractRestIT {
         // Verify deleting scheduled reports work
         given().delete("scheduled").then().statusCode(403);
 
-        // TODO MVR verify deleting persisted and scheduled tests does not work
+        // TODO MVR verify delivering/scheduling reports does not work
+        // TODO MVR verify deleting persisted and scheduled reports does not work
     }
 
     private static JSONObject getUsers() {
