@@ -112,7 +112,7 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
 
         LOG.info("Navigation to database reports page {}.", page);
         reportsPage();
-        findElementByLink("Database Reports").click();
+        findElementByLink("Database Reports (Legacy)").click();
         findElementByLink("List reports").click();
         if (page > 1) {
             findElementByLink(Integer.toString(page)).click();

@@ -48,7 +48,7 @@ public class DatabaseReportBatchIT extends OpenNMSSeleniumIT {
     @Before
     public void before() {
         reportsPage();
-        findElementByLink("Database Reports").click();
+        findElementByLink("Database Reports (Legacy)").click();
         findElementByLink("List reports").click();
 
         // we do not want to wait 2 minutes, we only want to wait n seconds
