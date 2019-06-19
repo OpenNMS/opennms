@@ -37,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.io.Resources;
+
 /**
  * All the OpenNMS related settings that need to be tweaked on
  * a per container basis.
@@ -107,6 +109,18 @@ public class OpenNMSProfile {
         /**
          * Add files to the container over
          *
+         * @param resourceName resource path
+         * @param target path the target file related to $OPENNMS_HOME/
+         * @return this builder
+         */
+        public Builder withFile(String resourceName, String target) {
+            files.add(new OverlayFile(Resources.getResource(resourceName), target));
+            return this;
+        }
+
+        /**
+         * Add files to the container over
+         *
          * @param source source URL
          * @param target path the target file related to $OPENNMS_HOME/
          * @param permissions file permissions to set
@@ -114,6 +128,19 @@ public class OpenNMSProfile {
          */
         public Builder withFile(URL source, String target, Set<PosixFilePermission> permissions) {
             files.add(new OverlayFile(source, target, permissions));
+            return this;
+        }
+
+        /**
+         * Add files to the container over
+         *
+         * @param resourceName resource path
+         * @param target path the target file related to $OPENNMS_HOME/
+         * @param permissions file permissions to set
+         * @return this builder
+         */
+        public Builder withFile(String resourceName, String target, Set<PosixFilePermission> permissions) {
+            files.add(new OverlayFile(Resources.getResource(resourceName), target, permissions));
             return this;
         }
 

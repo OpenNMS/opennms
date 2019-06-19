@@ -28,7 +28,6 @@
 
 package org.opennms.smoketest;
 
-import static com.google.common.io.Resources.getResource;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -85,13 +84,13 @@ public class ThresholdingIT {
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
             .withOpenNMS(OpenNMSProfile.newBuilder()
-                    .withFile(getResource("thresholding/poller-configuration.xml"), "etc/poller-configuration.xml")
-                    .withFile(getResource("thresholding/collectd-configuration.xml"), "etc/collectd-configuration.xml")
-                    .withFile(getResource("thresholding/jdbc-datacollection-config.xml"), "etc/jdbc-datacollection-config.xml")
-                    .withFile(getResource("thresholding/resource-types.d/metadata.xml"), "etc/resource-types.d/metadata.xml")
-                    .withFile(getResource("thresholding/threshd-configuration.xml"), "etc/threshd-configuration.xml")
-                    .withFile(getResource("thresholding/thresholds.xml"), "etc/thresholds.xml")
-                    .withFile(getResource("thresholding/thresholding-test-monitor.sh"), "bin/thresholding-test-monitor.sh",
+                    .withFile("thresholding/poller-configuration.xml", "etc/poller-configuration.xml")
+                    .withFile("thresholding/collectd-configuration.xml", "etc/collectd-configuration.xml")
+                    .withFile("thresholding/jdbc-datacollection-config.xml", "etc/jdbc-datacollection-config.xml")
+                    .withFile("thresholding/resource-types.d/metadata.xml", "etc/resource-types.d/metadata.xml")
+                    .withFile("thresholding/threshd-configuration.xml", "etc/threshd-configuration.xml")
+                    .withFile("thresholding/thresholds.xml", "etc/thresholds.xml")
+                    .withFile("thresholding/thresholding-test-monitor.sh", "bin/thresholding-test-monitor.sh",
                             // Make the script executable
                             PosixFilePermissions.fromString("rwxrwxr-x"))
                     .build())
