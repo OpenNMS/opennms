@@ -71,7 +71,7 @@ public class UiPageTest extends OpenNMSSeleniumIT {
     }
 
     protected void verifyElementNotPresent(final By by) {
-        new WebDriverWait(m_driver, 7 /* seconds */).until(
+        new WebDriverWait(driver, 7 /* seconds */).until(
                 ExpectedConditions.not((ExpectedCondition<Boolean>) input -> execute(() -> {
                     try {
                         WebElement elementFound = input.findElement(by);
@@ -116,7 +116,7 @@ public class UiPageTest extends OpenNMSSeleniumIT {
         }
 
         public void click() {
-            execute(() -> m_driver.findElement(By.id(id))).click();
+            execute(() -> driver.findElement(By.id(id))).click();
         }
     }
 

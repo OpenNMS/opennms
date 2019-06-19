@@ -49,8 +49,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.base.Predicate;
-
 public class GrafanaEndpointPageIT extends UiPageTest  {
 
     private Page uiPage;
@@ -60,7 +58,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         // Delete all endpoints
         sendDelete("rest/endpoints/grafana");
 
-        uiPage = new Page(getBaseUrl());
+        uiPage = new Page(getBaseUrlInternal());
         uiPage.open();
     }
 
@@ -165,13 +163,13 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         }
 
         public Page open() {
-            m_driver.get(url);
-            new WebDriverWait(m_driver, 5).until(pageContainsText("Grafana Endpoints"));
+            driver.get(url);
+            new WebDriverWait(driver, 5).until(pageContainsText("Grafana Endpoints"));
             return this;
         }
 
         public List<UIGrafanaEndpoint> getEndpoints() {
-            return execute(() -> m_driver.findElements(By.xpath("//table/tbody/tr"))
+            return execute(() -> driver.findElements(By.xpath("//table/tbody/tr"))
                     .stream()
                     .map(row -> {
                         final List<WebElement> columns = row.findElements(By.xpath("./td"));
@@ -184,7 +182,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
                         // Click reveal to get the API KEY and afterwards click again to hide
                         new Button("action.revealApiKey." + id).click();
-                        new WebDriverWait(m_driver, 5).until((Predicate<WebDriver>) webDriver -> !row.findElements(By.xpath("./td")).get(2).getText().contains("****"));
+                        new WebDriverWait(driver, 5).until(webDriver -> !row.findElements(By.xpath("./td")).get(2).getText().contains("****"));
                         final String apiKey = columns.get(2).getText();
                         new Button("action.revealApiKey." + id).click();
 
@@ -208,14 +206,14 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             return new EndpointModal()
                     .open(() -> {
                         findElementById("action.addGrafanaEndpoint").click(); // Click add button
-                        new WebDriverWait(m_driver, 5).until(pageContainsText("Add Grafana Endpoint"));
+                        new WebDriverWait(driver, 5).until(pageContainsText("Add Grafana Endpoint"));
                     });
         }
 
         public EndpointModal editModal(Long endpointId) {
             return new EndpointModal().open(() -> {
                 findElementById("action.edit." + endpointId).click();
-                new WebDriverWait(m_driver, 5).until(pageContainsText("Edit Grafana Endpoint"));
+                new WebDriverWait(driver, 5).until(pageContainsText("Edit Grafana Endpoint"));
             });
         }
 
@@ -224,7 +222,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
                 // Click Delete
                 findElementById("action.delete." + endpoint.getId()).click();
                 // Wait for confirm popover
-                new WebDriverWait(m_driver, 5).until(pageContainsText("Delete Endpoint"));
+                new WebDriverWait(driver, 5).until(pageContainsText("Delete Endpoint"));
                 // Click Yes in popover
                 final String confirmButtonXpath = String.format("//div[@class='popover-content']//p[contains(text(), \"UID '%s'\")]/..//button[text() = 'Yes']", endpoint.getUid());
                 final WebElement confirmElement = findElementByXpath(confirmButtonXpath);
@@ -282,7 +280,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
         // Ensure dialog closes
         private void ensureClosed() {
-            execute(() -> new WebDriverWait(m_driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id("endpointModal"), 0)));
+            execute(() -> new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id("endpointModal"), 0)));
         }
     }
 
