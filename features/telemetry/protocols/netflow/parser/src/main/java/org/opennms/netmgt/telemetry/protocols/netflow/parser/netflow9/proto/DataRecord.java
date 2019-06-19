@@ -75,12 +75,12 @@ public final class DataRecord implements Record {
 
         this.template = Objects.requireNonNull(template);
 
-        final List<Value<?>> scopes = new ArrayList(this.template.scopes.size());
+        final List<Value<?>> scopes = new ArrayList<>(this.template.scopes.size());
         for (final Field scope : template.scopes) {
             scopes.add(scope.parse(resolver, slice(buffer, scope.length())));
         }
 
-        final List<Value<?>> fields = new ArrayList(this.template.fields.size());
+        final List<Value<?>> fields = new ArrayList<>(this.template.fields.size());
         for (final Field field : template.fields) {
             fields.add(field.parse(resolver, slice(buffer, field.length())));
         }
@@ -95,7 +95,9 @@ public final class DataRecord implements Record {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("fields", fields)
+                .add("scopes", this.scopes)
+                .add("fields", this.fields)
+                .add("options", this.options)
                 .toString();
     }
 }

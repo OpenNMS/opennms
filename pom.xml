@@ -1343,6 +1343,7 @@
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <quartzVersion>2.2.3</quartzVersion>
+    <rancidApiVersion>1.0.4</rancidApiVersion>
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <rocksdbjniVersion>5.15.10</rocksdbjniVersion>
     <scalaLibraryVersion>2.12.8</scalaLibraryVersion>
@@ -1518,7 +1519,7 @@
           <plugin>
             <groupId>com.sun.tools.jxc.maven2</groupId>
             <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-            <version>[1.2,2.0)</version>
+            <version>1.2</version>
             <dependencies>
               <dependency>
               <groupId>com.sun</groupId>
@@ -1568,9 +1569,9 @@
                 <version>${project.version}</version>
               </dependency>
               <dependency>
-                <groupId>com.github.sevntu.checkstyle</groupId>
+                <groupId>com.github.sevntu-checkstyle</groupId>
                 <artifactId>sevntu-checkstyle-maven-plugin</artifactId>
-                <version>1.23.1</version>
+                <version>1.25.0</version>
               </dependency>
             </dependencies>
             <configuration>
@@ -4122,11 +4123,6 @@
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>sevntu-maven</id>
-      <name>sevntu-maven</name>
-      <url>http://maven.opennms.org/content/repositories/sevntu-maven/</url>
     </pluginRepository>
   </pluginRepositories>
 </project>

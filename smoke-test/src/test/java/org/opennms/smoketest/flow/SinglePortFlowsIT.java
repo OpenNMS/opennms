@@ -28,26 +28,19 @@
 
 package org.opennms.smoketest.flow;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.Timeout;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.NetworkProtocol;
+import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.telemetry.FlowPacket;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
 import org.opennms.smoketest.telemetry.FlowTester;
 import org.opennms.smoketest.telemetry.Packets;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
+
+import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Verifies that sending flow packets to a single port is dispatching the flows in the according queues.
@@ -55,43 +48,22 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
  */
 public class SinglePortFlowsIT {
 
-    @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
-
-    @Rule
-    public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
-
-    private final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms().es5();
-            // Enable flow adapter
-            builder.withOpenNMSEnvironment().addFile(getClass().getResource("/flows/telemetryd-configuration-single-port.xml"), "etc/telemetryd-configuration.xml");
-            builder.withOpenNMSEnvironment().addFile(getClass().getResource("/flows/org.opennms.features.flows.persistence.elastic.cfg"), "etc/org.opennms.features.flows.persistence.elastic.cfg");
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            return builder.build();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withTelemetryProcessing()
+            .build());
 
     // Verifies that when OpenNMS and ElasticSearch is running and configured, that sending a flow packet
     // will actually be persisted in elastic
     @Test
     public void verifyFlowStack() throws Exception {
-        final InetSocketAddress opennmsSinglePortAddress = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
-        final InetSocketAddress opennmsWebAddress = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
-        final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_5, 9200, "tcp");
+        final InetSocketAddress flowTelemetryAddress = stack.opennms().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
+        final InetSocketAddress opennmsWebAddress = stack.opennms().getWebAddress();
+        final InetSocketAddress elasticRestAddress = InetSocketAddress.createUnresolved(
+                stack.elastic().getContainerIpAddress(), stack.elastic().getMappedPort(9200));
 
         final List<FlowPacket> collect = Packets.getFlowPackets().stream()
-                .map(p -> new FlowPacket(p.getResource(), p.getFlowCount(), opennmsSinglePortAddress))
+                .map(p -> p.withDestinationAddress(flowTelemetryAddress))
                 .collect(Collectors.toList());
         final FlowTester tester = new FlowTestBuilder()
                 .withFlowPackets(collect)

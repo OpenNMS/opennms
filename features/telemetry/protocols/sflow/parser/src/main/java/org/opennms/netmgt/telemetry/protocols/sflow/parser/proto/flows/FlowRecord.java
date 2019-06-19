@@ -92,6 +92,10 @@ public class FlowRecord extends Record<FlowData> {
         super(buffer, flowDataFormats);
     }
 
+    public FlowRecord(final DataFormat dataFormat, final Opaque<FlowData> data) {
+        super(dataFormat, data);
+    }
+
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
         if (data.value != null) {

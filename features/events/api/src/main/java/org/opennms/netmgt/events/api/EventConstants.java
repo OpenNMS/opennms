@@ -773,6 +773,11 @@ public abstract class EventConstants {
     public static final String PARM_SNMP_LOCATION = "location";
 
     /**
+     * The ttl when sent as an event parm.
+     */
+    public static final String PARM_TTL = "ttl";
+
+    /**
      * Service monitor qualifier when sent as an event parm
      */
     public static final String PARM_QUALIFIER = "qualifier";

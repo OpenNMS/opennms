@@ -76,10 +76,17 @@ public class EthernetHeader {
         }
     }
 
+    public EthernetHeader(final Integer vlan, final Inet4Header inet4Header, final Inet6Header inet6Header, final byte[] rawHeader) {
+        this.vlan = vlan;
+        this.inet4Header = inet4Header;
+        this.inet6Header = inet6Header;
+        this.rawHeader = rawHeader;
+    }
+
     public void writeBson(final BsonWriter bsonWriter) {
         bsonWriter.writeStartDocument();
         if (this.vlan != null) {
-            bsonWriter.writeInt32("vlan", this.vlan);
+            bsonWriter.writeInt64("vlan", this.vlan);
         }
 
         bsonWriter.writeEndDocument();

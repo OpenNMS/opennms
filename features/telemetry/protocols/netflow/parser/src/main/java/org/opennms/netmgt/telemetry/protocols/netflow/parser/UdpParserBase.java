@@ -56,15 +56,18 @@ public abstract class UdpParserBase extends ParserBase {
 
     protected abstract RecordProvider parse(final Session session, final ByteBuffer buffer) throws Exception;
 
+    protected abstract UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress);
+
     public final CompletableFuture<?> parse(final ByteBuffer buffer,
                                             final InetSocketAddress remoteAddress,
                                             final InetSocketAddress localAddress) throws Exception {
-        final Session session = this.sessionManager.getSession(remoteAddress, localAddress);
+        final UdpSessionManager.SessionKey sessionKey = this.buildSessionKey(remoteAddress, localAddress);
+        final Session session = this.sessionManager.getSession(sessionKey);
 
         try {
             return this.transmit(this.parse(session, buffer), remoteAddress);
         } catch (Exception e) {
-            this.sessionManager.drop(remoteAddress, localAddress);
+            this.sessionManager.drop(sessionKey);
             throw e;
         }
     }

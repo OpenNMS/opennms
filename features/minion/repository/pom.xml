@@ -49,8 +49,10 @@
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-trapd-listener</feature>
+                                <feature>opennms-send-event-command</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>
+                                <feature>minion-events-sink-disptacher</feature>
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-detectors</feature>
                                 <feature>minion-provisiond-requisitions</feature>
@@ -165,6 +167,16 @@
         <dependency>
             <groupId>org.opennms.features.minion.heartbeat</groupId>
             <artifactId>org.opennms.features.minion.heartbeat.producer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.events.sink</groupId>
+            <artifactId>org.opennms.features.events.sink.dispatcher</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.events.sink</groupId>
+            <artifactId>org.opennms.features.events.sink.command</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

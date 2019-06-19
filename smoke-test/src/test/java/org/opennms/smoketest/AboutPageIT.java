@@ -35,11 +35,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-public class AboutPageIT extends OpenNMSSeleniumTestCase {
+public class AboutPageIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() throws Exception {
-        m_driver.get(getBaseUrl() + "opennms/about/index.jsp");
+        driver.get(getBaseUrlInternal() + "opennms/about/index.jsp");
     }
 
     @Test
@@ -48,8 +48,8 @@ public class AboutPageIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void hasContent() throws Exception {
-        assertNotNull(m_driver.findElement(By.xpath("//span[text()='License and Copyright']")));
-        assertNotNull(m_driver.findElement(By.xpath("//th[text()='Version:']")));
+    public void hasContent() {
+        assertNotNull(driver.findElement(By.xpath("//span[text()='License and Copyright']")));
+        assertNotNull(driver.findElement(By.xpath("//th[text()='Version:']")));
     }
 }

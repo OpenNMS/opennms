@@ -201,7 +201,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     @Override
     public void persist(final Collection<Flow> flows, final FlowSource source) throws FlowException {
-        LOG.debug("Converting {} flows from {} to flow documents.", flows.size(), source);
+        LOG.debug("Converting {} flows from {} @ {} to flow documents.", flows.size(), source.getSourceAddress(), source.getLocation());
         final List<FlowDocument> documents;
         try (final Timer.Context ctx = logConversionTimer.time()) {
             documents = flows.stream()
@@ -216,7 +216,7 @@ public class ElasticFlowRepository implements FlowRepository {
         flowsPerLog.update(flowDocuments.size());
 
         if (flowDocuments.isEmpty()) {
-            LOG.info("Received empty flows. Nothing to do.");
+            LOG.info("Received empty flows from {} @ {}. Nothing to do.", source.getSourceAddress(), source.getLocation());
             return;
         }
 

@@ -39,7 +39,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
+public class QuickAddNodeIT extends OpenNMSSeleniumIT {
 
     /** The Constant NODE_LABEL. */
     private static final String NODE_LABEL = "localNode";
@@ -107,7 +107,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
     }
 
     protected WebElement enterTextAutocomplete(final By selector, final CharSequence... text) throws InterruptedException {
-        final WebElement element = m_driver.findElement(selector);
+        final WebElement element = driver.findElement(selector);
         element.clear();
         element.click();
         Thread.sleep(500);
@@ -117,7 +117,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
         Thread.sleep(100);
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
-            final List<WebElement> matching = m_driver.findElements(By.cssSelector("a[title='"+text+"']"));
+            final List<WebElement> matching = driver.findElements(By.cssSelector("a[title='"+text+"']"));
             if (!matching.isEmpty()) {
                 findElementByCss("a[title='"+text+"']").click();
             }

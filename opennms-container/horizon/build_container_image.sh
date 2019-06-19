@@ -9,11 +9,11 @@ set -o pipefail
 # shellcheck source=registry-config.sh
 source ../registry-config.sh
 
-# shellcheck source=version-tags.sh
-source ./version-tags.sh
+# shellcheck source=opennms-container/version-n-tags.sh
+source ../version-tags.sh
 
 # OpenNMS Horizon packages
-ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-hawtio"
+ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting opennms-webapp-hawtio"
 
 for PKG in ${ONMS_PACKAGES}; do 
   cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms

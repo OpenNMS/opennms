@@ -39,8 +39,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
@@ -52,11 +50,10 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,72 +61,51 @@ public class SnmpV3IT {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpV3IT.class);
 
-    private static TestEnvironment m_testEnvironment;
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-    @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms();
-            builder.withOpenNMSEnvironment().addFile(SnmpV3IT.class.getResource("/trapd-configuration.xml"),
-                    "etc/trapd-configuration.xml");
-            ;
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            m_testEnvironment = builder.build();
-            return m_testEnvironment;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
-
     @Test
-    public void testSnmpV3Traps() throws Exception {
+    public void testSnmpV3Traps() {
         Date startOfTest = new Date();
-        final InetSocketAddress snmpAddress = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 162, "udp");
-        InetSocketAddress pgsql = m_testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
-        HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
+        final InetSocketAddress snmpAddress = stack.opennms().getNetworkProtocolAddress(NetworkProtocol.SNMP);
+        HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         AlarmDao alarmDao = daoFactory.getDao(AlarmDaoHibernate.class);
 
         Criteria criteria = new CriteriaBuilder(OnmsAlarm.class)
                 .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault").ge("lastEventTime", startOfTest)
                 .toCriteria();
 
-        executor.scheduleWithFixedDelay(() -> {
-            try {
-                sendV3Trap(snmpAddress);
-            } catch (Exception e) {
-                LOG.error("exception while sending traps");
-            }
-        }, 0, 5, TimeUnit.SECONDS);
-        // Check if there is atleast one alarm
-        await().atMost(30, SECONDS).pollInterval(10, SECONDS).pollDelay(10, SECONDS)
-                .until(DaoUtils.countMatchingCallable(alarmDao, criteria), greaterThanOrEqualTo(1));
-        // Check if multiple traps are getting received not just the first one
-        await().atMost(30, SECONDS).pollInterval(10, SECONDS).pollDelay(10, SECONDS)
-                .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
-                        .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault").ge("counter", 5).toCriteria()),
-                        notNullValue());
-        executor.shutdown();
+        try {
+            executor.scheduleWithFixedDelay(() -> {
+                try {
+                    sendV3Trap(snmpAddress);
+                } catch (Exception e) {
+                    LOG.error("Exception while sending trap.", e);
+                }
+            }, 0, 5, TimeUnit.SECONDS);
+            // Check if there is at least one alarm
+            await().atMost(30, SECONDS).pollInterval(5, SECONDS).pollDelay(5, SECONDS)
+                    .until(DaoUtils.countMatchingCallable(alarmDao, criteria), greaterThanOrEqualTo(1));
+            // Check if multiple traps are getting received not just the first one
+            await().atMost(30, SECONDS).pollInterval(5, SECONDS).pollDelay(5, SECONDS)
+                    .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
+                                    .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault").ge("counter", 3).toCriteria()),
+                            notNullValue());
+        } finally {
+            // Make sure we always shutdown the thread pool, even when the test fails
+            executor.shutdownNow();
+        }
     }
 
     private void sendV3Trap(InetSocketAddress snmpAddress) throws Exception {
-
         SnmpTrapBuilder pdu = SnmpUtils.getV3TrapBuilder();
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"),
                 SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.4.0")));
         pdu.send(InetAddressUtils.str(snmpAddress.getAddress()), snmpAddress.getPort(), "traptest");
         LOG.info("V3 trap sent successfully");
-
     }
 
 }

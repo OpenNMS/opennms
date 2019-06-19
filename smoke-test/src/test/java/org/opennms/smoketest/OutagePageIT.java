@@ -40,7 +40,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class OutagePageIT extends OpenNMSSeleniumTestCase {
+public class OutagePageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         outagePage();
