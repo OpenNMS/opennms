@@ -78,7 +78,7 @@ The following global options are available in each of the sub-commands of the to
 
 ===== Sub-command: query
 
-This sub-command is used to query a _MBean Server_ for it's available _MBean_ objects.
+This sub-command is used to query a _MBean Server_ for its available _MBean_ objects.
 The following example queries the server `myserver` with the credentials `myusername/mypassword` on port `7199` for _MBean objects_ in the `java.lang` domain.
 
 [source, shell]
