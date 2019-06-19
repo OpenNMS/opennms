@@ -1,32 +1,44 @@
+##
+# Use Java base image and setup required RPMS as cacheable image.
+##
 ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="latest"
+ARG BASE_IMAGE_VERSION="11"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 
-ARG VERSION=${BASE_IMAGE_VERSION}
-ARG BUILD_DATE="1970-01-01T00:00:00+0000"
+ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl"
 
-ARG REPO_RELEASE="stable"
-ARG REPO_HOST="yum.opennms.org"
+ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
+ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm"
 
-ARG REPO_KEY_URL="https://${REPO_HOST}/OPENNMS-GPG-KEY"
+SHELL ["/bin/bash", "-c"]
 
-ARG REPO_RPM="https://${REPO_HOST}/repofiles/opennms-repo-${REPO_RELEASE}-rhel7.noarch.rpm"
+# Collect generic steps in a layer for caching
+RUN rpm --import "${REPO_KEY_URL}" && \
+    yum install -y epel-release && \
+    yum -y install "${REPO_RPM}" && \
+    yum -y install ${REQUIRED_RPMS} && \
+    yum clean all -y && \
+    rm -rf /var/cache/yum
 
-ARG PACKAGES="wget gettext"
+##
+# Install and setup OpenNMS RPMS
+##
+FROM horizon-base
 
-ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-hawtio"
+# A default which installs the required OpenNMS Horizon packages
+ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting opennms-webapp-hawtio"
+
+# Allow to install optional packages via YUM
+ARG ADD_YUM_PACKAGES
 
 COPY ./rpms /tmp/rpms
 
 SHELL ["/bin/bash", "-c"]
 
 # Install repositories, system and OpenNMS packages and do some cleanup
-RUN yum -y install epel-release && \
-    rpm --import "${REPO_KEY_URL}" && \
-    yum -y install ${REPO_RPM} && \
-    yum -y install ${PACKAGES} && \
-    if [ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]; then yum -y localinstall /tmp/rpms/*.rpm; else yum -y install ${ONMS_PACKAGES}; fi && \
+RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then yum -y localinstall /tmp/rpms/*.rpm; else yum install -y ${ONMS_PACKAGES}; fi && \
+    if [[ -n ${ADD_YUM_PACKAGES} ]]; then yum -y install ${ADD_YUM_PACKAGES}; fi && \
     rm -rf /tmp/rpms && \
     yum clean all && \
     rm -rf /var/cache/yum && \
@@ -44,13 +56,24 @@ RUN yum -y install epel-release && \
 COPY ./assets/*.tpl /root/
 COPY ./assets/entrypoint.sh /
 
+# Arguments for labels should not invalidate caches
+ARG BUILD_DATE="1970-01-01T00:00:00+0000"
+ARG VERSION=${BASE_IMAGE_VERSION}
+ARG BUILD_NUMBER
+ARG BUILD_URL
+ARG BUILD_BRANCH
+ARG BUILD_SHA1
+
 LABEL maintainer="The OpenNMS Group" \
       license="AGPLv3" \
       name="Horizon" \
       version="${VERSION}" \
-      build.date="${BUILD_DATE}" \
       vendor="OpenNMS Community" \
-      org.opennms.repo.release="${REPO_RELEASE}"
+      cicd.build.date="${BUILD_DATE}" \
+      cicd.build.number="${BUILD_NUMBER}" \
+      cicd.build.url="${BUILD_URL}" \
+      cicd.build.branch="${BUILD_BRANCH}" \
+      cicd.build.sha1="${CIRCLE_SHA1}"
 
 WORKDIR /opt/opennms
 

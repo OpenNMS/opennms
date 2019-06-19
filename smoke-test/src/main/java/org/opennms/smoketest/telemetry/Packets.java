@@ -30,18 +30,20 @@ package org.opennms.smoketest.telemetry;
 
 import java.util.List;
 
+import org.opennms.netmgt.flows.elastic.NetflowVersion;
+
 import com.google.common.collect.Lists;
 
 public interface Packets {
     // Flow Packets
-    FlowPacket Netflow5 = new FlowPacket("/flows/netflow5.dat", 2);
-    FlowPacket Netflow9 = new FlowPacket("/flows/netflow9.dat", 7);
-    FlowPacket Ipfix = new FlowPacket("/flows/ipfix.dat", 2);
-    FlowPacket SFlow = new FlowPacket("/flows/sflow.dat", 5);
+    FlowPacket Netflow5 = new FlowPacket(NetflowVersion.V5, "/payloads/flows/netflow5.dat", 2);
+    FlowPacket Netflow9 = new FlowPacket(NetflowVersion.V9, "/payloads/flows/netflow9.dat", 7);
+    FlowPacket Ipfix = new FlowPacket(NetflowVersion.IPFIX, "/payloads/flows/ipfix.dat", 2);
+    FlowPacket SFlow = new FlowPacket(NetflowVersion.SFLOW, "/payloads/flows/sflow.dat", 5);
 
     // Other Packets
-    Packet NXOS = new Packet("/telemetry/cisco-nxos-proto.raw");
-    Packet JTI = new Packet("/telemetry/jti-proto.raw");
+    Packet NXOS = new Packet("/payloads/telemetry/cisco-nxos-proto.raw");
+    Packet JTI = new Packet("/payloads/telemetry/jti-proto.raw");
 
     static List<FlowPacket> getFlowPackets() {
         return Lists.newArrayList(Netflow5, Netflow9, Ipfix, SFlow);

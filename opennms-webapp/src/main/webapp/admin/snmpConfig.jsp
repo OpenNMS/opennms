@@ -120,7 +120,15 @@
 			alert(maxRepetitions
 					+ " is not a valid Max Repetitions. Please enter a number greater than 0 or leave it empty.");
 			return false;
-		}		
+		}
+
+		//validate ttl
+		var ttl = new String(document.snmpConfigForm.ttl.value);
+		if (ttl != "" && (!isNumber(ttl) || parseInt(ttl) <= 0)) {
+			alert(ttl
+					+ " is not a valid ttl. Please enter a number greater than 0 or leave it empty.");
+			return false;
+		}
 		
 		// validate save options (at least one must be selected)
 		var sendEventOption = document.snmpConfigForm.sendEventOption.checked;
@@ -255,6 +263,7 @@
 	String contextEngineId = getValue(snmpInfo.getContextEngineId());
 	String contextName = getValue(snmpInfo.getContextName());
 	String enterpriseId = getValue(snmpInfo.getEnterpriseId());
+	String ttl = getValue(snmpInfo.getTTL());
 %>
 
 
@@ -456,7 +465,18 @@ if (request.getAttribute("success") != null) {
             <div class="col-sm-9">
               <input id="maxRepetitions" name="maxRepetitions" class="form-control" value="<%=maxRepetitions%>">
               <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REPETITIONS %></p>
+           </div>
+          </div>
+
+          <div class="form-group form-row">
+            <label for="ttl" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The amount of time, in milliseconds, that OpenNMS will wait for a response from Minion.">
+            TTL
+            </label>
+            <div class="col-sm-9">
+              <input id="ttl" name="ttl" class="form-control" value="<%=ttl%>">
             </div>
+          </div>
+
           </div>
       </div> <!-- card-body -->
     </div> <!-- panel -->

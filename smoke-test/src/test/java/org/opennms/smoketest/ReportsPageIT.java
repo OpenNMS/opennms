@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ReportsPageIT extends OpenNMSSeleniumTestCase {
+public class ReportsPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         reportsPage();

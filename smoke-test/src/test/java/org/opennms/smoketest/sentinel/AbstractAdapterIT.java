@@ -34,8 +34,6 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
-import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD;
-import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -46,8 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -59,15 +56,14 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.MinionProfile;
+import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +78,7 @@ public abstract class AbstractAdapterIT {
 
     // Helper Object to create a requisition from
     protected static class RequisitionCreateInfo {
-        protected String location = "MINION";
+        protected String location = MinionProfile.DEFAULT_LOCATION;
         protected String nodeLabel;
         protected String foreignId;
         protected String foreignSource;
@@ -117,54 +113,32 @@ public abstract class AbstractAdapterIT {
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
-    @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withSentinel()
+            .withTelemetryProcessing()
+            .build());
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    protected TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder()
-                    .opennms()
-                    .minion()
-                    .newts()
-                    .sentinel();
-
-            customizeTestEnvironment(builder);
-
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            return builder.build();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
 
     @Test
     public void verifyAdapter() throws Exception {
         // Determine endpoints
-        final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        final InetSocketAddress opennmsHttpAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8980);
-        final InetSocketAddress postgresqlAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.POSTGRES, 5432);
+        final InetSocketAddress sentinelSshAddress = stack.sentinel().getSshAddress();
+        final InetSocketAddress opennmsHttpAddress = stack.opennms().getWebAddress();
 
         // Configure RestAssured
         RestAssured.baseURI = String.format("http://%s:%s/opennms", opennmsHttpAddress.getHostName(), opennmsHttpAddress.getPort());
         RestAssured.port = opennmsHttpAddress.getPort();
         RestAssured.basePath = "/rest";
-        RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+        RestAssured.authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
 
         // The package send may contain a node, which must be created in order to have the adapter store it to newts
         // so we check if this is the case and afterwards create the requisition
         final RequisitionCreateInfo requisitionToCreate = getRequisitionToCreate();
         if (requisitionToCreate != null) {
-            createRequisition(requisitionToCreate, opennmsHttpAddress, postgresqlAddress);
+            createRequisition(requisitionToCreate, opennmsHttpAddress, stack.postgres().getDaoFactory());
         }
 
         // Wait until a route for procession is actually started
@@ -185,11 +159,11 @@ public abstract class AbstractAdapterIT {
                 .get("/measurements/" + resourceId);
         Assert.assertEquals(404, response.statusCode());
 
-        // Send packet to minion
-        sendTelemetryMessage();
-
         await().atMost(3, TimeUnit.MINUTES).pollInterval(10, TimeUnit.SECONDS).until(
                 () -> {
+                    // Send packet to Minion
+                    sendTelemetryMessage();
+                    // Verify that the resource exists
                     final Response theResponse = RestAssured.given().accept(ContentType.JSON)
                             .get("/measurements/" + resourceId);
                     return theResponse.statusCode() == 200;
@@ -209,14 +183,11 @@ public abstract class AbstractAdapterIT {
     // Some tests require a requisition, if provided it will be created
     protected abstract RequisitionCreateInfo getRequisitionToCreate();
 
-    // Possibility to customize the test environment
-    protected abstract void customizeTestEnvironment(TestEnvironmentBuilder builder);
-
     // Creates the requisition
-    private OnmsNode createRequisition(RequisitionCreateInfo createInfo, InetSocketAddress opennmsHttp, InetSocketAddress postgresAddress) {
+    private OnmsNode createRequisition(RequisitionCreateInfo createInfo, InetSocketAddress opennmsHttp, HibernateDaoFactory daoFactory) {
         Objects.requireNonNull(createInfo);
         Objects.requireNonNull(opennmsHttp);
-        Objects.requireNonNull(postgresAddress);
+        Objects.requireNonNull(daoFactory);
 
         // Create Requisition
         final RestClient client = new RestClient(opennmsHttp);
@@ -225,7 +196,6 @@ public abstract class AbstractAdapterIT {
         client.importRequisition(requisition.getForeignSource());
 
         // Verify creation
-        final HibernateDaoFactory daoFactory = new HibernateDaoFactory(postgresAddress);
         final NodeDao nodeDao = daoFactory.getDao(NodeDaoHibernate.class);
         final OnmsNode onmsNode = await().atMost(3, MINUTES).pollInterval(30, SECONDS)
                 .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class)

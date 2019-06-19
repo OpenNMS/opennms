@@ -42,7 +42,7 @@ public class FlowTestBuilder {
     private InetSocketAddress opennmsWebAddress;
 
     public FlowTestBuilder withFlowPacket(FlowPacket packet, InetSocketAddress sendToAddress) {
-        final FlowPacket packetWithDestination = new FlowPacket(packet.getResource(), packet.getFlowCount(), sendToAddress);
+        final FlowPacket packetWithDestination = new FlowPacket(packet.getNetflowVersion(), packet.getResource(), packet.getFlowCount(), sendToAddress);
         this.packets.add(packetWithDestination);
         return this;
     }

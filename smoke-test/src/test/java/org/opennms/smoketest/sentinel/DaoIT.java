@@ -33,22 +33,19 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.PrintStream;
-import java.net.InetSocketAddress;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.SentinelProfile;
+import org.opennms.smoketest.stacks.StackModel;
+import org.opennms.smoketest.stacks.TimeSeriesStrategy;
+import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,43 +55,25 @@ public class DaoIT {
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
-    @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withSentinels(SentinelProfile.newBuilder()
+                    .withFile(Paths.get("target/deploy-artifacts/org.opennms.features.distributed.dao-test.jar"),
+                            "deploy/org.opennms.features.distributed.dao-test.jar")
+                    .build())
+            .withTimeSeriesStrategy(TimeSeriesStrategy.NEWTS)
+            .build());
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms().sentinel();
-
-            // Auto-Deploy sentinel-persistence feature and the dao-test bundle, which verifies the DAOs afterwards
-            builder.withSentinelEnvironment()
-                    .addFile(getClass().getResource("/sentinel/features-dao.xml"), "deploy/features.xml")
-                    .addFile(Paths.get("target/deploy-artifacts/org.opennms.features.distributed.dao-test.jar").toUri().toURL(), "deploy/org.opennms.features.distributed.dao-test.jar");
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            return builder.build();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
-
     @Test
     public void verifyDaos() {
-        final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-
         // Ensure we are actually started the sink and are ready to listen for messages
         await().atMost(5, MINUTES)
                 .pollInterval(5, SECONDS)
                 .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
+                    try (final SshClient sshClient = stack.sentinel().ssh()) {
                         final PrintStream pipe = sshClient.openShell();
                         final String command ="bundle:list";
                         pipe.println(command);

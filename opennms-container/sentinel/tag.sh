@@ -6,13 +6,13 @@ set -o errexit
 # Use the error status of the first failure, rather than that of the last item in a pipeline.
 set -o pipefail
 
-# shellcheck source=opennms-container/horizon/config.sh
-source ./config.sh
-
 # shellcheck source=opennms-container/registry-config.sh
 source ../registry-config.sh
 
-for TAG in ${IMAGE_VERSION[*]}; do
+# shellcheck source=opennms-container/version-n-tags.sh
+source ../version-tags.sh
+
+for TAG in ${OCI_TAGS[*]}; do
   docker tag sentinel "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/sentinel:${TAG}"
 done
 docker images

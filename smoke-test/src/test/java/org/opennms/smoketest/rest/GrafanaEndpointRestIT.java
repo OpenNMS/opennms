@@ -39,21 +39,16 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-public class GrafanaEndpointRestIT extends OpenNMSSeleniumTestCase {
+public class GrafanaEndpointRestIT extends AbstractRestIT {
+
+    public GrafanaEndpointRestIT() {
+        super(Version.V1, "endpoints/grafana");
+    }
 
     @Before
-    public void before() throws IOException, InterruptedException {
-        System.out.println("before");
-        RestAssured.baseURI = getBaseUrl();
-        RestAssured.port = getServerHttpPort();
-        RestAssured.basePath = "/opennms/rest/endpoints/grafana";
-        RestAssured.authentication = RestAssured.preemptive().basic(OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME, OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD);
-
+    public void setUp() throws IOException, InterruptedException {
         // Delete all endpoints
         sendDelete("rest/endpoints/grafana");
     }

@@ -38,6 +38,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.NullValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Field;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Scope;
@@ -53,38 +54,6 @@ public final class ScopeFieldSpecifier implements Field, Scope {
     public static final String SCOPE_LINE_CARD = "SCOPE:LINE_CARD";
     public static final String SCOPE_CACHE = "SCOPE:CACHE";
     public static final String SCOPE_TEMPLATE = "SCOPE:TEMPLATE";
-
-//    public enum ScopeFieldType {
-//        SYSTEM(UnsignedValue.parserWith64Bit(SCOPE_SYSTEM, Optional.empty())),
-//        INTERFACE(UnsignedValue.parserWith64Bit(SCOPE_INTERFACE, Optional.empty())),
-//        LINE_CARD(UnsignedValue.parserWith64Bit(SCOPE_LINE_CARD, Optional.empty())),
-//        CACHE(UnsignedValue.parserWith64Bit(SCOPE_CACHE, Optional.empty())),
-//        TEMPLATE(UnsignedValue.parserWith64Bit(SCOPE_TEMPLATE, Optional.empty()));
-//
-//        public final InformationElement parser;
-//
-//        ScopeFieldType(final InformationElement parser) {
-//            this.parser = parser;
-//        }
-//
-//        public static ScopeFieldType from(final ByteBuffer buffer) throws InvalidPacketException {
-//            final int type = uint16(buffer);
-//            switch (type) {
-//                case 0x0001:
-//                    return ScopeFieldType.SYSTEM;
-//                case 0x0002:
-//                    return ScopeFieldType.INTERFACE;
-//                case 0x0003:
-//                    return ScopeFieldType.LINE_CARD;
-//                case 0x0004:
-//                    return ScopeFieldType.CACHE;
-//                case 0x0005:
-//                    return ScopeFieldType.TEMPLATE;
-//                default:
-//                    throw new InvalidPacketException(buffer, "Invalid scope field type: 0x%04X", type);
-//            }
-//        }
-//    }
 
     /*
       0                   1                   2                   3

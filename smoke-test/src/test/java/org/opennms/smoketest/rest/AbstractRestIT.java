@@ -29,17 +29,22 @@
 package org.opennms.smoketest.rest;
 
 import static io.restassured.RestAssured.authentication;
-import static io.restassured.RestAssured.basePath;
-import static io.restassured.RestAssured.baseURI;
-import static io.restassured.RestAssured.port;
 import static io.restassured.RestAssured.preemptive;
 
 import java.util.Objects;
 
 import org.junit.Before;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.junit.ClassRule;
+import org.opennms.smoketest.OpenNMSSeleniumIT;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 
-public abstract class AbstractRestIT extends OpenNMSSeleniumTestCase {
+import io.restassured.RestAssured;
+
+public abstract class AbstractRestIT extends OpenNMSSeleniumIT {
+
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     public enum Version {
         V1("/rest/"), V2("/api/v2/");
@@ -59,14 +64,16 @@ public abstract class AbstractRestIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void before() {
-        baseURI = getBaseUrl();
-        port = getServerHttpPort();
-        basePath = path;
+        // Always reset the session before the test since we expect no existing session/cookies to be present
+        RestAssured.reset();
+        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+        RestAssured.port = stack.opennms().getWebPort();
+        RestAssured.basePath = path;
         applyDefaultCredentials();
     }
 
     protected void applyDefaultCredentials() {
-        authentication = preemptive().basic(OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME, OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD);
+        authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
     }
 
 }

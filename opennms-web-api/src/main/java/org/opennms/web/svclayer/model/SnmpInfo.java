@@ -72,6 +72,7 @@ public class SnmpInfo {
 	private String m_writeCommunity;
 	private String m_proxyHost;
 	private String m_location;
+	private Long m_ttl;
 	
 	/**
 	 * <p>
@@ -103,7 +104,8 @@ public class SnmpInfo {
 		// handle a possible proxy host setting
 		if (config.getProxyFor() != null) { // switch proxy and address
 			m_proxyHost = InetAddressUtils.str(config.getAddress());
-		} 
+		}
+		if (config.getTTL() != null) m_ttl = config.getTTL();
 		
 		// only set these properties if snmp version is v3
 		if (config.isVersion3()) {
@@ -401,7 +403,15 @@ public class SnmpInfo {
 	public void setProxyHost(String proxyHost) {
 		m_proxyHost = proxyHost;
 	}
-	
+
+	public Long getTTL() {
+		return m_ttl;
+	}
+
+	public void setTTL(Long ttl) {
+		m_ttl = ttl;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
@@ -445,6 +455,7 @@ public class SnmpInfo {
 		eventInfo.setSecurityName(m_securityName);
 		eventInfo.setProxyHost(m_proxyHost);
 		eventInfo.setLocation(m_location);
+		eventInfo.setTTL(getTTL());
 		if (m_port != null) eventInfo.setPort(m_port.intValue());
 		if (m_retries != null) eventInfo.setRetryCount(m_retries.intValue());
 		if (m_timeout != null) eventInfo.setTimeout(m_timeout.intValue());

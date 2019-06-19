@@ -24,8 +24,8 @@
                 <td>
                     <span ng-show="endpoint.revealApiKey === true">{{endpoint.apiKey}}</span>
                     <span ng-show="endpoint.revealApiKey === false">**********</span>
-                    <button id="action.revealApiKey.{{endpoint.id}}" class="btn btn-link">
-                        <i ng-class="{'fa-eye': endpoint.revealApiKey === false, 'fa-eye-slash': endpoint.revealApiKey === true}" class="fa" ng-click="endpoint.revealApiKey = !endpoint.revealApiKey"></i>
+                    <button id="action.revealApiKey.{{endpoint.id}}" class="btn btn-link" ng-click="endpoint.revealApiKey = !endpoint.revealApiKey">
+                        <i ng-class="{'fa-eye': endpoint.revealApiKey === false, 'fa-eye-slash': endpoint.revealApiKey === true}" class="fa"></i>
                     </button>
                 </td>
                 <td>{{endpoint.description}}</td>

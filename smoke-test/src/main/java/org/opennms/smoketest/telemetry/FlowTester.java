@@ -37,13 +37,20 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.elastic.NetflowVersion;
 import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -67,6 +74,7 @@ public class FlowTester {
 
     private static Logger LOG = LoggerFactory.getLogger(FlowTester.class);
 
+    private static final Gson gson = new Gson();
 
     /** The packets to send */
     private final List<FlowPacket> packets;
@@ -124,29 +132,61 @@ public class FlowTester {
         factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
 
         try {
-            LOG.info("Verifying flows. Expecting to persist {} flows", totalFlowCount);
             client = factory.getObject();
             runBefore.forEach(rb -> rb.accept(this));
 
-            // Send packets for each defined packet
-            for (FlowPacket packetDefinition : packets) {
-                packetDefinition.send();
+            // Group the packets by protocol
+            final Map<NetflowVersion, List<FlowPacket>> packetsByProtocol = packets.stream()
+                    .collect(Collectors.groupingBy(FlowPacket::getNetflowVersion));
+            LOG.info("Verifying flows. Expecting to persist {} flows across protocols: {}",
+                    totalFlowCount, packetsByProtocol.keySet());
+
+            // Send all the packets once
+            for (FlowPacket packet : packets) {
+                LOG.info("Sending packet payload from {} containing {} flows to: {}",
+                        packet.getResource(), packet.getFlowCount(),
+                        packet.getDestinationAddress());
+                packet.send();
             }
 
-            // Ensure that the template has been created
+            for (NetflowVersion netflowVersion : packetsByProtocol.keySet()) {
+                final List<FlowPacket> packetsForProtocol = packetsByProtocol.get(netflowVersion);
+                final int numFlowsExpected = packetsForProtocol.stream().mapToInt(FlowPacket::getFlowCount).sum();
+
+                LOG.info("Verifying flows for {}", netflowVersion);
+                verify(() -> {
+                    // Verify directly in Elasticsearch that the flows have been created
+                    final SearchResult response = client.execute(new Search.Builder(
+                            "{\"query\":{\"term\":{\"netflow.version\":{\"value\":"
+                                    + gson.toJson(netflowVersion)
+                                    + "}}}}")
+                            .addIndex("netflow-*")
+                            .build());
+                    LOG.info("Response {} with {} flow documents: {}", response.isSucceeded() ? "successful" : "failed", response.getTotal(), response.getJsonString());
+                    final boolean foundAllFlowsForProtocol = response.isSucceeded() && response.getTotal() >= numFlowsExpected;
+
+                    if (!foundAllFlowsForProtocol) {
+                        // If we haven't found them all yet, try sending all the packets for this protocol again.
+                        // We do this since the flows are UDP packages and aren't 100% reliable.
+                        // This test is only concerned that they eventually do make their way into ES.
+                        for (FlowPacket packet : packetsForProtocol) {
+                            LOG.info("Sending packet payload from {} containing {} flows to: {}",
+                                    packet.getResource(), packet.getFlowCount(),
+                                    packet.getDestinationAddress());
+                            packet.send();
+                        }
+                    }
+                    return foundAllFlowsForProtocol;
+                });
+            }
+
+            LOG.info("Ensuring that the index template was created...");
             verify(() -> {
                 final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
                 return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
             });
 
-            // Verify directly at elastic that the flows have been created
-            verify(() -> {
-                final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
-                LOG.info("Response: {} {} ", response.isSucceeded() ? "Success" : "Failure", response.getTotal());
-                return response.isSucceeded() && response.getTotal() == totalFlowCount;
-            });
-
-           runAfter.forEach(ra -> ra.accept(this));
+            runAfter.forEach(ra -> ra.accept(this));
         } finally {
             if (client != null) {
                 client.close();
@@ -177,7 +217,7 @@ public class FlowTester {
         Objects.requireNonNull(verifyCallback);
 
         // Verify
-        with().pollInterval(15, SECONDS).await().atMost(1, MINUTES).until(() -> {
+        with().pollInterval(15, SECONDS).await().atMost(5, MINUTES).until(() -> {
             try {
                 LOG.info("Querying elastic search");
                 return verifyCallback.test();

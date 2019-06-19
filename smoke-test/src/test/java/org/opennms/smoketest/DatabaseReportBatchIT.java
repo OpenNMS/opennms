@@ -43,7 +43,7 @@ import org.openqa.selenium.WebElement;
  * Unless {@link DatabaseReportIT} we only verify if the FIRST report can be delivered/scheduled.
  * We do NOT test ALL.
  */
-public class DatabaseReportBatchIT extends OpenNMSSeleniumTestCase {
+public class DatabaseReportBatchIT extends OpenNMSSeleniumIT {
 
     @Before
     public void before() {
@@ -52,13 +52,13 @@ public class DatabaseReportBatchIT extends OpenNMSSeleniumTestCase {
         findElementByLink("List reports").click();
 
         // we do not want to wait 2 minutes, we only want to wait n seconds
-        m_driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     }
 
     @Test
     public void testDeliver() {
         findElementByXpath("//td[@class=\"o-report-deliver\"]/a").click();
-        List<WebElement> elements = m_driver.findElements(By.xpath("//h3[contains(text(), 'Error')]"));
+        List<WebElement> elements = driver.findElements(By.xpath("//h3[contains(text(), 'Error')]"));
         Assert.assertEquals(0, elements.size());
     }
 
@@ -66,7 +66,7 @@ public class DatabaseReportBatchIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testSchedule() {
         findElementByXpath("//td[@class=\"o-report-schedule\"]/a").click();
-        List<WebElement> elements = m_driver.findElements(By.xpath("//h3[contains(text(), 'Error')]"));
+        List<WebElement> elements = driver.findElements(By.xpath("//h3[contains(text(), 'Error')]"));
         Assert.assertEquals(0, elements.size());
     }
 }

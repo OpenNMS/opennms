@@ -92,6 +92,17 @@ public class FlowSample implements SampleData {
         this.flow_records = new Array(buffer, Optional.empty(), FlowRecord::new);
     }
 
+    public FlowSample(final long sequence_number, final SFlowDataSource source_id, final long sampling_rate, final long sample_pool, final long drops, final Interface input, final Interface output, final Array<FlowRecord> flow_records) {
+        this.sequence_number = sequence_number;
+        this.source_id = source_id;
+        this.sampling_rate = sampling_rate;
+        this.sample_pool = sample_pool;
+        this.drops = drops;
+        this.input = input;
+        this.output = output;
+        this.flow_records = flow_records;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

@@ -40,16 +40,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
-import org.opennms.test.system.api.utils.SshClient;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.utils.CommandTestUtils;
+import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +54,8 @@ public class MonitorsListCommandIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(MonitorsListCommandIT.class);
 
-    private static TestEnvironment m_testEnvironment;
+    @ClassRule
+    public final static OpenNMSStack stack = OpenNMSStack.MINION;
 
     private ImmutableSet<String> expectedMonitors = ImmutableSet.<String> builder().add(
             "org.opennms.netmgt.poller.monitors.DNSResolutionMonitor",
@@ -119,36 +115,16 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.DhcpMonitor")
             .build();
 
-    @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().all();
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            m_testEnvironment = builder.build();
-            return m_testEnvironment;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
-
     @Test
     public void canLoadMonitorsOnMinion() throws Exception {
-        final InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
+        final InetSocketAddress sshAddr = stack.minion().getSshAddress();
         await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
                 .until(() -> listAndVerifyMonitors("Minion", sshAddr), hasSize(0));
     }
 
     @Test
     public void canLoadMonitorsOnOpenNMS() throws Exception {
-        final InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
+        final InetSocketAddress sshAddr = stack.opennms().getSshAddress();
         await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
                 .until(() -> listAndVerifyMonitors("OpenNMS", sshAddr), hasSize(0));
     }
