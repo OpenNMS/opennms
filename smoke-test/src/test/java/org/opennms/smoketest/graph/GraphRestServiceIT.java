@@ -42,12 +42,17 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.test.system.api.NewTestEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
+	private final static Logger LOG = LoggerFactory.getLogger(GraphRestServiceIT.class);
     private static final String CONTAINER_ID = "test";
     private KarafShell karafShell;
     private RestClient restClient;
@@ -125,6 +130,64 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("graphs[1].namespace", Matchers.is("acme:markets"))
                     .content("graphs[1].vertices", Matchers.hasSize(16))
                     .content("graphs[1].edges", Matchers.hasSize(0));
+        });
+    }
+
+    @Test
+    public void verifySuggest() {
+    	createGraphMLAndWaitUntilDone();
+        given().params("s", "unknown")
+               .accept(ContentType.JSON)
+               .get("/search/suggestions/{namespace}/", "acme:regions")
+               .then().statusCode(204);
+
+        Response response = given().params("s", "North Region")
+               .accept(ContentType.JSON)
+               .get("/search/suggestions/{namespace}/", "acme:regions");
+        LOG.info("Results from search:" + response.asString());
+
+        response
+               .then().statusCode(200)
+               .contentType(ContentType.JSON)
+               .content("[0].context", Matchers.is("GenericVertex"))
+               .content("[0].label", Matchers.is("North Region"))
+               .content("[0].provider", Matchers.is("LabelSearchProvider"));
+    }
+
+    @Test
+    public void verifySearch() {
+    	createGraphMLAndWaitUntilDone();
+        given()
+               .params("providerId", "LabelSearchProvider")
+               .params("criteria", "unknown")
+               .params("context", "GenericVertex")
+               .accept(ContentType.JSON)
+               .get("/search/results/{namespace}/", "acme:regions")
+               .then().statusCode(204);
+
+        Response response = given()
+               .params("providerId", "LabelSearchProvider")
+               .params("criteria", "North Region")
+               .params("context", "GenericVertex")
+               .accept(ContentType.JSON)
+               .get("/search/results/{namespace}/", "acme:regions");
+        LOG.info("Results from search:" + response.asString());
+
+        response.then().statusCode(200)
+               .contentType(ContentType.JSON)
+               .content("[0].properties.namespace", Matchers.is("acme:regions"))
+               .content("[0].label", Matchers.is("North Region"))
+               .content("[0].id", Matchers.is("north"));
+    }
+
+    private void createGraphMLAndWaitUntilDone() {
+    	createGraphML();
+    	await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
+            given().accept(ContentType.JSON).get()
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .content("[0].id", Matchers.is("application"))
+                    .content("[1].id", Matchers.is(CONTAINER_ID));
         });
     }
 
