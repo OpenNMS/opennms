@@ -23,5 +23,6 @@
     <module>datasource</module>
     <module>coordination</module>
     <module>opennms-identity</module>
+    <module>service-registry</module>
   </modules>
 </project>
