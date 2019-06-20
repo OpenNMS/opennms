@@ -31,11 +31,13 @@ package org.opennms.smoketest.stacks;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.io.Resources;
 
 /**
  * All the OpenNMS related settings that need to be tweaked on
@@ -48,11 +50,11 @@ public class OpenNMSProfile {
     public static OpenNMSProfile DEFAULT = OpenNMSProfile.newBuilder().build();
 
     private final boolean kafkaProducerEnabled;
-    private final Map<URL, String> files;
+    private final List<OverlayFile> files;
 
     private OpenNMSProfile(Builder builder) {
         kafkaProducerEnabled = builder.kafkaProducerEnabled;
-        files = Collections.unmodifiableMap(builder.files);
+        files = Collections.unmodifiableList(builder.files);
     }
 
     public static Builder newBuilder() {
@@ -61,7 +63,7 @@ public class OpenNMSProfile {
 
     public static final class Builder {
         private boolean kafkaProducerEnabled = false;
-        private Map<URL, String> files = new LinkedHashMap<>();
+        private List<OverlayFile> files = new LinkedList<>();
 
         /**
          * Enable/disable the Kafka producer feature.
@@ -80,15 +82,65 @@ public class OpenNMSProfile {
          * Add files to the container over
          *
          * @param source path to the source file on disk
-         * @param target path the target file related to $OPENNMS_HOME/
+         * @param target path the target file relative to $OPENNMS_HOME/
          * @return this builder
          */
         public Builder withFile(Path source, String target) {
             try {
-                files.put(source.toUri().toURL(), target);
+                files.add(new OverlayFile(source.toUri().toURL(), target));
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
+            return this;
+        }
+
+        /**
+         * Add files to the container over
+         *
+         * @param source source URL
+         * @param target path the target file related to $OPENNMS_HOME/
+         * @return this builder
+         */
+        public Builder withFile(URL source, String target) {
+            files.add(new OverlayFile(source, target));
+            return this;
+        }
+
+        /**
+         * Add files to the container over
+         *
+         * @param resourceName resource path
+         * @param target path the target file related to $OPENNMS_HOME/
+         * @return this builder
+         */
+        public Builder withFile(String resourceName, String target) {
+            files.add(new OverlayFile(Resources.getResource(resourceName), target));
+            return this;
+        }
+
+        /**
+         * Add files to the container over
+         *
+         * @param source source URL
+         * @param target path the target file related to $OPENNMS_HOME/
+         * @param permissions file permissions to set
+         * @return this builder
+         */
+        public Builder withFile(URL source, String target, Set<PosixFilePermission> permissions) {
+            files.add(new OverlayFile(source, target, permissions));
+            return this;
+        }
+
+        /**
+         * Add files to the container over
+         *
+         * @param resourceName resource path
+         * @param target path the target file related to $OPENNMS_HOME/
+         * @param permissions file permissions to set
+         * @return this builder
+         */
+        public Builder withFile(String resourceName, String target, Set<PosixFilePermission> permissions) {
+            files.add(new OverlayFile(Resources.getResource(resourceName), target, permissions));
             return this;
         }
 
@@ -107,7 +159,7 @@ public class OpenNMSProfile {
         return kafkaProducerEnabled;
     }
 
-    public Map<URL, String> getFiles() {
+    public List<OverlayFile> getFiles() {
         return files;
     }
 
