@@ -41,8 +41,8 @@ public class Conversation {
     private Conversation(final Builder builder) {
         this.location = Objects.requireNonNull(builder.location);
         this.protocol = Objects.requireNonNull(builder.protocol);
-        this.lowerHost = new Host(builder.lowerIp, Optional.ofNullable(builder.lowerHostname));
-        this.upperHost = new Host(builder.upperIp, Optional.ofNullable(builder.upperHostname));
+        this.lowerHost = new Host(builder.lowerIp, builder.lowerHostname);
+        this.upperHost = new Host(builder.upperIp, builder.upperHostname);
         this.application = Objects.requireNonNull(builder.application);
     }
 

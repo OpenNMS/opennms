@@ -490,7 +490,7 @@ public class ElasticFlowRepository implements FlowRepository {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
 
         if (OTHER_NAME.equals(host)) {
-            return CompletableFuture.completedFuture(new Host(OTHER_NAME, Optional.of(OTHER_NAME)));
+            return CompletableFuture.completedFuture(new Host(OTHER_NAME, OTHER_NAME));
         }
 
         final Host.Builder result = Host.from(host);

@@ -35,9 +35,9 @@ public class Host {
     private final String ip;
     private final Optional<String> hostname;
 
-    public Host(final String ip, final Optional<String> hostname) {
+    public Host(final String ip, final String hostname) {
         this.ip = Objects.requireNonNull(ip);
-        this.hostname = Objects.requireNonNull(hostname);
+        this.hostname = Optional.ofNullable(hostname);
     }
 
     public Host(final Builder builder) {
