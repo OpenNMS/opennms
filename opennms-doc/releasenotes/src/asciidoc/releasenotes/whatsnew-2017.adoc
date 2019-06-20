@@ -174,6 +174,18 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.18]
+
+==== Release Meridian-2017.1.18
+
+Release 2017.1.18 is a small update to 2017.1.17 that fixes an issue with timeline graphs in the node details page.
+
+The codename for 2017.1.18 is _Kyoto_.
+
+===== Bug
+
+* Timeline missing for service names including slashes (Issue http://issues.opennms.org/browse/NMS-12097[NMS-12097])
+
 [releasenotes-changelog-Meridian-2017.1.17]
 
 ==== Release Meridian-2017.1.17
