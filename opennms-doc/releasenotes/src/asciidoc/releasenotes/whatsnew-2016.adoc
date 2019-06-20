@@ -141,6 +141,18 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.22]
+
+==== Release Meridian-2016.1.22
+
+Release 2016.1.22 is a small update to 2016.1.21 that fixes an issue with timeline graphs in the node details page.
+
+The codename for 2016.1.22 is _Prof. Orlando Ferguson's Map of the Square and Stationary Earth, 1893_.
+
+===== Bug
+
+* Timeline missing for service names including slashes (Issue http://issues.opennms.org/browse/NMS-12097[NMS-12097])
+
 [releasenotes-changelog-Meridian-2016.1.21]
 
 ==== Release Meridian-2016.1.21
