@@ -39,7 +39,10 @@ import java.nio.file.Paths;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.smoketest.stacks.OverlayFile;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
+
+import com.google.common.collect.Lists;
 
 public class OverlayUtilsTest {
 
@@ -59,11 +62,10 @@ public class OverlayUtilsTest {
 
         File target = temporaryFolder.newFolder("target");
 
-        OverlayUtils.copyFiles(ImmutableMap.<URL, String>builder()
-                .put(a.toURI().toURL(), "a")
-                .put(b.toURI().toURL(), "b")
-                .put(c.toURI().toURL(), "c")
-                .build(), target.toPath());
+        OverlayUtils.copyFiles(Lists.newArrayList(new OverlayFile(a.toURI().toURL(), "a"),
+                        new OverlayFile(b.toURI().toURL(), "b"),
+                        new OverlayFile(c.toURI().toURL(), "c")),
+                target.toPath());
 
         // Verify
         assertThat(target.toPath().resolve("a").toFile().isFile(), equalTo(true));

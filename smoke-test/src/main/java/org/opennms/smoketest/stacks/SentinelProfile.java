@@ -29,11 +29,10 @@
 package org.opennms.smoketest.stacks;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -49,11 +48,11 @@ public class SentinelProfile {
 
     private final String id;
 
-    private final Map<URL, String> files;
+    private final List<OverlayFile> files;
 
     private SentinelProfile(Builder builder) {
         id = builder.id;
-        files = Collections.unmodifiableMap(builder.files);
+        files = Collections.unmodifiableList(builder.files);
     }
 
     public static Builder newBuilder() {
@@ -62,11 +61,11 @@ public class SentinelProfile {
 
     public static final class Builder {
         private String id = UUID.randomUUID().toString();
-        private Map<URL, String> files = new LinkedHashMap<>();
+        private List<OverlayFile> files = new LinkedList<>();
 
         public Builder withFile(Path source, String target) {
             try {
-                files.put(source.toUri().toURL(), target);
+                files.add(new OverlayFile(source.toUri().toURL(), target));
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
@@ -87,7 +86,8 @@ public class SentinelProfile {
         return id;
     }
 
-    public Map<URL, String> getFiles() {
+    public List<OverlayFile> getFiles() {
         return files;
     }
+
 }

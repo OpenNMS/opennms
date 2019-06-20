@@ -48,8 +48,13 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
@@ -86,6 +91,16 @@ public class RestClient {
     public RestClient(URL url, String username, String password) {
         this.url = url;
         authorizationHeader = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+    }
+
+    /**
+     * Create a REST client that connects to http://localhost:8980/ with the default credentials.
+     * Used for testing.
+     *
+     * @return a new REST client for OpenNMS on the localhost
+     */
+    public static RestClient forLocalhost() {
+        return new RestClient(InetSocketAddress.createUnresolved("127.0.0.1", 8980));
     }
 
     private static URL toUrl(InetSocketAddress addr) {
@@ -174,7 +189,7 @@ public class RestClient {
         // Serialize service to XML and remove attributes which can't be set
         final String serviceXml = XmlUtils.filterAttributesFromXml(JaxbUtils.marshal(service),
                 // We shouldn't be adding any extra attributes here, but rather work to remove these
-                "down");
+                "down", "statusLong");
         return getBuilder(target).post(Entity.entity(serviceXml, MediaType.APPLICATION_XML));
     }
 
@@ -188,6 +203,11 @@ public class RestClient {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria).path("ipinterfaces").path(ipAddress)
                 .path("services").path(service);
         return getBuilder(target).get();
+    }
+
+    public Response deleteNode(String nodeCriteria) {
+        final WebTarget target = getTarget().path("nodes").path(nodeCriteria);
+        return getBuilder(target).delete();
     }
 
     public Response deleteService(String nodeCriteria, String ipAddress, String service) {
@@ -204,6 +224,26 @@ public class RestClient {
     public Response getResponseForInterface(String nodeCriteria, String ipAddress) {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria).path("ipinterfaces").path(ipAddress);
         return getBuilder(target).get();
+    }
+
+    public Response setNodeLevelMetadata(String nodeCriteria, OnmsMetaData metaData) {
+        final WebTarget target = getTargetV2().path("nodes").path(nodeCriteria).path("metadata");
+        return getBuilder(target).post(Entity.entity(metaData, MediaType.APPLICATION_XML));
+    }
+
+    public OnmsEventCollection getEventsForNode(int nodeId) {
+        final WebTarget target = getTarget().path("events").queryParam("node.id", nodeId);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
+    }
+
+    public OnmsAlarmCollection getAlarmsByEventUei(String eventUei) {
+        final WebTarget target = getTarget().path("alarms").queryParam("uei", eventUei);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsAlarmCollection.class);
+    }
+
+    public OnmsAlarmCollection getAlarmsForNode(int nodeId) {
+        final WebTarget target = getTarget().path("alarms").queryParam("node.id", nodeId);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsAlarmCollection.class);
     }
 
     public OnmsMinion getMinion(String id) {
@@ -275,6 +315,25 @@ public class RestClient {
     public void resetGeocoderConfiguration() {
         final WebTarget target = getTargetV2().path("geocoding").path("config");
         final Response response = getBuilder(target).delete();
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
+    }
+
+    public void addCategory(String categoryName) {
+        final OnmsCategory category = new OnmsCategory(categoryName);
+        final WebTarget target = getTarget().path("categories");
+        final Response response = getBuilder(target).post(Entity.entity(category, MediaType.APPLICATION_XML));
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
+    }
+
+    public void addCategoryToNode(String nodeCriteria, String categoryName) {
+        final WebTarget target = getTarget().path("categories").path(categoryName).path("nodes").path(nodeCriteria);
+        final Response response = getBuilder(target).put(null);
         if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
             throw new RuntimeException(String.format("Request failed with: %s:\n%s",
                     response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
