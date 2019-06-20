@@ -1349,6 +1349,7 @@
     <scalaLibraryVersion>2.12.8</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.0</scalaLoggingVersion>
     <scalaVersion>2.12</scalaVersion>
+    <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.21</slf4jVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
