@@ -109,6 +109,28 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.servicemix.specs</groupId>
+      <artifactId>org.apache.servicemix.specs.jaxws-api-2.2</artifactId>
+      <version>${servicemixSpecsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix.specs</groupId>
+      <artifactId>org.apache.servicemix.specs.saaj-api-1.3</artifactId>
+      <version>${servicemixSpecsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>cxf-dependencies</artifactId>
       <type>pom</type>
