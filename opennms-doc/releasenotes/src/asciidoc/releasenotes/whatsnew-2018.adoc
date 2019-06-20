@@ -84,6 +84,18 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.9]
+
+==== Release Meridian-2018.1.9
+
+Release 2018.1.9 is a small update to 2018.1.8 that fixes an issue with timeline graphs in the node details page.
+
+The codename for 2018.1.9 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_9[Strong/Severe Gale]_.
+
+===== Bug
+
+* Timeline missing for service names including slashes (Issue http://issues.opennms.org/browse/NMS-12097[NMS-12097])
+
 [releasenotes-changelog-Meridian-2018.1.8]
 
 ==== Release Meridian-2018.1.8
@@ -111,7 +123,7 @@ The codename for 2018.1.8 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 Release 2018.1.7 is an update to Meridian 2018.1.6.
 It contains a few changes including UI updates and an SNMP loop bug that could cause out-of-memory crashes.
 
-The codename for 2018.1.7 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_7[High wind]_.
+The codename for 2018.1.7 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_7[High Wind]_.
 
 ===== Bug
 
@@ -138,7 +150,7 @@ Release 2018.1.6 is an update to Meridian 2018.1.5.
 It contains a number of changes including a ReST issue with truncated numbers, 3rd-party JDBC support in the Minion,
 a performance fix for the Measurements API, and a fix for bad (looping) SNMP agents.
 
-The codename for 2018.1.6 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_6[Strong breeze]_.
+The codename for 2018.1.6 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_6[Strong Breeze]_.
 
 ===== Bug
 
@@ -161,7 +173,7 @@ It contains a number of bug fixes including fixes for sending notifications for 
 associated nodes, XSS issues, and more.
 It also includes a number of performance improvements.
 
-The codename for 2018.1.5 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_5[Fresh breeze]_.
+The codename for 2018.1.5 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_5[Fresh Breeze]_.
 
 ===== Bug
 
@@ -182,7 +194,7 @@ The codename for 2018.1.5 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 Release 2018.1.4 is an update to Meridian 2018.1.3.
 It contains a number of bug fixes and a few enhancements, including a bunch of performance fixes to topology maps and a number of other smaller changes.
 
-The codename for 2018.1.4 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_4[Moderate breeze]_.
+The codename for 2018.1.4 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_4[Moderate Breeze]_.
 
 ===== Bug
 
@@ -211,7 +223,7 @@ The codename for 2018.1.4 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 Release 2018.1.3 is an update to Meridian 2018.1.2.
 It contains a number of bug fixes and a few enhancements, including additional HTTP proxy support, reliability updates, and UI performance improvements.
 
-The codename for 2018.1.3 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_3[Gentle breeze]_.
+The codename for 2018.1.3 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_3[Gentle Breeze]_.
 
 ===== Bug
 
@@ -236,7 +248,7 @@ The codename for 2018.1.3 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 Release 2018.1.2 is an update to Meridian 2018.1.1.
 It contains a number of bug fixes and a few enhancements, including improvements to VMware connection pooling.
 
-The codename for 2018.1.2 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_2[Light breeze]_.
+The codename for 2018.1.2 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_2[Light Breeze]_.
 
 ===== Bug
 
@@ -260,7 +272,7 @@ The codename for 2018.1.2 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 Release 2018.1.1 is an update to Meridian 2018.1.0.
 It contains a few bug fixes and enhancements.
 
-The codename for 2018.1.1 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_1[Light air]_.
+The codename for 2018.1.1 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_1[Light Air]_.
 
 ===== Bug
 
