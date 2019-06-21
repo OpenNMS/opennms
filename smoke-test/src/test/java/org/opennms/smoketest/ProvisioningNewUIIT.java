@@ -192,6 +192,15 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         clickId("save-asset", false);
         waitForModalClose();
 
+        // Add meta-data to the node
+        clickId("tab-metadata", false);
+        clickId("add-metadata", false);
+        findElementByCss("form[name='metaDataForm']");
+        enterText(By.id("metadata-key"), "foo");
+        enterText(By.id("metadata-value"), "bar");
+        clickId("save-metadata", false);
+        waitForModalClose();
+
         // Add a category to the node
         clickId("tab-categories", false);
         clickId("add-category", false);
@@ -275,6 +284,13 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         wait.until(elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + NODE_IPADDR + "']");
         findElementByLink("HTTP-8980");
+
+        // Verify that the meta-data was persisted
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":" + NODE_FOREIGNID);
+        findElementByLink("Meta-Data").click();
+        waitUntil(pageContainsText("Context requisition"));
+        waitUntil(pageContainsText("foo"));
+        waitUntil(pageContainsText("bar"));
     }
 
 
