@@ -29,15 +29,11 @@
 package org.opennms.smoketest.minion;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.utils.CommandTestUtils;
+import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,31 +48,12 @@ import static org.hamcrest.Matchers.containsString;
 public class JMXCollectorIT {
     private static final Logger LOG = LoggerFactory.getLogger(JMXCollectorIT.class);
 
-    private static TestEnvironment m_testEnvironment;
-
     @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().all();
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            m_testEnvironment = builder.build();
-            return m_testEnvironment;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        OpenNMSSeleniumTestCase.assumeDockerEnabled();
-    }
+    public static final OpenNMSStack stack = OpenNMSStack.MINION;
 
     @Test
     public void canPerformAdhocJmxCollection() throws Exception {
-        final InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101);
+        final InetSocketAddress sshAddr = stack.opennms().getSshAddress();
         await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
                 // Issue the collection and verify that a known string appears in the output
                 // Which string it is doesn't really matter provided that it is only returned when the collection

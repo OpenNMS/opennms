@@ -42,14 +42,14 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EditInRequisitionIT extends OpenNMSSeleniumTestCase {
+public class EditInRequisitionIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(EditInRequisitionIT.class);
 
     @Before
     public void before() throws Exception {
         createRequisition();
         createNode();
-        m_driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
         LOG.debug("Timeout for element lookup decreased to two seconds");
     }
 
@@ -63,11 +63,11 @@ public class EditInRequisitionIT extends OpenNMSSeleniumTestCase {
     public void testIfNotRequisition() throws Exception {
         LOG.debug("Check whether the 'Edit in Requisition' link appear for nodes in database without requisition...");
 
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=my-foreign-source:my-foreign-id");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=my-foreign-source:my-foreign-id");
         final WebElement viewEvents = waitForElement(By.linkText("View Events"));
         Assert.assertNotNull("Link 'View Events' should appear on the node page.", viewEvents);
 
-        m_driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
         final WebElement editInRequisition = getElementWithoutWaiting(By.linkText("Edit in Requisition"));
         Assert.assertNull("Link 'Edit in Requisition' should not appear on the node page!", editInRequisition);
     }
@@ -76,20 +76,20 @@ public class EditInRequisitionIT extends OpenNMSSeleniumTestCase {
     public void testIfDeployed() throws Exception {
         LOG.debug("Check whether the 'Edit in Requisition' link appear for nodes in database and requisition...");
 
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=" + OpenNMSSeleniumTestCase.REQUISITION_NAME + ":my-foreign-id-1");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + OpenNMSSeleniumIT.REQUISITION_NAME + ":my-foreign-id-1");
 
         final WebElement webElement = waitForElement(By.linkText("Edit in Requisition"));
         Assert.assertNotNull("Link 'Edit in Requisition' should appear on the node page.", webElement);
         webElement.click();
 
-        waitUntil(pageContainsText("Node my-node-1 at " + OpenNMSSeleniumTestCase.REQUISITION_NAME));
+        waitUntil(pageContainsText("Node my-node-1 at " + OpenNMSSeleniumIT.REQUISITION_NAME));
     }
 
     @Test
     public void testIfPending() throws Exception {
         LOG.debug("Check whether the 'Edit in Requisition' link appear for nodes in database that are not in a requisition anymore...");
 
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=" + OpenNMSSeleniumTestCase.REQUISITION_NAME + ":my-foreign-id-2");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + OpenNMSSeleniumIT.REQUISITION_NAME + ":my-foreign-id-2");
 
         final WebElement viewEvents = waitForElement(By.linkText("View Events"));
         Assert.assertNotNull("Link 'View Events' should appear on the node page.", viewEvents);
@@ -100,7 +100,7 @@ public class EditInRequisitionIT extends OpenNMSSeleniumTestCase {
 
     private void deleteRequisition() throws Exception {
         deleteTestRequisition();
-        LOG.debug("Deleted requisition '" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "'");
+        LOG.debug("Deleted requisition '" + OpenNMSSeleniumIT.REQUISITION_NAME + "'");
     }
 
     private void createNode() throws Exception {
@@ -121,15 +121,15 @@ public class EditInRequisitionIT extends OpenNMSSeleniumTestCase {
 
     private void createRequisition() throws Exception {
         // Create foreign source.
-        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">\n" +
                 "<scan-interval>1d</scan-interval>\n" +
                 "<detectors/>\n" +
                 "<policies/>\n" +
                 "</foreign-source>";
-        createForeignSource(OpenNMSSeleniumTestCase.REQUISITION_NAME, foreignSourceXML);
+        createForeignSource(OpenNMSSeleniumIT.REQUISITION_NAME, foreignSourceXML);
 
         // Create two nodes...
-        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">" +
                 "   <node foreign-id=\"my-foreign-id-1\" node-label=\"my-node-1\">" +
                 "       <interface ip-addr=\"::2\" status=\"1\" snmp-primary=\"N\">" +
                 "           <monitored-service service-name=\"AAA\"/>" +
@@ -149,14 +149,14 @@ public class EditInRequisitionIT extends OpenNMSSeleniumTestCase {
                 "</model-import>";
 
         // ...and add them to the requisition.
-        createRequisition(OpenNMSSeleniumTestCase.REQUISITION_NAME, requisitionXML, 2);
+        createRequisition(OpenNMSSeleniumIT.REQUISITION_NAME, requisitionXML, 2);
 
         // Now, delete one node from requisition...
-        sendDelete("rest/requisitions/" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "/nodes/my-foreign-id-2");
+        sendDelete("rest/requisitions/" + OpenNMSSeleniumIT.REQUISITION_NAME + "/nodes/my-foreign-id-2");
 
         // ...and assure that 'my-foreign-id-2' is in database but not in requisition anymore.
-        with().pollInterval(1, SECONDS).await().atMost(30, SECONDS).until(() -> (getNodesInRequisition(OpenNMSSeleniumTestCase.REQUISITION_NAME) == 1));
-        LOG.debug("Created requisition '" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "'");
+        with().pollInterval(1, SECONDS).await().atMost(30, SECONDS).until(() -> (getNodesInRequisition(OpenNMSSeleniumIT.REQUISITION_NAME) == 1));
+        LOG.debug("Created requisition '" + OpenNMSSeleniumIT.REQUISITION_NAME + "'");
     }
 
     private void deleteNode() throws Exception {

@@ -31,30 +31,20 @@ package org.opennms.smoketest.opsboard;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.smoketest.AbstractPage;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.OpenNMSSeleniumIT;
+import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
+import org.opennms.smoketest.selenium.AbstractPage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
-public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
+public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
 
     private OpsBoardAdminPage adminPage;
 
@@ -85,8 +75,8 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
         // Now ensure that access was NOT denied
         try {
             setImplicitWait(1, TimeUnit.SECONDS);
-            new WebDriverWait(m_driver, 5).until(not(pageContainsText("Access denied")));
-            new WebDriverWait(m_driver, 5).until(pageContainsText("Surveillance view"));
+            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(driver, 5).until(pageContainsText("Surveillance view"));
         } finally {
             setImplicitWait();
         }
@@ -109,7 +99,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
 
     private static class OpsBoardAdminPage extends AbstractPage {
 
-        OpsBoardAdminPage(OpenNMSSeleniumTestCase testCase) {
+        OpsBoardAdminPage(AbstractOpenNMSSeleniumHelper testCase) {
             super(testCase);
         }
 
@@ -150,7 +140,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
     }
 
     private static class OpsBoardAdminEditorPage extends AbstractPage {
-        OpsBoardAdminEditorPage(OpenNMSSeleniumTestCase testCase) {
+        OpsBoardAdminEditorPage(AbstractOpenNMSSeleniumHelper testCase) {
             super(testCase);
         }
 
@@ -175,7 +165,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
     }
 
     private static class OpsBoardPreviewPage extends AbstractPage {
-        OpsBoardPreviewPage(OpenNMSSeleniumTestCase testCase) {
+        OpsBoardPreviewPage(AbstractOpenNMSSeleniumHelper testCase) {
             super(testCase);
         }
 

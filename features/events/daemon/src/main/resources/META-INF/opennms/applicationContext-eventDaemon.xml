@@ -131,6 +131,8 @@
     <constructor-arg ref="eventIpcManagerImpl" />
   </bean>
 
-    <!-- Conditionally load event sink -->
-  <bean class="org.opennms.netmgt.eventd.sink.ConditionalEventSinkContext"/>
+  <!-- Consume events from sink component -->
+  <bean id="eventSinkConsumer" class="org.opennms.netmgt.eventd.sink.EventSinkConsumer">
+  </bean>
+
 </beans>

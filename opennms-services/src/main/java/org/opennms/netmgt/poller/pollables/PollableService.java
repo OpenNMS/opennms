@@ -459,11 +459,4 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         m_pollConfig.refresh();
     }
 
-    /**
-     * <p>refreshThresholds</p>
-     */
-    public void refreshThresholds() {
-        m_pollConfig.refreshThresholds();
-    }
-
 }

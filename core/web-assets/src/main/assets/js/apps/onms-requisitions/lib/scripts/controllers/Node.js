@@ -3,6 +3,7 @@ const bootbox = require('bootbox');
 require('../services/Requisitions');
 
 const RequisitionNode = require('../model/RequisitionNode');
+const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -14,12 +15,14 @@ const RequisitionNode = require('../model/RequisitionNode');
   'use strict';
 
   const assetView = require('../../views/asset.html');
+  const metaDataView = require('../../views/metadata.html');
   const interfaceView = require('../../views/interface.html');
 
   const nodeBasicView = require('../../views/node-basic.html');
   const nodePathoutagesView = require('../../views/node-pathoutages.html');
   const nodeInterfacesView = require('../../views/node-interfaces.html');
   const nodeAssetsView = require('../../views/node-assets.html');
+  const nodeMetaDataView = require('../../views/node-metadata.html');
   const nodeCategoriesView = require('../../views/node-categories.html');
 
   angular.module('onms-requisitions')
@@ -45,6 +48,7 @@ const RequisitionNode = require('../model/RequisitionNode');
     $scope.nodePathoutagesView = nodePathoutagesView;
     $scope.nodeInterfacesView = nodeInterfacesView;
     $scope.nodeAssetsView = nodeAssetsView;
+    $scope.nodeMetaDataView = nodeMetaDataView;
     $scope.nodeCategoriesView = nodeCategoriesView;
 
     /**
@@ -297,6 +301,75 @@ const RequisitionNode = require('../model/RequisitionNode');
     */
     $scope.addAsset = function() {
       $scope.editAsset($scope.node.addNewAsset(), true);
+    };
+
+    /**
+     * @description Should be called when the meta-data tab is selected
+     *
+     * @name NodeController:onMetadataTabSelect
+     * @ngdoc method
+     * @methodOf NodeController
+     */
+    $scope.onMetadataTabSelect = function() {
+      // Before switching over to the tab, let's delete any entries that reference entities which no longer exist
+      // i.e. in the case that meta-data was associated with an interface, and that interface is now deleted
+      $scope.node.metaData.removeEntriesForMissingScopedEntities();
+    };
+
+    /**
+     * @description Shows the dialog for add/edit an metaData entry
+     *
+     * @name NodeController:editMetaData
+     * @ngdoc method
+     * @methodOf NodeController
+     * @param {object} entry The metaData entry to be edited
+     * @param {boolean} isNew true, if the metaData entry is new
+     */
+    $scope.editMetaData = function(entry, isNew) {
+        const form = this.nodeForm;
+
+      const modalInstance = $uibModal.open({
+            backdrop: 'static',
+            keyboard: false,
+            controller: 'MetaDataController',
+            templateUrl: metaDataView,
+            resolve: {
+                node: function() { return angular.copy($scope.node); },
+                entry: function() { return angular.copy(entry); }
+            }
+        });
+
+        modalInstance.result.then(function(result) {
+            angular.copy(result, entry);
+            form.$dirty = true;
+            if (isNew) {
+              $scope.node.metaData.addEntry(entry);
+            }
+        });
+    };
+
+    /**
+     * @description Removes an metaData entry from the local node
+     *
+     * @name NodeController:removeMetaData
+     * @ngdoc method
+     * @methodOf NodeController
+     * @param {object} entry The index of the metaData entry to be removed
+     */
+    $scope.removeMetaData = function(entry) {
+      $scope.node.metaData.removeEntry(entry);
+      this.nodeForm.$dirty = true;
+    };
+
+    /**
+     * @description Adds a new metaData entry to the local node
+     *
+     * @name NodeController:addMetaData
+     * @ngdoc method
+     * @methodOf NodeController
+     */
+    $scope.addMetaData = function() {
+        $scope.editMetaData(new RequisitionMetaDataEntry(), true);
     };
 
     /**

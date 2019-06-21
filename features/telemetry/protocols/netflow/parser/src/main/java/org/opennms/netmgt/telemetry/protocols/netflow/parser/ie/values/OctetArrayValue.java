@@ -58,6 +58,11 @@ public class OctetArrayValue extends Value<byte[]> {
         this(name, Optional.empty(), value);
     }
 
+    public OctetArrayValue(final String name,
+                           final byte[] value) {
+        this(name, Optional.empty(), value);
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

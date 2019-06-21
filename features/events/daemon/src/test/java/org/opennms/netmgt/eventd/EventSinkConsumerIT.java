@@ -53,7 +53,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.XmlHandler;
 import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.eventd.sink.EventModule;
+import org.opennms.features.events.sink.module.EventSinkModule;
 import org.opennms.netmgt.eventd.sink.EventSinkConsumer;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -115,7 +115,7 @@ public class EventSinkConsumerIT {
     @Test
     public void verifyEventSinkConsumerWithKafka() throws Exception {
         final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaSinkConstants.KAFKA_TOPIC_PREFIX,
-                EventModule.MODULE_ID);
+                EventSinkModule.MODULE_ID);
         XmlHandler<Log> xmlHandler = new XmlHandler<>(Log.class);
         String marshalledEvent = xmlHandler.marshal(getEventLog());
         byte[] sinkMessageInBytes = wrapMessageToProto("1", marshalledEvent.getBytes(StandardCharsets.UTF_8));

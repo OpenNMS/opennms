@@ -24,15 +24,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>org.opennms.netmgt.shared.bootstrap.Activator</Bundle-Activator>
-                        <Spring-Context>META-INF/opennms/applicationContext-osgi.xml</Spring-Context>
                         <Embed-Dependency>groupId=org.eclipse.gemini.blueprint</Embed-Dependency>
-                        <Import-Package>
-                            *,
-                            org.opennms.core.soa,
-                            org.opennms.core.soa.config,
-                            org.opennms.core.soa.filter,
-                            org.opennms.core.soa.support
-                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

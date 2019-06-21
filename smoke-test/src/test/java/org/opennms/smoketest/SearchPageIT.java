@@ -39,7 +39,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SearchPageIT extends OpenNMSSeleniumTestCase {
+public class SearchPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         deleteTestRequisition();
@@ -54,7 +54,7 @@ public class SearchPageIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//span[text()='Search Options']");
     }
 
-    @Test 
+    @Test
     public void testAllFormsArePresent() throws Exception {
         assertEquals(11, countElementsMatchingCss("form"));
         for (final String matchingElement : new String[] {
@@ -70,7 +70,7 @@ public class SearchPageIT extends OpenNMSSeleniumTestCase {
         }) {
             findElementByXpath("//form[@action='element/nodeList.htm']//" + matchingElement);
         }
-        
+
         findElementByXpath("//form[@action='asset/nodelist.jsp']//select[@name='searchvalue']");
         findElementByXpath("//form[@action='asset/nodelist.jsp']//select[@name='column']");
     }

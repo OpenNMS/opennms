@@ -27,9 +27,7 @@
  *******************************************************************************/
 package org.opennms.smoketest.minion;
 
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.smoketest.stacks.IpcStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,25 +40,8 @@ import org.slf4j.LoggerFactory;
  */
 public class MinionHeartbeatOutageKafkaIT extends MinionHeartbeatOutageIT {
 
-    /**
-     * Override this method to customize the test environment.
-     */
     @Override
-    protected TestEnvironmentBuilder getEnvironmentBuilder() {
-        final TestEnvironmentBuilder builder = TestEnvironment.builder().all()
-                // Enable Kafka
-                .kafka();
-        builder.withOpenNMSEnvironment()
-                // Switch sink impl to Kafka using opennms-properties.d file
-                .addFile(MinionHeartbeatOutageKafkaIT.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
-        builder.withMinionEnvironment()
-                // Switch sink impl to Kafka using features.boot file
-                .addFile(MinionHeartbeatOutageKafkaIT.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
-        OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-        return builder;
-    }
-
-    protected static Logger getLogger() {
-        return LoggerFactory.getLogger(MinionHeartbeatOutageKafkaIT.class);
+    public IpcStrategy getIpcStrategy() {
+        return IpcStrategy.KAFKA;
     }
 }

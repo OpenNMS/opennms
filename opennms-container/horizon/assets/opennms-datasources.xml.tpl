@@ -9,10 +9,6 @@
   <!--
     Available implementations:
 
-      org.opennms.core.db.AtomikosDataSourceFactory
-        - Uses Atomikos TransactionEssentials (http://www.atomikos.com/Main/TransactionsEssentials)
-          This data source is XA-capable so that it works properly with Hibernate 4.
-
       org.opennms.core.db.C3P0ConnectionFactory
         - Uses C3P0 (http://sourceforge.net/projects/c3p0/).
           This data source is not XA-capable but is available because it was the default
@@ -21,7 +17,7 @@
       org.opennms.core.db.HikariCPConnectionFactory
         - Uses HikariCP (http://brettwooldridge.github.io/HikariCP/), a lightweight and extremely fast connection pool
    -->
-  <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory"
+  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
     idleTimeout="600"
     loginTimeout="3"
     minPool="50"

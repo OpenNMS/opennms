@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
 
-import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,6 +49,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 public class UdpSessionManager {
+    public interface SessionKey {
+    }
+
     private final class UdpSession implements Session {
         private final class Resolver implements Session.Resolver {
             private final long observationDomainId;
@@ -60,7 +61,7 @@ public class UdpSessionManager {
             }
 
             private Key key(final int templateId) {
-                return new Key(UdpSession.this.remoteAddress, UdpSession.this.localAddress, this.observationDomainId, templateId);
+                return new Key(UdpSession.this.sessionKey, this.observationDomainId, templateId);
             }
 
             @Override
@@ -75,13 +76,12 @@ public class UdpSessionManager {
 
             @Override
             public List<Value<?>> lookupOptions(final List<Value<?>> values) {
-                final LinkedHashMap<String, Value<?>> options = new LinkedHashMap();
+                final LinkedHashMap<String, Value<?>> options = new LinkedHashMap<>();
 
                 final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
                 for (final Map.Entry<Key, Map<Set<Value<?>>, List<Value<?>>>> e : Iterables.filter(UdpSessionManager.this.options.entrySet(),
-                                                                                                   e -> Objects.equals(e.getKey().localAddress, UdpSession.this.localAddress) &&
-                                                                                                        Objects.equals(e.getKey().remoteAddress, UdpSession.this.remoteAddress) &&
+                                                                                                   e -> Objects.equals(e.getKey().sessionKey, UdpSession.this.sessionKey) &&
                                                                                                         Objects.equals(e.getKey().observationDomainId, this.observationDomainId))) {
                     final Template template = UdpSessionManager.this.templates.get(e.getKey()).template;
 
@@ -100,27 +100,25 @@ public class UdpSessionManager {
                     }
                 }
 
-                return new ArrayList(options.values());
+                return new ArrayList<>(options.values());
             }
         }
 
-        private final InetSocketAddress remoteAddress;
-        private final InetSocketAddress localAddress;
+        private final SessionKey sessionKey;
 
-        public UdpSession(InetSocketAddress remoteAddress, InetSocketAddress localAddress) {
-            this.remoteAddress = remoteAddress;
-            this.localAddress = localAddress;
+        public UdpSession(final SessionKey sessionKey) {
+            this.sessionKey = sessionKey;
         }
 
         @Override
         public void addTemplate(final long observationDomainId, final Template template) {
-            final Key key = new Key(this.remoteAddress, this.localAddress, observationDomainId, template.id);
+            final Key key = new Key(this.sessionKey, observationDomainId, template.id);
             UdpSessionManager.this.templates.put(key, new TemplateWrapper(template));
         }
 
         @Override
         public void removeTemplate(final long observationDomainId, final int templateId) {
-            final Key key = new Key(this.remoteAddress, this.localAddress, observationDomainId, templateId);
+            final Key key = new Key(this.sessionKey, observationDomainId, templateId);
             UdpSessionManager.this.templates.remove(key);
         }
 
@@ -134,12 +132,8 @@ public class UdpSessionManager {
                                final int templateId,
                                final Collection<Value<?>> scopes,
                                final List<Value<?>> values) {
-            if (scopes.isEmpty()) {
-                return;
-            }
-
-            final Key key = new Key(this.remoteAddress, this.localAddress, observationDomainId, templateId);
-            UdpSessionManager.this.options.computeIfAbsent(key, (k) -> new HashMap()).put(new HashSet(scopes), values);
+            final Key key = new Key(this.sessionKey, observationDomainId, templateId);
+            UdpSessionManager.this.options.computeIfAbsent(key, (k) -> new HashMap<>()).put(new HashSet<>(scopes), values);
         }
 
         @Override
@@ -149,17 +143,14 @@ public class UdpSessionManager {
     }
 
     private final static class Key {
-        public final InetSocketAddress remoteAddress;
-        public final InetSocketAddress localAddress;
+        private final SessionKey sessionKey;
         public final long observationDomainId;
         public final int templateId;
 
-        Key(final InetSocketAddress remoteAddress,
-            final InetSocketAddress localAddress,
+        Key(final SessionKey sessionKey,
             final long observationDomainId,
             final int templateId) {
-            this.remoteAddress = Objects.requireNonNull(remoteAddress);
-            this.localAddress = Objects.requireNonNull(localAddress);
+            this.sessionKey = Objects.requireNonNull(sessionKey);
             this.observationDomainId = observationDomainId;
             this.templateId = templateId;
         }
@@ -172,13 +163,12 @@ public class UdpSessionManager {
             final Key that = (Key) o;
             return this.observationDomainId == that.observationDomainId &&
                     this.templateId == that.templateId &&
-                    Objects.equals(this.remoteAddress, that.remoteAddress) &&
-                    Objects.equals(this.localAddress, that.localAddress);
+                    Objects.equals(this.sessionKey, that.sessionKey);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.remoteAddress, this.localAddress, this.observationDomainId, this.templateId);
+            return Objects.hash(this.sessionKey, this.observationDomainId, this.templateId);
         }
     }
 
@@ -206,11 +196,11 @@ public class UdpSessionManager {
         UdpSessionManager.this.templates.entrySet().removeIf(e -> e.getValue().insertionTime.isBefore(timeout));
     }
 
-    public Session getSession(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
-        return new UdpSession(remoteAddress, localAddress);
+    public Session getSession(final SessionKey sessionKey) {
+        return new UdpSession(sessionKey);
     }
 
-    public void drop(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
-        this.templates.entrySet().removeIf(e -> Objects.equals(e.getKey().remoteAddress, remoteAddress) && Objects.equals(e.getKey().localAddress, localAddress));
+    public void drop(final SessionKey sessionKey) {
+        this.templates.entrySet().removeIf(e -> Objects.equals(e.getKey().sessionKey, sessionKey));
     }
 }

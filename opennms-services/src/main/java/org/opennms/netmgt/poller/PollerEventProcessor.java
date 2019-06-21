@@ -544,10 +544,6 @@ final class PollerEventProcessor implements EventListener {
             LOG.info("Reloading poller config factory and polloutages config factory");
 
             scheduledOutagesChangeHandler();
-        } else if(event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {
-            LOG.info("Reloading thresholding configuration in pollerd");
-
-            thresholdsConfigChangeHandler();
 
         } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI))  {
             LOG.info("Reloading poller configuration in pollerd");
@@ -779,10 +775,6 @@ final class PollerEventProcessor implements EventListener {
             LOG.error("Failed to reload PollerConfigFactory", e);
         }
         getPoller().refreshServicePackages();
-    }
-
-    private void thresholdsConfigChangeHandler() {
-        getPoller().refreshServiceThresholds();
     }
 
     /**
