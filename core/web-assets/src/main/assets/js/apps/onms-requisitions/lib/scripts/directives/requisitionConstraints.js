@@ -1,6 +1,7 @@
 const ip = require('vendor/ipaddress-js');
 const Address4 = ip.Address4;
 const Address6 = ip.Address6;
+const _ = require('lodash');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -153,6 +154,48 @@ const Address6 = ip.Address6;
         });
       }
     };
+  })
+
+  /**
+   * @ngdoc directive
+   * @name validMetaDataKey
+   * @module onms-requisitions
+   *
+   * @description A directive to verify if the meta-data key is unique with
+   * a specific scope & context.
+   *
+   * This directive is intended to be used in the modal dialog used to edit
+   * meta-data entries.
+   *
+   */
+  .directive('validMetaDataKey', function() {
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      transclude: true,
+      scope: { 'entry': '=validMetaDataKey' },
+      link: function(scope, element, attrs, ctrl) {
+        ctrl.$parsers.unshift(function(keyName) {
+          let isUnique = true;
+          if (keyName !== scope.$parent.originalKey) {
+            // The key has changed, we need to validate it's uniqueness
+            scope.$parent.resolveScopeReferences(scope.entry);
+            const existingKeys = scope.$parent.node.metaData.getKeysInScopeOf(scope.entry);
+            isUnique = _.indexOf(existingKeys, keyName) < 0;
+          }
+
+          if (!isUnique) {
+            ctrl.$setValidity('unique', false);
+            return undefined;
+          }
+
+          ctrl.$setValidity('unique', true);
+          return keyName;
+        });
+      }
+    };
   });
+
+
 
 }());
