@@ -29,10 +29,12 @@ package org.opennms.features.situationfeedback.elastic;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -73,18 +75,22 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private IndexStrategy indexStrategy;
     
-    private static String eventIndexName = "situation";
+    private String eventIndexName = "situation-feedback";
     
-    public static void setEventIndexName(String eventIndexName) {
-    	ElasticFeedbackRepository.eventIndexName = eventIndexName;
-	}
-    
-
     /**
      * The collection of listeners interested in alarm feedback, populated via runtime binding.
      */
     private final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
 
+    public String getModifiedIndex()
+	{
+		Objects.requireNonNull(eventIndexName, "null value");
+		if(!eventIndexName.equals("situation-feedback")) {
+		return String.format("%s-%s" , eventIndexName, TYPE);
+		}
+		return TYPE;
+		
+	}
     public ElasticFeedbackRepository(JestClient jestClient, IndexStrategy indexStrategy, int bulkRetryCount, ElasticFeedbackRepositoryInitializer initializer) {
         this.client = jestClient;
         this.indexStrategy = indexStrategy;
@@ -105,8 +111,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (FeedbackDocument document : documents) {
-            	String ModifiedIndex = new StringBuffer().append(eventIndexName).append("-").append(TYPE).toString();
-            	final String index = indexStrategy.getIndex(ModifiedIndex, Instant.ofEpochMilli(document.getTimestamp()));
+            	final String index = indexStrategy.getIndex(getModifiedIndex(), Instant.ofEpochMilli(document.getTimestamp()));
                 final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
                 bulkBuilder.addAction(indexBuilder.build());
             }

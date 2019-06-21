@@ -40,7 +40,7 @@
       <cm:property name="logAllEvents" value="false" />
       <cm:property name="archiveAssetData" value="true" />
       <cm:property name="groupOidParameters" value="false" />
-      <cm:property name="eventIndexName" value="ONMS-01" />
+      <cm:property name="eventIndexName" value="" />
 
       <!-- Bulk Action Retry settings -->
       <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->

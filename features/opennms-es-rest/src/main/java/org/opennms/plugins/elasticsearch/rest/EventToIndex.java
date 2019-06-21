@@ -98,7 +98,7 @@ public class EventToIndex implements AutoCloseable {
 
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
 	
-	private static String eventIndexName = "opennms";
+	private String eventIndexName = "opennms";
 
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 			threads,
@@ -156,8 +156,15 @@ public class EventToIndex implements AutoCloseable {
 		this.groupOidParameters = groupOidParameters;
 	}
 	
-	public void seteventIndexName(String eventIndexName) {
-		this.eventIndexName = eventIndexName;
+	public String getModifiedIndex()
+	{
+		Calendar cal= Calendar.getInstance();
+		Objects.requireNonNull(eventIndexName, "null value");
+		if(!eventIndexName.equals("opennms")) {
+			return String.format("%s-%s" , eventIndexName,INDEX_PREFIX) ;		
+		}
+		return INDEX_PREFIX;
+		
 	}
 
 	@Override
@@ -300,9 +307,8 @@ public class EventToIndex implements AutoCloseable {
 			}
 		}
 
-		String Modifiedindex = new StringBuffer().append(eventIndexName).append("-").append(INDEX_PREFIX).toString();
-				
-		String completeIndexName = indexStrategy.getIndex(Modifiedindex, cal.toInstant());
+					
+		String completeIndexName = indexStrategy.getIndex(getModifiedIndex(), cal.toInstant());
 
 		if (LOG.isDebugEnabled()){
 			String str = "populateEventIndexBodyFromEvent - index:"

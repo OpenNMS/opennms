@@ -34,7 +34,7 @@
             <cm:property name="nodeCache.maximumSize" value="1000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeCache.expireAfterWrite" value="300"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
-			<cm:property name="eventIndexName" value="ONMS-01" /> <!-- Set value of OpenNMS instance forwarding flow data to elastic -->
+			<cm:property name="eventIndexName" value="" /> <!-- Set value of OpenNMS instance forwarding flow data to elastic -->
             <!-- Bulk Action Retry settings -->
             <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
 
@@ -143,7 +143,7 @@
         <argument ref="tracerRegistry"/>
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
-        <property name="eventIndexname" value="${eventIndexName}" />
+        <property name="eventIndexName" value="${eventIndexName}" />
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">

@@ -147,6 +147,10 @@
       <version>${jestGsonVersion}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
 
     <!-- Test Scope -->
     <!--

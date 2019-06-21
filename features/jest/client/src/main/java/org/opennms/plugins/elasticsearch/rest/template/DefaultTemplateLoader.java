@@ -32,6 +32,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
@@ -63,16 +66,13 @@ public class DefaultTemplateLoader implements TemplateLoader {
                 serverVersion, resource));
     }
     
-    protected String getTemplate(String resource) throws IOException {
-		try (InputStream input = new FileInputStream(ConfigFileConstants.getConfigFileByName(resource))) {
-			final byte[] bytes = new byte[input.available()];
-			ByteStreams.readFully(input, bytes);
-			return new String(bytes);
-		} catch (FileNotFoundException exception) {
-			return getResource(resource);
-		}
-	}
-
+    	protected String getTemplate(String resource) throws IOException {
+    		Optional<Path> configPath = ConfigFileConstants.getConfigFilePathByName(resource);
+    		if(configPath.isPresent()) {
+    			  return new String(Files.readAllBytes(configPath.get()));
+    			}
+    			return getResource(resource);
+    	}
     protected String getResource(String resource) throws IOException {
         try (InputStream inputStream = getResourceAsStream(resource)) {
             if (inputStream == null) {
