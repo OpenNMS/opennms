@@ -28,17 +28,26 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.rnorth.ducttape.unreliables.Unreliables;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
     @Test
-    public void testMenuEntries() throws Exception {
+    public void testMenuEntries() {
         clickMenuItem("Search", null, "element/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Search for Nodes']");
 
@@ -111,8 +120,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
 
         frontPage();
-        final String adminMenuName = "name=nav-admin-top";
-        clickMenuItem(adminMenuName, "Configure OpenNMS", "opennms/admin/index.jsp");
+        findElementByXpath("//nav//a[contains(@title, 'Configure OpenNMS') and contains(@href, 'opennms/admin/index.jsp')]").click();
         findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");
         findElementByXpath("//div[@class='card-header']/span[text()='Provisioning']");
         findElementByXpath("//div[@class='card-header']/span[text()='Event Management']");
@@ -121,16 +129,46 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         findElementByXpath("//div[@class='card-header']/span[text()='Distributed Monitoring']");
 
         frontPage();
-        clickMenuItem(adminMenuName, "Help", "opennms/help/index.jsp");
+        final String helpMenuName = "nav-help-top";
+        clickMenuItemWithIcon(helpMenuName, "Help", "opennms/help/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Documentation']");
-        clickMenuItem(adminMenuName, "Support", "opennms/support/index.htm");
+        clickMenuItemWithIcon(helpMenuName, "Support", "opennms/support/index.htm");
         findElementByXpath("//div[@class='card-header']/span[text()='Commercial Support']");
-        clickMenuItem(adminMenuName, "About", "opennms/about/index.jsp");
+        clickMenuItemWithIcon(helpMenuName, "About", "opennms/about/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Version Details']");
 
         frontPage();
-        clickMenuItem(adminMenuName, "Log Out", "opennms/j_spring_security_logout");
+        final String userMenuName = "nav-user-top";
+        clickMenuItemWithIcon(userMenuName, "Log Out", "opennms/j_spring_security_logout");
         findElementById("input_j_username");
     }
 
+    // We need this helper method, as with the icon used in some menus the contains(text(),...) method does not work anymore
+    private void clickMenuItemWithIcon(String menuEntryName, String submenuText, String submenuHref) {
+        try {
+            setImplicitWait(5, TimeUnit.SECONDS);
+            final AtomicInteger offset = new AtomicInteger(0);
+            Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {
+                // Find Header element and try to move there
+                final WebDriverWait shortWait = new WebDriverWait(getDriver(), 1);
+                final Actions action = new Actions(driver);
+                final WebElement headerElement = findElementByXpath(String.format("//li/a[@name='%s']", menuEntryName));
+
+                // Move to element to make sub menu visible
+                action.moveToElement(headerElement, offset.get(), offset.get()).build().perform();
+                if (offset.incrementAndGet() > 10) {
+                    offset.set(0);
+                }
+
+                // Wait until sub menu element is visible, then click
+                final WebElement submenuElement = headerElement.findElement(By.xpath(String.format("./../div/a[contains(@class, 'dropdown-item') and contains(@href, '%s')]", submenuHref)));
+                shortWait.until(ExpectedConditions.visibilityOf(submenuElement));
+                assertEquals(submenuText, submenuElement.getText().trim());
+                submenuElement.click();
+                return null;
+            });
+        } finally {
+            setImplicitWait();
+        }
+    }
 }

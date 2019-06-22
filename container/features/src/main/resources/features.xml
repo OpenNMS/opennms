@@ -1146,6 +1146,7 @@
         <feature>geolocation</feature>
         <bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.vaadin-components/header/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology.plugins/org.opennms.features.topology.plugins.browsers/${project.version}</bundle>
     </feature>
@@ -1242,6 +1243,7 @@
         <bundle>mvn:org.opennms.features.topology.themes/org.opennms.features.topology.themes.default-theme/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.vaadin-components/graph/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.vaadin-components/header/${project.version}</bundle>
     </feature>
     <feature name="opennms-topology-runtime-linkd" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Linkd">
         <details>Linkd-based runtime and plugins for the OpenNMS topology web app.</details>

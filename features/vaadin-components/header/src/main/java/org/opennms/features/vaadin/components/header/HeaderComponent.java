@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.api;
+package org.opennms.features.vaadin.components.header;
 
-import javax.servlet.http.HttpServletRequest;
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.ui.AbstractJavaScriptComponent;
 
-/**
- * @deprecated use HeaderComponent from vaadin-components/header instead.
- */
-@Deprecated
-public interface OnmsHeaderProvider {
+@JavaScript("theme://../opennms/assets/header-component_connector.vaadin.js")
+public class HeaderComponent extends AbstractJavaScriptComponent {
 
-    /**
-     * @deprecated use HeaderComponent from vaadin-components/header instead.
-     */
-    @Deprecated
-    String getHeaderHtml(HttpServletRequest request) throws Exception;
+    public HeaderComponent() {
+        setId("onmsheader");
+        setWidth(100, Unit.PERCENTAGE);
+    }
 }
