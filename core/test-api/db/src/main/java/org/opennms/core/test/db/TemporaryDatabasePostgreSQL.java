@@ -189,6 +189,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     public static final String TEMPLATE_DATABASE_NAME_PREFIX = "opennms_it_template_";
 
+    private static final String ADMIN_DATABASE = "template1";
+
     public TemporaryDatabasePostgreSQL() throws Exception {
         this(null);
     }
@@ -236,7 +238,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             final Migration migration = createMigration(dbName);
 
             DataSource dataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + migration.getDatabaseName(), migration.getDatabaseUser(), migration.getDatabasePassword());
-            DataSource adminDataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/postgres", migration.getDatabaseUser(), migration.getDatabasePassword());
+            DataSource adminDataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + ADMIN_DATABASE, migration.getDatabaseUser(), migration.getDatabasePassword());
 
             final Migrator migrator = createMigrator(dataSource, adminDataSource);
 
@@ -282,7 +284,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
         try {
             setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(), m_adminUser, m_adminPassword));
-            setAdminDataSource(new SimpleDataSource(m_driver, m_url + "postgres", m_adminUser, m_adminPassword));
+            setAdminDataSource(new SimpleDataSource(m_driver, m_url + ADMIN_DATABASE, m_adminUser, m_adminPassword));
             m_xaDataSource = new PGXADataSource();
             m_xaDataSource.setServerName("localhost");
             m_xaDataSource.setDatabaseName(getTestDatabase());
@@ -290,7 +292,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             m_xaDataSource.setPassword(m_adminPassword);
             m_adminXaDataSource = new PGXADataSource();
             m_adminXaDataSource.setServerName("localhost");
-            m_adminXaDataSource.setDatabaseName("postgres");
+            m_adminXaDataSource.setDatabaseName(ADMIN_DATABASE);
             m_adminXaDataSource.setUser(m_adminUser);
             m_adminXaDataSource.setPassword(m_adminPassword);
         } catch (final ClassNotFoundException e) {
