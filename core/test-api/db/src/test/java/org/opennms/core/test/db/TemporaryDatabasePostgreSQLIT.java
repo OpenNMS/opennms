@@ -91,6 +91,15 @@ public class TemporaryDatabasePostgreSQLIT {
 
     @Test
     public void testMultipleThreads() throws Throwable {
+        doMultipleThreads(false);
+    }
+
+    @Test
+    public void testMultipleThreadsPopulate() throws Throwable {
+        doMultipleThreads(true);
+    }
+
+    private void doMultipleThreads(boolean populate) throws Throwable {
         Runnable r = () -> {
             for (int i = 0; i <= 10; i++) {
                 try {
