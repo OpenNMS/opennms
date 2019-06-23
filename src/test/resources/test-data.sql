@@ -23,13 +23,6 @@ SELECT pg_catalog.setval('catnxtid', 1, false);
 
 
 --
--- Name: demandpollnxtid; Type: SEQUENCE SET; Schema: public; Owner: opennms
---
-
-SELECT pg_catalog.setval('demandpollnxtid', 1, false);
-
-
---
 -- Name: eventsnxtid; Type: SEQUENCE SET; Schema: public; Owner: opennms
 --
 
@@ -63,12 +56,6 @@ SELECT pg_catalog.setval('notifynxtid', 1, false);
 
 SELECT pg_catalog.setval('outagenxtid', 2, true);
 
-
---
--- Name: pollresultnxtid; Type: SEQUENCE SET; Schema: public; Owner: opennms
---
-
-SELECT pg_catalog.setval('pollresultnxtid', 1, false);
 
 
 --
@@ -123,12 +110,6 @@ INSERT INTO assets (nodeid, category, manufacturer, vendor, modelnumber, serialn
 
 --
 -- Data for Name: datalinkinterface; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
--- Data for Name: demandpolls; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
 
@@ -259,12 +240,6 @@ INSERT INTO outages (outageid, svclosteventid, svcregainedeventid, nodeid, ipadd
 
 --
 -- Data for Name: pathoutage; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
--- Data for Name: pollresults; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
 

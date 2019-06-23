@@ -186,7 +186,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         TemporaryDatabasePostgreSQL.failIfUnitTest();
 
         // Fire up a thread pool for each CPU to create test databases
-        ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        ExecutorService pool = Executors.newFixedThreadPool(Integer.getInteger("org.opennms.core.test-api.dbCreateThreads", Runtime.getRuntime().availableProcessors()));
 
         final JUnitTemporaryDatabase classJtd = testContext.getTestClass().getAnnotation(JUnitTemporaryDatabase.class);
 
@@ -307,6 +307,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         if (methodName != null) {
             retval.setMethodName(methodName);
         }
+        retval.setPlpgsqlIplike(jtd.plpgsqlIplike());
         final StringBuilder b = new StringBuilder();
         if (jtd.useExistingDatabase() != null && !"".equals(jtd.useExistingDatabase())) {
             b.append("use existing database: " + jtd.useExistingDatabase() + " ");

@@ -43,7 +43,7 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 
 [source, xml]
 ----
-<--! OpenNMS.org -->
+<!-- OpenNMS.org -->
 <service name="LDAP" interval="300000" user-defined="false" status="on">
   <parameter key="port" value="389"/>
   <parameter key="version" value="3"/>

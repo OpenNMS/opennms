@@ -3,11 +3,12 @@
 :imagesdir: ../../images
 
 === Installed Plugins
-
+ 
 Under plugin settings, the Installed Plugins tab lists which plugins are currently installed in the _Karaf_ instance selected in the _Karaf_ instance data panel.
-System Plugins cannot be uninstalled through the UI.
+Installed plugins can be uninstalled by selecting the plugin on the list and selecting 'uninstall' or reinstalled by selecting the reinstall button.
+However Plugins designated as System Plugins (i.e. the System Plugin checkbox is ticked and grayed out) cannot be uninstalled through the UI.
 (The _Plugin Manager_ is itself a system plugin).
-Non-system plugins can be reinstalled or removed from the system.
+
 Each plugin has metadata associated with it which is used to identify and describe the plugin.
 
 .Plugin Metadata Fields
@@ -23,16 +24,24 @@ Each plugin has metadata associated with it which is used to identify and descri
 | Feature Repository URL | The URL identifying the feature repository (Same as _Karaf_ Feature Repository URL)
 | Product Description    | A textual description of the functionality provided by the plugin.
 | Product URL            | A URL to point to the plugin's documentation / web site
-| licence Type           | A description of the licence applied to the plugin (May be GPL if the plugin is not subject to an ELUA)
+| Licence Type           | A description of the licence applied to the plugin (May be GPL if the plugin is not subject to an EULA)
 | Organisation           | The organisation issuing the plugin and/or licence.
 |===
 
 image::plugin-manager/05_installedPlugins.png[]
 
-NOTE: The installed plugins tab shows the data retrieved the last time the `Reload Karaf Instance` data button was pressed. (This allow us to maintain a record of offline 
-_Karaf_ instances). However it also means that the localhost data may not be up to date with the local _Karaf_ instance. You should always reload to get the accurate picture of what is currently installed.
+NOTE: The installed plugins tab shows the data retrieved the last time the `Reload Karaf Instance` data button was pressed. 
+(This allow us to maintain a record of offline _Karaf_ instances). 
+However it also means that the localhost data may not be up to date with the local _Karaf_ instance. 
+You should always reload to get the accurate picture of what is currently installed.
+
 
 === Available Plugins Server
+
+Plugins which are available to be installed in _{opennms-product-name}_ are either listed in the Local Available Plugins tab or the Remote Available Plugins tab.
+Local Available Plugins are plugins which are available as standard packaged with the _{opennms-product-name}_ build.
+
+The Plugin Manager gets this list from the local system using the rest interface with the admin user and password.
 
 The _Plugin Manager_ obtains a list of available plugins from the _Available Plugin's server_.
 
@@ -40,8 +49,9 @@ _Available Plugin's server_ can be part of an externally hosted plugin shopping 
 internal list of available plugins as described in the section on Internal Plugins.
  
 In order for externally downloaded plugins to be installed, the _Available Plugin's server_ must have a related maven repository from which
-_Karaf_ can download the feature. By default feature download is not enabled in _{opennms-product-name}_. To enable _Karaf_ external
-feature download, the address of the maven repository should be entered in the org.ops4j.pax.url.mvn.cfg file in the 
+_Karaf_ can download the feature. 
+By default feature download is not enabled in _{opennms-product-name}_. 
+To enable _Karaf_ external feature download, the address of the maven repository should be entered in the org.ops4j.pax.url.mvn.cfg file in the 
 _{opennms-product-name}_ /etc directory.
 
 Alternatively the _Plugin Manager_ can list the available plugins which have been installed on the local machine as bundled Plugin Kar's 
@@ -66,7 +76,7 @@ image::plugin-manager/07_availablePlugins.png[]
 === Plugins Manifest
 
 The Plugins Manifest for a given _Karaf_ instance lists the target plugins which the _Karaf_ instance should install when it next contacts the licence manager.
-If the _Plugin Manager_ can communicate with the remote server, then a manifest can be selected for installation.
+If the _Plugin Manager_ can communicate with the remote server, then a manifest can be selected for immediate installation.
 A manual manifest entry can also be created for a feature.
 This can be used to install features which are not listed in the Available Features list.
 

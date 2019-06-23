@@ -32,6 +32,7 @@
 <%@page language="java"	contentType="text/html"	session="true" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
@@ -120,7 +121,7 @@
           </tr>
           <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
           <th class="col-md-1">Time</th>
-          <td class="col-md-3"><fmt:formatDate value="<%=event.getTime()%>" type="BOTH" /></td>
+          <td class="col-md-3"><onms:datetime date="<%=event.getTime()%>" /></td>
           <th class="col-md-1">Interface</th>
           <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-md-3' : 'col-md-7'}">
             <% if( event.getIpAddress() != null ) { %>
@@ -142,7 +143,7 @@
           <td class="col-md-3">
           <c:choose>
             <c:when test="<%=event.getAcknowledgeTime() != null%>">
-              <fmt:formatDate value="<%=event.getAcknowledgeTime()%>" type="BOTH" />
+              <onms:datetime date="<%=event.getAcknowledgeTime()%>" />
             </c:when>
             <c:otherwise>
               &nbsp;

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config;
 
 import java.util.List;
+import java.util.TimeZone;
 
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
@@ -140,4 +141,11 @@ public interface SyslogdConfig {
      * @return interval in ms
      */
     int getBatchIntervalMs();
+
+    /**
+     * Optional:
+     * - if not null it will be used as default time zone if no time zone is given
+     * - if not set the system time zone will be used
+     */
+    TimeZone getTimeZone();
 }

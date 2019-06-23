@@ -30,15 +30,16 @@ package org.opennms.netmgt.config;
 
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
-import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
-import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.test.DaoTestConfigBean;
 
 public class SyslogdConfigFactoryIT {
@@ -52,12 +53,8 @@ public class SyslogdConfigFactoryIT {
         daoTestConfig.setRelativeHomeDirectory("src/test/resources");
         daoTestConfig.afterPropertiesSet();
 
-        MockNetwork network = new MockNetwork();
-
-        MockDatabase db = new MockDatabase();
-        db.populate(network);
-
-        DataSourceFactory.setInstance(db);
+        DataSource ds = Mockito.mock(DataSource.class);
+        DataSourceFactory.setInstance(ds);
 
         m_factory = new SyslogdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-configuration.xml"));
     }

@@ -28,15 +28,30 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.sql.DataSource;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Filter;
@@ -46,16 +61,10 @@ import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.filter.api.FilterDao;
 
-import junit.framework.TestCase;
+public class PollerConfigFactoryIT {
 
-public class PollerConfigFactoryIT extends TestCase {
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(PollerConfigFactoryIT.class);
-    }
-    
     public static final String POLLER_CONFIG = "\n" +
             "<poller-configuration\n" +
             "   threads=\"10\"\n" +
@@ -79,56 +88,23 @@ public class PollerConfigFactoryIT extends TestCase {
             "   <monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.mock.MockMonitor\"/>\n"+
             "</poller-configuration>\n";
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-        
-        DatabaseSchemaConfigFactory.init();
 
-        MockNetwork network = new MockNetwork();
-        network.setCriticalService("ICMP");
-        network.addNode(1, "Router");
-        network.addInterface("192.168.1.1");
-        network.addService("ICMP");
-        network.addService("SMTP");
-        network.addInterface("192.168.1.2");
-        network.addService("ICMP");
-        network.addService("SMTP");
-        network.addNode(2, "Server");
-        network.addInterface("192.168.1.3");
-        network.addService("ICMP");
-        network.addService("HTTP");
-        network.addNode(3, "Firewall");
-        network.addInterface("192.168.1.4");
-        network.addService("SMTP");
-        network.addService("HTTP");
-        network.addInterface("192.168.1.5");
-        network.addService("SMTP");
-        network.addService("HTTP");
-        network.addInterface("192.169.1.5");
-        network.addService("SMTP");
-        network.addService("HTTP");
-        network.addNode(4, "TestNode121");
-        network.addInterface("123.12.123.121");
-        network.addService("HTTP");
-        network.addNode(5, "TestNode122");
-        network.addInterface("123.12.123.122");
-        network.addService("HTTP");
-        
-        MockDatabase db = new MockDatabase();
-        db.populate(network);
-        DataSourceFactory.setInstance(db);
-        
-        // Make sure it gets *our* MockDatabase
-        FilterDaoFactory.setInstance(null);
-        FilterDaoFactory.getInstance();
+        final DataSource dsmock = Mockito.mock(DataSource.class);
+        DataSourceFactory.setInstance(dsmock);
+
+        final FilterDao filterdao = Mockito.mock(FilterDao.class);
+        final List<InetAddress> addrs = Arrays.asList("192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.169.1.5", "123.12.123.121", "123.12.123.122").stream().map(InetAddressUtils::addr).collect(Collectors.toList());
+        Mockito.when(filterdao.getActiveIPAddressList(Mockito.anyString())).thenReturn(addrs);
+        FilterDaoFactory.setInstance(filterdao);
+
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-		MockLogAppender.assertNoWarningsOrGreater();
+    @After
+    public void tearDown() throws Exception {
+        MockLogAppender.assertNoWarningsOrGreater();
     }
     
     static class TestPollerConfigManager extends PollerConfigManager {
@@ -155,6 +131,7 @@ public class PollerConfigFactoryIT extends TestCase {
         }
     }
     
+    @Test
     public void testPollerConfigFactory() throws Exception {
         TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG);
         assertNull(factory.getPackage("TestPkg"));
@@ -192,22 +169,21 @@ public class PollerConfigFactoryIT extends TestCase {
         TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml());
         Package p = newFactory.getPackage("TestPkg");
         assertNotNull("package for 'TestPkg'", p);
+
         assertTrue("Expected 192.169.1.5 to be in the package", newFactory.isInterfaceInPackage("192.169.1.5", p));
         assertFalse("Expected 192.168.1.5 to *not* be in the package", newFactory.isInterfaceInPackage("192.168.1.5", p));
-        
     }
     
+    @Test
     public void testInterfaceInPackage() throws Exception {
         TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG);
         Package pkg = factory.getPackage("default");
         assertNotNull("Unable to find pkg default", pkg);
         
         assertTrue("Expected 192.168.1.1 to be in the package", factory.isInterfaceInPackage("192.168.1.1", pkg));
-        
-        
-        
     }
-    
+
+    @Test
     public void testSpecific() throws Exception {
         TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG);
         assertNull(factory.getPackage("TestPkg"));
@@ -243,12 +219,13 @@ public class PollerConfigFactoryIT extends TestCase {
         TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml());
         Package p = newFactory.getPackage("TestPkg");
         assertNotNull("package 'TestPkg' from new factory", p);
+
         assertTrue("Expect 123.12.123.121 to be part of the package", newFactory.isInterfaceInPackage("123.12.123.121", p));
         assertTrue("Expect 123.12.123.122 to be part of the package", newFactory.isInterfaceInPackage("123.12.123.122", p));
         assertFalse("Expected 192.168.1.1 to be excluded from the package", newFactory.isInterfaceInPackage("192.168.1.1", p));
-        
     }
 
+    @Test
     public void testIncludeUrl() throws Exception {
         TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG);
         assertNull(factory.getPackage("TestPkg"));

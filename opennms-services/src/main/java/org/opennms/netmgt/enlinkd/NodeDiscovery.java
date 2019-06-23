@@ -32,9 +32,6 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
-import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,35 +42,13 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public abstract class NodeDiscovery implements ReadyRunnable {
+public abstract class NodeDiscovery extends Discovery {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeDiscovery.class);
     /**
      * The node ID of the system used to collect the SNMP information
      */
     protected final Node m_node;
-
-    /**
-     * The scheduler object
-     */
-    private Scheduler m_scheduler;
-
-    /**
-     * The interval, default value 30 minutes
-     */
-    private long m_poll_interval = 1800000;
-
-    /**
-     * The initial sleep time, default value 5 minutes
-     */
-    private long m_initial_sleep_time = 600000;
-
-    private boolean m_suspendCollection = false;
-
-    private boolean m_runned = false;
-
-
-    protected final EnhancedLinkd m_linkd;
     
     /**
      * Constructs a new SNMP collector for a node using the passed interface
@@ -85,12 +60,12 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      *            The SnmpPeer object to collect from.
      */
     public NodeDiscovery(final EnhancedLinkd linkd, final Node node) {
-        m_linkd = linkd;
+        super(linkd,linkd.getRescanInterval(), linkd.getInitialSleepTime());
         m_node = node;
-        m_initial_sleep_time = m_linkd.getInitialSleepTime();
-        m_poll_interval = m_linkd.getRescanInterval();
     }
 
+
+    protected abstract void runNodeDiscovery(); 
     /**
      * <p>
      * Performs the collection for the targeted IP address. The success or
@@ -102,156 +77,19 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * thread context synchronization must be added.
      * </p>
      */
-    public void run() {
+    public void runDiscovery() {
         if (m_suspendCollection) {
             sendSuspendedEvent(getNodeId());
         } else {
             sendStartEvent(getNodeId());
             LOG.info( "run: node [{}], start {} collection.", 
                       getNodeId(), getName());
-            runCollection();
+            runNodeDiscovery();
             LOG.info( "run: node [{}], end {} collection.", 
                       getNodeId(),getName());
             sendCompletedEvent(getNodeId());
         }
-        m_runned = true;
-        reschedule();
     }
-
-    protected void sendSuspendedEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(getNodeId());
-                           builder.setInterface(getPrimaryIpAddress());
-                           builder.addParam("runnable", getName());
-       m_linkd.getEventForwarder().sendNow(builder.getEvent());
-    }
-    
-    protected void sendStartEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(getNodeId());
-                           builder.setInterface(getPrimaryIpAddress());
-                           builder.addParam("runnable", getName());
-                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
-        
-    }
-    
-    protected void sendCompletedEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(getNodeId());
-                           builder.setInterface(getPrimaryIpAddress());
-                           builder.addParam("runnable", getName());
-                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
-    }
-
-    protected abstract void runCollection(); 
-    /**
-     * <p>
-     * getScheduler
-     * </p>
-     * 
-     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
-     */
-    public Scheduler getScheduler() {
-        return m_scheduler;
-    }
-
-    /**
-     * <p>
-     * setScheduler
-     * </p>
-     * 
-     * @param scheduler
-     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
-     *            object.
-     */
-    public void setScheduler(Scheduler scheduler) {
-        m_scheduler = scheduler;
-    }
-
-    /**
-     * <p>
-     * schedule
-     * </p>
-     */
-    public void schedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(m_initial_sleep_time, this);
-    }
-
-    /**
-	 * 
-	 */
-    public void reschedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(m_poll_interval, this);
-    }
-
-    /**
-     * <p>
-     * isReady
-     * </p>
-     * 
-     * @return a boolean.
-     */
-    public boolean isReady() {
-        return true;
-    }
-
-    /**
-     * <p>
-     * isSuspended
-     * </p>
-     * 
-     * @return Returns the suspendCollection.
-     */
-    public boolean isSuspended() {
-        return m_suspendCollection;
-    }
-
-    /**
-     * <p>
-     * suspend
-     * </p>
-     */
-    public void suspend() {
-        m_suspendCollection = true;
-    }
-
-    /**
-     * <p>
-     * wakeUp
-     * </p>
-     */
-    public void wakeUp() {
-        m_suspendCollection = false;
-    }
-
-    /**
-     * <p>
-     * unschedule
-     * </p>
-     */
-    public void unschedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "rescedule: Cannot schedule a service whose scheduler is set to null");
-        if (m_runned) {
-            m_scheduler.unschedule(this, m_poll_interval);
-        } else {
-            m_scheduler.unschedule(this, m_initial_sleep_time);
-        }
-    }
-
 
     /**
      * Returns the target address that the collection occurred for.
@@ -273,72 +111,11 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * 
      * @return a {@link java.lang.String} object.
      */
-	public String getInfo() {
+    public String getInfo() {
         return  getName()  
         		+ " node=" + getNodeId()
-        		+ " ip=" + str(getPrimaryIpAddress())
-        		+ " package=" + getPackageName();
-	}
-
-    /**
-     * <p>
-     * Getter for the field <code>packageName</code>.
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    public String getPackageName() {
-        return "default";
+        		+ " ip=" + str(getPrimaryIpAddress());
     }
-
-    public void setPackageName(String pkgName) {
-    }
-    /**
-     * <p>
-     * getInitialSleepTime
-     * </p>
-     * 
-     * @return Returns the initial_sleep_time.
-     */
-    public long getInitialSleepTime() {
-        return m_initial_sleep_time;
-    }
-
-    /**
-     * <p>
-     * setInitialSleepTime
-     * </p>
-     * 
-     * @param initial_sleep_time
-     *            The initial_sleep_timeto set.
-     */
-    public void setInitialSleepTime(long initial_sleep_time) {
-        m_initial_sleep_time = initial_sleep_time;
-    }
-
-    /**
-     * <p>
-     * getPollInterval
-     * </p>
-     * 
-     * @return Returns the initial_sleep_time.
-     */
-    public long getPollInterval() {
-        return m_poll_interval;
-    }
-
-    /**
-     * <p>
-     * setPollInterval
-     * </p>
-     * 
-     * @param interval
-     *            a long.
-     */
-    public void setPollInterval(long interval) {
-        m_poll_interval = interval;
-    }
-
 
     public int getNodeId() {
     	return m_node.getNodeId();
@@ -355,40 +132,39 @@ public abstract class NodeDiscovery implements ReadyRunnable {
     public String getLocation() {
         return m_node.getLocation();
     }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime
+                * result
+                + (int) (m_initial_sleep_time ^ (m_initial_sleep_time >>> 32));
+        result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
+        result = prime * result
+                + (int) (m_poll_interval ^ (m_poll_interval >>> 32));
+        return result;
+    }
 
-    public abstract String getName();
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ (int) (m_initial_sleep_time ^ (m_initial_sleep_time >>> 32));
-		result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
-		result = prime * result
-				+ (int) (m_poll_interval ^ (m_poll_interval >>> 32));
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		NodeDiscovery other = (NodeDiscovery) obj;
-		if (m_initial_sleep_time != other.m_initial_sleep_time)
-			return false;
-		if (m_node == null) {
-			if (other.m_node != null)
-				return false;
-		} else if (!m_node.equals(other.m_node))
-			return false;
-		if (m_poll_interval != other.m_poll_interval)
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        NodeDiscovery other = (NodeDiscovery) obj;
+        if (m_initial_sleep_time != other.m_initial_sleep_time)
+            return false;
+        if (m_node == null) {
+            if (other.m_node != null)
+                return false;
+        } else if (!m_node.equals(other.m_node))
+            return false;
+        if (m_poll_interval != other.m_poll_interval)
+            return false;
+        return true;
+    }
 	
 }

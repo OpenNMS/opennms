@@ -43,14 +43,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
+import org.opennms.netmgt.model.topology.Topology;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 @Entity
 @Table(name="ospfLink")
-public class OspfLink implements Serializable {
+public class OspfLink implements Serializable,Topology {
 	/**
 	 * 
 	 */
@@ -201,6 +203,31 @@ public class OspfLink implements Serializable {
 			.append("lastPollTime", m_ospfLinkLastPollTime)
 			.toString();
 	}
+	
+	
+        @Transient
+        public String printTopology() {
+            StringBuffer strb = new StringBuffer();
+            strb.append("ospflink: nodeid:[");
+            strb.append(getNode().getId());
+            strb.append("]: id/mask/ifindex/addressless:[");
+            strb.append(str(getOspfIpAddr()));
+            strb.append("/");
+            strb.append(str(getOspfIpMask()));
+            strb.append("/");
+            strb.append(getOspfIfIndex());
+            strb.append("/");
+            strb.append(getOspfAddressLessIndex());
+            strb.append("]: rem router id/ip/addressless:[");
+            strb.append(str(getOspfRemRouterId()));
+            strb.append("/");
+            strb.append(str(getOspfRemIpAddr()));
+            strb.append("/");
+            strb.append(getOspfRemAddressLessIndex());
+            strb.append("]");
+            return strb.toString();
+        }
+
 	
 	public void merge(OspfLink link) {
 		if (link == null)

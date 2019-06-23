@@ -60,7 +60,7 @@ angular.module('onms-resources', [
     $scope.update();
   }, function errorCallback(response) {
      $scope.loaded = true;
-     growl.error("There was a problem in retrieving resources through ReST", {ttl: 10000});
+     growl.error('There was a problem in retrieving resources through ReST', {ttl: 10000});
   });
 
   $scope.$watch('resourceFilter', function() {
@@ -110,7 +110,7 @@ angular.module('onms-resources', [
       angular.copy($scope.resources, $scope.filteredResources);
     }, function errorCallback(response) {
        $scope.loaded = true;
-       growl.error("There was a problem in retrieving resources through ReST", {ttl: 10000});
+       growl.error('There was a problem in retrieving resources through ReST', {ttl: 10000});
     });
   };
 

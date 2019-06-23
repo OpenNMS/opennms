@@ -908,22 +908,31 @@ LOG_INST="$RPM_INSTALL_PREFIX2"
 [ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
 [ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
-printf -- "- making symlink for $ROOT_INST/docs... "
-if [ -e "$ROOT_INST/docs" ] && [ ! -L "$ROOT_INST/docs" ]; then
-	echo "failed: $ROOT_INST/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+if [ -e "$ROOT_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/docs... "
+	if [ -e "$ROOT_INST/docs" ] && [ ! -L "$ROOT_INST/docs" ]; then
+		echo "failed: $ROOT_INST/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+	else
+		install -d -m 755 "$ROOT_INST"
+		rm -rf "$ROOT_INST/docs"
+		ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/docs"
+		echo "done"
+	fi
 else
-	rm -rf "$ROOT_INST/docs"
-	ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/docs"
-	echo "done"
+	printf -- "- skipping symlink to $ROOT_INST/docs... %{name}-core is not installed\n"
 fi
 
-printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
-if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
-  echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}" ]; then
+	printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
+	if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+		echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+	else
+		rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+		ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+		echo "done"
+	fi
 else
-  rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
-  ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
-  echo "done"
+	printf -- "- skipping symlink to $ROOT_INST/jetty-webapps/%{servletdir}/docs... %{name}-webapp-jetty not installed\n"
 fi
 
 %postun -p /bin/bash docs
@@ -935,7 +944,7 @@ LOG_INST="$RPM_INSTALL_PREFIX2"
 [ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
 if [ "$1" = 0 ]; then
-	if [ -L "$ROOT_INST/docs" ]; then
+	if [ -e "$ROOT_INST" ] && [ -L "$ROOT_INST/docs" ]; then
 		rm -f "$ROOT_INST/docs"
 	fi
 fi

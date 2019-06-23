@@ -65,7 +65,7 @@ public class BridgeDot1dStpPortEnableUserType extends EnumType {
                 return type;
             }
         }
-        throw new HibernateException("Invalid value for IsisAdminState: " + c);
+        throw new HibernateException("Invalid value for BridgeDot1dStpPortEnable: " + c);
     }
 
     @Override

@@ -43,6 +43,7 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%
     WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(application);
@@ -100,12 +101,12 @@
   <table class="table table-condensed severity">
   <tr class="severity-<%=eventSeverity.toLowerCase()%>">
     <th class="col-md-1">Notification&nbsp;Time</th>
-    <td class="col-md-2"><fmt:formatDate value="<%=notice.getTimeSent()%>" type="BOTH" /></td>
+    <td class="col-md-2"><onms:datetime date="<%=notice.getTimeSent()%>" /></td>
     <th class="col-md-1">Time&nbsp;Replied</th>
     <td class="col-md-2">
       <c:choose>
         <c:when test="<%=notice.getTimeReplied() != null%>">
-          <fmt:formatDate value="<%=notice.getTimeReplied()%>" type="BOTH" />
+          <onms:datetime date="<%=notice.getTimeReplied()%>"/>
         </c:when>
         <c:otherwise>
           &nbsp;
@@ -241,7 +242,7 @@
       <td>
         <c:choose>
           <c:when test="<%=sentTo.getTime() != null && sentTo.getTime().getTime() > 0%>">
-            <fmt:formatDate value="<%=sentTo.getTime()%>" type="BOTH" />
+            <onms:datetime date="<%=sentTo.getTime()%>" />
           </c:when>
           <c:otherwise>
             &nbsp;

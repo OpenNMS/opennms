@@ -32,6 +32,8 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -49,6 +51,7 @@ import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -57,6 +60,7 @@ import org.opennms.netmgt.provision.snmp.EntityPhysicalTableRow;
 import org.opennms.netmgt.provision.snmp.EntityPhysicalTableTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -81,6 +85,9 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
 
     /** The Constant NAME. */
     public static final String NAME = "SnmpHardwareInventoryProvisioningAdapter";
+
+    /** The Constant SNMP OID for where we walk entAliasMapping. */
+    private static final SnmpObjId ENT_ALIAS_MAPPING_IDENTIFIER = SnmpObjId.get(".1.3.6.1.2.1.47.1.3.2.1.2");
 
     /** The node DAO. */
     private NodeDao m_nodeDao;
@@ -249,6 +256,13 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
             .withLocation(node.getLocation() != null ? node.getLocation().getLocationName() : null)
             .execute();
 
+
+        // walk the entAliasMappingTable
+        final CompletableFuture<List<SnmpResult>> aliasesFuture = m_locationAwareSnmpClient.walk(agentConfig, ENT_ALIAS_MAPPING_IDENTIFIER)
+            .withDescription("entHwAliasMib" + '_' + node.getLabel())
+            .withLocation(node.getLocation() != null ? node.getLocation().getLocationName() : null)
+            .execute();
+
         try {
             future.get();
         } catch (ExecutionException e) {
@@ -263,7 +277,46 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
             throw new SnmpHardwareInventoryException("Cannot get root entity for node " + node.getLabel() + ", it seems like its SNMP agent does not have an implementation for the entPhysicalTable of the ENTITY-MIB, or it has an incorrect implementation of it.");
         }
 
+        try {
+            // map the entity aliases
+            Map<Integer, SortedSet<OnmsHwEntityAlias>> aliasMap = mapAliases(aliasesFuture.get());
+            // overlay aliases onto physicalEntities recursively from the root
+            addAliasesToEntities(aliasMap, root);
+        } catch (ExecutionException e) {
+            LOG.error("Aborting aliasMapping for " + agentConfig, e);
+            throw new SnmpHardwareInventoryException("Aborting entities scan: Agent failed while scanning the entHwAliasMib" + '_' + node.getLabel() + ": " + e.getMessage());
+        } catch (final InterruptedException e) {
+            throw new SnmpHardwareInventoryException("ENTITY-ALIAS-MIB node collection interrupted, exiting");
+        }
+        
         return root;
+    }
+    
+    private void addAliasesToEntities(Map<Integer, SortedSet<OnmsHwEntityAlias>> aliasMap, OnmsHwEntity entity) {
+        for (OnmsHwEntity child : entity.getChildren()) {
+            addAliasesToEntities(aliasMap, child);
+        }
+        SortedSet<OnmsHwEntityAlias> aliases = aliasMap.get(entity.getEntPhysicalIndex());
+        if (aliases != null) {
+            entity.setEntAliases(aliases);
+        }
+    }
+
+    private Map<Integer, SortedSet<OnmsHwEntityAlias>> mapAliases(List<SnmpResult> results) {
+        Map<Integer, SortedSet<OnmsHwEntityAlias>> aliases = new HashMap<>();
+        for (SnmpResult result : results) {
+            int[] instance = result.getInstance().getIds();
+            int entAliasEntry = instance[0];
+            int entAliasIndex = instance[1];
+            SortedSet<OnmsHwEntityAlias> aliasSet = aliases.get(entAliasEntry);
+            if (aliasSet == null) {
+                aliasSet = new TreeSet<>();
+                aliases.put(entAliasEntry, aliasSet);
+            }
+            aliasSet.add(new OnmsHwEntityAlias(entAliasIndex, result.getValue().toString()));
+            LOG.debug("result from entAliasMappingTable: found entry {} index: {} oid: {}", entAliasEntry,  entAliasIndex, result.getValue());
+        }
+        return aliases;
     }
 
     /* (non-Javadoc)

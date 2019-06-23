@@ -70,7 +70,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     	super(linkd, node);
     }
 
-    protected void runCollection() {
+    protected void runNodeDiscovery() {
 
     	final Date now = new Date(); 
 
@@ -85,11 +85,11 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
                           .execute()
                           .get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: lldpLocalGroup: {}", 
+            LOG.info("run: node [{}]: ExecutionException: LLDP_MIB not supported {}", 
                      getNodeId(), e.getMessage());
                 return;
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: lldpLocalGroup: {}", 
+            LOG.info("run: node [{}]: InterruptedException: LLDP_MIB not supported {}", 
                      getNodeId(), e.getMessage());
                 return;
         }
@@ -99,7 +99,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     				getNodeId());
             return;
         } else {
-    		LOG.info( "run: node[{}]: lldp identifier : {}",
+    		LOG.debug( "run: node[{}]: lldp identifier : {}",
     				getNodeId(),
     				lldpLocalGroup.getLldpElement());
         }
@@ -140,11 +140,11 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
                                   .execute()
                                   .get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: lldpRemTable: {}", 
+            LOG.debug("run: node [{}]: ExecutionException: {}", 
                      getNodeId(), e.getMessage());
             return;
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: lldpRemTable: {}", 
+            LOG.debug("run: node [{}]: InterruptedException: {}", 
                      getNodeId(), e.getMessage());
             return;
         }
@@ -154,15 +154,16 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
                 new LldpLocPortGetter(peer,
                                 m_linkd.getLocationAwareSnmpClient(),
                                 getLocation(),getNodeId());
-        for (LldpLink link: links)
+        for (LldpLink link: links) {
             m_linkd.getQueryManager().store(getNodeId(),lldpLocPort.getLldpLink(link));
-
+        }
+        
         m_linkd.getQueryManager().reconcileLldp(getNodeId(),now);
     }
 
 	@Override
 	public String getName() {
-		return "LldpLinkDiscovery";
+		return "NodeDiscoveryLldp";
 	}
 
 }

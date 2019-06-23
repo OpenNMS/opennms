@@ -58,6 +58,13 @@ public interface EnhancedLinkdConfig {
     int getMaxBft();
 
     /**
+     * <p>getDiscoveryBridgeThreads</p>
+     *
+     * @return a int.
+     */
+    int getDiscoveryBridgeThreads();
+
+    /**
      * <p>getInitialSleepTime</p>
      *
      * @return a long.
@@ -65,11 +72,19 @@ public interface EnhancedLinkdConfig {
     long getInitialSleepTime();
 
     /**
-     * <p>getSnmpPollInterval</p>
+     * <p>getRescanInterval</p>
      *
      * @return a long.
      */
     long getRescanInterval();
+
+    /**
+     * <p>getBridgeTopologyInterval</p>
+     *
+     * @return a long.
+     */
+    long getBridgeTopologyInterval();
+
 
     /**
      * <p>useCdpDiscovery</p>

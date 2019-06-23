@@ -69,13 +69,6 @@
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-user/guide-user.html"
-                            target="_blank" class="btn btn-default" role="button"
-                            style="width: 100%">Users Guide</a></td>
-                    <td style="border-top: none;">OpenNMS users tend to have a broad network monitoring skill set. This User Guide contains an overview of concepts and explains how to use OpenNMS for day-to-day monitoring.</td>
-                </tr>
-                <tr>
-                    <td style="border-top: none;"><a
                             href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-development/guide-development.html"
                             target="_blank" class="btn btn-default" role="button"
                             style="width: 100%">Developers Guide</a></td>
@@ -105,11 +98,6 @@
                     <td style="border-top: none;"><a href="docs/guide-admin/index.html" target="_blank"
                                                      class="btn btn-default" role="button" style="width: 100%">Admin Guide</a></td>
                     <td style="border-top: none;">Have a look into the Admin Guide to find instructions how to configure OpenNMS to monitor your infrastructure and services.</td>
-                </tr>
-                <tr>
-                    <td style="border-top: none;"><a href="docs/guide-user/index.html" target="_blank"
-                                                     class="btn btn-default" role="button" style="width: 100%">Users Guide</a></td>
-                    <td style="border-top: none;">OpenNMS users tend to have a broad network monitoring skill set. This User Guide contains an overview of concepts and explains how to use OpenNMS for day-to-day monitoring.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a href="docs/guide-development/index.html" target="_blank"

@@ -223,15 +223,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 						+ Math.max(0, timeToRun - getCurrentTime()) + "ms)";
 			}
 			
-                        @Override
-			public String getPackageName() {
-				return runnable.getPackageName();
-			}
-			
-                        @Override
-			public void setPackageName(String pkg) {
-				runnable.setPackageName(pkg);
-			}
 		};
 		schedule(timeKeeper, interval);
 	}

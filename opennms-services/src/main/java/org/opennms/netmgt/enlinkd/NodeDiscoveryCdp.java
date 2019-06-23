@@ -69,7 +69,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     	super(linkd, node);
     }
 
-    protected void runCollection() {
+    protected void runNodeDiscovery() {
 
     	final Date now = new Date(); 
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
@@ -82,11 +82,11 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: node [{}]: ExecutionException: cdpGlobalGroup: {}", 
+           LOG.info("run: node [{}]: ExecutionException: CDP_MIB not supported {}", 
                     getNodeId(), e.getMessage());
            return;
        } catch (final InterruptedException e) {
-           LOG.info("run: node [{}]: InterruptedException: cdpGlobalGroup: {}", 
+           LOG.info("run: node [{}]: InterruptedException: CDP_MIB not supported {}", 
                     getNodeId(), e.getMessage());
            return;
        }
@@ -98,7 +98,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
        CdpElement cdpElement = cdpGlobalGroup.getCdpElement();
        m_linkd.getQueryManager().store(getNodeId(), cdpElement);
        if (cdpElement.getCdpGlobalRun() == TruthValue.FALSE) {
-           LOG.info("run: node [{}]. CDP disabled.",
+           LOG.info("run: node [{}]. CDP_MIB disabled.",
                     getNodeId());
            return;
        }
@@ -118,11 +118,11 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: cdpCacheTable: {}", 
+            LOG.debug("run: node [{}]: ExecutionException: {}", 
                      getNodeId(), e.getMessage());
             return;
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: cdpCacheTable: {}", 
+            LOG.debug("run: node [{}]: InterruptedException: {}", 
                      getNodeId(), e.getMessage());
             return;
         }
@@ -138,7 +138,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
 
 	@Override
 	public String getName() {
-		return "CdpLinkDiscovery";
+		return "NodeDiscoveryCdp";
 	}
 
 }

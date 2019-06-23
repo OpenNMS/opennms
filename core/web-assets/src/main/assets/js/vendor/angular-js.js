@@ -14,7 +14,7 @@ require('angular-growl-v2/build/angular-growl.css');
 require('angular-loading-bar/build/loading-bar.css');
 
 /* Bootstrap UI */
-require('./bootstrap-js');
+require('vendor/bootstrap-js');
 require('angular-bootstrap-checkbox');
 require('angular-ui-bootstrap');
 

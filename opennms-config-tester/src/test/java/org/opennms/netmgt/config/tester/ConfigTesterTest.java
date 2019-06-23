@@ -34,9 +34,9 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -670,7 +670,7 @@ public class ConfigTesterTest {
         setUpOpennmsHomeInTmpDir();
 
         // create broken properties file in opennms.properties.d:
-        File file = createPropertiesFileInPropertiesD("properties");
+        File file = createFileInPropertiesD("properties");
         String invalidCharacter="'\\u0zb9";
         Files.write(invalidCharacter, file, StandardCharsets.UTF_8);
 
@@ -691,16 +691,18 @@ public class ConfigTesterTest {
     }
 
     private void saveXmlToPropertiesD(String xml) throws IOException{
-        File file = createPropertiesFileInPropertiesD("xml");
+        File file = createFileInPropertiesD("xml");
         Files.write(xml, file, StandardCharsets.UTF_8);
     }
 
     private void savePropertiesToPropertiesD(Properties properties) throws IOException{
-        File file = createPropertiesFileInPropertiesD("properties");
-        properties.store(new FileOutputStream(file), "");
+        File file = createFileInPropertiesD("properties");
+        try(OutputStream out = new FileOutputStream(file)){
+            properties.store(out, "");
+        }
     }
 
-    private File createPropertiesFileInPropertiesD(String sufffix) throws IOException{
+    private File createFileInPropertiesD(String sufffix) throws IOException{
         Path etcDir = java.nio.file.Files.createDirectories(Paths.get(this.opennmsHomeDir.getPath(), "etc/opennms.properties.d"));
         File file = new File(etcDir.toFile(), this.getClass().getSimpleName() + "." + sufffix);
         file.createNewFile();

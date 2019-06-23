@@ -153,16 +153,17 @@ public class SyslogParser {
         return m_matcher;
     }
 
-    protected static Date parseDate(final String dateString) {
+    protected Date parseDate(final String dateString) {
         try {
             // Date pattern has been created and checked inside if loop instead of 
             // parsing date inside the exception class.
             if (dateString.matches(datePattern)) {
                 final DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+                adjustTimeZone(df);
                 return df.parse(dateString);
             } else {
                 final DateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.ROOT);
-                
+                adjustTimeZone(df);
                 // 2012-03-14 Ben: Ugh, what's a non-lame way of forcing it to parse to "this year"?
                 Date date = df.parse(dateString);
                 final Calendar c = df.getCalendar();
@@ -175,6 +176,12 @@ public class SyslogParser {
         } catch (final Exception e) {
             LOG.debug("Unable to parse date '{}'", dateString, e);
             return null;
+        }
+    }
+
+    void adjustTimeZone(DateFormat df) {
+        if(m_config.getTimeZone() !=null) {
+            df.setTimeZone(m_config.getTimeZone());
         }
     }
 }

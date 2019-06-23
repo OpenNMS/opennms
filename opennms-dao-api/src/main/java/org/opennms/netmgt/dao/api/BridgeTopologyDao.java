@@ -33,11 +33,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 
 public interface BridgeTopologyDao {
-        
         
     // Load the topology from the scratch
     Set<BroadcastDomain> load();
@@ -45,13 +45,8 @@ public interface BridgeTopologyDao {
     List<SharedSegment> getBridgeSharedSegments(int nodeid);
 
     SharedSegment getHostSharedSegment(String mac);
-
+    
+    void save(BroadcastDomain domain, Date now) throws BridgeTopologyException;
+    
     void delete(int nodeid);
-    
-    void deleteOlder(int nodeid,Date now);
-    
-    void save(BroadcastDomain domain);
-
-    void saveForwarders(BroadcastDomain domain);
-
 }

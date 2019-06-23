@@ -138,20 +138,6 @@ public abstract class MockEventUtil {
     }
     
     /**
-     * <p>createDemandPollServiceEvent</p>
-     *
-     * @param source a {@link java.lang.String} object.
-     * @param svc a {@link org.opennms.netmgt.mock.MockService} object.
-     * @param demandPollId a int.
-     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    public static Event createDemandPollServiceEvent(String source, MockService svc, int demandPollId) {
-        EventBuilder event = createServiceEventBuilder(source, EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, svc, null);
-        event.addParam(EventConstants.PARM_DEMAND_POLL_ID, demandPollId);
-        return event.getEvent();
-    }
-    
-    /**
      * <p>createNodeGainedServiceEvent</p>
      *
      * @param source a {@link java.lang.String} object.

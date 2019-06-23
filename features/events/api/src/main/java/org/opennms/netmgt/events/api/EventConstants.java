@@ -345,11 +345,6 @@ public abstract class EventConstants {
     public static final String NOTIFICATION_WITHOUT_USERS = "uei.opennms.org/internal/notificationWithoutUsers";
 
     /**
-     * Demand poll service event ui.
-     */
-	public static final String DEMAND_POLL_SERVICE_EVENT_UEI = "uei.opennms.org/internal/demandPollService";
-
-    /**
      * An event to signal that a user has changed asset information via the web
      * UI.
      */
@@ -531,12 +526,6 @@ public abstract class EventConstants {
      */
     public static final String PARM_CRITICAL_PATH_NOTICE_SUPRESSED = "noticeSupressed";
     
-    /**
-     * This parameter is set to indicate the id of the demandPoll object to store the results
-     * of a demandPoll in.
-     */
-    public static final String PARM_DEMAND_POLL_ID = "demandPollId";
-
     /**
      * The nodeSysName from the node table when sent as an event parm.
      */

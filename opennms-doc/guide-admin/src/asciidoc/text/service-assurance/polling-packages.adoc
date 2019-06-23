@@ -217,3 +217,68 @@ Available ? true (status Up[1])
 <3> _Service Monitor_ used for this test
 <4> RRD configuration for response time measurement
 <5> Retry and timeout settings for this test
+
+==== Test filters on Karaf Shell
+
+Filters are ubiquitous in opennms configurations with <filter> syntax.
+This karaf shell can be used to verify filters. For more info, refer to https://wiki.opennms.org/wiki/Filters[Filters].
+[source]
+----
+ssh -p 8101 admin@localhost
+----
+
+Once in the shell, print command help as follows
+
+[source]
+----
+opennms> filters:filter --help
+DESCRIPTION
+        filters:filter
+	Enumerates nodes/interfaces that match a give filter
+SYNTAX
+        filters:filter filterRule
+ARGUMENTS
+        filterRule
+                A filter Rule
+----
+For ex: Run a filter rule that match a location
+[source]
+----
+filters:filter  "location='MINION'"
+----
+Output is displayed as follows
+[source]
+----
+nodeId=2 nodeLabel=00000000-0000-0000-0000-000000ddba11 location=MINION
+	IpAddresses:
+		127.0.0.1
+----
+Another ex:  Run a filter that match a node location and for a given IP Address range.
+Refer to https://wiki.opennms.org/wiki/IPLIKE[IPLIKE] for more info on using IPLIKE syntax.
+[source]
+----
+filters:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
+----
+Output is displayed as follows
+[source]
+----
+nodeId=3 nodeLabel=label1 location=Default
+	IpAddresses:
+		172.10.154.1
+		172.20.12.12
+		172.20.2.14
+		172.01.134.1
+		172.20.11.15
+		172.40.12.18
+
+nodeId=5 nodeLabel=label2 location=Default
+	IpAddresses:
+		172.17.0.111
+
+nodeId=6 nodeLabel=label3 location=Default
+	IpAddresses:
+		172.20.12.22
+		172.17.0.123
+----
+
+NOTE: Node info displayed will have nodeId, nodeLabel, location and optional fileds like foreignId, foreignSource, categories when they exist.

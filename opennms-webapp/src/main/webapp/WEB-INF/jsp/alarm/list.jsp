@@ -55,7 +55,7 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@taglib uri="../../taglib.tld" prefix="onms" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%--
   This page is written to be the display (view) portion of the AlarmQueryServlet
@@ -685,7 +685,7 @@
           <td>
             <nobr>
               <% if(alarms[i].getLastEvent() != null) { %><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><% } %>
-                <fmt:formatDate value="${alarm.lastEventTime}" type="BOTH" />
+                <onms:datetime date="${alarm.lastEventTime}" />
               <% if(alarms[i].getLastEvent() != null) { %></a></span><% } %>
               <a href="<%=this.makeLink(callback, parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
@@ -693,7 +693,7 @@
           <c:if test="${param.display == 'long'}">
           <br />
             <nobr>
-              <fmt:formatDate value="${alarm.firstEventTime}" type="BOTH" />
+              <onms:datetime date="${alarm.firstEventTime}" />
               <a href="<%=this.makeLink(callback, parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>

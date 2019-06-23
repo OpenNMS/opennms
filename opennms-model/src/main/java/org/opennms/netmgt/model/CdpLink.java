@@ -44,13 +44,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="cdpLink")
-public class CdpLink implements Serializable {
+public class CdpLink implements Serializable,Topology {
 
 	/**
 	 * 
@@ -397,6 +399,30 @@ public class CdpLink implements Serializable {
         .append("lastPollTime", m_cdpLinkLastPollTime)
         .toString();
 	}
+
+    @Transient
+    public String printTopology() {
+        StringBuffer strb = new StringBuffer();
+            strb.append("cdplink: nodeid:["); 
+            strb.append(getNode().getId());
+            strb.append("]. ifindex:[ ");
+            strb.append(getCdpCacheIfIndex());
+            strb.append("], deviceindex:[");
+            strb.append(getCdpCacheDeviceIndex());
+            strb.append("], interfacename:[");
+            strb.append(getCdpInterfaceName()); 
+            strb.append("], address/type:[");
+            strb.append(getCdpCacheAddress()); 
+            strb.append("/");
+            strb.append(CiscoNetworkProtocolType.getTypeString(getCdpCacheAddressType().getValue()));
+            strb.append("], deviceid:[");
+            strb.append(getCdpCacheDeviceId()); 
+            strb.append("], deviceport:[");
+            strb.append(getCdpCacheDevicePort()); 
+           strb.append("]");
+
+        return strb.toString();
+    }
 
 
 }

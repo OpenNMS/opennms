@@ -157,8 +157,6 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
             assertEquals(CiscoNetworkProtocolType.ip, link.getCdpCacheAddressType());
         }
         
-        assertEquals(6, m_cdpLinkDao.findLinksForTopology().size());
-
     }
     
     @Test

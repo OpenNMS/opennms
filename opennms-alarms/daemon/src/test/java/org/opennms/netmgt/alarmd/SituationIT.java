@@ -130,9 +130,9 @@ public class SituationIT {
 
         // update the situation by adding an alarm
         OnmsAlarm alarm3 = new OnmsAlarm();
-        linkDownAlarmOnR2.setDistPoller(m_distPollerDao.whoami());
-        linkDownAlarmOnR2.setCounter(1);
-        linkDownAlarmOnR2.setUei("linkDown");
+        alarm3.setDistPoller(m_distPollerDao.whoami());
+        alarm3.setCounter(1);
+        alarm3.setUei("linkDown");
         retrieved.addAlarm(alarm3);
         assertThat(retrieved.getAlarms().size(), is(3));
 

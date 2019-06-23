@@ -63,43 +63,54 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
     	super(linkd, node);
     }
 
-    protected void runCollection() {
+    protected void runNodeDiscovery() {
 
     	final Date now = new Date(); 
 
         IpNetToMediaTableTracker ipNetToMediaTableTracker = new IpNetToMediaTableTracker() {
             public void processIpNetToMediaRow(final IpNetToMediaRow row) {
                 IpNetToMedia macep = row.getIpNetToMedia();
-                if (macep.getPhysAddress() == null && macep.getNetAddress() == null) {
-                    LOG.debug("processIpNetToMediaRow: node [{}], null:null:{}. ip and mac addresses null. skipping",
-                              getNodeId(),
-                              macep.getIpNetToMediaType());
-                } else  if (macep.getPhysAddress() == null) {
-                        LOG.debug("processIpNetToMediaRow: node [{}], null:{}:{}. mac address null. skipping",
-                                  getNodeId(),
-                                  str(macep.getNetAddress()),
-                                  macep.getIpNetToMediaType());
-                } else if (macep.getNetAddress() == null) {
-                    LOG.warn("processIpNetToMediaRow: node [{}], {}:null:{}. ip address null. skipping",
-                             getNodeId(),
-                             macep.getPhysAddress(), 
-                             macep.getIpNetToMediaType());
-                } else if (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC
-                        || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC) {
-                    LOG.debug("processIpNetToMediaRow: node [{}], mac address {} and ip {} mediatype {}. saving",
+                if (macep.getPhysAddress() != null && 
+                        macep.getNetAddress() != null && 
+                        macep.getSourceIfIndex() != null &&
+                        (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC
+                        || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC)) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("processIpNetToMediaRow: node [{}], mac address {} and ip {} mediatype {}. saving",
                               getNodeId(),
                               macep.getPhysAddress(), 
                               str(macep.getNetAddress()),
                               macep.getIpNetToMediaType());
+                    }
                     m_linkd.getQueryManager().store(getNodeId(), macep);
-                } else {
-                    LOG.warn("processIpNetToMediaRow: node [{}],  {}:{}:{}. mediatype not valid. skipping",
+                    return;
+                } 
+                if (macep.getPhysAddress() == null && macep.getNetAddress() == null) {
+                    LOG.debug("processIpNetToMediaRow: node [{}], null:null:{}. ip and mac addresses null. skipping",
+                              getNodeId(),
+                              macep.getIpNetToMediaType());
+                    return;
+                } 
+                if (macep.getPhysAddress() == null) {
+                        LOG.debug("processIpNetToMediaRow: node [{}], null:{}:{}. mac address null. skipping",
+                                  getNodeId(),
+                                  str(macep.getNetAddress()),
+                                  macep.getIpNetToMediaType());
+                        return;
+                } 
+                if (macep.getNetAddress() == null) {
+                    LOG.debug("processIpNetToMediaRow: node [{}], {}:null:{}. ip address null. skipping",
+                             getNodeId(),
+                             macep.getPhysAddress(), 
+                             macep.getIpNetToMediaType());
+                    return;
+                } 
+                LOG.debug("processIpNetToMediaRow: node [{}],  {}:{}:{}:{}. not valid. skipping",
                              getNodeId(),
                              macep.getPhysAddress(), 
                              str(macep.getNetAddress()),
-                             macep.getIpNetToMediaType());
-                }
-
+                             macep.getIpNetToMediaType(),
+                             macep.getSourceIfIndex());
             }
         };
 		
@@ -108,11 +119,11 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
             m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       ipNetToMediaTableTracker).withDescription("ipNetToMedia").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: ipNetToMedia table: {}", 
+            LOG.debug("run: node [{}]: ExecutionException: {}", 
                      getNodeId(), e.getMessage());
             return;
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: ipNetToMedia table: {}",
+            LOG.debug("run: node [{}]: InterruptedException: {}",
                      getNodeId(),e.getMessage());
             return;       
         }
@@ -122,7 +133,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 
 	@Override
 	public String getName() {
-		return "IpNetToMediaLinkDiscovery";
+		return "NodeDiscoveryIpNetToMedia";
 	}
 
 }

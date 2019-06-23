@@ -120,13 +120,13 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
 
         // identification of link is done with targets id..that is port or mac        
         BridgePort bpnode1port48 = new BridgePort();
-        bpnode1port48.setNode(m_node1);
+        bpnode1port48.setNodeId(m_node1.getId());
         bpnode1port48.setBridgePort(48);
         bpnode1port48.setBridgePortIfIndex(48);
         m_edges.add(connectVertices(bpnode1port48, cloud, sourceCloud, BRIDGE_EDGE_NAMESPACE));
 
         BridgePort bpnode2port24 = new BridgePort();
-        bpnode2port24.setNode(m_node2);
+        bpnode2port24.setNodeId(m_node2.getId());
         bpnode2port24.setBridgePort(24);
         bpnode2port24.setBridgePortIfIndex(24);
         m_edges.add(connectVertices(bpnode2port24, cloud, targetCloud1, BRIDGE_EDGE_NAMESPACE));
@@ -141,7 +141,8 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
         link2.setId(105);
         
         m_edges.add(connectVertices(
-                                    new IsIsLinkDetail(Math.min(link1.getId(), link2.getId()) + "|" + Math.max(link1.getId(), link2.getId()), source, link1.getId(), link1.getIsisCircIfIndex(), target, link2.getId(), link2.getIsisCircIfIndex()), ISIS_EDGE_NAMESPACE));
+                                    new IsIsLinkDetail(Math.min(link1.getId(), link2.getId()) + "|" + Math.max(link1.getId(), link2.getId()), source, link1, target, link2), 
+                                    ISIS_EDGE_NAMESPACE));
 
         // lldp link
         LldpLink link3 = new LldpLink(m_node4, 12, 1, "node4PortId", "node4PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,

@@ -46,6 +46,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -186,6 +187,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     private String m_testDetails = "?";
 
     private String m_blame = null;
+
+    private boolean m_plpgsqlIplike = false;
 
     public static final String TEMPLATE_DATABASE_NAME_PREFIX = "opennms_it_template_";
 
@@ -354,6 +357,12 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                 create = "CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'";
             }
             st.execute(create);
+
+            if (m_plpgsqlIplike) {
+                final Migrator m = createMigrator(m_dataSource, m_adminDataSource);
+                m.dropExistingIpLike();
+                m.createLangPlPgsql();
+            }
         } catch (final Throwable e) {
             try {
                 st = adminConnection.createStatement();
@@ -775,6 +784,9 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                 entries.add(new TemporaryDatabasePostgreSQL.ChangelogEntry(rs.getString(1), rs.getString(2)));
             }
             return entries;
+        } catch (final SQLException e) {
+            LOG.warn("Failed to query changelog entries.", e);
+            return Collections.emptyList();
         } finally {
             connection.close();
         }
@@ -833,7 +845,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         }
 
         final List<TemporaryDatabasePostgreSQL.ChangelogEntry> ids = TemporaryDatabasePostgreSQL.getChangelogEntries(dataSource);
-        assertTrue("no changelog entries were found in the newly created database", ids.size() > 0);
+        assertTrue("changelog entries were expected in the newly created database", ids.size() > 0);
 
         // Check to make sure some of the changelogs ran
         assertTrue(ids.stream().anyMatch(id -> "17.0.0-remove-legacy-ipinterface-composite-key-fields".equals(id.getId())));
@@ -915,5 +927,9 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
         }
         return null;
+    }
+    
+    public void setPlpgsqlIplike(final boolean iplike) {
+        m_plpgsqlIplike = iplike;
     }
 }

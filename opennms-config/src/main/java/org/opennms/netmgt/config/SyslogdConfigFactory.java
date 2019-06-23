@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
@@ -214,6 +215,11 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     @Override
     public int getBatchIntervalMs() {
         return m_config.getConfiguration().getBatchInterval();
+    }
+
+    @Override
+    public TimeZone getTimeZone() {
+        return m_config.getConfiguration().getTimeZone().orElse(null);
     }
 
     /**

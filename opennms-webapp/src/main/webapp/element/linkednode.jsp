@@ -126,8 +126,6 @@
 			<th>Port - Ip - Mac</th> 
 			<th>Other Hosts on Segment</th> 
 			<th>Bridge Ports on Segment</th>
-			<th>Created</th>
-			<th>Last Poll</th>
 			</tr>
 		</thead>
 				
@@ -185,8 +183,6 @@
             	</table>
 			<% }%>
             </td>
-		    <td><%=nodelink.getBridgeLinkCreateTime()%></td>
-		    <td><%=nodelink.getBridgeLinkLastPollTime()%></td>
 	    </tr>
 	    <% } %>
 		    
@@ -207,8 +203,6 @@
             <th>VLAN</th>
 			<th>Hosts on Segment</th> 
 			<th>Bridge Ports on Segment</th>
-			<th>Created</th>
-			<th>Last Poll</th>
 			</tr>
 		</thead>
 				
@@ -275,8 +269,6 @@
             	</table>
 <% }%>
             </td>
-		    <td><%=bridgelink.getBridgeLinkCreateTime()%></td>
-		    <td><%=bridgelink.getBridgeLinkLastPollTime()%></td>
 	    </tr>
 		    <% } %>
 	    <% } %>

@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,11 +81,16 @@ import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.DatabasePopulator.DaoSupport;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.model.OnmsHwEntityAlias;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -146,6 +152,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
     @Autowired
     private DatabasePopulator databasePopulator;
+    
+    @Autowired
+    private HwEntityDao hwEntityDao;
 
     private MockDatabase mockDatabase;
 
@@ -162,6 +171,41 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         File data = tempFolder.newFolder("data");
         eventdIpcMgr.setEventWriter(mockDatabase);
 
+        databasePopulator.addExtension(new DatabasePopulator.Extension<HwEntityDao>() {
+
+            @Override
+            public DaoSupport<HwEntityDao> getDaoSupport() {
+                return new DaoSupport<HwEntityDao>(HwEntityDao.class, hwEntityDao);
+            }
+
+            @Override
+            public void onPopulate(DatabasePopulator populator, HwEntityDao dao) {
+                OnmsNode node = new OnmsNode();
+                node.setId(1);
+                OnmsHwEntity port = getHwEntityPort(node);
+                dao.save(port);
+                OnmsHwEntity container = getHwEntityContainer(node);
+                container.addChildEntity(port);
+                dao.save(container);
+                OnmsHwEntity module = getHwEntityModule(node);
+                module.addChildEntity(container);
+                dao.save(module);
+                OnmsHwEntity powerSupply = getHwEntityPowerSupply(node);
+                dao.save(powerSupply);
+                OnmsHwEntity chassis = getHwEntityChassis(node);
+                chassis.addChildEntity(module);
+                chassis.addChildEntity(powerSupply);
+                dao.save(chassis);
+            }
+
+            @Override
+            public void onShutdown(DatabasePopulator populator, HwEntityDao dao) {
+                for (OnmsHwEntity entity : dao.findAll()) {
+                    dao.delete(entity);
+                }
+            }
+        });
+        
         databasePopulator.populateDatabase();
 
         Hashtable<String, Object> producerConfig = new Hashtable<>();
@@ -175,8 +219,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         when(configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties()).thenReturn(producerConfig);
         when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties()).thenReturn(streamsConfig);
 
-        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr,
-                alarmLifecycleListenerManager);
+        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr, alarmLifecycleListenerManager);
         kafkaProducer.setEventTopic(EVENT_TOPIC_NAME);
         // Don't forward newSuspect events
         kafkaProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");
@@ -186,8 +229,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         kafkaProducer.setNodeTopic(NODE_TOPIC_NAME);
         kafkaProducer.init();
 
-        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, alarmDao, protobufMapper,
-                transactionTemplate);
+        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, alarmDao, protobufMapper, transactionTemplate);
         kafkaAlarmaDataStore.setAlarmTopic(ALARM_TOPIC_NAME);
         kafkaAlarmaDataStore.setAlarmSyncIntervalMs(1000);
         kafkaAlarmaDataStore.init();
@@ -251,6 +293,17 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Verify the consumed alarm object
         assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getDescription(), equalTo("node down"));
+
+        // Verify the consumed Node objects
+        List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node> nodes = kafkaConsumer.getNodes();
+        assertThat(nodes.size(), equalTo(2));
+        // Verify the first node has hwInventory DAG including the Port with a hwEntAlias
+        assertThat(nodes.get(0), not(nullValue()));
+        assertThat(nodes.get(0).getHwInventory(), not(nullValue()));
+        assertThat(nodes.get(0).getHwInventory().getChildrenList().size(), equalTo(2));
+        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAliasCount(), equalTo(1));
+        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAlias(0).getIndex(), equalTo(0));
+        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
 
         // Now delete the alarm directly in the database
         alarmDao.delete(alarm);
@@ -364,6 +417,68 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         public void shutdown() {
             closed.set(true);
         }
+    }
+
+    private OnmsHwEntity getHwEntityChassis(OnmsNode node) {
+        final OnmsHwEntity chassis = new OnmsHwEntity();
+        chassis.setNode(node);
+        chassis.setEntPhysicalClass("chassis");
+        chassis.setEntPhysicalDescr("ME-3400EG-2CS-A");
+        chassis.setEntPhysicalFirmwareRev("12.2(60)EZ1");
+        chassis.setEntPhysicalHardwareRev("V03");
+        chassis.setEntPhysicalIsFRU(false);
+        chassis.setEntPhysicalModelName("ME-3400EG-2CS-A");
+        chassis.setEntPhysicalName("1");
+        chassis.setEntPhysicalSerialNum("FOC1701V24Y");
+        chassis.setEntPhysicalSoftwareRev("12.2(60)EZ1");
+        chassis.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.3.760");
+        return chassis;
+    }
+    private OnmsHwEntity getHwEntityPowerSupply(OnmsNode node) {
+        final OnmsHwEntity powerSupply = new OnmsHwEntity();
+        powerSupply.setNode(node);
+        powerSupply.setEntPhysicalClass("powerSupply");
+        powerSupply.setEntPhysicalDescr("ME-3400EG-2CS-A - Fan 0");
+        powerSupply.setEntPhysicalIsFRU(false);
+        powerSupply.setEntPhysicalModelName("ME-3400EG-2CS-A - Fan 0");
+        powerSupply.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.7.81");
+        return powerSupply;
+    }
+    private OnmsHwEntity getHwEntityModule(OnmsNode node) {
+        final OnmsHwEntity module = new OnmsHwEntity();
+        module.setNode(node);
+        module.setEntPhysicalClass("module");
+        module.setEntPhysicalDescr("ME-3400EG-2CS-A - Power Supply 0");
+        module.setEntPhysicalIsFRU(false);
+        module.setEntPhysicalModelName("ME-3400EG-2CS-A - Power Supply 0");
+        module.setEntPhysicalSerialNum("LIT16490HHP");
+        module.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.6.223");
+        return module;
+    }
+    private OnmsHwEntity getHwEntityContainer(OnmsNode node) {
+        OnmsHwEntity container = new OnmsHwEntity();
+        container.setNode(node);
+        container.setEntPhysicalClass("container");
+        container.setEntPhysicalDescr("GigabitEthernet Container");
+        container.setEntPhysicalIsFRU(false);
+        container.setEntPhysicalName("GigabitEthernet0/4 Container");
+        container.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.5.115");
+        return container;
+    }
+    private OnmsHwEntity getHwEntityPort(OnmsNode node) {
+        final OnmsHwEntity port = new OnmsHwEntity();
+        port.setNode(node);
+        port.setEntPhysicalAlias("10104");
+        port.setEntPhysicalClass("port");
+        port.setEntPhysicalDescr("1000BaseBX10-U SFP");
+        port.setEntPhysicalHardwareRev("V01");
+        port.setEntPhysicalIsFRU(true);
+        port.setEntPhysicalModelName("GLC-BX-U");
+        port.setEntPhysicalName("GigabitEthernet0/4");
+        port.setEntPhysicalSerialNum("L03C2AC0179");
+        port.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.10.253");
+        port.setEntAliases(new TreeSet<>(Arrays.asList(new OnmsHwEntityAlias(0, ".1.3.6.1.2.1.2.2.1.1.10104"))));
+        return port;
     }
 
     @After

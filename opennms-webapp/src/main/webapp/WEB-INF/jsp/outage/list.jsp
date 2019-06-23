@@ -60,6 +60,7 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%--
   This page is written to be the display (view) portion of the OutageFilterServlet
@@ -229,7 +230,7 @@
             
           <!-- lost service time -->
           <td class="noWrap">
-              <fmt:formatDate value="${outage.lostServiceTime}" type="BOTH" />
+              <onms:datetime date="${outage.lostServiceTime}" />
               <a href="<%=OutageUtil.makeLink( request, parms, new LostServiceDateAfterFilter(outages[i].getLostServiceTime()), true)%>" title="Only show outages beginning after this one"><%=AFTER_ICON%></a>            
               <a href="<%=OutageUtil.makeLink( request, parms, new LostServiceDateBeforeFilter(outages[i].getLostServiceTime()), true)%>" title="Only show outages beginning before this one"><%=BEFORE_ICON%></a>            
           </td>
@@ -238,7 +239,7 @@
           <% Date regainedTime = outages[i].getRegainedServiceTime(); %>
           <% if(regainedTime != null ) { %>
             <td class="noWrap">
-                <fmt:formatDate value="${outage.regainedServiceTime}" type="BOTH" />
+                <onms:datetime date="${outage.regainedServiceTime}"/>
                 <a href="<%=OutageUtil.makeLink( request, parms, new RegainedServiceDateAfterFilter(outages[i].getRegainedServiceTime()), true)%>" title="Only show outages resolving after this one"><%=AFTER_ICON%></a>            
                 <a href="<%=OutageUtil.makeLink( request, parms, new RegainedServiceDateBeforeFilter(outages[i].getRegainedServiceTime()), true)%>" title="Only show outages resolving before this one"><%=BEFORE_ICON%></a>            
             </td>

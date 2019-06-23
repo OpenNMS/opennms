@@ -53,7 +53,7 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@taglib uri="../../taglib.tld" prefix="onms" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%--
   This page is written to be the display (view) portion of the EventFilterController
@@ -408,7 +408,7 @@
           </td>
           <td class="divider">
             <nobr>
-              <fmt:formatDate value="${event.time}" type="BOTH" />
+                <onms:datetime date="${event.time}" />
               <a href="<%=this.makeLink(callback, parms, new AfterDateFilter(events[i].getTime()), true, favorite)%>"  class="filterLink" title="Only show events occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeDateFilter(events[i].getTime()), true, favorite)%>" class="filterLink" title="Only show events occurring before this one">${addBeforeFilter}</a>
             </nobr>

@@ -76,7 +76,6 @@ public class Nms6801EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(ciscoiosxr.getId()));
         assertEquals(4, m_isisLinkDao.countAll());
-        assertEquals(0, m_isisLinkDao.getLinksForTopology().size());
 
         for (OnmsNode node: m_nodeDao.findAll()) {
         	assertNotNull(node.getIsisElement());

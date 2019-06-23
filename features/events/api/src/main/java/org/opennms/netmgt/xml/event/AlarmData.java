@@ -103,7 +103,6 @@ public class AlarmData implements Serializable {
     @XmlElement(name="update-field", required=false)
     @Valid
     private List<UpdateField> m_updateFieldList = new ArrayList<>();
-    
 
     public AlarmData() {
         super();
@@ -301,7 +300,7 @@ public class AlarmData implements Serializable {
     public int getUpdateFieldListCount() {
         return m_updateFieldList.size();
     }
-    
+
     public Boolean hasUpdateFields() {
         Boolean hasFields = true;
         if (m_updateFieldList == null || m_updateFieldList.isEmpty()) {
@@ -329,7 +328,7 @@ public class AlarmData implements Serializable {
         m_updateFieldList.addAll(fields);
     }
 
-        @Override
+    @Override
     public String toString() {
     	return new OnmsStringBuilder(this).toString();
     }

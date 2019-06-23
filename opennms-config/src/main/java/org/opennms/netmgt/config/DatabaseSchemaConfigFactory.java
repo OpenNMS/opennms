@@ -68,7 +68,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
     /**
      * The singleton instance of this factory
      */
-    private static DatabaseSchemaConfigFactory m_singleton = null;
+    private static DatabaseSchemaConfig m_singleton = null;
 
     /**
      * The config class loaded from the config file
@@ -158,7 +158,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized DatabaseSchemaConfigFactory getInstance() {
+    public static synchronized DatabaseSchemaConfig getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 
@@ -168,9 +168,9 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
     /**
      * <p>setInstance</p>
      *
-     * @param instance a {@link org.opennms.netmgt.config.DatabaseSchemaConfigFactory} object.
+     * @param instance a {@link org.opennms.netmgt.config.DatabaseSchemaConfig} object.
      */
-    public static synchronized void setInstance(final DatabaseSchemaConfigFactory instance) {
+    public static synchronized void setInstance(final DatabaseSchemaConfig instance) {
         m_singleton = instance;
         m_loaded = true;
     }

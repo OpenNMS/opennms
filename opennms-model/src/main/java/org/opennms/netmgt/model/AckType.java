@@ -68,7 +68,7 @@ public enum AckType {
         m_label = label;
     }
     
-    private Integer getId() {
+    public Integer getId() {
         return m_id;
     }
     

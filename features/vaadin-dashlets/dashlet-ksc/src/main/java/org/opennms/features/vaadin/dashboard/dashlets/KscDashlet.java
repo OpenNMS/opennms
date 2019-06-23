@@ -31,7 +31,6 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.StringUtils;
@@ -45,8 +44,10 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
@@ -395,39 +396,43 @@ public class KscDashlet extends AbstractDashlet {
     /**
      * Returns a map with graph metadata for a given nodeId.
      *
-     * @param nodeId     the nodeId
-     * @param resourceId the resourceId
      * @return a map with meta data, like resourceLabel, resourceTypeLabel
      */
-    public Map<String, String> getDataForResourceId(final String nodeId, final String resourceId) {
+    public Map<String, String> getDataForResourceId(final String nodeId, final String resourceIdString) {
         return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
-                Map<String, String> data = new HashMap<String, String>();
+                Map<String, String> data = new HashMap<>();
+                ResourceId resourceId = ResourceId.fromString(resourceIdString);
 
-                if (nodeId == null) {
-                    String[] arr0 = resourceId.split("\\.");
-                    String[] arr1 = arr0[0].split("[\\[\\]]");
-                    data.put("nodeId", arr1[1]);
+                OnmsNode node;
+                OnmsResource resource;
+                if(nodeId == null){
+                    resource = determineResourceByResourceId(resourceId);
+                    node = ResourceTypeUtils.getNodeFromResource(resource);
                 } else {
-                    data.put("nodeId", nodeId);
+                    node = m_nodeDao.get(nodeId);
+                    resource = m_resourceDao.getResourceForNode(node);
                 }
+                data.put("nodeId", node.getNodeId());
+                data.put("nodeLabel", node.getLabel());
 
-                data.put("nodeLabel", m_nodeDao.getLabelForId(Integer.valueOf(data.get("nodeId"))));
-
-                List<OnmsResource> resourceList = m_resourceDao.getResourceById(ResourceId.get("node", data.get("nodeId"))).getChildResources();
-
-                for (OnmsResource onmsResource : resourceList) {
+                for (OnmsResource onmsResource : resource.getChildResources()) {
                     if (resourceId.equals(onmsResource.getId())) {
                         data.put("resourceLabel", onmsResource.getLabel());
                         data.put("resourceTypeLabel", onmsResource.getResourceType().getLabel());
-
                         break;
                     }
                 }
                 return data;
             }
         });
+    }
+
+    OnmsResource determineResourceByResourceId(ResourceId resourceId){
+        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        resource =(resource.getParent()== null) ? resource : resource.getParent();
+        return resource;
     }
 
     private static GraphContainer getGraphContainer(Graph graph, Date start, Date end) {

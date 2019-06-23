@@ -145,6 +145,11 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         return m_config.getRescanInterval();
     }
 
+    public long getBridgeTopologyInterval() {
+        return m_config.getBridgeTopologyInterval();
+    }
+
+
     /**
      * <p>getThreads</p>
      *
@@ -157,6 +162,11 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     
     public int getMaxBft() {
         if (m_config.getMaxBft() != null) return m_config.getMaxBft();
+        return 1;
+    }
+
+    public int getDiscoveryBridgeThreads() {
+        if (m_config.getDiscoveryBridgeThreads() != null) return m_config.getDiscoveryBridgeThreads();
         return 1;
     }
 

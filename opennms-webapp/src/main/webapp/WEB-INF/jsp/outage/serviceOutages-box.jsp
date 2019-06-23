@@ -46,6 +46,7 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%
 	Outage[] outages = (Outage[])request.getAttribute("outages");
@@ -77,11 +78,11 @@
       pageContext.setAttribute("outage", outage);
   %>
      <tr class="<%=(outages[i].getRegainedServiceTime() == null) ? "Critical" : "Normal"%>">
-      <td class="divider"><fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/></td>
+      <td class="divider"><onms:datetime date="${outage.lostServiceTime}"/></td>
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
         <td class="divider bright"><b>DOWN</b></td>
       <% } else { %>
-        <td class="divider bright"><fmt:formatDate value="${outage.regainedServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.regainedServiceTime}" type="time" pattern="HH:mm:ss"/></td>      
+        <td class="divider bright"><onms:datetime date="${outage.regainedServiceTime}"/></td>
       <% } %>
       <td class="divider"><a href="outage/detail.htm?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>
     </tr>

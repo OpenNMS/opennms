@@ -30,13 +30,14 @@ package org.opennms.netmgt.syslogd;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 
 /**
- * This is a bean container that can be used as a {@link SyslogConfig}
+ * This is a bean container that can be used as a {@link SyslogdConfig}
  * service.
  */
 public final class SyslogConfigBean implements SyslogdConfig {
@@ -53,6 +54,7 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	private int m_queueSize;
 	private int m_batchSize;
 	private int m_batchIntervalMs;
+	private TimeZone timeZone;
 
 	@Override
 	public int getSyslogPort() {
@@ -171,7 +173,16 @@ public final class SyslogConfigBean implements SyslogdConfig {
         return m_batchIntervalMs;
     }
 
-    public void setBatchIntervalMs(int batchIntervalMs) {
+	@Override
+	public TimeZone getTimeZone() {
+		return this.timeZone;
+	}
+
+	public void setTimeZone(TimeZone timeZone){
+		this.timeZone = timeZone;
+	}
+
+	public void setBatchIntervalMs(int batchIntervalMs) {
         m_batchIntervalMs = batchIntervalMs;
     }
 }

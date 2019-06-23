@@ -2,6 +2,44 @@
 
 === Changelog
 
+[[releasenotes-changelog-22.0.1]]
+
+==== Release 22.0.1
+
+Release 22.0.1 is the latest stable release of OpenNMS.
+It contains a number of bug fixes and enhancements, including an update to Drools 7, performance improvements to the flow exporter ReST endpoint, and new karaf shell tools for diagnosing nodes.
+For a high-level overview of what's changed in OpenNMS 22, see link:http://docs.opennms.org/opennms/releases/22.0.1/releasenotes/releasenotes.html#releasenotes-22[What's New in OpenNMS 22].
+
+The codename for 22.0.1 is _link:http://marvelcinematicuniverse.wikia.com/wiki/Reality_Stone[Reality]_.
+
+===== Bug
+
+* ConcurrentModificationException in DefaultEventHandlerImpl (Issue http://issues.opennms.org/browse/NMS-8413[NMS-8413])
+* The ReST API used to return XMLs with namespace, and now it doesn't (Issue http://issues.opennms.org/browse/NMS-8524[NMS-8524])
+* config-tester doesn't check opennms.properties (Issue http://issues.opennms.org/browse/NMS-9117[NMS-9117])
+* Event-Analysis Report shows incorrect numbers for big values in Top25 Events (Issue http://issues.opennms.org/browse/NMS-9202[NMS-9202])
+* Exceptions in Bridge Discovery (Issue http://issues.opennms.org/browse/NMS-9557[NMS-9557])
+* MBean "TasksCompleted" for Collectd and Pollerd returns wrong counters (Issue http://issues.opennms.org/browse/NMS-9741[NMS-9741])
+* Unregistered product specification (Issue http://issues.opennms.org/browse/NMS-9913[NMS-9913])
+* The auto-acknowledge-alarm tag with no content doesn't work on notifd-configuration.xml (Issue http://issues.opennms.org/browse/NMS-10085[NMS-10085])
+* Asset record is not being updated with user name that performed the update (Issue http://issues.opennms.org/browse/NMS-10087[NMS-10087])
+* wrong statement in event description for serviceDeleted (Issue http://issues.opennms.org/browse/NMS-10148[NMS-10148])
+* Incorrect Release Notes Link (Issue http://issues.opennms.org/browse/NMS-10204[NMS-10204])
+* AlarmChangeNotificationClient - Unable to parse time value (Issue http://issues.opennms.org/browse/HZN-1282[HZN-1282])
+* Heatmap stopped working in centerUrl after upgrading to 22.0.0 (Issue http://issues.opennms.org/browse/HZN-1316[HZN-1316])
+
+===== Enhancement
+
+* Upgrade Drools to 7.x (Issue http://issues.opennms.org/browse/NMS-9923[NMS-9923])
+* Provide a way to configure the date formats used by the Syslog NBI (Issue http://issues.opennms.org/browse/NMS-10158[NMS-10158])
+* Typos in Horizon 22.0.0 release notes (Issue http://issues.opennms.org/browse/NMS-10161[NMS-10161])
+* Support customizing the default time zone when parsing dates in syslog messages (Issue http://issues.opennms.org/browse/NMS-10164[NMS-10164])
+* Consolidate Kafka client library versions (Issue http://issues.opennms.org/browse/NMS-10165[NMS-10165])
+* Link to privacy policy from Data Choices UI elements (Issue http://issues.opennms.org/browse/NMS-10169[NMS-10169])
+* Karaf shell command to enumerate nodes that match a given filter  (Issue http://issues.opennms.org/browse/NMS-10172[NMS-10172])
+* Ubiquiti AirMax 8 support (Issue http://issues.opennms.org/browse/NMS-10210[NMS-10210])
+* Improve performance of /rest/flows/exporters endpoint (Issue http://issues.opennms.org/browse/HZN-1280[HZN-1280])
+
 [[releasenotes-changelog-22.0.0]]
 
 ==== Release 22.0.0

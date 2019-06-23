@@ -45,6 +45,7 @@
 		"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 
 <%!
@@ -210,6 +211,6 @@
     </table>
   </div>
 
-  <p>Last updated: <c:out value="<%=category.getLastUpdated().toString()%>"/></p>
+  <p>Last updated: <onms:datetime date="<%=category.getLastUpdated()%>"/></p>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

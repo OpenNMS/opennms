@@ -114,11 +114,12 @@ public class Rfc5424SyslogParser extends SyslogParser {
         return message;
     }
 
-    protected static Date parseDate(final String dateString) {
+    protected Date parseDate(final String dateString) {
         if (dateString.endsWith("Z")) {
             try {
                 final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT);
                 df.setTimeZone(TimeZone.getTimeZone("GMT"));
+                adjustTimeZone(df);
                 return df.parse(dateString);
             } catch (final Exception e) {
                 // try again with optional decimals
@@ -126,6 +127,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
                     final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.ROOT);
                     df.setLenient(true);
                     df.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    adjustTimeZone(df);
                     return df.parse(dateString);
                 } catch (final Exception pe) {
                     LOG.debug("Unable to parse date string '{}'.", dateString, pe);

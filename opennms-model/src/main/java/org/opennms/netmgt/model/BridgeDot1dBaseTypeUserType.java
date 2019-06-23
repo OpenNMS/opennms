@@ -65,7 +65,7 @@ public class BridgeDot1dBaseTypeUserType extends EnumType {
                 return type;
             }
         }
-        throw new HibernateException("Invalid value for IsisAdminState: " + c);
+        throw new HibernateException("Invalid value for BridgeDot1dBaseType: " + c);
     }
 
     @Override

@@ -137,4 +137,22 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
+    <tag>
+        <name>datetime</name>
+        <tag-class>org.opennms.web.tags.DateTimeTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>instant</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.time.Instant</type>
+        </attribute>
+        <attribute>
+            <name>date</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.util.Date</type>
+        </attribute>
+    </tag>
+
 </taglib>

@@ -42,15 +42,17 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="lldpLink")
-public class LldpLink implements Serializable {
+public class LldpLink implements Serializable,Topology {
 
 	/**
 	 * 
@@ -308,5 +310,37 @@ public class LldpLink implements Serializable {
 			.append("createTime", m_lldpLinkCreateTime)
 			.append("lastPollTime", m_lldpLinkLastPollTime)
 .toString();
+	}
+	
+	@Transient
+	public String printTopology() {
+	    StringBuffer strb = new StringBuffer();
+	        strb.append("lldplink: nodeid:["); 
+	        strb.append(getNode().getId());
+	        strb.append("]. portnum:[ ");
+	        strb.append(getLldpLocalPortNum());
+	        strb.append("], ifindex:[");
+	        strb.append(getLldpPortIfindex());
+	        strb.append("], port type/id:[");
+	        strb.append(LldpPortIdSubType.getTypeString(getLldpPortIdSubType().getValue())); 
+	        strb.append("/");
+	        strb.append(getLldpPortId());
+	        strb.append("], port descr:[");
+	        strb.append(getLldpPortDescr());
+	        strb.append("], rem chassis type/id:[");
+	        strb.append(LldpChassisIdSubType.getTypeString(getLldpRemChassisIdSubType().getValue()));
+	        strb.append("/");
+	        strb.append(getLldpRemChassisId());
+	        strb.append("], rem sysname:[");
+	        strb.append(getLldpRemSysname());
+	        strb.append("], rem port type/id:[");
+	        strb.append(LldpPortIdSubType.getTypeString(getLldpRemPortIdSubType().getValue()));
+	        strb.append("/");
+	        strb.append(getLldpRemPortId());
+	        strb.append("], rem port descr: [");
+	        strb.append(getLldpRemPortDescr());
+                strb.append("]");
+
+	    return strb.toString();
 	}
 }
