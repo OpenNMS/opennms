@@ -41,8 +41,8 @@ import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
-public class ClientRecoveryTest {
-	private static final Logger LOG = LoggerFactory.getLogger(ClientRecoveryTest .class);
+public class ClientRecoveryIT {
+	private static final Logger LOG = LoggerFactory.getLogger(ClientRecoveryIT.class);
 
 	@Test
 	public void test() {

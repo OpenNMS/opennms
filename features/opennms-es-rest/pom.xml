@@ -89,21 +89,16 @@
           <skip>${skipTests}</skip>
         </configuration>
         <executions>
-          <!-- The elasticsearch plugin is by default bound to the -->
-          <!-- pre-integration-test and post-integration-test phases -->
-          <!-- here we are binding into the normal unit test phases -->
           <execution>
             <id>start-elasticsearch</id>
-            <!-- <phase>pre-integration-test</phase> -->
-            <phase>test-compile</phase>
+            <phase>pre-integration-test</phase>
             <goals>
               <goal>runforked</goal>
             </goals>
           </execution>
           <execution>
             <id>stop-elasticsearch</id>
-            <!-- <phase>post-integration-test</phase> -->
-            <phase>prepare-package</phase>
+            <phase>post-integration-test</phase>
             <goals>
               <goal>stop</goal>
             </goals>

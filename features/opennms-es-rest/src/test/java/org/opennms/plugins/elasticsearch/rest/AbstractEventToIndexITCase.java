@@ -33,7 +33,7 @@ import org.junit.Before;
 
 import io.searchbox.client.JestClient;
 
-public abstract class AbstractEventToIndexTest {
+public abstract class AbstractEventToIndexITCase {
 
     protected JestClient jestClient;
     protected EventToIndex eventToIndex;

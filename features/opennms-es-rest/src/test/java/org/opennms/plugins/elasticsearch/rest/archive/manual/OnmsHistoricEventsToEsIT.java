@@ -34,8 +34,8 @@ import org.opennms.plugins.elasticsearch.rest.archive.OnmsHistoricEventsToEs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OnmsHistoricEventsToEsTest {
-	private static final Logger LOG = LoggerFactory.getLogger(OnmsHistoricEventsToEsTest.class);
+public class OnmsHistoricEventsToEsIT {
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsHistoricEventsToEsIT.class);
 	
 	private String onmsUrl="http://localhost:8980";
 

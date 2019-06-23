@@ -60,8 +60,8 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
 
-public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
-	private static final Logger LOG = LoggerFactory.getLogger(AlarmEventToIndexTest.class);
+public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
+	private static final Logger LOG = LoggerFactory.getLogger(AlarmEventToIndexIT.class);
 	
 	public static final int INDEX_WAIT_SECONDS=10; // time to wait for index to catch up
 
