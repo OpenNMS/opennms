@@ -114,9 +114,6 @@ public class Poller extends AbstractServiceDaemon {
     private PersisterFactory m_persisterFactory;
 
     @Autowired
-    private ResourceStorageDao m_resourceStorageDao;
-
-    @Autowired
     private ThresholdingService m_thresholdingService;
 
     @Autowired
@@ -532,7 +529,7 @@ public class Poller extends AbstractServiceDaemon {
         PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
                                                                      getScheduler(), m_persisterFactory, m_thresholdingService,
-                                                                     m_resourceStorageDao, m_locationAwarePollerClient);
+                                                                     m_locationAwarePollerClient);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

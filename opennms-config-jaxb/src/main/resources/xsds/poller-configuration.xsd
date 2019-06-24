@@ -353,12 +353,19 @@
 
     <complexType>
       <sequence>
-        <annotation>
-          <documentation>Parameters to be used for polling this
-          service.</documentation>
-        </annotation>
+        <element name="pattern" type="string" minOccurs="0" maxOccurs="1">
+          <annotation>
+            <documentation>Pattern to match service names mapped to this service config.</documentation>
+          </annotation>
+        </element>
+        <sequence>
+          <annotation>
+            <documentation>Parameters to be used for polling this
+            service.</documentation>
+          </annotation>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter"/>
+        </sequence>
       </sequence>
 
       <attribute name="name" type="string" use="required">
@@ -398,12 +405,6 @@
             <pattern value="(on|off)"/>
           </restriction>
         </simpleType>
-      </attribute>
-
-      <attribute name="pattern" type="string" use="optional">
-        <annotation>
-          <documentation>Pattern to match service names mapped to this service config.</documentation>
-        </annotation>
       </attribute>
     </complexType>
   </element>

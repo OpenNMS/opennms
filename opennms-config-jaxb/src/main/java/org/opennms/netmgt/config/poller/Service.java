@@ -78,7 +78,7 @@ public class Service implements Serializable {
     @XmlAttribute(name="status")
     private String m_status = "on";
 
-    @XmlAttribute(name="pattern")
+    @XmlElement(name="pattern")
     private String m_pattern = null;
 
     /**

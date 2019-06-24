@@ -96,7 +96,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */
     public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
-            ThresholdingService thresholdingService, ResourceStorageDao resourceStorageDao, LocationAwarePollerClient locationAwarePollerClient) {
+            ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
         m_pollOutagesConfig = pollOutagesConfig;

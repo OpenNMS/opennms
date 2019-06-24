@@ -55,8 +55,6 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
@@ -100,7 +98,6 @@ public class PollableServiceConfigIT {
         IOUtils.closeQuietly(is);
 
         PersisterFactory persisterFactory = new MockPersisterFactory();
-        ResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
 
         final PollContext context = mock(PollContext.class);
         final PollableNetwork network = new PollableNetwork(context);
@@ -112,7 +109,7 @@ public class PollableServiceConfigIT {
         final Timer timer = mock(Timer.class);
         final ThresholdingService thresholdingService = mock(ThresholdingService.class);
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
-                                                                    persisterFactory, thresholdingService, resourceStorageDao,
+                                                                    persisterFactory, thresholdingService,
                                                                     m_locationAwarePollerClient);
         PollStatus pollStatus = psc.poll();
         assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
@@ -129,7 +126,6 @@ public class PollableServiceConfigIT {
         IOUtils.closeQuietly(is);
 
         PersisterFactory persisterFactory = new MockPersisterFactory();
-        ResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
 
         final PollContext context = mock(PollContext.class);
         final PollableNetwork network = new PollableNetwork(context);
@@ -137,6 +133,8 @@ public class PollableServiceConfigIT {
         final PollableInterface iface = new PollableInterface(node, InetAddressUtils.addr("127.0.0.1"));
         final PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
         final Package pkg = factory.getPackage("Default");
+        final ThresholdingService thresholdingService = mock(ThresholdingService.class);
+
         final Timer timer = mock(Timer.class);
 
         final PollerRequestBuilder pollerRequestBuilder = mock(PollerRequestBuilder.class);
@@ -147,7 +145,8 @@ public class PollableServiceConfigIT {
         when(locationAwarePollerClient.poll()).thenReturn(pollerRequestBuilder);
 
         final PollableService svc = new PollableService(iface, "HTTP-www.example.com");
-        final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer, persisterFactory, resourceStorageDao, locationAwarePollerClient);
+        final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
+                persisterFactory, thresholdingService, locationAwarePollerClient);
         psc.poll();
 
         verify(pollerRequestBuilder).withMonitor(factory.getServiceMonitor("HTTP"));
@@ -166,8 +165,6 @@ public class PollableServiceConfigIT {
         // Create a future that fails with a RequestTimedOutException
         CompletableFuture<PollerResponse> future = new CompletableFuture<>();
         future.completeExceptionally(new RequestTimedOutException(new Exception("Test")));
-
-        ResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
 
         // Now mock the client to always return the future we created above
         LocationAwarePollerClient client = mock(LocationAwarePollerClient.class, Mockito.RETURNS_DEEP_STUBS);
@@ -199,7 +196,7 @@ public class PollableServiceConfigIT {
         ThresholdingService thresholdingService = mock(ThresholdingService.class);
 
         final PollableServiceConfig psc = new PollableServiceConfig(pollableSvc, pollerConfig,
-                pollOutagesConfig, pkg, timer, persisterFactory, thresholdingService, resourceStorageDao, client);
+                pollOutagesConfig, pkg, timer, persisterFactory, thresholdingService, client);
 
         // Trigger the poll
         PollStatus pollStatus = psc.poll();

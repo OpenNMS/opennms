@@ -157,7 +157,6 @@ public class PollablesIT {
 
     private PersisterFactory m_persisterFactory = null;
     private ThresholdingService m_thresholdingService = null;
-    private ResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
 
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
@@ -1519,7 +1518,7 @@ public class PollablesIT {
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg,
-                     m_timer, m_persisterFactory, m_thresholdingService, m_resourceStorageDao, m_locationAwarePollerClient);
+                     m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient);
 
         m_timer.setCurrentTime(1000L);
         pDot1Smtp.updateStatus(PollStatus.down());
@@ -1552,7 +1551,7 @@ public class PollablesIT {
         // mDot3Http/pDot3Http
         final Package pkg = m_pollerConfig.getPackage("TestPkg2");
         final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig, m_pollerConfig,
-                     pkg, m_timer, m_persisterFactory, m_thresholdingService, m_resourceStorageDao, m_locationAwarePollerClient);
+                     pkg, m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient);
 
         m_timer.setCurrentTime(1000L);
         pDot3Http.updateStatus(PollStatus.down());
@@ -1731,7 +1730,7 @@ public class PollablesIT {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig,
-                    pkg, m_timer, m_persisterFactory, m_thresholdingService, m_resourceStorageDao, m_locationAwarePollerClient);
+                    pkg, m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient);
 
         m_timer.setCurrentTime(2000L);
 
@@ -2762,7 +2761,7 @@ public class PollablesIT {
 
         PollableService svc = pNetwork.createService(nodeId, nodeLabel, nodeLocation, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg,
-                scheduler, m_persisterFactory, m_thresholdingService, m_resourceStorageDao, m_locationAwarePollerClient);
+                scheduler, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient);
 
         svc.setPollConfig(pollConfig);
         synchronized (svc) {
