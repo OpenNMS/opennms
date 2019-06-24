@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.ListMultimap;
@@ -59,7 +59,7 @@ import com.google.common.collect.Maps;
  *
  * @author jwhite
  */
-public class WsManMonitor extends AbstractServiceMonitor {
+public class WsManMonitor extends ParameterSubstitutingMonitor {
 
     public static final String RESOURCE_URI_PARAM = "resource-uri";
 
@@ -79,7 +79,7 @@ public class WsManMonitor extends AbstractServiceMonitor {
             throw new IllegalArgumentException("'" + RESOURCE_URI_PARAM + "' parameter is required.");
         }
 
-        final String rule = getKeyedString(parameters, RULE_PARAM, null);
+        final String rule = resolveKeyedString(parameters, RULE_PARAM, null);
         if (rule == null) {
             throw new IllegalArgumentException("'" + RULE_PARAM + "' parameter is required.");
         }

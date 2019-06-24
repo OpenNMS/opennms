@@ -5,7 +5,7 @@
         <title>Nodes</title>
         <subtitle>with Outages</subtitle>
         <visible>true</visible>
-        <icon>glyphicon-fire</icon>
+        <icon>fa-fire</icon>
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkHeight" value="35"/>
@@ -37,7 +37,7 @@
         <title>Severity</title>
         <subtitle>Distribution</subtitle>
         <visible>true</visible>
-        <icon>glyphicon-dashboard</icon>
+        <icon>fa-dashboard</icon>
         <trend-attributes>
             <trend-attribute key="sparkType" value="pie"/>
             <trend-attribute key="sparkHeight" value="35"/>
@@ -60,7 +60,7 @@
         <title>Alarms</title>
         <subtitle>Occurence</subtitle>
         <visible>true</visible>
-        <icon>glyphicon-bell</icon>
+        <icon>fa-bell</icon>
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkType" value="bar"/>
@@ -86,7 +86,7 @@
         <title>Alarms</title>
         <subtitle>Unacknowledged</subtitle>
         <visible>true</visible>
-        <icon>glyphicon-bell</icon>
+        <icon>fa-bell</icon>
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkHeight" value="40"/>
@@ -118,7 +118,7 @@
         <title>Outages</title>
         <subtitle>Occurence</subtitle>
         <visible>true</visible>
-        <icon>glyphicon-exclamation-sign</icon>
+        <icon>fa-exclamation-circle</icon>
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkType" value="bar"/>
@@ -144,7 +144,7 @@
         <title>Outages</title>
         <subtitle>Current</subtitle>
         <visible>true</visible>
-        <icon>glyphicon-exclamation-sign</icon>
+        <icon>fa-exclamation-circle</icon>
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkHeight" value="40"/>
@@ -176,7 +176,7 @@
         <title>Business Services</title>
         <subtitle>Problem Occurence</subtitle>
         <visible>true</visible>
-        <icon>glyphicon-tasks</icon>
+        <icon>fa-tasks</icon>
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkType" value="bar"/>
@@ -202,7 +202,7 @@
         <title>Business Services</title>
         <subtitle>Current Problems</subtitle>
         <visible>true</visible>
-        <icon>glyphicon-tasks</icon>
+        <icon>fa-tasks</icon>
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkHeight" value="40"/>

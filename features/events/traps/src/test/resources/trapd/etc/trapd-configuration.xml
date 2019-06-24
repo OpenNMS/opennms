@@ -1,0 +1,3 @@
+<trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd"
+                     snmp-trap-address="*" snmp-trap-port="1163" new-suspect-on-trap="false">
+</trapd-configuration>

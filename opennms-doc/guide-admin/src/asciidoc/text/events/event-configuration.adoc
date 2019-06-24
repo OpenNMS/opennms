@@ -182,3 +182,15 @@ At level `DEBUG`, `Eventd` will log a verbose description of every event it hand
 On busy systems, this setting may create so much noise as to be impractical.
 In these cases, you can get terse event summaries by setting `Eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `OPENNMS_HOME/etc/eventd-configuration.xml`.
 Note that changes to `eventd-configuration.xml` require a full restart of {opennms-product-name}.
+
+==== Karaf Shell
+
+The `events:show-event-config` command can be used to render the event definition for one or more event UEIs (matching a substring) to _XML_.
+This command is useful for displaying event definitions which may not be easily accessible on disk, or verifying that particular events were actually loaded.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> events:show-event-config -u uei.opennms.org/alarms
+----

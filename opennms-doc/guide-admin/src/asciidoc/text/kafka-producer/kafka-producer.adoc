@@ -3,10 +3,10 @@
 
 === Overview
 
-The _Kafka Producer feature_ allows events, alarms and nodes from _{opennms-product-name}_ to be forwarded to _Kafka_.
+The _Kafka Producer feature_ allows events, alarms, nodes, topologies and metrics from _{opennms-product-name}_ to be forwarded to _Kafka_.
 
 These objects are stored in different topics and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
-See `opennms-kafka-producer.proto` in the corresponding source distribution for the model definitions.
+See `opennms-kafka-producer.proto` and `collectionset.proto` in the corresponding source distribution for the model definitions.
 
 ==== Events
 
@@ -45,6 +45,28 @@ The _node criteria_ is a string representation of the unique identifier for a gi
 If the node is associated with a _foreign source (fs)_  and _foreign id (fid)_, the node criteria resulting node criteria will be the name of the _foreign source_, followed by a colon (:) and then the foreign id i.e. (fs:fid).
 If the node is not associated with both a _foreign source_ and _foreign id_, then the node id (database id) will be used.
 
+==== Topologies
+
+The _Kafka Producer_ listens for changes made to the current set of topologies (bridge, cdp, isis, lldp and ospf) and forwards the resulting messages to _Kafka_ topics. A topic is defined either for Topology Vertex Update Message and another topic is defined for Topology Edge Update Message.
+The topologies are provided by the _enhanced linkd updaters_ via the OnmsTopology API. 
+An _Updater_ send OnmsTopologyMessage to the subscribers.  
+The records are keyed by _GPB_ encoded key of protocol and TopologyRef and contain a _GPB_ encoded model of the Vertex or Edge.
+When a Vertex or an Edge is deleted, a _null_ value is sent with the corresponding encoded _GBP_ key.
+Publishing records in this fashion allows the topic to be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
+
+IMPORTANT: The topologies topic are not intended to include all of the vertices in the system, it only includes records for vertex that relate to topology messages that have been forwarded. 
+
+==== Metrics
+
+The _Kafka Producer_ can be used to write metrics to _Kafka_ either exclusively, or in addition to an existing persistence strategy i.e. RRD or Newts.
+The metrics are written in the form of "collection sets" which correspond to the internal representation used by the existing collectors and persistence strategies.
+The records are keyed by Node ID or by IP Address if no Node ID is available and contain a _GPB_ encoded version of the collection sets.
+The records are keyed in this fashion to help ensure that collection sets related to the same resources are written to the same partitions.
+
+When enabled (this functionality is disabled by default), the metrics are written to a topic named `metrics`.
+
+NOTE: When exclusively writing to _Kafka_, no metrics or resource graphs will be available on the _{opennms-product-name}_ instance.
+
 === Enabling the Kafka Producer
 
 The _Kafka Producer_ is disabled by default and can be enabled as follows.
@@ -81,17 +103,28 @@ The _Kafka Producer_ exposes the following options to help fine tune its behavio
                                                    Set this to an empty string to disable forwarding events.
 | `alarmTopic`            | `alarms`             | Name of the topic used for alarms.
                                                    Set this to an empty string to disable forwarding alarms.
+| `alarmFeedbackTopic`    | `alarmFeedback`      | Name of the topic used for alarm feedback.
+                                                   Set this to an empty string to disable forwarding alarm feedback.                                                   
 | `nodeTopic`             | `nodes`              | Name of the topic used for nodes.
                                                    Set this to an empty string to disable forwarding nodes.
+                                                   Set this to an empty string to disable forwarding topologies.
+| `topologyVertexTopic`             | `vertices`              | Name of the topic used for topology vertices.
+| `topologyEdgeTopic`             | `edges`              | Name of the topic used for topology edges.
+| `metricTopic`           | `metrics`            | Name of the topic used for metrics.
 | `eventFilter`           | `-`                  | A _Spring SpEL expression_ (see bellow) used to filter events.
                                                    Set this to an empty string to disable filtering, and forward all events.
 | `alarmFilter`           | `-`                  | A _Spring SpEL expression_ (see bellow) used to filter alarms.
                                                    Set this to an empty string to disable filtering, and forward all alarms.
+| `forward.metrics`       | `false`              | Set this value to `true` to enable forwarding of metrics.
 | `nodeRefreshTimeoutMs`  | `300000` (5 minutes) | Number of milliseconds to wait before looking up a node in the database again.
                                                    Decrease this value to improve accuracy at the cost of additional database look ups.
 | `alarmSyncIntervalMs`   | `300000` (5 minutes) | Number of milliseconds at which the contents of the alarm topic will be synchronized with the local database.
                                                    Decrease this to improve accuracy at the cost of additional database look ups.
                                                    Set this value to 0 to disable alarm synchronization.
+| `suppressIncrementalAlarms` | `true`           | Suppresses forwarding alarms that differ only by count or last event time.
+                                                   Set this to `false` to prevent suppressing these alarms.
+| `kafkaSendQueueCapacity` | `1000`           | The capacity for the queue of Kafka messages that is used when a Kafka message is pushed but Kafka is unavailable.
+| `startAlarmSyncWithCleanState` | `false`       | Set this to `true` to force the Kafka Streams client to start with a clean state on every boot.
 |===
 
 ==== Configuring Filtering
@@ -133,9 +166,31 @@ admin@opennms()> config:update
 In the example above, the filter is configured such that only alarms that are associated with a _ticket id_ are forwarded.
 Consult the source code of the `org.opennms.netmgt.model.OnmsAlarm` class in your distribution for a complete list of available properties.
 
+==== Enabling Metric Forwarding
+
+To enable metric forward, set the value of the `forward.metrics` property to `true`.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set forward.metrics true
+admin@opennms()> config:update
+----
+
+===== Enabling Exclusive Metric Forwarding
+
+Once metric forwarding is enabled, you can use this as the exclusive persistence strategy as follows by setting the following system property:
+
+[source, sh]
+----
+echo 'org.opennms.timeseries.strategy=osgi' > "$OPENNMS_HOME/etc/opennms.properties.d/kafka-for-metrics.properties"
+----
+
 ==== Configuring Topic Names
 
-By default three topics are created i.e. `events`, `alarms`, `nodes`.
+By default five topics are created i.e. `events`, `alarms`, `nodes`,`vertices`, and `edges` .
 To change these, you can use:
 
 [source]
@@ -149,6 +204,18 @@ admin@opennms()> config:update
 ----
 
 In the example above, we disable event forwarding by setting an empty topic name and change the node topic name to `opennms-nodes`.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set topologyVertexTopic "opennms-bridge-vertex"
+admin@opennms()> config:property-set topologyEdgeTopic "opennms-edge-vertex"
+admin@opennms()> config:update
+----
+
+In the example above, we set the vertex and edge topics to be different to default.
 
 === Shell Commands
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,14 +45,25 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
+
+import liquibase.Liquibase;
+import liquibase.database.DatabaseConnection;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.DatabaseException;
+import liquibase.integration.spring.SpringLiquibase;
+import liquibase.logging.LogFactory;
+import liquibase.logging.LogLevel;
+import liquibase.resource.ResourceAccessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,14 +71,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-
-import liquibase.Liquibase;
-import liquibase.database.DatabaseConnection;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
-import liquibase.logging.LogFactory;
-import liquibase.logging.LogLevel;
-import liquibase.resource.ResourceAccessor;
 
 /**
  * <p>Migrator class.</p>
@@ -80,10 +83,9 @@ public class Migrator {
     public static final String LIQUIBASE_CHANGELOG_LOCATION_PATTERN = "classpath*:/" + Migration.LIQUIBASE_CHANGELOG_FILENAME;
 
     private static final Logger LOG = LoggerFactory.getLogger(Migrator.class);
-
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
     private static final float POSTGRESQL_MIN_VERSION_INCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.minVersion", "9.1"));
-    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "11.0"));
+    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "12.0"));
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
@@ -93,23 +95,7 @@ public class Migrator {
     private boolean m_validateDatabaseVersion = true;
     private boolean m_createUser = true;
     private boolean m_createDatabase = true;
-
-    private Predicate<Resource> m_liquibaseChangelogFilter = null;
-
-    /**
-     * <p>Constructor for Migrator.</p>
-     */
-    public Migrator() {
-        initLogging();
-    }
-
-    private void initLogging() {
-        LogFactory.getLogger().setLogLevel(LogLevel.INFO);
-    }
-
-    public void enableDebug() {
-        LogFactory.getLogger().setLogLevel(LogLevel.DEBUG);
-    }
+    private Predicate<Resource> m_liquibaseChangelogFilter;
 
     /**
      * <p>getDataSource</p>
@@ -762,27 +748,29 @@ public class Migrator {
      */
     public void migrate(final Migration migration) throws MigrationException {
         Connection connection = null;
-        DatabaseConnection dbConnection = null;
 
         try {
             connection = m_dataSource.getConnection();
-            dbConnection = new JdbcConnection(connection);
 
-            ResourceAccessor accessor = migration.getAccessor();
-            if (accessor == null) accessor = new SpringResourceAccessor();
+            final SpringLiquibase lb = new SpringLiquibase();
+            lb.setChangeLog(migration.getChangeLog());
+            lb.setDataSource(m_dataSource);
 
-            final Liquibase liquibase = new Liquibase( Migration.LIQUIBASE_CHANGELOG_FILENAME, accessor, dbConnection );
-            liquibase.setChangeLogParameter("install.database.admin.user", migration.getAdminUser());
-            liquibase.setChangeLogParameter("install.database.admin.password", migration.getAdminPassword());
-            liquibase.setChangeLogParameter("install.database.user", migration.getDatabaseUser());
-            liquibase.getDatabase().setDefaultSchemaName(migration.getSchemaName());
+            final Map<String,String> parameters = new HashMap<>();
+            parameters.put("install.database.admin.user", migration.getAdminUser());
+            parameters.put("install.database.admin.password", migration.getAdminPassword());
+            parameters.put("install.database.user", migration.getDatabaseUser());
+            lb.setChangeLogParameters(parameters);
+            lb.setDefaultSchema(migration.getSchemaName());
+            lb.setResourceLoader(new DefaultResourceLoader());
 
             final String contexts = System.getProperty("opennms.contexts", "production");
-            liquibase.update(contexts);
+            lb.setContexts(contexts);
+            lb.afterPropertiesSet();
         } catch (final Throwable e) {
             throw new MigrationException("unable to migrate the database", e);
         } finally {
-            cleanUpDatabase(connection, dbConnection, null, null);
+            cleanUpDatabase(connection, null, null, null);
         }
     }
 
@@ -893,7 +881,7 @@ public class Migrator {
                     continue;
                 }
                 LOG.info("- Running migration for changelog: " + resource.getDescription());
-                migration.setAccessor(new ExistingResourceAccessor(resource));
+                migration.setChangeLog(resource);
                 migrate(migration);
             }
         }

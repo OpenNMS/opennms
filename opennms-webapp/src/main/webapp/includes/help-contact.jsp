@@ -28,26 +28,26 @@
  *******************************************************************************/
 --%>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Get in Contact</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Get in Contact</span>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <table class="table">
             <tr>
-                <td style="border-top: none;"><a href="https://www.opennms.com/support/" target="_blank" class="btn btn-default" role="button" style="width: 100%">Commercial Support</a></td>
+                <td style="border-top: none;"><a href="https://www.opennms.com/support/" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Commercial Support</a></td>
                 <td style="border-top: none;">Get commercial support for OpenNMS software provided by The OpenNMS Group, Inc.</td>
             </tr>
             <tr>
-                <td style="border-top: none;"><a href="https://chat.opennms.org/opennms" target="_blank" class="btn btn-default" role="button" style="width: 100%">Web Chat</a></td>
+                <td style="border-top: none;"><a href="https://chat.opennms.org/opennms" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Web Chat</a></td>
                 <td style="border-top: none;">Use the &quot;web-based&quot; chat platform powered by Mattermost. The Discussion channel is a good starting point to reach users and developers. If you prefer IRC, you can join the "#opennms" channel on irc.freenode.net which is bridged to our Web Chat.</td>
             </tr>
             <tr>
-                <td style="border-top: none;"><a href="https://wiki.opennms.org/wiki/Mailing_lists" target="_blank" class="btn btn-default" role="button" style="width: 100%">Mailing Lists</a></td>
+                <td style="border-top: none;"><a href="https://wiki.opennms.org/wiki/Mailing_lists" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Mailing Lists</a></td>
                 <td style="border-top: none;">Get into contact with OpenNMS users in our community through our topic-driven mailing lists. The opennms-discuss mailing list is a good way to ask questions about getting started with OpenNMS.</td>
             </tr>
             <tr>
-                <td style="border-top: none;"><a href="https://stackoverflow.com/search?q=opennms" target="_blank" class="btn btn-default" role="button" style="width: 100%">Questions &amp; Answers</a></td>
+                <td style="border-top: none;"><a href="https://stackoverflow.com/search?q=opennms" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Questions &amp; Answers</a></td>
                 <td style="border-top: none;">Questions and Answers around using and developing OpenNMS can also be found on StackOverflow.</td>
             </tr>
         </table>

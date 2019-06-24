@@ -91,7 +91,8 @@ public class RequestTrackerTest extends TestCase {
 
         RtConfigDao dao = new ReadOnlyRtConfigDao();
 
-        m_tracker = new RequestTracker(dao.getBaseURL(), dao.getUsername(), dao.getPassword(), dao.getTimeout(), dao.getRetry());
+        m_tracker = new RequestTracker(dao.getBaseURL(), dao.getUsername(), dao.getPassword(), dao.getTimeout(), dao.getRetry(),
+                dao.getUseSystemProxy());
         m_ticket = new RTTicket();
         m_ticket.setQueue(dao.getQueue());
         m_ticket.setStatus("open");

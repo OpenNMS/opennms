@@ -14,6 +14,10 @@
     <bean id="serviceCollectorRegistry" class="org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry" />
     <onmsgi:service interface="org.opennms.netmgt.collection.api.ServiceCollectorRegistry" ref="serviceCollectorRegistry"/>
 
+    <onmsgi:list id="serviceCollectors" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+        <onmsgi:listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorRegistry"/>
+    </onmsgi:list>
+
     <bean id="collectorClientRpcModule" class="org.opennms.netmgt.collection.client.rpc.CollectorClientRpcModule" />
 
     <bean id="locationAwareCollectorClient" class="org.opennms.netmgt.collection.client.rpc.LocationAwareCollectorClientImpl" />

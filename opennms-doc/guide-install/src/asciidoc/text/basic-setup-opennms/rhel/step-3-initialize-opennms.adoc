@@ -1,0 +1,26 @@
+
+==== Step 3: Initialize and start {opennms-product-name}
+
+.Detect of _Java_ environment and persist in /opt/opennms/etc/java.conf
+[source, shell]
+----
+${OPENNMS_HOME}/bin/runjava -s
+----
+
+.Initialize the database and detect system libraries persisted in /opt/opennms/etc/libraries.properties
+[source, shell]
+----
+${OPENNMS_HOME}/bin/install -dis
+----
+
+.Configure systemd to start {opennms-product-name} on system boot
+[source, shell]
+----
+systemctl enable opennms
+----
+
+.Start {opennms-product-name}
+[source, shell]
+----
+systemctl start opennms
+----

@@ -104,11 +104,14 @@ import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
+import org.opennms.netmgt.provision.persist.OnmsInterfaceMetaDataRequisition;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeMetaDataRequisition;
 import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
+import org.opennms.netmgt.provision.persist.OnmsServiceMetaDataRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
@@ -125,7 +128,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
@@ -1891,6 +1894,12 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         protected int m_assetCompleted;
         protected List<OnmsNodeRequisition> m_nodes = new ArrayList<>();
         protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<>();
+        protected int m_nodeMetaDataCount;
+        protected int m_nodeMetaDataCompleted;
+        protected int m_interfaceMetaDataCount;
+        protected int m_interfaceMetaDataCompleted;
+        protected int m_serviceMetaDataCount;
+        protected int m_serviceMetaDataCompleted;
 
         public List<OnmsNodeRequisition> getNodes() {
             return m_nodes;
@@ -1956,6 +1965,30 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
             return m_assetCompleted;
         }
 
+        public int getNodeMetaDataCount() {
+            return m_nodeMetaDataCount;
+        }
+
+        public int getNodeMetaDataCompletedCount() {
+            return m_nodeMetaDataCompleted;
+        }
+
+        public int getInterfaceMetaDataCount() {
+            return m_interfaceMetaDataCount;
+        }
+
+        public int getInterfaceMetaDataCompletedCount() {
+            return m_interfaceMetaDataCompleted;
+        }
+
+        public int getServiceMetaDataCount() {
+            return m_serviceMetaDataCount;
+        }
+
+        public int getServiceMetaDataCompletedCount() {
+            return m_serviceMetaDataCompleted;
+        }
+
         @Override
         public void visitModelImport(final Requisition req) {
             m_modelImportCount++;
@@ -1995,22 +2028,28 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         @Override
         public String toString() {
-            return (new ToStringCreator(this)
-            .append("modelImportCount", getModelImportCount())
-            .append("modelImportCompletedCount", getModelImportCompletedCount())
-            .append("nodeCount", getNodeCount())
-            .append("nodeCompletedCount", getNodeCompletedCount())
-            .append("nodeCategoryCount", getNodeCategoryCount())
-            .append("nodeCategoryCompletedCount", getNodeCategoryCompletedCount())
-            .append("interfaceCount", getInterfaceCount())
-            .append("interfaceCompletedCount", getInterfaceCompletedCount())
-            .append("monitoredServiceCount", getMonitoredServiceCount())
-            .append("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
-            .append("serviceCategoryCount", getServiceCategoryCount())
-            .append("serviceCategoryCompletedCount", getServiceCategoryCompletedCount())
-            .append("assetCount", getAssetCount())
-            .append("assetCompletedCount", getAssetCompletedCount())
-            .toString());
+            return MoreObjects.toStringHelper(this)
+            .add("modelImportCount", getModelImportCount())
+            .add("modelImportCompletedCount", getModelImportCompletedCount())
+            .add("nodeCount", getNodeCount())
+            .add("nodeCompletedCount", getNodeCompletedCount())
+            .add("nodeCategoryCount", getNodeCategoryCount())
+            .add("nodeCategoryCompletedCount", getNodeCategoryCompletedCount())
+            .add("interfaceCount", getInterfaceCount())
+            .add("interfaceCompletedCount", getInterfaceCompletedCount())
+            .add("monitoredServiceCount", getMonitoredServiceCount())
+            .add("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
+            .add("serviceCategoryCount", getServiceCategoryCount())
+            .add("serviceCategoryCompletedCount", getServiceCategoryCompletedCount())
+            .add("assetCount", getAssetCount())
+            .add("assetCompletedCount", getAssetCompletedCount())
+            .add("nodeMetaDataCount", getNodeMetaDataCount())
+            .add("nodeMetaDataCompletedCount", getNodeMetaDataCompletedCount())
+            .add("interfaceMetaDataCount", getInterfaceMetaDataCount())
+            .add("interfaceMetaDataCompletedCount", getInterfaceMetaDataCompletedCount())
+            .add("serviceMetaDataCount", getServiceMetaDataCount())
+            .add("serviceMetaDataCompletedCount", getServiceMetaDataCompletedCount())
+            .toString();
         }
 
         @Override
@@ -2046,6 +2085,36 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         @Override
         public void completeAsset(OnmsAssetRequisition assetReq) {
             m_assetCompleted++;
+        }
+
+        @Override
+        public void visitNodeMetaData(OnmsNodeMetaDataRequisition metaDataReq) {
+            m_nodeMetaDataCount++;
+        }
+
+        @Override
+        public void completeNodeMetaData(OnmsNodeMetaDataRequisition metaDataReq) {
+            m_nodeMetaDataCompleted++;
+        }
+
+        @Override
+        public void visitInterfaceMetaData(OnmsInterfaceMetaDataRequisition metaDataReq) {
+            m_interfaceMetaDataCount++;
+        }
+
+        @Override
+        public void completeInterfaceMetaData(OnmsInterfaceMetaDataRequisition metaDataReq) {
+            m_interfaceMetaDataCompleted++;
+        }
+
+        @Override
+        public void visitServiceMetaData(OnmsServiceMetaDataRequisition metaDataReq) {
+            m_serviceMetaDataCount++;
+        }
+
+        @Override
+        public void completeServiceMetaData(OnmsServiceMetaDataRequisition metaDataReq) {
+            m_serviceMetaDataCompleted++;
         }
     }
 

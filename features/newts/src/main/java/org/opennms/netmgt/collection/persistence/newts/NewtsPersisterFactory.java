@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.collection.persistence.newts;
 
+import java.util.Objects;
+
+import javax.inject.Inject;
+
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.newts.NewtsWriter;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.newts.api.Context;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Factory for {@link org.opennms.netmgt.collection.persistence.newts.NewtsPersister}.
@@ -43,11 +46,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class NewtsPersisterFactory implements PersisterFactory {
 
-    @Autowired
-    private NewtsWriter m_newtsWriter;
+    private final NewtsWriter m_newtsWriter;
 
-    @Autowired
-    private Context m_context;
+    private final Context m_context;
+
+    @Inject
+    public NewtsPersisterFactory(Context context, NewtsWriter newtsWriter) {
+        m_context = Objects.requireNonNull(context);
+        m_newtsWriter = newtsWriter;
+    }
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository) {

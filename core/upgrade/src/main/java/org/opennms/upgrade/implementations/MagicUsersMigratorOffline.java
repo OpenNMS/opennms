@@ -30,17 +30,17 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.xerces.parsers.DOMParser;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.UserFactory;
@@ -49,6 +49,11 @@ import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.opennms.web.api.Authentication;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * Migrate the content from magic-users.properties into the users.xml file
@@ -180,32 +185,45 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
             return;
         }
 
+        boolean foundReadOnlyTag = false;
         // Parse read-only attributes
         final List<String> readOnlyUsers = new ArrayList<>();
         try {
-            boolean readOnly = false;
-            for (String line : Files.readAllLines(usersFile.toPath())) {
-                if (line.contains("read-only")) {
-                    Matcher m = Pattern.compile("read-only=\"(.+)\"").matcher(line);
-                    if (m.find()) {
-                        readOnly = Boolean.parseBoolean(m.group(1));
+            final DOMParser parser = new DOMParser();
+            parser.parse(new InputSource(new FileReader(usersFile)));
+            final Document doc = parser.getDocument();
+            final NodeList users = doc.getElementsByTagName("user");
+            for (int i=0; i < users.getLength(); i++) {
+                String userName = null;
+                final Node user = users.item(i);
+                final NamedNodeMap attributes = user.getAttributes();
+                final NodeList userChildren = user.getChildNodes();
+                for (int j=0; j < userChildren.getLength(); j++) {
+                    final Node child = userChildren.item(j);
+                    if ("user-id".equals(child.getLocalName())) {
+                        userName = child.getTextContent();
+                        break;
                     }
                 }
-                if (line.contains("user-id")) {
-                    if (readOnly) {
-                        Matcher m = Pattern.compile("user-id[>](.+)[<][/]user-id").matcher(line);
-                        if (m.find()) {
-                            log("Warning: User %s has read-only flag\n", m.group(1));
-                            readOnlyUsers.add(m.group(1));
+                final Node readOnly = attributes.getNamedItem("read-only");
+                if (readOnly != null) {
+                    if (userName == null) {
+                        log("Warning: found a read-only tag but unable to determine username: " + user + "\n");
+                    } else {
+                        foundReadOnlyTag = true;
+                        final boolean isReadOnly = Boolean.valueOf(readOnly.getTextContent());
+                        if (isReadOnly) {
+                            log(userName + " is read-only\n");
+                            readOnlyUsers.add(userName);
                         }
                     }
-                    readOnly = false;
                 }
             }
-            if (!readOnlyUsers.isEmpty()) {
+
+            if (foundReadOnlyTag) {
                 log("Removing the read-only flags from users.xml\n");
                 String content = new String(Files.readAllBytes(usersFile.toPath()), StandardCharsets.UTF_8);
-                content = content.replaceAll(" read-only=\".+\"", "");
+                content = content.replaceAll("\\s+read-only=\".+\"", "");
                 Files.write(usersFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
             }
         } catch (Exception e) {

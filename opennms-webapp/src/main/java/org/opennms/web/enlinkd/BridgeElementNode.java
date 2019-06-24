@@ -40,10 +40,10 @@ public class BridgeElementNode {
 	private Integer m_stpRootPort;
 	private Integer m_vlan;
 	private String  m_vlanname;
-    private String  m_bridgeNodeCreateTime;
-    private String  m_bridgeNodeLastPollTime;
+        private String  m_bridgeNodeCreateTime;
+        private String  m_bridgeNodeLastPollTime;
 	
-    public String getBaseBridgeAddress() {
+        public String getBaseBridgeAddress() {
 		return m_baseBridgeAddress;
 	}
 	public void setBaseBridgeAddress(String baseBridgeAddress) {

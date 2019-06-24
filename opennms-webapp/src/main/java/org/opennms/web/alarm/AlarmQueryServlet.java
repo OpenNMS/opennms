@@ -46,6 +46,7 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
+import org.opennms.web.alarm.filter.AlarmTextFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
 import org.opennms.web.alarm.filter.IPAddrLikeFilter;
@@ -56,6 +57,7 @@ import org.opennms.web.alarm.filter.NodeLocationFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.alarm.filter.SituationFilter;
 import org.opennms.web.api.Util;
 import org.opennms.web.controller.alarm.AlarmFilterController;
 import org.opennms.web.filter.Filter;
@@ -81,7 +83,7 @@ public class AlarmQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the {@link AlarmFilterController AlarmFilterController}.
      */
-    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[] { "alarmtext", "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
 
     /**
      * The URL for the {@link AlarmFilterController AlarmFilterController}. The
@@ -114,6 +116,12 @@ public class AlarmQueryServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Filter> filterArray = new ArrayList<>();
+
+        // convenient syntax for AlarmTextFilter
+        String alarmTextString = request.getParameter("alarmtext");
+        if (alarmTextString != null && alarmTextString.length() > 0) {
+            filterArray.add(new AlarmTextFilter(alarmTextString));
+        }
 
         // convenient syntax for LogMessageSubstringFilter
         String msgSubstring = WebSecurityUtils.sanitizeString(request.getParameter("msgsub"));
@@ -218,6 +226,11 @@ public class AlarmQueryServlet extends HttpServlet {
         String nodelocation = WebSecurityUtils.sanitizeString(request.getParameter("nodelocation"));
         if (nodelocation != null && !nodelocation.equalsIgnoreCase("any")) {
             filterArray.add(new NodeLocationFilter(WebSecurityUtils.sanitizeString(nodelocation)));
+        }
+
+        String situation = WebSecurityUtils.sanitizeString(request.getParameter("situation"));
+        if (situation != null && !situation.equalsIgnoreCase("any")) {
+            filterArray.add(new SituationFilter(Boolean.valueOf(situation)));
         }
 
         String queryString = "";

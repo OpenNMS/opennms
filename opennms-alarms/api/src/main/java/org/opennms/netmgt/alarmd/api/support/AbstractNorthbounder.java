@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsEventParameter;
+import org.opennms.core.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -301,22 +303,20 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
 
         String count = alarm.getCount() == null ? "1" : alarm.getCount().toString();
         mapping.put("count", count);
-        if (dateFormat == null) {
-            dateFormat = "yyyy-MM-dd'T'HH:mm:ss:SSSXXX";
-        }
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
-        String firstOccurence = "";
-        if (alarm.getFirstOccurrence() != null) {
-            firstOccurence = simpleDateFormat.format(alarm.getFirstOccurrence());
-        }
-        String lastOccurence = "";
-        if (alarm.getLastOccurrence() != null) {
-            lastOccurence = simpleDateFormat.format(alarm.getLastOccurrence());
-        }
-        mapping.put("firstOccurrence", firstOccurence);
         mapping.put("alarmId", alarm.getId().toString());
         mapping.put("ipAddr", nullSafeToString(alarm.getIpAddr(), defaultMapping));
-        mapping.put("lastOccurrence", lastOccurence);
+        if (dateFormat != null) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+            if (alarm.getFirstOccurrence() != null) {
+                mapping.put("firstOccurrence", simpleDateFormat.format(alarm.getFirstOccurrence()));
+            }
+            if (alarm.getLastOccurrence() != null) {
+                mapping.put("lastOccurrence", simpleDateFormat.format(alarm.getLastOccurrence()));
+            }
+        } else {
+            mapping.put("firstOccurrence", nullSafeIso8601String(alarm.getFirstOccurrence(), defaultMapping));
+            mapping.put("lastOccurrence", nullSafeIso8601String(alarm.getLastOccurrence(), defaultMapping));
+        }
 
         if (alarm.getNodeId() != null) {
             LOG.debug("Adding nodeId: " + alarm.getNodeId().toString());
@@ -370,6 +370,12 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
         return defaultString;
     }
 
+    private String nullSafeIso8601String(Date d, String defaultString) {
+        if(d != null) {
+            defaultString = StringUtils.iso8601LocalOffsetString(d);
+        }
+        return defaultString;
+    }
     /**
      * Builds the parameters mappings.
      *

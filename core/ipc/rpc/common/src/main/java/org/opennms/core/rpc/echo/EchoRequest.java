@@ -28,11 +28,14 @@
 
 package org.opennms.core.rpc.echo;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.rpc.api.RpcRequest;
@@ -47,6 +50,9 @@ public class EchoRequest implements RpcRequest {
     @XmlAttribute(name="message")
     private String message;
 
+    @XmlElement(name="body", required=false)
+    private String body;
+
     @XmlAttribute(name="location")
     private String location;
 
@@ -60,6 +66,8 @@ public class EchoRequest implements RpcRequest {
     private boolean shouldThrow;
 
     private Long timeToLiveMs;
+
+    private Map<String, String> tracingInfo = new HashMap<>();
 
     public EchoRequest() { }
 
@@ -81,6 +89,18 @@ public class EchoRequest implements RpcRequest {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    /**
+     * Set body when there is large message typically >500KB
+     * @param body set body
+     */
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public void setLocation(String location) {
@@ -110,6 +130,15 @@ public class EchoRequest implements RpcRequest {
         return timeToLiveMs;
     }
 
+    @Override
+    public Map<String, String> getTracingInfo() {
+        return tracingInfo;
+    }
+
+    public void addTracingInfo(String key, String value) {
+        tracingInfo.put(key, value);
+    }
+
     public void setDelay(Long delay) {
         this.delay = delay;
     }
@@ -128,7 +157,7 @@ public class EchoRequest implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, message, location, delay,
+        return Objects.hash(id, message, body, location, delay,
                 shouldThrow, systemId);
     }
 
@@ -143,6 +172,7 @@ public class EchoRequest implements RpcRequest {
         final EchoRequest other = (EchoRequest) obj;
         return Objects.equals(this.id, other.id) &&
                 Objects.equals(this.message, other.message) &&
+                Objects.equals(this.body, other.body) &&
                 Objects.equals(this.location, other.location) &&
                 Objects.equals(this.delay, other.delay) &&
                 Objects.equals(this.shouldThrow, other.shouldThrow) &&
@@ -151,7 +181,7 @@ public class EchoRequest implements RpcRequest {
 
     @Override
     public String toString() {
-        return String.format("EchoRequest[id=%d, message=%s, location=%s, systemId=%s, delay=%s, shouldThrow=%s]",
-                id, message, location, systemId, delay, shouldThrow);
+        return String.format("EchoRequest[id=%d, message=%s, body=%s location=%s, systemId=%s, delay=%s, shouldThrow=%s]",
+                id, message, body, location, systemId, delay, shouldThrow);
     }
 }

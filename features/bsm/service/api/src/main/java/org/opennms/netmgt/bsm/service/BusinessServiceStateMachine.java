@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -143,6 +144,8 @@ public interface BusinessServiceStateMachine {
     List<GraphVertex> calculateImpact(IpService ipService);
 
     List<GraphVertex> calculateImpact(String reductionKey);
+
+    List<GraphVertex> calculateImpact(Application application);
 
     ThresholdResultExplanation explain(BusinessService businessService, Threshold threshold);
 }

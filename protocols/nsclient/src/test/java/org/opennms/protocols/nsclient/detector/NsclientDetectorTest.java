@@ -30,6 +30,7 @@ package org.opennms.protocols.nsclient.detector;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -78,7 +79,7 @@ public class NsclientDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
         // Initialize Mock NSClient Server
         m_server  = new SimpleServer() {
             @Override

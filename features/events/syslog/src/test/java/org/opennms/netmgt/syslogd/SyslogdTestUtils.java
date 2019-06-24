@@ -48,6 +48,11 @@ public abstract class SyslogdTestUtils {
          */
         try { Thread.sleep(3000); } catch (InterruptedException e) {}
     }
+    
+    public static void waitForSyslogdToReload() {
+        //wait till syslog stops and starts again, no other way to check this
+        try { Thread.sleep(6000); } catch (InterruptedException e) {}
+    }
 
     public static ByteBuffer toByteBuffer(String string) {
         return toByteBuffer(string, StandardCharsets.US_ASCII);

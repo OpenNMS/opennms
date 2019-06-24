@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  ">
+
+    <context:annotation-config />
+    <tx:annotation-driven/>
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+
+    <bean id="linkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
+
+	<bean id ="nodesOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="userDefinedLinkTopologyUpdater" class="org.opennms.netmgt.enlinkd.UserDefinedLinkTopologyUpdater">
+		<constructor-arg ref="userDefinedLinkTopologyService" />
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="bridgeOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.BridgeOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="bridgeTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="cdpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="cdpTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="isisOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.IsisOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="isisTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="lldpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="lldpTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="ospfOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="ospfTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+	
+	<bean id="discoveryBridgeDomain" class="org.opennms.netmgt.enlinkd.DiscoveryBridgeDomains">
+		<constructor-arg ref="bridgeTopologyService" />
+	</bean>
+
+    <bean name="daemon" class="org.opennms.netmgt.enlinkd.EnhancedLinkd">
+      <property name="linkdConfig"    ref="linkdConfig" />
+      <property name="queryManager"   ref="nodeTopologyService" />
+      <property name="bridgeTopologyService"   ref="bridgeTopologyService" />
+      <property name="cdpTopologyService"   ref="cdpTopologyService" />
+      <property name="isisTopologyService"   ref="isisTopologyService" />
+      <property name="ipNetToMediaTopologyService"   ref="ipNetToMediaTopologyService" />
+      <property name="lldpTopologyService"   ref="lldpTopologyService" />
+      <property name="ospfTopologyService"   ref="ospfTopologyService" />
+    </bean>
+
+    <bean id="receiver" class="org.opennms.netmgt.enlinkd.EventProcessor">
+      <property name="linkd" ref="daemon"/>
+    </bean>
+
+    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+      <property name="annotatedListener" ref="receiver" />
+      <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
+    
+    <onmsgi:service interface="org.opennms.netmgt.model.ServiceDaemon" ref="daemon">
+    	<onmsgi:service-properties>
+    		<entry key="name" value="enlinkd" />
+    	</onmsgi:service-properties>
+    </onmsgi:service>
+
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon" ref="daemon"/>
+
+</beans>

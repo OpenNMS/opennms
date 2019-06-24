@@ -28,55 +28,15 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.net.InetAddress;
-
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAgentFactory;
-import org.opennms.netmgt.collection.core.DefaultCollectionAgent;
+import org.opennms.netmgt.collection.core.AbstractCollectionAgentFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 
-public class DefaultSnmpCollectionAgentFactory implements CollectionAgentFactory {
-
-    @Autowired
-    private NodeDao nodeDao;
-
-    @Autowired
-    private IpInterfaceDao ipInterfaceDao;
-
-    @Autowired
-    private PlatformTransactionManager transMgr;
+public class DefaultSnmpCollectionAgentFactory extends AbstractCollectionAgentFactory<SnmpCollectionAgent> {
 
     @Override
-    public CollectionAgent createCollectionAgentAndOverrideLocation(String nodeCriteria, InetAddress ipAddr,
-            String location) {
-        final OnmsNode node = nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw new IllegalArgumentException(String.format("No node found with lookup criteria: %s",
-                    nodeCriteria));
-        }
-        final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(
-                node.getId(), InetAddressUtils.str(ipAddr));
-        if (ipInterface == null) {
-            throw new IllegalArgumentException(String.format("No interface found with IP %s on node %s",
-                    InetAddressUtils.str(ipAddr), nodeCriteria));
-        }
-        return DefaultSnmpCollectionAgent.create(ipInterface.getId(), ipInterfaceDao, transMgr, location);
+    protected SnmpCollectionAgent createAgent(Integer ipInterfaceId, IpInterfaceDao ipInterfaceDao,
+                                              PlatformTransactionManager transMgr, String location) {
+        return DefaultSnmpCollectionAgent.create(ipInterfaceId, ipInterfaceDao, transMgr, location);
     }
-
-    @Override
-    public CollectionAgent createCollectionAgent(String nodeCriteria, InetAddress ipAddr) {
-        return createCollectionAgentAndOverrideLocation(nodeCriteria, ipAddr, null);
-    }
-
-    @Override
-    public CollectionAgent createCollectionAgent(OnmsIpInterface ipIf) {
-        return DefaultSnmpCollectionAgent.create(ipIf.getId(), ipInterfaceDao, transMgr);
-    }
-
 }

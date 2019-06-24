@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,13 +40,13 @@ import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
@@ -56,7 +56,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
-@Ignore("Flapping. See NMS-9402")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -65,9 +64,12 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-scan-executor.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-detect.xml"
+        "classpath:/META-INF/opennms/applicationContext-rpc-detect.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml"
 })
 @JUnitConfigurationEnvironment  
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
@@ -116,6 +118,10 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
                     @Override
                     public String getLocation() {
                         return REMOTE_LOCATION_NAME;
+                    }
+                    @Override
+                    public String getType() {
+                        return SystemType.Minion.name();
                     }
                 }, new Properties()));
 

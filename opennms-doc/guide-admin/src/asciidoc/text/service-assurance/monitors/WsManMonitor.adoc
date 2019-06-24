@@ -5,6 +5,7 @@
 ==== WsManMonitor
 
 This monitor can be used to issue a WS-Man _Get_ command and validate the results using a link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SPEL] expression.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 ===== Monitor facts
 
@@ -19,10 +20,10 @@ This monitor can be used to issue a WS-Man _Get_ command and validate the result
 .Monitor specific parameters for the WsManMonitor
 [options="header, autowidth"]
 |===
-| Parameter      | Description                                                                 | Required | Default value
-| `resource-uri` | Resource URI                                                                | required | `-`
-| `rule`         | SPEL expression applied against the result of the _Get_                     | required | `-`
-| `selector.`    | Used to filter the result set. All selectors must prefixed with `selector.` | optional | `(None)`
+| Parameter      | Description                                                                 | Required | Default value | Placeholder substitution
+| `resource-uri` | Resource URI                                                                | required | `-` | No
+| `rule`         | SPEL expression applied against the result of the _Get_                     | required | `-` | Yes
+| `selector.`    | Used to filter the result set. All selectors must prefixed with `selector.` | optional | `(None)` | No
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

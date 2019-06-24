@@ -44,7 +44,7 @@ import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +66,7 @@ import org.slf4j.LoggerFactory;
 
 // NOTE: This requires that the JDBC Drivers for the dbs be included with the remote poller
 @Distributable
-public class JDBCMonitor extends AbstractServiceMonitor {
-    
+public class JDBCMonitor extends ParameterSubstitutingMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(JDBCMonitor.class);
     
@@ -134,13 +133,13 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 		// Get the JDBC url host part
 		InetAddress ipAddr = svc.getAddress();
 		String url = null;
-		url = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipAddr.getCanonicalHostName());
+		url = DBTools.constructUrl(resolveKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipAddr.getCanonicalHostName());
 		LOG.debug("JDBC url: {}", url);
 		
 		TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-		String db_user = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
-		String db_pass = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
+		String db_user = resolveKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
+		String db_pass = resolveKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
 
 		Properties props = new Properties();
 		props.setProperty("user", db_user);

@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.opennms.web.rest.v2.bsm.model.edge.AbstractEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ApplicationEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
@@ -73,6 +74,10 @@ public class BusinessServiceRequestDTO {
     @XmlElement(name="reduction-key-edge")
     @XmlElementWrapper(name="reduction-key-edges")
     private List<ReductionKeyEdgeRequestDTO> reductionKeys = Lists.newArrayList();
+
+    @XmlElement(name="application-edge")
+    @XmlElementWrapper(name="application-edges")
+    private List<ApplicationEdgeRequestDTO> m_applications = Lists.newArrayList();
 
     @XmlElement(name="reduce-function")
     private ReduceFunctionDTO reduceFunction;
@@ -123,6 +128,14 @@ public class BusinessServiceRequestDTO {
 
     public void setReduceFunction(ReduceFunctionDTO reduceFunction) {
         this.reduceFunction = reduceFunction;
+    }
+
+    public List<ApplicationEdgeRequestDTO> getApplications() {
+        return m_applications;
+    }
+
+    public void setApplications(List<ApplicationEdgeRequestDTO> applications) {
+        m_applications = applications;
     }
 
     public ReduceFunctionDTO getReduceFunction() {
@@ -196,6 +209,14 @@ public class BusinessServiceRequestDTO {
         edge.setWeight(weight);
         edge.setFriendlyName(friendlyName);
         getIpServices().add(edge);
+    }
+
+    public void addApplication(int applicationId, MapFunctionDTO mapFunction, int weight) {
+        ApplicationEdgeRequestDTO edge = new ApplicationEdgeRequestDTO();
+        edge.setApplicationId(applicationId);
+        edge.setMapFunction(mapFunction);
+        edge.setWeight(weight);
+        getApplications().add(edge);
     }
 
     @XmlTransient

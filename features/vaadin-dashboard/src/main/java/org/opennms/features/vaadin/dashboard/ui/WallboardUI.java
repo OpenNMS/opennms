@@ -28,19 +28,22 @@
 
 package org.opennms.features.vaadin.dashboard.ui;
 
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.google.common.base.Strings;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.opennms.features.vaadin.dashboard.ui.dashboard.DashboardView;
 import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
+
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.util.BeanItemContainer;
 
 /**
  * The wallboard application's "main" class
@@ -85,12 +88,13 @@ public class WallboardUI extends UI implements DashletSelectorAccess {
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSizeFull();
         rootLayout.setSpacing(true);
+        rootLayout.setMargin(false);
         HeaderLayout headerLayout = new HeaderLayout();
         rootLayout.addComponent(headerLayout);
 
         VerticalLayout portalWrapper = new VerticalLayout();
         portalWrapper.setSizeFull();
-        portalWrapper.setMargin(true);
+        portalWrapper.setMargin(false);
 
         rootLayout.addComponent(portalWrapper);
         rootLayout.setExpandRatio(portalWrapper, 1);
@@ -101,14 +105,28 @@ public class WallboardUI extends UI implements DashletSelectorAccess {
         navigator.addView("dashboard", DashboardView.class);
         navigator.addView("wallboard", WallboardView.class);
 
-        navigator.navigateTo("wallboard");
+        navigator.addViewChangeListener(new ViewChangeListener() {
+            @Override
+            public void afterViewChange(ViewChangeEvent viewChangeEvent) {
+                headerLayout.setWallboard(viewChangeEvent.getParameters());
+            }
+
+            @Override
+            public boolean beforeViewChange(ViewChangeEvent viewChangeEvent) {
+                return true;
+            }
+        });
 
         BeanItemContainer<Wallboard> beanItemContainer = WallboardProvider.getInstance().getBeanContainer();
 
-        for (Wallboard wallboard : beanItemContainer.getItemIds()) {
-            if (wallboard.isDefault()) {
-                headerLayout.gotoWallboard(wallboard);
-                break;
+        if (Strings.isNullOrEmpty(navigator.getState())) {
+            navigator.navigateTo("wallboard");
+
+            for (Wallboard wallboard : beanItemContainer.getItemIds()) {
+                if (wallboard.isDefault()) {
+                    headerLayout.gotoWallboard(wallboard);
+                    break;
+                }
             }
         }
     }

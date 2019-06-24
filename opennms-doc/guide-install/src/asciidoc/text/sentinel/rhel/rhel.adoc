@@ -1,0 +1,15 @@
+:sentinel-home: /opt/sentinel
+
+=== Installing on RHEL
+
+include::../generic/setup-overview.adoc[]
+
+:!sectnums:
+
+include::../generic/step1-setup-communication.adoc[]
+include::step2-install-on-rhel.adoc[]
+include::../generic/step3-starting-sentinel.adoc[]
+include::../generic/step4-configure-sentinel.adoc[]
+include::../generic/step5-verify-connectivity.adoc[]
+
+:sectnums:

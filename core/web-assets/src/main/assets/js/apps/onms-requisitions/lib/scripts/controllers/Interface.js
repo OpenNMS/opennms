@@ -1,5 +1,7 @@
 require('../services/Requisitions');
 
+const RequisitionService = require('../model/RequisitionService');
+
 /**
 * @author Alejandro Galue <agalue@opennms.org>
 * @copyright 2014 The OpenNMS Group, Inc.
@@ -122,7 +124,7 @@ require('../services/Requisitions');
     * @methodOf InterfaceController
     */
     $scope.addService = function() {
-      $scope.requisitionInterface.services.push({ name: '' });
+      $scope.requisitionInterface.services.push(new RequisitionService({ 'service-name': '' }));
     };
 
     /**

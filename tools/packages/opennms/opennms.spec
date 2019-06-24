@@ -27,7 +27,7 @@
 %{!?_descr:%define _descr "OpenNMS"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?jdk:%define jdk java-1.8.0}
+%{!?jdk:%define jdk java-11-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
@@ -64,6 +64,8 @@ Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 9.1
 Requires:		postgresql-server  >= 9.1
+Requires(pre):		%{jdk}
+Requires:		%{jdk}
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
@@ -92,11 +94,11 @@ Requires(pre):	jicmp >= 2.0.0
 Requires:	jicmp >= 2.0.0
 Requires(pre):	jicmp6 >= 2.0.0
 Requires:	jicmp6 >= 2.0.0
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
+Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
+Obsoletes:	%{name}-plugin-protocol-dhcp < %{version}
 
 %description core
 The core backend.  This package contains the main daemon responsible
@@ -145,8 +147,6 @@ This package contains the API and user documentation.
 %package remote-poller
 Summary:	Remote (Distributed) Poller for %{_descr}
 Group:		Applications/System
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
 
 %description remote-poller
 The distributed monitor.  For details, see:
@@ -159,8 +159,6 @@ The distributed monitor.  For details, see:
 %package jmx-config-generator
 Summary:	Generate JMX Configuration
 Group:		Applications/System
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description jmx-config-generator
@@ -200,14 +198,13 @@ The JNLP application that provides the Remote Poller.
 %{extrainfo2}
 
 
-%package ncs
-Summary:	Network Component Services
+%package webapp-hawtio
+Summary:	Hawtio webapp
 Group:		Applications/System
-Requires:	%{name}-webapp-jetty = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
-%description ncs
-NCS provides a framework for doing correlation of service events across
-disparate nodes.
+%description webapp-hawtio
+The Hawtio web console.
 
 %{extrainfo}
 %{extrainfo2}
@@ -226,6 +223,8 @@ Requires(pre):	%{name}-plugin-provisioning-reverse-dns
 Requires:	%{name}-plugin-provisioning-reverse-dns
 Requires(pre):	%{name}-plugin-provisioning-snmp-asset
 Requires:	%{name}-plugin-provisioning-snmp-asset
+Requires(pre):	%{name}-plugin-provisioning-wsman-asset
+Requires:	%{name}-plugin-provisioning-wsman-asset
 Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires(pre):	%{name}-plugin-ticketer-jira
@@ -236,8 +235,6 @@ Requires(pre):	%{name}-plugin-ticketer-rt
 Requires:	%{name}-plugin-ticketer-rt
 Requires(pre):	%{name}-plugin-protocol-cifs
 Requires:	%{name}-plugin-protocol-cifs
-Requires(pre):	%{name}-plugin-protocol-dhcp
-Requires:	%{name}-plugin-protocol-dhcp
 Requires(pre):	%{name}-plugin-protocol-nsclient
 Requires:	%{name}-plugin-protocol-nsclient
 Requires(pre):	%{name}-plugin-protocol-radius
@@ -343,6 +340,20 @@ fields with data fetched from SNMP GET requests.
 %{extrainfo2}
 
 
+%package plugin-provisioning-wsman-asset
+Summary:        WSMAN Asset Provisioning Adapter
+Group:          Applications/System
+Requires(pre):  %{name}-core = %{version}-%{release}
+Requires:       %{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-wsman-asset
+The WSMAN asset provisioning adapter responds to provisioning events by updating asset
+fields with data fetched from WSMAN WQL queries.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package plugin-provisioning-snmp-hardware-inventory
 Summary:	SNMP Hardware Inventory Provisioning Adapter
 Group:		Applications/System
@@ -407,20 +418,6 @@ Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-cifs
 The CIFS protocol plugin provides a poller monitor for CIFS network shares.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-protocol-dhcp
-Summary:	DHCP Poller and Detector Plugin
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-protocol-dhcp
-The DHCP protocol plugin provides a daemon, provisioning detector, capsd plugin, and
-poller monitor for DHCP.
 
 %{extrainfo}
 %{extrainfo2}
@@ -523,7 +520,7 @@ rm -rf %{buildroot}
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
-export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
+export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true -DskipTests=true"
 
 if [ -e "settings.xml" ]; then
 	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
@@ -624,11 +621,10 @@ cd %{buildroot}
 # core package files
 find %{buildroot}%{instprefix}/etc ! -type d | \
 	sed -e "s,^%{buildroot},%config(noreplace) ," | \
+	grep -v -E 'etc/.*.cfg$' | \
+	grep -v 'etc/custom.properties' | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'ncs-northbounder-configuration.xml' | \
-	grep -v 'drools-engine.d/ncs' | \
-	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
@@ -638,20 +634,25 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v '/users.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
+find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
+	grep -v 'etc/org.opennms' | \
+	sed -e "s,^%{buildroot},%config ," | \
+	sort >> %{_tmppath}/files.main
+find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
+	grep 'etc/org.opennms' | \
+	sed -e "s,^%{buildroot},%config(noreplace) ," | \
+	sort >> %{_tmppath}/files.main
 find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'ncs-northbounder-configuration.xml' | \
-	grep -v 'ncs.xml' | \
-	grep -v 'drools-engine.d/ncs' | \
-	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
@@ -661,6 +662,7 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -675,7 +677,6 @@ find %{buildroot}%{instprefix}/bin ! -type d | \
 find %{buildroot}%{sharedir} ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v 'etc-pristine' | \
-	grep -v 'ncs-' | \
 	grep -v 'nsclient-config.xsd' | \
 	grep -v 'nsclient-datacollection.xsd' | \
 	grep -v 'xmp-config.xsd' | \
@@ -688,16 +689,13 @@ find %{buildroot}%{instprefix}/contrib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
-	grep -v 'jdhcp' | \
 	grep -v 'jradius' | \
-	grep -v 'org.opennms.features.ncs.ncs-' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
 	grep -v 'opennms_jmx_config_generator' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'org.opennms.protocols.cifs' | \
-	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'org.opennms.protocols.xmp' | \
@@ -719,21 +717,20 @@ find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{i
 find %{buildroot}%{jettydir} ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
-	grep -v '/WEB-INF/jsp/alarm/ncs' | \
-	grep -v '/WEB-INF/jsp/ncs/' | \
-	grep -v '/WEB-INF/lib/org.opennms.features.ncs.ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^%{buildroot},%config ," | \
 	grep -v '/opennms-remoting' | \
-	grep -v '/WEB-INF/ncs' | \
+	grep -v '/hawtio' | \
 	sort >> %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir} -type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
 	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	sort >> %{_tmppath}/files.jetty
 
 cd -
@@ -750,9 +747,9 @@ rm -rf %{buildroot}
 
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
-%exclude %dir %{instprefix}/etc/drools-engine.d/ncs
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{logdir}
+                        %config %{instprefix}/etc/custom.properties
 %attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
@@ -771,21 +768,6 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{bindir}/jmx-config-generator
 %{instprefix}/lib/opennms_jmx_config_generator.jar
 
-%files ncs
-%defattr(644 root root 755)
-%{instprefix}/lib/org.opennms.features.ncs.ncs-*.jar
-%{jettydir}/%{servletdir}/WEB-INF/lib/org.opennms.features.ncs.ncs-*.jar
-%dir %{instprefix}/etc/drools-engine.d/ncs
-%config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
-%config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
-%{sharedir}/xsds/ncs-*.xsd
-%config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
-%config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
-%config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
-%dir %{sharedir}/etc-pristine/drools-engine.d/ncs
-%{sharedir}/etc-pristine/drools-engine.d/ncs/*
-%{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
-
 %files source
 %defattr(644 root root 755)
 %{jettydir}/opennms/source/*
@@ -798,6 +780,11 @@ rm -rf %{buildroot}
 %defattr(644 root root 755)
 %config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %{jettydir}/opennms-remoting
+
+%files webapp-hawtio
+%defattr(644 root root 755)
+%config %{jettydir}/hawtio/WEB-INF/*.xml
+%{jettydir}/hawtio
 
 %files plugins
 
@@ -824,6 +811,12 @@ rm -rf %{buildroot}
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
+
+%files plugin-provisioning-wsman-asset
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-wsman-asset-provisioning-adapter*.jar
+%config(noreplace) %{instprefix}/etc/wsman-asset-adapter-configuration.xml
+%{sharedir}/etc-pristine/wsman-asset-adapter-configuration.xml
 
 %files plugin-provisioning-snmp-hardware-inventory
 %defattr(664 root root 775)
@@ -855,14 +848,6 @@ rm -rf %{buildroot}
 %{instprefix}/lib/opennms-integration-rt-*.jar
 %config(noreplace) %{instprefix}/etc/rt.properties
 %{sharedir}/etc-pristine/rt.properties
-
-%files plugin-protocol-dhcp
-%defattr(664 root root 775)
-%config(noreplace) %{instprefix}/etc/dhcp*.xml
-%{instprefix}/lib/jdhcp-*.jar
-%{instprefix}/lib/org.opennms.protocols.dhcp*.jar
-%{sharedir}/etc-pristine/dhcp*.xml
-%{sharedir}/xsds/dhcp*.xsd
 
 %files plugin-protocol-nsclient
 %defattr(664 root root 775)
@@ -1051,8 +1036,10 @@ done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
-	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print0 | xargs -0 rm -rf
-	find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print0 | xargs -0 rm -rf
+	if [ -d "$ROOT_INST/data/tmp" ]; then
+		find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+	fi
 fi
 echo "done"
 

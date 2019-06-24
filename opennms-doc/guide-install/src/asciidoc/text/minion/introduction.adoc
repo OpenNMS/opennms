@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-minion]]
-== Minion
+== Installing Minion
 
 _Minion_ gives the ability to monitor devices and applications which are in isolated networks and hard to reach from a central _{opennms-product-name}_ instance.
 Maintaining a large set of _Firewall_ rules to allow a variety of management protocols is sometimes tedious and hard to set up.

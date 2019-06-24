@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -11,11 +11,25 @@
   <name>OpenNMS :: Features</name>
   <modules>
 
+    <!-- Enlinkd -->
+    <module>enlinkd</module>
+
+    <!-- Topologies -->
+    <module>topologies</module>
+
     <!-- ActiveMQ broker -->
     <module>activemq</module>
 
+    <module>api-layer</module>
+
+    <!-- Alarms -->
+    <module>alarms</module>
+
     <!-- AMQP Event Gateway and Alarm Northbounder -->
     <module>amqp</module>
+
+    <!-- DHCP integration -->
+    <module>dhcpd</module>
 
     <!-- OpenNMS Provisioning API and implementations -->
     <module>provisioning</module>
@@ -53,7 +67,6 @@
     <!-- OpenNMS Remote Poller daemon and UI -->
     <module>remote-poller</module>
     <module>remote-poller-jnlp</module> 
-    <module>remote-poller-gwt</module>
 
     <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
@@ -123,34 +136,35 @@
     <module>datachoices</module>
 
     <!-- Other projects -->
+    <module>distributed</module>
     <module>geocoder</module>
     <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
-    <module>ncs</module>
     <module>springframework-security</module>
     <module>status</module>
     <module>system-report</module>
+    <module>timeformat</module>
     <module>timeseries-evaluate</module>
 
     <!-- Business Service Monitor -->
     <module>bsm</module>
 
+    <!-- Standalone Karaf Containers -->
+    <module>container</module>
+
+    <!-- Sentinel -->
+    <module>sentinel</module>
+
     <!-- Minion -->
     <module>minion</module>
     <module>scv</module>
 
-    <!-- OpenNMS Plugin Manager -->
-    <module>vaadin-opennms-pluginmanager</module>
-    
     <!-- ReST Elasticsearch Integration -->
     <module>opennms-es-rest</module>
-    
-    <!-- Alarm Change Notifier -->
-    <module>alarm-change-notifier</module>
-    
-    <!-- Internal Plugins Descriptor -->
-    <module>internal-plugins-descriptor</module>
+
+    <!-- Correlation Feedback -->
+    <module>situation-feedback</module>
 
     <!-- Event Integration Facility Adapter -->
     <module>eif-adapter</module>

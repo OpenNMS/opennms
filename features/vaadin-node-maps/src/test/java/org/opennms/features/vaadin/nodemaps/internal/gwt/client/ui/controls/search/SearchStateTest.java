@@ -57,14 +57,12 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.junit.GWTMockUtilities;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.impl.HistoryImpl;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
     NativeEvent.class,
     EventTarget.class,
     History.class,
-    HistoryImpl.class,
     Scheduler.class,
     SchedulerImpl.class
 })
@@ -73,7 +71,6 @@ import com.google.gwt.user.client.impl.HistoryImpl;
     "com.google.gwt.dom.client.EventTarget",
     "com.google.gwt.dom.client.InputElement",
     "com.google.gwt.user.client.History",
-    "com.google.gwt.user.client.HistoryImpl",
     "com.google.gwt.core.client.Scheduler",
     "com.google.gwt.core.client.impl.SchedulerImpl"
 })

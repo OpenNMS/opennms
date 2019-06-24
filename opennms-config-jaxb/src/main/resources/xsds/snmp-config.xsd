@@ -70,7 +70,7 @@
 
       <attribute name="proxy-host" type="string" use="optional">
         <annotation>
-          <documentation>The proxy host to use when communiciating with this
+          <documentation>The proxy host to use when communicating with this
           agent</documentation>
         </annotation>
       </attribute>
@@ -110,6 +110,12 @@
           encoded into an individual SNMP PDU request by Collectd. Provides a
           means to limit the size of outgoing PDU requests. Default is 65535, must be 
           at least 484.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="ttl" type="long" use="optional">
+        <annotation>
+          <documentation>Default ttl when Minion handles the request (in milliseconds)</documentation>
         </annotation>
       </attribute>
 

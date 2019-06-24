@@ -4,6 +4,7 @@
 */
 
 const RequisitionInterface = require('./RequisitionInterface');
+const RequisitionMetaData = require('./RequisitionMetaData');
 
 // Internal function for initialization purposes
 const isEmpty = function(str) {
@@ -157,7 +158,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
   self.assets = [];
 
   angular.forEach(node['interface'], function(intf) {
-    self.interfaces.push(new RequisitionInterface(intf));
+      self.interfaces.push(new RequisitionInterface(intf));
   });
 
   angular.forEach(node['asset'], function(asset) {
@@ -167,6 +168,17 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
   angular.forEach(node['category'], function(category) {
     self.categories.push(category);
   });
+
+  /**
+   * Initialize the meta-data *after* the interfaces are set.
+   *
+   * @description The meta-data entries
+   * @ngdoc property
+   * @name RequisitionNode#metaData
+   * @propertyOf RequisitionNode
+   * @returns {object} The meta-data entries
+   */
+  self.metaData = new RequisitionMetaData(node, this);
 
   /**
   * @description Check if the node has been changed
@@ -294,6 +306,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
       'parent-foreign-id': self.parentForeignId,
       'parent-node-label': self.parentNodeLabel,
       'asset': [],
+      'meta-data': self.metaData.getOnmsMetaDataForNode(),
       'category': []
     };
 
@@ -303,12 +316,16 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
         'descr': intf.description,
         'snmp-primary': intf.snmpPrimary,
         'status': (intf.status || intf.status === 'managed') ? '1' : '3',
+        'meta-data': self.metaData.getOnmsMetaDataForInterface(intf),
         'monitored-service': []
       };
+
       angular.forEach(intf.services, function(service) {
-        interfaceObject['monitored-service'].push({
-          'service-name': service.name
-        });
+        var serviceObject = {
+          'service-name': service.name,
+          'meta-data': self.metaData.getOnmsMetaDataForService(intf, service)
+        };
+        interfaceObject['monitored-service'].push(serviceObject);
       });
 
       nodeObject['interface'].push(interfaceObject);
@@ -328,6 +345,6 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
   self.className = 'RequisitionNode';
 
   return self;
-}
+};
 
 module.exports = RequisitionNode;

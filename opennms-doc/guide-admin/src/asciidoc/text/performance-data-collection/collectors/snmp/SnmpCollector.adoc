@@ -61,3 +61,15 @@ _SNMP Collection_ are defined in the `etc/datacollection-config.xml` and `etc/da
 [[ga-performance-management-collectors-snmp-datacollection-configuration]]
 .Configuration overview for SNMP data collection
 image::performance-management/collectors/01_snmp-datacollection-configuration.png[]
+
+====== SnmpCollectorNG
+
+The `SnmpCollectorNG` provides an alternate implementation to the `SnmpCollector` that takes advantages of new _APIs_ in the platform.
+It is provided as a separate collector while we work to validate it's functionality and run-time characteristics, with the goal of eventually having it replace the `SnmpCollector` altogether.
+
+This new collector can be used by updating existing references from `org.opennms.netmgt.collectd.SnmpCollector` to `org.opennms.netmgt.collectd.SnmpCollectorNG`.
+
+Know caveats include:
+
+* No support for alias type resources
+* No support for min/max values

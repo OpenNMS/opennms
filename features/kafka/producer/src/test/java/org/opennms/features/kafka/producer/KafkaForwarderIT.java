@@ -29,12 +29,18 @@
 package org.opennms.features.kafka.producer;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -43,6 +49,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -78,7 +85,9 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
+import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.DatabasePopulator.DaoSupport;
@@ -92,13 +101,13 @@ import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Verifies events/alarms/nodes forwarded to Kafka.
@@ -106,7 +115,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author cgorantla
  * @author jwhite
  */
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -125,6 +133,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private static final String EVENT_TOPIC_NAME = "events";
     private static final String ALARM_TOPIC_NAME = "test-alarms";
     private static final String NODE_TOPIC_NAME = "test-nodes";
+    private static final String METRIC_TOPIC_NAME = "test-metrics";
+    private static final String ALARM_FEEDBACK_TOPIC_NAME = "test-alarm-feedback";
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -145,9 +155,6 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private AlarmLifecycleListenerManager alarmLifecycleListenerManager;
 
     @Autowired
-    private TransactionTemplate transactionTemplate;
-
-    @Autowired
     private AlarmDao alarmDao;
 
     @Autowired
@@ -166,6 +173,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
     private KafkaMessageConsumerRunner kafkaConsumer;
 
+    @Autowired
+    private OnmsTopologyDao onmsTopologyDao;
     @Before
     public void setUp() throws IOException {
         File data = tempFolder.newFolder("data");
@@ -219,39 +228,34 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         when(configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties()).thenReturn(producerConfig);
         when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties()).thenReturn(streamsConfig);
 
-        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr, alarmLifecycleListenerManager);
+        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr, onmsTopologyDao);
         kafkaProducer.setEventTopic(EVENT_TOPIC_NAME);
         // Don't forward newSuspect events
         kafkaProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");
         kafkaProducer.setAlarmTopic(ALARM_TOPIC_NAME);
+        kafkaProducer.setAlarmFeedbackTopic(ALARM_FEEDBACK_TOPIC_NAME);
         // No alarm filtering
         kafkaProducer.setAlarmFilter(null);
         kafkaProducer.setNodeTopic(NODE_TOPIC_NAME);
         kafkaProducer.init();
 
-        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, alarmDao, protobufMapper, transactionTemplate);
+        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, protobufMapper);
         kafkaAlarmaDataStore.setAlarmTopic(ALARM_TOPIC_NAME);
-        kafkaAlarmaDataStore.setAlarmSyncIntervalMs(1000);
+        kafkaAlarmaDataStore.setAlarmSync(true);
         kafkaAlarmaDataStore.init();
+        kafkaProducer.setDataSync(kafkaAlarmaDataStore);
+
+        alarmLifecycleListenerManager.onListenerRegistered(kafkaProducer, Collections.emptyMap());
     }
 
     @Test
-    public void canProducerAndConsumeMessages() throws Exception {
+    public void canProduceAndConsumeMessages() throws Exception {
         // Send a node down event (should be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
         // Create and trigger the associated alarm
-        final String alarmReductionKey = String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, databasePopulator.getNode1().getId());
-        final OnmsAlarm alarm = new OnmsAlarm();
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
+        final String alarmReductionKey = alarm.getReductionKey();
         {
-            alarm.setId(1);
-            alarm.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
-            alarm.setNode(databasePopulator.getNode1());
-            alarm.setCounter(1);
-            alarm.setDescription("node down");
-            alarm.setAlarmType(1);
-            alarm.setLogMsg("node down");
-            alarm.setSeverity(OnmsSeverity.NORMAL);
-            alarm.setReductionKey(alarmReductionKey);
             alarmDao.save(alarm);
             kafkaProducer.handleNewOrUpdatedAlarm(alarm);
         }
@@ -263,6 +267,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Send a node up (should be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode2()).getEvent());
+        
+        AlarmFeedback alarmFeedback = createTestalarmFeedback();
+        kafkaProducer.handleAlarmFeedback(Collections.singletonList(alarmFeedback));
 
         if (!kafkaProducer.getEventForwardedLatch().await(1, TimeUnit.MINUTES)) {
             throw new Exception("No events were successfully forwarded in time!");
@@ -273,11 +280,12 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         if (!kafkaProducer.getAlarmForwardedLatch().await(1, TimeUnit.MINUTES)) {
             throw new Exception("No alarm were successfully forwarded in time!");
         }
+        if (!kafkaProducer.getAlarmFeedbackForwardedLatch().await(1, TimeUnit.MINUTES)) {
+            throw new Exception("No alarm feedback was successfully forwarded in time!");
+        }
 
         // Fire up the consumer
-        executor = Executors.newSingleThreadExecutor();
-        kafkaConsumer = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString());
-        executor.execute(kafkaConsumer);
+        kafkaConsumer = startConsumer();
 
         // Wait for the events to be consumed
         await().atMost(1, TimeUnit.MINUTES).until(this::getUeisForConsumedEvents, hasItems(
@@ -288,8 +296,23 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                 databasePopulator.getNode1().getId(), databasePopulator.getNode2().getId()));
         // Wait for the alarms to be consumed
         await().atMost(1, TimeUnit.MINUTES).until(() -> kafkaConsumer.getAlarmByReductionKey(alarmReductionKey), not(nullValue()));
+        // Wait for alarm feedback to be consumed
+        await().atMost(1, TimeUnit.MINUTES).until(() -> kafkaConsumer.getAlarmFeedback(), not(empty()));
 
         // Events, nodes and alarms were forwarded and consumed!
+
+        // Verify the alarm feedback consumed
+        OpennmsModelProtos.AlarmFeedback consumedAlarmFeedback = kafkaConsumer.getAlarmFeedback().get(0);
+        assertThat(consumedAlarmFeedback.getSituationKey(), is(equalTo(alarmFeedback.getSituationKey())));
+        
+        // Ensure that we have some events with a fs:fid
+
+        List<OpennmsModelProtos.Event> eventsWithFsAndFid = kafkaConsumer.getEvents().stream()
+                .filter(e -> e.getNodeCriteria() != null
+                        && e.getNodeCriteria().getForeignId() != null
+                        && e.getNodeCriteria().getForeignSource() != null)
+                .collect(Collectors.toList());
+        assertThat(eventsWithFsAndFid, hasSize(greaterThanOrEqualTo(2)));
 
         // Verify the consumed alarm object
         assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getDescription(), equalTo("node down"));
@@ -314,6 +337,117 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
     }
 
+    @Test
+    public void testProducerSuppression() throws Exception {
+        kafkaProducer.setSuppressIncrementalAlarms(true);
+
+        // Send an alarm
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Increment the alarm and re-send
+        alarm.setCounter(2);
+        // Also update the related alarm
+        alarm.getRelatedAlarms().iterator().next().setCounter(2);
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
+        // One alarm should have been consumed
+        await().atMost(1, TimeUnit.MINUTES).until(() -> !kafkaConsumer.getAlarms().isEmpty());
+        // Sleep an additional 10 seconds to verify a second alarm was not consumed
+        Thread.sleep(10000);
+        assertEquals(1, kafkaConsumer.getAlarms().size());
+    }
+
+    @Test
+    public void testSyncSuppression() {
+        kafkaProducer.setSuppressIncrementalAlarms(true);
+
+        // Send an alarm
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Increment the alarm and write directly to db
+        alarm.setCounter(2);
+        // Also update the related alarm
+        alarm.getRelatedAlarms().iterator().next().setCounter(2);
+        alarmDao.save(alarm);
+
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
+        // Only one alarm should have been consumed
+        try {
+            // This is a bit tricky since we need to wait fairly long to verify that the sync suppressed the alarm
+            await().atMost(2, TimeUnit.MINUTES).until(() -> kafkaConsumer.getAlarms().size() > 1);
+            fail("Alarm was not suppressed!");
+        } catch (Exception e) {
+        }
+    }
+    
+    @Test
+    public void testSameAlarmIsNotSynced() {
+        kafkaProducer.setSuppressIncrementalAlarms(false);
+
+        // Send an alarm
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
+        await().atMost(1, TimeUnit.MINUTES)
+                .ignoreExceptions()
+                .pollDelay(5, TimeUnit.SECONDS)
+                .until(() -> kafkaProducer.getDataSync().isReady());
+        
+        // Force an alarm sync
+        kafkaProducer.handleAlarmSnapshot(Collections.singletonList(alarm));
+
+        // Only the alarm explicitly sent should be consumed, there should not have been any alarms sync'd        
+        try {            
+            await().atMost(10, TimeUnit.SECONDS).until(() -> kafkaConsumer.getAlarms().size() > 1);
+            fail("Same alarm was sync'd!");
+        } catch (Exception e) {
+        }
+    }
+
+    private KafkaMessageConsumerRunner startConsumer() {
+        executor = Executors.newSingleThreadExecutor();
+        kafkaConsumer = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString());
+        executor.execute(kafkaConsumer);
+        return kafkaConsumer;
+    }
+
+    private OnmsAlarm nodeDownAlarmWithRelatedAlarm() {
+        OnmsAlarm alarm = nodeDownAlarm();
+        OnmsAlarm relatedAlarm = nodeDownAlarm();
+        relatedAlarm.setId(2);
+        alarm.addRelatedAlarm(relatedAlarm);        
+        return alarm;
+    }
+    
+    private OnmsAlarm nodeDownAlarm() {
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setId(1);
+        alarm.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
+        alarm.setNode(databasePopulator.getNode1());
+        alarm.setCounter(1);
+        alarm.setDescription("node down");
+        alarm.setAlarmType(1);
+        alarm.setLogMsg("node down");
+        alarm.setSeverity(OnmsSeverity.NORMAL);
+        alarm.setReductionKey(String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI,
+                databasePopulator.getNode1().getId()));
+        return alarm;
+    }
+
     private Set<String> getUeisForConsumedEvents() {
         return kafkaConsumer.getEvents().stream()
                 .map(OpennmsModelProtos.Event::getUei)
@@ -334,13 +468,15 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                 .collect(Collectors.toSet());
     }
 
-    private static class KafkaMessageConsumerRunner implements Runnable {
+    public static class KafkaMessageConsumerRunner implements Runnable {
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private KafkaConsumer<String, byte[]> consumer;
         private String kafkaConnectString;
         private List<OpennmsModelProtos.Event> events = new ArrayList<>();
         private List<OpennmsModelProtos.Node> nodes = new ArrayList<>();
         private List<OpennmsModelProtos.Alarm> alarms = new ArrayList<>();
+        private List<OpennmsModelProtos.AlarmFeedback> alarmFeedback = new ArrayList<>();
+        private CollectionSetProtos.CollectionSet collectionSet = null;
         private Map<String, OpennmsModelProtos.Alarm> alarmsByReductionKey = new LinkedHashMap<>();
         private AtomicInteger numRecordsConsumed = new AtomicInteger(0);
 
@@ -360,7 +496,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             props.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, "1000");
             props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
             consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME, ALARM_TOPIC_NAME));
+            consumer.subscribe(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME, ALARM_TOPIC_NAME, METRIC_TOPIC_NAME,
+                    ALARM_FEEDBACK_TOPIC_NAME));
 
             while (!closed.get()) {
                 ConsumerRecords<String, byte[]> records = consumer.poll(1000);
@@ -379,6 +516,14 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                                         OpennmsModelProtos.Alarm.parseFrom(record.value()) : null;
                                 alarms.add(alarm);
                                 alarmsByReductionKey.put(record.key(), alarm);
+                                break;
+                            case METRIC_TOPIC_NAME :
+                                collectionSet = CollectionSetProtos.CollectionSet.parseFrom(record.value());
+                                break;
+                            case ALARM_FEEDBACK_TOPIC_NAME:
+                                final OpennmsModelProtos.AlarmFeedback alarmFeedbackRecord = record.value() != null ?
+                                        OpennmsModelProtos.AlarmFeedback.parseFrom(record.value()) : null;
+                                alarmFeedback.add(alarmFeedbackRecord);
                                 break;
                         }
                         numRecordsConsumed.incrementAndGet();
@@ -413,10 +558,19 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         public OpennmsModelProtos.Alarm getAlarmByReductionKey(String reductionKey) {
             return alarmsByReductionKey.get(reductionKey);
         }
+        
+        public List<OpennmsModelProtos.AlarmFeedback> getAlarmFeedback() {
+            return alarmFeedback;
+        }
 
         public void shutdown() {
             closed.set(true);
         }
+
+        public CollectionSetProtos.CollectionSet getCollectionSet() {
+            return collectionSet;
+        }
+
     }
 
     private OnmsHwEntity getHwEntityChassis(OnmsNode node) {
@@ -479,6 +633,17 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         port.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.10.253");
         port.setEntAliases(new TreeSet<>(Arrays.asList(new OnmsHwEntityAlias(0, ".1.3.6.1.2.1.2.2.1.1.10104"))));
         return port;
+    }
+    
+    private AlarmFeedback createTestalarmFeedback() {
+        return AlarmFeedback.newBuilder()
+                .withSituationKey("test.situationKey")
+                .withSituationFingerprint("test.fingerprint")
+                .withAlarmKey("test.alarmKey")
+                .withFeedbackType(AlarmFeedback.FeedbackType.FALSE_POSITIVE)
+                .withReason("reason")
+                .withUser("user")
+                .build();
     }
 
     @After

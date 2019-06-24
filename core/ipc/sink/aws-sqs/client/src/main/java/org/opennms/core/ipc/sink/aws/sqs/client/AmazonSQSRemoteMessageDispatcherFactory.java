@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.aws.sqs.client;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -38,12 +40,15 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
-import com.codahale.metrics.JmxReporter;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * A factory for creating AwsRemoteMessageDispatcher objects.
@@ -55,14 +60,13 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(AmazonSQSRemoteMessageDispatcherFactory.class);
 
-    /** The reporter. */
-    private JmxReporter reporter;
-
     /** The AWS SQS Object. */
     private AmazonSQS sqs;
 
     /** The AWS SQS manager. */
     private AmazonSQSManager awsSqsManager;
+
+    private BundleContext bundleContext;
 
     /* (non-Javadoc)
      * @see org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory#dispatch(org.opennms.core.ipc.sink.api.SinkModule, java.lang.Object, org.opennms.core.ipc.sink.api.Message)
@@ -90,25 +94,12 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
      */
     public void init() throws IOException {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
-            registerJmxReporter();
-
             try {
                 sqs = awsSqsManager.getSQSClient();
             } catch (AmazonSQSException e) {
                 LOG.error("Can't create an AmazonSQS Object", e);
             }
-        }
-    }
-
-    /**
-     * Register JMX reporter.
-     */
-    private void registerJmxReporter() {
-        if (reporter == null) {
-            reporter = JmxReporter.forRegistry(getMetrics())
-                    .inDomain(AmazonSQSLocalMessageDispatcherFactory.class.getPackage().getName())
-                    .build();
-            reporter.start();
+            onInit();
         }
     }
 
@@ -116,11 +107,24 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
      * Destroy.
      */
     public void destroy() {
-        if (reporter != null) {
-            reporter.close();
-            reporter = null;
-        }
+        onDestroy();
         sqs.shutdown();
+    }
+
+    @Override
+    public String getMetricDomain() {
+        return SINK_METRIC_PRODUCER_DOMAIN;
+    }
+
+    @Override
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+
+
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
     }
 
     /**
@@ -132,4 +136,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
         this.awsSqsManager = awsSqsManager;
     }
 
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 }

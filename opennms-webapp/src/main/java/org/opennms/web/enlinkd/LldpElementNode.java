@@ -30,17 +30,17 @@ package org.opennms.web.enlinkd;
 
 public class LldpElementNode {
 
-	private String m_lldpChassisIdString;
+	private String m_lldpChassisId;
 	private String m_lldpSysName;
 	private String m_lldpCreateTime;
 	private String m_lldpLastPollTime;
 	
 	
-	public String getLldpChassisIdString() {
-		return m_lldpChassisIdString;
+	public String getLldpChassisId() {
+		return m_lldpChassisId;
 	}
-	public void setLldpChassisIdString(String lldpSysIdString) {
-		m_lldpChassisIdString = lldpSysIdString;
+	public void setLldpChassisId(String lldpChassisId) {
+		m_lldpChassisId = lldpChassisId;
 	}
 	public String getLldpSysName() {
 		return m_lldpSysName;

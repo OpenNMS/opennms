@@ -147,6 +147,9 @@
     <logger name="org.snmp4j.transport" additivity="false" level="ERROR">
       <appender-ref ref="RoutingAppender"/>
     </logger>
+    <logger name="org.apache.kafka" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender" />
+    </logger>
 
     <!-- Allow any message to pass through the root logger -->
     <root level="DEBUG">
@@ -175,7 +178,6 @@
         <KeyValuePair key="bsmd"                 value="DEBUG" />
         <KeyValuePair key="collectd"             value="DEBUG" />
         <KeyValuePair key="correlator"           value="DEBUG" />
-        <KeyValuePair key="dhcpd"                value="DEBUG" />
         <KeyValuePair key="discovery"            value="DEBUG" />
         <KeyValuePair key="eventd"               value="DEBUG" />
         <KeyValuePair key="event-translator"     value="DEBUG" />
@@ -185,6 +187,7 @@
         <KeyValuePair key="enlinkd"              value="DEBUG" />
         <KeyValuePair key="manager"              value="DEBUG" />
         <KeyValuePair key="map"                  value="DEBUG" />
+        <KeyValuePair key="minion"               value="DEBUG" />
         <KeyValuePair key="notifd"               value="DEBUG" />
         <KeyValuePair key="oss-qosd"             value="DEBUG" />
         <KeyValuePair key="oss-qosdrx"           value="DEBUG" />

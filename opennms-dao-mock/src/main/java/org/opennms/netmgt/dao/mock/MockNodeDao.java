@@ -151,10 +151,15 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         }
     }
 
-    @Override
-    public OnmsNode get(final String lookupCriteria) {
-        throw new UnsupportedOperationException("Not yet implemented!");
-    }
+	@Override
+	public OnmsNode get(final String lookupCriteria) {
+		if (lookupCriteria.contains(":")) {
+			throw new UnsupportedOperationException("Not yet implemented!");
+		} else {
+			Integer nodeId = Integer.parseInt(lookupCriteria);
+			return get(nodeId);
+		}
+	}
 
     @Override
     public String getLabelForId(final Integer id) {
@@ -487,6 +492,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     @Override
     public List<OnmsNode> findAllHavingFlows() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public OnmsNode getDefaultFocusPoint() {
+        return null;
     }
 
 

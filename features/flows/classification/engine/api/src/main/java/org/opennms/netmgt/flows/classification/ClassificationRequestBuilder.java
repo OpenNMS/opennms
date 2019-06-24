@@ -39,13 +39,13 @@ public class ClassificationRequestBuilder {
         return this;
     }
 
-    public ClassificationRequestBuilder withSrcPort(int srcPort) {
+    public ClassificationRequestBuilder withSrcPort(final Integer srcPort) {
         request.setSrcPort(srcPort);
         return this;
     }
 
-    public ClassificationRequestBuilder withDstPort(int srcPort) {
-        request.setDstPort(srcPort);
+    public ClassificationRequestBuilder withDstPort(final Integer dstPort) {
+        request.setDstPort(dstPort);
         return this;
     }
 

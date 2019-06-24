@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -66,6 +67,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 
 public class VEProviderGraphContainerTest {
 
@@ -173,6 +175,7 @@ public class VEProviderGraphContainerTest {
 		MetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(m_graphProvider);
 		DefaultTopologyService topologyService = new DefaultTopologyService();
 		topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
+		topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
 
         VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
 		graphContainer.setSemanticZoomLevel(0);
@@ -205,6 +208,7 @@ public class VEProviderGraphContainerTest {
         DefaultTopologyService topologyService = new DefaultTopologyService();
         SimpleMetaTopologyProvider simpleMetaTopologyProvider = new SimpleMetaTopologyProvider(vertexHopGraphProvider);
 		topologyService.setServiceLocator(new SimpleServiceLocator(simpleMetaTopologyProvider));
+		topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
 
 		// Wrap the test GraphProvider in a VertexHopGraphProvider
 		VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();

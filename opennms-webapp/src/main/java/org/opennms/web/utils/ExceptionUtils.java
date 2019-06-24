@@ -28,6 +28,9 @@
 
 package org.opennms.web.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.servlet.ServletException;
 
 public class ExceptionUtils {
@@ -61,5 +64,14 @@ public class ExceptionUtils {
         }
 
         throw new ServletException("Unsupported exception of type " + t.getClass().getCanonicalName(), t);
+    }
+
+    public static String getFullStackTrace(Throwable throwable){
+        if(throwable == null){
+            return "Throwable=null";
+        }
+        StringWriter writer = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(writer));
+        return writer.toString();
     }
 }

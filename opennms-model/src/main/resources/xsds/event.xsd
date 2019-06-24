@@ -652,6 +652,7 @@
     <complexType>
       <sequence>
         <element ref="this:update-field" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:managed-object" minOccurs="0" maxOccurs="1" />
       </sequence>
       <attribute name="reduction-key" type="string" use="required" />
       <attribute name="alarm-type" use="required">
@@ -672,6 +673,12 @@
     <complexType>
       <attribute name="field-name" type="string" use="required" />
       <attribute name="update-on-reduction" type="boolean" use="optional" default="true" />
+    </complexType>
+  </element>
+
+  <element name="managed-object">
+    <complexType>
+      <attribute name="type" type="string" use="required" />
     </complexType>
   </element>
 

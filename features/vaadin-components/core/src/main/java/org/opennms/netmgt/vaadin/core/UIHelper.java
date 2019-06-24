@@ -39,15 +39,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
-import com.vaadin.data.Validator;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -130,8 +130,12 @@ public abstract class UIHelper {
 		showNotification("Validation Error", errorMessage != null ? errorMessage : "An unknown error occurred.", Type.ERROR_MESSAGE);
 	}
 
-	public static <T> T getCurrent(Class<T> clazz) {
-		return (T) UI.getCurrent();
+	public static <T extends UI> T getCurrent(Class<T> clazz) {
+		final T ui = (T) UI.getCurrent();
+		if (ui == null || !ui.isAttached()) {
+			throw new IllegalStateException("UI is either null or not attached. Ensure it is invoked from within a VaadinRequest");
+		}
+		return ui;
 	}
 
 	public static void showNotification(String message) {

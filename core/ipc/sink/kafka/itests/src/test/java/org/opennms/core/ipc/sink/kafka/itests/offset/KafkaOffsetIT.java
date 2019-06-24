@@ -42,7 +42,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffset;
 import org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -54,7 +54,9 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/applicationContext-test-ipc-sink-kafka.xml" })
+        "classpath:/applicationContext-test-ipc-sink-kafka.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
+        "classpath:/META-INF/opennms/applicationContext-opennms-identity.xml"})
 @JUnitConfigurationEnvironment
 public class KafkaOffsetIT {
 

@@ -34,11 +34,11 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Criteria;
 
 import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 public class NoContentAvailableWindow extends Window {
@@ -80,7 +80,7 @@ public class NoContentAvailableWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 List<Criteria> defaultCriteriaList = graphContainer.getTopologyServiceClient().getDefaults().getCriteria();
-                if (defaultCriteriaList != null) {
+                if (defaultCriteriaList != null && !defaultCriteriaList.isEmpty()) {
                     defaultCriteriaList.forEach(graphContainer::addCriteria);
                     graphContainer.redoLayout();
                     noDefaultsAvailable.setVisible(false);

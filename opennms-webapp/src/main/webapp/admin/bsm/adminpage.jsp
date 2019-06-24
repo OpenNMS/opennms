@@ -42,5 +42,5 @@
     <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 
-<iframe id="vaadin-content" src="admin/bsm-admin-page" frameborder="0" style="height:100%; width:100%;"></iframe>
+<iframe name="bsm-admin-page" id="vaadin-content" src="admin/bsm-admin-page" frameborder="0" class="vaadin-fullscreen"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

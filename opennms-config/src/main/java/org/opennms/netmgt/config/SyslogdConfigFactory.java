@@ -36,7 +36,9 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
+import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.syslogd.HideMatch;
@@ -64,12 +66,15 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      */
     private SyslogdConfiguration m_config;
 
+    private ConfigReloadContainer<SyslogdConfigurationGroup> m_extContainer;
+
     /**
      * Private constructor
      *
      * @throws java.io.IOException Thrown if the specified config file cannot be read
      */
     public SyslogdConfigFactory() throws IOException {
+        initExtensions();
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME);
         m_config = JaxbUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
         parseIncludedFiles();
@@ -81,6 +86,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @param stream a {@link java.io.InputStream} object.
      */
     public SyslogdConfigFactory(InputStream stream) throws IOException {
+        initExtensions();
         try (final Reader reader = new InputStreamReader(stream)) {
             m_config = JaxbUtils.unmarshal(SyslogdConfiguration.class, reader);
         }
@@ -221,6 +227,11 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     public TimeZone getTimeZone() {
         return m_config.getConfiguration().getTimeZone().orElse(null);
     }
+    
+    @Override
+    public boolean shouldIncludeRawSyslogmessage() {
+        return m_config.getConfiguration().shouldIncludeRawSyslogmessage();
+    }
 
     /**
      * Parse import-file tags and add all uei-matchs and hide-messages.
@@ -255,5 +266,33 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
                 }
             }
         }
+
+        // Insert UEI matches exposed via the service registry
+        SyslogdConfigurationGroup extGroup = m_extContainer.getObject();
+        if (extGroup != null) {
+            m_config.getUeiMatches().addAll(0, extGroup.getUeiMatches());
+            m_config.getHideMatches().addAll(0, extGroup.getHideMatches());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("UEI matches with the following UEIs are contributed by one or more extensions: {}", extGroup.getUeiMatches().stream()
+                        .map(UeiMatch::getUei)
+                        .collect(Collectors.joining(",")));
+            }
+        }
+    }
+
+    private void initExtensions() {
+        m_extContainer = new ConfigReloadContainer.Builder<>(SyslogdConfigurationGroup.class)
+                .withMerger((source, target) -> {
+                    if (target == null) {
+                        target = new SyslogdConfigurationGroup();
+                    }
+                    if (source == null) {
+                        source = new SyslogdConfigurationGroup();
+                    }
+                    target.getUeiMatches().addAll(source.getUeiMatches());
+                    target.getHideMatches().addAll(source.getHideMatches());
+                    return target;
+                })
+                .build();
     }
 }

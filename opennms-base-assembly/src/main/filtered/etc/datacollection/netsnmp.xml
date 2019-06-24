@@ -93,6 +93,12 @@
       <mibObj oid=".1.3.6.1.4.1.2021.11.62" instance="0" alias="RawBlksSwapIn" type="counter"/>
       <mibObj oid=".1.3.6.1.4.1.2021.11.63" instance="0" alias="RawBlksSwapOut" type="counter"/>
    </group>
+   <group name="ucd-sysstat-more" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.2021.11.64" instance="0" alias="CpuRawSteal" type="counter" />
+      <mibObj oid=".1.3.6.1.4.1.2021.11.65" instance="0" alias="CpuRawGuest" type="counter" />
+      <mibObj oid=".1.3.6.1.4.1.2021.11.66" instance="0" alias="CpuRawGuestNice" type="counter" />
+      <mibObj oid=".1.3.6.1.4.1.2021.11.67" instance="0" alias="CpuNumCpus" type="integer" />
+   </group>
    <group name="ucd-diskio" ifType="all">
       <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.2" instance="diskIOIndex" alias="diskIODevice" type="string"/>
       <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.3" instance="diskIOIndex" alias="diskIONRead" type="counter"/>
@@ -138,6 +144,7 @@
          <includeGroup>ucd-sysstat</includeGroup>
          <includeGroup>ucd-sysstat-raw</includeGroup>
          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+         <includeGroup>ucd-sysstat-more</includeGroup>
          <includeGroup>ucd-diskio</includeGroup>
          <includeGroup>ucd-diskio-64bit</includeGroup>
          <includeGroup>ucd-diskio-load</includeGroup>
@@ -161,6 +168,7 @@
          <includeGroup>ucd-sysstat</includeGroup>
          <includeGroup>ucd-sysstat-raw</includeGroup>
          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+         <includeGroup>ucd-sysstat-more</includeGroup>
          <includeGroup>ucd-diskio</includeGroup>
          <includeGroup>ucd-diskio-64bit</includeGroup>
          <includeGroup>ucd-diskio-load</includeGroup>

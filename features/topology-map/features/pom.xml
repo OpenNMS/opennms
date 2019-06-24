@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -17,18 +17,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>api</module>
-    <module>runtime-application</module>
-    <module>runtime-asset</module>
     <module>runtime-base</module>
-    <module>runtime-browsers</module>
-    <module>runtime-bsm</module>
-    <module>runtime-pathoutage</module>
     <module>runtime-graphml</module>
-    <module>runtime-linkd</module>
-    <module>runtime-vmware</module>
-    <module>runtime-ncs</module>
-    <module>runtime-sfree</module>
   </modules>
 
 </project>

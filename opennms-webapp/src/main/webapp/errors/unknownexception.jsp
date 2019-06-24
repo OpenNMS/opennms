@@ -37,6 +37,7 @@
                 java.lang.StackTraceElement,
                 java.lang.StringBuilder"
  %>
+<%@ page import="org.opennms.web.utils.ExceptionUtils" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
@@ -64,11 +65,11 @@ function toggleDiv(divName) {
 }
 </script>
 
-<div class="panel panel-default">
-<div class="panel-heading">
-  <h3 class="panel-title">The OpenNMS Web User Interface Has Experienced an Error</h3>
+<div class="card">
+<div class="card-header">
+  <span>The OpenNMS Web User Interface Has Experienced an Error</span>
 </div>
-<div class="panel-body">
+<div class="card-body">
 
 <p>
   The OpenNMS web UI has encountered an error that it does
@@ -90,31 +91,11 @@ function toggleDiv(divName) {
 
 <%
 final StringBuilder stBuilder = new StringBuilder();
-
-if (exception != null) {
-  if (exception instanceof ServletException && ((ServletException)exception).getRootCause() != null) {
-    exception = ((ServletException) exception).getRootCause();
-  } else if (exception.getCause() != null) {
-    exception = exception.getCause();
-  }
-  stBuilder.append(exception.getClass().getName());
-  /*
-  NOTE: While this may look like a good idea, we want to omit the message
-  to avoid transmitting sensitive information like file paths and other internal
-  information on the error page. If the user needs more precise information,
-  they can look at the webapp logs for the complete stack trace.
-
-  String message = exception.getMessage();
-  if (message != null && message.length() > 0) {
-    stBuilder.append(": ").append(exception.getMessage());
-  }
-  */
-  stBuilder.append("\n");
-  for (StackTraceElement ste : exception.getStackTrace()) {
-    stBuilder.append("\tat ").append(ste.toString()).append("\n");
-  }
+boolean showStrackTrace = Boolean.getBoolean("org.opennms.ui.show_stacktrace");
+if(showStrackTrace) {
+  stBuilder.append(ExceptionUtils.getFullStackTrace(exception));
 } else {
-  stBuilder.append("No exception to see here, please move along.");
+  stBuilder.append("Print of stack trace is disabled");
 }
 
 String errorDetails = 
@@ -155,36 +136,37 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   <strong><a href="javascript:toggleDiv('errorDetails')">here</a></strong>.
 </p>
 
-</div> <!-- panel-body -->
+</div> <!-- card-body -->
 </div> <!-- panel -->
 
 <div id="errorDetails" style="display: none;">
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Error Details</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Error Details</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
     Please include the information below when reporting problems.
     </p>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
-
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Exception Trace</h3>
+<% if(showStrackTrace){ %>
+  <div class="card">
+    <div class="card-header">
+      <span>Exception Trace</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <pre id="exceptionTrace"><%=stBuilder.toString()%></pre>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
+<% } %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Request Details</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Request Details</span>
   </div>
-  <table class="table table-condensed table-bordered">
+  <table class="table table-sm table-bordered">
     <tr>
       <th>Locale</th>
       <td><%=request.getLocale()%></td>
@@ -228,11 +210,11 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </table>
 </div> <!-- panel -->
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">System Details</h3>
+<div class="card">
+  <div class="card-header">
+    <span>System Details</span>
   </div>
-  <table class="table table-condensed table-bordered">
+  <table class="table table-sm table-bordered">
     <tr>
       <th>OpenNMS Version:</th>
       <td><%=Vault.getProperty("version.display")%></td>
@@ -260,11 +242,11 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </table>
 </div> <!-- panel -->
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Options for Reporting This Problem</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Options for Reporting This Problem</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
     There are two options for reporting this problem outside your own organization.
     </p>
@@ -292,23 +274,23 @@ userSession.setAttribute("errorReportDetails", errorDetails);
     or support ticket, click
     <strong><a href="javascript:toggleDiv('plainTextErrorDetails');">here</a></strong>.
     </p>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </div> <!-- errorDetails -->
 
 <div id="plainTextErrorDetails" style="display: none;">
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Plain Text Error Details</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Plain Text Error Details</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <textarea id="plainTextArea" style="width: 100%; height: 300px;">Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
 
 <%= errorDetails %>
     </textarea>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </div> <!-- plainTextErrorDetails -->

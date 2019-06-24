@@ -484,16 +484,18 @@ public abstract class Bootstrap {
     protected static void executeClass(final String classToExec, final String classToExecMethod, final String[] classToExecArgs, boolean appendClasspath, final boolean recurse) throws ClassNotFoundException, NoSuchMethodException, IOException {
         String dir = System.getProperty("opennms.classpath");
         if (dir == null) {
-            dir = System.getProperty(OPENNMS_HOME_PROPERTY) + File.separator
-            		+ "classes" + File.pathSeparator
-            		+ System.getProperty(OPENNMS_HOME_PROPERTY) + File.separator
-                    + "lib" + File.pathSeparator
-                    + System.getProperty(OPENNMS_HOME_PROPERTY)
-                    + File.separator + "etc";
+            final String home = System.getProperty(OPENNMS_HOME_PROPERTY);
+            dir = Paths.get(home, "lib", "endorsed").toString() + File.pathSeparator
+                    + Paths.get(home, "classes").toString() + File.pathSeparator
+                    + Paths.get(home, "lib").toString() + File.pathSeparator
+                    + Paths.get(home, "etc").toString();
         }
 
         // Add the JDK tools.jar to the classpath so that we can use the Attach API
-        dir += File.pathSeparator + System.getProperty("java.home") + File.separator + ".." + File.separator + "lib" + File.separator + "tools.jar";
+        final Path toolsJar = Paths.get(System.getProperty("java.home"), "..", "lib", "tools.jar").toAbsolutePath();
+        if (toolsJar.toFile().exists()) {
+            dir += File.pathSeparator + toolsJar.toString();
+        }
 
         if (System.getProperty("org.opennms.protocols.icmp.interfaceJar") != null) {
         	dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");

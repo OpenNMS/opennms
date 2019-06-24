@@ -1,0 +1,35 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+	<bean id="nxosAdapterFactory" class="org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosAdapterFactory">
+		<argument ref="blueprintBundleContext" />
+		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="transactionTemplate" ref="transactionTemplate" />
+		<property name="filterDao" ref="filterDao" />
+		<property name="persisterFactory" ref="persisterFactory" />
+	</bean>
+
+	<service id="nxosFactoryService" ref="nxosAdapterFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
+	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
+	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
+	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
+	
+</blueprint>

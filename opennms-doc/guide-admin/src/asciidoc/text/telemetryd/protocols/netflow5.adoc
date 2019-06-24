@@ -1,0 +1,41 @@
+
+==== NetFlow v5
+
+See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.
+
+
+[[telemetryd-netflow5-parser-udp]]
+===== Netflow v5 UDP Parser
+
+The Netflow v5 UDP Parser accepts packets received by a <<telemetryd-listener-udp, UDP Listener>> and must forward them to a <<telemetryd-netflow5-adapter, Netflow v5 Adapter>>.
+
+The Netflow v5 UDP Parser supports protocol detection.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser`
+|===
+
+====== Parameters
+
+This parser does not currently have any configurable parameters.
+
+
+[[telemetryd-netflow5-adapter]]
+===== Netflow v5 Adapter
+
+The Netflow v5 Adapter is used to handle _Netflow v5_ payloads received and parsed by by the <<telemetryd-netflow5-parser-udp, Netflow v5 UDP Parser>>.
+Flows are decoded from the messages into the canonical flow format and are published to the _flow repository_
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter`
+|===
+
+====== Parameters
+
+This adapter does not currently have any configurable parameters.

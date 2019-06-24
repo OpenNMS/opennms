@@ -75,7 +75,7 @@ public class MultiEngineBuilder implements InitializingBean {
         }
 
         @Override
-        public void reloadConfig() {
+        public void reloadConfig(boolean persistState) {
         }
         
     }

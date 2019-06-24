@@ -45,7 +45,8 @@ import org.junit.Test;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.smoketest.BSMAdminIT;
 import org.opennms.smoketest.BSMAdminIT.BsmAdminPage;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.OpenNMSSeleniumDebugIT;
+import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.TopologyIT.TopologyUIPage;
 import org.opennms.smoketest.TopologyIT.VisibleVertex;
 
@@ -56,7 +57,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
+public class BSMTopologyIT extends OpenNMSSeleniumIT {
 
     private BsmAdminPage bsmAdminPage;
     private TopologyUIPage topologyUiPage;
@@ -65,7 +66,7 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws InterruptedException {
         bsmAdminPage = new BsmAdminPage(this);
-        topologyUiPage = new TopologyUIPage(this, getBaseUrl());
+        topologyUiPage = new TopologyUIPage(this, getBaseUrlInternal());
 
         businessServiceNames = createChainOfBusinessServices(5);
 
@@ -175,6 +176,20 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
 
         // Simulation mode should still be enabled
         Assert.assertEquals(Boolean.TRUE, topologyUiPage.isSimulationModeEnabled());
+    }
+
+    // See NMS-10529
+    @Test
+    public void canShowBusinessServiceStatus() {
+        // Remove any existing vertices from focus
+        topologyUiPage.clearFocus();
+
+        // Search for and select the first business service in our list and select it
+        final String businessServiceName = businessServiceNames.get(0);
+        topologyUiPage.search(businessServiceName.substring(0,  12)).selectItemThatContains(businessServiceName);
+
+        // Now ensure that the "Business Service Status" is visible in the info panel
+        pageContainsText("Business Service Status");
     }
 
     private List<String> createChainOfBusinessServices(int length) throws InterruptedException {

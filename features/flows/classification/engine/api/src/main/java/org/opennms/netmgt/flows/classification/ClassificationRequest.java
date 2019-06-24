@@ -36,14 +36,16 @@ public class ClassificationRequest {
 
     private String location;
     private Protocol protocol;
-    private int dstPort;
+    private Integer dstPort;
     private String dstAddress;
-    private int srcPort;
+    private Integer srcPort;
     private String srcAddress;
     private String exporterAddress;
 
-    public ClassificationRequest(String location, int dstPort, String dstAddress, Protocol protocol) {
+    public ClassificationRequest(String location, int srcPort, String srcAddress, int dstPort, String dstAddress, Protocol protocol) {
         this.location = location;
+        this.srcPort = srcPort;
+        this.srcAddress = srcAddress;
         this.dstPort = dstPort;
         this.dstAddress = dstAddress;
         this.protocol = protocol;
@@ -69,11 +71,11 @@ public class ClassificationRequest {
         return protocol;
     }
 
-    public void setDstPort(int dstPort) {
+    public void setDstPort(final Integer dstPort) {
         this.dstPort = dstPort;
     }
 
-    public int getDstPort() {
+    public Integer getDstPort() {
         return dstPort;
     }
 
@@ -85,11 +87,11 @@ public class ClassificationRequest {
         return dstAddress;
     }
 
-    public int getSrcPort() {
+    public Integer getSrcPort() {
         return srcPort;
     }
 
-    public void setSrcPort(int srcPort) {
+    public void setSrcPort(final Integer srcPort) {
         this.srcPort = srcPort;
     }
 
@@ -107,6 +109,10 @@ public class ClassificationRequest {
 
     public void setExporterAddress(String exporterAddress) {
         this.exporterAddress = exporterAddress;
+    }
+
+    public boolean isClassifiable() {
+        return this.srcPort != null && this.dstPort != null && this.protocol != null;
     }
 
     @Override

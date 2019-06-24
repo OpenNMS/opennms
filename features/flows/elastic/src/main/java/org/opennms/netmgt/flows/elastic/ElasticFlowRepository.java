@@ -43,9 +43,11 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.opennms.core.tracing.api.TracerConstants;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -54,10 +56,6 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
-import org.opennms.netmgt.flows.elastic.index.IndexSelector;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.model.OnmsNode;
@@ -65,6 +63,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
+import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +79,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
@@ -93,8 +95,9 @@ import io.searchbox.core.search.aggregation.TermsAggregation;
 
 public class ElasticFlowRepository implements FlowRepository {
 
-    public static final String OTHER_APPLICATION_NAME = "Other";
+    public static final String OTHER_NAME = "Other";
     public static final String UNKNOWN_APPLICATION_NAME = "Unknown";
+    public static final String TRACER_FLOW_MODULE = "ElasticFlow";
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticFlowRepository.class);
 
@@ -149,6 +152,10 @@ public class ElasticFlowRepository implements FlowRepository {
     private final NodeDao nodeDao;
     private final SnmpInterfaceDao snmpInterfaceDao;
 
+    // An OpenNMS or Sentinel Identity.
+    private Identity identity;
+    private TracerRegistry tracerRegistry;
+
     /**
      * Cache for marking nodes and interfaces as having flows.
      *
@@ -159,6 +166,7 @@ public class ElasticFlowRepository implements FlowRepository {
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
                                  TransactionOperations transactionOperations, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
+                                 Identity identity, TracerRegistry tracerRegistry,
                                  int bulkRetryCount, long maxFlowDurationMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
@@ -169,6 +177,8 @@ public class ElasticFlowRepository implements FlowRepository {
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.bulkRetryCount = bulkRetryCount;
         this.indexSelector = new IndexSelector(TYPE, indexStrategy, maxFlowDurationMs);
+        this.identity = identity;
+        this.tracerRegistry = tracerRegistry;
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logConversionTimer = metricRegistry.timer("logConversion");
@@ -191,7 +201,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     @Override
     public void persist(final Collection<Flow> flows, final FlowSource source) throws FlowException {
-        LOG.debug("Converting {} flows from {} to flow documents.", flows.size(), source);
+        LOG.debug("Converting {} flows from {} @ {} to flow documents.", flows.size(), source.getSourceAddress(), source.getLocation());
         final List<FlowDocument> documents;
         try (final Timer.Context ctx = logConversionTimer.time()) {
             documents = flows.stream()
@@ -206,7 +216,7 @@ public class ElasticFlowRepository implements FlowRepository {
         flowsPerLog.update(flowDocuments.size());
 
         if (flowDocuments.isEmpty()) {
-            LOG.info("Received empty flows. Nothing to do.");
+            LOG.info("Received empty flows from {} @ {}. Nothing to do.", source.getSourceAddress(), source.getLocation());
             return;
         }
 
@@ -216,14 +226,19 @@ public class ElasticFlowRepository implements FlowRepository {
         }
 
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());
-        try (final Timer.Context ctx = logPersistingTimer.time()) {
+        final Tracer tracer = getTracer();
+        try (final Timer.Context ctx = logPersistingTimer.time();
+             Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
+            // Add location and source address tags to span.
+            scope.span().setTag(TracerConstants.TAG_LOCATION, source.getLocation());
+            scope.span().setTag(TracerConstants.TAG_SOURCE_ADDRESS, source.getSourceAddress());
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
-                   final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(flowDocument.getTimestamp()));
-                   final Index.Builder indexBuilder = new Index.Builder(flowDocument)
-                        .index(index)
-                        .type(TYPE);
+                    final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(flowDocument.getTimestamp()));
+                    final Index.Builder indexBuilder = new Index.Builder(flowDocument)
+                            .index(index)
+                            .type(TYPE);
                     bulkBuilder.addAction(indexBuilder.build());
                 }
                 return new BulkWrapper(bulkBuilder);
@@ -292,36 +307,131 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<List<String>> getApplications(String matchingPrefix, long limit, List<Filter> filters) {
+        final String query = searchQueryProvider.getApplicationsQuery(matchingPrefix, limit, filters);
+        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(res -> processGroupedByResult(res, limit));
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther,
+                                                                                       List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return getSeriesFromTopN(N, step, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
+    public CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications,
+                                                                                   boolean includeOther,
+                                                                                   List<Filter> filters) {
+        return getTotalBytesFrom(applications, "netflow.application", null, includeOther,
+                filters);
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversations(int N, List<Filter> filters) {
-        return getTotalBytesFromTopN(N, "netflow.convo_key", null, false, filters).thenApply((res) -> res.stream()
-                .map(summary -> {
-                    final ConversationKey convo = ConversationKeyUtils.fromJsonString(summary.getEntity());
-                    final Conversation conversation = new Conversation(convo, classify(convo));
-                    final TrafficSummary<Conversation> out = new TrafficSummary<>(conversation);
-                    out.setBytesIn(summary.getBytesIn());
-                    out.setBytesOut(summary.getBytesOut());
-                    return out;
-                })
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications,
+                                                                                            long step,
+                                                                                            boolean includeOther,
+                                                                                            List<Filter> filters) {
+        return getSeriesFor(applications, "netflow.application", step, includeOther, filters)
+                .thenApply((res) -> mapTable(res, s -> s));
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step,
+                                                                                                boolean includeOther,
+                                                                                                List<Filter> filters) {
+        return getSeriesFromTopN(N, step, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters)
+                .thenApply((res) -> mapTable(res, s -> s));
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getConversations(String locationPattern, String protocolPattern,
+                                                            String lowerIPPattern, String upperIPPattern,
+                                                            String applicationPattern, long limit,
+                                                            List<Filter> filters) {
+        // Handle the unquoted null value
+        if (applicationPattern.equals(".*")) {
+            applicationPattern = String.format("(\\\"%s\\\"|null)", applicationPattern);
+        } else if (!applicationPattern.equals("null")) {
+            applicationPattern = String.format("\\\"%s\\\"", applicationPattern);
+        }
+
+        String regex = String.format("\\[\\\"%s\\\",%s,\\\"%s\\\",\\\"%s\\\",%s\\]",
+                locationPattern,
+                protocolPattern,
+                lowerIPPattern,
+                upperIPPattern,
+                applicationPattern);
+        String query = searchQueryProvider.getConversationsRegexQuery(regex, limit, filters);
+        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(res -> processGroupedByResult(res, limit));
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversationSummaries(int N,
+                                                                                                 boolean includeOther,
+                                                                                                 List<Filter> filters) {
+        return getTotalBytesFromTopN(N, "netflow.convo_key", null, includeOther, filters)
+                .thenApply((res) -> res.stream()
+                        .map(ElasticFlowRepository::mapFromStringSummary)
+                        .collect(Collectors.toList()));
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getConversationSummaries(Set<String> conversations,
+                                                                                             boolean includeOther,
+                                                                                             List<Filter> filters) {
+        return getTotalBytesFrom(unescapeConversations(conversations), "netflow.convo_key", null, includeOther,
+                filters).thenApply(summaries -> summaries.stream()
+                .map(ElasticFlowRepository::mapFromStringSummary)
                 .collect(Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
-        return getSeriesFromTopN(N, step, "netflow.convo_key", null, false, filters).thenApply((res) -> mapTable(res, (key) -> {
-            final ConversationKey convo = ConversationKeyUtils.fromJsonString(key);
-            final String application = classify(convo);
-            return new Conversation(convo, application);
-        }));
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
+        return getSeriesFor(unescapeConversations(conversations), "netflow.convo_key", step, includeOther, filters)
+                .thenApply((res) -> mapTable(res, ElasticFlowRepository::getConversationKey));
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationSeries(int N,
+                                                                                                          long step,
+                                                                                                          boolean includeOther,
+                                                                                                          List<Filter> filters) {
+        return getSeriesFromTopN(N, step, "netflow.convo_key", null, includeOther, filters)
+                .thenApply((res) -> mapTable(res, ElasticFlowRepository::getConversationKey));
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getHosts(String regex, long limit, List<Filter> filters) {
+        final String hostsQuery = searchQueryProvider.getHostsQuery(regex, limit, filters);
+        return searchAsync(hostsQuery, extractTimeRangeFilter(filters)).thenApply(res -> processGroupedByResult(res,
+                limit));
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther,
+                                                                                List<Filter> filters) {
+        return getTotalBytesFromTopN(N, "hosts", null, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts,
+                                                                            boolean includeOther,
+                                                                            List<Filter> filters) {
+        return getTotalBytesFrom(hosts, "hosts", null, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step,
+                                                                                     boolean includeOther,
+                                                                                     List<Filter> filters) {
+        return getSeriesFor(hosts, "hosts", step, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step,
+                                                                                         boolean includeOther,
+                                                                                         List<Filter> filters) {
+        return getSeriesFromTopN(N, step, "hosts", null, includeOther, filters);
     }
 
     private CompletableFuture<List<String>> getTopN(int N, String groupByTerm, String keyForMissingTerm, List<Filter> filters) {
@@ -335,17 +445,41 @@ public class ElasticFlowRepository implements FlowRepository {
         final int multiplier = 2;
         final String query = searchQueryProvider.getTopNQuery(multiplier*N, groupByTerm, keyForMissingTerm, filters);
         return searchAsync(query, extractTimeRangeFilter(filters))
+                .thenApply(res -> processGroupedByResult(res, N));
+    }
+
+    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFor(Set<String> entities,
+                                                                                     String groupByTerm,
+                                                                                     long step,
+                                                                                     boolean includeOther,
+                                                                                     List<Filter> filters) {
+        Objects.requireNonNull(groupByTerm);
+
+        if (entities == null || entities.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+        final ImmutableTable.Builder<Directional<String>, Long, Double> builder = ImmutableTable.builder();
+        final String seriesFromQuery = searchQueryProvider.getSeriesFromQuery(entities, step,
+                timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, filters);
+        CompletableFuture<Void> seriesFuture;
+
+        seriesFuture = searchAsync(seriesFromQuery, timeRangeFilter)
                 .thenApply(res -> {
-                    final TermsAggregation groupedBy = res.getAggregations().getTermsAggregation("grouped_by");
-                    if (groupedBy == null) {
-                        // No results
-                        return Collections.emptyList();
-                    }
-                    return groupedBy.getBuckets().stream()
-                            .map(TermsAggregation.Entry::getKey)
-                            .limit(N)
-                            .collect(Collectors.toList());
+                    toTable(builder, res);
+                    return null;
                 });
+
+        if (includeOther) {
+            // We also want to gather series for all other terms
+            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(entities, step,
+                    timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, false, filters);
+            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter),
+                    (ignored, res) -> processOthersResult(res, builder));
+        }
+
+        return seriesFuture.thenApply(ignored -> builder.build());
     }
 
     private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFromTopN(List<String> topN, long step, String groupByTerm,
@@ -358,7 +492,7 @@ public class ElasticFlowRepository implements FlowRepository {
             // If there are no entries, skip the query
             seriesFuture = CompletableFuture.completedFuture(null);
         } else {
-            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, timeRangeFilter.getStart(),
+            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromQuery(topN, step, timeRangeFilter.getStart(),
                     timeRangeFilter.getEnd(), groupByTerm, filters);
             seriesFuture = searchAsync(seriesFromTopNQuery, timeRangeFilter)
                     .thenApply(res -> {
@@ -383,18 +517,8 @@ public class ElasticFlowRepository implements FlowRepository {
             // We also want to gather series for terms not part of the Top N
             final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step,
                     timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, missingTermIncludedInTopN, filters);
-            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter), (ignored,res) -> {
-                final MetricAggregation aggs = res.getAggregations();
-                final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
-                for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
-                    final boolean isIngress = isIngress(directionBucket);
-                    final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
-                    for (ProportionalSumAggregation.DateHistogram dateHistogram : sumAgg.getBuckets()) {
-                        builder.put(new Directional<>(OTHER_APPLICATION_NAME, isIngress), dateHistogram.getTime(), dateHistogram.getValue());
-                    }
-                }
-                return null;
-            });
+            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter),
+                    (ignored,res) -> processOthersResult(res, builder));
         }
 
         // Sort the table to ensure that the rows as in the same order as the Top N
@@ -403,7 +527,15 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private static void toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResult res) {
         final MetricAggregation aggs = res.getAggregations();
+        if (aggs == null) {
+            // No results
+            return;
+        }
         final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        if (groupedBy == null) {
+            // No results
+            return;
+        }
         for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
             final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");
             for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
@@ -423,9 +555,9 @@ public class ElasticFlowRepository implements FlowRepository {
                 .thenCompose((topN) -> getSeriesFromTopN(topN, step, groupByTerm, keyForMissingTerm, includeOther, filters));
     }
 
-    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(List<String> topN, String groupByTerm,
-                                                                                  String keyForMissingTerm,
-                                                                                  boolean includeOther, List<Filter> filters) {
+    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFrom(Collection<String> from, String groupByTerm,
+                                                                              String keyForMissingTerm,
+                                                                              boolean includeOther, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
         final long start = timeRangeFilter.getStart();
         // Remove 1 from the end to make sure we have a single bucket
@@ -434,16 +566,16 @@ public class ElasticFlowRepository implements FlowRepository {
         final long step = timeRangeFilter.getEnd() - timeRangeFilter.getStart();
 
         CompletableFuture<Map<String, TrafficSummary<String>>> summariesFuture;
-        if (topN.size() < 1) {
+        if (from.size() < 1) {
             // If there are no entries, skip the query
             summariesFuture = CompletableFuture.completedFuture(new LinkedHashMap<>());
         } else {
-            final String bytesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, start, end, groupByTerm, filters);
-            summariesFuture = searchAsync(bytesFromTopNQuery, timeRangeFilter).thenApply(ElasticFlowRepository::toTrafficSummaries);
+            final String bytesFromQuery = searchQueryProvider.getSeriesFromQuery(from, step, start, end, groupByTerm, filters);
+            summariesFuture = searchAsync(bytesFromQuery, timeRangeFilter).thenApply(ElasticFlowRepository::toTrafficSummaries);
         }
 
-        final boolean missingTermIncludedInTopN = keyForMissingTerm != null && topN.contains(keyForMissingTerm);
-        if (missingTermIncludedInTopN) {
+        final boolean missingTermIncluded = keyForMissingTerm != null && from.contains(keyForMissingTerm);
+        if (missingTermIncluded) {
             // We also need to query for items with a missing term, this will require a separate query
             final String bytesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step, start, end,
                     groupByTerm, keyForMissingTerm, filters);
@@ -455,12 +587,20 @@ public class ElasticFlowRepository implements FlowRepository {
 
         if (includeOther) {
             // We also want to tally up traffic from other elements not part of the Top N
-            final String bytesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step, start, end,
-                    groupByTerm, missingTermIncludedInTopN, filters);
+            final String bytesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(from, step, start, end,
+                    groupByTerm, missingTermIncluded, filters);
             summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery, timeRangeFilter), (summaries,results) -> {
                 final MetricAggregation aggs = results.getAggregations();
-                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_APPLICATION_NAME);
+                if (aggs == null) {
+                    // No results
+                    return summaries;
+                }
                 final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+                if (directionAgg == null) {
+                    // No results
+                    return summaries;
+                }
+                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_NAME);
                 for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
                     final boolean isIngress = isIngress(directionBucket);
                     final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
@@ -476,15 +616,15 @@ public class ElasticFlowRepository implements FlowRepository {
                         trafficSummary.setBytesIn(sum.longValue());
                     }
                 }
-                summaries.put(OTHER_APPLICATION_NAME, trafficSummary);
+                summaries.put(OTHER_NAME, trafficSummary);
                 return summaries;
             });
         }
 
         return summariesFuture.thenApply(summaries -> {
             // Now build a list in the same order as the given top N list
-            final List<TrafficSummary<String>> topNRes = new ArrayList<>(topN.size());
-            for (String topNEntry : topN) {
+            final List<TrafficSummary<String>> topNRes = new ArrayList<>(from.size());
+            for (String topNEntry : from) {
                 final TrafficSummary<String> summary = summaries.remove(topNEntry);
                 if (summary != null) {
                     topNRes.add(summary);
@@ -500,7 +640,15 @@ public class ElasticFlowRepository implements FlowRepository {
         // Build the traffic summaries from the search results
         final Map<String, TrafficSummary<String>> summaries = new LinkedHashMap<>();
         final MetricAggregation aggs = res.getAggregations();
+        if (aggs == null) {
+            // No results
+            return summaries;
+        }
         final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        if (groupedBy == null) {
+            // No results
+            return summaries;
+        }
         for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
             final TrafficSummary<String> trafficSummary = new TrafficSummary<>(bucket.getKey());
             final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");
@@ -526,54 +674,14 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(int N, String groupByTerm, String keyForMissingTerm, boolean includeOther, List<Filter> filters) {
         return getTopN(N, groupByTerm, keyForMissingTerm, filters)
-                .thenCompose((topN) -> getTotalBytesFromTopN(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
-    }
-
-    /**
-     * Perform a best-effort classification of the application based on
-     * the context of the conversation key.
-     *
-     * This currently has the following limitations:
-     *  * The application will be classified using the current configuration which may not match
-     *    that at the time that the flow were originally classified
-     *  * The classification does not take the exporter into account, and as a result can be classified
-     *    differently then the related flows
-     *
-     * @param convo the conversation key to classify
-     * @return the classified application name
-     */
-    private String classify(ConversationKey convo) {
-        final ClassificationRequest request = new ClassificationRequest();
-        request.setSrcAddress(convo.getSrcIp());
-        request.setSrcPort(convo.getSrcPort());
-        request.setDstAddress(convo.getSrcIp());
-        request.setDstPort(convo.getDstPort());
-
-        Protocol protocol = Protocols.getProtocol(convo.getProtocol());
-        if (protocol == null) {
-            protocol = new Protocol(convo.getProtocol(), null, null);
-        }
-        request.setProtocol(protocol);
-        request.setLocation(convo.getLocation());
-
-        String application = classificationEngine.classify(request);
-        if (application != null) {
-            return application;
-        }
-
-        // Flip the source and destination addresses and try again
-        request.setSrcAddress(convo.getDstIp());
-        request.setSrcPort(convo.getDstPort());
-        request.setDstAddress(convo.getSrcIp());
-        request.setDstPort(convo.getSrcPort());
-        return classificationEngine.classify(request);
+                .thenCompose((topN) -> getTotalBytesFrom(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
     }
 
     private CompletableFuture<SearchResult> searchAsync(String query, TimeRangeFilter timeRangeFilter) {
         Search.Builder builder = new Search.Builder(query)
                 .addType(TYPE);
         if(timeRangeFilter != null) {
-            final List<String> indices = indexSelector.getIndexNames(timeRangeFilter);
+            final List<String> indices = indexSelector.getIndexNames(timeRangeFilter.getStart(), timeRangeFilter.getEnd());
             builder.addIndices(indices);
             builder.setParameter("ignore_unavailable", "true"); // ignore unknown index
 
@@ -601,6 +709,47 @@ public class ElasticFlowRepository implements FlowRepository {
             }
         });
         return future;
+    }
+
+    private static Void processOthersResult(SearchResult res,
+                                            ImmutableTable.Builder<Directional<String>, Long, Double> builder) {
+        final MetricAggregation aggs = res.getAggregations();
+        if (aggs == null) {
+            // No results
+            return null;
+        }
+        final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+        if (directionAgg == null) {
+            // No results
+            return null;
+        }
+        for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
+            final boolean isIngress = isIngress(directionBucket);
+            final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes",
+                    ProportionalSumAggregation.class);
+            for (ProportionalSumAggregation.DateHistogram dateHistogram : sumAgg.getBuckets()) {
+                builder.put(new Directional<>(OTHER_NAME, isIngress), dateHistogram.getTime(),
+                        dateHistogram.getValue());
+            }
+        }
+        return null;
+    }
+
+    private static List<String> processGroupedByResult(SearchResult searchResult, long limit) {
+        final MetricAggregation aggs = searchResult.getAggregations();
+        if (aggs == null) {
+            // No results
+            return Collections.emptyList();
+        }
+        final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        if (groupedBy == null) {
+            // No results
+            return Collections.emptyList();
+        }
+        return groupedBy.getBuckets().stream()
+                .map(TermsAggregation.Entry::getKey)
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -647,5 +796,54 @@ public class ElasticFlowRepository implements FlowRepository {
         } else {
             throw new IllegalArgumentException("Unknown direction value: " + directionAsString);
         }
+    }
+
+    private static TrafficSummary<ConversationKey> mapFromStringSummary(TrafficSummary<String> trafficSummary) {
+        final ConversationKey conversationKey = getConversationKey(trafficSummary.getEntity());
+
+        final TrafficSummary<ConversationKey> mapped = new TrafficSummary<>(conversationKey);
+        mapped.copyBytes(trafficSummary);
+        return mapped;
+    }
+    
+    private static Set<String> unescapeConversations(Set<String> conversations) {
+        // freemarker template is going to auto-escape the string so we need to remove the explicit escaped quotes first
+        return conversations.stream()
+                .map(conversation -> conversation.replace("\\\"", "\""))
+                .collect(Collectors.toSet());
+    }
+
+    private static ConversationKey getConversationKey(String key) {
+        Objects.requireNonNull(key);
+        return key.equals(OTHER_NAME) ? ConversationKeyUtils.forOther() : ConversationKeyUtils.fromJsonString(key);
+    }
+
+    public Identity getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        this.tracerRegistry = tracerRegistry;
+    }
+
+    public void start() {
+        if (tracerRegistry != null && identity != null) {
+            tracerRegistry.init(identity.getId());
+        }
+    }
+
+    private Tracer getTracer() {
+        if (tracerRegistry != null) {
+            return tracerRegistry.getTracer();
+        }
+        return GlobalTracer.get();
     }
 }

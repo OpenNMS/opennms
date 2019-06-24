@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.io.StringWriter;
+import java.util.Objects;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
 
@@ -47,15 +48,19 @@ import com.google.gson.GsonBuilder;
  */
 public class ConversationKeyUtils {
     private static final Gson gson = new GsonBuilder().create();
+    private static final ConversationKey otherKey = new ConversationKey("Other", -1, "Other", "Other", "Other");
 
     public static ConversationKey fromJsonString(String json) {
         final Object[] array = gson.fromJson(json, Object[].class);
-        if (array.length != 6) {
+        if (array.length != 5) {
             throw new IllegalArgumentException("Invalid conversation key string: " + json);
         }
         return new ConversationKey((String)array[0], ((Number)array[1]).intValue(),
-                (String)array[2], ((Number)array[3]).intValue(),
-                (String)array[4], ((Number)array[5]).intValue());
+                (String)array[2], (String)array[3], (String)array[4]);
+    }
+    
+    public static ConversationKey forOther() {
+        return otherKey;
     }
 
     public static String getConvoKeyAsJsonString(FlowDocument document) {
@@ -63,9 +68,7 @@ public class ConversationKeyUtils {
         if (document.getLocation() != null
                 && document.getProtocol() != null
                 && document.getSrcAddr() != null
-                && document.getSrcPort() != null
-                && document.getDstAddr() != null
-                && document.getDstPort() != null) {
+                && document.getDstAddr() != null) {
             // Build the JSON string manually
             // This is faster than creating some new object on which we can use gson.toJson or similar
             final StringWriter writer = new StringWriter();
@@ -75,22 +78,23 @@ public class ConversationKeyUtils {
             writer.write(",");
             writer.write(Integer.toString(document.getProtocol()));
             writer.write(",\"");
-            if (Direction.INGRESS.equals(document.getDirection())) {
+            // Write out addresses in canonical format (lower one first)
+            if (Objects.compare(document.getSrcAddr(), document.getDstAddr(), String::compareTo) < 0) {
                 writer.write(document.getSrcAddr());
-                writer.write("\",");
-                writer.write(Integer.toString(document.getSrcPort()));
-                writer.write(",\"");
+                writer.write("\",\"");
                 writer.write(document.getDstAddr());
-                writer.write("\",");
-                writer.write(Integer.toString(document.getDstPort()));
             } else {
                 writer.write(document.getDstAddr());
-                writer.write("\",");
-                writer.write(Integer.toString(document.getDstPort()));
-                writer.write(",\"");
+                writer.write("\",\"");
                 writer.write(document.getSrcAddr());
-                writer.write("\",");
-                writer.write(Integer.toString(document.getSrcPort()));
+            }
+            writer.write("\",");
+            if (document.getApplication() != null) {
+                writer.write("\"");
+                writer.write(document.getApplication());
+                writer.write("\"");
+            } else {
+                writer.write("null");
             }
             writer.write("]");
             return writer.toString();

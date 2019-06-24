@@ -73,6 +73,9 @@ public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
             fw.write("# The number of times to retry before giving up when opening a ticket\n");
             fw.write("support.retry=" + getRetry() + "\n\n");
 
+            fw.write("# Should the system wide proxy settings be used? The system proxy settings can be configured in opennms.conf\n");
+            fw.write("support.useSystemProxy=" + getUseSystemProxy() + "\n\n");
+
             if (!"OpenNMS Version".equals(getVersionFieldName())) {
                 fw.write("support.versionFieldName=" + getVersionFieldName() + "\n\n");
             }

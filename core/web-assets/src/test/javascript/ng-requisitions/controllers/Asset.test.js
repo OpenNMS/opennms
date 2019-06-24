@@ -9,26 +9,37 @@ const angular = require('angular-js');
 require('angular-mocks');
 require('../../../../../src/main/assets/js/apps/onms-requisitions/requisitions');
 
-var scope, $q, controllerFactory, mockModalInstance, mockRequisitionsService = {}, asset = { key: 'admin', value: 'agalue' };
+const OnmsDateFormatter = require('../../../../../src/main/assets/js/apps/onms-date-formatter');
+
+var scope, $q, controllerFactory, dateFormatterService, mockModalInstance, mockRequisitionsService = {}, asset = { key: 'admin', value: 'agalue' };
 
 function createController() {
   return controllerFactory('AssetController', {
     $scope: scope,
     $uibModalInstance: mockModalInstance,
+    DateFormatterService: dateFormatterService,
     RequisitionsService: mockRequisitionsService,
     asset: asset,
     assetsBlackList: []
   });
 }
 
+beforeEach(function() {
+  window._onmsDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssxxx";
+  window._onmsZoneId = 'America/New_York';
+  window._onmsFormatter = new OnmsDateFormatter();
+});
+
 beforeEach(angular.mock.module('onms-requisitions', function($provide) {
   $provide.value('$log', console);    
 }));
 
-beforeEach(angular.mock.inject(function($rootScope, $controller, _$q_) {
+beforeEach(angular.mock.inject(function($rootScope, $controller, $interval, _$q_, DateFormatterService) {
   scope = $rootScope.$new();
   controllerFactory = $controller;
   $q = _$q_;
+  dateFormatterService = DateFormatterService;
+  $interval.flush(200);
 }));
 
 beforeEach(function() {

@@ -8,13 +8,15 @@
 const angular = require('vendor/angular-js');
 const bootbox = require('vendor/bootbox-js');
 require('lib/onms-http');
+require('../onms-date-formatter');
 
 const defaultConfig = require('./config.json');
 
 angular.module('onms-assets', [
   'onms.http',
   'ui.bootstrap',
-  'angular-growl'
+  'angular-growl',
+  'onmsDateFormatter'
 ])
 
 .config(['growlProvider', function(growlProvider) {

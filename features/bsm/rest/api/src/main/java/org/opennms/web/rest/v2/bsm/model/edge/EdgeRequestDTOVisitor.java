@@ -35,4 +35,6 @@ public interface EdgeRequestDTOVisitor {
     void visit(ChildEdgeRequestDTO childEdge);
 
     void visit(ReductionKeyEdgeRequestDTO rkEdge);
+
+    void visit(ApplicationEdgeRequestDTO rkEdge);
 }

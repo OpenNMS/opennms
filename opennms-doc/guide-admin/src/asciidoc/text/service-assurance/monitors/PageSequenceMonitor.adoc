@@ -50,6 +50,8 @@ Additionally, it is possible to configure a page sequence containing a path thro
                      With `strict-timout = false` the next attempt is started right after a failure.                      | optional | `false`
 | `page-sequence`  | Definition of the page-sequence to execute, see table with _Page Sequence Parameter_                 | required | `-`
 | `sequence-retry` | The retry parameter for the entire page sequence.                                                    | optional | `0`
+| `use-system-proxy` | Should the system wide proxy settings be used? The system proxy settings can be configured in
+                     link:#ga-opennms-system-properties[opennms.conf]                                                     | optional | `false`
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

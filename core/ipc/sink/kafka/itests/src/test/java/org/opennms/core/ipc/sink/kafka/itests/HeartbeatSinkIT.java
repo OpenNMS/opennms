@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.core.ipc.sink.kafka.itests;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -38,11 +39,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.Hashtable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +54,7 @@ import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.core.ipc.sink.common.ThreadLockingMessageConsumer;
 import org.opennms.core.ipc.sink.kafka.itests.HeartbeatSinkPerfIT.HeartbeatGenerator;
 import org.opennms.core.ipc.sink.kafka.client.KafkaRemoteMessageDispatcherFactory;
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.ipc.sink.kafka.itests.heartbeat.Heartbeat;
 import org.opennms.core.ipc.sink.kafka.itests.heartbeat.HeartbeatModule;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
@@ -69,7 +70,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/applicationContext-test-ipc-sink-kafka.xml"
+        "classpath:/applicationContext-test-ipc-sink-kafka.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
+        "classpath:/META-INF/opennms/applicationContext-opennms-identity.xml"
 })
 @JUnitConfigurationEnvironment
 public class HeartbeatSinkIT {
@@ -89,13 +92,15 @@ public class HeartbeatSinkIT {
     public void setUp() throws Exception {
         Hashtable<String, Object> kafkaConfig = new Hashtable<String, Object>();
         kafkaConfig.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
+        kafkaConfig.put("max.block.ms", 10000);
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties())
+        when(configAdmin.getConfiguration(KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties())
             .thenReturn(kafkaConfig);
         remoteMessageDispatcherFactory.setConfigAdmin(configAdmin);
+        remoteMessageDispatcherFactory.setTracerRegistry(new MockTracerRegistry());
         remoteMessageDispatcherFactory.init();
 
-        System.setProperty(String.format("%sbootstrap.servers", org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
+        System.setProperty(String.format("%sbootstrap.servers", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
                 kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%sauto.offset.reset", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
                 "earliest");
@@ -136,7 +141,7 @@ public class HeartbeatSinkIT {
     }
 
     @Test(timeout=60000)
-    @Ignore("flapping")
+    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
     public void canConsumeMessagesInParallel() throws Exception {
         final int NUM_CONSUMER_THREADS = 7;
 
@@ -172,5 +177,45 @@ public class HeartbeatSinkIT {
         } finally {
             consumerManager.unregisterConsumer(consumer);
         }
+    }
+
+    @Test(timeout = 60000)
+    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
+    public void testSinkMessagesBeingNotDropped() throws Exception {
+        kafkaServer.stopKafkaServer();
+        HeartbeatModule module = new HeartbeatModule();
+
+        AtomicInteger heartbeatCount = new AtomicInteger();
+        final MessageConsumer<Heartbeat, Heartbeat> heartbeatConsumer = new MessageConsumer<Heartbeat, Heartbeat>() {
+            @Override
+            public SinkModule<Heartbeat, Heartbeat> getModule() {
+                return module;
+            }
+
+            @Override
+            public void handleMessage(final Heartbeat heartbeat) {
+                heartbeatCount.incrementAndGet();
+            }
+        };
+
+        try {
+            consumerManager.registerConsumer(heartbeatConsumer);
+
+            final SyncDispatcher<Heartbeat> localDispatcher = localMessageDispatcherFactory.createSyncDispatcher(module);
+            localDispatcher.send(new Heartbeat());
+            await().atMost(30, SECONDS).until(() -> heartbeatCount.get(), equalTo(1));
+
+            final SyncDispatcher<Heartbeat> dispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(HeartbeatModule.INSTANCE);
+
+            Executors.newSingleThreadExecutor().execute(() -> dispatcher.send(new Heartbeat()));
+            Executors.newSingleThreadExecutor().execute(() -> dispatcher.send(new Heartbeat()));
+            // This sleep is needed for testing the timeout for kafka producer.send();
+            Thread.sleep(15000);
+            kafkaServer.startKafkaServer();
+            await().atMost(30, SECONDS).until(() -> heartbeatCount.get(), equalTo(3));
+        } finally {
+            consumerManager.unregisterConsumer(heartbeatConsumer);
+        }
+
     }
 }

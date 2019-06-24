@@ -242,4 +242,48 @@ public class EventdConfigManager implements EventdConfig {
             getReadLock().unlock();
         }
     }
+    
+    @Override
+    public int getNumThreads() {
+        getReadLock().lock();
+        try {
+            if (m_config.getNumThreads() <= 0) {
+                return Runtime.getRuntime().availableProcessors() * 2;
+            } else {
+                return m_config.getNumThreads();
+            }
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getQueueSize() {
+        getReadLock().lock();
+        try {
+            return m_config.getQueueSize();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getBatchSize() {
+        getReadLock().lock();
+        try {
+            return m_config.getBatchSize();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getBatchIntervalMs() {
+        getReadLock().lock();
+        try {
+            return m_config.getBatchInterval();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
 }

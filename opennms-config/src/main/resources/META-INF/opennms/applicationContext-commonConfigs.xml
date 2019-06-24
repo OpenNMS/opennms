@@ -55,6 +55,10 @@
 
 	<onmsgi:service interface="org.opennms.netmgt.poller.ServiceMonitorRegistry" ref="serviceMonitorRegistry" />
 
+    <onmsgi:list id="serviceMonitors" interface="org.opennms.netmgt.poller.ServiceMonitor">
+      <onmsgi:listener bind-method="onBind" unbind-method="onUnbind" ref="serviceMonitorRegistry"/>
+    </onmsgi:list>
+
 	<!--  collectd config factory is now init'd in the dao context -->
 
     <bean id="init-wmiPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

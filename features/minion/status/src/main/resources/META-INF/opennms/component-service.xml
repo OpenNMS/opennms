@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/tx      http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+    ">
+
+    <tx:annotation-driven />
+    <context:annotation-config />
+
+    <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="properties">
+            <props>
+                <!-- how often to check the outages database for current status in case of missed events -->
+                <prop key="org.opennms.minion.status.refresh">300000</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="minionStatusTracker" class="org.opennms.minion.status.MinionStatusTracker">
+        <property name="refresh" value="${org.opennms.minion.status.refresh}" />
+    </bean>
+
+    <bean id="minionStatusTrackerListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="minionStatusTracker" />
+        <property name="eventSubscriptionService">
+            <onmsgi:reference interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+        </property>
+    </bean>
+</beans>

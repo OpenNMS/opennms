@@ -47,6 +47,6 @@ _Pollerd_ can generate the following _Events_ in _{opennms-product-name}_:
 | `uei.opennms.org/nodes/nodeUp`              | Some of the _Critical Services_ came back online.
 |===
 
-The behavior to generate _interfaceDown_ and _nodeDown_ events is described in the <<gu-service-assurance-critical-service, Critical Service>> section.
+The behavior to generate _interfaceDown_ and _nodeDown_ events is described in the <<ga-service-assurance-critical-service, Critical Service>> section.
 
 NOTE: This assumes that node-outage processing is enabled.

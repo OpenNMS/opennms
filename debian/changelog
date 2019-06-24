@@ -1,3 +1,119 @@
+opennms (24.1.1-1) stable; urgency=medium
+
+  * New stable release.  It contains bug fixes to WS-Man, the web UI, flows,
+    and more as well as a few small enhancements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/24.1.1/releasenotes/releasenotes.html
+
+opennms (24.1.0-1) stable; urgency=medium
+
+  * New stable release. It contains a bunch of bug fixes and a few enhancements,
+    including support for OpenTracing in the sink API and a rework of geocoding
+    services.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/24.1.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 23 May 2019 14:47:30 -0400
+
+opennms (24.0.0-1) stable; urgency=medium
+
+  * New major stable release.  It contains a large number of bug fixes and
+    enhancements, most notably adding machine-learning-guided correlation of
+    alarms, and many improvements to Netflow/IPFIX/sFlow support.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/24.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 25 Apr 2019 13:04:29 -0400
+
+opennms (23.0.4-1) stable; urgency=medium
+
+  * New stable release.  It contains a number of bug fixes including fixes for
+    number handling in ReST interfaces, a possible deadlock in Alarmd, a
+    workaround for looping SNMP agents, and more.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/23.0.4/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Mar 2019 13:19:17 -0400
+
+opennms (23.0.3-1) stable; urgency=medium
+
+  * New stable release.  It contains a number of bug fixes including fixes for
+    sending notifications for events without associated nodes, XSS issues, and
+    more.  It also includes a number of performance improvements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/23.0.3/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Feb 2019 12:23:07 -0500
+
+opennms (23.0.2-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including performance improvements to topology maps, many fixes and
+    improvements to Kafka support, and a bunch of correlation and alarm updates.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/23.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 17 Jan 2019 11:05:30 -0500
+
+opennms (23.0.1-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including additional HTTP proxy support, reliability updates, UI performance
+    improvements, and a number of Kafka-related fixes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/23.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 15 Nov 2018 11:21:45 -0500
+
+opennms (23.0.0-1) stable; urgency=medium
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including support for alarm correlation, running OpenNMS components in an
+    external container, and many other improvements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/23.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 25 Oct 2018 12:32:16 -0500
+
+opennms (22.0.4-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including fixes in upgrades, flows, date handling, topology UI performance,
+    and minion management.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.4/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 20 Sep 2018 12:22:27 +0100
+
+opennms (22.0.3-1) stable; urgency=high
+
+  * New stable release.  It contains a critical fix for RADIUS authentication,
+    as well as a number of smaller bug fixes and enhancements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.3/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 16 Aug 2018 10:11:00 -0500
+
+opennms (22.0.2-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including partial support for custom date formatting in the web UI.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 19 Jul 2018 15:10:00 -0500
+
 opennms (22.0.1-1) stable; urgency=low
 
   * New stable release.  It contains a number of bug fixes and enhancements,

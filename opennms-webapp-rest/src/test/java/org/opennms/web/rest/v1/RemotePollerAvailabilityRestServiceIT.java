@@ -85,7 +85,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
+        "classpath:/applicationContext-rest-test.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

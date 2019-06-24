@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <!--
+       When running inside of opennms this is automatically available, however if we are running in a stand-alone container,
+       the registry must be made available. Otherwise the onmsgi:* statements will not work
+    -->
+    <onmsgi:default-registry/>  <!-- creates bean with id "serviceRegistry -->
+    <onmsgi:service ref="serviceRegistry" interface="org.opennms.core.soa.ServiceRegistry" /> <!-- expose that bean -->
+
+</beans>

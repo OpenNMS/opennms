@@ -41,12 +41,13 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.smoketest.selenium.ResponseData;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
+public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() throws Exception {
@@ -62,7 +63,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     public void verifyLocationDropdown() throws IOException, InterruptedException {
         boolean created = false;
         try {
-            HttpGet httpGet = new HttpGet(buildUrl("/api/v2/monitoringLocations/count"));
+            HttpGet httpGet = new HttpGet(buildUrlExternal("/api/v2/monitoringLocations/count"));
             ResponseData response = getRequest(httpGet);
             long locationCount = Long.parseLong(response.getResponseText());
 
@@ -70,17 +71,22 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals(new Select(findElementById("lookup_location")).getOptions().size(), locationCount);
             Assert.assertEquals(new Select(findElementById("location")).getOptions().size(), locationCount);
 
-            // create new location
-            sendPost("/api/v2/monitoringLocations", "<location location-name=\"Test\" monitoring-area=\"test\" priority=\"100\"/>", 201);
+            // creating the location "ABC" because "ABC" < "Default" alphabetically, see issue NMS-10514
+            sendPost("/api/v2/monitoringLocations", "<location location-name=\"ABC\" monitoring-area=\"ABC\" priority=\"100\"/>", 201);
             created = true;
 
             // verify
             gotoPage();
             Assert.assertEquals(new Select(findElementById("lookup_location")).getOptions().size(), locationCount + 1);
             Assert.assertEquals(new Select(findElementById("location")).getOptions().size(), locationCount + 1);
+
+            // check that "Default" is still selected even if the location "ABC" is added, see issue NMS-10514
+            Assert.assertEquals(new Select(findElementById("lookup_location")).getFirstSelectedOption().getText(), "Default");
+            Assert.assertEquals(new Select(findElementById("location")).getFirstSelectedOption().getText(), "Default");
+
         } finally {
             if (created) {
-                sendDelete("/api/v2/monitoringLocations/Test", 204);
+                sendDelete("/api/v2/monitoringLocations/ABC", 204);
             }
         }
     }
@@ -134,17 +140,17 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testVersionHandling() {
         new Select(findElementByName("version")).selectByVisibleText("v1");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//span[text()='v3 specific parameters']")));
 
         new Select(findElementByName("version")).selectByVisibleText("v2c");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//span[text()='v3 specific parameters']")));
 
         // change to v3
         new Select(findElementByName("version")).selectByVisibleText("v3");
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//span[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='v3 specific parameters']")));
     }
 
     /**
@@ -267,8 +273,8 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     public void testCancelButton() {
         findElementByName("cancelButton").click();
         // this takes you to the admin page
-        findElementByXpath("//h3[text()='OpenNMS System']");
-        assertTrue(m_driver.getCurrentUrl().endsWith("/admin/index.jsp"));
+        findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");
+        assertTrue(driver.getCurrentUrl().endsWith("/admin/index.jsp"));
     }
 
     /**

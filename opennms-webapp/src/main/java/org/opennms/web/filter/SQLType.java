@@ -48,7 +48,8 @@ public interface SQLType<T> {
     public static final SQLType<String> STRING = new StringSqlType();
     public static final SQLType<Date> DATE = new DateSqlType();
     public static final SQLType<OnmsSeverity> SEVERITY = new OnmsSeveritySqlType();
-    
+    public static final SQLType<Boolean> BOOLEAN = new BooleanSqlType();
+
     /**
      * <p>getValueAsString</p>
      *

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,14 +31,10 @@ package org.opennms.core.schema;
 import liquibase.resource.ResourceAccessor;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.core.io.Resource;
 
+import java.io.IOException;
 
-/**
- * <p>Migration class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class Migration {
     public static final String LIQUIBASE_CHANGELOG_FILENAME = "changelog.xml";
 
@@ -51,7 +47,7 @@ public class Migration {
     private String m_databasePassword;
     private String m_adminUser;
     private String m_adminPassword;
-    private ResourceAccessor m_accessor;
+    private String m_changeLog;
 
     /**
      * Get the JDBC connection URL.  Defaults to jdbc:postgresql://host/database.
@@ -200,12 +196,25 @@ public class Migration {
         m_adminPassword = adminPassword;
     }
 
-    public ResourceAccessor getAccessor() {
-        return m_accessor;
+    /**
+     * <p>getChangeLog</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getChangeLog() {
+        return m_changeLog;
+    }
+    /**
+     * <p>setChangeLog</p>
+     *
+     * @param changeLog a {@link java.lang.String} object.
+     */
+    public void setChangeLog(String changeLog) {
+        m_changeLog = changeLog;
     }
 
-    public void setAccessor(final ResourceAccessor accessor) {
-        m_accessor = accessor;
+    public void setChangeLog(final Resource resource) throws IOException {
+        m_changeLog = resource.getURI().toString();
     }
 
     /**
@@ -223,7 +232,7 @@ public class Migration {
             .append("url", m_jdbcUrl)
             .append("admin-user", m_adminUser)
             .append("user", m_databasePassword)
-            .append("accessor", m_accessor)
+            .append("changelog", m_changeLog)
             .toString();
     }
 }

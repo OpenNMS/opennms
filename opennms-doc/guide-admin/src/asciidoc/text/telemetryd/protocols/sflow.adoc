@@ -1,0 +1,85 @@
+
+==== sFlow
+
+sFlow is capable of transporting both, telemetry data and flow information.
+_{opennms-product-name}_ can utilize both data types and extract and persist accordingly.
+
+See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.
+
+
+[[telemetryd-sflow-parser-udp]]
+===== sFlow UDP Parser
+
+The sFlow UDP Parser accepts packets received by a <<telemetryd-listener-udp, UDP Listener>> and must forward them to a <<telemetryd-sflow-adapter, sFlow Adapter>>.
+
+The sFlow UDP Parser supports protocol detection.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser`
+|===
+
+====== Parameters
+
+This parser does not currently have any configurable parameters.
+
+
+[[telemetryd-sflow-adapter-flow]]
+===== sFlow Adapter
+
+The sFlow Adapter is used to handle _sFlow_ data received and parsed by the <<telemetryd-sflow-parser, sFlow Parser>>.
+Flows are decoded from the messages into the canonical flow format and are published to the _flow repository_.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter`
+|===
+
+====== Parameters
+
+This adapter does not currently have any configurable parameters.
+
+
+[[telemetryd-sflow-adapter-telemetry]]
+===== sFlow Telemetry Adapter
+
+The sFlow Telemetry Adapter is used to handle _sFlow_ telemetry data received and parsed by the <<telemetryd-sflow-parser-udp, sFlow UDP Parser>>.
+The telemetry data is forwarded to a JSR-223 compatible script (i.e. Beanshell or Groovy) for further processing.
+Using the script extension you can extract the desired metrics from the sFlow messages and persist the results as time series data.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter`
+|===
+
+====== Parameters
+
+.Adapter specific parameters
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                       | Required | Default value
+| `script`         | Full path to the script used to handle the sFlow messages         | required | (none)
+|===
+
+====== Scripting
+
+The script will be invoked for every sFlow (extended) counter sample that is received.
+
+The following globals will be passed to the script:
+
+.Globals passed to the script
+[options="header, autowidth"]
+|===
+| Parameter  | Description                                                      | Type
+| `agent`    | The agent (node) against which the metrics will be associated    | `org.opennms.netmgt.collection.api.CollectionAgent`
+| `builder`  | Builder in which the resources and metrics should be added       | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
+| `msg`      | sFlow (extended) counter sample                                  | dynamic Map
+|===
+
+See https://sflow.org/developers/specifications.php[sFlow Specification] for the contained fields and their meaning.

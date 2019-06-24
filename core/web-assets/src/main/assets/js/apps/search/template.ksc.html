@@ -7,12 +7,12 @@
       typeahead-no-results="kscNoResults"
       typeahead-min-length="1"
       typeahead-on-select="goToKscReport($item)"/>
-    <span class="input-group-addon">
-      <span class="glyphicon glyphicon-search"></span>
-    </span>
+    <div class="input-group-append">
+      <span class="input-group-text"><i class="fa fa-search"></i></span>
+    </div>
   </div>
-  <i ng-show="kscLoadingNodes" class="glyphicon glyphicon-refresh"></i>
-  <p class="help-block" ng-show="kscNoResults">
-    <i class="glyphicon glyphicon-remove"></i> No Results Found
+  <i ng-show="kscLoadingNodes" class="fa fa-refresh"></i>
+  <p class="form-text text-muted" ng-show="kscNoResults">
+    <i class="fa fa-remove"></i> No Results Found
   </p>
 </div>

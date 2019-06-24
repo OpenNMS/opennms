@@ -54,8 +54,12 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.test.MockLogAppender;
+import org.osgi.framework.BundleContext;
 
 import com.google.common.util.concurrent.RateLimiter;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 public class AggregationTest {
 
@@ -71,6 +75,22 @@ public class AggregationTest {
         public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
             dispatchedMessages.add(message);
         }
+
+        @Override
+        public String getMetricDomain() {
+            return AggregationTest.class.getPackage().getName();
+        }
+
+        @Override
+        public BundleContext getBundleContext() {
+            return null;
+        }
+
+        @Override
+        public Tracer getTracer() {
+            return GlobalTracer.get();
+        }
+
     };
 
     @Before
@@ -402,6 +422,16 @@ public class AggregationTest {
 
         @Override
         public T unmarshal(byte[] bytes) {
+            return null;
+        }
+
+        @Override
+        public byte[] marshalSingleMessage(S message) {
+            return null;
+        }
+
+        @Override
+        public S unmarshalSingleMessage(byte[] message) {
             return null;
         }
 

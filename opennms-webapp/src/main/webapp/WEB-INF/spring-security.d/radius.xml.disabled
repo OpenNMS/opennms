@@ -47,7 +47,7 @@
     <!--<beans:property name="port" value="1812"/>-->
     <!--<beans:property name="timeout" value="5"/>-->
     <!--<beans:property name="retries" value="3"/>-->
-    <!--<beans:property name="authTypeClass"><beans:bean class="net.jradius.client.auth.PAPAuthenticator"/></beans:property>-->
+    <!--<beans:property name="authTypeClass" value="net.jradius.client.auth.PAPAuthenticator"/> -->
     <!--<beans:property name="defaultRoles" value="ROLE_USER"/>-->
     <!--<beans:property name="rolesAttribute" value="Unknown-VSAttribute(%%% Vendor ID %%%:%%% Attribute Number %%%)"/>-->
   </beans:bean>

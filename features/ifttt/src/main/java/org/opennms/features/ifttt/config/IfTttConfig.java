@@ -95,9 +95,9 @@ public class IfTttConfig {
         this.triggerPackages = triggerPackages;
     }
 
-    public TriggerPackage getTriggerPackageForCategoryFilter(final String categoryFilter) {
+    public TriggerPackage getTriggerPackageForFilters(final String filterKey) {
         for (final TriggerPackage triggerPackage : triggerPackages) {
-            if (categoryFilter.equals(triggerPackage.getCategoryFilter())) {
+            if (filterKey.equals(triggerPackage.getFilterKey())) {
                 return triggerPackage;
             }
         }
@@ -112,9 +112,9 @@ public class IfTttConfig {
         final IfTttConfig that = (IfTttConfig) o;
 
         return Objects.equals(key, that.key) &&
-               Objects.equals(enabled, that.enabled) &&
-               Objects.equals(triggerPackages, that.triggerPackages) &&
-               Objects.equals(pollInterval, that.pollInterval);
+                Objects.equals(enabled, that.enabled) &&
+                Objects.equals(triggerPackages, that.triggerPackages) &&
+                Objects.equals(pollInterval, that.pollInterval);
     }
 
     @Override

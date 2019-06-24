@@ -46,7 +46,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-icmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath:/pinger.xml"
 })
 @JUnitConfigurationEnvironment
@@ -93,6 +95,11 @@ public class LocationAwarePingClientIT extends CamelBlueprintTest {
                     @Override
                     public String getLocation() {
                         return REMOTE_LOCATION_NAME;
+                    }
+
+                    @Override
+                    public String getType() {
+                        return SystemType.Minion.name();
                     }
                 }, new Properties()));
 

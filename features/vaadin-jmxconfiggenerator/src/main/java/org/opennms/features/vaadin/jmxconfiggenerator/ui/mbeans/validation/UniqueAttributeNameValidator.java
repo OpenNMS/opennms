@@ -28,14 +28,15 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
-import com.vaadin.data.validator.AbstractStringValidator;
-import com.vaadin.ui.Field;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.NameProvider;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.NameProvider;
+
+import com.vaadin.v7.data.validator.AbstractStringValidator;
+import com.vaadin.v7.ui.Field;
 
 /**
  * Ensures that a <code>value</code> only occurs once in a List of names.

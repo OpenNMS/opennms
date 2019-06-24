@@ -28,16 +28,17 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.MemoDao;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.alarm.SituationSummary;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,13 +66,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBean {
 
     @Autowired
-    AlarmDao m_alarmDao;
+    private AlarmDao m_alarmDao;
 
     @Autowired
-    MemoDao m_memoDao;
+    private MemoDao m_memoDao;
     
     @Autowired
-    AcknowledgmentDao m_ackDao;
+    private AcknowledgmentDao m_ackDao;
+
+    @Autowired
+    private AlarmEntityNotifier m_alarmEntityNotifier;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -89,7 +94,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     @Transactional
     public void acknowledgeAlarms(String user, Date timestamp, int[] alarmIds) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        criteria.add(Restrictions.in("id", findRelatedAlarms(alarmIds)));
         acknowledgeMatchingAlarms(user, timestamp, criteria);
     }
 
@@ -224,7 +229,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     @Override
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        criteria.add(Restrictions.in("id", findRelatedAlarms(alarmIds)));
         acknowledgeMatchingAlarms(user, timestamp, criteria);
     }
 
@@ -239,22 +244,45 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
         unacknowledgeMatchingAlarms(criteria, user);
     }
 
+    private Set<Integer> findRelatedAlarms(int[] alarmIds) {
+        final Set<Integer> allAlarmIds = new HashSet<>();
+        Set<Integer> toBeChecked = Sets.newHashSet(ArrayUtils.toObject(alarmIds));
+
+        do {
+            allAlarmIds.addAll(toBeChecked);
+
+            final Set<Integer> relatedAlarms = toBeChecked.stream()
+                    .map(i -> getAlarm(i))
+                    .filter(o -> o.isSituation())
+                    .flatMap(o -> o.getRelatedAlarmIds().stream())
+                    .collect(Collectors.toSet());
+
+            toBeChecked = relatedAlarms;
+        } while (!toBeChecked.isEmpty());
+
+        return allAlarmIds;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     @Transactional
     public void updateStickyMemo(Integer alarmId, String body, String user) {
-        OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
+        final OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
         if (onmsAlarm != null) {
             if (onmsAlarm.getStickyMemo() == null) {
                 onmsAlarm.setStickyMemo(new OnmsMemo());
                 onmsAlarm.getStickyMemo().setCreated(new Date());
             }
+            final String previousBody = onmsAlarm.getStickyMemo().getBody();
+            final String previousAuthor = onmsAlarm.getStickyMemo().getAuthor();
+            final Date previousUpdated = onmsAlarm.getStickyMemo().getUpdated();
             onmsAlarm.getStickyMemo().setBody(body);
             onmsAlarm.getStickyMemo().setAuthor(user);
             onmsAlarm.getStickyMemo().setUpdated(new Date());
             m_alarmDao.saveOrUpdate(onmsAlarm);
+            m_alarmEntityNotifier.didUpdateStickyMemo(onmsAlarm, previousBody, previousAuthor, previousUpdated);
         }
     }
 
@@ -264,19 +292,23 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     @Override
     @Transactional
     public void updateReductionKeyMemo(Integer alarmId, String body, String user) {
-        OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
+        final OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
         if (onmsAlarm != null) {
             OnmsReductionKeyMemo memo = onmsAlarm.getReductionKeyMemo();
             if (memo == null) {
                 memo = new OnmsReductionKeyMemo();
                 memo.setCreated(new Date());
             }
+            final String previousBody = memo.getBody();
+            final String previousAuthor = memo.getAuthor();
+            final Date previousUpdated = memo.getUpdated();
             memo.setBody(body);
             memo.setAuthor(user);
             memo.setReductionKey(onmsAlarm.getReductionKey());
             memo.setUpdated(new Date());
             m_memoDao.saveOrUpdate(memo);
             onmsAlarm.setReductionKeyMemo(memo);
+            m_alarmEntityNotifier.didUpdateReductionKeyMemo(onmsAlarm, previousBody, previousAuthor, previousUpdated);
         }
     }
 
@@ -286,10 +318,12 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     @Override
     @Transactional
     public void removeStickyMemo(Integer alarmId) {
-        OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
+        final OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
         if (onmsAlarm != null && onmsAlarm.getStickyMemo() != null) {
+            final OnmsMemo stickyMemo = onmsAlarm.getStickyMemo();
             m_memoDao.delete(onmsAlarm.getStickyMemo());
             onmsAlarm.setStickyMemo(null);
+            m_alarmEntityNotifier.didDeleteStickyMemo(onmsAlarm, stickyMemo);
         }
     }
 
@@ -301,8 +335,10 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     public void removeReductionKeyMemo(int alarmId) {
         OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
         if (onmsAlarm != null && onmsAlarm.getReductionKeyMemo() != null) {
+            final OnmsReductionKeyMemo reductionKeyMemo = onmsAlarm.getReductionKeyMemo();
             m_memoDao.delete(onmsAlarm.getReductionKeyMemo());
             onmsAlarm.setReductionKeyMemo(null);
+            m_alarmEntityNotifier.didDeleteReductionKeyMemo(onmsAlarm, reductionKeyMemo);
         }
     }
 
@@ -321,4 +357,9 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
         return m_alarmDao.getNodeAlarmSummaries();
     }
 
+    @Override
+    @Transactional
+    public List<SituationSummary> getCurrentSituationSummaries() {
+        return m_alarmDao.getSituationSummaries();
+    }
 }

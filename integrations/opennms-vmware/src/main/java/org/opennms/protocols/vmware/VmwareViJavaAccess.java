@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -107,6 +106,7 @@ import com.vmware.vim25.ws.Client;
  */
 public class VmwareViJavaAccess {
 
+    public final static int DEFAULT_TIMEOUT = 3000;
     /**
      * logging for VMware library VI Java
      */
@@ -130,6 +130,10 @@ public class VmwareViJavaAccess {
     private Map<HostSystem, HostServiceTicket> m_hostServiceTickets = new HashMap<HostSystem, HostServiceTicket>();
 
     private Map<HostSystem, String> m_hostSystemCimUrls = new HashMap<HostSystem, String>();
+
+    private static ServiceInstancePool m_serviceInstancePool = new ServiceInstancePool();
+
+    private int m_timeout = DEFAULT_TIMEOUT;
 
     /**
      * Constructor for creating a instance for a given server and credentials.
@@ -193,6 +197,10 @@ public class VmwareViJavaAccess {
         m_password = vmwareServer.getPassword();
     }
 
+    public int getTimeout() {
+        return m_timeout;
+    }
+
     /**
      * Connects to the server.
      *
@@ -202,7 +210,7 @@ public class VmwareViJavaAccess {
     public void connect() throws MalformedURLException, RemoteException {
         relax();
 
-        m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
+        m_serviceInstance = m_serviceInstancePool.retain(m_hostname, m_username, m_password);
     }
 
     /**
@@ -221,6 +229,8 @@ public class VmwareViJavaAccess {
                     if (client != null) {
                         client.setConnectTimeout(timeout);
                         client.setReadTimeout(timeout);
+                        m_timeout = timeout;
+                        logger.debug("Set VMware service instance timeout to " + timeout + " ms.");
                         return true;
                     }
                 }
@@ -233,19 +243,7 @@ public class VmwareViJavaAccess {
      * Disconnects from the server.
      */
     public void disconnect() {
-        if (m_serviceInstance == null) {
-            // not connected
-            return;
-        } else {
-            ServerConnection serverConnection = m_serviceInstance.getServerConnection();
-
-            if (serverConnection == null) {
-                // not connected
-                return;
-            } else {
-                m_serviceInstance.getServerConnection().logout();
-            }
-        }
+        m_serviceInstancePool.release(m_serviceInstance);
     }
 
     /**
@@ -643,5 +641,9 @@ public class VmwareViJavaAccess {
                 }
             }
         }
+    }
+
+    public static void setServiceInstancePool(final ServiceInstancePool serviceInstancePool) {
+        m_serviceInstancePool = serviceInstancePool;
     }
 }

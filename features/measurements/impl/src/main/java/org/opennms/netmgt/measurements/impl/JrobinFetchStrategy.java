@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import java.util.Map;
 import org.jrobin.core.RrdException;
 import org.jrobin.data.DataProcessor;
 import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.model.QueryMetadata;
 import org.opennms.netmgt.measurements.model.Source;
 
 import com.google.common.collect.Maps;
@@ -51,7 +52,7 @@ public class JrobinFetchStrategy extends AbstractRrdBasedFetchStrategy {
      */
     @Override
     protected FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
-            Map<Source, String> rrdsBySource, Map<String, Object> constants) throws RrdException {
+            Map<Source, String> rrdsBySource, Map<String, Object> constants, QueryMetadata metadata) throws RrdException {
 
         final long startInSeconds = (long) Math.floor(start / 1000d);
         final long endInSeconds = (long) Math.floor(end / 1000d);
@@ -93,6 +94,6 @@ public class JrobinFetchStrategy extends AbstractRrdBasedFetchStrategy {
             columns.put(source.getLabel(), dproc.getValues(source.getLabel()));
         }
 
-        return new FetchResults(timestamps, columns, dproc.getStep() * 1000, constants);
+        return new FetchResults(timestamps, columns, dproc.getStep() * 1000, constants, metadata);
     }
 }

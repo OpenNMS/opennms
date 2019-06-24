@@ -7,5 +7,9 @@
                      use-lldp-discovery="true"
                      use-ospf-discovery="true"
                      use-isis-discovery="true"
+                     topology_interval="30000"
+                     bridge_topology_interval="300000"
+                     max_bft="100"
+                     discovery-bridge-threads="1"
                      />
     

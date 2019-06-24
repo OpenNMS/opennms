@@ -61,5 +61,4 @@ public class OnmsNodeTest {
         Assert.assertSame(o, iface);
         
     }
-
 }

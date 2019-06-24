@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,19 +40,23 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEventParameter;
-import org.opennms.netmgt.model.Situation;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.rest.model.v2.AlarmDTO;
 import org.opennms.web.rest.model.v2.AlarmSummaryDTO;
 import org.opennms.web.rest.model.v2.EventParameterDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = "spring", uses = {EventMapper.class})
 public abstract class AlarmMapper {
 
     private String ticketUrlTemplate = System.getProperty("opennms.alarmTroubleTicketLinkTemplate");
+
+    @Autowired
+    private EventConfDao eventConfDao;
 
     @Mappings({
             @Mapping(source = "distPoller.location", target = "location"),
@@ -89,9 +93,11 @@ public abstract class AlarmMapper {
         if (alarm.getTTicketId() != null && !alarm.getTTicketId().isEmpty() && ticketUrlTemplate != null) {
             alarmDTO.setTroubleTicketLink(getTicketUrl(alarm.getTTicketId()));
         }
-        if (alarm instanceof Situation) {
-            alarmDTO.setRelatedAlarms(((Situation)alarm).getAlarms().stream()
-                                      .map(a -> alarmToAlarmSummaryDTO(a))
+        // If there are no related alarms, we do not add them to the DTO and
+        // the field will not be serialized.
+        if (alarm.isSituation()) {
+            alarmDTO.setRelatedAlarms(alarm.getRelatedAlarms().stream()
+                                      .map(this::alarmToAlarmSummaryDTO)
                                       .sorted(Comparator.comparing(AlarmSummaryDTO::getId))
                                       .collect(Collectors.toList()));
         }
@@ -113,8 +119,18 @@ public abstract class AlarmMapper {
 
     public abstract EventParameterDTO eventParameterToEventParameterDTO(OnmsEventParameter eventParameter);
 
+    @Mappings({
+        @Mapping(source = "id", target = "id"),
+        @Mapping(source = "type", target = "type"),
+        @Mapping(source = "severity", target = "severity"),
+        @Mapping(source = "reductionKey", target = "reductionKey"),
+        @Mapping(source = "description", target = "description"),
+        @Mapping(source = "lastEvent.eventUei", target = "uei"),
+        @Mapping(source = "nodeLabel", target = "nodeLabel"),
+        @Mapping(source = "logMsg", target = "logMessage"),
+    })
     public abstract AlarmSummaryDTO alarmToAlarmSummaryDTO(OnmsAlarm alarm);
-
+    
     public void setTicketUrlTemplate(String ticketUrlTemplate) {
         this.ticketUrlTemplate = ticketUrlTemplate;
     }
@@ -124,5 +140,14 @@ public abstract class AlarmMapper {
         Objects.requireNonNull(ticketUrlTemplate);
         Objects.requireNonNull(ticketId);
         return ticketUrlTemplate.replaceAll("\\$\\{id\\}", ticketId);
+    }
+
+    @AfterMapping
+    protected void mapEventLabel(@MappingTarget AlarmSummaryDTO summaryDTO) {
+        summaryDTO.setLabel(eventConfDao.getEventLabel(summaryDTO.getUei()));
+    }
+
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        this.eventConfDao = eventConfDao;
     }
 }

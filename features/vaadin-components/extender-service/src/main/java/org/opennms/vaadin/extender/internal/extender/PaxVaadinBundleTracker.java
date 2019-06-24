@@ -17,22 +17,33 @@
  */
 package org.opennms.vaadin.extender.internal.extender;
 
-import com.vaadin.ui.UI;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javax.servlet.http.HttpServlet;
 
 import org.opennms.vaadin.extender.AbstractApplicationFactory;
 import org.opennms.vaadin.extender.VaadinResourceService;
+import org.opennms.vaadin.extender.internal.servlet.OSGiUIProvider;
 import org.opennms.vaadin.extender.internal.servlet.VaadinOSGiServlet;
-import org.osgi.framework.*;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.BundleTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServlet;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.*;
+import com.vaadin.server.UIProvider;
+import com.vaadin.ui.UI;
 
 public class PaxVaadinBundleTracker extends BundleTracker<Object> {
 
@@ -103,13 +114,17 @@ public class PaxVaadinBundleTracker extends BundleTracker<Object> {
 
 			final String widgetset = findWidgetset(bundle);
 			if (application != null) {
-			    VaadinOSGiServlet servlet = new VaadinOSGiServlet(new ApplicationFactoryWrapper(application), bundle.getBundleContext());
+				final ApplicationFactoryWrapper applicationFactoryWrapper = new ApplicationFactoryWrapper(application);
+				final UIProvider uiProvider = new OSGiUIProvider(applicationFactoryWrapper);
+				VaadinOSGiServlet servlet = new VaadinOSGiServlet(uiProvider, bundle.getBundleContext());
 
 				Map<String, Object> props = new Hashtable<String, Object>();
 				props.put(org.opennms.vaadin.extender.Constants.ALIAS, alias);
+				props.put(org.opennms.vaadin.extender.Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN, alias);
+				props.put("servlet.init.ui.class", applicationFactoryWrapper.getUIClass().getCanonicalName());
 
 				if (widgetset != null) {
-					props.put("widgetset", widgetset);
+					props.put("servlet.init.widgetset", widgetset);
 				}
 
 				@SuppressWarnings({"unchecked"})
@@ -134,7 +149,7 @@ public class PaxVaadinBundleTracker extends BundleTracker<Object> {
 		return super.addingBundle(bundle, event);
 	}
 
-	protected String findWidgetset(Bundle bundle) {
+	protected static String findWidgetset(Bundle bundle) {
 		Enumeration<URL> widgetEntries = bundle.findEntries("", "*.gwt.xml", true);
 //		Enumeration widgetEntries = bundle.getEntryPaths(VAADIN_PATH);
 		if (widgetEntries == null || !widgetEntries.hasMoreElements())

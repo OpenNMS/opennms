@@ -33,22 +33,20 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!-- bsm/summary-box.htm -->
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">
+<div class="card">
+  <div class="card-header">
       <a href="#">Business Services with Pending Problems</a>
-    </h3>
   </div>
   <c:choose>
     <c:when test="${empty services}">
-      <div class="panel-body">
-        <p class="noBottomMargin">
+      <div class="card-body">
+        <p class="mb-0">
           There are no pending problems.
         </p>
       </div>
     </c:when>
     <c:otherwise>
-      <table class="table table-condensed severity">
+      <table class="table table-sm severity mb-0">
         <c:forEach var="service" items="${services}">
           <c:url var="bsTopoLink" value="topology">
             <c:param name="focus-vertices" value="${service.id}"/>
@@ -64,7 +62,7 @@
         </c:forEach>
       </table>
       <c:if test="${more}">
-        <div class="panel-footer text-right">
+        <div class="card-footer text-right">
           Not all Business Services with Pending Problems are shown.
         </div>
       </c:if>

@@ -12,6 +12,7 @@ If the search returns a result within the specified timeout and attempts, the se
 The scope of the LDAP search is limited to the immediate subordinates of the base object.
 The LDAP search is anonymous by default.
 The LDAP monitor makes use of the _com.novell.ldap.LDAPConnection_ class.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 ===== Monitor facts
 
@@ -26,15 +27,15 @@ The LDAP monitor makes use of the _com.novell.ldap.LDAPConnection_ class.
 .Monitor specific parameters for the LdapMonitor
 [options="header, autowidth"]
 |===
-| Parameter       | Description                                                       | Required | Default value
-| `dn`            | The distinguished name to use if authenticated search is needed.  | optional | `-`
-| `password`      | The password to use if authenticated search is needed.            | optional | `-`
-| `port`          | The destination port where connection shall be attempted.         | optional | `389`
-| `retry`         | Number of attempts to get a search result.                        | optional | `1`
-| `searchbase`    | The base distinguished name to search from.                       | optional | `base`
-| `searchfilter`  | The LDAP search's filter.                                         | optional | `(objectclass=*)`
+| Parameter       | Description                                                       | Required | Default value | Placeholder substitution
+| `dn`            | The distinguished name to use if authenticated search is needed.  | optional | `-` | Yes
+| `password`      | The password to use if authenticated search is needed.            | optional | `-` | Yes
+| `port`          | The destination port where connection shall be attempted.         | optional | `389` | No
+| `retry`         | Number of attempts to get a search result.                        | optional | `1` | No
+| `searchbase`    | The base distinguished name to search from.                       | optional | `base` | No
+| `searchfilter`  | The LDAP search's filter.                                         | optional | `(objectclass=*)` | No
 | `version`       | The version of the LDAP protocol to use, specified as an integer.
-                    Note: Only LDAPv3 is supported at the moment.                     | optional | `3`
+                    Note: Only LDAPv3 is supported at the moment.                     | optional | `3` | No
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

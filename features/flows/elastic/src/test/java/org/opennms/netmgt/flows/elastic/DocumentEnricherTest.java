@@ -29,6 +29,8 @@
 package org.opennms.netmgt.flows.elastic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,6 +41,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.collect.Lists;
@@ -92,5 +95,77 @@ public class DocumentEnricherTest {
         node.setForeignSource(foreignSource);
         node.setForeignId(nodeId + "");
         return node;
+    }
+
+    @Test
+    public void testCreateClassificationRequest() {
+        final FlowDocument flowDocument = new FlowDocument();
+
+        // verify that null values are handled correctly, see issue HZN-1329
+        ClassificationRequest classificationRequest;
+
+        classificationRequest = enricher.createClassificationRequest(flowDocument);
+        assertEquals(false, classificationRequest.isClassifiable());
+
+        flowDocument.setDstPort(123);
+
+        classificationRequest = enricher.createClassificationRequest(flowDocument);
+        assertEquals(false, classificationRequest.isClassifiable());
+
+        flowDocument.setSrcPort(456);
+
+        classificationRequest = enricher.createClassificationRequest(flowDocument);
+        assertEquals(false, classificationRequest.isClassifiable());
+
+        flowDocument.setProtocol(6);
+
+        classificationRequest = enricher.createClassificationRequest(flowDocument);
+        assertEquals(true, classificationRequest.isClassifiable());
+    }
+
+    @Test
+    public void testDirection() {
+        final FlowDocument d1 = new FlowDocument();
+        d1.setSrcAddr("1.1.1.1");
+        d1.setSrcPort(1);
+        d1.setDstAddr("2.2.2.2");
+        d1.setDstPort(2);
+        d1.setProtocol(6);
+        d1.setDirection(Direction.INGRESS);
+
+        final ClassificationRequest c1 = enricher.createClassificationRequest(d1);
+        assertEquals("1.1.1.1", c1.getSrcAddress());
+        assertEquals("2.2.2.2", c1.getDstAddress());
+        assertEquals(new Integer(1), c1.getSrcPort());
+        assertEquals(new Integer(2), c1.getDstPort());
+
+        final FlowDocument d2 = new FlowDocument();
+        d2.setSrcAddr("1.1.1.1");
+        d2.setSrcPort(1);
+        d2.setDstAddr("2.2.2.2");
+        d2.setDstPort(2);
+        d2.setProtocol(6);
+        d2.setDirection(Direction.EGRESS);
+
+        // check that fields stay as theay are even when EGRESS is used
+        final ClassificationRequest c2 = enricher.createClassificationRequest(d2);
+        assertEquals("1.1.1.1", c2.getSrcAddress());
+        assertEquals("2.2.2.2", c2.getDstAddress());
+        assertEquals(new Integer(1), c2.getSrcPort());
+        assertEquals(new Integer(2), c2.getDstPort());
+
+        final FlowDocument d3 = new FlowDocument();
+        d3.setSrcAddr("1.1.1.1");
+        d3.setSrcPort(1);
+        d3.setDstAddr("2.2.2.2");
+        d3.setDstPort(2);
+        d3.setProtocol(6);
+        d3.setDirection(null);
+
+        final ClassificationRequest c3 = enricher.createClassificationRequest(d3);
+        assertEquals("1.1.1.1", c3.getSrcAddress());
+        assertEquals("2.2.2.2", c3.getDstAddress());
+        assertEquals(new Integer(1), c3.getSrcPort());
+        assertEquals(new Integer(2), c3.getDstPort());
     }
 }

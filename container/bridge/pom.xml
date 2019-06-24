@@ -6,106 +6,15 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
-
     <groupId>org.opennms.container</groupId>
     <artifactId>org.opennms.container.bridge</artifactId>
-    <packaging>bundle</packaging>
-    <name>OpenNMS :: OSGi Container :: Web Servlet OSGi Bridge</name>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>
-                            org.opennms.container.web.bridge.internal.BridgeActivator
-                        </Bundle-Activator>
-                        <Bundle-SymbolicName>
-                            org.opennms.container.web.bridge
-                        </Bundle-SymbolicName>
-                        <Export-Package>
-                            org.apache.felix.http.api;version=${felixVersion},
-                            org.osgi.service.http;version=1.2.1
-                        </Export-Package>
-                        <Private-Package>
-                            org.opennms.container.web.felix.base.internal.*,
-                            org.opennms.container.web.bridge.internal.*
-                        </Private-Package>
-                        <Import-Package>
-                            javax.servlet.*,
-                            *;resolution:=optional
-                        </Import-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.api</artifactId>
-            <version>${felixVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.eclipsesource.jaxrs</groupId>
-            <artifactId>publisher-api</artifactId>
-            <version>${osgiJaxRsVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>spring-dependencies</artifactId>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>spring-test-dependencies</artifactId>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <!-- Required for com.eclipsesource.jaxrs/* -->
-    <repositories>
-        <repository>
-            <snapshots><enabled>false</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
-            <id>opennms-repo</id>
-            <name>OpenNMS Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-        </repository>
-        <repository>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-            <id>opennms-snapshots</id>
-            <name>OpenNMS Snapshot Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-        </repository>
-    </repositories>
-
+    <packaging>pom</packaging>
+    <name>OpenNMS :: OSGi Container :: Web OSGi Bridge :: Parent</name>
+    <modules>
+        <module>api</module>
+        <module>proxy</module>
+        <module>rest</module>
+    </modules>
 </project>

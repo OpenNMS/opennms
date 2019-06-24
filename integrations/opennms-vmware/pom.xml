@@ -5,7 +5,7 @@
     <parent>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-integrations</artifactId>
-      <version>23.0.0-SNAPSHOT</version>
+      <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>opennms-vmware</artifactId>
@@ -91,6 +91,15 @@
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
+                <!--
+                    Lombok is a build dependency and should not leak into our project.
+                    We exclude it, otherwise it does not compile under Java 9.
+                    Please refer to https://github.com/rzwitserloot/lombok/issues/1629#issuecomment-376005025 for more details
+                -->
+                <exclusion>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -156,6 +165,11 @@
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>
             <artifactId>org.opennms.core.test-api.xml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>1.7.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

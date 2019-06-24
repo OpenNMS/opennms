@@ -43,9 +43,15 @@ import com.datastax.driver.core.ConsistencyLevel;
 public class ContextConfigurationFactory {
 
     public static ContextConfigurations getContextConfigurations() {
-        String resourceShardStr = System.getProperty("org.opennms.newts.config.resource_shard", "604800");
-        String readConsistencyStr = System.getProperty("org.opennms.newts.config.read_consistency", "ONE");
-        String writeConsistencyStr = System.getProperty("org.opennms.newts.config.write_consistency", "ANY");
+        return getContextConfigurations(
+                System.getProperty("org.opennms.newts.config.resource_shard", "604800"),
+                System.getProperty("org.opennms.newts.config.read_consistency", "ONE"),
+                System.getProperty("org.opennms.newts.config.write_consistency", "ANY")
+        );
+    }
+
+    public static ContextConfigurations getContextConfigurations(
+            final String resourceShardStr, final String readConsistencyStr, final String writeConsistencyStr) {
 
         Duration resourceShard = Duration.seconds(Long.parseLong(resourceShardStr));
         ConsistencyLevel readConsistency = ConsistencyLevel.valueOf(readConsistencyStr);

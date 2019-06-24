@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.opennms.core.web.HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined;
+
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
@@ -50,7 +52,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +70,7 @@ import com.google.common.base.Strings;
  */
 
 @Distributable(DistributionContext.DAEMON)
-final public class HttpPostMonitor extends AbstractServiceMonitor {
+final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
 
     /**
      * Default port.
@@ -126,16 +128,16 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
         int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
 
         //URI
-        String strURI = ParameterMap.getKeyedString(parameters, PARAMETER_URI, DEFAULT_URI);
+        String strURI = resolveKeyedString(parameters, PARAMETER_URI, DEFAULT_URI);
 
         //Username
-        String strUser = ParameterMap.getKeyedString(parameters, PARAMETER_USERNAME, null);
+        String strUser = resolveKeyedString(parameters, PARAMETER_USERNAME, null);
 
         //Password
-        String strPasswd = ParameterMap.getKeyedString(parameters, PARAMETER_PASSWORD, null);
+        String strPasswd = resolveKeyedString(parameters, PARAMETER_PASSWORD, null);
 
         //BannerMatch
-        String strBannerMatch = ParameterMap.getKeyedString(parameters, PARAMETER_BANNER, null);
+        String strBannerMatch = resolveKeyedString(parameters, PARAMETER_BANNER, null);
 
         //Scheme
         String strScheme = ParameterMap.getKeyedString(parameters, PARAMETER_SCHEME, DEFAULT_SCHEME);
@@ -180,6 +182,8 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                 if (strUser != null && strPasswd != null) {
                     clientWrapper.addBasicCredentials(strUser, strPasswd);
                 }
+
+                setUseSystemProxyIfDefined(clientWrapper, parameters);
 
                 try {
                     postReq = new StringEntity(strPayload, ContentType.create(strMimetype, strCharset));

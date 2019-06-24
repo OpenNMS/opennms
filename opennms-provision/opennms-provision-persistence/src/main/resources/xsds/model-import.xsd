@@ -24,6 +24,7 @@
         <element ref="this:interface" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:category" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:asset" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:meta-data" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="node-label" use="required">
         <simpleType>
@@ -92,6 +93,7 @@
       <sequence>
         <element ref="this:monitored-service" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:category" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:meta-data" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="ip-addr" type="string" use="required" />
       <attribute name="descr" use="optional" >
@@ -136,8 +138,8 @@
     </annotation>
     <complexType>
       <sequence>
-        <element ref="this:category" minOccurs="0" maxOccurs="unbounded">
-        </element>
+        <element ref="this:category" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:meta-data" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="service-name" type="string" use="required" />
     </complexType>
@@ -160,6 +162,16 @@
     </annotation>
     <complexType>
       <attribute name="name" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
+    </complexType>
+  </element>
+  <element name="meta-data">
+    <annotation>
+      <documentation>This element is used to associated meta-data with a node.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="context" type="string" use="required" />
+      <attribute name="key" type="string" use="required" />
       <attribute name="value" type="string" use="required" />
     </complexType>
   </element>

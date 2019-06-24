@@ -7,6 +7,7 @@
 The _JDBCQueryMonitor_ runs an SQL query against a database and is able to verify the result of the query.
 A read-only connection is used to run the SQL query, so the data in the database is not altered.
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 ===== Monitor facts
 
@@ -21,19 +22,19 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 .Monitor specific parameters for the JDBCQueryMonitor
 [options="header, autowidth"]
 |===
-| Parameter  | Description                                                        | Required | Default value
-| `driver`   | JDBC driver class to use                                           | required | `org.postgresql.Driver`
-| `url`      | JDBC URL to connect to.                                            | required | `jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms`
-| `user`     | Database user                                                      | required | `postgres`
-| `password` | Database password                                                  | required | `empty string`
-| `query`    | The SQL query to run                                               | required | `-`
-| `action`   | What evaluation action to perform                                  | required | `row_count`
-| `column`   | The result column to evaluate against                              | required | `-`
-| `operator` | Operator to use for the evaluation                                 | required | `>=`
-| `operand`  | The operand to compare against the SQL query result                | required | depends on the action
+| Parameter  | Description                                                        | Required | Default value | Placeholder substitution
+| `driver`   | JDBC driver class to use                                           | required | `org.postgresql.Driver` | No
+| `url`      | JDBC URL to connect to.                                            | required | `jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms` | Yes
+| `user`     | Database user                                                      | required | `postgres` | Yes
+| `password` | Database password                                                  | required | `empty string` | Yes
+| `query`    | The SQL query to run                                               | required | `-` | No
+| `action`   | What evaluation action to perform                                  | required | `row_count` | No
+| `column`   | The result column to evaluate against                              | required | `-` | No
+| `operator` | Operator to use for the evaluation                                 | required | `>=` | No
+| `operand`  | The operand to compare against the SQL query result                | required | depends on the action | No
 | `message`  | The message to use if the service is down.
-               Both operands and the operator are added to the message too.       | optional | generic message depending on the action
-| `retries`  | How many retries should be performed before failing the test       | optional | `0`
+               Both operands and the operator are added to the message too.       | optional | generic message depending on the action | No
+| `retries`  | How many retries should be performed before failing the test       | optional | `0` | No
 |===
 
 NOTE: The +OPENNMS_JDBC_HOSTNAME+ is replaced in the +url+ parameter with the IP or resolved hostname of the interface the monitored service is assigned to.

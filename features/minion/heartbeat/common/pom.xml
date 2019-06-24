@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>org.opennms.features.minion.heartbeat</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.minion.heartbeat</groupId>
@@ -31,7 +31,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.features.minion</groupId>
+            <groupId>org.opennms.features.distributed</groupId>
             <artifactId>core-api</artifactId>
             <version>${project.version}</version>
         </dependency>

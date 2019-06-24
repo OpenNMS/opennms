@@ -20,6 +20,7 @@
 	<bean id="awsRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.aws.sqs.client.AmazonSQSRemoteMessageDispatcherFactory"
 	  init-method="init" destroy-method="destroy">
 	  <property name="awsSqsManager" ref="awsSqsManager"/>
+	  <property name="bundleContext" ref="blueprintBundleContext"/>
 	</bean>
 
     <service ref="awsRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>

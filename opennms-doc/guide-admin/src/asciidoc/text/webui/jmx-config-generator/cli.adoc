@@ -5,7 +5,12 @@
 ==== CLI based utility
 
 The command line _(CLI)_ based tool is not installed by default.
+ifdef::opennms-prime[]
+It is available as an _RPM_ package in the official repositories.
+endif::opennms-prime[]
+ifndef::opennms-prime[]
 It is available as _Debian_ and _RPM_ package in the official repositories.
+endif::opennms-prime[]
 
 ===== Installation
 
@@ -16,12 +21,14 @@ It is available as _Debian_ and _RPM_ package in the official repositories.
 yum install opennms-jmx-config-generator
 ----
 
+ifndef::opennms-prime[]
 .Debian based installation with apt
 
 [source, shell]
 ----
 apt-get install opennms-jmx-config-generator
 ----
+endif::opennms-prime[]
 
 .Installation from source
 
@@ -40,7 +47,7 @@ This file can be invoked by:
 
 [source, shell]
 ----
-java -jar target/jmxconfiggenerator-23.0.0-SNAPSHOT-onejar.jar
+java -jar target/jmxconfiggenerator-25.0.0-SNAPSHOT-onejar.jar
 ----
 
 ===== Usage

@@ -13,7 +13,7 @@ NOTE: Only nodes with a running _CDP_ process can be part of the link discovery.
       The data is similar to running a `show cdp neighbor` command on the IOS CLI of the device.
       Linux and Windows servers don't have a _CDP_ process running by default and will not be part of the link discovery.
 
-The following OIDs are supported to discover and build the _CDP_ network topology.
+The following OIDs are supported to discover and build the _CDP_ network topology and are collected by the _CDP Discovery Collector_.
 
 .Supported OIDS from the IF-MIB
 [options="header, autowidth"]
@@ -76,3 +76,6 @@ Information gathered from these OIDs will be stored in the following database ta
 
 .Database tables related to CDP discovery
 image::enlinkd/cdp-database.png[]
+
+_Cdp Topology Updater_ provide CDP OnmsTopology consolidating cdp data collected by _CDP Collector_ only full bidirectional connections between two Cdp supported devices become _Edges_.
+_Node A_  and _Node B_ are connected by an _CDP Edge_ if and only if there is a CDP MIB port connection in _Node A_ to _Node B_ and viceversa.

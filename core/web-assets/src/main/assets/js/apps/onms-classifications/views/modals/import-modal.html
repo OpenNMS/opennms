@@ -1,29 +1,29 @@
 <div class="modal-header">
-  <h4 class="modal-title">Import Classification Rules</h4>
+  <h5 class="modal-title">Import Classification Rules</h5>
 </div>
 <div class="modal-body">
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label class="col-sm-3 control-label">Group</label>
+  <form class="form">
+    <div class="form-group form-row">
+      <label class="col-sm-3 col-form-label">Group</label>
       <div class="col-sm-9">
-        <p class="form-control-static">{{group.name}}</p>
+        <p class="form-control-plaintext">{{group.name}}</p>
       </div>
     </div>
-    <div class="form-group">
-      <label class="col-sm-3 control-label" for="importFile">Select file to import</label>
+    <div class="form-group form-row">
+      <label class="col-sm-3 col-form-label" for="importFile">Select file to import</label>
       <div class="col-sm-9">
         <div class="input-group">
-          <span class="input-group-btn">
-              <button ng-click="openFileDialogue()" class="btn btn-default" type="button">Choose</button>
+          <span class="input-group-prepend">
+              <button ng-click="openFileDialogue()" class="btn btn-secondary" type="button">Choose</button>
           </span>
           <input ng-click="openFileDialogue()" type="text" id="importFile" class="form-control" placeholder='Choose a file...' ng-model="fileToUpload.name"/>
-          <span class="input-group-btn">
-             <button class="btn btn-default" type="button" ng-click="resetInput()">Reset</button>
+          <span class="input-group-append">
+             <button class="btn btn-secondary" type="button" ng-click="resetInput()">Reset</button>
           </span>
         </div>
       </div>
     </div>
-    <div class="form-group">
+    <div class="form-group form-row">
       <div class="col-sm-offset-3 col-sm-9">
         <div class="checkbox">
           <label>
@@ -46,14 +46,14 @@
     <pagination model="pagination" position="bottom" on-change="navigateWithinErrors">
       <table class="table table-bordered table-striped">
         <tbody>
-        <tr>
-          <th class="col-md-1 text-nowrap">Row Index</th>
-          <th class="col-md-11 text-nowrap">Error Message</th>
+        <tr class="d-flex">
+          <th class="col-md-1">Row Index</th>
+          <th class="col-md-11">Error Message</th>
         </tr>
 
-        <tr ng-repeat="failedRow in failedRows">
-          <td class="text-nowwrap">{{failedRow['index']}}</td>
-          <td class="text-nowwrap">{{failedRow['message']}}</td>
+        <tr class="d-flex" ng-repeat="failedRow in failedRows">
+          <td class="col-md-1">{{failedRow['index']}}</td>
+          <td class="col-md-11">{{failedRow['message']}}</td>
         </tr>
         </tbody>
       </table>
@@ -64,5 +64,5 @@
   <div style="display: inline" title="Please confirm deletion">
     <button type="button" class="btn btn-primary" ng-click="uploadFile()" ng-show="fileToUpload" title="Upload Rule">Upload</button>
   </div>
-  <button type="button" class="btn btn-default" ng-click="$dismiss('cancelled by user')" >Cancel</button>
+  <button type="button" class="btn btn-secondary" ng-click="$dismiss('cancelled by user')" >Cancel</button>
 </div>

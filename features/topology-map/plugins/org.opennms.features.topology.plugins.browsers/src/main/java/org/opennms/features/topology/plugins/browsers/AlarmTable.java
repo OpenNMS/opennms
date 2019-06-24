@@ -28,12 +28,12 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import com.vaadin.data.Container;
-import com.vaadin.ui.AbstractSelect;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.themes.BaseTheme;
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;

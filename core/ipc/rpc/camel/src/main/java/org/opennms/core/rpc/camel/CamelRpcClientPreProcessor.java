@@ -28,14 +28,22 @@
 
 package org.opennms.core.rpc.camel;
 
+import static org.opennms.core.rpc.api.RpcClientFactory.JMX_DOMAIN_RPC;
+import static org.opennms.core.rpc.api.RpcClientFactory.RPC_REQUEST_SIZE;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.utils.PropertiesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
 
 public class CamelRpcClientPreProcessor implements Processor {
     private static final Logger LOG = LoggerFactory.getLogger(CamelRpcClientPreProcessor.class);
@@ -43,6 +51,9 @@ public class CamelRpcClientPreProcessor implements Processor {
     public static final String CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY = "org.opennms.jms.timeout";
     public static final long CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT = 20000L;
     protected final Long CAMEL_JMS_REQUEST_TIMEOUT;
+
+    private MetricRegistry metrics = new MetricRegistry();
+    private JmxReporter metricsReporter = null;
 
     public CamelRpcClientPreProcessor() {
         long camelJmsRequestTimeout = PropertiesUtils.getProperty(System.getProperties(), CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT);
@@ -68,7 +79,29 @@ public class CamelRpcClientPreProcessor implements Processor {
         if (wrapper.getRequest().getSystemId() != null) {
             exchange.getIn().setHeader(CamelRpcConstants.JMS_SYSTEM_ID_HEADER, wrapper.getRequest().getSystemId());
         }
+        if(wrapper.getTracingInfo().size() > 0) {
+            // Message mapping between camel and JMS ignores non-primitive headers there by need for marshalling.
+            String tracingInfo = TracingInfoCarrier.marshalTracingInfo(wrapper.getTracingInfo());
+            if(tracingInfo != null) {
+                exchange.getIn().setHeader(CamelRpcConstants.JMS_TRACING_INFO, tracingInfo);
+            }
+        }
         final String request = wrapper.getModule().marshalRequest((RpcRequest)wrapper.getRequest());
         exchange.getIn().setBody(request);
+        final Histogram rpcRequestSize = metrics.histogram(MetricRegistry.name(wrapper.getRequest().getLocation(), wrapper.getModule().getId(), RPC_REQUEST_SIZE));
+        rpcRequestSize.update(request.getBytes().length);
+    }
+
+    public void start() {
+        // Initialize metrics reporter.
+        metricsReporter = JmxReporter.forRegistry(metrics).
+                inDomain(JMX_DOMAIN_RPC).build();
+        metricsReporter.start();
+    }
+
+    public void stop() {
+        if (metricsReporter != null) {
+            metricsReporter.close();
+        }
     }
 }

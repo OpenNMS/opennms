@@ -15,5 +15,6 @@
   <tx:annotation-driven />
 
   <bean id="measurementsRestService" class="org.opennms.web.rest.v1.MeasurementsRestService"/>
+  <bean name="timeformatService" class="org.opennms.features.timeformat.impl.DefaultTimeformatService" />
 
 </beans>

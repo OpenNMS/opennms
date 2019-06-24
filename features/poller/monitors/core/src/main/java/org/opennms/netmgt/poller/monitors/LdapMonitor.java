@@ -43,7 +43,7 @@ import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable
-public class LdapMonitor extends AbstractServiceMonitor {
+public class LdapMonitor extends ParameterSubstitutingMonitor {
 
     public static final Logger LOG = LoggerFactory.getLogger(LdapMonitor.class);
 
@@ -132,8 +132,8 @@ public class LdapMonitor extends AbstractServiceMonitor {
         final String searchBase = ParameterMap.getKeyedString(parameters, "searchbase", DEFAULT_BASE);
         final String searchFilter = ParameterMap.getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
 
-        final String password = (String) parameters.get("password");
-        final String ldapDn = (String) parameters.get("dn");
+        final String password = resolveKeyedString(parameters, "password", null);
+        final String ldapDn = resolveKeyedString(parameters, "dn", null);
 
         String address = InetAddrUtils.str(svc.getAddress());
 
@@ -145,21 +145,8 @@ public class LdapMonitor extends AbstractServiceMonitor {
         // thus tying
         // up the thread
         Double responseTime = null;
-        Socket socket = null;
+
         try {
-
-            socket = new Socket();
-            socket.connect(new InetSocketAddress(svc.getAddress(), ldapPort), tracker.getConnectionTimeout());
-            socket.setSoTimeout(tracker.getSoTimeout());
-            LOG.debug("LdapMonitor: connected to host: {} on port: {}", address, ldapPort);
-
-            // We're connected, so upgrade status to unresponsive
-            serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
-        
-
-            if (socket != null)
-                socket.close();
-
             // lets detect the service
             LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(tracker.getSoTimeout()));
 
@@ -247,15 +234,6 @@ public class LdapMonitor extends AbstractServiceMonitor {
                     LOG.debug(e.getMessage());
                 }
             }
-        } catch (ConnectException e) {
-		LOG.debug("connection refused to host {}", address, e);
-        	reason = "connection refused to host " + address;
-        } catch (NoRouteToHostException e) {
-		LOG.debug("No route to host {}", address, e);
-        	reason = "No route to host " + address;
-        } catch (InterruptedIOException e) {
-		LOG.debug("did not connect to host with {}", tracker);
-        	reason = "did not connect to host with "+tracker;
         } catch (Throwable t) {
 		LOG.debug("An undeclared throwable exception caught contacting host {}", address, t);
         	reason = "An undeclared throwable exception caught contacting host " + address;

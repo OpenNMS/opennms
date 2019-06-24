@@ -203,6 +203,10 @@ public class VmwareImporter {
         }
         logger.debug("Successfully connected VIJava access for host {}", request.getHostname());
 
+        if (!vmwareViJavaAccess.setTimeout(request.getTimeout())) {
+            logger.warn("Error setting connection timeout");
+        }
+
         logger.debug("Starting to enumerate VMware managed objects from host {} ...", request.getHostname());
         try {
             int apiVersion = vmwareViJavaAccess.getMajorApiVersion();
@@ -517,8 +521,10 @@ public class VmwareImporter {
     }
 
     private boolean reachableCimService(VmwareViJavaAccess vmwareViJavaAccess, HostSystem hostSystem, String ipAddress) {
-        if (!vmwareViJavaAccess.setTimeout(3000)) {
-            logger.warn("Error setting connection timeout");
+        int oldTimeout = vmwareViJavaAccess.getTimeout();
+
+        if (!vmwareViJavaAccess.setTimeout(request.getCimTimeout())) {
+            logger.warn("Error setting CIM connection timeout");
         }
 
         logger.debug("Probing address {} for Host System '{}'", ipAddress, hostSystem.getName());
@@ -530,6 +536,10 @@ public class VmwareImporter {
             logger.debug("Error while probing for address {} for Host System '{}'", ipAddress, hostSystem.getName());
             logger.debug("Exception thrown while probing IP address: {}", e);
             return false;
+        } finally {
+            if (!vmwareViJavaAccess.setTimeout(oldTimeout)) {
+                logger.warn("Error restoring connection timeout");
+            }
         }
 
         return cimObjects != null;

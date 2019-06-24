@@ -28,10 +28,13 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -43,7 +46,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
+import org.opennms.netmgt.model.alarm.SituationSummary;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
@@ -95,56 +98,6 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         return findObjects(AlarmSummary.class, sql.toString());
     }
 
-    @Override
-    public List<EdgeAlarmStatusSummary> getLldpEdgeAlarmSummaries(List<Integer> lldpLinkIds) {
-        if (lldpLinkIds.size() < 1) {
-            return Collections.emptyList();
-        }
-
-        /*StringBuilder sql = new StringBuilder();
-        sql.append("SELECT new org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary( LEAST(s.id, t.id), GREATEST(s.id, t.id), alarm.uei)\n");
-        sql.append("FROM LldpLink as s\n");
-        sql.append("LEFT JOIN org.opennms.netmgt.model.LldpLink as t\n");
-        sql.append("with s.lldpRemPortDescr = t.lldpPortDescr AND\n");
-        sql.append(" s.lldpRemPortIdSubtype = t.lldpPortIdSubtype AND\n");
-        sql.append(" s.lldpRemPortId = t.lldpPortId\n");
-        sql.append("LEFT JOIN\n");
-        sql.append("  OnmsAlarm as alarm\n");
-        sql.append("with\n");
-        sql.append(" alarm.node.id = s.node.id AND\n");
-        sql.append(" s.lldpPortIfindex = alarm.ifindex\n");
-        sql.append("GROUP BY\n");
-        sql.append(" s.id,\n");
-        sql.append(" t.id,\n");
-        sql.append(" s.nodeId,\n");
-        sql.append(" t.nodeId,\n");
-        sql.append(" alarm.uei,\n");
-        sql.append(" alarm.lastEventTime\n");
-        sql.append("ORDER BY\n");
-        sql.append(" alarm.lastEventTime DESC limit 1");*/
-        final StringBuilder sql = new StringBuilder();
-        sql.append("SELECT new org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary( LEAST(s.id, t.id), GREATEST(s.id, t.id), alarm.uei)\n");
-        sql.append("FROM LldpLink as s\n");
-        sql.append("LEFT JOIN org.opennms.netmgt.model.LldpLink as t\n");
-        sql.append("LEFT JOIN\n");
-        sql.append("  OnmsAlarm as alarm\n");
-        sql.append("with\n");
-        sql.append(" alarm.node.id = s.node.id AND\n");
-        sql.append(" s.lldpPortIfindex = alarm.ifindex\n");
-        sql.append("GROUP BY\n");
-        sql.append(" s.id,\n");
-        sql.append(" t.id,\n");
-        sql.append(" s.node.id,\n");
-        sql.append(" t.node.id,\n");
-        sql.append(" alarm.uei,\n");
-        sql.append(" alarm.lastEventTime\n");
-        sql.append("ORDER BY\n");
-        sql.append(" alarm.lastEventTime DESC limit 1");
-
-
-        return findObjects(EdgeAlarmStatusSummary.class, sql.toString());
-    }
-
     /** {@inheritDoc} */
     @Override
     public List<AlarmSummary> getNodeAlarmSummaries() {
@@ -156,6 +109,42 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         sql.append("GROUP BY node.id, node.label ");
         sql.append("ORDER BY min(alarm.lastEventTime) DESC, node.label ASC");
         return findObjects(AlarmSummary.class, sql.toString());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<SituationSummary> getSituationSummaries() {
+        return getHibernateTemplate().execute(session -> (List<SituationSummary>) session.createSQLQuery(
+                "SELECT " +
+                        "  a1.alarmid, " +
+                        "  a1.severity, " +
+                        "  string_agg(DISTINCT n2.location, ', ')," +
+                        "  COUNT(DISTINCT n2.nodeid) AS nodeCount, " +
+                        "  COUNT(DISTINCT s1.related_alarm_id) AS alarmCount, " +
+                        "  MIN(a2.lastEventTime) " +
+                        "FROM " +
+                        "  alarms a1 JOIN alarm_situations s1 ON a1.alarmid=s1.situation_id " +
+                        "  LEFT JOIN alarms a2 ON s1.related_alarm_id = a2.alarmid " +
+                        "  LEFT JOIN node n2 ON a2.nodeid = n2.nodeid " +
+                        "WHERE " +
+                        "  a1.alarmAckTime IS NULL AND a1.severity>3 " +
+                        "GROUP BY " +
+                        "  a1.alarmid " +
+                        "ORDER BY " +
+                        "  a1.severity DESC, " +
+                        "  COUNT(DISTINCT s1.related_alarm_id) DESC")
+                .setResultTransformer(new ResultTransformer() {
+                    @Override
+                    public Object transformTuple(Object[] tuple, String[] aliases) {
+                        return new SituationSummary((Integer) tuple[0], OnmsSeverity.get((Integer) tuple[1]), (String) tuple[2], ((BigInteger) tuple[3]).longValue(), ((BigInteger) tuple[4]).longValue(), (Date) tuple[5]);
+                    }
+
+                    @SuppressWarnings("rawtypes")
+                    @Override
+                    public List transformList(List collection) {
+                        return collection;
+                    }
+                }).list());
     }
 
     @Override

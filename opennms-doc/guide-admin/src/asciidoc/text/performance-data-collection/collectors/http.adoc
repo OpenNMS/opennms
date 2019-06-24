@@ -27,6 +27,8 @@ Attributes are extracted from the _HTTP_ responses using a regular expression.
 | `port`                 | Override the default port in the all of the URIs                               | optional | 80
 | `timeout`              | Connection and socket timeout in milliseconds                                  | optional | 3000
 | `retry`                | Number of retries                                                              | optional | 2
+| `use-system-proxy`     | Should the system wide proxy settings be used? The system proxy settings can
+                           be configured in link:#ga-opennms-system-properties[opennms.conf]              | optional | `false`
 |===
 
 

@@ -66,9 +66,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
+import org.opennms.protocols.vmware.ServiceInstancePool;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 import org.sblim.wbem.cim.CIMDataType;
 import org.sblim.wbem.cim.CIMInstance;
 import org.sblim.wbem.cim.CIMNameSpace;
@@ -181,6 +183,13 @@ public class VmwareViJavaAccessTest {
         managedEntity = new ManagedEntity(null, managedObjectReferenceManagedEntity);
         virtualMachine = new VirtualMachine(null, managedObjectReferenceVirtualMachine);
         hostSystem = new HostSystem(null, managedObjectReferenceHostSystem);
+
+        Whitebox.setInternalState(VmwareViJavaAccess.class, "m_serviceInstancePool", new ServiceInstancePool(){
+            @Override
+            public synchronized ServiceInstance retain(String host, String username, String password) throws MalformedURLException, RemoteException {
+                return mockServiceInstance;
+            }
+        });
 
         // setup MorUtil
 

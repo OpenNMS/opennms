@@ -70,11 +70,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">Details for User: <%=user.getUserId()%></h2>
+    <div class="card">
+      <div class="card-header">
+        <span>Details for User: <%=user.getUserId()%></span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>
             Full Name:
@@ -106,11 +106,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">Notification Information</h2>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Notification Information</h2>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
                    <tr>
                      <th>
                        Email:
@@ -207,11 +207,15 @@
               
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">Duty Schedules:</h2>
+    <div class="card">
+      <div class="card-header">
+        <span>Duty Schedules</span>
       </div>
-      <table class="table table-condensed table-striped table-bordered">
+      <% Collection<String> dutySchedules = user.getDutySchedules(); %>
+      <% if (dutySchedules.isEmpty()) { %>
+      <div class="card-body">No schedule(s) defined yet.</div>
+      <% } else { %>
+      <table class="table table-sm table-striped">
         <thead>
           <tr>
           <th>Mo</th>
@@ -226,7 +230,6 @@
           </tr>
         </thead>
 
-			<% Collection<String> dutySchedules = user.getDutySchedules(); %>
                         <%
                                 for (String dutySchedule : dutySchedules) {
                                         DutySchedule tmp = new DutySchedule(dutySchedule);
@@ -252,6 +255,7 @@
                         </tr>
                         <% } %>
       </table>
+      <% } %>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

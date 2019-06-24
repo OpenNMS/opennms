@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,6 +52,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.SimpleDataSource;
@@ -488,10 +490,14 @@ public class Installer {
         m_ignore_database_version = m_commandLine.hasOption("Q");
         m_update_iplike = m_commandLine.hasOption("s");
         m_do_vacuum = m_commandLine.hasOption("v");
-        //m_installerDb.setDebug(m_commandLine.hasOption("x"));
+        m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
+
+        m_installerDb.setDebug(m_commandLine.hasOption("x"));
+        Configurator.setRootLevel(Level.WARN);
         if (m_commandLine.hasOption("x")) {
-            m_migrator.enableDebug();
+            Configurator.setRootLevel(Level.DEBUG);
         }
+
         m_fix_constraint_remove_rows = m_commandLine.hasOption("X");
         m_skip_upgrade_tools = m_commandLine.hasOption("S");
 

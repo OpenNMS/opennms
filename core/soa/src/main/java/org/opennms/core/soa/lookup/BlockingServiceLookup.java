@@ -31,7 +31,6 @@ package org.opennms.core.soa.lookup;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import org.opennms.core.soa.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,31 +38,26 @@ import org.slf4j.LoggerFactory;
  * Used to ensure that during startup a service can be fetched even if it is not yet available.
  *
  */
-public class BlockingServiceLookup implements ServiceLookup {
+public class BlockingServiceLookup<C, F> implements ServiceLookup<C, F> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BlockingServiceLookup.class);
 
-    private final ServiceLookup delegate;
+    private final ServiceLookup<C, F> delegate;
     private long gracePeriodInMs;
     private Supplier<Long> uptimeSupplier;
     private long lookupDelayMs;
+    private long waitTimeMs;
 
-    public BlockingServiceLookup(ServiceRegistry registry) {
-        Objects.requireNonNull(registry);
-        this.delegate =  new SimpleServiceLookup(registry);
+    protected BlockingServiceLookup(ServiceLookup<C, F> delegate) {
+        this.delegate = Objects.requireNonNull(delegate);
     }
 
     @Override
-    public <T> T lookup(Class<T> serviceClass) {
-        return this.lookup(serviceClass, null);
-    }
-
-    @Override
-    public <T> T lookup(Class<T> serviceClass, String filter) {
-        Objects.requireNonNull(serviceClass);
+    public <T> T lookup(C criteria, F filter) {
+        Objects.requireNonNull(criteria);
 
         // Lookup
-        T service = delegate.lookup(serviceClass, filter);
+        T service = delegate.lookup(criteria, filter);
         if (service != null) {
             return service;
         }
@@ -71,16 +65,16 @@ public class BlockingServiceLookup implements ServiceLookup {
         // A service matching the filter is not currently available.
         // Wait until the system has finished starting up (uptime >= grace period)
         // while ensuring we've waited for at least WAIT_PERIOD_MS before aborting the search.
-        final long waitUntil = System.currentTimeMillis() + ServiceLookupBuilder.WAIT_PERIOD_MS;
+        final long waitUntil = System.currentTimeMillis() + this.waitTimeMs;
         while (uptimeSupplier.get() < this.gracePeriodInMs
-                && System.currentTimeMillis() < waitUntil) {
+                || System.currentTimeMillis() < waitUntil) {
             try {
                 Thread.sleep(this.lookupDelayMs);
             } catch (InterruptedException e) {
-                LOG.error("Interrupted while waiting for service of type " + serviceClass + " to become available in the service registry. Aborting.");
+                LOG.error("Interrupted while waiting for service with search criteria " + criteria + " to become available in the service registry. Aborting.");
                 return null;
             }
-            service = delegate.lookup(serviceClass, filter);
+            service = delegate.lookup(criteria, filter);
             if (service != null) {
                 return service;
             }
@@ -100,5 +94,9 @@ public class BlockingServiceLookup implements ServiceLookup {
 
     void setLookupDelayMs(long lookupDelayMs) {
         this.lookupDelayMs = lookupDelayMs;
+    }
+
+    public void setWaitTimeMs(long waitTimeMs) {
+        this.waitTimeMs = waitTimeMs;
     }
 }

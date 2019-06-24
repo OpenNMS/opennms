@@ -41,6 +41,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
@@ -58,6 +59,8 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	protected abstract String getUsernamePropertyName();
 
 	protected abstract String getUrlPropertyName();
+
+	protected abstract String getUseSystemProxyPropertyName();
 
 	protected abstract String decorateMessageBody(String body);
 
@@ -86,8 +89,10 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	
 	    final HttpClientWrapper clientWrapper = HttpClientWrapper.create()
 	            .setConnectionTimeout(3000)
-	            .setSocketTimeout(3000)
-	            .useSystemProxySettings();
+	            .setSocketTimeout(3000);
+		if(getUseSystemProxy()) {
+	        clientWrapper.useSystemProxySettings();
+		}
 	
 	    HttpPost postMethod = new HttpPost(url);
 	
@@ -166,6 +171,16 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 			LOG.info("No icon URL specified as a notification command switch or via system property {}. Not setting one.", getIconUrlPropertyName());
 		}
 		return iconurl;
+	}
+
+	protected boolean getUseSystemProxy() {
+		String useSystemProxy = getValueFromSwitchOrProp("Use System Proxy", HttpClientWrapperConfigHelper.PARAMETER_KEYS.useSystemProxy.name(), getUseSystemProxyPropertyName());
+
+		if (useSystemProxy == null) {
+			LOG.info("useSystemProxy is not specified as a notification command switch or via system property {}. Setting it to true (use system proxy settings).", getUseSystemProxyPropertyName());
+            useSystemProxy="true"; // legacy behaviour
+		}
+		return Boolean.parseBoolean(useSystemProxy);
 	}
 
 	protected String getIconEmoji() {

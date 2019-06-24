@@ -35,12 +35,15 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.internal.edge.ApplicationEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.ReductionKeyEdgeImpl;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
@@ -132,6 +135,7 @@ public class BusinessServiceImpl implements BusinessService {
         edges.addAll(getIpServiceEdges());
         edges.addAll(getReductionKeyEdges());
         edges.addAll(getChildEdges());
+        edges.addAll(getApplicationEdges());
         return edges;
     }
 
@@ -152,6 +156,25 @@ public class BusinessServiceImpl implements BusinessService {
     public void addIpServiceEdge(IpService ipService, MapFunction mapFunction, int weight, String friendlyName) {
         m_manager.addIpServiceEdge(this, ipService, mapFunction, weight, friendlyName);
     }
+
+    @Override
+    public Set<ApplicationEdge> getApplicationEdges() {
+        return m_entity.getApplicationEdges()
+                .stream()
+                .map(edge -> new ApplicationEdgeImpl(m_manager, edge))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void setApplicationEdges(Set<ApplicationEdge> applicationEdges) {
+        m_manager.setApplicationEdges(this, applicationEdges);
+    }
+
+    @Override
+    public void addApplicationEdge(Application application, MapFunction mapFunction, int weight) {
+        m_manager.addApplicationEdge(this, application, mapFunction, weight);
+    }
+
 
     @Override
     public Set<ReductionKeyEdge> getReductionKeyEdges() {

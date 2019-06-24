@@ -33,7 +33,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.HorizontalLayout;
 
 /**
  * The Class EditorToolbar.
@@ -70,7 +70,6 @@ public abstract class EditorToolbar extends HorizontalLayout implements ClickLis
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         saveBtn.setVisible(!readOnly);
         cancelBtn.setVisible(!readOnly);
         editBtn.setVisible(readOnly);

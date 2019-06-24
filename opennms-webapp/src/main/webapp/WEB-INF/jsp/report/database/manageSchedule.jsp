@@ -57,11 +57,11 @@
     <div class="col-md-12">
         <c:choose>
             <c:when test="${empty pagedListHolder.pageList}">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Report Schedule List</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <span>Report Schedule List</span>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <p>The database report schedule is empty.</p>
                     </div>
                 </div>
@@ -131,26 +131,26 @@
                     </table>
                     <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
                     <div class="pagination">
-                        <a onClick="toggle(true, 'triggerNames')">Select all</a> /
-                        <a onClick="toggle(false, 'triggerNames')">Deselect all</a>
+                        <button type="button" class="btn btn-link" onClick="toggle(true, 'triggerNames')">Select all</button>
+                        <button type="button" class="btn btn-link" href onClick="toggle(false, 'triggerNames')">Deselect all</button>
                     </div>
                     <% } %>
 
                     <% // if deletion was successful %>
                     <c:if test="${not empty success}">
-                        <div class="alert-success" style="clear:both">
+                        <div class="alert alert-success" style="clear:both">
                                 ${success}
                         </div>
                     </c:if>
 
                     <% // If user is not allowed to delete %>
                     <c:if test="${not empty error}">
-                        <div class="alert-error" style="clear:both">
+                        <div class="alert alert-danger" style="clear:both">
                                 ${error}
                         </div>
                     </c:if>
                     <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-                    <input type="submit" class="btn btn-default" value="unschedule selected jobs"/>
+                    <input type="submit" class="btn btn-secondary" value="unschedule selected jobs"/>
                     <% } %>
 
                 </form:form>

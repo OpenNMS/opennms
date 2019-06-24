@@ -53,6 +53,7 @@ public enum SortStyle {
     ACKUSER("ackuser"),
     LOCATION("location"),
     NODE_LOCATION("nodelocation"),
+    SITUATION("situation"),
     REVERSE_SEVERITY("rev_severity"),
     REVERSE_LASTEVENTTIME("rev_lasteventtime"),
     REVERSE_FIRSTEVENTTIME("rev_firsteventtime"),
@@ -64,7 +65,9 @@ public enum SortStyle {
     REVERSE_COUNT("rev_count"),
     REVERSE_ACKUSER("rev_ackuser"),
     REVERSE_LOCATION("rev_location"),
-    REVERSE_NODE_LOCATION("rev_nodelocation");
+    REVERSE_NODE_LOCATION("rev_nodelocation"),
+    REVERSE_SITUATION("rev_situation")
+    ;
 
     /** Constant <code>m_sortStylesString</code> */
     private static final Map<String, SortStyle> m_sortStylesString;
@@ -227,6 +230,14 @@ public enum SortStyle {
 
         case REVERSE_NODE_LOCATION:
             clause = " ORDER BY NODE.LOCATION DESC, NODE.NODELABEL ASC";
+            break;
+
+        case SITUATION:
+            clause = " ORDER BY (SELECT COUNT(*)>0 FROM ALARM_SITUATIONS WHERE ALARM_SITUATIONS.SITUATION_ID = ALARMID) ASC";
+            break;
+
+        case REVERSE_SITUATION:
+            clause = " ORDER BY (SELECT COUNT(*)>0 FROM ALARM_SITUATIONS WHERE ALARM_SITUATIONS.SITUATION_ID = ALARMID) DESC";
             break;
 
         default:

@@ -37,7 +37,7 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class NotificationsPageIT extends OpenNMSSeleniumTestCase {
+public class NotificationsPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         notificationsPage();
@@ -45,27 +45,27 @@ public class NotificationsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
-        findElementByXpath("//h3[text()='Notification queries']");
-        findElementByXpath("//h3[text()='Outstanding and Acknowledged Notices']");
-        findElementByXpath("//h3[text()='Notification Escalation']");
+        assertEquals(3, countElementsMatchingCss("div.card-header"));
+        findElementByXpath("//span[text()='Notification queries']");
+        findElementByXpath("//span[text()='Outstanding and Acknowledged Notices']");
+        findElementByXpath("//span[text()='Notification Escalation']");
     }
 
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void testAllLinksArePresent() {
         findElementByLink("Your outstanding notices");
         findElementByLink("All outstanding notices");
         findElementByLink("All acknowledged notices");
     }
 
-    @Test 
-    public void testAllFormsArePresent() throws InterruptedException {
-        findElementByXpath("//button[@type='submit' and text() = 'Check notices']");
-        findElementByXpath("//button[@type='submit' and text() = 'Get details']");
+    @Test
+    public void testAllFormsArePresent() {
+        findElementByXpath("//button[@id='btn_search_by_notice' and @type='submit']");
+        findElementByXpath("//button[@id='btn_search_by_user' and @type='submit']");
     }
 
     @Test
-    public void testAllLinks() throws InterruptedException {
+    public void testAllLinks() {
         findElementByLink("Your outstanding notices").click();
         findElementByXpath("//span[@class='label label-default' and contains(text(), 'admin was notified')]");
         findElementByLink("[Remove all]");

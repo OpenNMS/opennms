@@ -1,0 +1,47 @@
+
+==== Step 2: Install the repository and Minion package
+
+.Add apt repository in /etc/apt/sources.list.d/opennms.list and add GPG key
+[source, shell]
+----
+echo 'deb https://debian.opennms.org stable main \
+      deb-src https://debian.opennms.org stable main' > /etc/apt/sources.list.d/opennms.list
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+apt update
+----
+
+.Install the Minion package
+[source, bash]
+----
+apt -y install opennms-minion
+----
+
+The following packages will be automatically installed:
+
+* _opennms-minion_: The Minion meta package
+* _opennms-minion-container_: The _Karaf_ OSGi container with _Minion_ branding and additional management extensions
+* _opennms-minion-features-core_: Core utilities and services required by the _Minion_ features
+* _opennms-minion-features-default_: Service-specific features
+
+The _Minion_ packages setup the following directory structure:
+
+[source, shell]
+----
+[root@localhost /usr/share/minion]# $ tree -L 1
+.
+├── bin
+├── deploy
+├── etc
+├── lib
+├── repositories
+└── system
+----
+
+Additionally, symbolic links are set up pointing to `/etc/minion` and `/var/log/minion` to match Debian's expected filesystem layout.
+
+The Minion's startup configuration can be changed by editing the `/etc/default/minion` file.
+It allows to override the defaults used at startup including:
+
+* Location of the JDK
+* Memory usage
+* User to run as

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.model.v2;
 
+import java.beans.Transient;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -54,6 +55,17 @@ public class AlarmSummaryDTO {
 
     @XmlElement(name="description")
     private String description;
+
+    @XmlElement(name="label")
+    private String label;
+
+    @XmlElement(name="nodeLabel")
+    private String nodeLabel;
+
+    @XmlElement(name="logMessage")
+    private String logMessage;
+
+    private String uei;
 
     public Integer getId() {
         return id;
@@ -95,6 +107,39 @@ public class AlarmSummaryDTO {
         this.description = description;
     }
 
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getNodeLabel() {
+        return label;
+    }
+
+    public void setNodeLabel(final String nodeLabel) {
+        this.nodeLabel = nodeLabel;
+    }
+
+    public String getLogMessage() {
+        return logMessage;
+    }
+
+    public void setLogMessage(String logMessage) {
+        this.logMessage = logMessage;
+    }
+
+    @Transient
+    public String getUei() {
+        return uei;
+    }
+
+    public void setUei(String uei) {
+        this.uei = uei;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -104,11 +149,15 @@ public class AlarmSummaryDTO {
                 Objects.equals(reductionKey, alarmDTO.reductionKey) &&
                 Objects.equals(type, alarmDTO.type) &&
                 Objects.equals(severity, alarmDTO.severity) &&
-                Objects.equals(description, alarmDTO.description);
+                Objects.equals(description, alarmDTO.description) &&
+                Objects.equals(label, alarmDTO.label) &&
+                Objects.equals(nodeLabel, alarmDTO.nodeLabel) &&
+                Objects.equals(logMessage, alarmDTO.logMessage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, reductionKey, type, severity, description);
+        return Objects.hash(id, reductionKey, type, severity, description, label, nodeLabel, logMessage);
     }
+
 }

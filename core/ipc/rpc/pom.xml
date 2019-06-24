@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.ipc</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc</groupId>
@@ -16,6 +16,7 @@
     <module>camel</module>
     <module>common</module>
     <module>jms-impl</module>
+    <module>kafka</module>
     <module>mock-impl</module>
     <module>shell-commands</module>
     <module>utils</module>

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.test-api</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.test-api</groupId>
@@ -12,7 +12,7 @@
   <packaging>jar</packaging>
 
   <properties>
-    <elasticsearchVersion>6.1.1</elasticsearchVersion>
+    <elasticsearchVersion>6.5.4</elasticsearchVersion>
   </properties>
 
    <dependencies>
@@ -42,6 +42,11 @@
        <version>${elasticsearchVersion}</version>
      </dependency>
      <dependency>
+       <groupId>org.codelibs.elasticsearch.module</groupId>
+       <artifactId>lang-painless</artifactId>
+       <version>${elasticsearchVersion}</version>
+     </dependency>
+     <dependency>
        <groupId>org.elasticsearch.plugin</groupId>
        <artifactId>aggs-matrix-stats-client</artifactId>
        <version>${elasticsearchVersion}</version>
@@ -49,7 +54,42 @@
      <dependency>
        <groupId>io.netty</groupId>
        <artifactId>netty-all</artifactId>
-       <version>4.1.17.Final</version>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-codec</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-codec-http</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-transport</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-resolver</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-handler</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-buffer</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-common</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
      </dependency>
      <dependency>
        <groupId>org.apache.logging.log4j</groupId>

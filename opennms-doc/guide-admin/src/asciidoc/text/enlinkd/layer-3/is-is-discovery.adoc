@@ -12,6 +12,8 @@ Each entry in this SNMP MIB table represents a unidirectional link from the _Int
 If two routers _IS-A_ and _IS-B_ support _ISIS-MIB_, then _EnLinkd_ will create two link entries in {opennms-product-name}: one from _IS-A_ to _IS-B_ (from the _adjtable_ of _IS-A_) the complementary link back from _IS-B_ to _IS-A_ (from the _adjTable of _IS-B_).
 IS-IS links are represented in the _ISIS-MIB_ as follows:
 
+The following OIDs are supported to discover and build the _ISIS_ network topology and are collected by the _ISIS Discovery Collector_.
+
 .Supported OIDs from ISIS-MIB
 [options="header, autowidth"]
 |===
@@ -40,3 +42,7 @@ Information gathered from this OIDs will be stored in the following database tab
 
 .Database tables related to IS-IS discovery
 image::enlinkd/is-is-database.png[]
+
+
+_ISIS Topology Updater_ provide ISIS OnmsTopology consolidating Is-IS data collected by _ISIS Collector_ only full bidirectional connections between two ISIS supported devices become _Edges_.
+_Node A_  and _Node B_ are connected by an _ISIS Edge_ if and only if there is a _ISIS link_ in _Node A_ to _Node B_ and viceversa.

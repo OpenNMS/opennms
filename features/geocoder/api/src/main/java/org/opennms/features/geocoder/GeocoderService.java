@@ -28,6 +28,44 @@
 
 package org.opennms.features.geocoder;
 
+import java.util.Map;
+
+/**
+ * A {@link GeocoderService} capable of resolving an address string to actual coordinates.
+ *
+ * @author mvrueden
+ */
 public interface GeocoderService {
-    public Coordinates getCoordinates(final String address) throws GeocoderException;
+
+    /**
+     * A unique identifier for this {@link GeocoderService}.
+     * @return The unique identifier for this {@link GeocoderService}.
+     */
+    String getId();
+
+    /**
+     * Resolves the given address string to valid coordinates.
+     * Originally it returned only the {@link Coordinates} but that makes it hard to distinguish
+     * if there was no valid address or an exception occurred.
+     *
+     * @param address The address to resolve
+     * @return The result of the resolution
+     * @throws GeocoderException
+     */
+    GeocoderResult resolveAddress(final String address) throws GeocoderConfigurationException;
+
+    /**
+     * Returns configuration of the {@link GeocoderService}.
+     *
+     * @return configuration.
+     */
+    GeocoderConfiguration getConfiguration();
+
+    /**
+     * Validates the provided configuration properties.
+     *
+     * @param properties to validate
+     * @throws GeocoderConfigurationException in case the configuration is invalid.
+     */
+    void validateConfiguration(Map<String, Object> properties) throws GeocoderConfigurationException;
 }

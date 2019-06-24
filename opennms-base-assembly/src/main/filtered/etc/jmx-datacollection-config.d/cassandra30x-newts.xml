@@ -26,7 +26,7 @@
             <!-- Memtable :: Count -->
             <mbean name="org.apache.cassandra.metrics.Keyspace"
                    objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableSwitchCount">
-                <attrib name="Value" alias="memTblSwitchCount" type="gauge"/>
+                <attrib name="Value" alias="memTblSwitchCount" type="counter"/>
             </mbean>
 
             <mbean name="org.apache.cassandra.metrics.Keyspace"

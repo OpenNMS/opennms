@@ -44,6 +44,7 @@
         contentType="text/html"
         session="true"
         import="java.io.File,
+                org.opennms.web.api.Util,
                 org.opennms.core.resource.Vault,
                 org.opennms.web.api.HtmlInjectHandler,
                 org.opennms.web.servlet.XssRequestWrapper"
@@ -55,10 +56,6 @@
     XssRequestWrapper req = new XssRequestWrapper(request);
 %>
 
-<!-- End of Content -->
-<div class="spacer"><!-- --></div>
-
-
 <c:choose>
     <c:when test="${param.quiet == 'true'}">
         <!-- Not displaying footer -->
@@ -67,9 +64,9 @@
     <c:otherwise>
         <!-- Footer -->
 
-        <footer id="footer">
+        <footer id="footer" class="card-footer">
             <p>
-                OpenNMS <a href="about/index.jsp">Copyright</a> &copy; 2002-2018
+                OpenNMS <a href="about/index.jsp">Copyright</a> &copy; 2002-2019
                 <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
                 OpenNMS&reg; is a registered trademark of
                 <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
@@ -80,6 +77,14 @@
                 %>
             </p>
         </footer>
+
+        <% if (req.getUserPrincipal() != null) { %>
+            <!-- Browser notifications -->
+            <jsp:include page="/assets/load-assets.jsp" flush="false">
+                <jsp:param name="asset" value="notifications" />
+                <jsp:param name="asset-defer" value="true" />
+            </jsp:include>
+        <% } %>
     </c:otherwise>
 </c:choose>
 
@@ -100,7 +105,14 @@
 <%-- This </div> tag is unmatched in this file (its matching tag is in the
      header), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
-<%= "</div>" %><!-- id="content" class="container-fluid" -->
+<c:choose>
+    <c:when test="${param.superQuiet == 'true'}">
+        <%-- nothing to do --%>
+    </c:when>
+    <c:otherwise>
+        <%= "</div>" %><!-- id="content" class="container-fluid" -->
+    </c:otherwise>
+</c:choose>
 
 <%-- Allows services exposed via the OSGi registry to inject HTML content --%>
 <%= HtmlInjectHandler.inject(request) %>

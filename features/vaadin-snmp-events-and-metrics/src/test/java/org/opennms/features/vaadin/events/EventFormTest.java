@@ -39,10 +39,10 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.springframework.core.io.FileSystemResource;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * The Test Class for EventForm.

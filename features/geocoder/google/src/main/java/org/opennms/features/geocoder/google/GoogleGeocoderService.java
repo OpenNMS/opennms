@@ -29,109 +29,97 @@
 package org.opennms.features.geocoder.google;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.opennms.features.geocoder.Coordinates;
-import org.opennms.features.geocoder.GeocoderException;
+import org.opennms.features.geocoder.GeocoderConfigurationException;
+import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.features.geocoder.TemporaryGeocoderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.code.geocoder.AdvancedGeoCoder;
-import com.google.code.geocoder.GeocoderRequestBuilder;
-import com.google.code.geocoder.model.GeocodeResponse;
-import com.google.code.geocoder.model.GeocoderRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
 
 public class GoogleGeocoderService implements GeocoderService {
+
     private static final Logger LOG = LoggerFactory.getLogger(GoogleGeocoderService.class);
 
-    private final int timeout; // in ms
-    private AdvancedGeoCoder m_geocoder = null;
-    private String m_clientId = null;
-    private String m_clientKey = null;
+    private final GoogleConfiguration configuration;
 
-    public GoogleGeocoderService(int timeout) {
-        this.timeout = Math.max(0, timeout);
-    }
-
-    public void setClientId(final String clientId) {
-        m_clientId = clientId;
-    }
-
-    public void setClientKey(final String clientKey) {
-        m_clientKey = clientKey;
-    }
-
-    public void ensureInitialized() throws GeocoderException {
-        if (m_geocoder == null) {
-            final HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
-
-            if (notEmpty(m_clientId) && notEmpty(m_clientKey)) {
-                try {
-                    LOG.info("Initializing Google Geocoder using Client ID and Key.");
-                    m_geocoder = new AdvancedGeoCoder(httpClient, m_clientId, m_clientKey);
-                } catch (final InvalidKeyException e) {
-                    throw new GeocoderException("Unable to initialize Google Geocoder.", e);
-                }
-            }
-
-            if (m_geocoder == null) {
-                LOG.info("Initializing Google Geocoder using default configuration.");
-                m_geocoder = new AdvancedGeoCoder(httpClient);
-            }
-
-            /* Configure proxying, if necessary... */
-            final String httpProxyHost = System.getProperty("http.proxyHost");
-            final Integer httpProxyPort = Integer.getInteger("http.proxyPort");
-            if (httpProxyHost != null && httpProxyPort != null) {
-                LOG.info("Proxy configuration found, using {}:{} as HTTP proxy.", httpProxyHost, httpProxyPort);
-                httpClient.getHostConfiguration().setProxy(httpProxyHost, httpProxyPort);
-            } else {
-                LOG.info("No proxy configuration found.");
-            }
-
-            /* Limit retries... */
-            httpClient.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(1, true));
-            httpClient.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, timeout);
-
-            LOG.info("Google Geocoder initialized.");
-        }
-    }
-
-    private boolean notEmpty(final String value) {
-        return value != null && !"".equals(value);
+    public GoogleGeocoderService(GoogleConfiguration configuration) {
+        this.configuration = Objects.requireNonNull(configuration);
     }
 
     @Override
-    public synchronized Coordinates getCoordinates(final String address) throws GeocoderException {
-        ensureInitialized();
+    public String getId() {
+        return "google";
+    }
 
-        final GeocoderRequest request = new GeocoderRequestBuilder().setAddress(address).setLanguage("en").getGeocoderRequest();
-        GeocodeResponse response;
+    @Override
+    public synchronized GeocoderResult resolveAddress(final String address) throws GeocoderConfigurationException {
+        configuration.validate();
+        LOG.debug("Configuration: {}", configuration.asMap());
+        final GeoApiContext.Builder builder = new GeoApiContext.Builder()
+                .readTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS)
+                .connectTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS)
+                .maxRetries(1);
+        if (configuration.isUseSystemProxy()) {
+            final String targetUrl = "https://maps.googleapis.com";
+            try {
+                final Proxy proxy = selectProxy(targetUrl);
+                builder.proxy(proxy);
+            } catch (URISyntaxException e) {
+                return GeocoderResult.error("Couldn't find proxy for URL: '" + targetUrl + "'").build();
+            }
+        }
+        if (configuration.isUseEnterpriseCredentials()) {
+            builder.enterpriseCredentials(configuration.getClientId(), configuration.getSignature());
+        } else {
+            builder.apiKey(configuration.getApiKey());
+        }
         try {
-            response = m_geocoder.geocode(request);
-        } catch (IOException e) {
-            // Makes the assumption that IO related exceptions are temporary, which is suitable for most scenarios
-            throw new TemporaryGeocoderException("Failed to get coordinates for " + address + " using the Google Geocoder.", e);
+            final GeoApiContext context = builder.build();
+            final GeocodingResult[] results = GeocodingApi.geocode(context, address).await();
+            LOG.trace("API returned {} results. If multiple, first is used.", results.length);
+            if (results.length > 0 && results[0].geometry != null && results[0].geometry.location != null) {
+                final LatLng location = results[0].geometry.location;
+                LOG.trace("API returned a result with valid long/lat fields: {}/{}", location.lng, location.lat);
+                return GeocoderResult.success(address, location.lng, location.lat).build();
+            } else {
+                LOG.debug("API returned a result, but long/lat fields were missing: {}", results[0]);
+            }
+            LOG.debug("Couldn't resolve coordinates for address {}", address);
+            return GeocoderResult.noResult(address).build();
+        } catch (ApiException | InterruptedException | IOException e) {
+            return GeocoderResult.error(e).build();
         }
+    }
 
-        switch (response.getStatus()) {
-        case OK:
-            return new GoogleCoordinates(response.getResults().get(0));
-        case OVER_QUERY_LIMIT:
-            throw new TemporaryGeocoderException("Failed to get coordinates for " + address + " using the Google Geocoder.  You have exceeded the daily usage limit.");
-        case ERROR:
-        case INVALID_REQUEST:
-        case REQUEST_DENIED:
-        case UNKNOWN_ERROR:
-        case ZERO_RESULTS:
-        default:
-            throw new GeocoderException("Failed to get coordinates for " + address + " using Google Geocoder.  Response was: " + response.getStatus().toString());
-        }
+    @Override
+    public GoogleConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    @Override
+    public void validateConfiguration(Map<String, Object> properties) throws GeocoderConfigurationException {
+        GoogleConfiguration.fromMap(properties).validate();
+    }
+
+    private Proxy selectProxy(String targetUri) throws URISyntaxException {
+        final List<Proxy> proxies = ProxySelector.getDefault().select(new URI(targetUri));
+        return proxies.stream()
+                .filter(proxy -> proxy.type() == Proxy.Type.DIRECT || proxy.type() == Proxy.Type.HTTP)
+                .findFirst()
+                .orElse(Proxy.NO_PROXY);
     }
 }

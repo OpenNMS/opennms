@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -12,7 +12,10 @@
   <name>OpenNMS Minion</name>
   <url>http://maven.apache.org</url>
   <properties>
+    <NAME_DISPLAY>Minion</NAME_DISPLAY>
+    <NAME_LC>minion</NAME_LC>
     <INSTPREFIX>/opt/minion</INSTPREFIX>
+    <RUNAS>root</RUNAS>
     <SYSCONFDIR>/opt/minion/etc</SYSCONFDIR>
   </properties>
   <build>
@@ -77,8 +80,8 @@
               <outputDirectory>${project.build.directory}/unpacked</outputDirectory>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.opennms.features.minion.container</groupId>
-                  <artifactId>karaf</artifactId>
+                  <groupId>org.opennms.features.container</groupId>
+                  <artifactId>minion</artifactId>
                   <version>${project.version}</version>
                   <type>tar.gz</type>
                 </artifactItem>
@@ -105,7 +108,7 @@
                   <classifier>daemon</classifier>
                   <type>tar.gz</type>
                   <outputDirectory>${project.build.directory}/unpacked/base-assembly</outputDirectory>
-                  <includes>bin/find-java.sh</includes>
+                  <includes>bin/_lib.sh,bin/find-java.sh,bin/ensure-user-ping.sh</includes>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -134,7 +137,7 @@
               </includes>
             </fileSet>
             <fileSet>
-              <directory>${project.build.directory}/unpacked/karaf-${project.version}</directory>
+              <directory>${project.build.directory}/unpacked/minion-${project.version}</directory>
               <includes>
                 <include>**/*.jar</include>
                 <include>**/*.pom</include>
@@ -166,8 +169,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features.minion.container</groupId>
-      <artifactId>karaf</artifactId>
+      <groupId>org.opennms.features.container</groupId>
+      <artifactId>minion</artifactId>
       <version>${project.version}</version>
       <type>tar.gz</type>
     </dependency>

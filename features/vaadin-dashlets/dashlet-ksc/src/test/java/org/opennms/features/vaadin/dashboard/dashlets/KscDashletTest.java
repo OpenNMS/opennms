@@ -59,6 +59,7 @@ public class KscDashletTest {
                 null,
                 null,
                 resourceDao,
+                null,
                 null);
         assertEquals(parentResource, dashlet.determineResourceByResourceId(resourceId));
     }

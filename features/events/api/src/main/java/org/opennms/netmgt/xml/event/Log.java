@@ -41,6 +41,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.ipc.sink.api.Message;
+
 /**
  * Class Log.
  * 
@@ -50,8 +52,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="log")
 @XmlAccessorType(XmlAccessType.FIELD)
 //@ValidateUsing("event.xsd")
-public class Log implements Serializable {
-    private static final long serialVersionUID = 8526177705077223094L;
+public class Log implements Message,Serializable {
+    private static final long serialVersionUID = 7684449895077223094L;
 
     //--------------------------/
     //- Class/Member Variables -/

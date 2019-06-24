@@ -36,6 +36,11 @@
 <div class="row">
 	<!-- Left Column -->
 	<div class="col-md-3" id="index-contentleft">
+		<!-- Situations box -->
+		<% String showSituations = System.getProperty("opennms.situations.show", "true");
+		   if (Boolean.parseBoolean(showSituations)) { %>
+		<jsp:include page="/situation/summary-box.htm" flush="false" />
+		<% } %>
 		<!-- Problems box -->
 		<% String showNodesWithProblems = System.getProperty("opennms.nodesWithProblems.show", "true");
            if (Boolean.parseBoolean(showNodesWithProblems)) { %>

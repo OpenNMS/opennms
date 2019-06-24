@@ -87,10 +87,13 @@ if (not defined $MVN or not -x $MVN) {
 
 delete $ENV{'M2_HOME'};
 
+my $MEM = "2560m";
+my $RCCS = "512m";
+
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
+	$MAVEN_OPTS = "-Xmx${MEM} -XX:ReservedCodeCacheSize=${RCCS}";
 }
 
 if (not $MAVEN_OPTS =~ /TieredCompilation/) {
@@ -100,11 +103,11 @@ if (not $MAVEN_OPTS =~ /TieredCompilation/) {
 }
 
 if (not $MAVEN_OPTS =~ /-Xmx/) {
-	$MAVEN_OPTS .= " -Xmx2048m";
+	$MAVEN_OPTS .= " -Xmx${MEM}";
 }
 
 if (not $MAVEN_OPTS =~ /ReservedCodeCacheSize/) {
-	$MAVEN_OPTS .= " -XX:ReservedCodeCacheSize=512m";
+	$MAVEN_OPTS .= " -XX:ReservedCodeCacheSize=${RCCS}";
 }
 
 if (not $MAVEN_OPTS =~ /UseGCOverheadLimit/) {
@@ -183,9 +186,15 @@ if ((defined $JAVA_HOME and -d $JAVA_HOME) or (exists $ENV{'JAVA_HOME'} and -d $
 
 	my ($shortversion) = get_version_from_java(File::Spec->catfile($JAVA_HOME, 'bin', 'java'));
 	my $minimumversion = get_minimum_java();
+	my $maximumversion = get_maximum_java();
 
 	if ($shortversion < $minimumversion) {
 		warning("You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!  Will attempt to search for one instead.");
+		$JAVA_HOME = undef;
+		delete $ENV{'JAVA_HOME'};
+	}
+	if ($shortversion >= $maximumversion) {
+		warning("You specified a Java home of $JAVA_HOME, but it meets or exceeds maximum java version $maximumversion!  Will attempt to search for one instead.");
 		$JAVA_HOME = undef;
 		delete $ENV{'JAVA_HOME'};
 	}
@@ -205,7 +214,7 @@ if (defined $JAVA_HOME and $JAVA_HOME ne "") {
 	$ENV{'PATH'}      = File::Spec->catfile($JAVA_HOME, 'bin') . $PATHSEP . $ENV{'PATH'};
 
         my ($shortversion) = get_version_from_java(File::Spec->catfile($JAVA_HOME, 'bin', 'java'));
-        if ($shortversion >= '9') {
+        if ($shortversion >= 9) {
                 $JDK9_OR_GT = 1;
         };
 }
@@ -345,6 +354,11 @@ sub get_minimum_java {
 	return $minimum_java;
 }
 
+# for now
+sub get_maximum_java {
+	return 9;
+}
+
 sub get_version_from_java {
 	my $javacmd = shift;
 
@@ -371,9 +385,12 @@ sub get_version_from_java {
 	my ($output, $bindir, $shortversion, $version, $build, $java_home);
 
 	$output = `"$javacmd" -version 2>\&1`;
-	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?$/ms;
-	($version, $build) = $version =~ /^([\d\.]+)(?:[\+\-\_](.*?))?$/;
-	($shortversion) = $version =~ /^(\d+\.\d+|\d+)/;
+	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?(?: \d\d\d\d-\d\d-\d\d)?$/ms;
+	if (defined $version) {
+		($version, $build) = $version =~ /^([\d\.]+)(?:[\+\-\_](.*?))?$/;
+		($shortversion) = $version =~ /^(\d+\.\d+|\d+)/;
+		$shortversion += 0; # make sure it's a number
+	}
 	$build = 0 if (not defined $build);
 
 	$bindir = dirname($javacmd);
@@ -384,6 +401,7 @@ sub get_version_from_java {
 
 sub find_java_home {
 	my $minimum_java = get_minimum_java();
+	my $maximum_java = get_maximum_java();
 
 	my $versions = {};
 	my $javacmd = 'java';
@@ -421,7 +439,7 @@ sub find_java_home {
 	my $highest_valid = undef;
 
 	for my $majorversion (sort keys %$versions) {
-		if (looks_like_number($majorversion) and looks_like_number($minimum_java) and $majorversion < $minimum_java) {
+		if (looks_like_number($majorversion) and looks_like_number($minimum_java) and ($majorversion < $minimum_java or $majorversion >= $maximum_java)) {
 			next;
 		}
 

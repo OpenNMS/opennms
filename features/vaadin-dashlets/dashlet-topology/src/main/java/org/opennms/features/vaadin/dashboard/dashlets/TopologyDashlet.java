@@ -38,6 +38,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -59,7 +60,7 @@ public class TopologyDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
         if (m_dashletComponent == null) {
             m_dashletComponent = new AbstractDashletComponent() {
                 private VerticalLayout m_verticalLayout = new VerticalLayout();
@@ -101,7 +102,7 @@ public class TopologyDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
-        return getWallboardComponent();
+    public DashletComponent getDashboardComponent(final UI ui) {
+        return getWallboardComponent(ui);
     }
 }

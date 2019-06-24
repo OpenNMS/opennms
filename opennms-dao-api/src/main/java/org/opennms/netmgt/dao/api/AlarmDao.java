@@ -34,7 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
+import org.opennms.netmgt.model.alarm.SituationSummary;
 
 public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
 
@@ -50,6 +50,13 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
     List<AlarmSummary> getNodeAlarmSummaries();
 
     /**
+     * <p>Get the list of current - not yet acknowledged - situations with severity greater than normal;
+     *
+     * @return A list of situation summaries.
+     */
+    List<SituationSummary> getSituationSummaries();
+
+    /**
      * Get the list of current alarms per node with severity not equal to cleared, reflecting the max severity,
      * the minimum last event time and alarm count.
      * The alarm count only considers not yet acknowledged alarms, but the max severity is calculated overall
@@ -58,8 +65,6 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
      * @param nodeIds The nodeIds you want to restrict the AlarmSummary calculation to. Must not be NULL!
      */
     List<AlarmSummary> getNodeAlarmSummariesIncludeAcknowledgedOnes(List<Integer> nodeIds);
-
-    List<EdgeAlarmStatusSummary> getLldpEdgeAlarmSummaries(List<Integer> lldpLinkIds);
 
     List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns);
 

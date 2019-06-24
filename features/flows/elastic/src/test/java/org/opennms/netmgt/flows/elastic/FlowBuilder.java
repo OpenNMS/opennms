@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.elastic;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class FlowBuilder {
 
@@ -60,7 +61,7 @@ public class FlowBuilder {
     }
 
     public FlowBuilder withDirection(Direction direction) {
-        this.direction = direction;
+        this.direction = Objects.requireNonNull(direction);
         return this;
     }
 
@@ -82,8 +83,11 @@ public class FlowBuilder {
         if (exporterNode !=  null) {
             flow.setNodeExporter(exporterNode);
         }
-        flow.setInputSnmp(snmpInterfaceId);
-        flow.setOutputSnmp(snmpInterfaceId);
+        if (direction == Direction.INGRESS) {
+            flow.setInputSnmp(snmpInterfaceId);
+        } else if (direction == Direction.EGRESS) {
+            flow.setOutputSnmp(snmpInterfaceId);
+        }
         flow.setApplication(application);
         flow.setDirection(direction);
         flows.add(flow);

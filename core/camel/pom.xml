@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -32,7 +32,7 @@
               org.opennms.netmgt.snmp;resolution:=optional,
               org.opennms.netmgt.syslogd;resolution:=optional,
               org.opennms.netmgt.trapd;resolution:=optional,
-              org.opennms.minion.core.api;resolution:=optional,
+              org.opennms.distributed.core.api;resolution:=optional,
               *
             </Import-Package>
           </instructions>

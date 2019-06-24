@@ -300,17 +300,17 @@
       <!-- menu -->
       <div class="row form-inline">
       <div class="col-md-12">
-      <a class="btn btn-default" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a>
-      <a class="btn btn-default" href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>
+      <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a>
+      <a class="btn btn-secondary" href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>
       <c:choose>
         <c:when test="${param.display == 'long'}">
-      <a class="btn btn-default" href="<%=this.makeLink(callback, parms, "short", favorite)%>" title="Summary List of Alarms">Short Listing</a>
+      <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, "short", favorite)%>" title="Summary List of Alarms">Short Listing</a>
         </c:when>
         <c:otherwise>
-      <a class="btn btn-default" href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a>
+      <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a>
         </c:otherwise>
       </c:choose>
-      <a class="btn btn-default" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
+      <a class="btn btn-secondary text-white" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
       
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if ( alarmCount > 0 ) { %>
@@ -322,15 +322,15 @@
             </form>
          <% if (!unAckFlash) { // global ack or unack only displayed if flashing disabled %>
             <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-              <a class="btn btn-default" href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+              <a class="btn btn-secondary" href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
             <% } else { %>
-              <a class="btn btn-default" href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+              <a class="btn btn-secondary" href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
             <% } %>
          <% } %>
         <% } %>
       <% } %>
 
-      <select class="form-control pull-right" onchange="location = this.value;">
+      <select class="form-control custom-select pull-right" onchange="location = this.value;">
           <option value="<%= makeLimitLink(callback, parms, favorite,  10) %>" ${(parms.getLimit() ==  10) ? 'selected' : ''}> 10</option>
           <option value="<%= makeLimitLink(callback, parms, favorite,  20) %>" ${(parms.getLimit() ==  20) ? 'selected' : ''}> 20</option>
           <option value="<%= makeLimitLink(callback, parms, favorite,  50) %>" ${(parms.getLimit() ==  50) ? 'selected' : ''}> 50</option>
@@ -339,7 +339,7 @@
       </select>
       
 <% if(soundEnabled){ %>
-      <select class="form-control pull-right" onchange="location = this.value;">
+      <select class="form-control custom-select pull-right" onchange="location = this.value;">
           <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"off") %>" <% out.write("off".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound off</option>
           <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarm" ) %>" <% out.write("newalarm".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on new alarm</option>
           <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarmcount" ) %>" <% out.write("newalarmcount".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm event count</option>
@@ -352,7 +352,7 @@
       </div>
       <!-- end menu -->
 
-<div class="hidden">
+<div class="form-group mt-2">
   <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
 </div>
 
@@ -373,33 +373,31 @@
 <div class="row">
   <div class="col-sm-6 col-md-3">
   <div class="input-group">
-    <span class="input-group-addon">
+    <div class="input-group-prepend">
       <c:choose>
       <c:when test="${favorite == null}">
-      <a onclick="createFavorite()">
+      <button class="btn btn-secondary" onclick="createFavorite()">
         <!-- Star outline -->
         <i class="fa fa-lg fa-star-o"></i>
-      </a>
+      </button>
       </c:when>
       <c:otherwise>
-      <a onclick="deleteFavorite(${favorite.id})">
+      <button class="btn btn-secondary" onclick="deleteFavorite(${favorite.id})">
         <i class="fa fa-lg fa-star"></i>
-      </a>
+      </button>
       </c:otherwise>
       </c:choose>
-    </span>
+    </div>
     <!-- Use background-color:white to make it look less disabled -->
     <input type="text" class="form-control" style="background-color:white;" readonly placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
-    <div class="input-group-btn">
-      <div class="dropdown">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-          <span class="caret"></span>
+    <div class="input-group-append">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
         </button>
         <!-- I put margin: 0px here because the margin gap was causing the menu to disappear before you could get the mouse on it -->
         <ul class="dropdown-menu dropdown-menu-right" style="margin: 0px;" role="menu">
           <c:forEach var="fave" items="${favorites}">
             <c:if test="${favorite.id != fave.id}">
-              <li>
+              <li class="dropdown-item">
                 <a onclick="changeFavorite(${fave.id}, '${fave.filter}')">
                   <c:out value="${fave.name}"/>
                 </a>
@@ -407,10 +405,9 @@
               <c:set var="showDivider" value="${true}"/>
             </c:if>
           </c:forEach>
-          <c:if test="${showDivider}"><li class="divider"/></c:if>
-          <li><a onclick="clearFilters()">Clear filters</a></li>
+          <c:if test="${showDivider}"><li class="dropdown-divider"/></c:if>
+          <li class="dropdown-item"><a onclick="clearFilters()">Clear filters</a></li>
         </ul>
-      </div>
     </div>
   </div>
   </div>
@@ -453,7 +450,7 @@
           <%=Util.makeHiddenTags(req)%>
       <% } %>
 
-      <table class="table table-condensed severity">
+      <table class="table table-sm severity">
 				<thead>
 					<tr>
                         <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
@@ -470,6 +467,9 @@
 
 			<th width="2%">
               <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" ,       favorite )%>
+            </th>
+            <th width="4%">
+              <%=this.makeSortLink(callback, parms, SortStyle.SITUATION, SortStyle.REVERSE_SITUATION, "situation", "Situation", favorite )%>
             </th>
             <th width="6%">
               <%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity",  favorite )%>
@@ -506,7 +506,7 @@
               </c:if>
             </th>
             <c:if test="${param.display != 'long'}">
-			<th width="56%">Log Msg</th>
+			<th width="52%">Log Msg</th>
 			</c:if>
 		</tr>
 	</thead>
@@ -560,10 +560,10 @@
                 <br />
             </c:if>
             <c:if test="<%= alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null%>">
-                <img style="vertical-align:middle" src="images/AlarmMemos/StickyMemo.png" width="20" height="20" title="<%=alarms[i].getStickyMemo().getBody() %>"/>
+                <i class="fa fa-comment-o" title="<%=alarms[i].getStickyMemo().getBody() %>"></i>
             </c:if>
             <c:if test="<%= alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null%>">
-                <img style="vertical-align:middle" src="images/AlarmMemos/JournalMemo.png" width="20" height="20" title="<%=alarms[i].getReductionKeyMemo().getBody() %>"/>
+                <i class="fa fa-sticky-note-o" title="<%=alarms[i].getReductionKeyMemo().getBody() %>"></i>
             </c:if>
 
           <c:if test="${param.display == 'long'}">
@@ -589,6 +589,31 @@
               </nobr>
             <% } %>
           </c:if>
+          </td>
+          <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
+              <%
+                  if (alarms[i].isSituation()) {
+                      if(parms.getFilters().contains(new SituationFilter(true))) {
+              %>
+              <i class="fa fa-check-square-o"></i>
+              <%
+              } else {
+              %>
+              <a href="<%=this.makeLink(callback, parms, new SituationFilter(true), true, favorite)%>" class="filterLink" title="Show only situations"><i class="fa fa-check-square-o"></i></a>
+              <%
+                  }
+              } else {
+                  if(parms.getFilters().contains(new SituationFilter(false))) {
+              %>
+              <i class="fa fa-square-o"></i>
+              <%
+              } else {
+              %>
+              <a href="<%=this.makeLink(callback, parms, new SituationFilter(false), true, favorite)%>" class="filterLink" title="Show only alarms"><i class="fa fa-square-o"></i></a>
+              <%
+                      }
+                  }
+              %>
           </td>
           <td class="divider bright" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
             <nobr>
@@ -744,9 +769,9 @@
 			<hr />
 			 <p><%=alarms.length%> alarms &nbsp;
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-          <input class="btn btn-default" TYPE="reset" />
-          <input class="btn btn-default" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-          <select class="form-control" name="alarmAction">
+          <input class="btn btn-sm btn-secondary" TYPE="reset" />
+          <input class="btn btn-sm btn-secondary" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+          <select class="form-control custom-select input-sm" name="alarmAction">
           <% if(unAckFlash){ // allow alarms to be acked and unacked %>
               <option value="acknowledge">Acknowledge Alarms</option>
               <option value="unacknowledge">Unacknowledge Alarms</option>
@@ -760,7 +785,7 @@
               <option value="clear">Clear Alarms</option>
               <option value="escalate">Escalate Alarms</option>
           </select>
-          <input class="btn btn-default" type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
+          <input class="btn btn-sm btn-secondary" type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>
         </p>
       </form>

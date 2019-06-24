@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -97,6 +97,7 @@ public class MonitoredServiceDaoIT implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void testFindAllServices() {
         final List<OnmsMonitoredService> allSvcs = m_monitoredServiceDao.findAllServices();
         assertTrue(allSvcs.size() > 1);

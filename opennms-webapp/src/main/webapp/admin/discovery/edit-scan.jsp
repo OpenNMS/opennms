@@ -67,19 +67,19 @@
 
 <script type="text/javascript">
 function addSpecific(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-specific.jsp?mode=scan" )%>', 'AddSpecific', 'toolbar=0,width=700,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-specific.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddSpecific', 'toolbar=0,width=700,height=500, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addIncludeRange(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-ir.jsp?mode=scan" )%>', 'AddIncludeRange', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-ir.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddIncludeRange', 'toolbar=0,width=750 ,height=670, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addIncludeUrl(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-url.jsp?mode=scan" )%>', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-url.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addExcludeRange(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-er.jsp?mode=scan" )%>', 'AddExcludeRange', 'toolbar=0,width=600 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-er.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddExcludeRange', 'toolbar=0,width=600 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 
@@ -152,12 +152,14 @@ for (OnmsMonitoringLocation location : locationDao.findAll()) {
 RequisitionAccessService reqAccessService = context.getBean(RequisitionAccessService.class);
 Map<String,String> foreignsources = new TreeMap<String,String>();
 for (Requisition requisition : reqAccessService.getRequisitions()) {
-  foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
+  if (! "Minions".equals(requisition.getForeignSource())) {
+    foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
+  }
 }
 
 %>
 
-<form role="form" class="form-horizontal" method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%= Util.calculateUrlBase(request, "admin/discovery/scanConfig") %>" onsubmit="return restartDiscovery();">
+<form role="form" class="form" method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%= Util.calculateUrlBase(request, "admin/discovery/scanConfig") %>" onsubmit="return restartDiscovery();">
 
 <input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
 <input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
@@ -181,114 +183,109 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
 
-<button type="submit" class="btn btn-default">Start Discovery Scan</button>
-
-<p/>
+<button type="submit" class="btn btn-secondary mt-2 mb-4">Start Discovery Scan</button>
 
 <div class="row">
-  <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">General Settings</h3>
-      </div>
-      <div class="list-group">
-        <div class="list-group-item">
-        <div class="col-xs-12 input-group">
-          <label for="retries" class="control-label">Timeout (milliseconds):</label>
-          <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
-        </div> <!-- input-group -->
-        <div class="col-xs-12 input-group">
-          <label for="retries" class="control-label">Retries:</label>
-          <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
-        </div> <!-- input-group -->
-        <div class="col-xs-12 input-group">
-          <label for="foreignsource" class="control-label">Foreign Source:</label>
-          <select id="foreignsource" class="form-control" name="foreignsource">
-            <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
-            <% for (String key : foreignsources.keySet()) { %>
-              <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=foreignsources.get(key)%></option>
-            <% } %>
-          </select>
-        </div> <!-- input-group -->
-        <div class="col-xs-12 input-group">
-          <label for="location" class="control-label">Location:</label>
-          <select id="location" class="form-control" name="location">
-            <% for (String key : locations.keySet()) { %>
-              <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
-            <% } %>
-          </select>
-        </div> <!-- input-group -->
-        </div>
+  <div class="col-sm-12 col-md-10 col-lg-8">
+    <div class="card">
 
-        <div class="list-group-item">
-        <h4 class="list-group-item-heading">Advanced configuration</h4>
-        <div class="col-xs-12 input-group">
-          <label for="chunksize" class="control-label">Task chunk size:</label>
-          <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=currConfig.getChunkSize().orElse(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE)%>"/>
-        </div> <!-- input-group -->
+        <div class="card-header">
+            <span>General Settings</span>
         </div>
-      </div>
+        <div class="card-body">
+            <div class="form-group form-row">
+                <label for="retries" class="col-form-label col-md-4">Timeout (milliseconds)</label>
+                <input type="text" class="form-control col-md-8" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
+            </div> <!-- form-group -->
+            <div class="form-group form-row">
+                <label for="retries" class="col-form-label col-md-4">Retries</label>
+                <input type="text" class="form-control col-md-8" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
+            </div> <!-- form-group -->
+            <div class="form-group form-row">
+                <label for="foreignsource" class="col-form-label col-md-4">Foreign Source</label>
+                <select id="foreignsource" class="form-control custom-select col-md-8" name="foreignsource">
+                    <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
+                    <% for (String key : foreignsources.keySet()) { %>
+                    <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=foreignsources.get(key)%></option>
+                    <% } %>
+                </select>
+            </div> <!-- form-group -->
+            <div class="form-group form-row">
+                <label for="location" class="col-form-label col-md-4">Location</label>
+                <select id="location" class="form-control custom-select col-md-8" name="location">
+                    <% for (String key : locations.keySet()) { %>
+                    <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
+                    <% } %>
+                </select>
+            </div> <!-- form-group -->
+
+            <h4 class="">Advanced configuration</h4>
+            <div class="form-group form-row">
+                <label for="chunksize" class="col-form-label col-md-4">Task chunk size</label>
+                <input type="text" class="form-control col-md-8" id="chunksize" name="chunksize" value="<%=currConfig.getChunkSize().orElse(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE)%>"/>
+            </div> <!-- form-group -->
+        </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Specific Addresses</h3>
+  <div class="col-sm-12 col-md-10 col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <span>Specific Addresses</span>
       </div>
       <%if(currConfig.getSpecifics().size()>0){
             Specific[] specs = currConfig.getSpecifics().toArray(new Specific[0]);
       %>
-				    <table class="table table-bordered table-condensed">
+				    <table class="table table-sm">
 				      <tr>
-					<th class="col-xs-4">IP&nbsp;Address</th>
-					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
-					<th class="col-xs-2">Retries</th>
-					<th class="col-xs-2">Foreign&nbsp;Source</th>
-					<th class="col-xs-2">Location</th>
+					<th>IP&nbsp;Address</th>
+					<th>Timeout&nbsp;(milliseconds)</th>
+					<th>Retries</th>
+					<th>Foreign&nbsp;Source</th>
+					<th>Location</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<specs.length; i++){%>
-					 <tr class="text-center">
+					 <tr>
 					  <td><%=specs[i].getAddress()%></td>
 					  <td><%=specs[i].getTimeout().isPresent() ? "" + specs[i].getTimeout().get() : "<i>Use Default</i>" %></td>
 					  <td><%=specs[i].getRetries().isPresent() ? "" + specs[i].getRetries().get() : "<i>Use Default</i>" %></td>
 					  <td><%=specs[i].getForeignSource().isPresent() ? specs[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
 					  <td><%=specs[i].getLocation().isPresent() ? specs[i].getLocation().get() : "<i>Use Default</i>" %></td>
-					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
       <% } else { // end if currConfig.getSpecificsCount()>0 %>
-      <div class="panel-body">
+      <div class="card-body">
         <strong>No specifics found.</strong>
       </div>
       <% } %>
-      <div class="panel-footer">
-        <button type="button" class="btn btn-default" onclick="addSpecific();">Add New</button>
+      <div class="card-footer">
+        <button type="button" class="btn btn-secondary pull-right" onclick="addSpecific();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Include URLs</h3>
+  <div class="col-sm-12 col-md-10 col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <span>Include URLs</span>
       </div>
 			    <%if(currConfig.getIncludeUrls().size()>0){
 			        IncludeUrl[] urls = currConfig.getIncludeUrls().toArray(new IncludeUrl[0]);
 			    %>
-				    <table class="table table-bordered table-condensed">
+				    <table class="table table-sm">
 				      <tr>
-					<th class="col-xs-4">URL</th>
-					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
-					<th class="col-xs-2">Retries</th> 
-					<th class="col-xs-2">Foreign&nbsp;Source</th>
-					<th class="col-xs-2">Location</th>
+					<th>URL</th>
+					<th>Timeout&nbsp;(milliseconds)</th>
+					<th>Retries</th> 
+					<th>Foreign&nbsp;Source</th>
+					<th>Location</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<urls.length; i++){%>
@@ -298,39 +295,39 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					  <td><%=urls[i].getRetries().isPresent() ? "" + urls[i].getRetries().get() : "<i>Use Default</i>" %></td>
 					  <td><%=urls[i].getForeignSource().isPresent() ? urls[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
 					  <td><%=urls[i].getLocation().isPresent() ? urls[i].getLocation().get() : "<i>Use Default</i>" %></td>
-					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
       <% } else { // end if currConfig.getIncludeUrlCount()>0 %>
-      <div class="panel-body">
+      <div class="card-body">
         <strong>No include URLs found.</strong>
       </div>
       <% } %>
-      <div class="panel-footer">
-        <button type="button" class="btn btn-default" onclick="addIncludeUrl();">Add New</button>
+      <div class="card-footer">
+        <button type="button" class="btn btn-secondary pull-right" onclick="addIncludeUrl();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Include Ranges</h3>
+  <div class="col-sm-12 col-md-10 col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <span>Include Ranges</span>
       </div>
 				    <%if(currConfig.getIncludeRanges().size()>0){
 					    IncludeRange[] irange = currConfig.getIncludeRanges().toArray(new IncludeRange[0]);
 				    %>
-					    <table class="table table-bordered table-condensed">
+					    <table class="table table-sm">
 					      <tr>
-						<th class="col-xs-2">Begin&nbsp;Address</th>
-						<th class="col-xs-2">End&nbsp;Address</th>
-						<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
-						<th class="col-xs-2">Retries</th>
-						<th class="col-xs-2">Foreign&nbsp;Source</th>
-						<th class="col-xs-2">Location</th>
+						<th>Begin&nbsp;Address</th>
+						<th>End&nbsp;Address</th>
+						<th>Timeout&nbsp;(milliseconds)</th>
+						<th>Retries</th>
+						<th>Foreign&nbsp;Source</th>
+						<th>Location</th>
 						<th>Action</th>
 					      </tr>
 					      <%for(int i=0; i<irange.length; i++){
@@ -343,35 +340,35 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 						  <td><%=irange[i].getRetries().isPresent() ? "" + irange[i].getRetries().get() : "<i>Use Default</i>" %></td>
 						  <td><%=irange[i].getForeignSource().isPresent() ? irange[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
 						  <td><%=irange[i].getLocation().isPresent() ? irange[i].getLocation().get() : "<i>Use Default</i>" %></td>
-						  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIR(<%=i%>);">Delete</button></td>
+						  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteIR(<%=i%>);">Delete</button></td>
 						</tr>
 					      <%} // end for%>
 					     </table>
       <% } else { // end if currConfig.getIncludeRange()>0 %>
-      <div class="panel-body">
+      <div class="card-body">
         <strong>No include ranges found.</strong>
       </div>
       <% } %>
-      <div class="panel-footer">
-        <button type="button" class="btn btn-default" onclick="addIncludeRange();">Add New</button>
+      <div class="card-footer">
+        <button type="button" class="btn btn-secondary pull-right" onclick="addIncludeRange();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Exclude Ranges</h3>
+  <div class="col-sm-12 col-md-10 col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <span>Exclude Ranges</span>
       </div>
 			    <%if(currConfig.getExcludeRanges().size()>0){
 				    ExcludeRange[] irange = currConfig.getExcludeRanges().toArray(new ExcludeRange[0]);
 			    %>
-				    <table class="table table-bordered table-condensed">
+				    <table class="table table-sm">
 				      <tr>
-					<th class="col-xs-6">Begin</th>
-					<th class="col-xs-6">End</th>
+					<th>Begin</th>
+					<th>End</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<irange.length; i++){
@@ -380,28 +377,25 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					 <tr class="text-center">
 					  <td><%=irange[i].getBegin()%></td>
 					  <td><%=irange[i].getEnd()%></td>
-					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteER(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteER(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 
 				     </table>
       <% } else { // end if currConfig.getExcludeRangeCount()>0 %>
-      <div class="panel-body">
+      <div class="card-body">
         <strong>No exclude ranges found.</strong>
       </div>
       <% } %>
-      <div class="panel-footer">
-        <button type="button" class="btn btn-default" onclick="addExcludeRange();">Add New</button>
+      <div class="card-footer">
+        <button type="button" class="btn btn-secondary pull-right" onclick="addExcludeRange();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
-<button type="submit" class="btn btn-default">Start Discovery Scan</button>
+<button type="submit" class="btn btn-secondary mt-2 mb-4">Start Discovery Scan</button>
 
 </form>
-
-<!-- TODO: Remove this, add top padding to the footer div -->
-<p/>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

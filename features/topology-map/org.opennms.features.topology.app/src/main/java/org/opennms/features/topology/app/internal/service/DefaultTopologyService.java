@@ -50,6 +50,7 @@ import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.LayoutOperation;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,6 +110,8 @@ public class DefaultTopologyService implements TopologyService {
     private final LoadingCache<GraphProviderKey, GraphProvider> graphProviderCache;
 
     private ServiceLocator serviceLocator;
+
+    private TopologyEntityCache topologyEntityCache;
 
     public DefaultTopologyService() {
         this(30);
@@ -222,7 +225,15 @@ public class DefaultTopologyService implements TopologyService {
         this.serviceLocator = Objects.requireNonNull(serviceLocator);
     }
 
+    public void setTopologyEntityCache(TopologyEntityCache topologyEntityCache) {
+        this.topologyEntityCache = Objects.requireNonNull(topologyEntityCache);
+    }
+
     public void invalidate(String namespace) {
+        if(namespace.startsWith("nodes")) {
+            topologyEntityCache.refresh();
+        }
+
         // Tt the moment the namespace of each topology must be unique overall meta topology providers, even if they
         // are encapsulated by the meta topology provider. It should be addressed by <metaId>:<namespace>.
         // This is at the moment not the case, therefore we iterate over all meta topology providers and invalidate
@@ -236,6 +247,7 @@ public class DefaultTopologyService implements TopologyService {
     }
 
     public void invalidateAll() {
+        topologyEntityCache.refresh();
         graphProviderCache.invalidateAll();
     }
 

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.IOException;
 
 /**
  * @author Seth
@@ -40,4 +41,6 @@ public interface SyslogReceiver extends Runnable {
     String getName();
 
     void stop() throws InterruptedException;
+
+    void reload() throws IOException;
 }

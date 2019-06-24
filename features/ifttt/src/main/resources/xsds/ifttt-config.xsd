@@ -50,9 +50,14 @@
                     </annotation>
                 </element>
             </sequence>
-            <attribute name="categoryFilter" type="string" use="required">
+            <attribute name="categoryFilter" type="string" use="optional">
                 <annotation>
                     <documentation>The categoryFilter for this trigger package.</documentation>
+                </annotation>
+            </attribute>
+            <attribute name="reductionKeyFilter" type="string" use="optional">
+                <annotation>
+                    <documentation>The ueiFilter for this trigger package.</documentation>
                 </annotation>
             </attribute>
             <attribute name="onlyUnacknowledged" type="boolean" default="true" use="optional">

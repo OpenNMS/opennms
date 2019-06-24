@@ -275,4 +275,9 @@ public class IfLabelDaoImpl extends AbstractIfLabel implements IfLabel {
             return IfLabel.NO_IFLABEL;
         }
     }
+
+    @Override
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
 }

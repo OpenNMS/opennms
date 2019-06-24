@@ -63,6 +63,8 @@ public class RelativeTimePeriod {
                                        Calendar.DATE, -366) };
     }
 
+    public static final RelativeTimePeriod DEFAULT_RELATIVE_TIME_PERIOD = RelativeTimePeriod.getPeriodByIdOrDefault(System.getProperty("org.opennms.web.defaultGraphPeriod", "lastday"));
+
     /**
      * <p>Constructor for RelativeTimePeriod.</p>
      */
@@ -173,8 +175,7 @@ public class RelativeTimePeriod {
      * @return a {@link org.opennms.web.svclayer.model.RelativeTimePeriod} object.
      */
     public static RelativeTimePeriod getPeriodByIdOrDefault(String id) {
-        return getPeriodByIdOrDefault(s_defaultPeriods, id,
-                                      s_defaultPeriods[0]);
+        return getPeriodByIdOrDefault(s_defaultPeriods, id, s_defaultPeriods[5]);
     }
     /**
      * <p>getPeriodByIdOrDefault</p>

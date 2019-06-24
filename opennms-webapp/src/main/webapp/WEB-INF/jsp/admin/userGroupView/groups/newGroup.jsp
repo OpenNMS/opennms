@@ -64,41 +64,33 @@
   }
 </script>
 
-<div class="row">
-  <div class="col-sm-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <%if ("redo".equals(request.getParameter("action"))) { %>
-          <h3 class="panel-title">The group <%=request.getParameter("groupName")%> already exists.
-            Please type in a different group ID.</h3>
-        <%} else { %>
-          <h3 class="panel-title">Please enter a group ID below.</h3>
-        <%}%>
+<div class="card">
+  <div class="card-header">
+    <%if ("redo".equals(request.getParameter("action"))) { %>
+      <span>The group <%=request.getParameter("groupName")%> already exists.
+        Please type in a different group ID.</span>
+    <%} else { %>
+      <span>Please enter a group ID below.</span>
+    <%}%>
+  </div>
+  <div class="card-body">
+    <form role="form" class="form" id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();">
+      <input type="hidden" name="operation" />
+
+      <div class="form-group">
+        <label for="groupName" class="">Group Name</label>
+      <input class="form-control" id="groupName" type="text" name="groupName"/>
       </div>
-      <div class="panel-body">
-        <form role="form" class="form-horizontal" id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();">
-          <input type="hidden" name="operation" />
 
-          <div class="form-group">
-            <label for="groupName" class="col-sm-2 control-label">Group Name:</label>
-            <div class="col-sm-10">
-              <input class="form-control" id="groupName" type="text" name="groupName"/>
-            </div>
-          </div>
+      <div class="form-group">
+        <label for="groupComment" class="">Comment</label>
+      <input class="form-control" id="groupComment" type="text" name="groupComment"/>
+      </div>
 
-          <div class="form-group">
-            <label for="groupComment" class="col-sm-2 control-label">Comment:</label>
-            <div class="col-sm-10">
-              <input class="form-control" id="groupComment" type="text" name="groupComment"/>
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-default">OK</button>
-          <button type="button" class="btn btn-default" onclick="cancelGroup()">Cancel</button>
-        </form>
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
+      <button type="submit" class="btn btn-secondary mr-2">OK</button>
+      <button type="button" class="btn btn-secondary" onclick="cancelGroup()">Cancel</button>
+    </form>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

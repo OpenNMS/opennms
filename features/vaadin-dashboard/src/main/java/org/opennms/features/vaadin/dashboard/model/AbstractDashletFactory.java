@@ -28,14 +28,15 @@
 
 package org.opennms.features.vaadin.dashboard.model;
 
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.config.ui.PropertiesWindow;
-
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.opennms.features.vaadin.dashboard.config.ui.PropertiesWindow;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.Label;
 
 /**
  * This class represents an abstract factory for instantiating {@link Dashlet} objects.

@@ -58,14 +58,16 @@ public class DefaultBulkResult<T> implements BulkResultWrapper {
 
     @Override
     public List<FailedItem<T>> getFailedItems() {
+        int j = 0;
         final List<FailedItem<T>> failedItems = new ArrayList<>();
         for (int i = 0; i< rawResult.getItems().size(); i++) {
             final BulkResult.BulkResultItem bulkResultItem = rawResult.getItems().get(i);
             if (bulkResultItem.error != null && !bulkResultItem.error.isEmpty()) {
                 final Exception cause = BulkUtils.convertToException(bulkResultItem.error);
-                final T failedObject = documents.get(i);
-                final FailedItem failedItem = new FailedItem(i, failedObject, cause);
+                final T failedObject = documents.get(j);
+                final FailedItem failedItem = new FailedItem(j, failedObject, cause);
                 failedItems.add(failedItem);
+                j++;
             }
         }
         return failedItems;

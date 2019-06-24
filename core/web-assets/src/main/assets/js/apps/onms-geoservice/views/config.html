@@ -1,0 +1,18 @@
+<div class="">
+    <form class="form" name="configForm">
+        <div ng-repeat="geocoder in geocoders">
+            <div class="mt-3 ml-2">
+                <label style="width: 100px">{{geocoder.id | capitalize}}</label>
+                <toggle id="{{geocoder.id}}-toggle"
+                        class="mr-2"
+                        ng-change="onGeocoderChange(geocoder)"
+                        ng-model="geocoder.active"
+                        size="btn-sm"
+                />
+                <span class="text-muted" ng-show="geocoder.active && geocoder.error">
+                    <a ui-sref="geocoding.details({'id': geocoder.id})">Please configure the Geocoder</a>
+                </span>
+            </div>
+        </div>
+    </form>
+</div>

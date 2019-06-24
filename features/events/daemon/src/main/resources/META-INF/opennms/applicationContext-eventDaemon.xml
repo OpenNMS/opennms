@@ -36,7 +36,7 @@
     <property name="eventConfDao" ref="eventConfDao"/>
     <property name="eventUtil" ref="eventUtil"/>
   </bean>
-
+  
   <bean id="eventParmRegexFilter" class="org.opennms.netmgt.eventd.processor.EventParmRegexFilterProcessor">
     <property name="eventConfDao" ref="eventConfDao"/>
   </bean>
@@ -129,6 +129,10 @@
   <bean id="udpListener" class="org.opennms.netmgt.eventd.listener.UdpListener" init-method="start" destroy-method="stop">
     <constructor-arg ref="eventdConfigManager" />
     <constructor-arg ref="eventIpcManagerImpl" />
+  </bean>
+
+  <!-- Consume events from sink component -->
+  <bean id="eventSinkConsumer" class="org.opennms.netmgt.eventd.sink.EventSinkConsumer">
   </bean>
 
 </beans>

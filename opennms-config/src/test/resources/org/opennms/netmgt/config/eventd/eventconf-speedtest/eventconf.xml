@@ -1616,27 +1616,6 @@
      <severity>Minor</severity>
      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false" />
   </event>
-  <event>
-     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted</uei>
-     <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryStarted</event-label>
-     <descr>&lt;p&gt;The Linkd process has started its attempt to discover links for this node.&lt;/p&gt;</descr>
-     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
-     <severity>Normal</severity>
-  </event>
-  <event>
-     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted</uei>
-     <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryCompleted</event-label>
-     <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links for this node.&lt;/p&gt;</descr>
-     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
-     <severity>Normal</severity>
-  </event>
-  <event>
-     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended</uei>
-     <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoverySuspended</event-label>
-     <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links for this node.&lt;/p&gt;</descr>
-     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
-     <severity>Warning</severity>
-  </event>
 
 
   <event-file>events/Translator.default.events.xml</event-file>
@@ -1901,8 +1880,6 @@
   <event-file>events/Websense.events.xml</event-file>
   <event-file>events/Xerox-V2.events.xml</event-file>
   <event-file>events/Xerox.events.xml</event-file>
-
-  <event-file>events/ncs-component.events.xml</event-file>
 
   <event-file>events/asset-management.events.xml</event-file>
   <event-file>events/Standard.events.xml</event-file>

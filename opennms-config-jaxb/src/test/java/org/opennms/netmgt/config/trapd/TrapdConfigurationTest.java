@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,16 @@
 
 package org.opennms.netmgt.config.trapd;
 
+import static org.junit.Assert.fail;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.xml.JaxbUtils;
 
 public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> {
 
@@ -175,5 +179,65 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 		});
 
 	}
+	
+	  /**  Try to validate missing "required" fields and misspellings in "optional" fields **/
+	  @Test
+	  public void validateUsingJaxbUtils() {
+	        
+        String validConfig = "<trapd-configuration " 
+                                 + "snmp-trap-port=\"1111\" " 
+                                 + "new-suspect-on-trap=\"false\" "
+                                 + "/>";
+
+        try {
+            JaxbUtils.unmarshal(TrapdConfiguration.class, validConfig);
+        } catch (Exception e) {
+            fail();
+        }
+        String missingPortConfig = "<trapd-configuration "
+                                       + "new-suspect-on-trap=\"false\" " 
+                                       + "/>";
+
+        try {
+            JaxbUtils.unmarshal(TrapdConfiguration.class, missingPortConfig);
+            fail();
+        } catch (Exception e) {
+        }
+        String missingNewSuspectOnTrapConfig = "<trapd-configuration " 
+                                                   + "snmp-trap-port=\"1111\" "
+                                                   + "/>";
+        try {
+            JaxbUtils.unmarshal(TrapdConfiguration.class, missingNewSuspectOnTrapConfig);
+            fail();
+        } catch (Exception e) {
+        }
+
+        String misspelledConfig = "<trapd-configuration "
+                                      + "Ssnmp-trap-port=\"1111\" "
+                                      + "new-suspect-on-trap=\"false\" " 
+                                      + "/>";
+
+        try {
+            JaxbUtils.unmarshal(TrapdConfiguration.class, misspelledConfig);
+            fail();
+        } catch (Exception e) {
+        }
+
+        String missplledConfig1 = "<trapd-configuration " 
+                                      + "snmp-crap-address=\"*\" " 
+                                      + "snmp-trap-port=\"162\" "
+                                      + "new-suspect-on-trap=\"false\" " 
+                                      + "include-raw-message=\"false\" "
+                                      + "threads=\"0\" "
+                                      + "queue-size=\"10000\" " 
+                                      + "batch-size=\"1000\" " 
+                                      + "batch-interval=\"500\"" + "/>";
+        try {
+            JaxbUtils.unmarshal(TrapdConfiguration.class, missplledConfig1);
+            fail();
+        } catch (Exception e) {
+        }
+	        
+	    }
 
 }

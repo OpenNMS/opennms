@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,25 +44,25 @@
 </jsp:include>
 
 <script type="text/javascript">
-var nodesToAddAuto = {
-  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource == null}">"${node.id}": "${node.label}",</c:if>
+var nodesToAddAuto = [
+  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${node.label}" },</c:if>
   </c:forEach>
-};
+];
 
-var nodesToDeleteAuto = {
-  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource == null}">"${node.id}": "${node.label}",</c:if>
+var nodesToDeleteAuto = [
+  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${node.label}" },</c:if>
   </c:forEach>
-};
+];
 
-var nodesToAddReq = {
-  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource != null}">"${node.id}": "${node.label}",</c:if>
+var nodesToAddReq = [
+  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${node.label}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
   </c:forEach>
-};
+];
 
-var nodesToDeleteReq = {
-  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource != null}">"${node.id}": "${node.label}",</c:if>
+var nodesToDeleteReq = [
+  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${node.label}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
   </c:forEach>
-};
+];
 
 function populateOptGroupFromList(elementName, list) {
 	var optgroupElem = document.getElementById(elementName);
@@ -73,10 +73,15 @@ function populateOptGroupFromList(elementName, list) {
 		optgroupElem.remove(0);
 	}
 	
-	for (var nodeId in list) {
+	for (var i=0, len=list.length, nodeSpec; i < len; i++) {
+		nodeSpec = list[i];
 		var optionElem = document.createElement("option");
-		optionElem.value = nodeId;
-		optionElem.textContent = list[nodeId];
+		optionElem.value = nodeSpec["id"];
+		optionElem.textContent = nodeSpec["label"];
+		optionElem.title = "Node ID " + nodeSpec["id"];
+		if (!!nodeSpec["foreignId"]) {
+			optionElem.title += " / " + nodeSpec["foreignSource"] + ":" + nodeSpec["foreignId"];
+		}
 		optgroupElem.appendChild(optionElem);
 	}
 }
@@ -99,11 +104,11 @@ function toggleReqNodes() {
 }
 </script>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Edit Surveillance Category ${model.category.name}</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Edit Surveillance Category ${model.category.name}</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
     Category '${model.category.name}' has ${fn:length(model.sortedMemberNodes)} nodes
     </p>
@@ -112,7 +117,7 @@ function toggleReqNodes() {
       <input type="hidden" name="categoryid" value="${model.category.id}"/>
       <input type="hidden" name="edit" value=""/>
 
-      <div class="row form-group">
+      <div class="form-group form-row">
         <div class="col-md-5">
           <label for="toAdd">Available nodes</label>
           <select id="toAdd" class="form-control" name="toAdd" size="20" multiple>
@@ -121,11 +126,9 @@ function toggleReqNodes() {
           </select>
         </div> <!-- column -->
 
-        <div class="col-md-2 text-center">
-          <div class="btn-group-vertical" role="group">
-            <button type="submit" class="btn btn-default" name="action" value="Add &#155;&#155;">Add &#155;&#155;</button>
-            <button type="submit" class="btn btn-default" name="action" value="&#139;&#139; Remove">&#139;&#139; Remove</button>
-          </div>
+        <div class="col-md-2 form-group text-center my-auto mx-auto">
+            <button type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;">Add &#155;&#155;</button>
+            <button type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove">&#139;&#139; Remove</button>
         </div>
 
         <div class="col-md-5">
@@ -142,7 +145,7 @@ function toggleReqNodes() {
         <label for="toggleCheckbox">Check this box to enable requisitioned nodes (changes <strong>will</strong> be lost on next synchronization)</label>
       </div>
     </form>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <script type="text/javascript">

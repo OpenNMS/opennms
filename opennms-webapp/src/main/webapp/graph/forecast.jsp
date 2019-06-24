@@ -93,16 +93,16 @@ window.forecastError = "One or more dependencies required for forecasting "
 <div class="row-fluid" ng-app="forecast" ng-controller="forecastCtrl">
     <div class="col-md-12">
       <div ng-cloak class="alert alert-danger" role="alert" ng-show="error">
-	    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+		<span class="fa fa-exclamation-circle" aria-hidden="true"></span>
 	    <span class="sr-only">Error:</span>
 	    {{error}}
 	  </div>
 
-      <div class="panel panel-default" ng-hide="error">
-      <div class="panel-heading text-center">
-          <h3 class="panel-title">Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </h3>
-      </div> <!-- panel-heading -->
-      <div class="panel-body">
+      <div class="card" ng-hide="error">
+      <div class="card-header text-center">
+          <span>Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </span>
+      </div> <!-- card-header -->
+      <div class="card-body">
 		<div class="row-fluid">
 			<div class="col-md-7">
 		        <div data-graph-report="<c:out value="${report}"/>" data-graph-resource="<c:out value="${resourceId}"/>"></div>
@@ -110,12 +110,12 @@ window.forecastError = "One or more dependencies required for forecasting "
 		    <div class="col-md-4" ng-show="series.length < 1">
 		        <p>The graph does not contain any series that can be forecasted.</p>
 		    </div>
-		    <div class="col-md-4" ng-hide="series.length < 1">
-		        <form class="form-horizontal" name="form">
-		            <div class="form-group">
+		    <div class="col-md-4 mt-4" ng-hide="series.length < 1">
+		        <form class="form" name="form">
+		            <div class="form-group form-row">
 		                <div class="col-sm-12">
-		                    <label for="select-metric">Select the metric to forecast:</label>
-		                    <select class="form-control" id="select-metric"
+		                    <label for="select-metric">Select the metric to forecast</label>
+		                    <select class="form-control custom-select" id="select-metric"
 		                            ng-model="metricToForecast"
 		                            ng-options="s.name for s in series track by s.metric"
 		                    >
@@ -123,82 +123,89 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                </div>
 		            </div>
 
-		            <div class="form-group" ng-show="metricToForecast">
+		            <div class="form-group form-row" ng-show="metricToForecast">
 		                <div class="col-sm-12">
-		                    <label for="select-template">Select a template:</label>
-		                    <select class="form-control" id="select-template"
+		                    <label for="select-template">Select a template</label>
+		                    <select class="form-control custom-select" id="select-template"
 		                            ng-model="forecastingTemplate"
 		                            ng-options="t.name for t in forecastingTemplates track by t.id"
 		                            ng-change="onForecastingTemplateChange()">
 		                    </select>
-		                    <span class="help-block">Choose from one of the available forecasting templates, or configure your own options.</span>
+		                    <span class="form-text text-muted">Choose from one of the available forecasting templates, or configure your own options.</span>
 		                </div>
 		            </div>
 
-		            <div class="form-group" ng-show="forecastingTemplate.id === 'custom'">
+		            <div class="form-group form-row" ng-show="forecastingTemplate.id === 'custom'">
 		                <div role="tabpanel" id="options">
 		                    <!-- Nav tabs -->
 		                    <ul class="nav nav-tabs" role="tablist">
-		                        <li role="presentation" class="active"><a href="#time" role="tab" data-toggle="tab">Time Span</a></li>
-		                        <li role="presentation"><a href="#stat" role="tab" data-toggle="tab">Trend and Forecast</a></li>
+		                        <li role="presentation" class="nav-item"><a href="#time" role="tab" data-toggle="tab" class="nav-link active">Time Span</a></li>
+		                        <li role="presentation" class="nav-item"><a href="#stat" role="tab" data-toggle="tab" class="nav-link">Trend and Forecast</a></li>
 		                    </ul>
 		                    <!-- Tab panes -->
 		                    <div class="tab-content">
-		                        <div role="tabpanel" class="tab-pane active" id="time">
-		                            <div class="form-group" ng-class="{'has-error': form.trainingStart.$invalid}">
-		                                <label class="col-sm-3 control-label">Training Start</label>
+		                        <div role="tabpanel" class="tab-pane active mt-2" id="time">
+		                            <div class="form-group form-row">
+		                                <label class="col-sm-3 col-form-label">Training Start</label>
 		                                <div class="col-sm-9">
-		                                    <input type="number" integer min="0" ng-required="true" class="form-control" name="trainingStart" ng-model="forecastingOptions.trainingStart">
-		                                    <span class="help-block">Samples from this number of days ago will be used to train the model, but won't be shown on the graph.</span>
+		                                    <input type="number" integer min="0" ng-required="true" class="form-control" name="trainingStart" ng-model="forecastingOptions.trainingStart"
+												   ng-class="{'is-invalid': form.trainingStart.$invalid}">
+		                                    <span class="form-text text-muted">Samples from this number of days ago will be used to train the model, but won't be shown on the graph.</span>
 		                                </div>
 		                            </div>
 
-		                            <div class="form-group" ng-class="{'has-error': form.graphStart.$invalid}">
-		                                <label class="col-sm-3 control-label">Graph Start</label>
+		                            <div class="form-group form-row">
+		                                <label class="col-sm-3 col-form-label">Graph Start</label>
 		                                <div class="col-sm-9">
-		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="graphStart" ng-model="forecastingOptions.graphStart">
-		                                    <span class="help-block">Samples from this number of days ago will be shown on the graph.</span>
+		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="graphStart" ng-model="forecastingOptions.graphStart"
+												   ng-class="{'is-invalid': form.graphStart.$invalid}">
+		                                    <span class="form-text text-muted">Samples from this number of days ago will be shown on the graph.</span>
 		                                </div>
 		                            </div>
 
-		                            <div class="form-group" ng-class="{'has-error': form.forecasts.$invalid}">
-		                                <label class="col-sm-3 control-label">Forecasts</label>
+		                            <div class="form-group form-row">
+		                                <label class="col-sm-3 col-form-label">Forecasts</label>
 		                                <div class="col-sm-9">
-		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="forecasts" ng-model="forecastingOptions.forecasts">
-		                                    <span class="help-block">Number of seasons to forecast.</span>
+		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="forecasts" ng-model="forecastingOptions.forecasts"
+												   ng-class="{'is-invalid': form.forecasts.$invalid}">
+		                                    <span class="form-text text-muted">Number of seasons to forecast.</span>
 		                                </div>
 		                            </div>
 		                        </div>
-		                        <div role="tabpanel" class="tab-pane" id="stat">
-		                            <div class="form-group" ng-class="{'has-error': form.season.$invalid}">
-		                                <label class="col-sm-3 control-label">Season</label>
+		                        <div role="tabpanel" class="tab-pane mt-2" id="stat">
+		                            <div class="form-group form-row">
+		                                <label class="col-sm-3 col-form-label">Season</label>
 		                                <div class="col-sm-9">
-		                                    <input type="number" greater-than-zero ng-required="true" class="form-control" name="season" ng-model="forecastingOptions.season">
-		                                    <span class="help-block">Seasonality in days of the sample data. The training set must contain at least two seasons worth of data.</span>
+		                                    <input type="number" greater-than-zero ng-required="true" class="form-control" name="season" ng-model="forecastingOptions.season"
+												   ng-class="{'is-invalid': form.season.$invalid}">
+		                                    <span class="form-text text-muted">Seasonality in days of the sample data. The training set must contain at least two seasons worth of data.</span>
 		                                </div>
 		                            </div>
 
-		                            <div class="form-group" ng-class="{'has-error': form.trendOrder.$invalid}">
-		                                <label class="col-sm-3 control-label">Trend Order</label>
+		                            <div class="form-group form-row">
+		                                <label class="col-sm-3 col-form-label">Trend Order</label>
 		                                <div class="col-sm-9">
-		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="trendOrder" ng-model="forecastingOptions.trendOrder">
-		                                    <span class="help-block">Order of the polynomial used to estimate the trend. Set to this 1 for a line or higher for a curve.</span>
+		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="trendOrder" ng-model="forecastingOptions.trendOrder"
+												   ng-class="{'is-invalid': form.trendOrder.$invalid}">
+		                                    <span class="form-text text-muted">Order of the polynomial used to estimate the trend. Set to this 1 for a line or higher for a curve.</span>
 		                                </div>
 		                            </div>
 
-		                            <div class="form-group" ng-class="{'has-error': form.confidenceLevel.$invalid}">
-		                                <label class="col-sm-3 control-label">Confidence Level</label>
+		                            <div class="form-group form-row">
+		                                <label class="col-sm-3 col-form-label">Confidence Level</label>
 		                                <div class="col-sm-9">
-		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="confidenceLevel" ng-model="forecastingOptions.confidenceLevel">
-		                                    <span class="help-block">Level used to calculate the upper and lower confidence bounds.</span>
+		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="confidenceLevel" ng-model="forecastingOptions.confidenceLevel"
+												   ng-class="{'is-invalid': form.confidenceLevel.$invalid}">
+		                                    <span class="form-text text-muted">Level used to calculate the upper and lower confidence bounds.</span>
 		                                </div>
 		                            </div>
 		
-		                            <div class="form-group" ng-class="{'has-error': form.outlierThreshold.$invalid}">
-		                                <label class="col-sm-3 control-label">Outlier Threshold</label>
+		                            <div class="form-group form-row">
+		                                <label class="col-sm-3 col-form-label">Outlier Threshold</label>
 		                                <div class="col-sm-9">
-		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="outlierThreshold" ng-model="forecastingOptions.outlierThreshold">
-		                                    <span class="help-block">Percentile used to eliminate outliers. Outliers and missing values are automatically interpolated.</span>
+		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="outlierThreshold" ng-model="forecastingOptions.outlierThreshold"
+												   ng-class="{'is-invalid': form.outlierThreshold.$invalid}">
+		                                    <span class="form-text text-muted">Percentile used to eliminate outliers. Outliers and missing values are automatically interpolated.</span>
 		                                </div>
 		                            </div>
 		                        </div>
@@ -206,7 +213,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                </div>
 		            </div>
 		
-		            <div class="form-group">
+		            <div class="form-group form-row">
 		                <div class="col-sm-12">
 		                    <button type="button" id="reset" ng-click="reset()" ng-show="graphModel !== null" class="btn btn-danger pull-left">Reset</button>
 		                    <button type="button" id="forecast" ng-click="forecast()" ng-disabled="!canForecast()" class="btn btn-primary pull-right">Forecast</button>
@@ -215,7 +222,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		        </form>
 		    </div>
 		  </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
       </div> <!-- panel -->
     </div> <!-- col-md-12 -->
 </div> <!-- row -->

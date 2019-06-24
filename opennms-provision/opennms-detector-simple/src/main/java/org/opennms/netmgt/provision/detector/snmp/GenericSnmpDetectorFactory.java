@@ -49,8 +49,8 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
 
     @SuppressWarnings("unchecked")
     @Override
-    public T createDetector() {
-        return (T)super.createDetector();
+    public T createDetector(Map<String, String> properties) {
+        return (T)super.createDetector(properties);
     }
 
     @Override

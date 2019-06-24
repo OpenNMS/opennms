@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,18 @@
 
 package org.opennms.netmgt.config.snmp;
 
+import static org.junit.Assert.fail;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.xml.JaxbUtils;
 
 public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
 
@@ -156,6 +160,63 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
                                            + "    <ip-match>10.0.0.*</ip-match>"
                                            + "  </definition>" + "</snmp-config>\n",
                 "target/classes/xsds/snmp-config.xsd" } });
+    }
+    
+    
+    /**  Try to validate missing "required" fields and misspellings in "optional" fields **/
+    @Test
+    public void validateSnmpConfiguration() {
+        
+        String validConfig =  "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
+                + "  <definition "
+                + "    read-community=\"public\" "
+                + "    write-community=\"private\" "
+                + "    version=\"v3\">" + "    <range "
+                + "      begin=\"192.168.0.1\" "
+                + "      end=\"192.168.0.255\"/>"
+                + "    <specific>192.168.1.1</specific>"
+                + "    <ip-match>10.0.0.*</ip-match>"
+                + "  </definition>" + "</snmp-config>\n";
+        
+        try {
+            JaxbUtils.unmarshal(SnmpConfig.class, validConfig);
+        } catch (Exception e) {
+            fail();
+        }
+        
+        String missingFieldConfig =  "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
+                + "  <definition "
+                + "    read-community=\"public\" "
+                + "    wrong-community=\"private\" "
+                + "    version=\"v3\">" + "    <range "
+                + "      end=\"192.168.0.255\"/>"
+                + "    <specific>192.168.1.1</specific>"
+                + "    <ip-match>10.0.0.*</ip-match>"
+                + "  </definition>" + "</snmp-config>\n";
+        
+        try {
+            JaxbUtils.unmarshal(SnmpConfig.class, missingFieldConfig);
+            fail();
+        } catch (Exception e) {
+        }
+        
+        String misspelledConfig =  "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
+                + "  <definition "
+                + "    read-community=\"public\" "
+                + "    wrong-community=\"private\" "
+                + "    version=\"v3\">" + "    <range "
+                + "      begin=\"192.168.0.1\" "
+                + "      end=\"192.168.0.255\"/>"
+                + "    <specific>192.168.1.1</specific>"
+                + "    <ip-match>10.0.0.*</ip-match>"
+                + "  </definition>" + "</snmp-config>\n";
+        
+        try {
+            JaxbUtils.unmarshal(SnmpConfig.class, misspelledConfig);
+            fail();
+        } catch (Exception e) {
+        }
+        
     }
 
 }

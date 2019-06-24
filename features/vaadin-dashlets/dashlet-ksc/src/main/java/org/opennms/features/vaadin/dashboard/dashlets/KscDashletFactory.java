@@ -28,6 +28,7 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletFactory;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
@@ -47,6 +48,7 @@ public class KscDashletFactory extends AbstractDashletFactory {
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private TransactionOperations m_transactionOperations;
+    private TimeformatService m_timeformatService;
 
     /**
      * Method for creating a new {@link org.opennms.features.vaadin.dashboard.model.Dashlet} instance.
@@ -55,7 +57,7 @@ public class KscDashletFactory extends AbstractDashletFactory {
      * @return a new {@link org.opennms.features.vaadin.dashboard.model.Dashlet} instance
      */
     public Dashlet newDashletInstance(DashletSpec dashletSpec) {
-        return new KscDashlet(getName(), dashletSpec, m_nodeDao, m_resourceDao, m_transactionOperations);
+        return new KscDashlet(getName(), dashletSpec, m_nodeDao, m_resourceDao, m_transactionOperations, m_timeformatService);
     }
 
     /**
@@ -78,6 +80,10 @@ public class KscDashletFactory extends AbstractDashletFactory {
 
     public void setTransactionOperations(TransactionOperations transactionOperations) {
         this.m_transactionOperations = transactionOperations;
+    }
+
+    public void setTimeformatService(TimeformatService timeformatService) {
+        m_timeformatService = timeformatService;
     }
 
     /**

@@ -27,7 +27,7 @@
 
 	<reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
-	<reference id="restClient" interface="org.opennms.minion.core.api.RestClient"/>
+	<reference id="restClient" interface="org.opennms.distributed.core.api.RestClient"/>
 
 	<!-- Camel Event for unmarshalling processor -->
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">

@@ -85,15 +85,15 @@ public class BSFNorthbounderManager implements InitializingBean, Northbounder, D
         m_registrations.put(getName(), m_serviceRegistry.register(this, Northbounder.class));
 
         // Registering each destination as a northbounder
-        registerNorthnounders();
+        registerNorthbounders();
     }
 
     /**
-     * Register northnounders.
+     * Register northbounders.
      *
      * @throws Exception the exception
      */
-    private void registerNorthnounders() throws Exception {
+    private void registerNorthbounders() throws Exception {
         if (! m_configDao.getConfig().isEnabled()) {
             LOG.warn("The BSF NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
             return;
@@ -172,7 +172,7 @@ public class BSFNorthbounderManager implements InitializingBean, Northbounder, D
         try {
             m_configDao.reload();
             m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
-            registerNorthnounders();
+            registerNorthbounders();
         } catch (Exception e) {
             throw new NorthbounderException("Can't reload the BSF trap northbound configuration", e);
         }

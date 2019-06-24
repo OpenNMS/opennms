@@ -64,12 +64,21 @@ public interface PollerdMBean extends BaseOnmsMBean {
      */
     public double getTaskCompletionRatio();
     
+     /**
+     * @return The current number of threads in the pool
+     */
+    public long getNumPoolThreads();
+
     /**
-     * 
      * @return The largest size of the poller thread pool since poller startup
      */
     public long getPeakPoolThreads();
-    
+
+    /**
+     * @return The core number of threads
+     */
+    public long getCorePoolThreads();
+
     /**
      * @return The maximum number of threads allowed in the poller's thread pool
      */

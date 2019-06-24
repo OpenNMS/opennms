@@ -198,13 +198,7 @@ public class StressCommand implements Action {
         if (rras != null && rras.size() > 0) {
             repository.setRraList(rras);
         } else {
-            repository.setRraList(Lists.newArrayList(
-                // Use the default list of RRAs we provide in our stock configuration files
-                "RRA:AVERAGE:0.5:1:2016",
-                "RRA:AVERAGE:0.5:12:1488",
-                "RRA:AVERAGE:0.5:288:366",
-                "RRA:MAX:0.5:288:366",
-                "RRA:MIN:0.5:288:366"));
+            repository.setRraList(Lists.newArrayList(CollectCommand.DEFAULT_RRA));
         }
         repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"),"share","rrd","snmp").toFile());
 

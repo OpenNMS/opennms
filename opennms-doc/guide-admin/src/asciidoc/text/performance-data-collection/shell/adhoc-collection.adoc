@@ -45,6 +45,15 @@ collection:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collectio
 
 TIP: Some collectors, such as the `JdbcCollector`, can be invoked without specifying a node.
 
+Persist a collection :
+
+[source]
+----
+collection:collect -l MINION -n NODES=n1 -p org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
+----
+
+NOTE: `-p/--persist` option will persist collection set there by introducing an extra datapoint other than data collected during already configured collection interval.
+
 A complete list of options is available using:
 
 [source]

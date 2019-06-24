@@ -74,7 +74,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
+        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
+        "classpath:/META-INF/opennms/mockSinkConsumerManager.xml"
+        
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -200,7 +202,7 @@ public class EventdIT implements InitializingBean {
         final List<OnmsEvent> matching = m_eventDao.findMatching(cb.toCriteria());
         System.err.println("matching = " + matching);
         assertEquals(1, matching.size());
-        assertEquals(new Integer(1), matching.get(0).getNodeId());
+        assertEquals(node.getId(), matching.get(0).getNodeId());
     }
 
     /**

@@ -72,7 +72,7 @@ import com.google.common.base.Optional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-newts.xml"
+        "classpath:/META-INF/opennms/applicationContext-timeseries-newts.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.timeseries.strategy=newts"

@@ -29,6 +29,8 @@
 package org.opennms.netmgt.collection.commands;
 
 import java.net.InetAddress;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,16 +57,31 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.InvalidCollectionAgentException;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.InetAddrUtils;
+
+import com.google.common.collect.Lists;
 
 @Command(scope = "collection", name = "collect", description="Invokes a collector against a host at a specified location.")
 @Service
 public class CollectCommand implements Action {
+
+    public static final List<String> DEFAULT_RRA = Lists.newArrayList(
+            // Use the default list of RRAs we provide in our stock
+            // configuration files
+            "RRA:AVERAGE:0.5:1:2016",
+            "RRA:AVERAGE:0.5:12:1488",
+            "RRA:AVERAGE:0.5:288:366",
+            "RRA:MAX:0.5:288:366",
+            "RRA:MIN:0.5:288:366");
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String location;
@@ -78,6 +95,9 @@ public class CollectCommand implements Action {
     @Option(name = "-n", aliases = "--node", description = "Node ID or FS:FID", required = false, multiValued = false)
     String nodeCriteria;
 
+    @Option(name = "-p",  aliases = "--persist", description = "Persist collection")
+    boolean persist;
+
     @Argument(index = 0, name = "collectorClass", description = "Collector class", required = true, multiValued = false)
     @Completion(CollectorClassNameCompleter.class)
     String className;
@@ -88,6 +108,10 @@ public class CollectCommand implements Action {
     @Argument(index = 2, name = "attributes", description = "Collector specific attributes in key=value form", multiValued = true)
     List<String> attributes;
 
+    @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the pristine content on datacollection-config.xml", required=false, multiValued=true)
+    List<String> rras = null;
+
+
     @Reference
     public ServiceCollectorRegistry serviceCollectorRegistry;
 
@@ -96,6 +120,10 @@ public class CollectCommand implements Action {
 
     @Reference
     public CollectionAgentFactory collectionAgentFactory;
+
+    @Reference
+    private PersisterFactory persisterFactory;
+
 
     @Override
     public Void execute() {
@@ -118,17 +146,35 @@ public class CollectCommand implements Action {
         final CompletableFuture<CollectionSet> future = locationAwareCollectorClient.collect()
                 .withAgent(agent)
                 .withSystemId(systemId)
-                .withCollector(collector)
+                // For Service collectors that implement integration api will have proxy collectors.
+                // fetching class name from proxy won't match with class name in collector registry.
+                .withCollectorClassName(className)
                 .withTimeToLive(ttlInMs)
                 .withAttributes(parse(attributes))
                 .execute();
 
+        Persister persister = null;
+        if (persist) {
+            ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+            RrdRepository repository = new RrdRepository();
+            persister = persisterFactory.createPersister(params, repository);
+            if (rras != null && rras.size() > 0) {
+                repository.setRraList(rras);
+            } else {
+                repository.setRraList(Lists.newArrayList(DEFAULT_RRA));
+            }
+            repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"), "share", "rrd", "snmp").toFile());
+        }
         while (true) {
             try {
                 try {
                     CollectionSet collectionSet = future.get(1, TimeUnit.SECONDS);
                     if (CollectionStatus.SUCCEEDED.equals(collectionSet.getStatus())) {
                         printCollectionSet(collectionSet);
+                        if (persist) {
+                            collectionSet.visit(persister);
+                            System.out.println("---- Persisted collection ----");
+                        }
                     } else {
                         System.out.printf("\nThe collector returned a collection set with status: %s\n", collectionSet.getStatus());
                     }
@@ -140,9 +186,7 @@ public class CollectCommand implements Action {
                         System.out.printf("The collector requires a valid node and interface. Try specifying a valid node using the --node option.\n", e);
                         break;
                     }
-                    System.out.printf("\nCollect failed with:", e);
-                    e.printStackTrace();
-                    System.out.println();
+                    System.out.printf("\nCollect failed with: %s \n", e);
                 }
                 break;
             } catch (TimeoutException e) {
@@ -193,7 +237,7 @@ public class CollectCommand implements Action {
         }
     }
 
-    private static Map<String, Object> parse(List<String> attributeList) {
+    private Map<String, Object> parse(List<String> attributeList) {
         final Map<String, Object> properties = new HashMap<>();
         if (attributeList != null) {
             for (String keyValue : attributeList) {

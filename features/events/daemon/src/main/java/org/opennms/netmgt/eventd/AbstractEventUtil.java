@@ -840,7 +840,7 @@ public abstract class AbstractEventUtil implements EventUtil {
                 offsetH = octetStringValue.and(new BigInteger("000000000000000000ff00", 16)).shiftRight(1*8);
                 offsetM = octetStringValue.and(new BigInteger("00000000000000000000ff", 16));
 	    } else {
-	        LOG.warn("Not sure what to do with the DateAndTime value '{}'. Using current time instead.");
+	        LOG.warn("Not sure what to do with the DateAndTime value '{}'. Using current time instead.", octetStringValue);
 	        return null;
 	    }
 

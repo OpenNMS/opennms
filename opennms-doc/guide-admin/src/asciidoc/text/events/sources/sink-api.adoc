@@ -1,0 +1,12 @@
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-events-sources-sink-api]]
+
+==== Sink
+
+Events can also be created by routing them to a specific topic on _Kafka_ / _ActiveMQ_.
+
+The topic name should be of the form  `OpenNMS`.Sink.Events where `OpenNMS` is default instance id of {opennms-product-name}.
+The instance id is configurable through a system property `org.opennms.instance.id`.
+

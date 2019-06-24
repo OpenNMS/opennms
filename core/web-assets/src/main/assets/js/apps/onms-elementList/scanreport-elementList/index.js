@@ -5,11 +5,12 @@ const MODULE_NAME = 'onms.elementList.scanreport';
 const angular = require('vendor/angular-js');
 const elementList = require('../lib/elementList');
 require('../lib/restResources');
+require('../../onms-date-formatter');
 
 const mainTemplate = require('./main.html');
 
 // $filters that can be used to create human-readable versions of filter values
-angular.module('scanReportListFilters', [ 'onmsListFilters' ])
+angular.module('scanReportListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 .directive('onmsScanreportList', () => {
 	return {
 		restrict: 'E',
@@ -39,7 +40,7 @@ angular.module('scanReportListFilters', [ 'onmsListFilters' ])
 		switch (property) {
 		case 'timestamp':
 			// Return the date in our preferred format
-			return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+			return $filter('onmsDate')(input);
 		default:
 			return input;
 		}

@@ -51,7 +51,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.SystemInfoUtils;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -64,9 +65,12 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-server.xml",
-        "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml"
+        "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
+        "classpath:/META-INF/opennms/applicationContext-opennms-identity.xml"
 })
 @JUnitConfigurationEnvironment
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
@@ -93,6 +97,10 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
                     @Override
                     public String getLocation() {
                         return REMOTE_LOCATION_NAME;
+                    }
+                    @Override
+                    public String getType() {
+                        return SystemType.Minion.name();
                     }
                 }, new Properties()));
 
@@ -126,8 +134,11 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
         };
         consumerManager.registerConsumer(consumer);
 
+        Thread.sleep(500);
+
         // Fetch the remote dispatcher from the blueprint context
         MessageDispatcherFactory remoteMessageDispatcherFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageDispatcherFactory", MessageDispatcherFactory.class);
+        assertNotNull(remoteMessageDispatcherFactory);
         SyncDispatcher<Heartbeat> dispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(HeartbeatModule.INSTANCE);
 
         dispatcher.send(new Heartbeat());

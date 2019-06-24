@@ -53,7 +53,6 @@ import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
@@ -77,6 +76,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.threshd.ThresholdingService;
+import org.opennms.netmgt.threshd.ThresholdingSession;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -131,9 +132,6 @@ public class CollectdIntegrationTest {
         File homeDir = resource.getFile().getParentFile().getParentFile();
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
 
-        resource = new ClassPathResource("/test-thresholds.xml");
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(resource.getInputStream()));
-
         // set up test using a string key
         m_key = m_testName.getMethodName()+System.nanoTime();
         m_tests.put(m_key, this);
@@ -167,6 +165,12 @@ public class CollectdIntegrationTest {
             
         };
 
+        ThresholdingService mockThresholdingService = m_mockUtils.createMock(ThresholdingService.class);
+        ThresholdingSession mockThresholdingSession = m_mockUtils.createMock(ThresholdingSession.class);
+        EasyMock.expect(mockThresholdingService.createSession(EasyMock.anyInt(), EasyMock.anyString(), EasyMock.anyString(), EasyMock.anyObject(),
+                                                              EasyMock.anyObject())).andReturn(mockThresholdingSession);
+        m_collectd.setThresholdingService(mockThresholdingService);
+
         OnmsServiceType snmp = new OnmsServiceType("SNMP");
         NetworkBuilder netBuilder = new NetworkBuilder();
         NodeBuilder nodeBuilder = netBuilder.addNode("node1").setId(1);
@@ -181,7 +185,7 @@ public class CollectdIntegrationTest {
         EasyMock.expect(m_ifaceDao.findByServiceType(snmp.getName())).andReturn(initialIfs).anyTimes();
         
         m_filterDao.flushActiveIpAddressListCache();
-        
+
         EasyMock.expect(m_nodeDao.load(1)).andReturn(nodeBuilder.getNode()).anyTimes();
         
         createGetPackagesExpectation(svc);
@@ -245,8 +249,6 @@ public class CollectdIntegrationTest {
 
     private void createGetPackagesExpectation(OnmsMonitoredService svc) {
         String rule = "ipaddr = '"+ str(svc.getIpAddress())+"'";
-        
-        //EasyMock.expect(m_filterDao.getActiveIPAddressList(rule)).andReturn(Collections.singletonList(svc.getIpAddress()));
         
         final Package pkg = new Package();
         pkg.setName("testPackage");

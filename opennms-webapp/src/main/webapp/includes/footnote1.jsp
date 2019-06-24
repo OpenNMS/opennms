@@ -53,7 +53,7 @@
     <!-- Footnote1 -->
     <div class="row">
       <div class="col-md-12">
-          <b>(*) Denotes an interface that no longer exists in the database, or a resource that is not an interface.</b>
+        <p><strong>(*) Denotes an interface that no longer exists in the database, or a resource that is not an interface.</strong></p>
       </div>
     </div>
   </c:otherwise>

@@ -42,6 +42,8 @@ import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.v2.bsm.model.edge.ApplicationEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ApplicationResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceResponseDTO;
@@ -70,6 +72,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         bs.getChildren().add(createChildEdgeResponse(3L, 2L, ignoreDto, Status.MAJOR, new ResourceLocation(ApiVersion.Version2, "test/3")));
         bs.getChildren().add(createChildEdgeResponse(4L, 3L, ignoreDto, Status.MAJOR, new ResourceLocation(ApiVersion.Version2, "test/4")));
         bs.getIpServices().add(createIpServiceEdgeResponse(5L, createIpServiceResponse(), ignoreDto, Status.MINOR, new ResourceLocation(ApiVersion.Version2, "test/5"), "ip-service-friendly-name"));
+        bs.getApplications().add(createApplicationEdgeResponse(6L, createApplicationResponse(), ignoreDto, Status.MAJOR, new ResourceLocation(ApiVersion.Version2, "test/6")));
         bs.getParentServices().add(11L);
         bs.getParentServices().add(12L);
 
@@ -156,6 +159,25 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    }," +
             "    \"friendly-name\" : \"ip-service-friendly-name\"" +
             "  } ]," +
+
+            "  \"application-edges\" : [ {" +
+            "    \"id\" : 6," +
+            "    \"operational-status\" : \"MAJOR\"," +
+            "    \"map-function\" : {" +
+            "      \"type\" : \"Ignore\"," +
+            "      \"properties\" : { }" +
+            "    }," +
+            "    \"weight\" : 5," +
+            "    \"location\" : \"/api/v2/test/6\"," +
+            "    \"reduction-keys\" : [ \"key1\", \"key2\" ]," +
+            "    \"application\" : {" +
+            "      \"location\" : \"/api/v2/business-services/applications/42\"," +
+            "      \"id\" : 42," +
+            "      \"application-name\" : \"MyApplication\"," +
+            "    }," +
+            "  } ]," +
+
+
             "  \"parent-services\" : [ 11, 12 ]" +
             "}",
             "<business-service>\n" +
@@ -242,6 +264,28 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "         <child-id>3</child-id>\n" +
             "      </child-edge>\n" +
             "   </child-edges>\n" +
+
+            "   <application-edges>\n" +
+            "      <application-edge>\n" +
+            "         <id>6</id>\n" +
+            "         <operational-status>MAJOR</operational-status>\n" +
+            "         <map-function>\n" +
+            "            <type>Ignore</type>\n" +
+            "         </map-function>\n" +
+            "         <location>/api/v2/test/6</location>\n" +
+            "         <reduction-keys>\n" +
+            "            <reduction-key>key1</reduction-key>\n" +
+            "            <reduction-key>key2</reduction-key>\n" +
+            "         </reduction-keys>\n" +
+            "         <weight>5</weight>\n" +
+            "         <application>\n" +
+            "            <id>42</id>\n" +
+            "            <application-name>MyApplication</application-name>\n" +
+            "            <location>/api/v2/business-services/applications/42</location>\n" +
+            "         </application>\n" +
+            "      </application-edge>\n" +
+            "   </application-edges>\n" +
+
             "   <parent-services>\n" +
             "      <parent-service>11</parent-service>\n" +
             "      <parent-service>12</parent-service>\n" +
@@ -265,6 +309,14 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         return ipService;
     }
 
+    private static ApplicationResponseDTO createApplicationResponse() {
+        ApplicationResponseDTO applicationResponseDTO = new ApplicationResponseDTO();
+        applicationResponseDTO.setId(42);
+        applicationResponseDTO.setApplicationName("MyApplication");
+        applicationResponseDTO.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "applications", "42"));
+        return applicationResponseDTO;
+    }
+
     private static IpServiceEdgeResponseDTO createIpServiceEdgeResponse(long id, IpServiceResponseDTO ipServiceResponseDTO, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location, String friendlyName) {
         IpServiceEdgeResponseDTO responseDTO = new IpServiceEdgeResponseDTO();
         responseDTO.setOperationalStatus(status);
@@ -276,6 +328,19 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         responseDTO.setWeight(5);
         responseDTO.setMapFunction(mapFunctionDTO);
         responseDTO.setFriendlyName(friendlyName);
+        return responseDTO;
+    }
+
+    private static ApplicationEdgeResponseDTO createApplicationEdgeResponse(long id, ApplicationResponseDTO applicationResponseDTO, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location) {
+        ApplicationEdgeResponseDTO responseDTO = new ApplicationEdgeResponseDTO();
+        responseDTO.setId(id);
+        responseDTO.setLocation(location);
+        responseDTO.setApplication(applicationResponseDTO);
+        responseDTO.getReductionKeys().add("key1");
+        responseDTO.getReductionKeys().add("key2");
+        responseDTO.setWeight(5);
+        responseDTO.setMapFunction(mapFunctionDTO);
+        responseDTO.setOperationalStatus(status);
         return responseDTO;
     }
 

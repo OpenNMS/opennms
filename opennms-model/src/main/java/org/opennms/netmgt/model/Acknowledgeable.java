@@ -103,5 +103,7 @@ public interface Acknowledgeable {
      * @return the related OnmsNode, null if non available or doesn't make sense
      */
     OnmsNode getNode();
-    
+
+    OnmsSeverity getSeverity();
+
 }

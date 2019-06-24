@@ -33,6 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
+import org.osgi.framework.BundleContext;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 public class ThreadLockingDispatcherFactory<U extends Message> extends AbstractMessageDispatcherFactory<Void> {
     private final AtomicInteger numMessageDispatched = new AtomicInteger(0);
@@ -56,6 +60,21 @@ public class ThreadLockingDispatcherFactory<U extends Message> extends AbstractM
         throw new IllegalStateException();
     }
 
+    @Override
+    public String getMetricDomain() {
+        return ThreadLockingDispatcherFactory.class.getPackage().getName();
+    }
+
+    @Override
+    public BundleContext getBundleContext() {
+        return null;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
+    }
+
     @SuppressWarnings("unchecked")
     public <S extends Message> ThreadLockingSyncDispatcher<S> getThreadLockingSyncDispatcher() {
         return (ThreadLockingSyncDispatcher<S>)threadLockingSyncDispatcher;
@@ -64,4 +83,5 @@ public class ThreadLockingDispatcherFactory<U extends Message> extends AbstractM
     public int getNumMessageDispatched() {
         return numMessageDispatched.get();
     }
+
 }

@@ -6,7 +6,8 @@
 
 	<service interface="org.opennms.vaadin.extender.ApplicationFactory"  ref="jmxConfigToolApplicationFactory">
 		<service-properties>
-			<entry key="alias" value="/admin/jmx-config-tool" />
+			<entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/jmx-config-tool/*" />
+            <entry key="servlet.init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
 		</service-properties>
 	</service>
         

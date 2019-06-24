@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,14 +36,15 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.smoketest.AbstractPage;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.OpenNMSSeleniumIT;
+import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
+import org.opennms.smoketest.selenium.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
+public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
 
     private OpsBoardAdminPage adminPage;
 
@@ -74,22 +75,43 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
         // Now ensure that access was NOT denied
         try {
             setImplicitWait(1, TimeUnit.SECONDS);
-            new WebDriverWait(m_driver, 5).until(not(pageContainsText("Access denied")));
-            new WebDriverWait(m_driver, 5).until(pageContainsText("Surveillance view"));
+            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(driver, 5).until(pageContainsText("Surveillance view"));
         } finally {
             setImplicitWait();
         }
     }
 
+    // See NMS-10515
+    @Test
+    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
+    public void canCreateAndUseDeepLink() {
+        final OpsBoardAdminEditorPage testBoard = adminPage.createNew("My-Wallboard");
+        testBoard.addDashlet(new DashletBuilder()
+                .withDashlet("Alarms")
+                .withTitle("My-Alarms")
+                .withDuration(300).build());
+
+        adminPage.open("/vaadin-wallboard#!wallboard/My-Wallboard");
+        waitUntil(pageContainsText("Ops Panel"));
+        waitUntil(pageContainsText("Alarms: My-Alarms"));
+    }
+
     private static class OpsBoardAdminPage extends AbstractPage {
 
-        OpsBoardAdminPage(OpenNMSSeleniumTestCase testCase) {
+        OpsBoardAdminPage(AbstractOpenNMSSeleniumHelper testCase) {
             super(testCase);
         }
 
         public OpsBoardAdminPage open() {
             get("/admin/wallboardConfig.jsp");
             getDriver().switchTo().frame(0);
+            return this;
+        }
+
+        public OpsBoardAdminPage open(final String path) {
+            get(path);
+            getDriver().switchTo().parentFrame();
             return this;
         }
 
@@ -118,7 +140,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
     }
 
     private static class OpsBoardAdminEditorPage extends AbstractPage {
-        OpsBoardAdminEditorPage(OpenNMSSeleniumTestCase testCase) {
+        OpsBoardAdminEditorPage(AbstractOpenNMSSeleniumHelper testCase) {
             super(testCase);
         }
 
@@ -143,14 +165,15 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
     }
 
     private static class OpsBoardPreviewPage extends AbstractPage {
-        OpsBoardPreviewPage(OpenNMSSeleniumTestCase testCase) {
+        OpsBoardPreviewPage(AbstractOpenNMSSeleniumHelper testCase) {
             super(testCase);
         }
 
         public OpsBoardPreviewPage open() {
             findElement(By.id("opsboard.action.preview")).click();
-            waitUntil(driver -> driver.findElements(By.tagName("iframe")).size() == 3);
-            getDriver().switchTo().frame(2); // first 2 frames are either empty or javascript
+
+            waitUntil(driver -> driver.findElements(By.tagName("iframe")).size() == 2);
+            getDriver().switchTo().frame(1);
             return this;
         }
 

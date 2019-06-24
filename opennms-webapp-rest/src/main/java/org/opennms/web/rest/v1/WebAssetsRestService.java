@@ -30,6 +30,7 @@ package org.opennms.web.rest.v1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +46,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.web.assets.api.AssetLocator;
@@ -89,7 +91,7 @@ public class WebAssetsRestService extends OnmsRestService {
         try {
             Optional<InputStream> resourceInputStream = m_assetLocator.open(assetName, type);
             if (!resourceInputStream.isPresent()) {
-                
+
                 final List<String> split = Arrays.asList(assetName.split("-"));
                 if (split.size() > 1) {
                     split.remove(split.size() - 1);
@@ -109,18 +111,70 @@ public class WebAssetsRestService extends OnmsRestService {
             is = resourceInputStream.get();
             final byte[] bytes = FileCopyUtils.copyToByteArray(is);
             switch(type) {
+            // javascript
             case "js":
                 return Response.ok(new String(bytes, StandardCharsets.UTF_8)).type("application/javascript").build();
+            case "map":
+            case "json":
+                return streamResponse(bytes, "application/json");
+            // styles
             case "css":
                 return Response.ok(new String(bytes, StandardCharsets.UTF_8)).type("text/css").build();
+            // images
+            case "gif":
+                return streamResponse(bytes, "image/gif");
+            case "ico":
+                return streamResponse(bytes, "image/x-icon");
+            case "jpg":
+            case "jpeg":
+                return streamResponse(bytes, "image/jpeg");
+            case "png":
+                return streamResponse(bytes, "image/png");
+            case "svg":
+                return streamResponse(bytes, "image/svg+xml");
+            // fonts
+            case "eot":
+                return streamResponse(bytes, "application/vnd.ms-fontobject");
+            case "otf":
+            case "ttf":
+                return streamResponse(bytes, "application/octet-stream");
+            case "woff":
+                return streamResponse(bytes, "font/woff");
+            case "woff2":
+                return streamResponse(bytes, "font/woff2");
+            // text
+            case "html":
+                return streamResponse(bytes, "text/html");
+            case "jsp":
+            case "md":
+            case "sh":
+            case "txt":
+            case "yml":
+                return Response.ok(new String(bytes, StandardCharsets.UTF_8)).type("text/plain").build();
+            case "xml":
+                return Response.ok(new String(bytes, StandardCharsets.UTF_8)).type("text/xml").build();
+            // miscellaneous
+            case "hbs":
+                return streamResponse(bytes, "text/x-handlebars-template");
             default:
-                throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity("Unhandled resource type: " + type).build());
+                LOG.warn("Unhandled type, returning as application/octet-stream: {}", type);
+                return streamResponse(bytes, "application/octet-stream");
             }
         } catch (final IOException e) {
             LOG.debug("I/O error while reading {}.{}", assetName, type, e);
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity("Resource " + assetName + "/" + type + " exists, but could not be read.\n" + e.getMessage() + "\n" + e.getStackTrace()).build());
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity("Resource " + assetName + "/" + type + " exists, but could not be read.\n" + e.getMessage() + "\n" + e.getCause()).build());
         } finally {
             IOUtils.closeQuietly(is);
         }
+    }
+
+    private Response streamResponse(final byte[] bytes, final String mimeType) {
+        return Response.status(Status.OK).type(mimeType).entity(new StreamingOutput() {
+            @Override
+            public void write(final OutputStream output) throws IOException, WebApplicationException {
+                output.write(bytes);
+                output.flush();
+            }
+        }).build();
     }
 }

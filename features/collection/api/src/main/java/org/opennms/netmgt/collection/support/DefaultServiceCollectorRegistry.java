@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collection.support;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -38,6 +37,8 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * <p>
@@ -81,7 +82,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
         if (serviceCollector != null) {
             final String className = getClassName(properties);
             if (className == null) {
-                LOG.warn("Unable to determine the class name for collector: {}, with properties: {}. The monitor will not be registered.",
+                LOG.warn("Unable to determine the class name for collector: {}, with properties: {}. The collector will not be registered.",
                         serviceCollector, properties);
                 return;
             }
@@ -95,7 +96,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
         if (serviceCollector != null) {
             final String className = getClassName(properties);
             if (className == null) {
-                LOG.warn("Unable to determine the class name for collector: {}, with properties: {}. The monitor will not be unregistered.",
+                LOG.warn("Unable to determine the class name for collector: {}, with properties: {}. The collector will not be unregistered.",
                         serviceCollector, properties);
                 return;
             }
@@ -110,7 +111,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
 
     @Override
     public Set<String> getCollectorClassNames() {
-        return Collections.unmodifiableSet(m_collectorsByClassName.keySet());
+        return ImmutableSet.copyOf(m_collectorsByClassName.keySet());
     }
 
     private static String getClassName(Map<?, ?> properties) {

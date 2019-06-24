@@ -28,9 +28,14 @@
 
 package org.opennms.core.soa.lookup;
 
-public interface ServiceLookup {
+/**
+ * Helper interface to lookup services from any underlying registry.
+ * That can be a factory or a
+ *
+ * @param <C> The criteria to identify the service by, e.g. the type of the service.
+ * @param <F> Additional filter criteria, e.g. the "filter string" in case of OSGi.
+ */
+public interface ServiceLookup<C, F> {
 
-    <T> T lookup(Class<T> serviceType);
-
-    <T> T lookup(Class<T> serviceType, String filter);
+    <T> T lookup(C criteria, F filter);
 }

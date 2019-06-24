@@ -65,6 +65,9 @@ public class HttpRequisitionProvider extends AbstractRequisitionProvider<HttpReq
             if (Boolean.FALSE.equals(request.getStrictSsl())) {
                 client.trustSelfSigned(uri.getScheme());
             }
+            if(Boolean.TRUE.equals(request.getUseSystemProxy())){
+                client.useSystemProxySettings();
+            }
             if (request.getUsername() != null) {
                 client.addBasicCredentials(request.getPassword(), request.getPassword());
             }

@@ -30,73 +30,60 @@ package org.opennms.web.enlinkd;
 
 public class LldpLinkNode implements Comparable<LldpLinkNode> {
 
-	private String   m_lldpPortString;
-	private String   m_lldpPortDescr;
-	private String   m_lldpPortUrl;
-	private String   m_lldpRemChassisIdString;
-	private String   m_lldpRemSysName;
-	private String   m_lldpRemChassisIdUrl;
-	private String   m_lldpRemPortString;
-	private String   m_lldpRemPortDescr;
+	private String   m_lldpLocalPort;
+	private String   m_lldpLocalPortUrl;
+	private String   m_lldpRemChassisId;
+        private String   m_lldpRemChassisIdUrl;
+	private String   m_lldpRemInfo;
+	private String   m_lldpRemPort;
 	private String   m_lldpRemPortUrl;
 	private String   m_lldpCreateTime;
 	private String   m_lldpLastPollTime;
 
-	public String getLldpPortString() {
-		return m_lldpPortString;
-	}
-	public void setLldpPortString(String lldpPortString) {
-		m_lldpPortString = lldpPortString;
-	}
-	public String getLldpPortDescr() {
-		return m_lldpPortDescr;
-	}
-	public void setLldpPortDescr(String lldpPortDescr) {
-		m_lldpPortDescr = lldpPortDescr;
-	}
-	public String getLldpPortUrl() {
-		return m_lldpPortUrl;
-	}
-	public void setLldpPortUrl(String lldpPortUrl) {
-		m_lldpPortUrl = lldpPortUrl;
-	}
-	public String getLldpRemChassisIdString() {
-		return m_lldpRemChassisIdString;
-	}
-	public void setLldpRemChassisIdString(String lldpRemChassisIdString) {
-		m_lldpRemChassisIdString = lldpRemChassisIdString;
-	}
-	public String getLldpRemSysName() {
-		return m_lldpRemSysName;
-	}
-	public void setLldpRemSysName(String lldpRemSysName) {
-		m_lldpRemSysName = lldpRemSysName;
-	}
-	public String getLldpRemChassisIdUrl() {
-		return m_lldpRemChassisIdUrl;
-	}
-	public void setLldpRemChassisIdUrl(String lldpRemChassisIdUrl) {
-		m_lldpRemChassisIdUrl = lldpRemChassisIdUrl;
-	}
-	public String getLldpRemPortString() {
-		return m_lldpRemPortString;
-	}
-	public void setLldpRemPortString(String lldpRemPortString) {
-		m_lldpRemPortString = lldpRemPortString;
-	}
-	public String getLldpRemPortDescr() {
-		return m_lldpRemPortDescr;
-	}
-	public void setLldpRemPortDescr(String lldpRemPortDescr) {
-		m_lldpRemPortDescr = lldpRemPortDescr;
-	}
-	public String getLldpRemPortUrl() {
-		return m_lldpRemPortUrl;
-	}
-	public void setLldpRemPortUrl(String lldpRemPortUrl) {
-		m_lldpRemPortUrl = lldpRemPortUrl;
-	}
-	public String getLldpCreateTime() {
+	
+	public String getLldpLocalPort() {
+        return m_lldpLocalPort;
+    }
+    public void setLldpLocalPort(String lldpLocalPort) {
+        m_lldpLocalPort = lldpLocalPort;
+    }
+    public String getLldpLocalPortUrl() {
+        return m_lldpLocalPortUrl;
+    }
+    public void setLldpLocalPortUrl(String lldpLocalPortUrl) {
+        m_lldpLocalPortUrl = lldpLocalPortUrl;
+    }
+    public String getLldpRemChassisId() {
+        return m_lldpRemChassisId;
+    }
+    public void setLldpRemChassisId(String lldpRemChassisId) {
+        m_lldpRemChassisId = lldpRemChassisId;
+    }
+    public String getLldpRemChassisIdUrl() {
+        return m_lldpRemChassisIdUrl;
+    }
+    public void setLldpRemChassisIdUrl(String lldpRemChassisIdUrl) {
+        m_lldpRemChassisIdUrl = lldpRemChassisIdUrl;
+    }
+    public String getLldpRemInfo() {
+        return m_lldpRemInfo;
+    }
+    public void setLldpRemInfo(String lldpRemInfo) {
+        m_lldpRemInfo = lldpRemInfo;
+    }
+    public String getLldpRemPort() {
+        return m_lldpRemPort;
+    }
+    public void setLldpRemPort(String lldpRemPort) {
+        m_lldpRemPort = lldpRemPort;
+    }
+    public String getLldpRemPortUrl() {
+        return m_lldpRemPortUrl;
+    }
+    public void setLldpRemPortUrl(String lldpRemPortUrl) {
+        m_lldpRemPortUrl = lldpRemPortUrl;
+    }
+    public String getLldpCreateTime() {
 		return m_lldpCreateTime;
 	}
 	public void setLldpCreateTime(String lldpCreateTime) {
@@ -110,7 +97,7 @@ public class LldpLinkNode implements Comparable<LldpLinkNode> {
 	}
     @Override
     public int compareTo(LldpLinkNode o) {
-        return m_lldpPortString.compareTo(o.m_lldpPortString);
+        return m_lldpLocalPort.compareTo(o.m_lldpLocalPort);
     }
 	
 }

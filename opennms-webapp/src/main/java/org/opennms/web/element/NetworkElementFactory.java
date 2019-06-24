@@ -73,6 +73,9 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +83,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 
 /**
  * The source for all network element business objects (nodes, interfaces,
@@ -118,6 +123,14 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
 	@Autowired
 	private PlatformTransactionManager m_transactionManager;
+
+    @Autowired
+    @Qualifier("deployed")
+    private ForeignSourceRepository m_deployedForeignSourceRepository;
+
+    @Autowired
+    @Qualifier("pending")
+    private ForeignSourceRepository m_pendingForeignSourceRepository;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -959,5 +972,26 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     public List<OnmsMonitoringSystem> getMonitoringSystems() {
         return m_monitoringSystemDao.findAll().stream().sorted((a,b) -> a.getId().compareTo(b.getId())).collect(Collectors.toList());
+    }
+
+    public boolean nodeExistsInRequisition(final String foreignSource, final String foreignId) {
+        if (foreignSource == null || foreignId == null) {
+            return false;
+        }
+
+        Requisition requisition = m_pendingForeignSourceRepository.getRequisition(foreignSource);
+
+        if (requisition == null) {
+            requisition = m_deployedForeignSourceRepository.getRequisition(foreignSource);
+        }
+
+        if (requisition != null) {
+            for(RequisitionNode requisitionNode : requisition.getNodes()) {
+                if (foreignId.equals(requisitionNode.getForeignId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

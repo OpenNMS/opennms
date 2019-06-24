@@ -227,7 +227,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     public SearchBox(OnmsServiceManager serviceManager, OperationContext operationContext) {
         m_serviceManager = serviceManager;
         m_operationContext = operationContext;
-        setImmediate(true);
         init();
     }
 
@@ -373,9 +372,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     private void init() {
         registerRpc(m_rpc);
-        getState().immediate = true;
         setWidth(100, Unit.PERCENTAGE);
-        setImmediate(true);
 
         m_suggestionMap = HashMultimap.create();
         updateTokenFieldList(m_operationContext.getGraphContainer());

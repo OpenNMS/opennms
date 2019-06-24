@@ -34,6 +34,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -412,14 +413,17 @@ public class TimelineRestService extends OnmsRestService {
 
         int numLabels = TimescaleDescriptor.computeNumberOfLabels(graphics2D, delta, width);
 
-        final StringBuilder htmlBuffer = new StringBuilder();
+        final String encodedIpAddress = URLEncoder.encode(ipAddress, "UTF-8");
+        final String encodedServiceName = URLEncoder.encode(serviceName, "UTF-8");
+
+        final StringBuffer htmlBuffer = new StringBuffer();
 
         htmlBuffer.append("<img src=\"/opennms/rest/timeline/image/");
         htmlBuffer.append(nodeId);
         htmlBuffer.append("/");
-        htmlBuffer.append(ipAddress);
+        htmlBuffer.append(encodedIpAddress);
         htmlBuffer.append("/");
-        htmlBuffer.append(serviceName);
+        htmlBuffer.append(encodedServiceName);
         htmlBuffer.append("/");
         htmlBuffer.append(start);
         htmlBuffer.append("/");
@@ -429,15 +433,15 @@ public class TimelineRestService extends OnmsRestService {
         htmlBuffer.append("\" usemap=\"#");
         htmlBuffer.append(nodeId);
         htmlBuffer.append("-");
-        htmlBuffer.append(ipAddress);
+        htmlBuffer.append(encodedIpAddress);
         htmlBuffer.append("-");
-        htmlBuffer.append(serviceName);
+        htmlBuffer.append(encodedServiceName);
         htmlBuffer.append("\"><map name=\"");
         htmlBuffer.append(nodeId);
         htmlBuffer.append("-");
-        htmlBuffer.append(ipAddress);
+        htmlBuffer.append(encodedIpAddress);
         htmlBuffer.append("-");
-        htmlBuffer.append(serviceName);
+        htmlBuffer.append(encodedServiceName);
         htmlBuffer.append("\">");
 
         for (TimescaleDescriptor desc : TIMESCALE_DESCRIPTORS) {

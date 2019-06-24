@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -384,6 +384,12 @@ public class JEXLExpressionEngineTest {
         assertEquals(99000.0, results[0], 0.0001);
     }
 
+    @Test
+    public void canReferenceStep() throws ExpressionException {
+        double results[] = performExpression("1 * __step");
+        assertEquals(1.0, results[0], 0.0001);
+    }
+
     private double[] performExpression(String expression) throws ExpressionException {
         Map<String, Object> constants = Maps.newHashMap();
         return performExpression(expression, constants);
@@ -412,7 +418,7 @@ public class JEXLExpressionEngineTest {
         }
         Map<String, double[]> values = Maps.newHashMap();
         values.put("x", xValues);
-        FetchResults results = new FetchResults(timestamps, values, 1, constants);
+        FetchResults results = new FetchResults(timestamps, values, 1, constants, null);
 
         // Use the engine to evaluate the expression
         jexlExpressionEngine.applyExpressions(request, results);

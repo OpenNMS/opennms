@@ -39,6 +39,7 @@ import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpException;
@@ -178,6 +179,11 @@ public class TrapListener implements TrapNotificationListener {
         LOG.info("Restarting the TrapListener service...");
         start();
         LOG.info("TrapListener service has been restarted.");
+    }
+
+    public void reload() throws IOException {
+        TrapdConfigFactory.reload();
+        m_config = TrapdConfigFactory.getInstance();
     }
 
     private InetAddress getInetAddress() {

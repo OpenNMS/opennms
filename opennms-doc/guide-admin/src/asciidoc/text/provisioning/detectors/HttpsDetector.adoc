@@ -1,0 +1,21 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== HTTPS Detector
+
+This detector is used to find and assigns services based on _HTTPS_.
+
+===== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.simple.HttpsDetector`
+|===
+
+===== Configuration and Usage
+
+
+.Parameters for the HTTPS detector
+
+_The parameters are the same as for the HTTP detector_

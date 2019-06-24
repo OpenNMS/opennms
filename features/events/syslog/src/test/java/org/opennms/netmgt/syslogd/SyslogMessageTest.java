@@ -37,6 +37,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -170,7 +172,7 @@ public class SyslogMessageTest {
             final SyslogMessage message = parser.parse();
             LOG.debug("message = {}", message);
             final Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.YEAR, ZonedDateTimeBuilder.getBestYearForMonth(Month.MARCH.getValue()));
+            cal.set(Calendar.YEAR, getExpectedYear("Mar 14 17:10:25"));
             cal.set(Calendar.MONTH, Calendar.MARCH);
             cal.set(Calendar.DAY_OF_MONTH, 14);
             cal.set(Calendar.HOUR_OF_DAY, 17);
@@ -392,16 +394,16 @@ public class SyslogMessageTest {
     }
 
     @Test
-    public void shouldHonorTimezoneWithConfiguredDefault() throws IOException {
+    public void shouldHonorTimezoneWithConfiguredDefault() throws IOException, NumberFormatException, ParseException {
         checkDateParserWith(TimeZone.getTimeZone("CET"), "timezone=\"CET\" ");
     }
 
     @Test
-    public void shouldHonorTimezoneWithoutConfiguredDefault() throws IOException {
+    public void shouldHonorTimezoneWithoutConfiguredDefault() throws IOException, NumberFormatException, ParseException {
         checkDateParserWith(TimeZone.getDefault(), "");
     }
 
-    private void checkDateParserWith(TimeZone expectedTimeZone, String timezoneProperty) throws IOException {
+    private void checkDateParserWith(TimeZone expectedTimeZone, String timezoneProperty) throws IOException, ParseException {
         String configuration = "<syslogd-configuration>" +
                 "<configuration " +
                 "syslog-port=\"10514\" " +
@@ -414,17 +416,25 @@ public class SyslogMessageTest {
         assertTrue(parser.find());
 
         // Date Format 1:
-        int currentYear = ZonedDateTime.now(expectedTimeZone.toZoneId()).getYear();
-        LocalDateTime expectedLocalDateTime = LocalDateTime.of(currentYear, 2, 3 , 12, 21, 20);
+        String dateString = "Feb 03 12:21:20";
+        int expectedYear = getExpectedYear(dateString);
+        LocalDateTime expectedLocalDateTime = LocalDateTime.of(expectedYear, 2, 3 , 12, 21, 20);
         ZonedDateTime expectedDateTime = ZonedDateTime.of(expectedLocalDateTime, expectedTimeZone.toZoneId());
-        Date parsedDate = parser.parseDate("Feb 03 12:21:20");
+        Date parsedDate = parser.parseDate(dateString);
         assertEquals(expectedDateTime.toInstant(), parsedDate.toInstant());
 
         // Date Format 2:
-        LocalDate expectedLocalDate = LocalDate.of(currentYear, 2, 3 );
+        LocalDate expectedLocalDate = LocalDate.of(expectedYear, 2, 3 );
         expectedDateTime = expectedLocalDate.atStartOfDay(expectedTimeZone.toZoneId());
         parsedDate = parser.parseDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(expectedDateTime));
         assertEquals(expectedDateTime.toInstant(), parsedDate.toInstant());
+    }
+
+    public static int getExpectedYear(String dateFragment) throws ParseException {
+        // Return the prior year if date is after today on the calendar - this is what the syslog parsers will do
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        Date date = new SimpleDateFormat("yyyy MMM dd hh:mm:ss", Locale.ENGLISH).parse(Integer.toString(currentYear) + " " + dateFragment);
+        return date.getTime() > System.currentTimeMillis() ? currentYear - 1 : currentYear;
     }
 
 }

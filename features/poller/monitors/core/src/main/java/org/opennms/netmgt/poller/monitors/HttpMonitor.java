@@ -56,7 +56,7 @@ import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 @Distributable
-public class HttpMonitor extends AbstractServiceMonitor {
+public class HttpMonitor extends ParameterSubstitutingMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(HttpMonitor.class);
     
@@ -231,7 +231,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
     }
 
     private static String determineUserAgent(final Map<String, Object> parameters) {
-        String agent = ParameterMap.getKeyedString(parameters, PARAMETER_USER_AGENT, null);
+        String agent = resolveKeyedString(parameters, PARAMETER_USER_AGENT, null);
         if (isBlank(agent)) {
             return "OpenNMS HttpMonitor";
         }
@@ -239,18 +239,18 @@ public class HttpMonitor extends AbstractServiceMonitor {
     }
 
     static String determineBasicAuthentication(final Map<String, Object> parameters) {
-        String credentials = ParameterMap.getKeyedString(parameters, PARAMETER_BASIC_AUTHENTICATION, null);
+        String credentials = resolveKeyedString(parameters, PARAMETER_BASIC_AUTHENTICATION, null);
 
         if (isNotBlank(credentials)) {
             credentials = new String(Base64.encodeBase64(credentials.getBytes()));
         } else {
             
-            String user = ParameterMap.getKeyedString(parameters, PARAMETER_USER, null);
+            String user = resolveKeyedString(parameters, PARAMETER_USER, null);
             
             if (isBlank(user)) {
                 credentials = null;
             } else {
-                String passwd = ParameterMap.getKeyedString(parameters, PARAMETER_PASSWORD, "");
+                String passwd = resolveKeyedString(parameters, PARAMETER_PASSWORD, "");
                 credentials = new String(Base64.encodeBase64((user+":"+passwd).getBytes()));
             }
         }
@@ -271,7 +271,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
     }
 
     private static String determineUrl(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, PARAMETER_URL, DEFAULT_URL);
+        String url = resolveKeyedString(parameters, PARAMETER_URL, DEFAULT_URL);
+        return url;
     }
 
     /**

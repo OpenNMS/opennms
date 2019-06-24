@@ -28,21 +28,26 @@
 
 package org.opennms.core.ipc.sink.aws.sqs.client;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
+
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.aws.sqs.server.AmazonSQSMessageConsumerManager;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.codahale.metrics.JmxReporter;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * Dispatches the messages directly the consumers.
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean {
+public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean, DisposableBean {
 
     /** The message consumer manager. */
     @Autowired
@@ -59,10 +64,28 @@ public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispa
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
-        final JmxReporter reporter = JmxReporter.forRegistry(getMetrics())
-                .inDomain(AmazonSQSLocalMessageDispatcherFactory.class.getPackage().getName())
-                .build();
-        reporter.start();
+    public void afterPropertiesSet() {
+        onInit();
     }
+
+    @Override
+    public void destroy() {
+        onDestroy();
+    }
+
+    @Override
+    public String getMetricDomain() {
+        return SINK_METRIC_PRODUCER_DOMAIN;
+    }
+
+    @Override
+    public BundleContext getBundleContext() {
+        return null;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
+    }
+
 }

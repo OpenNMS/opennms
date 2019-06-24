@@ -84,7 +84,7 @@ public class IconRepositoryManager implements IconManager {
         }
     }
 
-    private String lookupSVGIconIdForExactKey(String key) {
+    private synchronized String lookupSVGIconIdForExactKey(String key) {
         for(IconRepository iconRepo : m_iconRepositories) {
             if(iconRepo.contains(key)) {
                 return iconRepo.getSVGIconId(key);
@@ -181,7 +181,7 @@ public class IconRepositoryManager implements IconManager {
     }
 
     @Override
-    public ConfigurableIconRepository findRepositoryByIconKey(String iconKey) {
+    public synchronized ConfigurableIconRepository findRepositoryByIconKey(String iconKey) {
         // only consider configurable Repositories
         final List<ConfigurableIconRepository> configurableIconRepositories = m_iconRepositories.stream()
                 .filter(e -> e instanceof ConfigurableIconRepository)

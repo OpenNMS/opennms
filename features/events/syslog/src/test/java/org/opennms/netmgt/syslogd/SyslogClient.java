@@ -87,6 +87,7 @@ public class SyslogClient {
     public static final int LOG_NOWAIT = 0x10; // don't wait for console forks
 
     public static final int PORT = 10514;
+    public int syslogPort = 10514;
 
     private String ident;
     private int facility;
@@ -139,7 +140,7 @@ public class SyslogClient {
 
     public DatagramPacket getPacket(final int priority, final String msg) {
         byte[] bytes = getPacketPayload(facility, ident, priority, msg);
-        return new DatagramPacket(bytes, bytes.length, address, PORT);
+        return new DatagramPacket(bytes, bytes.length, address, getSyslogPort());
     }
 
     public static byte[] getPacketPayload(final int facility, final String ident, final int priority, final String msg) {
@@ -152,5 +153,13 @@ public class SyslogClient {
         sb.append(ident).append(": ").append(msg).append("\0");
 
         return sb.toString().getBytes();
+    }
+
+    public int getSyslogPort() {
+        return syslogPort;
+    }
+
+    public void setSyslogPort(int syslogPort) {
+        this.syslogPort = syslogPort;
     }
 }

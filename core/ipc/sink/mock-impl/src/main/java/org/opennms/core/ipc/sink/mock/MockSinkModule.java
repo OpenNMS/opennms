@@ -56,6 +56,16 @@ public class MockSinkModule<S extends Message, T extends Message> implements Sin
     }
 
     @Override
+    public byte[] marshalSingleMessage(S message) {
+        return new byte[0];
+    }
+
+    @Override
+    public S unmarshalSingleMessage(byte[] message) {
+        return null;
+    }
+
+    @Override
     public AggregationPolicy<S, T, ?> getAggregationPolicy() {
         return null;
     }

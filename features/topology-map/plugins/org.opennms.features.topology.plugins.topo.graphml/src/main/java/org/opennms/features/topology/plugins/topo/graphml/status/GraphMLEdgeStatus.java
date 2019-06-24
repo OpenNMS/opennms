@@ -51,6 +51,7 @@ public class GraphMLEdgeStatus extends GraphMLStatus {
     public Set<String> getAllowedStyleProperties() {
         return ImmutableSet.of("stroke",
                                "stroke-width",
+                               "stroke-opacity",
                                "stroke-dasharray");
     }
 

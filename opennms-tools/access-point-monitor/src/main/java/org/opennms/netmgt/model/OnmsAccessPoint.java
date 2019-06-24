@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>
@@ -230,11 +230,11 @@ public class OnmsAccessPoint implements Serializable, Comparable<OnmsAccessPoint
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("physAddr", getPhysAddr())
-            .append("pollingPackage", getPollingPackage())
-            .append("status", getStatus())
-            .append("controllerIpAddr", getControllerIpAddress())
+        return MoreObjects.toStringHelper(this)
+            .add("physAddr", getPhysAddr())
+            .add("pollingPackage", getPollingPackage())
+            .add("status", getStatus())
+            .add("controllerIpAddr", getControllerIpAddress())
             .toString();
     }
 

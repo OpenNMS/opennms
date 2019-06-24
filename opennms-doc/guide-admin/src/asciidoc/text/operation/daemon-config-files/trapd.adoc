@@ -1,0 +1,23 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-opennms-operation-daemon-config-files-trapd]]
+==== Trapd
+
+[options="header, autowidth"]
+|===
+| Internal Daemon Name | Reload Event
+| _Trapd_            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Trapd'`
+|===
+
+Trapd reload event stops and starts daemon and loads all the trapd configuration changes.
+
+Trapd daemon can also be reloaded with following shell command on karaf.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms> reload:daemon trapd
+----

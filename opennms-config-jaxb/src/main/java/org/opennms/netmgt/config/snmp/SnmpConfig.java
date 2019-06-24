@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,12 +39,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 /**
  * Top-level element for the snmp-config.xml configuration file.
  */
 
 @XmlRootElement(name="snmp-config")
 @XmlAccessorType(XmlAccessType.NONE)
+@ValidateUsing("snmp-config.xsd")
 public class SnmpConfig extends Configuration implements Serializable {
     private static final long serialVersionUID = -5963402509661530467L;
 

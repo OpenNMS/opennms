@@ -39,11 +39,13 @@ import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
 import org.opennms.netmgt.config.collectd.jmx.CompMember;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
+import com.vaadin.v7.data.Validator;
+
 public class ValidationManager {
 
     protected final AttributeNameValidator attributeNameValidator;
     protected final MaximumLengthValidator attributeLengthValidator;
-    protected final com.vaadin.data.Validator attributeUniqueNameValidator;
+    protected final Validator attributeUniqueNameValidator;
 
     protected final NameProvider nameProvider;
 
@@ -72,10 +74,10 @@ public class ValidationManager {
         return result;
     }
 
-    protected void validateInternal(com.vaadin.data.Validator validator, Object itemId, Object value, ValidationResult result) {
+    protected void validateInternal(Validator validator, Object itemId, Object value, ValidationResult result) {
         try {
             validator.validate(value);
-        } catch (com.vaadin.data.Validator.InvalidValueException ex) {
+        } catch (Validator.InvalidValueException ex) {
             result.add(itemId, ex);
         }
     }

@@ -31,8 +31,8 @@ package org.opennms.features.vaadin.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.v7.data.util.BeanContainer;
+import com.vaadin.v7.data.util.BeanItem;
 
 /**
  * The Class OnmsBeanContainer.

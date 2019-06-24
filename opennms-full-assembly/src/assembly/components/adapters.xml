@@ -15,6 +15,7 @@
         <include>org.opennms:opennms-dns-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-reverse-dns-provisioning-adapter:jar:${project.version}</include>
         <!-- <include>org.opennms:opennms-puppet-provisioning-adapter:jar:${project.version}</include> -->
+        <include>org.opennms:opennms-wsman-asset-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-snmp-asset-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-snmp-hardware-inventory-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-rancid-provisioning-adapter:jar:${project.version}</include>

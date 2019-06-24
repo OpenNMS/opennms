@@ -31,4 +31,14 @@
       <severity>Minor</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false"/>
    </event>
+   <event>
+      <uei>uei.opennms.org/internal/droolsEngineException</uei>
+      <event-label>OpenNMS-defined Drools Engine Encountered Exception</event-label>
+      <descr>Drools engine encountered an exception while running rules</descr>
+      <logmsg dest="logndisplay">
+            Drools engine rule %parm[enginename]% has encountered an exception : %parm[stacktrace]%.
+        </logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%parm[enginename]%" alarm-type="3"/>
+   </event>
 </events>

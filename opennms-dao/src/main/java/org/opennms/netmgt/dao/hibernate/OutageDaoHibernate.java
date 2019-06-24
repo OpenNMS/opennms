@@ -28,7 +28,17 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -37,20 +47,12 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import java.net.InetAddress;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer> implements OutageDao {
-
     @Autowired
     private FilterDao m_filterDao;
 
@@ -100,6 +102,67 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                         .list();
             }
 
+        });
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Collection<CurrentOutageDetails> newestCurrentOutages(final List<String> serviceNames) {
+        return getHibernateTemplate().execute(new HibernateCallback<List<CurrentOutageDetails>>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public List<CurrentOutageDetails> doInHibernate(Session session) throws HibernateException, SQLException {
+                final StringBuilder query = new StringBuilder()
+                        .append("SELECT DISTINCT\n")
+                        .append("        outages.outageId,\n")
+                        .append("        outages.ifServiceId AS monitoredServiceId,\n")
+                        .append("        service.serviceName AS serviceName,\n")
+                        .append("        outages.ifLostService,\n")
+                        .append("        node.nodeId,\n")
+                        .append("        node.foreignSource,\n")
+                        .append("        node.foreignId,\n")
+                        .append("        node.location\n")
+                        .append("FROM outages\n")
+                        .append("        LEFT JOIN ifServices ON outages.ifServiceId = ifServices.id\n")
+                        .append("        LEFT JOIN service ON ifServices.serviceId = service.serviceId\n")
+                        .append("        LEFT JOIN ipInterface ON ifServices.ipInterfaceId = ipInterface.id\n")
+                        .append("        LEFT JOIN node ON ipInterface.nodeId = node.nodeId\n")
+                        .append("WHERE\n")
+                        .append("        outages.ifRegainedService IS NULL\n");
+                if (serviceNames.size() > 0) {
+                    query.append("        AND service.serviceName IN ( :serviceNames )\n");
+                }
+                query.append("ORDER BY outages.outageId\n")
+                .append(";\n");
+
+                Query sqlQuery = session.createSQLQuery( query.toString() );
+                if (serviceNames.size() > 0) {
+                    sqlQuery = sqlQuery.setParameterList("serviceNames", serviceNames);
+                }
+
+                return (List<CurrentOutageDetails>) sqlQuery.setResultTransformer(new ResultTransformer() {
+                            private static final long serialVersionUID = 1L;
+
+                            @Override
+                            public Object transformTuple(Object[] tuple, String[] aliases) {
+                                return new CurrentOutageDetails(
+                                                         (Integer)tuple[0],
+                                                         (Integer)tuple[1],
+                                                         (String)tuple[2],
+                                                         (Date)tuple[3],
+                                                         (Integer)tuple[4],
+                                                         (String)tuple[5],
+                                                         (String)tuple[6],
+                                                         (String)tuple[7]);
+                            }
+
+                            @SuppressWarnings("rawtypes")
+                            @Override
+                            public List transformList(List collection) {
+                                return collection;
+                            }
+                        }).list();
+            }
         });
     }
 
@@ -172,6 +235,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
 
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
+            @SuppressWarnings("unchecked")
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
                 return (List<HeatMapElement>) session.createSQLQuery(
                         "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +

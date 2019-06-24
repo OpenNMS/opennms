@@ -121,6 +121,7 @@ angular.module('onms-ksc-wizard', [
 
 .controller('KSCWizardCtrl', ['$scope', '$filter', '$http', '$window', 'growl', function($scope, $filter, $http, $window, growl) {
 
+  $scope.resourceFilter = null;
   $scope.resources = [];
   $scope.filteredResources = [];
   $scope.pageSize = 10;

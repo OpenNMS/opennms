@@ -29,69 +29,92 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.SimpleConnector;
-import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
-public class LinkdEdge extends AbstractEdge {
+public class LinkdEdge extends AbstractEdge implements Edge {
 
-    private Integer m_sourceNodeid;
-    private Integer m_targetNodeid;
+    public static LinkdEdge create(String id,
+            LinkdPort sourceport, LinkdPort targetport,
+            ProtocolSupported discoveredBy) {
+        
+        SimpleConnector source = new SimpleConnector(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, sourceport.getVertex().getId()+"-"+id+"-connector", sourceport.getVertex());
+        SimpleConnector target = new SimpleConnector(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, targetport.getVertex().getId()+"-"+id+"-connector", targetport.getVertex());
 
-    private String m_sourceEndPoint;
-    private String m_targetEndPoint;
+        LinkdEdge edge = new LinkdEdge(id, sourceport, targetport,source, target,discoveredBy);
+        
+        return edge;
+    }
     
-    public LinkdEdge(String namespace, String id, Vertex source, Vertex target) {
-        super(namespace, id, source, target);
+    private final LinkdPort m_sourcePort;
+    private final LinkdPort m_targetPort;
+    private final ProtocolSupported m_discoveredBy;
+    
+    public LinkdEdge(String id, LinkdPort source, LinkdPort target, ProtocolSupported discoveredBy) {
+        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, source.getVertex(), target.getVertex());
+        m_discoveredBy = discoveredBy;
+        m_sourcePort = source;
+        m_targetPort = target;
     }
 
-    public LinkdEdge(String namespace, String id, SimpleConnector source,
-            SimpleConnector target) {
-        super(namespace, id, source, target);
+    public LinkdEdge(String id, LinkdPort sourcePort, LinkdPort targetPort, SimpleConnector source,
+            SimpleConnector target, ProtocolSupported discoveredBy) {
+        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
+        m_sourcePort = sourcePort;
+        m_targetPort = targetPort;
+        m_discoveredBy = discoveredBy;
     }
 
-    public Integer getSourceNodeid() {
-        return m_sourceNodeid;
+    // Constructor to make cloneable easier for sub classes
+    private LinkdEdge(LinkdEdge edgeToClone) {
+            this(edgeToClone.getId(), 
+                 edgeToClone.getSourcePort().clone(), 
+                 edgeToClone.getTargetPort().clone(),
+                 edgeToClone.getSource().clone(),
+                 edgeToClone.getTarget().clone(),
+                 edgeToClone.getDiscoveredBy());
+
+            setLabel(edgeToClone.getLabel());
+            setStyleName(edgeToClone.getStyleName());
+            setTooltipText(edgeToClone.getTooltipText());
     }
 
-    public void setSourceNodeid(Integer sourceNodeid) {
-        m_sourceNodeid = sourceNodeid;
+    @Override
+    public LinkdEdge clone() {
+            return new LinkdEdge(this);
     }
 
-    public Integer getTargetNodeid() {
-        return m_targetNodeid;
+    @Override
+    public String  getTooltipText() {       
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append("<p>");
+        tooltipText.append("discovery by: ");
+        tooltipText.append(m_discoveredBy.toString());
+        tooltipText.append("</p>");
+    
+        tooltipText.append("<p>");
+        tooltipText.append(m_sourcePort.getToolTipText());
+        tooltipText.append("</p>");
+        
+        tooltipText.append("<p>");
+        tooltipText.append(m_targetPort.getToolTipText());
+        tooltipText.append("</p>");
+        return tooltipText.toString();
     }
 
-    public void setTargetNodeid(Integer targetNodeid) {
-        m_targetNodeid = targetNodeid;
+    
+    public ProtocolSupported getDiscoveredBy() {
+        return m_discoveredBy;
     }
 
-    public String getSourceEndPoint() {
-        return m_sourceEndPoint;
+    public LinkdPort getSourcePort() {
+        return m_sourcePort;
     }
 
-    public void setSourceEndPoint(String sourceEndPoint) {
-        m_sourceEndPoint = sourceEndPoint;
+    public LinkdPort getTargetPort() {
+        return m_targetPort;
     }
-
-    public String getTargetEndPoint() {
-        return m_targetEndPoint;
-    }
-
-    public void setTargetEndPoint(String targetEndPoint) {
-        m_targetEndPoint = targetEndPoint;
-    }
-
-    public boolean containsVertexEndPoint(String vertexRef, String endpointRef) {
-        if (vertexRef == null)
-            return false;
-        if (endpointRef == null)
-            return false;
-        if (getSource() != null && getSourceEndPoint() != null 
-                && getSource().getVertex().getId().equals(vertexRef) && getSourceEndPoint().equals(endpointRef))
-            return true;
-        if (getTarget() != null && getTargetEndPoint() != null 
-                && getTarget().getVertex().getId().equals(vertexRef) && getTargetEndPoint().equals(endpointRef))
-            return true;
-        return false;
-    }
+    
 }

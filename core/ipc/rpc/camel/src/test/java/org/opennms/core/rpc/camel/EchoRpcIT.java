@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +52,7 @@ import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.rpc.echo.MyEchoException;
 import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -232,7 +233,7 @@ public abstract class EchoRpcIT {
 
         CamelContext context = getContext();
 
-        CamelRpcRequest<EchoRequest,EchoResponse> wrapper = new CamelRpcRequest<>(new EchoRpcModule(), new EchoRequest());
+        CamelRpcRequest<EchoRequest,EchoResponse> wrapper = new CamelRpcRequest<>(new EchoRpcModule(), new EchoRequest(), new HashMap<>());
 
         CamelRpcClientPreProcessor camelRpcClientPreProcessor = new CamelRpcClientPreProcessor();
         DefaultExchange defaultExchange = new DefaultExchange(context);
@@ -248,7 +249,7 @@ public abstract class EchoRpcIT {
     public void checkUndefinedTimeout() throws Exception {
         CamelContext context = getContext();
 
-        CamelRpcRequest<EchoRequest,EchoResponse> wrapper = new CamelRpcRequest<>(new EchoRpcModule(), new EchoRequest());
+        CamelRpcRequest<EchoRequest,EchoResponse> wrapper = new CamelRpcRequest<>(new EchoRpcModule(), new EchoRequest(), new HashMap<>());
 
         CamelRpcClientPreProcessor camelRpcClientPreProcessor = new CamelRpcClientPreProcessor();
         DefaultExchange defaultExchange = new DefaultExchange(context);
@@ -267,7 +268,7 @@ public abstract class EchoRpcIT {
         CamelContext context = getContext();
 
         EchoRequest echoRequest = new EchoRequest();
-        CamelRpcRequest<EchoRequest,EchoResponse> wrapper = new CamelRpcRequest<>(new EchoRpcModule(), echoRequest);
+        CamelRpcRequest<EchoRequest,EchoResponse> wrapper = new CamelRpcRequest<>(new EchoRpcModule(), echoRequest, new HashMap<>());
 
         CamelRpcClientPreProcessor camelRpcClientPreProcessor = new CamelRpcClientPreProcessor();
         DefaultExchange defaultExchange = new DefaultExchange(context);

@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.persist;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
@@ -40,6 +41,7 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,7 @@ public class OnmsNodeRequisition {
     private String m_foreignSource;
     private RequisitionNode m_node;
     private List<OnmsAssetRequisition> m_assetReqs;
+    private List<OnmsNodeMetaDataRequisition> m_metaDataReqs;
     private List<OnmsIpInterfaceRequisition> m_ifaceReqs;
     private List<OnmsNodeCategoryRequisition> m_categoryReqs;
 
@@ -65,6 +68,7 @@ public class OnmsNodeRequisition {
         m_foreignSource = foreignSource;
         m_node = node;
         m_assetReqs = constructAssetRequistions();
+        m_metaDataReqs = constructMetaDataRequistions();
         m_ifaceReqs = constructIpInterfaceRequistions();
         m_categoryReqs = constructCategoryRequistions();
     }
@@ -87,6 +91,12 @@ public class OnmsNodeRequisition {
             reqs.add(new OnmsAssetRequisition(asset));
         }
         return reqs;
+    }
+
+    private List<OnmsNodeMetaDataRequisition> constructMetaDataRequistions() {
+        return m_node.getMetaData().stream()
+                .map(OnmsNodeMetaDataRequisition::new)
+                .collect(Collectors.toList());
     }
 
     private List<OnmsIpInterfaceRequisition> constructIpInterfaceRequistions() {
@@ -124,6 +134,9 @@ public class OnmsNodeRequisition {
         for(final OnmsAssetRequisition assetReq : m_assetReqs) {
             assetReq.visit(visitor);
         }
+
+        m_metaDataReqs.forEach(r -> r.visit(visitor));
+
         visitor.completeNode(this);
     }
     
@@ -137,6 +150,21 @@ public class OnmsNodeRequisition {
         @Override
         public void visitAsset(final OnmsAssetRequisition assetReq) {
             bldr.setAssetAttribute(assetReq.getName(), assetReq.getValue());
+        }
+
+        @Override
+        public void visitNodeMetaData(OnmsNodeMetaDataRequisition metaDataReq) {
+            bldr.setNodeMetaDataEntry(metaDataReq.getContext(), metaDataReq.getKey(), metaDataReq.getValue());
+        }
+
+        @Override
+        public void visitInterfaceMetaData(OnmsInterfaceMetaDataRequisition metaDataReq) {
+            bldr.setInterfaceMetaDataEntry(metaDataReq.getContext(), metaDataReq.getKey(), metaDataReq.getValue());
+        }
+
+        @Override
+        public void visitServiceMetaData(OnmsServiceMetaDataRequisition metaDataReq) {
+            bldr.setServiceMetaDataEntry(metaDataReq.getContext(), metaDataReq.getKey(), metaDataReq.getValue());
         }
 
         @Override
@@ -175,7 +203,6 @@ public class OnmsNodeRequisition {
             nodeBldr.getAssetRecord().setBuilding(nodeReq.getBuilding());
             nodeBldr.getAssetRecord().getGeolocation().setCity(nodeReq.getCity());
         }
-        
     }
     
     /* (non-Javadoc)

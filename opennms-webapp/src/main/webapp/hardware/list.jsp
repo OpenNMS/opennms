@@ -60,7 +60,7 @@
 
     public String getContent(OnmsHwEntity entity) {
         StringBuffer sb = new StringBuffer();
-        sb.append("<table class=\"table table-condensed table-bordered\">");
+        sb.append("<table class=\"table table-sm table-bordered\">");
         sb.append("<tr><th>Description</th><td>" + entity.getEntPhysicalDescr() + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalVendorType()))
             sb.append("<tr><th>Vendor Type</th><td>" + entity.getEntPhysicalVendorType() + "</td></tr>");
@@ -117,7 +117,7 @@
 </jsp:include>
 
 <br/>
-<table class="table table-condensed table-hover tree">
+<table class="table table-sm table-hover tree">
   <% if (root == null) { %>
       <br/>
       <div class="jumbotron"><h3>The node <%= node.getLabel() %> doesn't have hardware information on the database.</h3></div>
