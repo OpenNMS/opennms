@@ -6,7 +6,7 @@ export default class OnmsLoader {
   private loaded = new Set<string>();
   private mappings: object;
 
-  constructor(prefix?: string, extension?: string) {
+  public constructor(prefix?: string, extension?: string) {
     if (prefix) {
       this.prefix = prefix;
     }
