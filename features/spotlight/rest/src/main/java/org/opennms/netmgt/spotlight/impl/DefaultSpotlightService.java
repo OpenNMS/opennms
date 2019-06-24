@@ -29,7 +29,10 @@
 package org.opennms.netmgt.spotlight.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.netmgt.spotlight.api.SearchContext;
@@ -53,12 +56,12 @@ public class DefaultSpotlightService implements SpotlightService {
     public List<SearchResult> query(String query) {
         // TODO MVR use searchContext
         final SearchContext searchContext = new SearchContext();
-        final List<SearchResult> totalResult = new ArrayList<>();
 
         // Enforce minimum length, otherwise don't query
         if (Strings.isNullOrEmpty(query) || query.length() < 1) { // TODO MVR length?
-            return totalResult;
+            return Collections.emptyList();
         }
+        final Map<String, SearchResult> resultMap = new HashMap<>();
         try {
             final ServiceReference<SearchProvider>[] allServiceReferences = (ServiceReference<SearchProvider>[]) bundleContext.getServiceReferences(SearchProvider.class.getCanonicalName(), null);
             if (allServiceReferences != null) {
@@ -66,7 +69,17 @@ public class DefaultSpotlightService implements SpotlightService {
                     final SearchProvider service = bundleContext.getService(eachReference);
                     try {
                         final List<SearchResult> providerResult = service.query(query);
-                        totalResult.addAll(providerResult);
+                        for (SearchResult eachResult : providerResult) {
+                            if (resultMap.containsKey(eachResult.getUrl())) {
+                                final SearchResult searchResult = resultMap.get(eachResult.getUrl());
+                                // Merge attributes
+                                searchResult.getProperties().putAll(eachResult.getProperties());
+                                // Merge Matches
+                                eachResult.getMatches().forEach(m -> searchResult.addMatch(m));
+                            } else {
+                                resultMap.put(eachResult.getUrl(), eachResult);
+                            }
+                        }
                     } finally {
                         bundleContext.ungetService(eachReference);
                     }
@@ -75,7 +88,6 @@ public class DefaultSpotlightService implements SpotlightService {
         } catch (InvalidSyntaxException e) {
             e.printStackTrace(); // TODO MVR
         }
-        // TODO MVR unify result
-        return totalResult;
+        return new ArrayList<>(resultMap.values());
     }
 }

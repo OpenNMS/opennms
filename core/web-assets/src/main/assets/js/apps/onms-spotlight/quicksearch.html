@@ -1,21 +1,23 @@
-<form class="form">
-    <label for="query">Search</label>
-    <input type="text" ng-model="query" id="query"/>
-    <button class="btn btn-small btn-primary" ng-click="search()"><i class="fa fa-search"></i></button>
+<form autocomplete="off" novalidate>
+    <input autocomplete="false" name="hidden" type="text" style="display:none;">
+    <input class="form-control" type="text" placeholder="Search..." ng-model="query" id="query" ng-change="search()" />
 </form>
 
-<div>
-    <div>
-        <div class="card" ng-repeat="(context, result) in results">
-            <h5 class="card-header">
-                {{context}}
-            </h5>
-            <div class="card-body">
-                <div ng-repeat="item in result">
-                    <span><a href="{{item.url}}">{{item.label}}</a></span>
-                </div>
+<div ng-show="loading">
+    <i class="fa fa-refresh"></i>
+</div>
+
+<div ng-show="!loading" style="min-width: 200px; max-width: 500px">
+    <div class="list-group" ng-repeat="(context, result) in results">
+        <h6 class="text-muted">{{result.length == 1 ? context : context + 's'}}</h6>
+        <a href="{{item.url}}" class="list-group-item list-group-item-action flex-column align-items-start" ng-repeat="item in result">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{item.label}}</h5>
+                <span class="">{{context}}</span>
             </div>
-        </div>
+
+            <span class="mr-2 badge" ng-class="getClassesForMatch(match)" ng-repeat="match in item.matches">{{match.label}} = {{match.value}}</span>
+        </a>
     </div>
     <div class="mt-4">
         <span ng-if="searchExecutedOnce && emptyResult === true" class="alert alert-warning">

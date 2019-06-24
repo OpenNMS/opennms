@@ -32,59 +32,40 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.spotlight.api.Contexts;
+import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.providers.Query;
+import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-
-public class NodeSearchProvider implements SearchProvider {
+public class NodeCategorySearchProvider implements SearchProvider {
 
     private final NodeDao nodeDao;
 
-    public NodeSearchProvider(final NodeDao nodeDao) {
+    public NodeCategorySearchProvider(final NodeDao nodeDao) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
     }
 
     @Override
     public List<SearchResult> query(String input) {
-        final List<Restriction> restrictions = Lists.newArrayList(
-                Restrictions.ilike("label", input),
-                Restrictions.eq("foreignSource", input),
-                Restrictions.eq("foreignId", input));
-
-        // Try if input could be an id
-        try {
-            int nodeId = Integer.parseInt(input);
-            restrictions.add(Restrictions.eq("id", nodeId));
-        } catch (NumberFormatException ex) {
-            // expected, we ignore it
-        }
-
-        final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class)
-                .or(restrictions.toArray(new Restriction[restrictions.size()]))
+        final Criteria criteria = new CriteriaBuilder(OnmsNode.class)
+                .alias("categories", "categories", Alias.JoinType.INNER_JOIN)
+                .ilike("categories.name", Query.ilike(input))
                 .distinct()
                 .orderBy("label")
-                .limit(10); // TODO MVR make configurable
-        final Criteria criteria = criteriaBuilder.toCriteria();
+                .limit(10) // TODO MVR make configurable
+                .toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
-        final List<SearchResult> searchResults = matchingNodes.stream().map(n -> {
-            final SearchResult searchResult = new SearchResult();
-            searchResult.setContext(Contexts.Node);
-            searchResult.setIdentifer(new NodeRef(n).asString());
-            searchResult.setUrl("element/node.jsp?node=" + n.getId());
-            searchResult.setLabel(n.getLabel());
-            searchResult.setProperties(ImmutableMap.<String, String>builder()
-                    .put("label", n.getLabel())
-                    .put("foreignId", n.getForeignId())
-                    .put("foreignSource", n.getForeignSource()).build());
+        final List<SearchResult> searchResults = matchingNodes.stream().map(node -> {
+            final SearchResult searchResult = new SearchResultBuilder().withOnmsNode(node).build();
+            node.getCategories().stream()
+                    .filter(c -> Query.matches(c.getName(), input))
+                    .forEach(c -> searchResult.addMatch(new Match("category.name", "Category", c.getName())));
             return searchResult;
         }).collect(Collectors.toList());
         return searchResults;

@@ -10,21 +10,45 @@
 
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="serviceTypeDao" interface="org.opennms.netmgt.dao.api.ServiceTypeDao" availability="mandatory"/>
+    <reference id="monitoringLocationDao" interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" availability="mandatory"/>
 
-    <bean id="nodeSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeSearchProvider">
+    <!-- Node Providers -->
+    <bean id="nodeSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeLabelSearchProvider">
         <argument ref="nodeDao" />
     </bean>
     <service ref="nodeSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
+    <bean id="nodeCategorySearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeCategorySearchProvider">
+        <argument ref="nodeDao" />
+    </bean>
+    <service ref="nodeCategorySearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <bean id="nodeLocationSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeLocationSearchProvider">
+        <argument ref="nodeDao" />
+    </bean>
+    <service ref="nodeLocationSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <bean id="nodeServiceSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeServiceSearchProvider">
+        <argument ref="nodeDao" />
+    </bean>
+    <service ref="nodeServiceSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <!-- Action Providers -->
     <bean id="actionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.ActionSearchProvider">
     </bean>
     <service ref="actionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
-    <bean id="serviceSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.ServiceSearchProvider">
+    <bean id="serviceActionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.ServiceSearchProvider">
         <argument ref="serviceTypeDao" />
     </bean>
-    <service ref="serviceSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+    <service ref="serviceActionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
+    <bean id="actionLocationSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.LocationSearchServiceProvider">
+        <argument ref="monitoringLocationDao" />
+    </bean>
+    <service ref="actionLocationSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <!-- General Services -->
     <bean id="spotlightService" class="org.opennms.netmgt.spotlight.impl.DefaultSpotlightService">
         <argument ref="blueprintBundleContext" />
     </bean>

@@ -32,36 +32,43 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.providers.Query;
+import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
 
-public class ServiceSearchProvider implements SearchProvider {
+public class NodeServiceSearchProvider implements SearchProvider {
 
-    private final ServiceTypeDao serviceTypeDao;
+    private final NodeDao nodeDao;
 
-    public ServiceSearchProvider(final ServiceTypeDao serviceTypeDao) {
-        this.serviceTypeDao = Objects.requireNonNull(serviceTypeDao);
+    public NodeServiceSearchProvider(final NodeDao nodeDao) {
+        this.nodeDao = Objects.requireNonNull(nodeDao);
     }
 
-    // TODO MVR this is currently  an action search but it actually should show nodes with a service match
     @Override
     public List<SearchResult> query(String input) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsServiceType.class)
-                .ilike("name", input)
+        final Criteria criteria = new CriteriaBuilder(OnmsNode.class)
+                .alias("ipInterfaces", "ipInterfaces", Alias.JoinType.INNER_JOIN)
+                .alias("ipInterfaces.monitoredServices", "monitoredServices", Alias.JoinType.INNER_JOIN)
+                .alias("monitoredServices.serviceType", "serviceType", Alias.JoinType.INNER_JOIN)
+                .ilike("serviceType.name", Query.ilike(input))
                 .distinct()
-                .limit(10); // TODO MVR make configurable
-        final Criteria criteria = builder.toCriteria();
-        final List<OnmsServiceType> matchingResult = serviceTypeDao.findMatching(criteria);
-        final List<SearchResult> searchResults = matchingResult.stream().map(service -> {
-            final SearchResult searchResult = new SearchResult();
-            searchResult.setContext("Providing Service");
-            searchResult.setIdentifer(service.getId().toString());
-            searchResult.setLabel("Show nodes with service '" + service.getName() + "'");
-            searchResult.setUrl("element/nodeList.htm?service=" + service.getId());
+                .orderBy("label")
+                .limit(10) // TODO MVR make configurable
+                .toCriteria();
+        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
+        final List<SearchResult> searchResults = matchingNodes.stream().map(node -> {
+            final SearchResult searchResult = new SearchResultBuilder().withOnmsNode(node).build();
+            node.getIpInterfaces().stream()
+                    .flatMap(ipInterface -> ipInterface.getMonitoredServices().stream())
+                    .filter(service -> Query.matches(service.getServiceName(), input))
+                    .forEach(service -> searchResult.addMatch(new Match("service.name", "Monitored Service", service.getServiceName())));
             return searchResult;
         }).collect(Collectors.toList());
         return searchResults;

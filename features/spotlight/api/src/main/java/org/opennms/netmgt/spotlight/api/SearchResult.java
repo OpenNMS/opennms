@@ -28,17 +28,21 @@
 
 package org.opennms.netmgt.spotlight.api;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 // TODO MVR add visible to user (e.g. due to missing restrictions)
 public class SearchResult {
     private String context;
-    private String identifer;
+    private String identifier;
     private String label;
     private String url;
-    private Map<String, String> properties = new HashMap<>();
+    private final Map<String, String> properties = new HashMap<>();
+    private final List<Match> matches = new ArrayList<>();
 
     public String getContext() {
         return context;
@@ -48,12 +52,12 @@ public class SearchResult {
         this.context = context;
     }
 
-    public String getIdentifer() {
-        return identifer;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setIdentifer(String identifer) {
-        this.identifer = identifer;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getLabel() {
@@ -73,7 +77,16 @@ public class SearchResult {
     }
 
     public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+        this.properties.clear();
+        this.properties.putAll(properties);
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public List<Match> getMatches() {
+        return matches;
     }
 
     @Override
@@ -83,16 +96,28 @@ public class SearchResult {
         if (o instanceof SearchResult) {
             final SearchResult that = (SearchResult) o;
             return Objects.equals(context, that.context)
-                    && Objects.equals(identifer, that.identifer)
+                    && Objects.equals(identifier, that.identifier)
                     && Objects.equals(label, that.label)
                     && Objects.equals(url, that.url)
-                    && Objects.equals(properties, that.properties);
+                    && Objects.equals(properties, that.properties)
+                    && Objects.equals(matches, that.matches);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(context, identifer, label, properties, url);
+        return Objects.hash(context, identifier, label, properties, matches, url);
+    }
+
+    public void addMatch(Match match) {
+        final Optional<Match> existingMatch = matches.stream()
+                .filter(m -> match.getId().equals(m.getId()) && match.getLabel().equals(m.getLabel()))
+                .findAny();
+        if (existingMatch.isPresent()) {
+            existingMatch.get().getValues().addAll(match.getValues());
+        } else {
+            matches.add(match);
+        }
     }
 }

@@ -39,31 +39,16 @@ const quickSearchTemplate  = require('./quicksearch.html');
         })
 
         .controller('QuickSearchController', ['$scope', 'SearchResource', function($scope, SearchResource) {
-
-            $scope.handleGlobalError = function(errorResponse) {
-                $scope.globalError = "An unexpected error occurred: " + errorResponse.statusText;
-                $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
-            };
-
             $scope.query = "";
             $scope.searchExecutedOnce = false;
             $scope.results = {};
-            $scope.data = {
-                "id": [1,2,3,4,5],
-                "project": "wewe2012",
-                "date": "2013-02-26",
-                "description": "ewew",
-                "eet_no": "ewew",
-            };
-            console.log($scope.data);
+            $scope.loading = false;
 
             $scope.search = function() {
                 console.log("Search method invoked");
-                if ($scope.query.length >= 1) {
-                    SearchResource.query(
-                            {
-                                '_s' : $scope.query
-                            },
+                if ($scope.query.length >= 3) {
+                    $scope.loading = true;
+                    return SearchResource.query({'_s' : $scope.query},
                         function(data) {
                             console.log("Search result", data);
                             $scope.searchExecutedOnce = true;
@@ -76,7 +61,21 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                 }
                                 // Group by context
                                 $scope.results[item.context].push(item);
+
+                                // TODO MVR we first create this, and now we undo this, should be different
+                                var matches = item.matches;
+                                item.matches = [];
+                                matches.forEach(function(eachMatch) {
+                                    eachMatch.values.forEach(function(eachValue) {
+                                        item.matches.push({
+                                            id: eachMatch.id,
+                                            label: eachMatch.label,
+                                            value: eachValue
+                                        });
+                                    });
+                                })
                             });
+                            $scope.loading = false;
                             console.log("Search grouped", $scope.results);
                         },
                         function(error) {
@@ -89,6 +88,19 @@ const quickSearchTemplate  = require('./quicksearch.html');
                 }
 
             };
+
+            function hashCode(s) {
+                for(var i = 0, h = 0; i < s.length; i++)
+                    h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+                return h;
+            }
+
+            $scope.classes = ['primary', 'secondary', 'info', 'dark'];
+            $scope.getClassesForMatch = function(match) {
+                var hash = hashCode(match.id);
+                var index = hash % $scope.classes.length;
+                return "badge-" + $scope.classes[index];
+            }
         }])
     ;
 }());

@@ -28,51 +28,43 @@
 
 package org.opennms.netmgt.spotlight.providers.action;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.providers.Query;
 
-public class ActionSearchProvider implements SearchProvider {
+public class ServiceSearchProvider implements SearchProvider {
 
-    private static class Action {
-        private final String label;
-        private final String url;
+    private final ServiceTypeDao serviceTypeDao;
 
-        private Action(String label, String url) {
-            this.label = Objects.requireNonNull(label);
-            this.url = Objects.requireNonNull(url);
-        }
-    }
-
-    private final List<Action> actions = new ArrayList<>();
-
-    public ActionSearchProvider() {
-        actions.add(new Action("Configure OpenNMS", "admin/index.jsp")); // TODO MVR this is role dependant
-        actions.add(new Action("Configure Geocoder Service", "admin/geoservice/index.jsp#!/geocoding/config")); // TODO MVR this is role dependant
-        actions.add(new Action("Show System Information", "admin/sysconfig.jsp")); // TODO MVR this is role dependant
-        actions.add(new Action("Manage Flow Classification", "admin/classification/index.jsp")); // TODO MVR this is role dependant
-        actions.add(new Action("Database Reports", "report/database/index.htm"));
+    public ServiceSearchProvider(final ServiceTypeDao serviceTypeDao) {
+        this.serviceTypeDao = Objects.requireNonNull(serviceTypeDao);
     }
 
     @Override
     public List<SearchResult> query(String input) {
-        final List<SearchResult> searchResults = actions.stream()
-                .filter(action -> Query.matches(action.label, input))
-                .map(action -> {
-                    final SearchResult searchResult = new SearchResult();
-                    searchResult.setContext(Contexts.Action);
-                    searchResult.setLabel(action.label);
-                    searchResult.setUrl(action.url);
-                    searchResult.setIdentifier(action.url);
-                    return searchResult;
-                })
-                .collect(Collectors.toList());
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsServiceType.class)
+                .ilike("name", Query.ilike(input))
+                .distinct()
+                .limit(10); // TODO MVR make configurable
+        final Criteria criteria = builder.toCriteria();
+        final List<OnmsServiceType> matchingResult = serviceTypeDao.findMatching(criteria);
+        final List<SearchResult> searchResults = matchingResult.stream().map(service -> {
+            final SearchResult searchResult = new SearchResult();
+            searchResult.setContext(Contexts.Action);
+            searchResult.setIdentifier(service.getId().toString());
+            searchResult.setLabel("Show nodes with service '" + service.getName() + "'");
+            searchResult.setUrl("element/nodeList.htm?service=" + service.getId());
+            return searchResult;
+        }).collect(Collectors.toList());
         return searchResults;
     }
 }

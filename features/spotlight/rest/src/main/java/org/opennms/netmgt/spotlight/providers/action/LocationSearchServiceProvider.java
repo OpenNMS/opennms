@@ -28,51 +28,43 @@
 
 package org.opennms.netmgt.spotlight.providers.action;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.providers.Query;
 
-public class ActionSearchProvider implements SearchProvider {
+public class LocationSearchServiceProvider implements SearchProvider {
 
-    private static class Action {
-        private final String label;
-        private final String url;
+    private final MonitoringLocationDao monitoringLocationDao;
 
-        private Action(String label, String url) {
-            this.label = Objects.requireNonNull(label);
-            this.url = Objects.requireNonNull(url);
-        }
-    }
-
-    private final List<Action> actions = new ArrayList<>();
-
-    public ActionSearchProvider() {
-        actions.add(new Action("Configure OpenNMS", "admin/index.jsp")); // TODO MVR this is role dependant
-        actions.add(new Action("Configure Geocoder Service", "admin/geoservice/index.jsp#!/geocoding/config")); // TODO MVR this is role dependant
-        actions.add(new Action("Show System Information", "admin/sysconfig.jsp")); // TODO MVR this is role dependant
-        actions.add(new Action("Manage Flow Classification", "admin/classification/index.jsp")); // TODO MVR this is role dependant
-        actions.add(new Action("Database Reports", "report/database/index.htm"));
+    public LocationSearchServiceProvider(final MonitoringLocationDao monitoringLocationDao) {
+        this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
     }
 
     @Override
     public List<SearchResult> query(String input) {
-        final List<SearchResult> searchResults = actions.stream()
-                .filter(action -> Query.matches(action.label, input))
-                .map(action -> {
-                    final SearchResult searchResult = new SearchResult();
-                    searchResult.setContext(Contexts.Action);
-                    searchResult.setLabel(action.label);
-                    searchResult.setUrl(action.url);
-                    searchResult.setIdentifier(action.url);
-                    return searchResult;
-                })
-                .collect(Collectors.toList());
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class)
+                .ilike("locationName", Query.ilike(input))
+                .distinct()
+                .limit(10); // TODO MVR make configurable
+        final Criteria criteria = builder.toCriteria();
+        final List<OnmsMonitoringLocation> matchingResult = monitoringLocationDao.findMatching(criteria);
+        final List<SearchResult> searchResults = matchingResult.stream().map(monitoringLocation -> {
+            final SearchResult searchResult = new SearchResult();
+            searchResult.setContext(Contexts.Action);
+            searchResult.setIdentifier(monitoringLocation.getLocationName());
+            searchResult.setLabel("Show nodes in location '" + monitoringLocation.getLocationName() + "'");
+            searchResult.setUrl("element/nodeList.htm?monitoringLocation=" + monitoringLocation.getLocationName());
+            return searchResult;
+        }).collect(Collectors.toList());
         return searchResults;
     }
 }
