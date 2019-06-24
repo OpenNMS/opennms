@@ -2,15 +2,17 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"downlevelIteration": true,
+		"allowJs": true,
 		"target": "ES5",
 		"lib": [
-			"DOM",
-			"ES2015",
-			"ES5",
-			"ES6"
+			"dom",
+			"es2015",
+			"es5",
+			"es6"
 		]
 	},
 	"include": [
+		"src/main/**/*.js",
 		"src/main/**/*.ts"
 	]
 }

@@ -6,13 +6,14 @@ var path = require('path');
 var file = require('file');
 var fs = require('fs');
 
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+
 var AssetsPlugin = require('assets-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var StringReplacePlugin = require('string-replace-webpack-plugin');
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-var WebpackMd5Hash = require('webpack-md5-hash');
 var createVariants = require('parallel-webpack').createVariants;
 var clonedeep = require('lodash.clonedeep');
 
@@ -36,6 +37,36 @@ var variants = {
   production: [ false ]
 };
 
+const scssUse = [
+  {
+    loader: 'cache-loader',
+    options: {
+      cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
+    }
+  },
+  {
+    loader: 'css-loader',
+    options: {
+      modules: 'global'
+    }
+  },
+  {
+    loader: 'postcss-loader',
+    options: {
+      plugins: () => {
+        const ret = [ require('autoprefixer')() ];
+        if (isProduction) {
+          ret.push(require('cssnano')());
+        }
+        return ret;
+      }
+    }
+  },
+  {
+    loader: 'sass-loader'
+  }
+];
+
 if (isProduction) {
   variants.production = [ true, false ];
   if (doVaadin) {
@@ -43,7 +74,7 @@ if (isProduction) {
   }
 }
 
-var getLatest = function getLatest(searchPath, latest = 0) {
+var getLatest = function getLatest(searchPath, latest = 0, recurse = true) {
   var ret = latest;
 //  console.log('getLatest(' + searchPath + ')');
   if (!fs.existsSync(searchPath)) {
@@ -57,7 +88,9 @@ var getLatest = function getLatest(searchPath, latest = 0) {
     }
     var stat = fs.statSync(entryPath);
     if (stat.isDirectory()) {
-      ret = Math.max(ret, getLatest(entryPath));
+      if (recurse) {
+        ret = Math.max(ret, getLatest(entryPath));
+      }
     } else if (fs.existsSync(entryPath)) {
       ret = Math.max(ret, stat.ctimeMs);
     }
@@ -65,7 +98,7 @@ var getLatest = function getLatest(searchPath, latest = 0) {
   return ret;
 };
 
-var srcModified = getLatest(path.join(__dirname, 'src'));
+var srcModified = Math.max(getLatest(__dirname, 0, false), getLatest(path.join(__dirname, 'src')));
 var targetModified = getLatest(path.join(__dirname, 'target'));
 
 if (targetModified > srcModified) {
@@ -311,48 +344,32 @@ var config = {
         }]
       },
       {
-        test: /\.scss$/,
+        // special case, vaadin-theme.scss needs string-replace-webpack-plugin to fix up header include stuff
+        test: /vaadin-theme\.scss$/,
+        include: [ styleroot ],
         use: extractText.extract({
           fallback: 'style-loader',
-          use: [
-            {
-              loader: 'cache-loader',
-              options: {
-                cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
-              }
-            },
-            {
-              loader: StringReplacePlugin.replace({
-                replacements: [
-                  {
-                    pattern: /\/\*! string-replace-webpack-plugin:\s*(.+?)\s*\*\//,
-                    replacement: function(match, p1, offset, string) {
-                      return p1;
-                    }
+          use: [ {
+            loader: StringReplacePlugin.replace({
+              replacements: [
+                {
+                  pattern: /\/\*! string-replace-webpack-plugin:\s*(.+?)\s*\*\//,
+                  replacement: function(match, p1, offset, string) {
+                    return p1;
                   }
-                ]
-              })
-            },
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: true
-              }
-            },
-            {
-                loader: 'postcss-loader',
-                options: {
-                    plugins: function () {
-                        return [
-                            require('autoprefixer')
-                        ];
-                    }
                 }
-            },
-            {
-              loader: 'sass-loader'
-            }
-          ]
+              ]
+            })
+          } ].concat(scssUse)
+        })
+      },
+      {
+        test: /\.scss$/,
+        include: [ styleroot ],
+        exclude: [ path.join(styleroot, 'vaadin-theme.scss') ],
+        use: extractText.extract({
+          fallback: 'style-loader',
+          use: scssUse
         })
       },
       {
@@ -374,44 +391,22 @@ var config = {
       },
       {
         /* translate javascript to es2015 */
-        test: /(\.jsx?)$/,
+        test: /(\.[jt]sx?)$/,
         exclude: [/node_modules/],
         use: [
+          /*
           {
             loader: 'cache-loader',
             options: {
               cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
             }
           },
+          */
           {
             loader: 'babel-loader',
             options: {
-              compact: false
-            }
-          }
-        ]
-      },
-      {
-        /* translate typescript to es2015 */
-        test: /(\.tsx?)$/,
-        exclude: [/node_modules/],
-        use: [
-          {
-            loader: 'cache-loader',
-            options: {
-              cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
-            }
-          },
-          {
-            loader: 'babel-loader',
-            options: {
-              compact: false
-            }
-          },
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true
+              compact: false,
+              cacheDirectory: true,
             }
           }
         ]
@@ -429,13 +424,6 @@ var config = {
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
   plugins: [
-    /*
-    new webpack.ProvidePlugin({
-      jQuery: 'vendor/jquery-js',
-      $: 'vendor/jquery-js'
-    }),
-    */
-    new WebpackMd5Hash(),
     new StringReplacePlugin()
   ]
 };
@@ -453,7 +441,6 @@ function getFile(name, options) {
 
 function createConfig(options) {
   var myconf = clonedeep(config);
-  //myconf.devtool = options.production? 'source-map' : 'eval-source-map';
   myconf.devtool = 'source-map';
 
   myconf.mode = options.production? 'production':'development';
@@ -478,7 +465,6 @@ function createConfig(options) {
       delete myconf.entry[key];
     }
   }
-  //console.log('Production=' + options.production + ', entry=', myconf.entry);
 
   myconf.plugins.push(new webpack.DefinePlugin(defs));
   myconf.plugins.push(new webpack.LoaderOptionsPlugin({
@@ -488,14 +474,15 @@ function createConfig(options) {
 
   if (options.production !== 'vaadin') {
     myconf.module.rules.unshift({
-      // run tslint on typescript files before rendering
+      // run eslint on typescript files before rendering
       enforce: 'pre',
-      test: /\.tsx?$/,
+      test: /\.(js|ts)x?$/,
       use: [
         {
-          loader: 'tslint-loader',
+          loader: 'eslint-loader',
           options: {
-            typeCheck: true
+            cache: true,
+            failOnError: true
           }
         }
       ],
@@ -577,7 +564,11 @@ function createConfig(options) {
   console.log('Building variant: production=' + options.production);
   //console.log(myconf);
 
-  return myconf;
+  const smp = new SpeedMeasurePlugin({
+    outputTarget: 'target/smp-' + (options.production === 'vaadin' ? 'vaadin' : myconf.mode) + '.log'
+  });
+  
+  return smp.wrap( myconf );
 }
 
 module.exports = createVariants({}, variants, createConfig);
