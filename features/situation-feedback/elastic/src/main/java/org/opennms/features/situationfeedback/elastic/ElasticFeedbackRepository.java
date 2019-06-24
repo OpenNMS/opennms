@@ -75,21 +75,24 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private IndexStrategy indexStrategy;
     
-    private String eventIndexName = "situation-feedback";
-    
-    /**
+	private String eventIndexName = "";
+
+	public void setEventIndexName(String eventIndexName) {
+		Objects.requireNonNull(eventIndexName);
+		this.eventIndexName = eventIndexName;
+	}
+
+	/**
      * The collection of listeners interested in alarm feedback, populated via runtime binding.
      */
     private final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
 
-    public String getModifiedIndex()
-	{
-		Objects.requireNonNull(eventIndexName, "null value");
-		if(!eventIndexName.equals("situation-feedback")) {
-		return String.format("%s-%s" , eventIndexName, TYPE);
+	public String getModifiedIndex() {
+		if (!eventIndexName.isEmpty()) {
+			return String.format("%s-%s", eventIndexName, TYPE);
 		}
 		return TYPE;
-		
+
 	}
     public ElasticFeedbackRepository(JestClient jestClient, IndexStrategy indexStrategy, int bulkRetryCount, ElasticFeedbackRepositoryInitializer initializer) {
         this.client = jestClient;
@@ -111,8 +114,9 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (FeedbackDocument document : documents) {
-            	final String index = indexStrategy.getIndex(getModifiedIndex(), Instant.ofEpochMilli(document.getTimestamp()));
-                final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
+				final String index = indexStrategy.getIndex(getModifiedIndex(),
+						Instant.ofEpochMilli(document.getTimestamp()));
+				final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
                 bulkBuilder.addAction(indexBuilder.build());
             }
             return new BulkWrapper(bulkBuilder);

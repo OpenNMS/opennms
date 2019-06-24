@@ -98,7 +98,7 @@ public class EventToIndex implements AutoCloseable {
 
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
 	
-	private String eventIndexName = "opennms";
+	private String eventIndexName = "";
 
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 			threads,
@@ -148,6 +148,11 @@ public class EventToIndex implements AutoCloseable {
 		}
 	}
 
+	public void setEventIndexName(String eventIndexName) {
+		Objects.requireNonNull(eventIndexName);
+		this.eventIndexName = eventIndexName;
+	}
+
 	public void setNodeCache(NodeCache cache) {
 		this.nodeCache = cache;
 	}
@@ -156,15 +161,12 @@ public class EventToIndex implements AutoCloseable {
 		this.groupOidParameters = groupOidParameters;
 	}
 	
-	public String getModifiedIndex()
-	{
-		Calendar cal= Calendar.getInstance();
-		Objects.requireNonNull(eventIndexName, "null value");
-		if(!eventIndexName.equals("opennms")) {
-			return String.format("%s-%s" , eventIndexName,INDEX_PREFIX) ;		
+	public String getModifiedIndex() {
+		if (!eventIndexName.isEmpty()) {
+			return String.format("%s-%s", eventIndexName, INDEX_PREFIX);
 		}
 		return INDEX_PREFIX;
-		
+
 	}
 
 	@Override
@@ -283,7 +285,9 @@ public class EventToIndex implements AutoCloseable {
 		// Parse event parameters
 		handleParameters(event, body);
 
-		body.put("EventForwarder", eventIndexName);
+		if (!eventIndexName.isEmpty()) {
+			body.put("EventForwarder", eventIndexName);
+		}
 		body.put("interface", event.getInterface());
 		body.put("logmsg", ( event.getLogmsg()!=null ? event.getLogmsg().getContent() : null ));
 		body.put("logmsgdest", ( event.getLogmsg()!=null ? event.getLogmsg().getDest() : null ));

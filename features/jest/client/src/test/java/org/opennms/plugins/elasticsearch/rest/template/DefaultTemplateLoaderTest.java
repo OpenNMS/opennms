@@ -44,21 +44,21 @@ public class DefaultTemplateLoaderTest {
     public void canLoadTemplateForVersion() throws IOException {
         DefaultTemplateLoader loader = mock(DefaultTemplateLoader.class);
         when(loader.load(any(), any())).thenCallRealMethod();
-        when(loader.getTemplate("/template.es6.json")).thenReturn("ES6!");
-        when(loader.getTemplate("/template.json")).thenReturn("ES!");
+		when(loader.getTemplate("/template.es6.json")).thenReturn("ES6!");
+		when(loader.getTemplate("/template.json")).thenReturn("ES!");
 
         // ES 6 template
-        String template = loader.load(new Version(6,2,3), "/template");
-        assertThat(template, equalTo("ES6!"));
+		String template = loader.load(new Version(6, 2, 3), "/template");
+		assertThat(template, equalTo("ES6!"));
 
-        // Fallback to next major when no specific match is made
-        template = loader.load(new Version(7,1,0), "/template");
-        assertThat(template, equalTo("ES6!"));
+		// Fallback to next major when no specific match is made
+		template = loader.load(new Version(7, 1, 0), "/template");
+		assertThat(template, equalTo("ES6!"));
 
-        // Use the default otherwise
-        template = loader.load(new Version(2,1,1), "/template");
-        assertThat(template, equalTo("ES!"));
-    }
+		// Use the default otherwise
+		template = loader.load(new Version(2, 1, 1), "/template");
+		assertThat(template, equalTo("ES!"));
+	}
 
     @Test(expected = NullPointerException.class)
     public void failsWithNPEIfNoMatchIsMade() throws IOException {

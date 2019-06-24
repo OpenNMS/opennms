@@ -115,20 +115,19 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final int bulkRetryCount;
     
-    private static String eventIndexName = "netflow";
-    
-    //public static void setEventIndexName(String eventIndexName) {
-	//ElasticFlowRepository.eventIndexName = eventIndexName;
-	//}
-    
-    public String getModifiedIndex()
-    {
-    	Objects.requireNonNull(eventIndexName, "null value");
-		if(!eventIndexName.equals("netflow")) {
-    	return String.format("%s-%s", eventIndexName, TYPE);
+    private String eventIndexName = "";
+
+	public void setEventIndexName(String eventIndexName) {
+		Objects.requireNonNull(eventIndexName);
+		this.eventIndexName = eventIndexName;
+	}
+
+	public String getModifiedIndex() {
+		if (!eventIndexName.isEmpty()) {
+			return String.format("%s-%s", eventIndexName, TYPE);
 		}
 		return TYPE;
-    }   
+	}
 
     /**
      * Flows/second throughput
@@ -191,7 +190,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.bulkRetryCount = bulkRetryCount;
-        this.indexSelector = new IndexSelector(getModifiedIndex(), indexStrategy, maxFlowDurationMs);
+		this.indexSelector = new IndexSelector(getModifiedIndex(), indexStrategy, maxFlowDurationMs);
         this.identity = identity;
         this.tracerRegistry = tracerRegistry;
 
@@ -251,7 +250,8 @@ public class ElasticFlowRepository implements FlowRepository {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
                 	
-                    final String index = indexStrategy.getIndex(getModifiedIndex(), Instant.ofEpochMilli(flowDocument.getTimestamp()));
+					final String index = indexStrategy.getIndex(getModifiedIndex(),
+							Instant.ofEpochMilli(flowDocument.getTimestamp()));
                     final Index.Builder indexBuilder = new Index.Builder(flowDocument)
                             .index(index)
                             .type(TYPE);
