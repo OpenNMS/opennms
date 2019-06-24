@@ -52,7 +52,7 @@ import io.restassured.response.Response;
 
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
-	private final static Logger LOG = LoggerFactory.getLogger(GraphRestServiceIT.class);
+    private final static Logger LOG = LoggerFactory.getLogger(GraphRestServiceIT.class);
     private static final String CONTAINER_ID = "test";
     private KarafShell karafShell;
     private RestClient restClient;
