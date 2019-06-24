@@ -3,8 +3,6 @@
 * @copyright 2014 The OpenNMS Group, Inc.
 */
 
-const RequisitionMetaData = require('./RequisitionMetaData');
-
 /**
 * @ngdoc object
 * @name RequisitionService
@@ -25,15 +23,6 @@ const RequisitionService = function RequisitionService(svc) {
    * @returns {string} The name of the service
    */
   self.name = svc['service-name'];
-
-  /**
-   * @description The meta-data entries
-   * @ngdoc property
-   * @name RequisitionNode#metaData
-   * @propertyOf RequisitionNode
-   * @returns {object} The meta-data entries
-   */
-  self.metaData = new RequisitionMetaData(svc['meta-data']);
 
   self.className = 'RequisitionService';
 

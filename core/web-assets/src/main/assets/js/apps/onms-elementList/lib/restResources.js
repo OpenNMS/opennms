@@ -48,7 +48,7 @@ const arrayify = (data, headers, status, key) => {
 angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 
 // OnmsAlarm REST $resource
-.factory('alarmFactory', function($resource, $log, $http, $location) {
+.factory('alarmFactory', /* @ngInject */ function($resource, $log, $http, $location) {
 	return $resource(
 		BASE_REST_URL + '/alarms/:id', 
 		{ id: '@id' },
@@ -87,7 +87,7 @@ angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 })
 
 // OnmsEvent REST $resource
-.factory('eventFactory', function($resource, $log, $http, $location) {
+.factory('eventFactory', /* @ngInject */ function($resource, $log, $http, $location) {
 	return $resource(
 		BASE_REST_URL + '/events/:id', 
 		{ id: '@id' },
@@ -126,7 +126,7 @@ angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 })
 
 // OnmsMinion REST $resource
-.factory('minionFactory', function($resource, $log, $http, $location) {
+.factory('minionFactory', /* @ngInject */ function($resource, $log, $http, $location) {
 	return $resource(BASE_REST_URL + '/minions/:id', { id: '@id' },
 		{
 			'query': { 
@@ -145,7 +145,7 @@ angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 })
 
 // OnmsMonitoringLocation REST $resource
-.factory('monitoringLocationFactory', function($resource, $log, $http, $location) {
+.factory('monitoringLocationFactory', /* @ngInject */ function($resource, $log, $http, $location) {
 	return $resource(BASE_REST_URL + '/monitoringLocations/:id', {},
 		{
 			'query': { 
@@ -164,7 +164,7 @@ angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 })
 
 // OnmsNode REST $resource
-.factory('nodeFactory', function($resource, $log, $http, $location) {
+.factory('nodeFactory', /* @ngInject */ function($resource, $log, $http, $location) {
 	return $resource(BASE_REST_URL + '/nodes/:id', { id: '@id' },
 		{
 			'query': { 
@@ -201,7 +201,7 @@ angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 })
 
 // OnmsNotification REST $resource
-.factory('notificationFactory', function($resource, $log, $http, $location) {
+.factory('notificationFactory', /* @ngInject */ function($resource, $log, $http, $location) {
 	return $resource(BASE_REST_URL + '/notifications/:id', { id: '@id' },
 		{
 			'query': { 
@@ -238,7 +238,7 @@ angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 })
 
 // OnmsOutage REST $resource
-.factory('outageFactory', function($resource, $log, $http, $location) {
+.factory('outageFactory', /* @ngInject */ function($resource, $log, $http, $location) {
 	return $resource(BASE_REST_URL + '/outages/:id', { id: '@id' },
 		{
 			'query': { 
@@ -274,7 +274,7 @@ angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 	);
 })
 
-.factory('scanReportLogFactory', function($resource, $log, $http, $location) {
+.factory('scanReportLogFactory', /* @ngInject */ function($resource, $log, $http, $location) {
 	return $resource(BASE_REST_URL + '/scanreports/:id/logs', { id: '@id' },
 		{
 			'query': { 
@@ -301,7 +301,7 @@ angular.module(MODULE_NAME, [ 'onms.http', 'ngResource' ])
 })
 
 // ScanReport REST $resource
-.factory('scanReportFactory', function($resource, $log, $http, $location) {
+.factory('scanReportFactory', /* @ngInject */ function($resource, $log, $http, $location) {
 	return $resource(BASE_REST_URL + '/scanreports/:id', { id: '@id' },
 		{
 			'query': { 

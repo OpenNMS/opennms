@@ -88,6 +88,7 @@ public class WSManCollectorTest {
         addAttribute(group, "!PrimaryStatus!", "GaugeWithoutValue", AttributeType.GAUGE);
         addAttribute(group, "ElementName", "StringWithValue", AttributeType.STRING);
         addAttribute(group, "!ElementName!", "StringWithoutValue", AttributeType.STRING);
+        addAttribute(group, WsManCollector.ELEMENT_COUNT_ATTRIB_NAME, "NumElements", AttributeType.GAUGE);
 
         CollectionAgent agent = mock(CollectionAgent.class);
         when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
@@ -119,6 +120,7 @@ public class WSManCollectorTest {
         assertFalse("The CollectionSet should not contain attributes for missing values.", attributesByName.containsKey("StringWithoutValue"));
         assertEquals(42.1, attributesByName.get("GaugeWithValue").getNumericValue().doubleValue(), 2);
         assertEquals("Computer System", attributesByName.get("StringWithValue").getStringValue());
+        assertEquals(1, attributesByName.get("NumElements").getNumericValue().intValue());
     }
 
     @Test
@@ -288,6 +290,7 @@ public class WSManCollectorTest {
         addAttribute(group, "PercentDPCTime", "wmiOSCpuPctDPCTime", AttributeType.GAUGE);
         addAttribute(group, "PercentInterruptTime", "wmiOSCpuPctIntrTime", AttributeType.GAUGE);
         addAttribute(group, "PercentUserTime", "wmiOSCpuPctUserTime", AttributeType.GAUGE);
+        addAttribute(group, WsManCollector.ELEMENT_COUNT_ATTRIB_NAME, "NumElements", AttributeType.GAUGE);
 
         // Mock the agent
         CollectionAgent agent = mock(CollectionAgent.class);
@@ -316,8 +319,10 @@ public class WSManCollectorTest {
         assertEquals(Arrays.asList(
                 "wsProcIndex/c0/windows-os-wmi-processor/wmiOSCpuName[c0,null]",
                 "wsProcIndex/c0/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,95.0]",
+                "wsProcIndex/c0/windows-os-wmi-processor/NumElements[null,2.0]",
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuName[c1,null]",
-                "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,100.0]"),
+                "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,100.0]",
+                "wsProcIndex/c1/windows-os-wmi-processor/NumElements[null,2.0]"),
                 CollectionSetUtils.flatten(collectionSet));
         assertEquals(Sets.newHashSet("c0", "c1"), CollectionSetUtils.getResourcesByLabel(collectionSet).keySet());
     }
