@@ -77,8 +77,8 @@
 
         Package.ServiceMatch serviceMatch = lastPkg.findService(serviceName).orElse(null);
         if (serviceMatch != null) {
-            pageContext.setAttribute("serviceName", serviceMatch.service.getName());
-            pageContext.setAttribute("servicePattern", serviceMatch.service.getPattern());
+            pageContext.setAttribute("pollerName", serviceMatch.service.getName());
+            pageContext.setAttribute("pollerPattern", serviceMatch.service.getPattern());
             pageContext.setAttribute("patternVariables", serviceMatch.patternVariables);
 
             ServiceMonitor monitor = pollerCfgFactory.getServiceMonitor(serviceMatch.service.getName());
@@ -206,19 +206,19 @@ function doDelete() {
               </tr>
               <tr>
                 <th>Polling Package</th>
-                <td>${packageName}</td>
+                <td>${empty packageName ? "N/A" : packageName}</td>
               </tr>
               <tr>
-                <th>Service Name</th>
-                <td>${serviceName}</td>
+                <th>Poller Name</th>
+                <td>${empty pollerName ? "N/A" : pollerName}</td>
               </tr>
               <tr>
-                <th>Service Pattern</th>
-                <td>${fn:escapeXml(servicePattern)}</td>
+                <th>Poller Pattern</th>
+                <td>${empty pollerPattern ? "N/A" : fn:escapeXml(pollerPattern)}</td>
               </tr>
               <tr>
                 <th>Monitor Class</th>
-                <td>${monitorClass}</td>
+                <td>${empty monitorClass ? "N/A" : monitorClass}</td>
               </tr>
                 <tr>
                     <th>Interval</th>
