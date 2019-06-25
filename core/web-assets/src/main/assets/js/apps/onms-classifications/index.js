@@ -68,14 +68,14 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             }
         })
 
-        .factory('ClassificationService', function($resource) {
+        .factory('ClassificationService', /* @ngInject */ function($resource) {
             return $resource('rest/classifications/', {},
                 {
                     'classify': { method: 'POST', url:'rest/classifications/classify'}
                 }
             );
         })
-        .factory('ClassificationGroupService', function($resource) {
+        .factory('ClassificationGroupService', /* @ngInject */ function($resource) {
             return $resource('rest/classifications/groups/:id', {id: '@id'},
                 {
                     'get': {method: 'GET'},
@@ -85,7 +85,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                 }
             );
         })
-        .factory('ClassificationRuleService', function($resource) {
+        .factory('ClassificationRuleService', /* @ngInject */ function($resource) {
             return $resource('rest/classifications/:id', {id: '@id'},
                 {
                     'get': {method: 'GET'},
@@ -97,7 +97,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             );
         })
 
-        .factory('ProtocolService', function($resource) {
+        .factory('ProtocolService', /* @ngInject */ function($resource) {
             return $resource('rest/classifications/protocols');
         })
         .controller('ClassificationController', ['$scope', '$state', 'ClassificationService', 'ClassificationGroupService', 'ProtocolService', function($scope, $state, ClassificationService, ClassificationGroupService, ProtocolService) {

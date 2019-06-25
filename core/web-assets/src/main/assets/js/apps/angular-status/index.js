@@ -88,7 +88,7 @@ angular.module(MODULE_NAME, [
         }
     })
 
-    .factory('StatusService', function($resource, $log, $http, $location) {
+    .factory('StatusService', /* @ngInject */ function($resource, $log, $http, $location) {
         return $resource('api/v2/status/:type/:strategy', {},
             {
                 'query': { method: 'GET' }

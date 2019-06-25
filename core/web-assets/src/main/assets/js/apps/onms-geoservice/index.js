@@ -25,7 +25,7 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
             'ui.router',
             'ui.toggle',
             'onms.http',
-            'onms.elementList',
+            'onms.elementList'
         ])
         .config(['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
@@ -65,14 +65,14 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
             }
         })
 
-        .factory('GeocodingConfigService', function($resource) {
+        .factory('GeocodingConfigService', /* @ngInject */ function($resource) {
             return $resource('api/v2/geocoding/config', {}, {
                 'get':      { method: 'GET' },
                 'update':   { method: 'POST'}
             });
         })
 
-        .factory('GeocodingGeocoderService', function($resource) {
+        .factory('GeocodingGeocoderService', /* @ngInject */ function($resource) {
             return $resource('api/v2/geocoding/geocoders/:id', {id: '@id'},
                 {
                     'list': { method: 'GET', isArray: true },
@@ -84,7 +84,7 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
         .controller('GeocoderController', ['$scope', '$http', '$sce', 'GeocodingConfigService', 'GeocodingGeocoderService', function($scope, $http, $sce, GeocodingConfigService, GeocodingGeocoderService) {
 
             $scope.handleGlobalError = function(errorResponse) {
-                $scope.globalError = "An unexpected error occurred: " + errorResponse.statusText;
+                $scope.globalError = 'An unexpected error occurred: ' + errorResponse.statusText;
                 $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
             };
 
