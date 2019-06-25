@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.io.IOUtils;
@@ -140,6 +141,8 @@ public class PollableServiceConfigIT {
         final PollerRequestBuilder pollerRequestBuilder = mock(PollerRequestBuilder.class);
         when(pollerRequestBuilder.withMonitor(any())).thenReturn(pollerRequestBuilder);
         when(pollerRequestBuilder.withService(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.withTimeToLive(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.withAdaptor(any())).thenReturn(pollerRequestBuilder);
         
         final LocationAwarePollerClient locationAwarePollerClient = mock(LocationAwarePollerClient.class);
         when(locationAwarePollerClient.poll()).thenReturn(pollerRequestBuilder);
@@ -187,7 +190,7 @@ public class PollableServiceConfigIT {
         Service configuredSvc = new Service();
         configuredSvc.setName("SVC");
         Package pkg = mock(Package.class);
-        when(pkg.getServices()).thenReturn(Lists.newArrayList(configuredSvc));
+        when(pkg.findService("SVC")).thenReturn(Optional.of(new Package.ServiceMatch(configuredSvc)));
 
         PollerConfig pollerConfig = mock(PollerConfig.class);
         PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
