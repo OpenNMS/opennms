@@ -136,7 +136,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 final Matcher matcher = pattern.matcher(m_service.getSvcName());
                 if (matcher.matches()) {
                     configService = s;
-                    patternVariables = Maps.uniqueIndex(RegexUtils.getNamedCaptureGroupsFromPattern(s.getPattern()), matcher::group);
+                    patternVariables = Maps.asMap(RegexUtils.getNamedCaptureGroupsFromPattern(s.getPattern()), matcher::group);
                     break;
                 }
             }

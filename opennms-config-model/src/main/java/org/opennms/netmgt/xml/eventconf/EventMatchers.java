@@ -43,6 +43,7 @@ import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_UEI;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -271,7 +272,7 @@ public abstract class EventMatchers  {
 
 	public static EventMatcher valueMatchesRegexMatcher(final Field field,	final String value) {
 		final Pattern eventValueRegex = Pattern.compile(value.startsWith("~") ? value.substring(1) : value);
-		final List<String> namedCaptureGroupsFromRegex = RegexUtils.getNamedCaptureGroupsFromPattern(eventValueRegex.pattern());
+		final Set<String> namedCaptureGroupsFromRegex = RegexUtils.getNamedCaptureGroupsFromPattern(eventValueRegex.pattern());
 
         return new EventMatcher() {
             @Override

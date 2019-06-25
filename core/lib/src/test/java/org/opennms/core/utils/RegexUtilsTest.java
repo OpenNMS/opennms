@@ -30,6 +30,7 @@ package org.opennms.core.utils;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 
 import org.junit.Test;
@@ -41,6 +42,6 @@ public class RegexUtilsTest {
         assertThat(RegexUtils.getNamedCaptureGroupsFromPattern(""), hasSize(0));
         assertThat(RegexUtils.getNamedCaptureGroupsFromPattern("(?<user>.*)"), contains("user"));
         assertThat(RegexUtils.getNamedCaptureGroupsFromPattern("Node /(?<poolName>.*?)/(?<poolMember>\\S+) address (?<poolAddr>\\S+) monitor status down. .*\\(slot(?<slotNum>[0-9]+)\\)"),
-                contains("poolName", "poolMember", "poolAddr", "slotNum"));
+                containsInAnyOrder("poolName", "poolMember", "poolAddr", "slotNum"));
     }
 }
