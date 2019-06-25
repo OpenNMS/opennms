@@ -28,40 +28,15 @@
 
 package org.opennms.core.test.db;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.function.Predicate;
-import java.util.logging.Logger;
-
-import javax.sql.DataSource;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-
+import liquibase.Contexts;
+import liquibase.changelog.ChangeLogParameters;
+import liquibase.changelog.ChangeSet;
+import liquibase.changelog.DatabaseChangeLog;
+import liquibase.exception.ChangeLogParseException;
+import liquibase.exception.LiquibaseException;
+import liquibase.parser.ChangeLogParserFactory;
+import liquibase.resource.ResourceAccessor;
+import liquibase.util.StringUtils;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -81,14 +56,27 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
 
-import liquibase.changelog.ChangeLogParameters;
-import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
-import liquibase.exception.ChangeLogParseException;
-import liquibase.exception.LiquibaseException;
-import liquibase.parser.ChangeLogParserFactory;
-import liquibase.resource.ResourceAccessor;
-import liquibase.util.StringUtils;
+import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.*;
+import java.util.Date;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * 
@@ -796,7 +784,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             throws NoSuchAlgorithmException, IOException, Exception, ChangeLogParseException, LiquibaseException {
         final String contexts = System.getProperty("opennms.contexts", "production");
         ChangeLogParameters changeLogParameters = new ChangeLogParameters();
-        changeLogParameters.setContexts(StringUtils.splitAndTrim(contexts, ","));
+        changeLogParameters.setContexts(new Contexts(StringUtils.splitAndTrim(contexts, ",")));
 
         MessageDigest md = MessageDigest.getInstance("MD5");
 
@@ -813,7 +801,9 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             Set<String> seenChangeLogs = new HashSet<String>();
             for (ChangeSet c : changeLog.getChangeSets()) {
                 if (seenChangeLogs.add(c.getFilePath())) {
-                    DigestUtils.updateDigest(md, accessor.getResourceAsStream(c.getFilePath()));
+                    for (InputStream s : accessor.getResourcesAsStream(c.getFilePath())) {
+                        DigestUtils.updateDigest(md, s);
+                    }
                 }
             }
         }
