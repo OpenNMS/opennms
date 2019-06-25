@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -94,6 +95,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     public static final int PROBLEM_WITHOUT_RESOLUTION_TYPE = 3;
 
     public static final String ARCHIVED = "Archived";
+
+    private UUID m_uuid;
 
     /** identifier field */
     private Integer m_id;
@@ -209,6 +212,14 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private boolean m_situation;
 
     private boolean m_partOfSituation;
+
+    public UUID getUuid() {
+        return m_uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        m_uuid = uuid;
+    }
 
     /**
      * default constructor

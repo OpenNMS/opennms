@@ -173,5 +173,6 @@
     <module>ifttt</module>
 
     <module>jest</module>
+    <module>nosql-dao</module>
   </modules>
 </project>
