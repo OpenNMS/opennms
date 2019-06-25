@@ -180,7 +180,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     public static final String TEMPLATE_DATABASE_NAME_PREFIX = "opennms_it_template_";
 
-    private static final String ADMIN_DATABASE = "template1";
+    private static final String ADMIN_DATABASE = "postgres";
 
     public TemporaryDatabasePostgreSQL() throws Exception {
         this(null);
