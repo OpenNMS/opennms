@@ -403,16 +403,6 @@ public class Poller extends AbstractServiceDaemon {
         getScheduler().resume();
     }
 
-    /**
-     * <p>getServiceMonitor</p>
-     *
-     * @param svcName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
-     */
-    public ServiceMonitor getServiceMonitor(String svcName) {
-        return getPollerConfig().getServiceMonitor(svcName);
-    }
-
     private void scheduleExistingServices() throws Exception {
         scheduleServices();
 
@@ -507,7 +497,7 @@ public class Poller extends AbstractServiceDaemon {
 
         closeOutageIfSvcLostEventIsMissing(outage);
 
-        final Package pkg = findPackageForService(ipAddr, serviceName);
+        final Package pkg = m_pollerConfig.findPackageForService(ipAddr, serviceName);
         if (pkg == null) {
             if(active){
                 LOG.warn("Active service {} on {} not configured for any package. Marking as Not Polled.", serviceName, ipAddr);
@@ -590,79 +580,6 @@ public class Poller extends AbstractServiceDaemon {
         final Date now = new Date();
         outage.setIfRegainedService(now);
         m_outageDao.update(outage);
-    }
-
-    Package findPackageForService(String ipAddr, String serviceName) {
-        Enumeration<Package> en = m_pollerConfig.enumeratePackage();
-        Package lastPkg = null;
-
-        while (en.hasMoreElements()) {
-            Package pkg = (Package)en.nextElement();
-            if (pollableServiceInPackage(ipAddr, serviceName, pkg))
-                lastPkg = pkg;
-        }
-        return lastPkg;
-    }
-
-    /**
-     * <p>pollableServiceInPackage</p>
-     *
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param serviceName a {@link java.lang.String} object.
-     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
-     * @return a boolean.
-     */
-    protected boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
-
-        if (pkg.getRemote()) {
-            LOG.debug("pollableServiceInPackage: this package: {}, is a remote monitor package.", pkg.getName());
-            return false;
-        }
-
-        if (!m_pollerConfig.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
-
-        boolean inPkg = m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
-
-        if (inPkg) return true;
-
-        if (m_initialized) {
-            m_pollerConfig.rebuildPackageIpListMap();
-            return m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
-        }
-
-        return false;
-    }
-
-    /**
-     * <p>packageIncludesIfAndSvc</p>
-     *
-     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
-        if (!getPollerConfig().isServiceInPackageAndEnabled(svcName, pkg)) {
-            LOG.debug("packageIncludesIfAndSvc: address/service: {}/{} not scheduled, service is not enabled or does not exist in package: {}", ipAddr, svcName, pkg.getName());
-            return false;
-        }
-
-        // Is the interface in the package?
-        //
-        if (!getPollerConfig().isInterfaceInPackage(ipAddr, pkg)) {
-
-            if (m_initialized) {
-                getPollerConfig().rebuildPackageIpListMap();
-                if (!getPollerConfig().isInterfaceInPackage(ipAddr, pkg)) {
-                    LOG.debug("packageIncludesIfAndSvc: interface {} gained service {}, but the interface was not in package: {}", ipAddr, svcName, pkg.getName());
-                    return false;
-                }
-            } else {
-                LOG.debug("packageIncludesIfAndSvc: address/service: {}/{} not scheduled, interface does not belong to package: {}", ipAddr, svcName, pkg.getName());
-                return false;
-            }
-        }
-        return true;
     }
 
     public void refreshServicePackages() {

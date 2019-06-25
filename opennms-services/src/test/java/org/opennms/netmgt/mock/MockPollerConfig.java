@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -319,12 +320,12 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public ServiceMonitor getServiceMonitor(String svcName) {
-        return getServiceMonitors().get(svcName);
+        return m_svcMonitors.get(svcName);
     }
 
     @Override
-    public Map<String, ServiceMonitor> getServiceMonitors() {
-        return m_svcMonitors;
+    public Set<String> getServiceMonitorNames() {
+        return null;
     }
 
     @Override

@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
@@ -40,6 +41,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -140,7 +142,15 @@ public class Test implements Action {
 
         ServiceMonitor monitor = null;
         if (monitorClass == null) {
-            monitor = pollerConfig.getServiceMonitor(serviceName);
+            final Optional<Package.ServiceMatch> service = pkg.findService(serviceName);
+            if (!service.isPresent()) {
+                System.err.printf("Error: Service %s not defined%n", serviceName);
+                return null;
+            }
+
+            // TODO fooker: Print matching pattern fields...
+
+            monitor = pollerConfig.getServiceMonitor(service.get().service.getName());
             if (monitor == null) {
                 System.err.printf("Error: Service %s doesn't have a monitor class defined%n", serviceName);
                 return null;

@@ -105,49 +105,15 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
         m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, thresholdingService);
 
-        this.findService(m_pkg);
+        this.findService();
     }
 
-    /**
-     * @param pkg
-     * @return
-     */
-    private synchronized void findService(Package pkg) {
-        Service configService = null;
-        Map<String, String> patternVariables = null;
+    private synchronized void findService() {
+        final Package.ServiceMatch service = m_pkg.findService(m_service.getSvcName())
+                .orElseThrow(() -> new RuntimeException("Service name not part of package!"));
 
-        for (Service s : m_pkg.getServices()) {
-            if (s.getName().equalsIgnoreCase(m_service.getSvcName())) {
-                configService = s;
-                patternVariables = Collections.emptyMap();
-                break;
-            }
-        }
-
-        if (configService == null) {
-            // Find service by pattern
-            for (final Service s : m_pkg.getServices()) {
-                final String status = s.getStatus();
-                if ((status != null && !status.equals("on")) || Strings.isNullOrEmpty(s.getPattern())) {
-                    continue;
-                }
-
-                final Pattern pattern = Pattern.compile(s.getPattern());
-                final Matcher matcher = pattern.matcher(m_service.getSvcName());
-                if (matcher.matches()) {
-                    configService = s;
-                    patternVariables = Maps.asMap(RegexUtils.getNamedCaptureGroupsFromPattern(s.getPattern()), matcher::group);
-                    break;
-                }
-            }
-        }
-
-        if (configService == null) {
-            throw new RuntimeException("Service name not part of package!");
-        }
-
-        m_configService = configService;
-        m_patternVariables = patternVariables;
+        m_configService = service.service;
+        m_patternVariables = service.patternVariables;
 
         m_serviceMonitor = m_pollerConfig.getServiceMonitor(m_configService.getName());
     }
@@ -224,7 +190,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
         m_pkg = newPkg;
 
-        this.findService(m_pkg);
+        this.findService();
     }
 
     private synchronized Map<String,Object> getParameters() {

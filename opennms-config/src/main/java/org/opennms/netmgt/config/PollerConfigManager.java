@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
@@ -1001,11 +1002,20 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link java.util.Map} object.
      */
-    @Override
     public Map<String, ServiceMonitor> getServiceMonitors() {
         try {
             getReadLock().lock();
             return Collections.unmodifiableMap(m_svcMonitors);
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public Set<String> getServiceMonitorNames() {
+        try {
+            getReadLock().lock();
+            return Collections.unmodifiableSet(m_svcMonitors.keySet());
         } finally {
             getReadLock().unlock();
         }
