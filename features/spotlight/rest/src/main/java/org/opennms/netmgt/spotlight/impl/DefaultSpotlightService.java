@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.spotlight.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.ToIntFunction;
+import java.util.stream.Collectors;
 
+import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchResult;
@@ -56,6 +59,7 @@ public class DefaultSpotlightService implements SpotlightService {
     public List<SearchResult> query(String query) {
         // TODO MVR use searchContext
         final SearchContext searchContext = new SearchContext();
+        final int MAX_RESULTS = 20;
 
         // Enforce minimum length, otherwise don't query
         if (Strings.isNullOrEmpty(query) || query.length() < 1) { // TODO MVR length?
@@ -88,6 +92,10 @@ public class DefaultSpotlightService implements SpotlightService {
         } catch (InvalidSyntaxException e) {
             e.printStackTrace(); // TODO MVR
         }
-        return new ArrayList<>(resultMap.values());
+        final List<SearchResult> resultList = resultMap.values().stream()
+                .sorted(Comparator.comparingInt((ToIntFunction<SearchResult>) result -> Contexts.Node.equals(result.getContext()) ? 0 : Contexts.Action.equals(result.getContext()) ? 1 : 2)
+                .thenComparingInt(result -> -1 * result.getMatches().stream().mapToInt(m -> m.getValues().size()).sum()))
+                .collect(Collectors.toList());
+        return resultList.subList(0, Math.min(resultList.size(), MAX_RESULTS));
     }
 }
