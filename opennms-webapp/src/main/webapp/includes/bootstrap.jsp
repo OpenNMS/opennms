@@ -241,6 +241,9 @@
 
   </c:when>
   <c:otherwise>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="onms-spotlight" />
+    </jsp:include>
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
   </c:otherwise>
 </c:choose>

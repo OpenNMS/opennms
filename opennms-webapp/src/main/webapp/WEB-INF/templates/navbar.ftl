@@ -1,5 +1,5 @@
 <#assign currentDate = .now>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation" ng-app="onms.spotlight">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
         <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS Horizon Logo" width="20px" height="20px" onerror="this.src='${baseHref}images/o-green-trans.png'" />
@@ -31,6 +31,9 @@
                 </li>
             </ul>
         </#if>
+
+        <onms-spotlight class="ml-auto"></onms-spotlight>
+
         <ul class="navbar-nav ml-auto">
 		<#if request.remoteUser?has_content >
 		  <#list model.entryList as entry>

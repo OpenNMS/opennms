@@ -1,28 +1,57 @@
-<form autocomplete="off" novalidate>
+<style type="text/css">
+    .spotlight-no-results {
+        position: absolute;
+        top: 100%;
+        z-index: 10000;
+    }
+
+    .spotlight-loading-indicator {
+        position: absolute;
+        top: 100%;
+        z-index: 10000;
+    }
+
+    .spotlight-result {
+        min-width: 200px;
+        max-width: 500px;
+        position: absolute;
+        top: 100%;
+        z-index: 10000;
+    }
+</style>
+
+<form autocomplete="off" novalidate class="form-inline">
+    <!-- Disable auto complete -->
     <input autocomplete="false" name="hidden" type="text" style="display:none;">
-    <input class="form-control" type="text" placeholder="Search..." ng-model="query" id="query" ng-change="search()" />
-</form>
 
-<div ng-show="loading">
-    <i class="fa fa-refresh"></i>
-</div>
+    <!-- Search Input -->
+    <div class="input-group">
+        <input id="query" ng-change="onQueryChange()" ng-model="query" type="text" class="form-control" placeholder="Search..." aria-label="Search">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+        </div>
+    </div>
 
-<div ng-show="!loading" style="min-width: 200px; max-width: 500px">
-    <div class="list-group" ng-repeat="(context, result) in results">
-        <h6 class="text-muted">{{result.length == 1 ? context : context + 's'}}</h6>
-        <a href="{{item.url}}" class="list-group-item list-group-item-action flex-column align-items-start" ng-repeat="item in result">
+    <!-- Loading Indicator -->
+    <div id="searchLoadingIndicator" class="spotlight-loading-indicator" ng-show="showLoadingIndicator">
+        <div class="spinner-border spinner-border-sm text-primary" role="status"/>
+        <span>Loading...</span>
+    </div>
+
+    <!-- Results -->
+    <div ng-if="results.length > 0" class="bg-dark px-2 py-2 list-group spotlight-result">
+        <h6 ng-repeat-start="item in results" ng-if="item.group === true" class="mb-1 mt-2 text-muted">{{item.label}}</h6>
+        <a ng-repeat-end ng-if="item.group === false" href="{{item.url}}" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{item.label}}</h5>
-                <span class="">{{context}}</span>
+                <h6 class="mb-1 mr-4">{{item.label}}</h6>
+                <span class="">{{item.context}}</span>
             </div>
-
-            <span class="mr-2 badge" ng-class="getClassesForMatch(match)" ng-repeat="match in item.matches">{{match.label}} = {{match.value}}</span>
+            <span class="mr-2 badge" ng-class="getClassForMatch(match)" ng-repeat="match in item.matches">{{match.label}} = {{match.value}}</span>
         </a>
     </div>
-    <div class="mt-4">
-        <span ng-if="searchExecutedOnce && emptyResult === true" class="alert alert-warning">
-            No Results for '{{query}}'
-        </span>
-    </div>
-</div>
 
+    <!-- No Result -->
+    <div ng-if="performSearchExecuted === true && results.length === 0" class="alert alert-warning spotlight-no-results">
+        <i class="fa fa-times"></i> No Results found for '{{query}}'
+    </div>
+</form>
