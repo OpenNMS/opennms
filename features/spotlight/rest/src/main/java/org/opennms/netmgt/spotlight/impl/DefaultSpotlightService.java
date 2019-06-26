@@ -45,12 +45,17 @@ import org.opennms.netmgt.spotlight.api.SpotlightService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 public class DefaultSpotlightService implements SpotlightService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultSpotlightService.class);
+
     private final BundleContext bundleContext;
+
 
     public DefaultSpotlightService(final BundleContext bundleContext) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
@@ -84,13 +89,15 @@ public class DefaultSpotlightService implements SpotlightService {
                                 resultMap.put(eachResult.getUrl(), eachResult);
                             }
                         }
+                    } catch (Exception ex) {
+                        LOG.error("Could not execute query for provider", ex);
                     } finally {
                         bundleContext.ungetService(eachReference);
                     }
                 }
             }
         } catch (InvalidSyntaxException e) {
-            e.printStackTrace(); // TODO MVR
+            LOG.error("Could not fetch search providers", e);
         }
         final List<SearchResult> resultList = resultMap.values().stream()
                 .sorted(Comparator.comparingInt((ToIntFunction<SearchResult>) result -> Contexts.Node.equals(result.getContext()) ? 0 : Contexts.Action.equals(result.getContext()) ? 1 : 2)

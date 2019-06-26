@@ -34,6 +34,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.spotlight</groupId>
       <artifactId>org.opennms.features.spotlight.api</artifactId>
       <version>${project.version}</version>
