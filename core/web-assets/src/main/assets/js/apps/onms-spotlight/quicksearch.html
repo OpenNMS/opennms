@@ -43,8 +43,8 @@
         <h6 ng-repeat-start="item in results" ng-if="item.group === true" class="mb-1 mt-2 text-muted">{{item.count == 0 ? item.label : item.label + 's'}}</h6>
         <a ng-repeat-end ng-if="item.group === false" href="{{item.url}}" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1 mr-4">{{item.label}}</h6>
-                <span class="">{{item.context}}</span>
+                <h6 class="mb-1 mr-5">{{item.label}}</h6>
+                <small class="">{{item.context}}</small>
             </div>
             <span class="mr-2 badge" ng-class="getClassForMatch(match)" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</span>
         </a>

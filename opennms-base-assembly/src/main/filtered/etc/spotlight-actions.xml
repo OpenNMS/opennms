@@ -48,6 +48,14 @@
         <url>help/index.jsp</url>
     </action>
     <action>
+        <label>Show Nodes with Flows</label>
+        <url>element/nodeList.htm?flows=true</url>
+    </action>
+    <action>
+        <label>Show Nodes without Flows</label>
+        <url>element/nodeList.htm?flows=false</url>
+    </action>
+    <action>
         <label>Show Nodes</label>
         <url>element/nodeList.htm</url>
     </action>
