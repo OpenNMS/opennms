@@ -40,7 +40,7 @@
     <service ref="nodeIpLikeSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
     <!-- Action Providers -->
-    <bean id="actionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.ActionSearchProvider">
+    <bean id="actionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.StaticActionSearchProvider">
     </bean>
     <service ref="actionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 

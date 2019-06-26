@@ -28,10 +28,13 @@
 
 package org.opennms.netmgt.spotlight.providers.action;
 
-import java.util.ArrayList;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXB;
 
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
@@ -39,48 +42,25 @@ import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 
-import com.google.common.collect.Lists;
-
-public class ActionSearchProvider implements SearchProvider {
-
-    private static class Action {
-        private final String label;
-        private final String url;
-        private final List<String> privilegedRoles = Lists.newArrayList();
-
-        private Action(String label, String url, String... roles) {
-            this.label = Objects.requireNonNull(label);
-            this.url = Objects.requireNonNull(url);
-            if (roles != null) {
-                privilegedRoles.addAll(Lists.newArrayList(roles));
-            }
-        }
-    }
-
-    private final List<Action> actions = new ArrayList<>();
-
-    public ActionSearchProvider() {
-        actions.add(new Action("Configure OpenNMS", "admin/index.jsp", "ROLE_ADMIN"));
-        actions.add(new Action("Configure Geocoder Service", "admin/geoservice/index.jsp#!/geocoding/config", "ROLE_ADMIN"));
-        actions.add(new Action("Show System Information", "admin/sysconfig.jsp", "ROLE_ADMIN"));
-        actions.add(new Action("Manage Flow Classification", "admin/classification/index.jsp", "ROLE_ADMIN"));
-        actions.add(new Action("Database Reports", "report/database/index.htm"));
-    }
+public class StaticActionSearchProvider implements SearchProvider {
 
     @Override
     public List<SearchResult> query(SearchQuery query) {
         Objects.requireNonNull(query.getPrincipal());
 
+        // TODO MVR do not reload all the time
+        final Path etc = Paths.get(System.getProperty("opennms.home"), "etc", "spotlight-actions.xml");
+        final Actions actions = JAXB.unmarshal(etc.toFile(), Actions.class);
         final String input = query.getInput();
-        final List<SearchResult> searchResults = actions.stream()
-                .filter(action -> action.privilegedRoles.isEmpty() || action.privilegedRoles.stream().anyMatch(query::isUserInRole))
-                .filter(action -> QueryUtils.matches(action.label, input))
+        final List<SearchResult> searchResults = actions.getActions().stream()
+                .filter(action -> action.getPrivilegedRoles().isEmpty() || action.getPrivilegedRoles().stream().anyMatch(query::isUserInRole))
+                .filter(action -> QueryUtils.matches(action.getLabel(), input))
                 .map(action -> {
                     final SearchResult searchResult = new SearchResult();
                     searchResult.setContext(Contexts.Action);
-                    searchResult.setLabel(action.label);
-                    searchResult.setUrl(action.url);
-                    searchResult.setIdentifier(action.url);
+                    searchResult.setLabel(action.getLabel());
+                    searchResult.setUrl(action.getUrl());
+                    searchResult.setIdentifier(action.getUrl());
                     return searchResult;
                 })
                 .limit(query.getMaxResults())

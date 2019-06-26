@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<actions>
+    <!-- Admin Actions -->
+    <action>
+        <label>Configure OpenNMS</label>
+        <url>admin/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure Geocoder Service</label>
+        <url>admin/geoservice/index.jsp#!/geocoding/config</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Show System Information</label>
+        <url>admin/sysconfig.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Manage Flow Classification</label>
+        <url>admin/classification/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- Normal User Actions -->
+    <action>
+        <label>Database Reports</label>
+        <url>report/database/index.htm</url>
+    </action>
+    <action>
+        <label>Logout</label>
+        <url>j_spring_security_logout</url>
+    </action>
+    <action>
+        <label>Change Password</label>
+        <url>account/selfService/index.jsp</url>
+    </action>
+    <action>
+        <label>Help</label>
+        <url>help/index.jsp</url>
+    </action>
+    <action>
+        <label>Show Nodes</label>
+        <url>element/nodeList.htm</url>
+    </action>
+    <action>
+        <label>Show Alarms</label>
+        <url>alarm/index.htm</url>
+    </action>
+    <action>
+        <label>Show Events</label>
+        <url>alarm/index.htm</url>
+    </action>
+</actions>
