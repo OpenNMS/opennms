@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -453,7 +454,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     @Override
-    public void handleDeletedAlarm(int alarmId, String reductionKey) {
+    public void handleDeletedAlarm(UUID alarmId, String reductionKey) {
         if (!forwardAlarms) {
             // Ignore
             return;

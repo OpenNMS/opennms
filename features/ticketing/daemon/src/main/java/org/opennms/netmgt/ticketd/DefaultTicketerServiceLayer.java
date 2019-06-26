@@ -108,7 +108,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /** {@inheritDoc} */
     @Override
     public void cancelTicketForAlarm(int alarmId, String ticketId) {
-        OnmsAlarm alarm = m_alarmDao.get(alarmId);
+        OnmsAlarm alarm = m_alarmDao.get(null); // JW: TODO: FIXME
         if (alarm == null) {
             LOG.error("No alarm with id {} was found. Ticket with id '{}' will not be canceled.", alarmId, ticketId);
             return;
@@ -146,7 +146,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /** {@inheritDoc} */
     @Override
     public void closeTicketForAlarm(int alarmId, String ticketId) {
-        OnmsAlarm alarm = m_alarmDao.get(alarmId);
+        OnmsAlarm alarm = m_alarmDao.get(null); // JW: TODO: FIXME
         if (alarm == null) {
             LOG.error("No alarm with id {} was found. Ticket with id '{}' will not be closed.", alarmId, ticketId);
             return;
@@ -181,7 +181,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     @Transactional
     public void createTicketForAlarm(int alarmId, Map<String,String> attributes) {
 
-        OnmsAlarm alarm = m_alarmDao.get(alarmId);
+        OnmsAlarm alarm = m_alarmDao.get(null); // JW: TODO: FIXME
         if (alarm == null) {
             LOG.error("No alarm with id {} was found. No ticket will be created.", alarmId);
             return;
@@ -220,7 +220,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         List<RelatedAlarmSummary> relatedAlarmSummaryList = new ArrayList<>();
         relatedAlarms.forEach(relatedAlarm -> {
             RelatedAlarmSummary relatedAlarmSummary = new RelatedAlarmSummary();
-            relatedAlarmSummary.setAlarmId(relatedAlarm.getId());
+            relatedAlarmSummary.setAlarmId(null); // JW: TODO: FIXME
             relatedAlarmSummary.setIpAddress(relatedAlarm.getIpAddr());
             relatedAlarmSummary.setNodeId(relatedAlarm.getNodeId());
             relatedAlarmSummary.setSummary(relatedAlarm.getDescription());
@@ -245,7 +245,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         ticket.setSummary(alarm.getLogMsg());
         ticket.setDetails(alarm.getDescription());
         ticket.setId(alarm.getTTicketId());
-        ticket.setAlarmId(alarm.getId());
+        ticket.setAlarmId(null); // JW: TODO: FIXME
         ticket.setNodeId(alarm.getNodeId());
         ticket.setIpAddress(alarm.getIpAddr());
         ticket.setAttributes(attributes);
@@ -262,7 +262,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /** {@inheritDoc} */
     @Override
     public void updateTicketForAlarm(int alarmId, String ticketId) {
-        OnmsAlarm alarm = m_alarmDao.get(alarmId);
+        OnmsAlarm alarm = m_alarmDao.get(null); // JW: TODO: FIXME
         if (alarm == null) {
             LOG.error("No alarm with id {} was found. Ticket with id '{}' will not be updated.", alarmId, ticketId);
             return;

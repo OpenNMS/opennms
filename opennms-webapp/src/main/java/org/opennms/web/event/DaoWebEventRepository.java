@@ -181,7 +181,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         Event event = new Event();
         event.acknowledgeTime = onmsEvent.getEventAckTime();
         event.acknowledgeUser = onmsEvent.getEventAckUser();
-        event.alarmId = onmsEvent.getAlarm() != null ? onmsEvent.getAlarm().getId() : 0;
+        event.alarmId = null; // JW: TODO: FIXME: onmsEvent.getAlarm() != null ? onmsEvent.getAlarm().getId() : 0;
         event.autoAction = onmsEvent.getEventAutoAction();
         event.createTime = onmsEvent.getEventCreateTime();
         event.description = onmsEvent.getEventDescr();
@@ -189,7 +189,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         event.eventDisplay = Boolean.valueOf(onmsEvent.getEventDisplay().equals("Y"));
         event.forward = onmsEvent.getEventForward();
         event.host = onmsEvent.getEventHost();
-        event.id = onmsEvent.getId();
+        event.id = -1; // JW: TODO: FIXME: onmsEvent.getId();
         event.ipAddr = onmsEvent.getIpAddr() == null ? null : InetAddressUtils.toIpAddrString(onmsEvent.getIpAddr());
         event.logGroup = onmsEvent.getEventLogGroup();
         event.logMessage = onmsEvent.getEventLogMsg();
@@ -309,7 +309,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     @Transactional
     @Override
     public Event getEvent(int eventId) {
-        return mapOnmsEventToEvent(m_eventDao.get(eventId));
+        return mapOnmsEventToEvent(m_eventDao.get(null)); // JW:TODO:FIXME
     }
     
     /** {@inheritDoc} */

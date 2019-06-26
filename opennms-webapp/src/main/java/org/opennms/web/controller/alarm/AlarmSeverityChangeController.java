@@ -29,6 +29,7 @@
 package org.opennms.web.controller.alarm;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -117,9 +118,9 @@ public class AlarmSeverityChangeController extends AbstractController implements
         }
 
         // convert the alarm id strings to ints
-        int[] alarmIds = new int[alarmIdStrings.length];
+        UUID[] alarmIds = new UUID[alarmIdStrings.length];
         for (int i = 0; i < alarmIds.length; i++) {
-            alarmIds[i] = WebSecurityUtils.safeParseInt(alarmIdStrings[i]);
+            alarmIds[i] = UUID.fromString(alarmIdStrings[i]);
         }
 
         if (action.equals(ESCALATE_ACTION)) {

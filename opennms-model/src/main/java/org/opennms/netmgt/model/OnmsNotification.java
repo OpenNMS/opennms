@@ -34,6 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -408,7 +409,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
 
     @Transient
     @XmlElement(name="eventId", required=true)
-    public Integer getEventId() {
+    public UUID getEventId() {
         return m_event == null ? null : m_event.getId();
     }
 
@@ -426,7 +427,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     public String getEventUei() {
         return m_event == null ? null : m_event.getEventUei();
     }
-    
+
     /**
      * <p>setEventUei</p>
      *

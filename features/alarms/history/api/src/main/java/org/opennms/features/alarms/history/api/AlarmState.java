@@ -29,6 +29,7 @@
 package org.opennms.features.alarms.history.api;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Used to represent the state of an alarm at some particular point in time.
@@ -38,7 +39,7 @@ import java.util.List;
  */
 public interface AlarmState {
 
-    Integer getId();
+    UUID getId();
 
     String getReductionKey();
 

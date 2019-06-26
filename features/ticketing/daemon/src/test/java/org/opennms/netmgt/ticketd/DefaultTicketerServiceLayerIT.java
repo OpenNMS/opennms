@@ -120,22 +120,22 @@ public class DefaultTicketerServiceLayerIT implements InitializingBean {
         assertNull(alarm.getTTicketState());
         assertNull(alarm.getTTicketId());
 
-        final int alarmId = alarm.getId();
+        final int alarmId = -1;// alarm.getId(); // JW: TODO: FIXME
         m_ticketerServiceLayer.setTicketerPlugin(new TestTicketerPlugin());
         m_ticketerServiceLayer.createTicketForAlarm(alarmId, new HashMap<String, String>());
 
         m_alarmDao.flush();
 
-        alarm = m_alarmDao.get(alarmId);
+        alarm = m_alarmDao.get(null); // JW: TODO: FIXME
         assertEquals(TroubleTicketState.OPEN, alarm.getTTicketState());
         assertNotNull(alarm.getTTicketId());
         assertEquals("testId", alarm.getTTicketId());
 
-        m_ticketerServiceLayer.updateTicketForAlarm(alarm.getId(), alarm.getTTicketId());
+        m_ticketerServiceLayer.updateTicketForAlarm(-1, alarm.getTTicketId()); // JW: TODO: FIXME
 
         m_alarmDao.flush();
 
-        alarm = m_alarmDao.get(alarmId);
+        alarm = m_alarmDao.get(null); // JW: TODO: FIXME
         assertEquals(TroubleTicketState.OPEN, alarm.getTTicketState());
 
         alarm.setSeverity(OnmsSeverity.CLEARED);
@@ -146,7 +146,7 @@ public class DefaultTicketerServiceLayerIT implements InitializingBean {
 
         m_alarmDao.flush();
 
-        alarm = m_alarmDao.get(alarmId);
+        alarm = m_alarmDao.get(null); // JW: TODO: FIXME
         assertEquals(TroubleTicketState.CLOSED, alarm.getTTicketState());
 
     }
@@ -190,7 +190,7 @@ public class DefaultTicketerServiceLayerIT implements InitializingBean {
         OnmsAlarm retrieved = m_alarmDao.findByReductionKey("situation/reduction/key");
         TestTicketerPlugin ticketerPlugin = new TestTicketerPlugin();
         m_ticketerServiceLayer.setTicketerPlugin(ticketerPlugin);
-        m_ticketerServiceLayer.createTicketForAlarm(retrieved.getId(), new HashMap<String, String>());
+        m_ticketerServiceLayer.createTicketForAlarm(-1, new HashMap<String, String>()); // JW: TODO: FIXME
 
         OnmsAlarm alarm = m_alarmDao.get(retrieved.getId());
         assertEquals(TroubleTicketState.OPEN, alarm.getTTicketState());

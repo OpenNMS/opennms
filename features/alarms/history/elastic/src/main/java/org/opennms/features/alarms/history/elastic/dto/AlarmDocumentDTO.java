@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import org.opennms.features.alarms.history.api.AlarmState;
 
@@ -96,7 +97,7 @@ public class AlarmDocumentDTO implements AlarmState {
     private Long firstAutomationTime;
 
     @SerializedName("id")
-    private Integer id;
+    private UUID id;
 
     @SerializedName("if_index")
     private Integer ifIndex;
@@ -147,7 +148,7 @@ public class AlarmDocumentDTO implements AlarmState {
     private int relatedAlarmCount;
 
     @SerializedName("related_alarm_ids")
-    private final Set<Integer> relatedAlarmIds = new HashSet<>();
+    private final Set<UUID> relatedAlarmIds = new HashSet<>();
 
     @SerializedName("related_alarm_reduction_keys")
     private final List<String> relatedAlarmReductionKeys = new ArrayList<>();
@@ -350,11 +351,11 @@ public class AlarmDocumentDTO implements AlarmState {
     }
 
     @Override
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -483,7 +484,7 @@ public class AlarmDocumentDTO implements AlarmState {
         return relatedAlarmCount;
     }
 
-    public Set<Integer> getRelatedAlarmIds() {
+    public Set<UUID> getRelatedAlarmIds() {
         return relatedAlarmIds;
     }
 

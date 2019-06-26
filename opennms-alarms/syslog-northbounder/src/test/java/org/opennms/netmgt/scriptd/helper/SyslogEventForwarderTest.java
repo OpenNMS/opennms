@@ -36,6 +36,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.graylog2.syslog4j.server.SyslogServer;
 import org.graylog2.syslog4j.server.SyslogServerConfigIF;
@@ -188,7 +189,7 @@ public class SyslogEventForwarderTest {
         Event event = new Event();
         event.setUei("uei.opennms.org/junit/testEvent");
         event.setNodeid(1l);
-        event.setDbid(100);
+        event.setDbid(UUID.randomUUID());
         event.setLogmsg(new Logmsg());
         event.getLogmsg().setContent("something is wrong");
         Parm param = new Parm();

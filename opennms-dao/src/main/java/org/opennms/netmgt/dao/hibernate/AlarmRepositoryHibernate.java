@@ -92,7 +92,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     }
 
     @Transactional
-    public void acknowledgeAlarms(String user, Date timestamp, int[] alarmIds) {
+    public void acknowledgeAlarms(String user, Date timestamp, UUID[] alarmIds) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.add(Restrictions.in("id", findRelatedAlarms(alarmIds)));
         acknowledgeMatchingAlarms(user, timestamp, criteria);
@@ -121,9 +121,9 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Transactional
     @Override
-    public void clearAlarms(int[] alarmIds, String user, Date timestamp) {
+    public void clearAlarms(UUID[] alarmIds, String user, Date timestamp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        criteria.add(Restrictions.in("id", Arrays.asList(alarmIds)));
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
@@ -163,9 +163,9 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Transactional
     @Override
-    public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
+    public void escalateAlarms(UUID[] alarmIds, String user, Date timestamp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        criteria.add(Restrictions.in("id", Arrays.asList(alarmIds)));
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
@@ -183,7 +183,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Transactional
     @Override
-    public OnmsAlarm getAlarm(int alarmId) {
+    public OnmsAlarm getAlarm(UUID alarmId) {
         return m_alarmDao.get(alarmId);
     }
 
@@ -227,7 +227,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Transactional
     @Override
-    public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
+    public void acknowledgeAlarms(UUID[] alarmIds, String user, Date timestamp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.add(Restrictions.in("id", findRelatedAlarms(alarmIds)));
         acknowledgeMatchingAlarms(user, timestamp, criteria);
@@ -238,20 +238,20 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Transactional
     @Override
-    public void unacknowledgeAlarms(int[] alarmIds, String user) {
+    public void unacknowledgeAlarms(UUID[] alarmIds, String user) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        criteria.add(Restrictions.in("id", Arrays.asList(alarmIds)));
         unacknowledgeMatchingAlarms(criteria, user);
     }
 
-    private Set<Integer> findRelatedAlarms(int[] alarmIds) {
-        final Set<Integer> allAlarmIds = new HashSet<>();
-        Set<Integer> toBeChecked = Sets.newHashSet(ArrayUtils.toObject(alarmIds));
+    private Set<UUID> findRelatedAlarms(UUID[] alarmIds) {
+        final Set<UUID> allAlarmIds = new HashSet<>();
+        Set<UUID> toBeChecked = Sets.newHashSet(alarmIds);
 
         do {
             allAlarmIds.addAll(toBeChecked);
 
-            final Set<Integer> relatedAlarms = toBeChecked.stream()
+            final Set<UUID> relatedAlarms = toBeChecked.stream()
                     .map(i -> getAlarm(i))
                     .filter(o -> o.isSituation())
                     .flatMap(o -> o.getRelatedAlarmIds().stream())
@@ -268,7 +268,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Override
     @Transactional
-    public void updateStickyMemo(Integer alarmId, String body, String user) {
+    public void updateStickyMemo(UUID alarmId, String body, String user) {
         final OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
         if (onmsAlarm != null) {
             if (onmsAlarm.getStickyMemo() == null) {
@@ -291,7 +291,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Override
     @Transactional
-    public void updateReductionKeyMemo(Integer alarmId, String body, String user) {
+    public void updateReductionKeyMemo(UUID alarmId, String body, String user) {
         final OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
         if (onmsAlarm != null) {
             OnmsReductionKeyMemo memo = onmsAlarm.getReductionKeyMemo();
@@ -317,7 +317,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Override
     @Transactional
-    public void removeStickyMemo(Integer alarmId) {
+    public void removeStickyMemo(UUID alarmId) {
         final OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
         if (onmsAlarm != null && onmsAlarm.getStickyMemo() != null) {
             final OnmsMemo stickyMemo = onmsAlarm.getStickyMemo();
@@ -332,7 +332,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Override
     @Transactional
-    public void removeReductionKeyMemo(int alarmId) {
+    public void removeReductionKeyMemo(UUID alarmId) {
         OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
         if (onmsAlarm != null && onmsAlarm.getReductionKeyMemo() != null) {
             final OnmsReductionKeyMemo reductionKeyMemo = onmsAlarm.getReductionKeyMemo();
@@ -344,7 +344,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
 
     @Override
     @Transactional
-    public List<OnmsAcknowledgment> getAcknowledgments(int alarmId) {
+    public List<OnmsAcknowledgment> getAcknowledgments(UUID alarmId) {
         CriteriaBuilder cb = new CriteriaBuilder(OnmsAcknowledgment.class);
         cb.eq("refId", alarmId);
         cb.eq("ackType", AckType.ALARM);

@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Date;
+import java.util.UUID;
 
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -95,4 +96,7 @@ public interface AcknowledgmentDao extends OnmsDao<OnmsAcknowledgment, Integer> 
      * @return an optional containing the latest ack for the given refId or Optional.empty() if none found
      */
     Optional<OnmsAcknowledgment> findLatestAckForRefId(Integer refId);
+
+    Optional<OnmsAcknowledgment> findLatestAckForRefId(UUID refId);
+
 }

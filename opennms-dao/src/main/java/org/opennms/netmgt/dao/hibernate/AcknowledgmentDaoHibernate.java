@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.hibernate.ObjectNotFoundException;
@@ -295,5 +296,10 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
         List<OnmsAcknowledgment> acks = findMatching(builder.toCriteria());
 
         return acks.size() == 1 ? Optional.of(acks.get(0)) : Optional.empty();
+    }
+
+    @Override
+    public Optional<OnmsAcknowledgment> findLatestAckForRefId(UUID refId) {
+        return Optional.empty();
     }
 }

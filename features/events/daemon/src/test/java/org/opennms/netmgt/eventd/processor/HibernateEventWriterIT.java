@@ -201,7 +201,7 @@ public class HibernateEventWriterIT {
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
         m_eventWriter.process(bldr.getLog());
-        assertTrue(event.getDbid() > 0);
+        assertTrue(event.getDbid() != null);
 
         final List<Map<String, Object>> parameters = jdbcTemplate.queryForList("SELECT name, value FROM event_parameters WHERE eventID = " + event.getDbid() + " ORDER BY name");
         assertEquals(3, parameters.size());
@@ -231,7 +231,7 @@ public class HibernateEventWriterIT {
         assertEquals(new Integer(0), event.getDbid());
 
         m_eventWriter.process(bldr.getLog());
-        assertTrue(event.getDbid() > 0);
+        assertTrue(event.getDbid() != null);
 
         final String descr = jdbcTemplate.queryForObject("SELECT eventDescr FROM events LIMIT 1", String.class);
         assertEquals("abc%0def", descr);
@@ -252,7 +252,7 @@ public class HibernateEventWriterIT {
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
         m_eventWriter.process(bldr.getLog());
-        assertTrue(event.getDbid() > 0);
+        assertTrue(event.getDbid() != null);
 
         String minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
         assertEquals(DistPollerDao.DEFAULT_DIST_POLLER_ID, minionId);
@@ -262,7 +262,7 @@ public class HibernateEventWriterIT {
 
         event = bldr.getEvent();
         m_eventWriter.process(bldr.getLog());
-        assertTrue(event.getDbid() > 0);
+        assertTrue(event.getDbid() != null);
 
         minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
         assertEquals(systemId, minionId);
@@ -282,7 +282,7 @@ public class HibernateEventWriterIT {
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
         m_eventWriter.process(bldr.getLog());
-        assertTrue(event.getDbid() > 0);
+        assertTrue(event.getDbid() != null);
 
         final String logMessage = jdbcTemplate.queryForObject("SELECT eventLogmsg FROM events LIMIT 1", String.class);
         assertEquals("abc%0def", logMessage);
@@ -377,7 +377,7 @@ public class HibernateEventWriterIT {
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
         m_eventWriter.process(bldr.getLog());
-        assertTrue(event.getDbid() > 0);
+        assertTrue(event.getDbid() != null);
         
         assertEquals("event count", new Integer(1), jdbcTemplate.queryForObject("select count(*) from events", Integer.class));
         assertEquals("event service ID", new Integer(serviceId), jdbcTemplate.queryForObject("select serviceID from events", Integer.class));

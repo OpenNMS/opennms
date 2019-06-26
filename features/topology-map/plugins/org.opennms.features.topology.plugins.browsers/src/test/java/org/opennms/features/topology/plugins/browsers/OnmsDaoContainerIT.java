@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.browsers;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -90,9 +91,9 @@ public class OnmsDaoContainerIT {
 
     @Test
     public void verifyCacheIsReloadedCorrectly() {
-        OnmsVaadinContainer<OnmsAlarm, Integer> container = new OnmsVaadinContainer<OnmsAlarm, Integer>(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(m_alarmDao, m_transactionTemplate)) {
+        OnmsVaadinContainer<OnmsAlarm, UUID> container = new OnmsVaadinContainer<OnmsAlarm, UUID>(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(m_alarmDao, m_transactionTemplate)) {
             @Override
-            protected Integer getId(OnmsAlarm bean) {
+            protected UUID getId(OnmsAlarm bean) {
                 return bean == null ? null : bean.getId();
             }
 
@@ -119,7 +120,7 @@ public class OnmsDaoContainerIT {
         return input.stream().sorted().collect(Collectors.toList());
     }
 
-    private List<Integer> getAlarmIds() {
+    private List<UUID> getAlarmIds() {
         return m_alarmDao.findAll().stream().map(eachAlarm -> eachAlarm.getId()).sorted().collect(Collectors.toList());
     }
 

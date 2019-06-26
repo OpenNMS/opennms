@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -184,7 +185,7 @@ public class AcknowledgmentDaoIT implements InitializingBean {
         ack = null;
         
         OnmsAcknowledgment ack2 = getAcknowledgmentDao().get(ackId);
-        OnmsAlarm alarm2 = m_alarmDao.get(ack2.getRefId());
+        OnmsAlarm alarm2 = m_alarmDao.get(null); // JW: FIXME: TODO: ack2.getRefId()
         
         assertEquals(ack2.getAckUser(), alarm2.getAlarmAckUser());
         assertEquals(ack2.getAckTime(), alarm2.getAlarmAckTime());
@@ -195,7 +196,7 @@ public class AcknowledgmentDaoIT implements InitializingBean {
     public void clearingSituationClearsRelatedAlarms() {
 
         OnmsAlarm alarm1 = new OnmsAlarm();
-        alarm1.setId(1);
+        alarm1.setId(UUID.randomUUID());
         alarm1.setAlarmType(1);
         alarm1.setUei("uei://org/opennms/test/EventDaoTest");
         alarm1.setSeverity(OnmsSeverity.WARNING);
@@ -207,7 +208,7 @@ public class AcknowledgmentDaoIT implements InitializingBean {
         m_alarmDao.flush();
 
         OnmsAlarm alarm2 = new OnmsAlarm();
-        alarm2.setId(2);
+        alarm2.setId(UUID.randomUUID());
         alarm2.setAlarmType(1);
         alarm2.setUei("uei://org/opennms/test/EventDaoTest");
         alarm2.setSeverity(OnmsSeverity.WARNING);
@@ -219,7 +220,7 @@ public class AcknowledgmentDaoIT implements InitializingBean {
         m_alarmDao.flush();
 
         OnmsAlarm situation = new OnmsAlarm();
-        situation.setId(3);
+        situation.setId(UUID.randomUUID());
         situation.setAlarmType(1);
         situation.setUei("uei://org/opennms/test/EventDaoTest");
         situation.setSeverity(OnmsSeverity.CRITICAL);

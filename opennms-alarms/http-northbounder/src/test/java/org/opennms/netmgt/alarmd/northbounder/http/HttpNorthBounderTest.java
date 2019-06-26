@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.alarmd.northbounder.http;
 
+import java.util.UUID;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -66,7 +68,7 @@ public class HttpNorthBounderTest {
         nb.setConfig(config);
         
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(1);
+        alarm.setId(UUID.randomUUID());
         alarm.setUei("uei.opennms.org/test/httpNorthBounder");
         
         NorthboundAlarm a = new NorthboundAlarm(alarm);

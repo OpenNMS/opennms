@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -63,8 +64,6 @@ import org.springframework.dao.DataAccessException;
 
 public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster {
     private static final Logger LOG = LoggerFactory.getLogger(MockEventIpcManager.class);
-
-    private static final AtomicInteger m_eventId = new AtomicInteger();
 
     static class ListenerKeeper {
     	final EventListener m_listener;
@@ -186,7 +185,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     private EventWriter m_eventWriter = new EventWriter() {
         @Override
         public void writeEvent(final Event e) {
-            e.setDbid(m_eventId.incrementAndGet());
+            e.setDbid(UUID.randomUUID());
         }
     };
 

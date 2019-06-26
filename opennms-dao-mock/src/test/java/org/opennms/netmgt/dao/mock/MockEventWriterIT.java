@@ -84,7 +84,7 @@ public class MockEventWriterIT {
         m_eventWriter.process(eb.getLog());
 
         System.err.println(m_eventDao.findAll());
-        assertTrue(m_eventDao.findAll().get(0).getId() > 0);
+        assertTrue(m_eventDao.findAll().get(0).getId() != null);
     }
 
 }

@@ -546,7 +546,7 @@ public class AlarmdBlackboxIT {
         assertThat(results.getUnAcknowledgedAlarms(5), hasSize(1));
         // t=6, alarm and situation should be unacked
         assertThat(results.getSituation(6), not(acknowledged()));
-        assertThat(results.getAlarmAt(6, 1), not(acknowledged()));
+        assertThat(results.getAlarmAt(6, null), not(acknowledged())); // JW: TODO: FIXME: Alarm id?
         // but other alarm should still be ACK'd
         assertThat(results.getAcknowledgedAlarms(6), hasSize(2));
         // t=∞

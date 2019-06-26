@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -1279,7 +1280,7 @@ public abstract class NotificationManager {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                event.setDbid(rs.getInt("eventid"));
+                event.setDbid(UUID.fromString(rs.getString("eventid")));
                 event.setUei(rs.getString("eventuei"));
                 event.setNodeid(rs.getLong("nodeid"));
                 event.setTime(rs.getDate("eventtime"));

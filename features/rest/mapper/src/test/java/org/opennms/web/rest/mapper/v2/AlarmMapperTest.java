@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -89,7 +90,7 @@ public class AlarmMapperTest {
         eventConfDao.addEvent(getEvent());
 
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(34);
+        alarm.setId(UUID.randomUUID());
         alarm.setUei("uei.opennms.org/nodes/interfaceDown");
 
         OnmsNode node = getNode(1, "n1");
@@ -124,7 +125,7 @@ public class AlarmMapperTest {
         eventConfDao.addEvent(getEvent());
 
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(16);
+        alarm.setId(UUID.randomUUID());
         alarm.setUei("uei.opennms.org/nodes/interfaceDown");
 
         OnmsNode node = getNode(1, "n1");
@@ -197,7 +198,7 @@ public class AlarmMapperTest {
 
     private OnmsEvent getOnmsEvent(OnmsMonitoringSystem monitoringSystem, OnmsNode node, OnmsServiceType serviceType) throws UnknownHostException {
         OnmsEvent event = new OnmsEvent();
-        event.setId(2035);
+        event.setId(UUID.randomUUID());
         event.setEventUei("uei.opennms.org/nodes/interfaceDown");
         event.setEventTime(new Date(1503412443118L));
         event.setEventHost("noise");
@@ -225,7 +226,7 @@ public class AlarmMapperTest {
 
     private Set<OnmsAlarm> getRelatedAlarms() throws UnknownHostException {
         OnmsAlarm alarm1 = new OnmsAlarm();
-        alarm1.setId(34);
+        alarm1.setId(UUID.randomUUID());
         alarm1.setUei("uei.opennms.org/nodes/interfaceDown");
         alarm1.setSeverity(OnmsSeverity.CRITICAL);
         alarm1.setReductionKey("ALARM1");
@@ -235,7 +236,7 @@ public class AlarmMapperTest {
         alarm1.setLogMsg("logit");
         alarm1.setLastEvent(getOnmsEvent(getOnmsMonitoringSystem(alarm1), node1, getOnmsServiceType(alarm1)));
         OnmsAlarm alarm2 = new OnmsAlarm();
-        alarm2.setId(32);
+        alarm2.setId(UUID.randomUUID());
         alarm2.setUei("uei.opennms.org/nodes/interfaceDown");
         alarm2.setSeverity(OnmsSeverity.MAJOR);
         alarm2.setReductionKey("ALARM2");

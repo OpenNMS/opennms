@@ -29,6 +29,7 @@
 package org.opennms.netmgt.mock;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 
 public class Outage {
@@ -36,8 +37,8 @@ public class Outage {
     String m_ipAddr;
     int m_serviceId;
     String m_serviceName;
-    int m_lostEventId;
-    int m_regainedEventId;
+    UUID m_lostEventId;
+    UUID m_regainedEventId;
     Timestamp m_lostEventTime;
     Timestamp m_regainedEventTime;
 
@@ -51,12 +52,12 @@ public class Outage {
         this(svc.getNodeId(), svc.getIpAddr(), svc.getSvcId());
     }
 
-    public void setLostEvent(int eventId, Timestamp eventTime) {
+    public void setLostEvent(UUID eventId, Timestamp eventTime) {
         m_lostEventId = eventId;
         m_lostEventTime = eventTime;
     }
     
-    public void setRegainedEvent(int eventId, Timestamp eventTime) {
+    public void setRegainedEvent(UUID eventId, Timestamp eventTime) {
         m_regainedEventId = eventId;
         m_regainedEventTime = eventTime;
     }

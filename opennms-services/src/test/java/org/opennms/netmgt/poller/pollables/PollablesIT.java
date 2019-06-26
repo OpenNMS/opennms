@@ -45,6 +45,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -308,7 +309,7 @@ public class PollablesIT {
                 String ipAddr = rs.getString("ipAddr");
                 String serviceName = rs.getString("serviceName");
                 Date date = rs.getTimestamp("ifLostService");
-                Number svcLostEventId = (Number)rs.getObject("svcLostEventId");
+                UUID svcLostEventId = (UUID)rs.getObject("svcLostEventId");
                 String svcLostUei = rs.getString("svcLostEventUei");
 
                 addServiceToNetwork(pNetwork, nodeId, nodeLabel, null, ipAddr,
@@ -1011,7 +1012,7 @@ public class PollablesIT {
 
         pDot1.updateStatus(PollStatus.down());
         pDot1Icmp.updateStatus(PollStatus.down());
-        pDot1.setCause(new DbPollEvent(1, EventConstants.INTERFACE_DOWN_EVENT_UEI, new Date()));
+        pDot1.setCause(new DbPollEvent(UUID.randomUUID(), EventConstants.INTERFACE_DOWN_EVENT_UEI, new Date()));
 
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
@@ -2748,7 +2749,7 @@ public class PollablesIT {
 
     private PollableService addServiceToNetwork(final PollableNetwork pNetwork,
             int nodeId, String nodeLabel, String nodeLocation, String ipAddr, String serviceName,
-            Number svcLostEventId, String svcLostUei,
+            UUID svcLostEventId, String svcLostUei,
             Date svcLostTime, final ScheduleTimer scheduler,
             final PollerConfig pollerConfig,
             final PollOutagesConfig pollOutageConfig) {
@@ -2784,7 +2785,7 @@ public class PollablesIT {
         else {
             svc.updateStatus(PollStatus.down());
 
-            PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), svcLostUei, svcLostTime);
+            PollEvent cause = new DbPollEvent(svcLostEventId, svcLostUei, svcLostTime);
             svc.setCause(cause);
         }
         return svc;

@@ -38,6 +38,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.index.reindex.ReindexPlugin;
@@ -265,23 +266,23 @@ public class ElasticAlarmHistoryRepositoryIT {
         List<AlarmState> alarms = repo.getLastStateOfAllAlarms(0, 10);
 
         // a1 should be deleted
-        AlarmState a1State = alarms.stream().filter(a -> a.getId() == 1).findFirst().orElse(null);
+        AlarmState a1State = alarms.stream().filter(a -> a.getId() == null).findFirst().orElse(null); // JW: TODO: FIXME
         assertThat(a1State.getDeletedTime(), notNullValue());
 
         // a2 should not be deleted
-        AlarmState a2State = alarms.stream().filter(a -> a.getId() == 2).findFirst().orElse(null);
+        AlarmState a2State = alarms.stream().filter(a -> a.getId() == null).findFirst().orElse(null); // JW: TODO: FIXME
         assertThat(a2State.getDeletedTime(), nullValue());
     }
 
     private static OnmsAlarm createAlarm(int id, long firstEventTime) {
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(id);
+        alarm.setId(UUID.randomUUID());
         alarm.setReductionKey("rkey-" + id);
         alarm.setFirstEventTime(new Date(firstEventTime));
         alarm.setCounter(1);
 
         OnmsEvent lastEvent = new OnmsEvent();
-        lastEvent.setId(id);
+        lastEvent.setId(UUID.randomUUID());
         lastEvent.setEventTime(new Date(firstEventTime));
         alarm.setLastEvent(lastEvent);
         return alarm;

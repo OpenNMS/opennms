@@ -75,7 +75,7 @@ public class AlarmBean implements Alarm {
 
     @Override
     public Integer getId() {
-        return alarm.getId();
+        return 1; // return alarm.getId();
     }
 
     @Override

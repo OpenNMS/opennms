@@ -30,13 +30,14 @@ package org.opennms.features.alarms.history.elastic.tasks;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 public class BulkDeleteTask implements Task {
 
-    private final Set<Integer> alarmIdsToKeep;
+    private final Set<UUID> alarmIdsToKeep;
     private final long deletedAt;
 
-    public BulkDeleteTask(Set<Integer> alarmIdsToKeep, long deletedAt) {
+    public BulkDeleteTask(Set<UUID> alarmIdsToKeep, long deletedAt) {
         this.alarmIdsToKeep = Objects.requireNonNull(alarmIdsToKeep);
         this.deletedAt = deletedAt;
     }

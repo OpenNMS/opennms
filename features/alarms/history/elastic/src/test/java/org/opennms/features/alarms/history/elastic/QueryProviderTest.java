@@ -34,6 +34,7 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Test;
 
@@ -49,7 +50,7 @@ public class QueryProviderTest {
     @Test
     public void canGenerateQueries() {
         QueryProvider queryProvider = new QueryProvider();
-        validate(queryProvider.getAlarmByDbIdAt(1, new TimeRange(1, 1)));
+        validate(queryProvider.getAlarmByDbIdAt(UUID.randomUUID(), new TimeRange(1, 1)));
         validate(queryProvider.getAlarmByReductionKeyAt("string-with-some-special-characters\"\r\n[]{}\t+'", new TimeRange(1, 1)));
         validate(queryProvider.getActiveAlarmsAt(new TimeRange(1, 1), null));
         validate(queryProvider.getAllAlarms(new TimeRange(1, 1), 1));

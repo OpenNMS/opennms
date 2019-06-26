@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -240,7 +241,7 @@ public class SnmpTrapNorthbounderConfigDaoTest {
 
         // Build a test alarm
         OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setId(10);
+        onmsAlarm.setId(UUID.randomUUID());
         onmsAlarm.setNode(node);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
         onmsAlarm.setLogMsg("everything is good");

@@ -28,6 +28,8 @@
 
 package org.opennms.features.kafka.producer.shell;
 
+import java.util.UUID;
+
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -55,7 +57,7 @@ public class EvaluateFilter implements Action {
     private SessionUtils sessionUtils;
 
     @Option(name = "-a", aliases = "--alarm-id", description = "Lookup an alarm by id and apply the given expression against it.")
-    private Integer alarmId;
+    private UUID alarmId;
 
     @Option(name = "-e", aliases = "--event-uei", description = "Create a new event with the given UEI and apply the given expression against it.")
     private String eventUei;

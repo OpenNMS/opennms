@@ -30,13 +30,14 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
 
-public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
+public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, UUID> {
 
     OnmsAlarm findByReductionKey(String reductionKey);
 

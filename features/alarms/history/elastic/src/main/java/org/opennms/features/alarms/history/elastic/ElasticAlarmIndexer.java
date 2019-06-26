@@ -41,6 +41,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -135,7 +136,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
 
     private final List<AlarmDocumentDTO> alarmDocumentsToIndex = new LinkedList<>();
 
-    private Map<Integer, AlarmDocumentDTO> alarmDocumentsById = new LinkedHashMap<>();
+    private Map<UUID, AlarmDocumentDTO> alarmDocumentsById = new LinkedHashMap<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
             .setNameFormat("ElasticAlarmIndexer")
             .build());
@@ -219,7 +220,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                     }
 
                     @Override
-                    public void deleteAlarmsWithoutIdsIn(Set<Integer> alarmIdsToKeep, long time) {
+                    public void deleteAlarmsWithoutIdsIn(Set<UUID> alarmIdsToKeep, long time) {
                         // If we have successfully performed a bulk delete with no changes, then we know
                         // that all of the alarms before that time that should have been marked as deleted
                         // were in fact deleted. Since any additional inserts will happen *after* this time
@@ -282,7 +283,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                                         .map(a -> documentFactory.createAlarmDocumentForDelete(a.getId(), a.getReductionKey()))
                                         .collect(Collectors.toList());
                                 if (LOG.isDebugEnabled()) {
-                                    LOG.debug("Deleting alarms with IDs: {}", deletes.stream().map(a -> Integer.toString(a.getId()))
+                                    LOG.debug("Deleting alarms with IDs: {}", deletes.stream().map(a -> a.getId().toString())
                                             .collect(Collectors.joining(",")));
                                 }
 
@@ -368,7 +369,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         }
 
         // Bulk delete alarms that are not yet marked as deleted in ES, and are not present in the given list
-        final Set<Integer> alarmIdsToKeep = new HashSet<>(stateTracker.getUpdatedAlarmIds());
+        final Set<UUID> alarmIdsToKeep = new HashSet<>(stateTracker.getUpdatedAlarmIds());
         alarms.stream().map(OnmsAlarm::getId).forEach(alarmIdsToKeep::add);
         taskQueue.add(new BulkDeleteTask(alarmIdsToKeep, getCurrentTimeMillis()));
         alarmDocumentsById.keySet().removeIf(alarmId -> !alarmIdsToKeep.contains(alarmId));
@@ -393,7 +394,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     }
 
     @Override
-    public synchronized void handleDeletedAlarm(int alarmId, String reductionKey) {
+    public synchronized void handleDeletedAlarm(UUID alarmId, String reductionKey) {
         LOG.debug("Got delete callback for alarm with id: {} and reduction key: {}",
                 alarmId, reductionKey);
         final AlarmDocumentDTO alarmDocument = documentFactory.createAlarmDocumentForDelete(alarmId, reductionKey);

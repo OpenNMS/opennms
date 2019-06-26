@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -69,13 +70,12 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 	// See NMS-9831 for more information
 	@Test
 	public void verifyOidMapping() throws InterruptedException, IOException {
-		int eventId = 13;
-		final Event event = createDummyEventWithOids(eventId);
+		final Event event = createDummyEventWithOids();
 		getEventToIndex().forwardEvents(Arrays.asList(event));
 
 		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
 
-		final String query = buildSearchQuery(eventId);
+		final String query = buildSearchQuery(event.getDbid());
 		final Search search = new Search.Builder(query)
 				.addIndex("opennms-events-raw-*")
 				.build();
@@ -89,14 +89,13 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 	// See NMS-9831 for more information
 	@Test
 	public void verifyOidGrouping() throws InterruptedException, IOException {
-		int eventId = 15;
-		final Event event = createDummyEventWithOids(eventId);
+		final Event event = createDummyEventWithOids();
 		getEventToIndex().setGroupOidParameters(true);
 		getEventToIndex().forwardEvents(Arrays.asList(event));
 
 		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
 
-		final String query = buildSearchQuery(eventId);
+		final String query = buildSearchQuery(event.getDbid());
 		final Search search = new Search.Builder(query)
 				.addIndex("opennms-events-raw-*")
 				.build();
@@ -118,8 +117,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 	// See HZN-1272
 	@Test
 	public void verifyJsonEventParameters() throws InterruptedException, IOException {
-		final int eventId = 17;
-		final Event event = createDummyEvent(eventId);
+		final Event event = createDummyEvent();
 
 		final JsonObject addressObject = new JsonObject();
 		addressObject.addProperty("street", "950 Windy Rd, Ste 300");
@@ -144,7 +142,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
 
 		// ... and verify that the json was actually persisted as json and not as string
-		final String query = buildSearchQuery(eventId);
+		final String query = buildSearchQuery(event.getDbid());
 		final Search search = new Search.Builder(query)
 				.addIndex("opennms-events-raw-*")
 				.build();
@@ -155,19 +153,19 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 		assertEquals(jsonObject, jsonArray.get(0).getAsJsonObject().get("_source").getAsJsonObject().get("p_name").getAsJsonObject());
 	}
 
-	private static Event createDummyEvent(int eventId) {
+	private static Event createDummyEvent() {
 		final Event event = new Event();
 		event.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
 		event.setCreationTime(new Date());
 		event.setDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
 		event.setDescr("Dummy Event");
 		event.setSeverity(OnmsSeverity.WARNING.getLabel());
-		event.setDbid(eventId);
+		event.setDbid(UUID.randomUUID());
 		return event;
 	}
 
-	private static Event createDummyEventWithOids(int eventId) {
-		final Event event = createDummyEvent(eventId);
+	private static Event createDummyEventWithOids() {
+		final Event event = createDummyEvent();
 		IntStream.range(1, 100).forEach(i -> {
 			Parm parm = new Parm();
 			parm.setParmName("." + i + ".0.0.0.0.0.0.0.0.0"); // 10 * 100 -> 1000 fields at least
@@ -177,7 +175,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 		return event;
 	}
 
-	private static String buildSearchQuery(int eventId) {
+	private static String buildSearchQuery(UUID eventId) {
 		return "{\n"
 				+"\n       \"query\": {"
 				+ "\n         \"match\": {"

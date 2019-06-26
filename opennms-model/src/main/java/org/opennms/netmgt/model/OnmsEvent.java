@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -85,7 +86,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private static final long serialVersionUID = -7412025003474162992L;
 
 	/** identifier field */
-	private Integer m_eventId;
+	private UUID m_eventId;
 
 	/** persistent field */
 	private String m_eventUei;
@@ -210,10 +211,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
      */
     @Id
     @XmlAttribute(name="id")
-    @Column(name="eventId", nullable=false)
-    @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
-    @GeneratedValue(generator="eventSequence")
-	public Integer getId() {
+	@Type(type="pg-uuid")
+	@Column(name="eventId", nullable=false)
+    //@SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
+    //@GeneratedValue(generator="eventSequence")
+	public UUID getId() {
 		return m_eventId;
 	}
 
@@ -222,7 +224,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @param eventid a {@link java.lang.Integer} object.
 	 */
-	public void setId(Integer eventid) {
+	public void setId(UUID eventid) {
 		m_eventId = eventid;
 	}
 

@@ -28,6 +28,8 @@
 
 package org.opennms.features.alarms.history.api;
 
+import java.util.UUID;
+
 /**
  * Used to represent the state of a related alarm at some particular point in time.
  *
@@ -36,6 +38,6 @@ package org.opennms.features.alarms.history.api;
  */
 public interface RelatedAlarmState {
 
-    Integer getId();
+    UUID getId();
 
 }

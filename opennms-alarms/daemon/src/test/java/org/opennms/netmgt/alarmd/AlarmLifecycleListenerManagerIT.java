@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import org.junit.After;
@@ -307,7 +308,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
     }
 
     @Override
-    public synchronized void handleDeletedAlarm(int alarmId, String reductionKey) {
+    public synchronized void handleDeletedAlarm(UUID alarmId, String reductionKey) {
         m_deletedAlarms.add(reductionKey);
         m_alarmsByReductionKey.remove(reductionKey);
     }

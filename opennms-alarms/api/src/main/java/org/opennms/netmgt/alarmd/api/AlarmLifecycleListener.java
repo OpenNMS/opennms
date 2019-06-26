@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.api;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 
@@ -107,6 +108,6 @@ public interface AlarmLifecycleListener {
      * @param alarmId id of the alarm that was deleted
      * @param reductionKey reduction key of the alarm that was deleted
      */
-    void handleDeletedAlarm(int alarmId, String reductionKey);
+    void handleDeletedAlarm(UUID alarmId, String reductionKey);
 
 }

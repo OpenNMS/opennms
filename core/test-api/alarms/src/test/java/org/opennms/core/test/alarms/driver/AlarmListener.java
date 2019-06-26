@@ -31,6 +31,7 @@ package org.opennms.core.test.alarms.driver;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -39,7 +40,7 @@ public class AlarmListener implements AlarmLifecycleListener {
 
     private static AlarmListener instance = new AlarmListener();
 
-    private final Set<Integer> allObservedAlarmIds = new LinkedHashSet<>();
+    private final Set<UUID> allObservedAlarmIds = new LinkedHashSet<>();
 
     private AlarmListener() {}
 
@@ -68,7 +69,7 @@ public class AlarmListener implements AlarmLifecycleListener {
     }
 
     @Override
-    public synchronized void handleDeletedAlarm(int alarmId, String reductionKey) {
+    public synchronized void handleDeletedAlarm(UUID alarmId, String reductionKey) {
         allObservedAlarmIds.add(alarmId);
     }
 

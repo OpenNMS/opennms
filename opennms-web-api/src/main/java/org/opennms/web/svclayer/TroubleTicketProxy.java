@@ -29,6 +29,7 @@
 package org.opennms.web.svclayer;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,19 +48,19 @@ public interface TroubleTicketProxy {
      *
      * @param alarmId a {@link java.lang.Integer} object.
      */
-    public void createTicket(Integer alarmId, Map<String,String> attributes);
+    public void createTicket(UUID alarmId, Map<String,String> attributes);
     
     /**
      * <p>updateTicket</p>
      *
      * @param alarmId a {@link java.lang.Integer} object.
      */
-    public void updateTicket(Integer alarmId);
+    public void updateTicket(UUID alarmId);
     
     /**
      * <p>closeTicket</p>
      *
      * @param alarmId a {@link java.lang.Integer} object.
      */
-    public void closeTicket(Integer alarmId);
+    public void closeTicket(UUID alarmId);
 }

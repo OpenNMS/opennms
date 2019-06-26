@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -265,9 +266,9 @@ public class BeanWrapperVisitorTest {
         cb.isNull("ipaddr");
         
         final List<OnmsEvent> events = new ArrayList<>();
-        events.add(createEvent(1, "uei.opennms.org/test"));
-        events.add(createEvent(2, EventConstants.NODE_DOWN_EVENT_UEI));
-        events.add(createEvent(3, EventConstants.NODE_DOWN_EVENT_UEI));
+        events.add(createEvent(UUID.randomUUID(), "uei.opennms.org/test"));
+        events.add(createEvent(UUID.randomUUID(), EventConstants.NODE_DOWN_EVENT_UEI));
+        events.add(createEvent(UUID.randomUUID(), EventConstants.NODE_DOWN_EVENT_UEI));
         final BeanWrapperCriteriaVisitor visitor = new BeanWrapperCriteriaVisitor(events);
         cb.toCriteria().visit(visitor);
         assertEquals(2, visitor.getMatches().size());
@@ -369,7 +370,7 @@ public class BeanWrapperVisitorTest {
         THIRD
     }
 
-    private OnmsEvent createEvent(final int id, final String uei) {
+    private OnmsEvent createEvent(final UUID id, final String uei) {
         final OnmsEvent event = new OnmsEvent();
         event.setId(id);
         event.setEventUei(uei);

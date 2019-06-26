@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -50,9 +51,9 @@ public class ScenarioResults {
         return alarmsByTime.getOrDefault(time, Collections.emptyList());
     }
 
-    public OnmsAlarm getAlarmAt(long time, int id) {
+    public OnmsAlarm getAlarmAt(long time, UUID id) {
         return getAlarms(time).stream()
-                .filter(a -> a.getId() == id)
+                .filter(a -> Objects.equals(a.getId(), id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Alarm " + id + " not found at time: " + time));
     }
@@ -111,7 +112,7 @@ public class ScenarioResults {
                 .orElseThrow(() -> new RuntimeException("No " + typeDescr + " alarms at time: " + time));
     }
 
-    public List<State> getStateChangesForAlarmWithId(Integer id) {
+    public List<State> getStateChangesForAlarmWithId(UUID id) {
         // Build a sorted list of all known alarm states
         final List<State> states = alarmsByTime.entrySet().stream()
                 .map(e -> {

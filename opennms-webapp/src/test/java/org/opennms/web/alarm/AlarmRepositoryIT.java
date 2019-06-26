@@ -106,10 +106,10 @@ public class AlarmRepositoryIT implements InitializingBean {
     @Transactional
     @JUnitTemporaryDatabase
     public void testGetAlarmById(){
-        OnmsAlarm alarm = m_alarmRepo.getAlarm(1);
+        OnmsAlarm alarm = m_alarmRepo.getAlarm(null);
         assertNotNull(alarm);
         
-        assertEquals(1, alarm.getId().intValue());
+        assertEquals(null, alarm.getId());
         assertEquals("uei.opennms.org/test", alarm.getUei());
         assertEquals("00000000-0000-0000-0000-000000000000", alarm.getDistPoller().getId());
         assertEquals(1, alarm.getCounter().intValue());
@@ -260,7 +260,7 @@ public class AlarmRepositoryIT implements InitializingBean {
     @JUnitTemporaryDatabase
     public void testEscalateAlarms() {
         int[] alarmIds = {1};
-        m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
+        m_alarmRepo.escalateAlarms(null, "TestUser", new Date());
         
         OnmsAlarm[] alarms = m_alarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdFilter(1))));
         
@@ -272,15 +272,15 @@ public class AlarmRepositoryIT implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase
     public void testClearAlarms(){
-        OnmsAlarm alarm = m_alarmRepo.getAlarm(1);
+        OnmsAlarm alarm = m_alarmRepo.getAlarm(null);
         
         assertNotNull(alarm);
         assertEquals(OnmsSeverity.NORMAL.getId(), alarm.getSeverity().getId());
         
         int[] alarmIds = {1};
-        m_alarmRepo.clearAlarms(alarmIds, "TestUser", new Date());
+        m_alarmRepo.clearAlarms(null, "TestUser", new Date());
         
-        alarm = m_alarmRepo.getAlarm(1);
+        alarm = m_alarmRepo.getAlarm(null);
         assertNotNull(alarm);
         assertEquals(OnmsSeverity.CLEARED.getId(), alarm.getSeverity().getId());
     }
@@ -288,8 +288,8 @@ public class AlarmRepositoryIT implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase
     public void testAcknowledgements(){
-        m_alarmRepo.acknowledgeAlarms(new int[] { 1 }, "agalue", new Date());
-        List<OnmsAcknowledgment> acks = m_alarmRepo.getAcknowledgments(1);
+        m_alarmRepo.acknowledgeAlarms(null, "agalue", new Date());
+        List<OnmsAcknowledgment> acks = m_alarmRepo.getAcknowledgments(null);
         Assert.assertNotNull(acks);
         Assert.assertEquals(1, acks.size());
         Assert.assertEquals("agalue", acks.get(0).getAckUser());
@@ -418,7 +418,7 @@ public class AlarmRepositoryIT implements InitializingBean {
         assertEquals(false, before.get(2).isAcknowledged());
         assertEquals(false, before.get(3).isAcknowledged());
 
-        m_alarmRepo.acknowledgeAlarms(new int[]{alarm3.getId()},"me", new Date());
+        m_alarmRepo.acknowledgeAlarms(null,"me", new Date());
 
         // Ack of Alarm #3 should also ack Alarm #2 because it is a situation. Alarm #2
         // itself is also a situation, so Alarm #1 is also ack'd.

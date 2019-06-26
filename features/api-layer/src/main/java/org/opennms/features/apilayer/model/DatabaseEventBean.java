@@ -58,7 +58,7 @@ public class DatabaseEventBean implements DatabaseEvent {
 
     @Override
     public Integer getId() {
-        return event.getId();
+        return 1; // TODO: FIXME: JW
     }
 
     @Override

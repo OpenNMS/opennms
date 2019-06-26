@@ -39,6 +39,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -75,7 +76,7 @@ public class NaggingNotificationsIT extends DroolsExampleIT {
 
     @Test
     public void canTriggerNag() {
-        OnmsAlarm trigger = createNagAlarmTrigger(1, "uei.opennms.org/nag/notification");
+        OnmsAlarm trigger = createNagAlarmTrigger("uei.opennms.org/nag/notification");
         when(alarmDao.get(trigger.getId())).thenReturn(trigger);
         dac.getClock().advanceTime( 16, TimeUnit.SECONDS );
         dac.handleNewOrUpdatedAlarm(trigger);
@@ -137,9 +138,9 @@ public class NaggingNotificationsIT extends DroolsExampleIT {
      */
     @Test
     public void canTriggerDifferentNagEventsForDifferentAlarms() {
-        OnmsAlarm a1 = createNagAlarmTrigger(1, "uei.opennms.org/nag/notification");
+        OnmsAlarm a1 = createNagAlarmTrigger("uei.opennms.org/nag/notification");
         dac.handleNewOrUpdatedAlarm(a1);
-        OnmsAlarm a2 = createNagAlarmTrigger(2, "uei.opennms.org/nag/other/notification");
+        OnmsAlarm a2 = createNagAlarmTrigger("uei.opennms.org/nag/other/notification");
         dac.handleNewOrUpdatedAlarm(a2);
 
         dac.getClock().advanceTime( 16, TimeUnit.SECONDS );
@@ -174,12 +175,12 @@ public class NaggingNotificationsIT extends DroolsExampleIT {
         reset(eventForwarder);
     }
 
-    private OnmsAlarm createNagAlarmTrigger(int id, String nagUei) {
+    private OnmsAlarm createNagAlarmTrigger(String nagUei) {
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(id);
+        alarm.setId(UUID.randomUUID());
         alarm.setAlarmType(1);
         alarm.setSeverity(OnmsSeverity.WARNING);
-        alarm.setReductionKey("uei.opennms.org/nag/alarm:" + id);
+        alarm.setReductionKey("uei.opennms.org/nag/alarm:" + alarm.getId());
         alarm.setFirstEventTime(new Date(15 * 1000));
 
         final OnmsEvent event = new OnmsEvent();

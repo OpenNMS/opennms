@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -96,7 +97,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     public static final String ARCHIVED = "Archived";
 
     /** identifier field */
-    private Integer m_id;
+    private UUID m_id;
 
     /** persistent field */
     private String m_uei;
@@ -219,7 +220,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     /**
      * minimal constructor
      *
-     * @param alarmid a {@link java.lang.Integer} object.
+     * @param alarmid a {@link java.util.UUID} object.
      * @param eventuei a {@link java.lang.String} object.
      * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
      * @param counter a {@link java.lang.Integer} object.
@@ -227,7 +228,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @param firsteventtime a {@link java.util.Date} object.
      * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
      */
-    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, Integer counter, Integer severity, Date firsteventtime, OnmsEvent event) {
+    public OnmsAlarm(UUID alarmid, String eventuei, OnmsDistPoller distPoller, Integer counter, Integer severity, Date firsteventtime, OnmsEvent event) {
         this.m_id = alarmid;
         this.m_uei = eventuei;
         this.m_distPoller = distPoller;
@@ -240,23 +241,24 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     /**
      * <p>getId</p>
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return a {@link java.util.UUID} object.
      */
     @Id
-    @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId")
-    @GeneratedValue(generator="alarmSequence")    
+   // @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId")
+    // @GeneratedValue(generator="alarmSequence")
     @Column(name="alarmId", nullable=false)
+    @Type(type="pg-uuid")
     @XmlAttribute(name="id")
-    public Integer getId() {
+    public UUID getId() {
         return this.m_id;
     }
 
     /**
      * <p>setId</p>
      *
-     * @param alarmid a {@link java.lang.Integer} object.
+     * @param alarmid a {@link java.util.UUID} object.
      */
-    public void setId(Integer alarmid) {
+    public void setId(UUID alarmid) {
         this.m_id = alarmid;
     }
 
@@ -1157,7 +1159,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @Transient
     @Override
     public Integer getAckId() {
-        return m_id;
+        // JW: FIXME: TODO: Does not work with UUID types
+        return 0;
     }
     
     /**
@@ -1195,7 +1198,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     @Transient
     @XmlTransient
-    public Set<Integer> getRelatedAlarmIds() {
+    public Set<UUID> getRelatedAlarmIds() {
         return getRelatedAlarms().stream()
                 .map(OnmsAlarm::getId)
                 .collect(Collectors.toSet());
@@ -1234,7 +1237,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         m_situation = !m_associatedAlarms.isEmpty();
     }
 
-    public void removeRelatedAlarmWithId(Integer relatedAlarmId) {
+    public void removeRelatedAlarmWithId(UUID relatedAlarmId) {
         m_associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(relatedAlarmId));
         m_situation = !m_associatedAlarms.isEmpty();
     }
@@ -1269,7 +1272,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     @Transient
     @XmlTransient
-    public Set<Integer> getRelatedSituationIds() {
+    public Set<UUID> getRelatedSituationIds() {
         return getRelatedSituations().stream()
                 .map(OnmsAlarm::getId)
                 .collect(Collectors.toSet());

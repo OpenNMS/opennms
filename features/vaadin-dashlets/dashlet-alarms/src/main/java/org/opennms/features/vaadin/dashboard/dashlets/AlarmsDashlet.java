@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
@@ -235,7 +236,7 @@ public class AlarmsDashlet extends AbstractDashlet {
          */
 
         List<OnmsAlarm> onmsAlarmList = m_alarmDao.findMatching(alarmCb.toCriteria());
-        Map<Integer, OnmsAlarm> onmsAlarmMap = new LinkedHashMap<>();
+        Map<UUID, OnmsAlarm> onmsAlarmMap = new LinkedHashMap<>();
 
         for (OnmsAlarm onmsAlarm : onmsAlarmList) {
             if (!onmsAlarmMap.containsKey(onmsAlarm.getId())) {

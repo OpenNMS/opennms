@@ -30,11 +30,12 @@ package org.opennms.features.alarms.history.elastic.tasks;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
 
 public interface TaskVisitor {
     void indexAlarms(List<AlarmDocumentDTO> docs);
 
-    void deleteAlarmsWithoutIdsIn(Set<Integer> alarmIdsToKeep, long time);
+    void deleteAlarmsWithoutIdsIn(Set<UUID> alarmIdsToKeep, long time);
 }

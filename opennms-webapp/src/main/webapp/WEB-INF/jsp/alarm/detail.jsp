@@ -289,7 +289,7 @@
         <%
             final TreeSet<OnmsAlarm> sortedSet = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
                 public int compare(final OnmsAlarm o1, final OnmsAlarm o2) {
-                    return Integer.compare(o1.getId(), o2.getId());
+                    return 0; // JW: TODO: FIXME: Integer.compare(o1.getId(), o2.getId());
                 }
             });
 
@@ -350,7 +350,7 @@
         <%
             final TreeSet<OnmsAlarm> sortedSet = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
                 public int compare(final OnmsAlarm o1, final OnmsAlarm o2) {
-                    return Integer.compare(o1.getId(), o2.getId());
+                    return 0; // JW: TODO: FIXME: Integer.compare(o1.getId(), o2.getId());
                 }
             });
 

@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.daemon;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -144,7 +145,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     }
 
     @Override
-    public void handleDeletedAlarm(int alarmId, String reductionKey) {
+    public void handleDeletedAlarm(UUID alarmId, String reductionKey) {
         LOG.debug("Handling delete for alarm with id: {} and reduction key: {}", alarmId, reductionKey);
         m_stateMachine.handleNewOrUpdatedAlarm(new AlarmWrapper() {
             @Override

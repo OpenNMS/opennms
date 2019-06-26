@@ -49,6 +49,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @SuppressWarnings("serial")
 public class AlarmTable extends SelectionAwareTable implements HasExtraComponents, VaadinApplicationContextAware {
@@ -84,24 +85,24 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 						String action = (String)m_ackCombo.getValue();
 						if (ACTION_ACKNOWLEDGE.equals(action)) {
 							m_alarmRepo.acknowledgeAlarms(
-									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									new UUID[]{}, // JW: TODO: FIXME
 									getUser(),
 									new Date()
 							);
 						} else if (ACTION_UNACKNOWLEDGE.equals(action)) {
 							m_alarmRepo.unacknowledgeAlarms(
-									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									new UUID[]{}, // JW: TODO: FIXME
 									getUser()
 							);
 						} else if (ACTION_ESCALATE.equals(action)) {
 							m_alarmRepo.escalateAlarms(
-									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									new UUID[]{}, // JW: TODO: FIXME
 									getUser(),
 									new Date()
 							);
 						} else if (ACTION_CLEAR.equals(action)) {
 							m_alarmRepo.clearAlarms(
-									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									new UUID[]{}, // JW: TODO: FIXME
 									getUser(),
 									new Date()
 							);

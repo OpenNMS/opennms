@@ -225,7 +225,7 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         
         m_eventMgr.finishProcessingEvents();
         assertNotNull(e);
-        assertTrue("Invalid Event Id", e.getEventId() > 0);
+        assertNotNull("Invalid Event Id", e.getEventId());
         
         assertEquals(0, m_eventMgr.getEventAnticipator().waitForAnticipated(0).size());
         assertEquals(0, m_eventMgr.getEventAnticipator().getUnanticipatedEvents().size());

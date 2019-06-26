@@ -28,6 +28,8 @@
 
 package org.opennms.features.alarms.history.elastic.dto;
 
+import java.util.UUID;
+
 import org.opennms.features.alarms.history.api.RelatedAlarmState;
 
 import com.google.gson.annotations.SerializedName;
@@ -43,7 +45,7 @@ public class RelatedAlarmDocumentDTO implements RelatedAlarmState {
     private Long firstEventTime;
 
     @SerializedName("id")
-    private Integer id;
+    private UUID id;
 
     @SerializedName("last_event")
     private EventDocumentDTO lastEvent;
@@ -75,11 +77,11 @@ public class RelatedAlarmDocumentDTO implements RelatedAlarmState {
     }
 
     @Override
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

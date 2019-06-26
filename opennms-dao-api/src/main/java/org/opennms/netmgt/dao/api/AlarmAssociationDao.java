@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.opennms.netmgt.model.AlarmAssociation;
 
@@ -37,6 +38,6 @@ import org.opennms.netmgt.model.AlarmAssociation;
  */
 public interface AlarmAssociationDao extends OnmsDao<AlarmAssociation, Integer>{
 
-    List<AlarmAssociation> getAssociationsForSituation(int situationId);
+    List<AlarmAssociation> getAssociationsForSituation(UUID situationId);
 
 }

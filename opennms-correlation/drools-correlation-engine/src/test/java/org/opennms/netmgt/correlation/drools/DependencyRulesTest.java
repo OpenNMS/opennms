@@ -30,6 +30,8 @@ package org.opennms.netmgt.correlation.drools;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.util.UUID;
+
 import org.junit.Test;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -62,7 +64,7 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
         DroolsCorrelationEngine engine = findEngineByName("dependencyRules");
 
         Event event = createNodeLostServiceEvent( 1, "10.1.1.1", "ICMP" );
-        event.setDbid(17);
+        event.setDbid(UUID.randomUUID());
 	engine.correlate(event);
 
         // event + initialized

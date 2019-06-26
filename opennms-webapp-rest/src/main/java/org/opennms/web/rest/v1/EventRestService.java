@@ -31,6 +31,7 @@ package org.opennms.web.rest.v1;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -94,10 +95,10 @@ public class EventRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{eventId}")
     @Transactional
-    public OnmsEvent getEvent(@PathParam("eventId") final Integer eventId) {
+    public OnmsEvent getEvent(@PathParam("eventId") final UUID eventId) {
         final OnmsEvent e = m_eventDao.get(eventId);
         if (e == null) {
-            throw getException(Status.NOT_FOUND, "Event object {} was not found.", Integer.toString(eventId));
+            throw getException(Status.NOT_FOUND, "Event object {} was not found.", eventId.toString());
         }
         return e;
     }
@@ -217,7 +218,7 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvent(@Context final SecurityContext securityContext, @PathParam("eventId") final Integer eventId, @FormParam("ack") final Boolean ack) {
+    public Response updateEvent(@Context final SecurityContext securityContext, @PathParam("eventId") final UUID eventId, @FormParam("ack") final Boolean ack) {
         writeLock();
 
         try {

@@ -43,6 +43,8 @@ import org.springframework.test.context.ContextConfiguration;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
+import java.util.UUID;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -68,7 +70,7 @@ public class EventMapperTest {
         eventConfDao.addEvent(eventConf);
 
         OnmsEvent event = new OnmsEvent();
-        event.setId(1);
+        event.setId(UUID.randomUUID());
         event.setEventUei("some-uei");
         event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 

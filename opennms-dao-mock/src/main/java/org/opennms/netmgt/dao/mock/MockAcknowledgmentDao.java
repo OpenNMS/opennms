@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
@@ -79,5 +80,10 @@ public class MockAcknowledgmentDao extends AbstractMockDao<OnmsAcknowledgment, I
     @Override
     public Optional<OnmsAcknowledgment> findLatestAckForRefId(Integer refId) {
         throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public Optional<OnmsAcknowledgment> findLatestAckForRefId(UUID refId) {
+        return Optional.empty();
     }
 }

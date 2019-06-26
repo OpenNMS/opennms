@@ -200,7 +200,7 @@ public class ProtobufMapper {
             return null;
         }
         final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder()
-                .setId(event.getDbid())
+                .setId(-1) // JW: TODO: Add UUID field
                 .setUei(event.getUei())
                 .setSource(event.getSource())
                 .setSeverity(toSeverity(OnmsSeverity.get(event.getSeverity())))
@@ -241,7 +241,7 @@ public class ProtobufMapper {
             return null;
         }
         final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder()
-                .setId(event.getId())
+                .setId(-1) // JW: TODO: FIXME
                 .setUei(event.getEventUei())
                 .setSource(event.getEventSource())
                 .setSeverity(toSeverity(OnmsSeverity.get(event.getEventSeverity())))
@@ -279,7 +279,7 @@ public class ProtobufMapper {
 
     public OpennmsModelProtos.Alarm.Builder toAlarm(OnmsAlarm alarm) {
         final OpennmsModelProtos.Alarm.Builder builder = OpennmsModelProtos.Alarm.newBuilder()
-                .setId(alarm.getId())
+                .setId(-1) // JW: TODO: FIXME
                 .setUei(alarm.getUei())
                 .setCount(alarm.getCounter())
                 .setSeverity(toSeverity(alarm.getSeverity()));

@@ -29,6 +29,8 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -39,7 +41,7 @@ import java.util.Date;
  */
 public class DbPollEvent extends PollEvent {
     
-    private final int m_eventId;
+    private final UUID m_eventId;
     private final Date m_date;
     
     /**
@@ -49,7 +51,7 @@ public class DbPollEvent extends PollEvent {
      * @param uei a {@link java.lang.String} object.
      * @param date a {@link java.util.Date} object.
      */
-    public DbPollEvent(int eventId, String uei, Date date) {
+    public DbPollEvent(UUID eventId, String uei, Date date) {
         super(Scope.fromUei(uei));
         m_eventId = eventId;
         m_date = date;
@@ -61,7 +63,7 @@ public class DbPollEvent extends PollEvent {
      * @return a int.
      */
     @Override
-    public int getEventId() {
+    public UUID getEventId() {
         return m_eventId;
     }
     
@@ -81,7 +83,7 @@ public class DbPollEvent extends PollEvent {
      * @return a int.
      */
     @Override
-    public int hashCode() { return m_eventId; }
+    public int hashCode() { return Objects.hash(m_eventId, m_date); }
     
     /**
      * <p>equals</p>

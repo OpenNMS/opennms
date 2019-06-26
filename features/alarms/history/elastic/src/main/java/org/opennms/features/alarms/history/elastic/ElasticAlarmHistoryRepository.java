@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -74,7 +75,7 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
     }
 
     @Override
-    public Optional<AlarmState> getAlarmWithDbIdAt(long id, long time) {
+    public Optional<AlarmState> getAlarmWithDbIdAt(UUID id, long time) {
         final TimeRange timeRange = getTimeRange(time);
         return findAlarms(queryProvider.getAlarmByDbIdAt(id, timeRange), timeRange)
                 .stream().findFirst().map(a -> a);
@@ -88,7 +89,7 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
     }
 
     @Override
-    public List<AlarmState> getStatesForAlarmWithDbId(long id) {
+    public List<AlarmState> getStatesForAlarmWithDbId(UUID id) {
         return findAlarms(queryProvider.getAlarmStatesByDbId(id), null)
                 .stream()
                 .map(a -> (AlarmState)a)

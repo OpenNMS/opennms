@@ -27,13 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.rest;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
@@ -68,7 +67,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
     }
 
     @Override
-    public Collection<AlarmFeedback> getFeedback(int situationId) {
+    public Collection<AlarmFeedback> getFeedback(UUID situationId) {
         try {
             return repository.getFeedback(getReductionKey(situationId));
         } catch (FeedbackException e) {
@@ -77,7 +76,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         }
     }
 
-    private String getReductionKey(int situationId) throws FeedbackException {
+    private String getReductionKey(UUID situationId) throws FeedbackException {
         OnmsAlarm situation = alarmDao.get(situationId);
         if (situation == null) {
             throw new FeedbackException("No Situation found with ID " + situationId);
@@ -86,7 +85,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
     }
 
     @Override
-    public void setFeedback(int situationId, List<AlarmFeedback> feedback) {
+    public void setFeedback(UUID situationId, List<AlarmFeedback> feedback) {
         try {
             repository.persist(feedback);
         } catch (Exception e) {

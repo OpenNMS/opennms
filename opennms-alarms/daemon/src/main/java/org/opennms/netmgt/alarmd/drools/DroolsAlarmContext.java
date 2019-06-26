@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -106,11 +107,11 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
 
-    private final Map<Integer, AlarmAndFact> alarmsById = new HashMap<>();
+    private final Map<UUID, AlarmAndFact> alarmsById = new HashMap<>();
 
-    private final Map<Integer, AlarmAcknowledgementAndFact> acknowledgementsByAlarmId = new HashMap<>();
+    private final Map<UUID, AlarmAcknowledgementAndFact> acknowledgementsByAlarmId = new HashMap<>();
 
-    private final Map<Integer, Map<Integer, AlarmAssociationAndFact>> alarmAssociationById = new HashMap<>();
+    private final Map<UUID, Map<UUID, AlarmAssociationAndFact>> alarmAssociationById = new HashMap<>();
 
     public DroolsAlarmContext() {
         this(getDefaultRulesFolder());
@@ -133,12 +134,12 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                     alarmsById.put(alarmInSession.getId(), new AlarmAndFact(alarmInSession, fact));
                 } else if (objForFact instanceof OnmsAcknowledgment) {
                     final OnmsAcknowledgment ackInSession = (OnmsAcknowledgment)objForFact;
-                    acknowledgementsByAlarmId.put(ackInSession.getRefId(), new AlarmAcknowledgementAndFact(ackInSession, fact));
+                    acknowledgementsByAlarmId.put(UUID.randomUUID(), new AlarmAcknowledgementAndFact(ackInSession, fact)); // JW: TODO: FIXME: ackInSession.getRefId()
                 } else if (objForFact instanceof AlarmAssociation) {
                     final AlarmAssociation associationInSession = (AlarmAssociation)objForFact;
-                    final Integer situationId = associationInSession.getSituationAlarm().getId();
-                    final Integer alarmId = associationInSession.getRelatedAlarm().getId();
-                    final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situationId, (sid) -> new HashMap<>());
+                    final UUID situationId = associationInSession.getSituationAlarm().getId();
+                    final UUID alarmId = associationInSession.getRelatedAlarm().getId();
+                    final Map<UUID, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situationId, (sid) -> new HashMap<>());
                     associationFacts.put(alarmId, new AlarmAssociationAndFact(associationInSession, fact));
                 }
             }
@@ -211,26 +212,26 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         // before the session & transaction were closed, which can cause Hibernate related exceptions.
         getLock().lock();
         LOG.debug("Handling snapshot for {} alarms.", alarms.size());
-        final Map<Integer, OnmsAlarm> alarmsInDbById = alarms.stream()
+        final Map<UUID, OnmsAlarm> alarmsInDbById = alarms.stream()
                 .filter(a -> a.getId() != null)
                 .collect(Collectors.toMap(OnmsAlarm::getId, a -> a));
 
-        final Set<Integer> alarmIdsInDb = alarmsInDbById.keySet();
-        final Set<Integer> alarmIdsInWorkingMem = alarmsById.keySet();
+        final Set<UUID> alarmIdsInDb = alarmsInDbById.keySet();
+        final Set<UUID> alarmIdsInWorkingMem = alarmsById.keySet();
 
-        final Set<Integer> alarmIdsToAdd = Sets.difference(alarmIdsInDb, alarmIdsInWorkingMem).stream()
+        final Set<UUID> alarmIdsToAdd = Sets.difference(alarmIdsInDb, alarmIdsInWorkingMem).stream()
                 // The snapshot contains an alarm which we don't have in working memory.
                 // It is possible that the alarm was in fact deleted some time after the
                 // snapshot was processed. We should only add it, if we did not explicitly
                 // delete the alarm after the snapshot was taken.
                 .filter(alarmId -> !stateTracker.wasAlarmWithIdDeleted(alarmId))
                 .collect(Collectors.toSet());
-        final Set<Integer> alarmIdsToRemove = Sets.difference(alarmIdsInWorkingMem, alarmIdsInDb).stream()
+        final Set<UUID> alarmIdsToRemove = Sets.difference(alarmIdsInWorkingMem, alarmIdsInDb).stream()
                 // We have an alarm in working memory that is not contained in the snapshot.
                 // Only remove it from memory if the fact we have dates before the snapshot.
                 .filter(alarmId -> !stateTracker.wasAlarmWithIdUpdated(alarmId))
                 .collect(Collectors.toSet());
-        final Set<Integer> alarmIdsToUpdate = Sets.intersection(alarmIdsInWorkingMem, alarmIdsInDb).stream()
+        final Set<UUID> alarmIdsToUpdate = Sets.intersection(alarmIdsInWorkingMem, alarmIdsInDb).stream()
                 // This stream contains the set of all alarms which are both in the snapshot
                 // and in working memory
                 .filter(alarmId -> {
@@ -257,7 +258,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             // When TRACE is enabled, include diagnostic information to help explain why
             // the alarms are being updated
             if (LOG.isTraceEnabled()) {
-                for (Integer alarmIdToUpdate : alarmIdsToUpdate) {
+                for (UUID alarmIdToUpdate : alarmIdsToUpdate) {
                     LOG.trace("Updating alarm with id={}. Alarm from DB: {} vs Alarm from memory: {}",
                             alarmIdToUpdate,
                             alarmsInDbById.get(alarmIdToUpdate),
@@ -266,7 +267,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             }
         }
 
-        for (Integer alarmIdToRemove : alarmIdsToRemove) {
+        for (UUID alarmIdToRemove : alarmIdsToRemove) {
             handleDeletedAlarmNoLock(alarmIdToRemove, alarmsById.get(alarmIdToRemove).getAlarm().getReductionKey());
         }
 
@@ -314,7 +315,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 "Add or update");
     }
 
-    private void tryWithLock(int alarmId, String reductionKey, BiConsumer<Integer, String> callback, String action) {
+    private void tryWithLock(UUID alarmId, String reductionKey, BiConsumer<UUID, String> callback, String action) {
         try {
             // It is possible that the session is currently locked while waiting for the
             // transaction that this thread is holding to be committed, so we limit the time
@@ -345,7 +346,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
      * Fetches an {@link OnmsAcknowledgment ack} via the {@link #acknowledgmentDao ack DAO} for all the given alarms.
      * For any alarm for which an ack does not exist, a default ack is generated.
      */
-    private Map<Integer, OnmsAcknowledgment> fetchAcks(Set<OnmsAlarm> alarms) {
+    private Map<UUID, OnmsAcknowledgment> fetchAcks(Set<OnmsAlarm> alarms) {
         Set<OnmsAcknowledgment> acks = new HashSet<>();
 
         // Update acks depending on if we are interested in one or many alarms
@@ -373,8 +374,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         }
 
         // Handle all the alarms for which an ack could be found
-        Map<Integer, OnmsAcknowledgment> acksById =
-                acks.stream().collect(Collectors.toMap(OnmsAcknowledgment::getRefId, ack -> ack));
+        Map<UUID, OnmsAcknowledgment> acksById =
+                acks.stream().collect(Collectors.toMap(OnmsAcknowledgment::getRefIdAsUuid, ack -> ack));
 
         // Handle all the alarms that no ack could be found for by generating a default ack
         acksById.putAll(alarms.stream()
@@ -397,7 +398,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             return;
         }
 
-        Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
+        Map<UUID, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
 
         for (OnmsAlarm alarm : alarms) {
             handleNewOrUpdatedAlarmNoLock(alarm);
@@ -437,7 +438,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     @Override
-    public void handleDeletedAlarm(int alarmId, String reductionKey) {
+    public void handleDeletedAlarm(UUID alarmId, String reductionKey) {
         if (!isStarted()) {
             LOG.debug("Ignoring deleted alarm. Drools session is stopped.");
             return;
@@ -449,9 +450,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         if (!situation.isSituation()) {
             return;
         }
-        final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situation.getId(), (sid) -> new HashMap<>());
+        final Map<UUID, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situation.getId(), (sid) -> new HashMap<>());
         for (AlarmAssociation association : situation.getAssociatedAlarms()) {
-            Integer alarmId = association.getRelatedAlarm().getId();
+            UUID alarmId = association.getRelatedAlarm().getId();
             AlarmAssociationAndFact assocationFact = associationFacts.get(alarmId);
             if (assocationFact == null) {
                 LOG.debug("Inserting alarm association into session: {}", association);
@@ -465,7 +466,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             }
         }
         // Remove Fact for any Alarms no longer in the Situation
-        Set<Integer> deletedAlarmIds = associationFacts.values().stream()
+        Set<UUID> deletedAlarmIds = associationFacts.values().stream()
                 .map(fact -> fact.getAlarmAssociation().getRelatedAlarm().getId())
                     .filter(alarmId -> !situation.getRelatedAlarmIds().contains(alarmId))
                     .collect(Collectors.toSet());
@@ -492,7 +493,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         }
     }
 
-    private void handleDeletedAlarmNoLock(int alarmId, String reductionKey) {
+    private void handleDeletedAlarmNoLock(UUID alarmId, String reductionKey) {
         final AlarmAndFact alarmAndFact = alarmsById.remove(alarmId);
         if (alarmAndFact != null) {
             LOG.debug("Deleting alarm from session: {}", alarmAndFact.getAlarm());
@@ -503,7 +504,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         stateTracker.trackDeletedAlarm(alarmId, reductionKey);
     }
 
-    private void deleteAlarmAcknowledgement(int alarmId) {
+    private void deleteAlarmAcknowledgement(UUID alarmId) {
         final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.remove(alarmId);
         if (acknowledgmentFact != null) {
             LOG.debug("Deleting ack from session: {}", acknowledgmentFact.getAcknowledgement());
@@ -511,12 +512,12 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         }
     }
 
-    private void deleteAlarmAssociations(int alarmId) {
-        Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.remove(alarmId);
+    private void deleteAlarmAssociations(UUID alarmId) {
+        Map<UUID, AlarmAssociationAndFact> associationFacts = alarmAssociationById.remove(alarmId);
         if (associationFacts == null) {
             return;
         }
-        for (Integer association : associationFacts.keySet()) {
+        for (UUID association : associationFacts.keySet()) {
             AlarmAssociationAndFact assocationFact = associationFacts.get(association);
             if (assocationFact != null) {
                 LOG.debug("Deleting association from session: {}", assocationFact.getAlarmAssociation());
@@ -538,7 +539,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     @VisibleForTesting
-    OnmsAcknowledgment getAckByAlarmId(Integer id) {
+    OnmsAcknowledgment getAckByAlarmId(UUID id) {
         return acknowledgementsByAlarmId.get(id).getAcknowledgement();
     }
 

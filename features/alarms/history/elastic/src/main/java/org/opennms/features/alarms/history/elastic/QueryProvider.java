@@ -33,6 +33,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -71,7 +72,7 @@ public class QueryProvider {
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
 
-    public String getAlarmStatesByDbId(long id) {
+    public String getAlarmStatesByDbId(UUID id) {
         return render("get_alarm.ftl", ImmutableMap.builder()
                 .put("alarmId", id)
                 .put("maxResults", MAX_STATES_FOR_ALARM)
@@ -85,7 +86,7 @@ public class QueryProvider {
                 .build());
     }
 
-    public String getAlarmByDbIdAt(long id, TimeRange timeRange) {
+    public String getAlarmByDbIdAt(UUID id, TimeRange timeRange) {
         return render("get_alarm_at.ftl", ImmutableMap.builder()
                 .put("alarmId", id)
                 .put("fromMillis", timeRange.getStart())
@@ -125,7 +126,7 @@ public class QueryProvider {
         return render("get_alarms_at.ftl", builder.build());
     }
 
-    public String getActiveAlarmIdsAtTimeAndExclude(TimeRange timeRange, Set<Integer> alarmIdsToKeep, Integer afterAlarmWithId) {
+    public String getActiveAlarmIdsAtTimeAndExclude(TimeRange timeRange, Set<UUID> alarmIdsToKeep, Integer afterAlarmWithId) {
         final ImmutableMap.Builder<Object,Object> builder = ImmutableMap.builder()
                 .put("fromMillis", timeRange.getStart())
                 .put("toMillis", timeRange.getEnd())

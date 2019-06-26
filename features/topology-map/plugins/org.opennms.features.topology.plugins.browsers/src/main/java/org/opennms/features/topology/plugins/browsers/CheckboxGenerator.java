@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import org.opennms.web.api.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

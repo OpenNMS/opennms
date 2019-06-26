@@ -29,10 +29,11 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.Set;
+import java.util.UUID;
 
 import org.opennms.netmgt.model.OnmsEvent;
 
-public interface EventCountDao extends OnmsDao<OnmsEvent, Integer> {
+public interface EventCountDao extends OnmsDao<OnmsEvent, UUID> {
     
     Set<CountedObject<String>> getUeiCounts(final Integer limit);
 

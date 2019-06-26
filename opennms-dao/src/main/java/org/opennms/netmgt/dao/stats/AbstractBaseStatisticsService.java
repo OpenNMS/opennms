@@ -42,7 +42,7 @@ public abstract class AbstractBaseStatisticsService<T> implements StatisticsServ
         Assert.notNull(getDao());
     }
 
-    public abstract OnmsDao<T, Integer> getDao();
+    public abstract OnmsDao<T, ?> getDao();
 
     @Transactional
     @Override

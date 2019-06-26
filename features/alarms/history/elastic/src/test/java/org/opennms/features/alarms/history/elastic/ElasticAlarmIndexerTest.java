@@ -34,6 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -55,7 +56,7 @@ public class ElasticAlarmIndexerTest {
     @Test
     public void testGetDocumentIfNeedsIndexing() {
         OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setId(1);
+        onmsAlarm.setId(UUID.randomUUID());
 
         // Check to make sure updating each of the fields we expect to cause a re-index actually does
         updateAndTestPositive(onmsAlarm, () -> onmsAlarm.setReductionKey("test"));

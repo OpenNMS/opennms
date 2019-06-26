@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v1;
 
+import java.util.UUID;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -159,7 +161,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
         } else if (alarmId != null && notifId != null) {
             return getBadRequestResponse("You cannot supply both an alarmId and a notifId");
         } else if (alarmId != null) {
-            final Integer numericAlarmId = getNumericValue(alarmId);
+            final UUID numericAlarmId = UUID.fromString(alarmId);
             if (numericAlarmId == null) {
                 return getBadRequestResponse("The alarmId has to be an integer value");
             }

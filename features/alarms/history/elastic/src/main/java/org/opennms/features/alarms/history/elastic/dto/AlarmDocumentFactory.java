@@ -28,6 +28,8 @@
 
 package org.opennms.features.alarms.history.elastic.dto;
 
+import java.util.UUID;
+
 /**
  * Factory for creating {@link AlarmDocumentDTO} objects.
  */
@@ -39,5 +41,5 @@ public interface AlarmDocumentFactory {
      * @param reductionKey the alarm reduction key
      * @return a DTO representing a delete for the given alarm Id/reduction key
      */
-    AlarmDocumentDTO createAlarmDocumentForDelete(int alarmId, String reductionKey);
+    AlarmDocumentDTO createAlarmDocumentForDelete(UUID alarmId, String reductionKey);
 }

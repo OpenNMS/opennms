@@ -31,6 +31,7 @@ package org.opennms.web.controller.alarm;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,12 +58,12 @@ public class AlarmTicketController extends MultiActionController {
     private TroubleTicketProxy m_troubleTicketProxy;
 
     static class CommandBean {
-        Integer alarm;
+        UUID alarm;
         String redirect;
-        public Integer getAlarm() {
+        public UUID getAlarm() {
             return alarm;
         }
-        public void setAlarm(Integer alarm) {
+        public void setAlarm(UUID alarm) {
             this.alarm = alarm;
         }
         public String getRedirect() {

@@ -342,7 +342,7 @@ public class BundleContextHistoryManagerTest  {
                 Date eventTime = new Date();
                 OnmsDistPoller distPoller = new OnmsDistPoller("pollerID");
                 OnmsEvent event = new OnmsEvent();
-                OnmsAlarm alarm = new OnmsAlarm(Integer.valueOf(idAlarm), "eventUI", distPoller, 2, 3, eventTime, event);
+                OnmsAlarm alarm = new OnmsAlarm(null, "eventUI", distPoller, 2, 3, eventTime, event); // JW: TODO: FIXME: Integer.valueOf(idAlarm)
                 return Lists.newArrayList(alarm);
             }
         };

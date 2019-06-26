@@ -109,7 +109,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
 
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(m_dbPopulator.getDistPollerDao().whoami());
-        event.setAlarm(m_dbPopulator.getAlarmDao().get(1));
+        event.setAlarm(m_dbPopulator.getAlarmDao().get(null));
         event.setNode(node2);
         event.setEventUei("uei.opennms.org/test2");
         event.setEventTime(new Date());

@@ -41,13 +41,14 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @XmlRootElement(name = "event")
 @XmlAccessorType(XmlAccessType.NONE)
 public class EventDTO {
 
     @XmlAttribute(name = "id")
-    private Integer id;
+    private UUID id;
 
     @XmlElement(name = "uei")
     private String uei;
@@ -153,11 +154,11 @@ public class EventDTO {
     @XmlElement(name = "location")
     private String location;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

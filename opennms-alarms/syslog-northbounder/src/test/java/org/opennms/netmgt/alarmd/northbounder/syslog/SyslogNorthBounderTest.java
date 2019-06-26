@@ -38,6 +38,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -266,7 +267,7 @@ public class SyslogNorthBounderTest {
         for (SyslogNorthbounder nbi : nbis) {
             for (int i = 1; i <=j; ++i) {
                 OnmsAlarm onmsAlarm = new OnmsAlarm();
-                onmsAlarm.setId(i);
+                onmsAlarm.setId(UUID.randomUUID());
                 onmsAlarm.setUei("uei.opennms.org/test/syslogNorthBounder");
                 onmsAlarm.setNode(node);
                 onmsAlarm.setSeverityId(i);

@@ -28,6 +28,8 @@
 
 package org.opennms.features.alarms.history.elastic.dto;
 
+import java.util.UUID;
+
 import com.google.gson.annotations.SerializedName;
 
 public class EventDocumentDTO {
@@ -36,7 +38,7 @@ public class EventDocumentDTO {
     private String description;
 
     @SerializedName("id")
-    private Integer id;
+    private UUID id;
 
     @SerializedName("log_message")
     private String logMessage;
@@ -52,11 +54,11 @@ public class EventDocumentDTO {
         this.description = description;
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -428,14 +428,14 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private OnmsAlarm nodeDownAlarmWithRelatedAlarm() {
         OnmsAlarm alarm = nodeDownAlarm();
         OnmsAlarm relatedAlarm = nodeDownAlarm();
-        relatedAlarm.setId(2);
+        relatedAlarm.setId(UUID.randomUUID());
         alarm.addRelatedAlarm(relatedAlarm);        
         return alarm;
     }
     
     private OnmsAlarm nodeDownAlarm() {
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(1);
+        alarm.setId(UUID.randomUUID());
         alarm.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
         alarm.setNode(databasePopulator.getNode1());
         alarm.setCounter(1);

@@ -31,6 +31,7 @@ package org.opennms.netmgt.alarmd.api.support;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -55,7 +56,7 @@ public class AlarmQueueTest implements StatusFactory<NorthboundAlarm>{
      */
     private NorthboundAlarm createAlarm() {
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(++alarmNumber);
+        alarm.setId(UUID.randomUUID());
         alarm.setUei("uei.opennms.org/test/httpNorthBounder");
 
         return new NorthboundAlarm(alarm);

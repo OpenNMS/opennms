@@ -82,7 +82,7 @@ public class DefaultTicketerServiceLayerTest {
         m_ticketerPlugin = m_easyMockUtils.createMock(Plugin.class);
         m_defaultTicketerServiceLayer.setTicketerPlugin(m_ticketerPlugin);
         m_alarm = new OnmsAlarm();
-        m_alarm.setId(1);
+        m_alarm.setId(null); // JW: TODO: FIXME
         m_alarm.setLogMsg("Test Logmsg");
         m_alarm.setDescription("Test Description");
 
@@ -111,7 +111,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.cancelTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+        m_defaultTicketerServiceLayer.cancelTicketForAlarm(-1, m_ticket.getId()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -138,7 +138,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.cancelTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+        m_defaultTicketerServiceLayer.cancelTicketForAlarm(-1, m_ticket.getId()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -227,7 +227,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.closeTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+        m_defaultTicketerServiceLayer.closeTicketForAlarm(-1, m_ticket.getId()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -251,7 +251,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.closeTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+        m_defaultTicketerServiceLayer.closeTicketForAlarm(-1, m_ticket.getId()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -269,7 +269,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(), new HashMap<String, String>());
+        m_defaultTicketerServiceLayer.createTicketForAlarm(-1, new HashMap<String, String>()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -295,7 +295,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(),new HashMap<String, String>());
+        m_defaultTicketerServiceLayer.createTicketForAlarm(-1,new HashMap<String, String>()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -322,7 +322,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.updateTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+        m_defaultTicketerServiceLayer.updateTicketForAlarm(-1, m_ticket.getId()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -352,7 +352,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.updateTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+        m_defaultTicketerServiceLayer.updateTicketForAlarm(-1, m_ticket.getId()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -371,7 +371,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(), Collections.emptyMap());
+        m_defaultTicketerServiceLayer.createTicketForAlarm(-1, Collections.emptyMap()); // JW: TODO: FIXME
 
         // Verify that no additional calls where made (such as trying to open the ticket)
         m_easyMockUtils.verifyAll();
@@ -397,7 +397,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(), Collections.emptyMap());
+        m_defaultTicketerServiceLayer.createTicketForAlarm(-1, Collections.emptyMap()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -416,7 +416,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.closeTicketForAlarm(m_alarm.getId(), "id");
+        m_defaultTicketerServiceLayer.closeTicketForAlarm(-1, "id"); // JW: TODO: FIXME
 
         // Verify that no additional calls where made (such as trying to close the ticket)
         m_easyMockUtils.verifyAll();
@@ -445,7 +445,7 @@ public class DefaultTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_defaultTicketerServiceLayer.closeTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+        m_defaultTicketerServiceLayer.closeTicketForAlarm(-1, m_ticket.getId()); // JW: TODO: FIXME
 
         // Verify that no additional calls where made (such as trying to close the ticket)
         m_easyMockUtils.verifyAll();

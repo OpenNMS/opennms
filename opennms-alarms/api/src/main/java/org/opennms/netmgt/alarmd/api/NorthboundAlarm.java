@@ -746,7 +746,7 @@ public class NorthboundAlarm implements Preservable, Serializable {
         m_desc = alarm.getDescription();
         m_poller = alarm.getDistPoller();
         m_firstOccurrence = alarm.getFirstEventTime();
-        m_id = alarm.getId();
+        m_id = 0; // FIXME: TODO: alarm.getId();
         m_ipAddr = alarm.getIpAddr() != null ? InetAddressUtils.toIpAddrString(alarm.getIpAddr()) : null;
         m_lastOccurrence = alarm.getLastEventTime();
         m_logMsg = alarm.getLogMsg();

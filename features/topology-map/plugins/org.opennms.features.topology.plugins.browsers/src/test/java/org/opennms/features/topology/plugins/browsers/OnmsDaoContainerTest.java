@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.browsers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -49,7 +50,7 @@ public class OnmsDaoContainerTest {
 
         List<OnmsAlarm> alarmList = new ArrayList<>();
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(102);
+        alarm.setId(UUID.randomUUID());
         alarmList.add(alarm);
 
         final AlarmDao alarmDaoMock = EasyMock.createNiceMock(AlarmDao.class);
@@ -59,7 +60,7 @@ public class OnmsDaoContainerTest {
 
         AlarmDaoContainer container = new AlarmDaoContainer(alarmDaoMock, transactionTemplate);
 
-        List<Integer> items = container.getItemIds(0, 1);
+        List<UUID> items = container.getItemIds(0, 1);
         Assert.assertNotNull(items);
         Assert.assertEquals(1, items.size());
     }

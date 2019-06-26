@@ -72,7 +72,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         @Override
         public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.hasDbid()) {
-                return Integer.toString(event.getDbid());
+                return event.getDbid().toString();
             } else {
                 return "eventid-unknown";
             }

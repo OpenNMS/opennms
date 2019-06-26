@@ -76,7 +76,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
         eventForwarder.sendNow(new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, DefaultAlarmTicketerService.class.getSimpleName())
                 .addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei())
                 .addParam(EventConstants.PARM_USER, DefaultAlarmService.DEFAULT_USER)
-                .addParam(EventConstants.PARM_ALARM_ID, alarm.getId())
+                .addParam(EventConstants.PARM_ALARM_ID, alarm.getId().toString())
                 .getEvent());
 
         // Update the lastAutomationTime
@@ -100,7 +100,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
         eventForwarder.sendNow(new EventBuilder(EventConstants.TROUBLETICKET_UPDATE_UEI, DefaultAlarmTicketerService.class.getSimpleName())
                 .addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei())
                 .addParam(EventConstants.PARM_USER, DefaultAlarmService.DEFAULT_USER)
-                .addParam(EventConstants.PARM_ALARM_ID, alarm.getId())
+                .addParam(EventConstants.PARM_ALARM_ID, alarm.getId().toString())
                 .addParam(EventConstants.PARM_TROUBLE_TICKET, alarm.getTTicketId())
                 .getEvent());
 
@@ -125,7 +125,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
         eventForwarder.sendNow(new EventBuilder(EventConstants.TROUBLETICKET_CLOSE_UEI, DefaultAlarmTicketerService.class.getSimpleName())
                 .addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei())
                 .addParam(EventConstants.PARM_USER, DefaultAlarmService.DEFAULT_USER)
-                .addParam(EventConstants.PARM_ALARM_ID, alarm.getId())
+                .addParam(EventConstants.PARM_ALARM_ID, alarm.getId().toString())
                 .addParam(EventConstants.PARM_TROUBLE_TICKET, alarm.getTTicketId())
                 .getEvent());
 

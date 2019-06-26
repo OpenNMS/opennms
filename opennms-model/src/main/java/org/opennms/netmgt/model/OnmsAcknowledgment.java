@@ -31,6 +31,7 @@ package org.opennms.netmgt.model;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -295,6 +296,10 @@ public class OnmsAcknowledgment {
     @Column(name="refId")
     public Integer getRefId() {
         return m_refId;
+    }
+
+    public UUID getRefIdAsUuid() {
+        return UUID.randomUUID();
     }
 
     /**

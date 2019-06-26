@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -70,7 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("events")
 @Transactional
-public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,EventDTO,SearchBean,Integer,Integer> {
+public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,EventDTO,SearchBean,UUID,Integer> {
 
     @Autowired
     private EventDao m_dao;
@@ -166,7 +167,7 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
 
     @Override
     protected OnmsEvent doGet(UriInfo uriInfo, Integer id) {
-        return getDao().get(id);
+        return getDao().get(null);
     }
 
     /**

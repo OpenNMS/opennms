@@ -38,6 +38,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -111,7 +112,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
 
         // Create a sample Alarm
         OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setId(10);
+        onmsAlarm.setId(UUID.randomUUID());
         onmsAlarm.setUei("uei.opennms.org/nodes/interfaceDown");
         onmsAlarm.setNode(node);
         onmsAlarm.setSeverityId(6);

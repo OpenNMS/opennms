@@ -30,6 +30,7 @@ package org.opennms.features.alarms.history.api;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Provides methods for querying the alarm history.
@@ -47,10 +48,10 @@ public interface AlarmHistoryRepository {
      * @param time timestamps in milliseconds
      * @return the last known state of the alarm, or an empty {@code Optional} if none was found
      */
-    Optional<AlarmState> getAlarmWithDbIdAt(long id, long time);
+    Optional<AlarmState> getAlarmWithDbIdAt(UUID id, long time);
 
     /**
-     * Similar to {@link #getAlarmWithDbIdAt(long, long)}, except the lookup is performed using the reduction key.
+     * Similar to {@link #getAlarmWithDbIdAt(UUID, long)}, except the lookup is performed using the reduction key.
      *
      * @param reductionKey reduction key of the alarm to query
      * @param time timestamps in milliseconds
@@ -64,7 +65,7 @@ public interface AlarmHistoryRepository {
      * @param id database id of the alarm to query
      * @return all the known states for the alarm, or an empty list if none were found
      */
-    List<AlarmState> getStatesForAlarmWithDbId(long id);
+    List<AlarmState> getStatesForAlarmWithDbId(UUID id);
 
     /**
      * Retrieves all the known states for the alarm with the given database reduction key.

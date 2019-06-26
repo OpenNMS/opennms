@@ -79,7 +79,7 @@ public class EventValidationTest {
         final Event event = new Event();
         event.setSource("tests");
         event.setTime(new Date());
-        event.setDbid(-1);
+        event.setDbid(null);
         final Set<ConstraintViolation<Event>> errors = validator.validate(event);
         assertEquals(1, errors.size());
     }

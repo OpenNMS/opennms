@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -75,7 +76,7 @@ public class Event implements Message,Serializable {
 	 */
 	@Min(1)
 	@XmlElement(name = "dbid")
-	private Integer _dbid;
+	private UUID _dbid;
 
 	/**
 	 * Field _distPoller.
@@ -589,8 +590,8 @@ public class Event implements Message,Serializable {
 	 * 
 	 * @return the value of field 'Dbid'.
 	 */
-	public Integer getDbid() {
-		return _dbid == null ? 0 : _dbid;
+	public UUID getDbid() {
+		return _dbid;
 	}
 
 	/**
@@ -1387,7 +1388,7 @@ public class Event implements Message,Serializable {
 	 * @param dbid
 	 *            the value of field 'dbid'.
 	 */
-	public void setDbid(final Integer dbid) {
+	public void setDbid(final UUID dbid) {
 		_dbid = dbid;
 	}
 

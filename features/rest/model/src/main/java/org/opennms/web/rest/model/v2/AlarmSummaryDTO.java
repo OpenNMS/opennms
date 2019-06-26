@@ -30,6 +30,7 @@ package org.opennms.web.rest.model.v2;
 
 import java.beans.Transient;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -42,7 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AlarmSummaryDTO {
 
     @XmlAttribute(name="id")
-    private Integer id;
+    private UUID id;
 
     @XmlAttribute(name="type")
     private Integer type;
@@ -67,11 +68,11 @@ public class AlarmSummaryDTO {
 
     private String uei;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

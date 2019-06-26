@@ -29,6 +29,7 @@ package org.opennms.netmgt.alarmd.northbounder.email;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -124,7 +125,7 @@ public class EmailNorthbounderTest {
 
         // Setup test alarm
         OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setId(100);
+        onmsAlarm.setId(UUID.randomUUID());
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
@@ -176,7 +177,7 @@ public class EmailNorthbounderTest {
 
         // Setup test alarm
         OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setId(100);
+        onmsAlarm.setId(UUID.randomUUID());
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");

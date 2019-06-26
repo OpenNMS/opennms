@@ -29,6 +29,7 @@
 package org.opennms.features.apilayer.alarms;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
@@ -68,8 +69,8 @@ public class AlarmLifecycleListenerManager extends InterfaceMapper<org.opennms.i
             }
 
             @Override
-            public void handleDeletedAlarm(int alarmId, String reductionKey) {
-                ext.handleDeletedAlarm(alarmId, reductionKey);
+            public void handleDeletedAlarm(UUID alarmId, String reductionKey) {
+                ext.handleDeletedAlarm(1, reductionKey); // TODO: JW: FIXME
             }
         };
     }

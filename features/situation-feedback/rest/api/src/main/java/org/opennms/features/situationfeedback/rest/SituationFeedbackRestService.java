@@ -29,6 +29,7 @@ package org.opennms.features.situationfeedback.rest;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -52,11 +53,11 @@ public interface SituationFeedbackRestService {
     @GET
     @Path("/{situationId : \\d+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<AlarmFeedback> getFeedback(@PathParam("situationId") int situationId);
+    public Collection<AlarmFeedback> getFeedback(@PathParam("situationId") UUID situationId);
 
     @POST
     @Path("/{situationId : \\d+}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void setFeedback(@PathParam("situationId") int situationId, List<AlarmFeedback> feedback);
+    public void setFeedback(@PathParam("situationId") UUID situationId, List<AlarmFeedback> feedback);
 }

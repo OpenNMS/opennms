@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
@@ -181,8 +182,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         return getNextSequenceValStatement("eventsNxtId");
     }
     
-    public Integer getNextEventId() {
-        return getNextId(getNextEventIdStatement());
+    public UUID getNextEventId() {
+        return UUID.randomUUID();
     }
     
     public String getNextServiceIdStatement() {
@@ -234,11 +235,11 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         createOutage(svc, svcLostEvent.getDbid(), new Timestamp(svcLostEvent.getTime().getTime()));
     }
 
-    public void createOutage(MockService svc, int eventId, Timestamp time) {
+    public void createOutage(MockService svc, UUID eventId, Timestamp time) {
         Object[] values = {
                 getNextOutageId(), // outageID
                 svc.getId(), // service ID
-                Integer.valueOf(eventId),           // svcLostEventId
+                eventId,           // svcLostEventId
                 time, // ifLostService
                };
         
@@ -250,12 +251,12 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         resolveOutage(svc, svcRegainEvent.getDbid(), new Timestamp(svcRegainEvent.getTime().getTime()));
     }        
 
-    public void resolveOutage(MockService svc, int eventId, Timestamp timestamp) {
+    public void resolveOutage(MockService svc, UUID eventId, Timestamp timestamp) {
 
         Object[] values = {
-                Integer.valueOf(eventId),           // svcLostEventId
+                eventId,           // svcLostEventId
                 timestamp, // ifLostService
-                Integer.valueOf(svc.getId()) // ifServiceId
+                svc.getId() // ifServiceId
                };
 
         // TODO: Alert if more than 1 row is updated, should not be possible with index in place
@@ -267,7 +268,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
      */
     @Override
     public void writeEvent(Event e) {
-        Integer eventId = getNextEventId();
+        UUID eventId = getNextEventId();
         
         if (e.getCreationTime() == null) {
             e.setCreationTime(new Date());
@@ -383,10 +384,10 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
             public void processRow(ResultSet rs) throws SQLException {
                 Outage outage = new Outage(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getInt("serviceId"));
                 outage.setServiceName(rs.getString("serviceName"));
-                outage.setLostEvent(rs.getInt("svcLostEventID"), rs.getTimestamp("ifLostService"));
+                outage.setLostEvent(UUID.fromString(rs.getString("svcLostEventID")), rs.getTimestamp("ifLostService"));
                 boolean open = (rs.getObject("ifRegainedService") == null);
                 if (!open) {
-                    outage.setRegainedEvent(rs.getInt("svcRegainedEventID"), rs.getTimestamp("ifRegainedService"));
+                    outage.setRegainedEvent(UUID.fromString(rs.getString("svcRegainedEventID")), rs.getTimestamp("ifRegainedService"));
                 }
                 outages.add(outage);
             }
@@ -461,7 +462,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 notifyIds.add(rs.getInt(1));
             }
         };
-        loadExisting.execute(Integer.valueOf(event.getDbid()));
+        loadExisting.execute(event.getDbid());
         return notifyIds;
     }
 

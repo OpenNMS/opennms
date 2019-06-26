@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -314,8 +315,8 @@ public class DefaultPollContext implements PollContext, EventListener {
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                final int eventId = svcLostEvent.getEventId();
-                if (eventId > 0) {
+                final UUID eventId = svcLostEvent.getEventId();
+                if (eventId != null) {
                     getQueryManager().updateOpenOutageWithEventId(outageId, eventId);
                 } else {
                     LOG.warn("run: Failed to determine an eventId for service lost for: {} with event: {}", svc, svcLostEvent);
@@ -354,8 +355,8 @@ public class DefaultPollContext implements PollContext, EventListener {
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                final int eventId = svcRegainEvent.getEventId();
-                if (eventId > 0) {
+                final UUID eventId = svcRegainEvent.getEventId();
+                if (eventId != null) {
                     getQueryManager().updateResolvedOutageWithEventId(outageId, eventId);
                 } else {
                     LOG.warn("run: Failed to determine an eventId for service regained for: {} with event: {}", svc, svcRegainEvent);

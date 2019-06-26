@@ -212,13 +212,13 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
             outage.lostServiceEventId = 0;
             outage.regainedServiceEventId = 0;
             if (event != null) {
-                outage.lostServiceEventId = onmsOutage.getServiceLostEvent().getId();
+                outage.lostServiceEventId = null; // JW: TODO onmsOutage.getServiceLostEvent().getId();
                 if (event.getDistPoller() != null) {
                     outage.eventLocation = event.getDistPoller().getLocation();
                 }
             }
             if (onmsOutage.getServiceRegainedEvent() != null) {
-                outage.regainedServiceEventId = onmsOutage.getServiceRegainedEvent().getId();
+                outage.regainedServiceEventId = null; // JW: TODO onmsOutage.getServiceRegainedEvent().getId();
             }
             
             return outage;

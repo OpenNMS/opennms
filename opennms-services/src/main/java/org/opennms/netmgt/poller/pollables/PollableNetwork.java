@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -235,7 +236,7 @@ public class PollableNetwork extends PollableContainer {
             boolean up = status.isUp();
             String statusDesc = status.toString();
             PollEvent cause = e.getCause();
-            int eventId = cause == null ? 0 : cause.getEventId();
+            UUID eventId = cause == null ? null : cause.getEventId();
             return (up ? statusDesc : statusDesc+"("+eventId+")");
         }
     }

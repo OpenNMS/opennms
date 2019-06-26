@@ -41,13 +41,14 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @XmlRootElement(name="alarm")
 @XmlAccessorType(XmlAccessType.NONE)
 public class AlarmDTO {
 
     @XmlAttribute(name="id")
-    private Integer id;
+    private UUID id;
 
     @XmlElement(name="uei")
     private String uei;
@@ -174,11 +175,11 @@ public class AlarmDTO {
     @XmlElement(name="affectedNodeCount")
     private Integer affectedNodeCount;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

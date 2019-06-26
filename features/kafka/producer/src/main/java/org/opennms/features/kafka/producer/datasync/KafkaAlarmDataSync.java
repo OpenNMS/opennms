@@ -225,7 +225,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                     // Only remove it if the alarm we have dates before the snapshot
                     .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyUpdated(reductionKey))
                     .collect(Collectors.toSet());
-            reductionKeysNotInDb.forEach(rkey -> kafkaProducer.handleDeletedAlarm((int)alarmsInKtableByReductionKey.get(rkey).getId(), rkey));
+            reductionKeysNotInDb.forEach(rkey -> kafkaProducer.handleDeletedAlarm(null, rkey)); // JW: TODO: FIXME
 
             // Push new entries for keys that are in the database, but not in the ktable
             final Set<String> reductionKeysNotInKtable = Sets.difference(reductionKeysInDb, reductionKeysInKtable).stream()

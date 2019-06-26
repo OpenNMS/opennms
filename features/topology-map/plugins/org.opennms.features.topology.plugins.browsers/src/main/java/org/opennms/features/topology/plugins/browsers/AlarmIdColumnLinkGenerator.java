@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.browsers;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.UUID;
 
 import org.opennms.features.topology.api.support.DialogWindow;
 import org.opennms.features.topology.api.support.InfoWindow;
@@ -67,8 +68,8 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
 	@Override
 	public Object generateCell(final Table source, Object itemId, Object columnId) {
 		if (source == null) return null; // no source
-		Property<Integer> alarmIdProperty = source.getContainerProperty(itemId,  alarmIdPropertyName);
-		final Integer alarmId = alarmIdProperty.getValue(); 
+		Property<UUID> alarmIdProperty = source.getContainerProperty(itemId,  alarmIdPropertyName);
+		final UUID alarmId = alarmIdProperty.getValue();
 		if (alarmId == null) return null; // no value
 
 		// create Link

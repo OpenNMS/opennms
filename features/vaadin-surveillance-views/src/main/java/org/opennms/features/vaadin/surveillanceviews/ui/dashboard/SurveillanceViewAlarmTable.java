@@ -412,7 +412,8 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                         nodeMap.put(onmsAlarm.getNodeId(), getSurveillanceViewService().getNodeForId(onmsAlarm.getNodeId()));
                     }
 
-                    alarms.add(new Alarm(onmsAlarm.getId(), onmsAlarm.getUei(), onmsAlarm.getSeverityId(), onmsAlarm.getSeverity().getLabel(), nodeMap.get(onmsAlarm.getNodeId()).getLabel(), onmsAlarm.getNodeId(), onmsAlarm.getLogMsg(), onmsAlarm.getCounter(), onmsAlarm.getFirstEventTime(), onmsAlarm.getLastEventTime()));
+                    // TODO: FIXME: onmsAlarm.getId()
+                    alarms.add(new Alarm(0, onmsAlarm.getUei(), onmsAlarm.getSeverityId(), onmsAlarm.getSeverity().getLabel(), nodeMap.get(onmsAlarm.getNodeId()).getLabel(), onmsAlarm.getNodeId(), onmsAlarm.getLogMsg(), onmsAlarm.getCounter(), onmsAlarm.getFirstEventTime(), onmsAlarm.getLastEventTime()));
                 }
                 return alarms;
             }

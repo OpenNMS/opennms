@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -94,7 +95,7 @@ public class DroolsTicketerServiceLayerTest {
         EasyMock.reset(m_configDao);
         
         m_alarm = new OnmsAlarm();
-        m_alarm.setId(1);
+        m_alarm.setId(UUID.randomUUID());
         m_alarm.setLogMsg("Test Logmsg");
         m_alarm.setDescription("Test Description");
         m_alarm.setUei("uei.opennms.org/nodes/nodeDown");
@@ -113,7 +114,7 @@ public class DroolsTicketerServiceLayerTest {
 
         m_easyMockUtils.replayAll();
 
-        m_droolsTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(), new HashMap<>());
+        m_droolsTicketerServiceLayer.createTicketForAlarm(-1, new HashMap<>()); // JW: TODO: FIXME
 
         m_easyMockUtils.verifyAll();
     }
@@ -134,7 +135,7 @@ public class DroolsTicketerServiceLayerTest {
         
         m_easyMockUtils.replayAll();
         
-        m_droolsTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(), new HashMap<>());
+        m_droolsTicketerServiceLayer.createTicketForAlarm(-1, new HashMap<>()); // JW: TODO: FIXME
         
         m_easyMockUtils.verifyAll();
     }

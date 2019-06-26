@@ -29,6 +29,7 @@
 package org.opennms.netmgt.scriptd.helper;
 
 import java.net.UnknownHostException;
+import java.util.UUID;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -380,8 +381,8 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 
 	private SnmpTrapBuilder buildEventTrap(Event event, SnmpTrapBuilder trap, String severity) {
 		try {
-			 Integer t_dbid = Integer.valueOf(event.getDbid());
-             if (t_dbid.intValue() > 0)
+			 UUID t_dbid = event.getDbid();
+             if (t_dbid != null)
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.1.0", "OctetString", "text", t_dbid.toString());
              else
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.1.0", "OctetString", "text", "null");

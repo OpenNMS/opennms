@@ -38,6 +38,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.NavigableSet;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -212,7 +213,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setAlarmAckTime(null);
         alarm.setAlarmAckUser(null);
         getAlarmDao().saveOrUpdate(alarm);
-        final Integer alarmId = alarm.getId();
+        final UUID alarmId = alarm.getId();
 
         sendPut("/alarms", "ack=true&alarmId=" + alarmId, 204);
         String xml = sendRequest(GET, "/alarms/" + alarmId, 200);

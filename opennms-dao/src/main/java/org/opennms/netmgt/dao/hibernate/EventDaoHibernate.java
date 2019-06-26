@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -41,7 +42,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> implements EventDao {
+public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, UUID> implements EventDao {
 
 	public EventDaoHibernate() {
 		super(OnmsEvent.class);
@@ -49,7 +50,7 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> 
 
     /** {@inheritDoc} */
         @Override
-    public int deletePreviousEventsForAlarm(Integer id, OnmsEvent e) throws DataAccessException {
+    public int deletePreviousEventsForAlarm(UUID id, OnmsEvent e) throws DataAccessException {
         String hql = "delete from OnmsEvent where alarmid = ? and eventid != ?";
         Object[] values = {id, e.getId()};
         return bulkDelete(hql, values);

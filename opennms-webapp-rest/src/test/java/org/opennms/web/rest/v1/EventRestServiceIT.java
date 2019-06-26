@@ -116,7 +116,7 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testBadDbidEvent() throws Exception {
         final Event e = new Event();
-        e.setDbid(-1);
+        e.setDbid(null);
         sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), Status.BAD_REQUEST.getStatusCode());
     }
 

@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -43,7 +44,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.springframework.transaction.support.TransactionOperations;
 
-public class AlarmDaoContainer extends OnmsVaadinContainer<OnmsAlarm,Integer> {
+public class AlarmDaoContainer extends OnmsVaadinContainer<OnmsAlarm,UUID> {
 
     private static final long serialVersionUID = -4026870931086916312L;
 
@@ -63,7 +64,7 @@ public class AlarmDaoContainer extends OnmsVaadinContainer<OnmsAlarm,Integer> {
     }
 
     @Override
-    protected Integer getId(OnmsAlarm bean){
+    protected UUID getId(OnmsAlarm bean){
         return bean == null ? null : bean.getId();
     }
 

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
@@ -306,12 +307,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // Retrieve the related alarms as given by the event parameters
         final Set<OnmsAlarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
         // Index these by id
-        final Map<Integer, OnmsAlarm> relatedAlarmsByIds = relatedAlarms.stream()
+        final Map<UUID, OnmsAlarm> relatedAlarmsByIds = relatedAlarms.stream()
                 .collect(Collectors.toMap(OnmsAlarm::getId, a -> a));
 
         // Build sets of the related alarm ids for easy comparison
-        final Set<Integer> relatedAlarmIdsFromEvent = ImmutableSet.copyOf(relatedAlarmsByIds.keySet());
-        final Set<Integer> relatedAlarmIdsFromExistingAlarm = ImmutableSet.copyOf(alarm.getRelatedAlarmIds());
+        final Set<UUID> relatedAlarmIdsFromEvent = ImmutableSet.copyOf(relatedAlarmsByIds.keySet());
+        final Set<UUID> relatedAlarmIdsFromExistingAlarm = ImmutableSet.copyOf(alarm.getRelatedAlarmIds());
 
         // Remove alarms that are not referenced in the event -  we treat the event as an
         // authoritative source of the related alarms rather than using the union of the previously known related alarms
@@ -418,7 +419,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             return false;
         }
 
-        if (event.getDbid() <= 0) {
+        if (event.getDbid() == null) {
             throw new IllegalArgumentException("Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
         }
 

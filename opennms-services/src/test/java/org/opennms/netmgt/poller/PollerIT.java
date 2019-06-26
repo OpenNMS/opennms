@@ -45,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
@@ -1776,17 +1777,17 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
             assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
             assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
             assertEquals(m_svc.getSvcId(), rs.getInt("serviceId"));
-            assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
+            assertEquals(m_lostSvcEvent.getDbid(), UUID.fromString(rs.getString("svcLostEventId")));
             assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
             assertEquals(getRegainedEventId(), rs.getObject("svcRegainedEventId"));
             assertEquals(m_regainedSvcTime, rs.getTimestamp("ifRegainedService"));
         }
 
-        private Integer getRegainedEventId() {
+        private UUID getRegainedEventId() {
             if (m_regainedSvcEvent == null) {
                 return null;
             }
-            return Integer.valueOf(m_regainedSvcEvent.getDbid());
+            return m_regainedSvcEvent.getDbid();
         }
     }
 

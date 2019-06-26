@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
@@ -504,7 +505,7 @@ public class Poller extends AbstractServiceDaemon {
         final String ipAddr = InetAddressUtils.str(iface.getIpAddress());
         final String serviceName = service.getServiceName();
         boolean active = "A".equals(service.getStatus());
-        final Number svcLostEventId = event == null ? null : event.getId();
+        final UUID svcLostEventId = event == null ? null : event.getId();
         final Date ifLostService = outage == null ? null : outage.getIfLostService();
         final String svcLostUei = event == null ? null : event.getEventUei();
 
@@ -556,7 +557,7 @@ public class Poller extends AbstractServiceDaemon {
         } else {
             svc.updateStatus(PollStatus.down("Service has lost event : " + svcLostEventId));
 
-            PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), svcLostUei, ifLostService);
+            PollEvent cause = new DbPollEvent(svcLostEventId, svcLostUei, ifLostService);
 
             svc.setCause(cause);
 

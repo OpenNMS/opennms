@@ -31,12 +31,13 @@ package org.opennms.netmgt.dao.api;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.opennms.netmgt.model.OnmsEvent;
 
-public interface EventDao extends LegacyOnmsDao<OnmsEvent, Integer> {
+public interface EventDao extends LegacyOnmsDao<OnmsEvent, UUID> {
 
-    int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
+    int deletePreviousEventsForAlarm(final UUID id, final OnmsEvent e);
 
     /**
      * Returns a list of events which have been created

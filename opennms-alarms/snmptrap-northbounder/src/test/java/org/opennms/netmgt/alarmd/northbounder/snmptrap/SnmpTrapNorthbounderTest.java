@@ -30,6 +30,7 @@ package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -97,7 +98,7 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
 
         // Setup test alarm
         OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setId(100);
+        onmsAlarm.setId(UUID.randomUUID());
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");

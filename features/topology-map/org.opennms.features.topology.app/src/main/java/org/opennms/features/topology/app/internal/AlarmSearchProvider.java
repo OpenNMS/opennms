@@ -191,7 +191,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
             String nodeLabel = alarm.getNodeLabel();
             LOG.debug("SearchProvider.query: adding '{}' to set of results.", nodeLabel);
 
-            AlarmSearchResult result = new AlarmSearchResult(alarm.getId(), alarm.getNodeLabel(), queryString, !SearchResult.COLLAPSED);
+            AlarmSearchResult result = new AlarmSearchResult(1, alarm.getNodeLabel(), queryString, !SearchResult.COLLAPSED); // JW: TODO: FIXME: alarm.getId()
             queryResults.add(result);
         }
         return queryResults;

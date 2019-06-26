@@ -72,4 +72,5 @@ public class SinkStrategy {
         }
         throw new IllegalArgumentException("Unsupported Sink strategy: " + effectiveStrategyName);
     }
+
 }

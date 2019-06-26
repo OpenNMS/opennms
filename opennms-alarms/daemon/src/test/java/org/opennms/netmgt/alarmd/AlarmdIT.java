@@ -51,6 +51,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
@@ -361,7 +362,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         assertEquals(2, situation.getRelatedAlarms().size());
 
         //capture the current association time of the related alarms
-        Map<Integer, Date> associationTimesByRelatedAlarmId = situation.getAssociatedAlarms().stream()
+        Map<UUID, Date> associationTimesByRelatedAlarmId = situation.getAssociatedAlarms().stream()
                 .collect(Collectors.toMap(assoc -> assoc.getRelatedAlarm().getId(), AlarmAssociation::getMappedTime));
 
         //now trigger the same situation again
@@ -374,7 +375,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         assertThat(m_alarmAssociationDao.getAssociationsForSituation(situation.getId()), hasSize(2));
 
         //the association times should not have changed - gather them again and compare
-        Map<Integer, Date> afterReduceAssociationTimesByRelatedAlarmId = situation.getAssociatedAlarms().stream()
+        Map<UUID, Date> afterReduceAssociationTimesByRelatedAlarmId = situation.getAssociatedAlarms().stream()
                 .collect(Collectors.toMap(assoc -> assoc.getRelatedAlarm().getId(), AlarmAssociation::getMappedTime));
         //make sure the two maps match
         assertThat(associationTimesByRelatedAlarmId.entrySet(), everyItem(isIn(afterReduceAssociationTimesByRelatedAlarmId.entrySet())));
@@ -477,7 +478,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         bldr.setLogMessage("This is a test.");
 
         final Event event = bldr.getEvent();
-        event.setDbid(17);
+        event.setDbid(UUID.randomUUID());
 
         MockNode node = m_mockNetwork.getNode(1);
         sendNodeDownEvent("%nodeid%", node);

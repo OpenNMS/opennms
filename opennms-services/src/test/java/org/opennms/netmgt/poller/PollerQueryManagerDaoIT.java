@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
@@ -1290,7 +1291,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
 			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
 			assertEquals(m_svc.getSvcId(), rs.getInt("serviceId"));
-			assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
+			assertEquals(m_lostSvcEvent.getDbid(), UUID.fromString(rs.getString("svcLostEventId")));
 			assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
 			assertEquals(getRegainedEventId(), rs
 					.getObject("svcRegainedEventId"));
@@ -1298,10 +1299,10 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 					.getTimestamp("ifRegainedService"));
 		}
 
-		private Integer getRegainedEventId() {
+		private UUID getRegainedEventId() {
 			if (m_regainedSvcEvent == null)
 				return null;
-			return Integer.valueOf(m_regainedSvcEvent.getDbid());
+			return m_regainedSvcEvent.getDbid();
 		}
 	}
 

@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.mock;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,12 +41,11 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
 
-public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements AlarmDao {
-    private AtomicInteger m_id = new AtomicInteger(0);
+public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, UUID> implements AlarmDao {
 
     @Override
-    public Integer save(final OnmsAlarm alarm) {
-        Integer retval = super.save(alarm);
+    public UUID save(final OnmsAlarm alarm) {
+        UUID retval = super.save(alarm);
         updateSubObjects(alarm);
         return retval;
     }
@@ -68,11 +67,11 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
 
     @Override
     protected void generateId(final OnmsAlarm alarm) {
-        alarm.setId(m_id.incrementAndGet());
+        alarm.setId(UUID.randomUUID());
     }
 
     @Override
-    protected Integer getId(final OnmsAlarm alarm) {
+    protected UUID getId(final OnmsAlarm alarm) {
         return alarm.getId();
     }
 

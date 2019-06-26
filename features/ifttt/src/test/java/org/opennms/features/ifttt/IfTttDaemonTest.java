@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -121,7 +122,7 @@ public class IfTttDaemonTest {
     }
 
     private Map<Integer, OnmsNode> nodeMap;
-    private Map<Integer, OnmsAlarm> alarmMap;
+    private Map<UUID, OnmsAlarm> alarmMap;
     private Map<String, OnmsCategory> categoryMap;
 
     private void addCategory(final String category) {
@@ -136,8 +137,8 @@ public class IfTttDaemonTest {
         nodeMap.put(id, onmsNode);
     }
 
-    private void addAlarm(final Integer id, final Integer nodeId, final String reductionKey, final OnmsSeverity onmsSeverity, final boolean acknowledged) {
-        final OnmsAlarm onmsAlarm = new OnmsAlarm(id, "dummy.uei", null, null, onmsSeverity.getId(), new Date(), new OnmsEvent()) {
+    private void addAlarm(final Integer nodeId, final String reductionKey, final OnmsSeverity onmsSeverity, final boolean acknowledged) {
+        final OnmsAlarm onmsAlarm = new OnmsAlarm(UUID.randomUUID(), "dummy.uei", null, null, onmsSeverity.getId(), new Date(), new OnmsEvent()) {
             @Override
             public boolean isAcknowledged() {
                 return acknowledged;
@@ -145,7 +146,7 @@ public class IfTttDaemonTest {
         };
         onmsAlarm.setNode(nodeMap.get(nodeId));
         onmsAlarm.setReductionKey(reductionKey);
-        alarmMap.put(id, onmsAlarm);
+        alarmMap.put(onmsAlarm.getId(), onmsAlarm);
     }
 
     @Before
@@ -167,26 +168,26 @@ public class IfTttDaemonTest {
 
         alarmMap = new HashMap<>();
 
-        addAlarm(1, 1, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.NORMAL, false);
-        addAlarm(2, 2, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.INDETERMINATE, false);
-        addAlarm(3, 3, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MINOR, false);
+        addAlarm(1, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.NORMAL, false);
+        addAlarm(2, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.INDETERMINATE, false);
+        addAlarm(3, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MINOR, false);
 
-        addAlarm(4, 4, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.WARNING, false);
-        addAlarm(5, 5, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CLEARED, false);
-        addAlarm(6, 6, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CRITICAL, false);
+        addAlarm(4, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.WARNING, false);
+        addAlarm(5, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CLEARED, false);
+        addAlarm(6, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CRITICAL, false);
 
-        addAlarm(7, 1, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MINOR, false);
-        addAlarm(8, 2, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.WARNING, false);
-        addAlarm(9, 3, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MINOR, false);
+        addAlarm(1, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MINOR, false);
+        addAlarm(2, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.WARNING, false);
+        addAlarm(3, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MINOR, false);
 
-        addAlarm(10, null, null, OnmsSeverity.CRITICAL, false);
+        addAlarm(null, null, OnmsSeverity.CRITICAL, false);
 
-        addAlarm(11, 2, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CRITICAL, true);
+        addAlarm(2, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CRITICAL, true);
 
-        addAlarm(12, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.MINOR, false);
-        addAlarm(13, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.CRITICAL, false);
-        addAlarm(14, null, null, OnmsSeverity.CRITICAL, false);
-        addAlarm(15, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.MAJOR, false);
+        addAlarm(null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.MINOR, false);
+        addAlarm(null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.CRITICAL, false);
+        addAlarm(null, null, OnmsSeverity.CRITICAL, false);
+        addAlarm(null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.MAJOR, false);
     }
 
     @Test
@@ -253,8 +254,8 @@ public class IfTttDaemonTest {
         await().atMost(timeout, SECONDS).until(() -> allEntrySizesMatch(receivedEntries, entryCount - 2));
         LOG.debug("#1: {}", receivedEntries);
 
-        addAlarm(100, 4, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MAJOR, false);
-        addAlarm(101, 4, "uei.opennms.org/bsm/serviceProblem", OnmsSeverity.MAJOR, false);
+        addAlarm(4, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MAJOR, false);
+        addAlarm(4, "uei.opennms.org/bsm/serviceProblem", OnmsSeverity.MAJOR, false);
         when(alarmDao.findMatching((Criteria) Matchers.anyObject())).thenReturn(alarmMap.values().stream().collect(Collectors.toList()));
 
         await().atMost(timeout, SECONDS).until(() -> allEntrySizesMatch(receivedEntries, entryCount - 1));

@@ -31,6 +31,7 @@ package org.opennms.netmgt.alarmd.api.support;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -231,7 +232,7 @@ public class AbstractNorthbounderTest {
      */
     private NorthboundAlarm createNorthboundAlarm(int alarmid) {
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(alarmid);
+        alarm.setId(UUID.randomUUID()); // JW: FIXME: TODO
         alarm.setUei("uei.opennms.org/test/httpNorthBounder");
 
         return new NorthboundAlarm(alarm);

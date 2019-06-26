@@ -29,6 +29,7 @@
 package org.opennms.web.svclayer.support;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -76,24 +77,24 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
     
     /** {@inheritDoc} */
     @Override
-    public void closeTicket(Integer alarmId) {
+    public void closeTicket(UUID alarmId) {
         changeTicket(alarmId, TroubleTicketState.CLOSE_PENDING, EventConstants.TROUBLETICKET_CLOSE_UEI,null);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void createTicket(Integer alarmId, Map<String,String> attributes) {
+    public void createTicket(UUID alarmId, Map<String,String> attributes) {
         changeTicket(alarmId, TroubleTicketState.CREATE_PENDING, EventConstants.TROUBLETICKET_CREATE_UEI,attributes);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void updateTicket(Integer alarmId) {
+    public void updateTicket(UUID alarmId) {
         changeTicket(alarmId, TroubleTicketState.UPDATE_PENDING, EventConstants.TROUBLETICKET_UPDATE_UEI,null);
     }
 
-    private void changeTicket(Integer alarmId, TroubleTicketState newState, String uei,Map<String,String> attributes) {
+    private void changeTicket(UUID alarmId, TroubleTicketState newState, String uei,Map<String,String> attributes) {
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
         alarm.setTTicketState(newState);
         m_alarmDao.saveOrUpdate(alarm);
@@ -110,7 +111,7 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
         bldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
         if (attributes == null || !attributes.containsKey(EventConstants.PARM_USER))
         	bldr.addParam(EventConstants.PARM_USER, alarm.getAlarmAckUser());
-        bldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
+        bldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId().toString());
         if (alarm.getTTicketId() != null) {
             bldr.addParam(EventConstants.PARM_TROUBLE_TICKET, alarm.getTTicketId());
         }

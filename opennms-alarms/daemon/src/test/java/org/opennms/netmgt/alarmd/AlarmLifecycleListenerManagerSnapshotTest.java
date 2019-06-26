@@ -35,6 +35,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -101,7 +102,7 @@ public class AlarmLifecycleListenerManagerSnapshotTest {
             }
 
             @Override
-            public void handleDeletedAlarm(int alarmId, String reductionKey) {
+            public void handleDeletedAlarm(UUID alarmId, String reductionKey) {
                 if (doneSnapshot.get()) {
                     newUpdateOrDeleteAfterSnapshot.incrementAndGet();
                 } else {

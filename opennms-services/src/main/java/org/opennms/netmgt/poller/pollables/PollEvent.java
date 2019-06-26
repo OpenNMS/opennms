@@ -29,7 +29,7 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
-
+import java.util.UUID;
 
 
 /**
@@ -65,7 +65,7 @@ public abstract class PollEvent {
      *
      * @return a int.
      */
-    public abstract int getEventId();
+    public abstract UUID getEventId();
 
     /**
      * <p>getDate</p>

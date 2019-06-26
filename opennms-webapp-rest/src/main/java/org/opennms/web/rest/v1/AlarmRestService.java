@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -84,13 +85,13 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{alarmId}")
     @Transactional
-    public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final String alarmId) {
+    public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final UUID alarmId) {
         SecurityHelper.assertUserReadCredentials(securityContext);
         if ("summaries".equals(alarmId)) {
             final List<AlarmSummary> collection = m_alarmDao.getNodeAlarmSummaries();
             return collection == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(new AlarmSummaryCollection(collection)).build();
         } else {
-            final OnmsAlarm alarm = m_alarmDao.get(Integer.valueOf(alarmId));
+            final OnmsAlarm alarm = m_alarmDao.get(alarmId);
             return alarm == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(alarm).build();
         }
     }
@@ -147,7 +148,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("{alarmId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateAlarm(@Context final SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
+    public Response updateAlarm(@Context final SecurityContext securityContext, @PathParam("alarmId") final UUID alarmId, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {

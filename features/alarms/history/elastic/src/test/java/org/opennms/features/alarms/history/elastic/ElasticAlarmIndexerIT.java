@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -140,13 +141,13 @@ public class ElasticAlarmIndexerIT {
 
     private static OnmsAlarm createAlarm(int id, long firstEventTime) {
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(id);
+        alarm.setId(UUID.randomUUID());
         alarm.setReductionKey("rkey-" + id);
         alarm.setFirstEventTime(new Date(firstEventTime));
         alarm.setCounter(1);
 
         OnmsEvent lastEvent = new OnmsEvent();
-        lastEvent.setId(id);
+        lastEvent.setId(UUID.randomUUID());
         lastEvent.setEventTime(new Date(firstEventTime));
         alarm.setLastEvent(lastEvent);
         return alarm;

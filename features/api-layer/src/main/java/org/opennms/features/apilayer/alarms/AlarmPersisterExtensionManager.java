@@ -48,6 +48,8 @@ public class AlarmPersisterExtensionManager extends InterfaceMapper<org.opennms.
 
     public AlarmPersisterExtensionManager(BundleContext bundleContext, SessionUtils sessionUtils) {
         super(AlarmPersisterExtension.class, bundleContext);
+
+
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 

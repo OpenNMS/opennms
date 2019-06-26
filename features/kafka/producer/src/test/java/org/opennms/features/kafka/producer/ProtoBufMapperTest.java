@@ -38,6 +38,7 @@ import static org.opennms.topologies.service.api.EdgeMockUtil.createEdge;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -66,12 +67,12 @@ public class ProtoBufMapperTest {
     @Test
     public void testRelatedalarms() {
         OnmsAlarm parentAlarm = generateTestAlarm();
-        parentAlarm.setId(0);
+        parentAlarm.setId(UUID.randomUUID());
         parentAlarm.setUei("parent");
 
         OnmsAlarm childAlarm = generateTestAlarm();
         int childId = 1;
-        childAlarm.setId(childId);
+        childAlarm.setId(UUID.randomUUID());
         String childUei = "child";
         childAlarm.setUei(childUei);
         String reductionKey = "test key";

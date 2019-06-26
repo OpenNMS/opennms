@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -43,10 +44,10 @@ import com.google.common.collect.ImmutableSet;
  */
 public class AlarmCallbackStateTracker {
 
-    private final Set<Integer> alarmsUpdatesById = new HashSet<>();
+    private final Set<UUID> alarmsUpdatesById = new HashSet<>();
     private final Set<String> alarmsUpdatesByReductionKey = new HashSet<>();
 
-    private final Set<Integer> deletedAlarmsByAlarmId = new HashSet<>();
+    private final Set<UUID> deletedAlarmsByAlarmId = new HashSet<>();
     private final Set<String> deletedAlarmsByReductionKey = new HashSet<>();
 
     private final List<Set<?>> sets = Arrays.asList(alarmsUpdatesById, alarmsUpdatesByReductionKey,
@@ -58,7 +59,7 @@ public class AlarmCallbackStateTracker {
         trackAlarms = true;
     }
 
-    public synchronized void trackNewOrUpdatedAlarm(int alarmId, String reductionKey) {
+    public synchronized void trackNewOrUpdatedAlarm(UUID alarmId, String reductionKey) {
         if (!trackAlarms) {
             return;
         }
@@ -66,7 +67,7 @@ public class AlarmCallbackStateTracker {
         alarmsUpdatesByReductionKey.add(reductionKey);
     }
 
-    public synchronized void trackDeletedAlarm(int alarmId, String reductionKey) {
+    public synchronized void trackDeletedAlarm(UUID alarmId, String reductionKey) {
         if (!trackAlarms) {
             return;
         }
@@ -81,11 +82,11 @@ public class AlarmCallbackStateTracker {
 
     // By ID
 
-    public synchronized boolean wasAlarmWithIdUpdated(int alarmId) {
+    public synchronized boolean wasAlarmWithIdUpdated(UUID alarmId) {
         return alarmsUpdatesById.contains(alarmId);
     }
 
-    public synchronized boolean wasAlarmWithIdDeleted(int alarmId) {
+    public synchronized boolean wasAlarmWithIdDeleted(UUID alarmId) {
         return deletedAlarmsByAlarmId.contains(alarmId);
     }
 
@@ -99,7 +100,7 @@ public class AlarmCallbackStateTracker {
         return deletedAlarmsByReductionKey.contains(reductionKey);
     }
 
-    public Set<Integer> getUpdatedAlarmIds() {
+    public Set<UUID> getUpdatedAlarmIds() {
         return ImmutableSet.copyOf(alarmsUpdatesById);
     }
 }

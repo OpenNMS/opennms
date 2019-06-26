@@ -699,7 +699,7 @@
             </c:if>
           </td>          
           <td valign="middle">
-	    <% if(alarms[i].getId() > 0 ) { %>           
+	    <% if(alarms[i].getId() != null ) { %>           
                 <nobr>
                   <a href="event/list.htm?sortby=id&amp;acktype=unack&amp;filter=alarm%3d<%=alarms[i].getId()%>"><%=alarms[i].getCounter()%></a>
                 </nobr>
@@ -927,6 +927,7 @@
 
         // To have every new unique alarm trigger, use getId.  To have every new
         // alarm and every increment of Count, use last event Id.
+	/* FIXME
         if(soundOnEvent){
             OnmsEvent lastEvent=onmsAlarm.getLastEvent();
             if(lastEvent!=null && lastEvent.getId()!=null) lastId = lastEvent.getId();
@@ -948,6 +949,7 @@
                 return soundStr;
             }
         }
+	*/
 
         return "<!-- no sound -->";
 

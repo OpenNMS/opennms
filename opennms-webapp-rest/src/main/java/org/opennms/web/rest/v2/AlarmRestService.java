@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import javax.ws.rs.Consumes;
@@ -89,7 +90,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("alarms")
 @Transactional
-public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,AlarmDTO,SearchBean,Integer,Integer> {
+public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,AlarmDTO,SearchBean,UUID,Integer> {
 
     @Autowired
     private AlarmDao m_dao;
@@ -188,7 +189,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
     @Override
     protected OnmsAlarm doGet(UriInfo uriInfo, Integer id) {
-        return getDao().get(id);
+        return getDao().get(null); // JW: TODO: FIXME
     }
 
     @Override
@@ -242,7 +243,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @PUT
     @Path("{id}/memo")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+    public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final UUID alarmId, final MultivaluedMapImpl params) {
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
         SecurityHelper.assertUserEditCredentials(securityContext, user);
         final String body = params.getFirst("body");
@@ -254,7 +255,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @PUT
     @Path("{id}/journal")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+    public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final UUID alarmId, final MultivaluedMapImpl params) {
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
         SecurityHelper.assertUserEditCredentials(securityContext, user);
         final String body = params.getFirst("body");
@@ -266,7 +267,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @DELETE
     @Path("{id}/memo")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
+    public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final UUID alarmId) {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
         m_repository.removeStickyMemo(alarmId);
         return Response.noContent().build();
@@ -275,7 +276,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @DELETE
     @Path("{id}/journal")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response removeJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
+    public Response removeJournal(@Context final SecurityContext securityContext, @PathParam("id") final UUID alarmId) {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
         m_repository.removeReductionKeyMemo(alarmId);
         return Response.noContent().build();
@@ -283,7 +284,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
     @POST
     @Path("{id}/ticket/create")
-    public Response createTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+    public Response createTicket(@Context final SecurityContext securityContext, @PathParam("id") final UUID alarmId) throws Exception {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
 
         return runIfTicketerPluginIsEnabled(() -> {
@@ -296,7 +297,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
     @POST
     @Path("{id}/ticket/update")
-    public Response updateTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+    public Response updateTicket(@Context final SecurityContext securityContext, @PathParam("id") final UUID alarmId) throws Exception {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
 
         return runIfTicketerPluginIsEnabled(() -> {
@@ -307,7 +308,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
     @POST
     @Path("{id}/ticket/close")
-    public Response closeTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+    public Response closeTicket(@Context final SecurityContext securityContext, @PathParam("id") final UUID alarmId) throws Exception {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
 
         return runIfTicketerPluginIsEnabled(() -> {

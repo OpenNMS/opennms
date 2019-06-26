@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.opennms.netmgt.poller.QueryManager;
 
@@ -122,7 +123,7 @@ public class MockQueryManager implements QueryManager {
     }
 
     @Override
-    public void updateOpenOutageWithEventId(int outageId, int lostEventId) {
+    public void updateOpenOutageWithEventId(int outageId, UUID lostEventId) {
         // TODO Auto-generated method stub
     }
 
@@ -135,7 +136,7 @@ public class MockQueryManager implements QueryManager {
 
     @Override
     public void updateResolvedOutageWithEventId(int outageId,
-            int regainedEventId) {
+                                                UUID regainedEventId) {
         // TODO Auto-generated method stub
     }
 
@@ -151,20 +152,20 @@ public class MockQueryManager implements QueryManager {
 	}
 
 	@Override
-	public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+	public void closeOutagesForNode(Date closeDate, UUID eventId, int nodeId) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void closeOutagesForInterface(Date closeDate, int eventId,
+	public void closeOutagesForInterface(Date closeDate, UUID eventId,
 			int nodeId, String ipAddr) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void closeOutagesForService(Date closeDate, int eventId, int nodeId,
+	public void closeOutagesForService(Date closeDate, UUID eventId, int nodeId,
 			String ipAddr, String serviceName) {
 		// TODO Auto-generated method stub
 		

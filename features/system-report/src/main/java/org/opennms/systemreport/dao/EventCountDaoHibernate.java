@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -43,7 +44,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
-public class EventCountDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> implements EventCountDao {
+public class EventCountDaoHibernate extends AbstractDaoHibernate<OnmsEvent, UUID> implements EventCountDao {
 
     public EventCountDaoHibernate() {
         super(OnmsEvent.class);

@@ -37,6 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -72,7 +73,7 @@ public class MiscExamplesIT extends DroolsExampleIT {
     @Test
     public void canEscalateAlarmsForNodesInCategory() {
         // Create an alarm that we know will trigger our escalate rule
-        OnmsAlarm trigger = createNodeDownAlarm(1, "EMERGENCY_F0");
+        OnmsAlarm trigger = createNodeDownAlarm("EMERGENCY_F0");
         OnmsSeverity originalSeverity = trigger.getSeverity();
 
         // Tick
@@ -92,7 +93,7 @@ public class MiscExamplesIT extends DroolsExampleIT {
 
         // Create an alarm that should not trigger our escalate rule
         reset(alarmDao);
-        trigger = createNodeDownAlarm(2, "NOT_EMERGENCY_F0");
+        trigger = createNodeDownAlarm("NOT_EMERGENCY_F0");
 
         // Tick
         dac.getClock().advanceTime( 1, TimeUnit.SECONDS );
@@ -104,12 +105,12 @@ public class MiscExamplesIT extends DroolsExampleIT {
         verify(alarmDao, times(0)).update(any(OnmsAlarm.class));
     }
 
-    private OnmsAlarm createNodeDownAlarm(int id, String nodeCategory) {
+    private OnmsAlarm createNodeDownAlarm(String nodeCategory) {
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(id);
+        alarm.setId(UUID.randomUUID());
         alarm.setAlarmType(1);
         alarm.setSeverity(OnmsSeverity.MAJOR);
-        alarm.setReductionKey(EventConstants.NODE_DOWN_EVENT_UEI + id);
+        alarm.setReductionKey(EventConstants.NODE_DOWN_EVENT_UEI + alarm.getId());
         alarm.setFirstEventTime(new Date(15 * 1000));
 
         final OnmsNode node = new OnmsNode();

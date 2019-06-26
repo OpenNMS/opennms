@@ -29,6 +29,7 @@
 package org.opennms.features.alarms.history.elastic.mapping;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
 
@@ -61,7 +62,7 @@ public class MapStructDocumentImpl implements Function<OnmsAlarm, AlarmDocumentD
     }
 
     @Override
-    public AlarmDocumentDTO createAlarmDocumentForDelete(int alarmId, String reductionKey) {
+    public AlarmDocumentDTO createAlarmDocumentForDelete(UUID alarmId, String reductionKey) {
         AlarmDocumentDTO doc = new AlarmDocumentDTO();
         doc.setId(alarmId);
         doc.setReductionKey(reductionKey);

@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -84,7 +85,7 @@ public class PendingPollEvent extends PollEvent {
      * @return a int.
      */
     @Override
-    public int getEventId() {
+    public UUID getEventId() {
         return m_event.getDbid();
     }
     

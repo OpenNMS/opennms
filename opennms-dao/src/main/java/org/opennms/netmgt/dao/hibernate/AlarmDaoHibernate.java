@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -55,7 +56,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  * @author ranger
  * @version $Id: $
  */
-public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> implements AlarmDao {
+public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, UUID> implements AlarmDao {
 
     public AlarmDaoHibernate() {
         super(OnmsAlarm.class);

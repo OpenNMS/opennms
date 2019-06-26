@@ -30,6 +30,7 @@ package org.opennms.web.controller.alarm;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -108,7 +109,7 @@ public class AlarmDetailController extends MultiActionController {
         // Try to parse alarm ID as string to integer
         try {
             alarmIdString = safeRequest.getParameter("id");
-            int alarmId = Integer.parseInt(alarmIdString);
+            UUID alarmId = UUID.fromString(alarmIdString);
             acknowledgments = m_webAlarmRepository.getAcknowledgments(alarmId);
 
             // Get alarm by ID
@@ -133,13 +134,13 @@ public class AlarmDetailController extends MultiActionController {
     }
 
     public ModelAndView removeStickyMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-        int alarmId;
+        UUID alarmId;
         String alarmIdString = "";
 
         // Try to parse alarm ID from string to integer
         try {
             alarmIdString = httpServletRequest.getParameter("alarmId");
-            alarmId = Integer.parseInt(alarmIdString);
+            alarmId = UUID.fromString(alarmIdString);
             m_webAlarmRepository.removeStickyMemo(alarmId);
 
             return new ModelAndView(new RedirectView("detail.htm", true), "id", alarmId);
@@ -150,13 +151,13 @@ public class AlarmDetailController extends MultiActionController {
     }
 
     public ModelAndView saveStickyMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-        int alarmId;
+        UUID alarmId;
         String alarmIdString = "";
 
         // Try to parse alarm ID from string to integer
         try {
             alarmIdString = httpServletRequest.getParameter("alarmId");
-            alarmId = Integer.parseInt(alarmIdString);
+            alarmId = UUID.fromString(alarmIdString);
             String stickyMemoBody = httpServletRequest.getParameter("stickyMemoBody");
             m_webAlarmRepository.updateStickyMemo(alarmId, stickyMemoBody, httpServletRequest.getRemoteUser());
             return new ModelAndView(new RedirectView("detail.htm", true), "id", alarmId);
@@ -167,13 +168,13 @@ public class AlarmDetailController extends MultiActionController {
     }
 
     public ModelAndView removeJournalMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-        int alarmId;
+        UUID alarmId;
         String alarmIdString = "";
 
         // Try to parse alarm ID from string to integer
         try {
             alarmIdString = httpServletRequest.getParameter("alarmId");
-            alarmId = Integer.parseInt(alarmIdString);
+            alarmId = UUID.fromString(alarmIdString);
             m_webAlarmRepository.removeReductionKeyMemo(alarmId);
 
             return new ModelAndView(new RedirectView("detail.htm", true), "id", alarmId);
@@ -184,13 +185,13 @@ public class AlarmDetailController extends MultiActionController {
     }
 
     public ModelAndView saveJournalMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-        int alarmId;
+        UUID alarmId;
         String alarmIdString = "";
 
         // Try to parse alarm ID from string to integer
         try {
             alarmIdString = httpServletRequest.getParameter("alarmId");
-            alarmId = Integer.parseInt(alarmIdString);
+            alarmId = UUID.fromString(alarmIdString);
             String journalMemoBody = httpServletRequest.getParameter("journalMemoBody");
             m_webAlarmRepository.updateReductionKeyMemo(alarmId, journalMemoBody, httpServletRequest.getRemoteUser());
 

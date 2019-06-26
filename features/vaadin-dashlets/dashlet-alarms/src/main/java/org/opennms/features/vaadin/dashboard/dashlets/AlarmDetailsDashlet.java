@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
@@ -246,14 +247,14 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 public void refresh() {
                     List<OnmsAlarm> alarms = getAlarms();
 
-                    List<Integer> alarmIds = new LinkedList<>();
+                    List<UUID> alarmIds = new LinkedList<>();
 
                     if (alarms.size() > 0) {
                         for (OnmsAlarm onmsAlarm : alarms) {
                             alarmIds.add(onmsAlarm.getId());
                         }
                     } else {
-                        alarmIds.add(0);
+                        alarmIds.add(null); // JW: TODO: WHY
                     }
 
                     List<Restriction> restrictions = new LinkedList<>();
@@ -312,7 +313,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
          */
 
         List<OnmsAlarm> onmsAlarmList = m_alarmDao.findMatching(alarmCb.toCriteria());
-        Map<Integer, OnmsAlarm> onmsAlarmMap = new LinkedHashMap<>();
+        Map<UUID, OnmsAlarm> onmsAlarmMap = new LinkedHashMap<>();
 
         for (OnmsAlarm onmsAlarm : onmsAlarmList) {
             if (!onmsAlarmMap.containsKey(onmsAlarm.getId())) {

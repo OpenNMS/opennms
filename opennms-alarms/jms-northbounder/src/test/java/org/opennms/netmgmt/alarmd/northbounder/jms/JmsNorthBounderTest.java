@@ -35,6 +35,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
@@ -210,7 +211,7 @@ public class JmsNorthBounderTest {
         for (JmsNorthbounder nbi : nbis) {
             for (int i = 1; i <= j; ++i) {
                 OnmsAlarm onmsAlarm = new OnmsAlarm();
-                onmsAlarm.setId(i);
+                onmsAlarm.setId(UUID.randomUUID());
                 onmsAlarm.setUei("uei.opennms.org/test/jmsNorthBounder");
                 onmsAlarm.setNode(node);
                 onmsAlarm.setSeverityId(i);
@@ -305,7 +306,7 @@ public class JmsNorthBounderTest {
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
-            event.setId(5);
+            event.setId(UUID.randomUUID());
             event.setEventUei("uei.uei.org/uei");
             event.setEventTime(new Date());
             event.setEventHost("eventhost");
@@ -342,7 +343,7 @@ public class JmsNorthBounderTest {
             event.setAssociatedServiceRegainedOutages(null);
             event.setAssociatedServiceLostOutages(null);
 
-            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
+            OnmsAlarm alarm = new OnmsAlarm(UUID.randomUUID(), event.getEventUei(), null, 1, 4, new Date(), event);
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
             alarm.setApplicationDN("applicationDN");
@@ -418,7 +419,7 @@ public class JmsNorthBounderTest {
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
-            event.setId(5);
+            event.setId(UUID.randomUUID());
             event.setEventUei("uei.uei.org/uei");
             event.setEventTime(new Date());
             event.setEventHost("eventhost");
@@ -461,7 +462,7 @@ public class JmsNorthBounderTest {
             event.setAssociatedServiceRegainedOutages(null);
             event.setAssociatedServiceLostOutages(null);
 
-            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
+            OnmsAlarm alarm = new OnmsAlarm(UUID.randomUUID(), event.getEventUei(), null, 1, 4, new Date(), event);
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
             alarm.setApplicationDN("applicationDN");
@@ -542,7 +543,7 @@ public class JmsNorthBounderTest {
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
-            event.setId(5);
+            event.setId(UUID.randomUUID());
             event.setEventUei("uei.uei.org/uei");
             event.setEventTime(new Date());
             event.setEventHost("eventhost");
@@ -585,7 +586,7 @@ public class JmsNorthBounderTest {
             event.setAssociatedServiceRegainedOutages(null);
             event.setAssociatedServiceLostOutages(null);
 
-            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
+            OnmsAlarm alarm = new OnmsAlarm(UUID.randomUUID(), event.getEventUei(), null, 1, 4, new Date(), event);
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
             alarm.setApplicationDN("applicationDN");

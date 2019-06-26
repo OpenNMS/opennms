@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -64,7 +65,7 @@ public interface AlarmRepository {
      * @param alarmId the alarm id
      * @return the alarm object
      */
-    public abstract OnmsAlarm getAlarm(int alarmId);
+    public abstract OnmsAlarm getAlarm(UUID alarmId);
 
     /**
      * Gets alarms matching a specific criteria.
@@ -91,7 +92,7 @@ public interface AlarmRepository {
      * @param user the user
      * @param timestamp the timestamp
      */
-    public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp);
+    public void acknowledgeAlarms(UUID[] alarmIds, String user, Date timestamp);
 
     /**
      * Acknowledge all the alarms.
@@ -115,7 +116,7 @@ public interface AlarmRepository {
      * @param alarmIds an array of alarms ID
      * @param user the user
      */
-    public void unacknowledgeAlarms(int[] alarmIds, String user);
+    public void unacknowledgeAlarms(UUID[] alarmIds, String user);
 
     /**
      * Unacknowledge all the alarms.
@@ -131,7 +132,7 @@ public interface AlarmRepository {
      * @param user the user
      * @param timestamp the timestamp
      */
-    public abstract void escalateAlarms(int[] alarmIds, String user, Date timestamp);
+    public abstract void escalateAlarms(UUID[] alarmIds, String user, Date timestamp);
 
     /**
      * Clear Alarms
@@ -140,14 +141,14 @@ public interface AlarmRepository {
      * @param user the user
      * @param timestamp the timestamp
      */
-    public abstract void clearAlarms(int[] alarmIds, String user, Date timestamp);
+    public abstract void clearAlarms(UUID[] alarmIds, String user, Date timestamp);
 
     /**
      * Updates the StickyMemo of the alarm to persistence.
      * 
      * @param alarmId the alarmId of the alarm where the StickyMemo has to be persisted.
      */
-    public abstract void updateStickyMemo(Integer alarmId, String body, String user);
+    public abstract void updateStickyMemo(UUID alarmId, String body, String user);
 
     /**
      * Updates the ReductionKeyMemo of the alarm to persistence.
@@ -157,21 +158,21 @@ public interface AlarmRepository {
      * @param body the body
      * @param user the user
      */
-    public abstract void updateReductionKeyMemo(Integer alarmId, String body, String user);
+    public abstract void updateReductionKeyMemo(UUID alarmId, String body, String user);
 
     /**
      * Removes the sticky memo.
      *
      * @param alarmId the alarm id
      */
-    public abstract void removeStickyMemo(Integer alarmId);
+    public abstract void removeStickyMemo(UUID alarmId);
 
     /**
      * Removes the reduction key memo.
      *
      * @param alarmId the alarm id
      */
-    public abstract void removeReductionKeyMemo(int alarmId);
+    public abstract void removeReductionKeyMemo(UUID alarmId);
 
     /**
      * Gets the acknowledgments.
@@ -179,7 +180,7 @@ public interface AlarmRepository {
      * @param alarmId the alarm id
      * @return the acknowledgments
      */
-    public abstract List<OnmsAcknowledgment> getAcknowledgments(int alarmId);
+    public abstract List<OnmsAcknowledgment> getAcknowledgments(UUID alarmId);
 
     /**
      * Gets the current node alarm summaries.

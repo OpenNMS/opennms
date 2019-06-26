@@ -49,6 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -145,7 +146,7 @@ public class DroolsAlarmContextIT {
     @Test
     public void canClearAlarm() {
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
@@ -156,7 +157,7 @@ public class DroolsAlarmContextIT {
         dac.tick();
 
         OnmsAlarm clear = new OnmsAlarm();
-        clear.setId(2);
+        clear.setId(UUID.randomUUID());
         clear.setAlarmType(2);
         clear.setSeverity(OnmsSeverity.CLEARED);
         clear.setReductionKey("clear:n1:oops");
@@ -173,7 +174,7 @@ public class DroolsAlarmContextIT {
     @Test
     public void canDeleteAlarm() {
         final OnmsAlarm toDelete = new OnmsAlarm();
-        toDelete.setId(2);
+        toDelete.setId(UUID.randomUUID());
         toDelete.setAlarmType(2);
         toDelete.setSeverity(OnmsSeverity.CLEARED);
         toDelete.setReductionKey("clear:n1:oops");
@@ -204,7 +205,7 @@ public class DroolsAlarmContextIT {
     @Test
     public void canDeleteAcknowledgedAlarm() {
         final OnmsAlarm toDelete = new OnmsAlarm();
-        toDelete.setId(2);
+        toDelete.setId(UUID.randomUUID());
         toDelete.setAlarmType(2);
         toDelete.setSeverity(OnmsSeverity.CLEARED);
         toDelete.setReductionKey("clear:n1:oops");
@@ -245,7 +246,7 @@ public class DroolsAlarmContextIT {
     public void canGarbageCollectAlarm() {
         // Trigger some problem
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
@@ -285,7 +286,7 @@ public class DroolsAlarmContextIT {
     public void canGarbageCollectAcknowledgedAlarm() {
         // Trigger some problem
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
@@ -328,7 +329,7 @@ public class DroolsAlarmContextIT {
         event.setEventSeverity(OnmsSeverity.WARNING.getId());
 
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(1);
+        alarm.setId(UUID.randomUUID());
         alarm.setAlarmType(1);
         alarm.setSeverity(OnmsSeverity.CLEARED);
         alarm.setReductionKey("n1:oops");
@@ -348,7 +349,7 @@ public class DroolsAlarmContextIT {
     @Ignore("This rule is disabled by default")
     public void canEscalateAlarm() {
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
@@ -377,7 +378,7 @@ public class DroolsAlarmContextIT {
 
         // Trigger some problem
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
@@ -404,7 +405,7 @@ public class DroolsAlarmContextIT {
 
         // Trigger some problem
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.CRITICAL);
         trigger.setReductionKey("n1:oops");
@@ -431,7 +432,7 @@ public class DroolsAlarmContextIT {
 
         // Trigger some problem
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
@@ -470,7 +471,7 @@ public class DroolsAlarmContextIT {
 
         // Trigger some problem
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
@@ -491,7 +492,7 @@ public class DroolsAlarmContextIT {
 
         // Inject a clear
         OnmsAlarm clear = new OnmsAlarm();
-        clear.setId(2);
+        clear.setId(UUID.randomUUID());
         clear.setAlarmType(2);
         clear.setSeverity(OnmsSeverity.CLEARED);
         clear.setReductionKey("clear:n1:oops");
@@ -517,7 +518,7 @@ public class DroolsAlarmContextIT {
 
         // Trigger some problem
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
@@ -536,19 +537,19 @@ public class DroolsAlarmContextIT {
     @Test
     public void canDeleteRelatedAlarm() {
         OnmsAlarm alarm1 = new OnmsAlarm();
-        alarm1.setId(1);
+        alarm1.setId(UUID.randomUUID());
         alarm1.setAlarmType(1);
         alarm1.setSeverity(OnmsSeverity.WARNING);
         alarm1.setReductionKey("n1:oops1");
         alarm1.setLastEventTime(new Date(1000));
         OnmsAlarm alarm2 = new OnmsAlarm();
-        alarm2.setId(2);
+        alarm2.setId(UUID.randomUUID());
         alarm2.setAlarmType(1);
         alarm2.setSeverity(OnmsSeverity.WARNING);
         alarm2.setReductionKey("n1:oops2");
         alarm2.setLastEventTime(new Date(1000));
         OnmsAlarm situation = new OnmsAlarm();
-        situation.setId(3);
+        situation.setId(UUID.randomUUID());
         situation.setAlarmType(1);
         situation.setSeverity(OnmsSeverity.WARNING);
         situation.setReductionKey("n1:situation");
@@ -577,14 +578,14 @@ public class DroolsAlarmContextIT {
 
     }
 
-    private OnmsAlarm generateAlarm(int id) {
+    private OnmsAlarm generateAlarm() {
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(id);
+        alarm.setId(UUID.randomUUID());
         alarm.setAlarmType(1);
         alarm.setSeverity(OnmsSeverity.WARNING);
-        alarm.setReductionKey("n" + id + ":oops");
-        alarm.setFirstEventTime(new Date(id));
-        alarm.setLastEventTime(new Date(id + 1));
+        alarm.setReductionKey("n" + alarm.getId() + ":oops");
+        alarm.setFirstEventTime(new Date(1));
+        alarm.setLastEventTime(new Date(2));
         return alarm;
     }
 
@@ -593,8 +594,8 @@ public class DroolsAlarmContextIT {
      */
     @Test
     public void testAckCachingNoDBHit() {
-        OnmsAlarm alarm1 = generateAlarm(1);
-        OnmsAlarm alarm2 = generateAlarm(2);
+        OnmsAlarm alarm1 = generateAlarm();
+        OnmsAlarm alarm2 = generateAlarm();
         dac.handleAlarmSnapshot(Arrays.asList(alarm1, alarm2));
         verify(acknowledgmentDao, times(1)).findLatestAcks(any(Date.class));
         assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
@@ -610,11 +611,11 @@ public class DroolsAlarmContextIT {
      */
     @Test
     public void testAckCachingWithDBHit() {
-        OnmsAlarm alarm1 = generateAlarm(1);
+        OnmsAlarm alarm1 = generateAlarm();
         OnmsAcknowledgment ack1 = new OnmsAcknowledgment(alarm1, DefaultAlarmService.DEFAULT_USER,
                 alarm1.getFirstEventTime());
         ack1.setAckAction(AckAction.ACKNOWLEDGE);
-        OnmsAlarm alarm2 = generateAlarm(2);
+        OnmsAlarm alarm2 = generateAlarm();
         OnmsAcknowledgment ack2 = new OnmsAcknowledgment(alarm2, DefaultAlarmService.DEFAULT_USER,
                 alarm2.getFirstEventTime());
         ack2.setAckAction(AckAction.ESCALATE);
@@ -634,7 +635,7 @@ public class DroolsAlarmContextIT {
     public void canReloadEngine() {
         // Create a trigger alarm
         OnmsAlarm trigger = new OnmsAlarm();
-        trigger.setId(1);
+        trigger.setId(UUID.randomUUID());
         trigger.setAlarmType(1);
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
@@ -653,7 +654,7 @@ public class DroolsAlarmContextIT {
 
         // Create a clear alarm
         OnmsAlarm clear = new OnmsAlarm();
-        clear.setId(2);
+        clear.setId(UUID.randomUUID());
         clear.setAlarmType(2);
         clear.setSeverity(OnmsSeverity.CLEARED);
         clear.setReductionKey("clear:n1:oops");
@@ -683,10 +684,10 @@ public class DroolsAlarmContextIT {
 
     private class MockTicketer implements AlarmTicketerService {
         private boolean enabled = false;
-        private List<Integer> creates = new ArrayList<>();
-        private List<Integer> closes = new ArrayList<>();
+        private List<UUID> creates = new ArrayList<>();
+        private List<UUID> closes = new ArrayList<>();
 
-        private Map<Integer, Integer> updates = new LinkedHashMap<>();
+        private Map<UUID, Integer> updates = new LinkedHashMap<>();
 
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
@@ -727,11 +728,11 @@ public class DroolsAlarmContextIT {
             dac.handleNewOrUpdatedAlarm(alarm);
         }
 
-        public List<Integer> getCreates() {
+        public List<UUID> getCreates() {
             return creates;
         }
 
-        public List<Integer> getCloses() {
+        public List<UUID> getCloses() {
             return closes;
         }
 

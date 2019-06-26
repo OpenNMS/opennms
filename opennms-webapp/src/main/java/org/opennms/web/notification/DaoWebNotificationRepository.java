@@ -181,7 +181,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
     private static Notification mapOnmsNotificationToNotification(OnmsNotification onmsNotification){
         if(onmsNotification != null){
             Notification notif = new Notification();
-            notif.m_eventId = onmsNotification.getEvent() != null ? onmsNotification.getEvent().getId() : 0;
+            notif.m_eventId = -1; // JW: TODO: FIXME onmsNotification.getEvent() != null ? onmsNotification.getEvent().getId() : 0;
             notif.m_interfaceID = onmsNotification.getIpAddress() == null ? null : InetAddressUtils.toIpAddrString(onmsNotification.getIpAddress());
             notif.m_nodeID = onmsNotification.getNode() != null ? onmsNotification.getNode().getId() : 0;
             notif.m_notifyID = onmsNotification.getNotifyId();

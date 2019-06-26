@@ -476,7 +476,7 @@ public class NotificationManagerIT implements InitializingBean {
                 .put(NotificationManager.PARAM_INTERFACE, InetAddressUtils.toIpAddrString(ipInterfaceOnNode1.getIpAddress()))
                 .put(NotificationManager.PARAM_SERVICE, "ICMP")
                 .put("eventUEI", dbEvent.getEventUei())
-                .put("eventID", Integer.toString(dbEvent.getId()))
+                .put("eventID", dbEvent.getId().toString())
                 .build();
         m_notificationManager.insertNotice(1, params, "q1", notification);
 

@@ -208,7 +208,7 @@ public class EventToIndex implements AutoCloseable {
 			refreshCacheIfNecessary(event);
 
 			// Only send events to ES if they are persisted to database or logAllEvents is set to true
-			if(logAllEvents || (event.getDbid() !=null && event.getDbid()!=0)) {
+			if(logAllEvents || (event.getDbid() !=null && event.getDbid() != null)) {
 				Index eventIndex = createEventIndexFromEvent(event);
 				retval.add(eventIndex);
 			} else {
@@ -225,8 +225,7 @@ public class EventToIndex implements AutoCloseable {
 	private Index createEventIndexFromEvent(final Event event) {
 		final JSONObject body = new JSONObject();
 
-		final Integer id = event.getDbid();
-		body.put("id", Integer.toString(id));
+		body.put("id", event.getDbid().toString());
 		body.put("eventuei", event.getUei());
 
 		final Calendar cal=Calendar.getInstance();
@@ -299,7 +298,7 @@ public class EventToIndex implements AutoCloseable {
 			String str = "populateEventIndexBodyFromEvent - index:"
 					+ "/"+completeIndexName
 					+ "/"+INDEX_TYPE
-					+ "/"+id
+					+ "/"+event.getDbid()
 					+ "\n   body: \n" + body.toJSONString();
 			LOG.debug(str);
 		}
@@ -311,8 +310,8 @@ public class EventToIndex implements AutoCloseable {
 		// NMS-9015: If the event is a database event, set the ID of the
 		// document to the event's database ID. Otherwise, allow ES to
 		// generate a unique ID value.
-		if (id != null && id > 0) {
-			builder = builder.id(Integer.toString(id));
+		if (event.getDbid() != null) {
+			builder = builder.id(event.getDbid().toString());
 		}
 
 		Index index = builder.build();
