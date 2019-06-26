@@ -11,6 +11,7 @@
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="serviceTypeDao" interface="org.opennms.netmgt.dao.api.ServiceTypeDao" availability="mandatory"/>
     <reference id="monitoringLocationDao" interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" availability="mandatory"/>
+    <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory"/>
 
     <!-- Node Providers -->
     <bean id="nodeSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeLabelSearchProvider">
@@ -32,6 +33,11 @@
         <argument ref="nodeDao" />
     </bean>
     <service ref="nodeServiceSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <bean id="nodeIpLikeSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeIpLikeSearchProvider">
+        <argument ref="genericPersistenceAccessor" />
+    </bean>
+    <service ref="nodeIpLikeSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
     <!-- Action Providers -->
     <bean id="actionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.ActionSearchProvider">
