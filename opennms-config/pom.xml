@@ -115,5 +115,10 @@
       <groupId>com.googlecode.concurrent-locks</groupId>
       <artifactId>concurrent-locks</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
