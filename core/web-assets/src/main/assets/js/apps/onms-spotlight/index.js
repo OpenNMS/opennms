@@ -91,12 +91,14 @@ const quickSearchTemplate  = require('./quicksearch.html');
 
                         data.forEach(function(item) {
                             // Create a "menu seperator"
-                            if (lastContext === undefined || item.context !== lastContext) {
-                                results.push({
+                            if (lastContext === undefined || item.context !== lastContext.context) {
+                                lastContext = {
+                                    context: item.context,
+                                    label: item.context,
                                     group: true,
-                                    label: item.context
-                                });
-                                lastContext = item.context;
+                                    count: 0
+                                };
+                                results.push(lastContext);
                             }
 
                             // An item cannot be a group
@@ -116,7 +118,8 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                         value: eachValue
                                     });
                                 });
-                            })
+                            });
+                            lastContext.count++;
                         });
                         $scope.performSearchExecuted = true;
                         $scope.results = results;
