@@ -53,10 +53,10 @@
     </action>
     <action>
         <label>Show Alarms</label>
-        <url>alarm/index.htm</url>
+        <url>alarm/list.htm</url>
     </action>
     <action>
         <label>Show Events</label>
-        <url>alarm/index.htm</url>
+        <url>alarm/list.htm</url>
     </action>
 </actions>

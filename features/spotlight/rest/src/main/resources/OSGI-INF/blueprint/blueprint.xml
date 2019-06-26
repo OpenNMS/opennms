@@ -8,10 +8,11 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 	">
 
-    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
-    <reference id="serviceTypeDao" interface="org.opennms.netmgt.dao.api.ServiceTypeDao" availability="mandatory"/>
-    <reference id="monitoringLocationDao" interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" availability="mandatory"/>
-    <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory"/>
+    <reference id="filterDao"                   interface="org.opennms.netmgt.filter.api.FilterDao"                 availability="mandatory"/>
+    <reference id="nodeDao"                     interface="org.opennms.netmgt.dao.api.NodeDao"                      availability="mandatory"/>
+    <reference id="serviceTypeDao"              interface="org.opennms.netmgt.dao.api.ServiceTypeDao"               availability="mandatory"/>
+    <reference id="monitoringLocationDao"       interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"        availability="mandatory"/>
+    <reference id="genericPersistenceAccessor"  interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor"   availability="mandatory"/>
 
     <!-- Node Providers -->
     <bean id="nodeSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeLabelSearchProvider">
@@ -40,8 +41,7 @@
     <service ref="nodeIpLikeSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
     <!-- Action Providers -->
-    <bean id="actionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.StaticActionSearchProvider">
-    </bean>
+    <bean id="actionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.StaticActionSearchProvider" />
     <service ref="actionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
     <bean id="serviceActionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.ServiceSearchProvider">
@@ -53,6 +53,13 @@
         <argument ref="monitoringLocationDao" />
     </bean>
     <service ref="actionLocationSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <!-- Filter Provider -->
+    <bean id="filterSearchProvider" class="org.opennms.netmgt.spotlight.providers.FilterSearchProvider">
+        <argument ref="filterDao" />
+        <argument ref="nodeDao" />
+    </bean>
+    <service ref="filterSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
     <!-- General Services -->
     <bean id="spotlightService" class="org.opennms.netmgt.spotlight.impl.DefaultSpotlightService">

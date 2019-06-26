@@ -52,6 +52,7 @@ public class NodeIpLikeSearchProvider implements SearchProvider {
         this.genericPersistenceAccessor = Objects.requireNonNull(genericPersistenceAccessor);
     }
 
+    // TODO MVR use ilike instead
     @Override
     public List<SearchResult> query(final SearchQuery query) {
         final String input = query.getInput();

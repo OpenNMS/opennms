@@ -32,6 +32,7 @@ import java.util.Objects;
 
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Contexts;
+import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.providers.node.NodeRef;
 
@@ -53,6 +54,11 @@ public class SearchResultBuilder {
                 .put("label", node.getLabel())
                 .put("foreignId", node.getForeignId())
                 .put("foreignSource", node.getForeignSource()).build());
+        return this;
+    }
+
+    public SearchResultBuilder withMatch(String id, String label, String value) {
+        searchResult.addMatch(new Match(id, label, value));
         return this;
     }
 
