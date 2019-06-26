@@ -32,9 +32,11 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.api.SpotlightService;
 import org.opennms.netmgt.spotlight.rest.SearchRestService;
@@ -48,8 +50,12 @@ public class SearchRestServiceImpl implements SearchRestService {
     }
 
     @Override
-    public Response query(String query) {
-        final List<SearchResult> result = spotlightService.query(query);
+    public Response query(final SecurityContext securityContext, final String query) {
+        final SearchQuery searchQuery = new SearchQuery(query);
+        searchQuery.setPrincipal(securityContext.getUserPrincipal());
+        searchQuery.setUserInRoleFunction(securityContext::isUserInRole);
+
+        final List<SearchResult> result = spotlightService.query(searchQuery);
         if (result.isEmpty()) {
             return Response.noContent().build();
         }

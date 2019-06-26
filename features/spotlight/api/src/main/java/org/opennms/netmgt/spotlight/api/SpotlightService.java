@@ -32,5 +32,5 @@ import java.util.List;
 
 public interface SpotlightService {
 
-    List<SearchResult> query(String input);
+    List<SearchResult> query(SearchQuery query);
 }

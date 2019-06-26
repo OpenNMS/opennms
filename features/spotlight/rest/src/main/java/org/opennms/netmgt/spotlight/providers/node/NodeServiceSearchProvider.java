@@ -39,8 +39,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
+import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
-import org.opennms.netmgt.spotlight.providers.Query;
+import org.opennms.netmgt.spotlight.providers.QueryUtils;
 import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
 
 public class NodeServiceSearchProvider implements SearchProvider {
@@ -52,22 +53,23 @@ public class NodeServiceSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(String input) {
+    public List<SearchResult> query(final SearchQuery query) {
+        final String input = query.getInput();
         final Criteria criteria = new CriteriaBuilder(OnmsNode.class)
                 .alias("ipInterfaces", "ipInterfaces", Alias.JoinType.INNER_JOIN)
                 .alias("ipInterfaces.monitoredServices", "monitoredServices", Alias.JoinType.INNER_JOIN)
                 .alias("monitoredServices.serviceType", "serviceType", Alias.JoinType.INNER_JOIN)
-                .ilike("serviceType.name", Query.ilike(input))
+                .ilike("serviceType.name", QueryUtils.ilike(input))
                 .distinct()
                 .orderBy("label")
-                .limit(10) // TODO MVR make configurable
+                .limit(query.getMaxResults())
                 .toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
         final List<SearchResult> searchResults = matchingNodes.stream().map(node -> {
             final SearchResult searchResult = new SearchResultBuilder().withOnmsNode(node).build();
             node.getIpInterfaces().stream()
                     .flatMap(ipInterface -> ipInterface.getMonitoredServices().stream())
-                    .filter(service -> Query.matches(service.getServiceName(), input))
+                    .filter(service -> QueryUtils.matches(service.getServiceName(), input))
                     .forEach(service -> searchResult.addMatch(new Match("service.name", "Monitored Service", service.getServiceName())));
             return searchResult;
         }).collect(Collectors.toList());

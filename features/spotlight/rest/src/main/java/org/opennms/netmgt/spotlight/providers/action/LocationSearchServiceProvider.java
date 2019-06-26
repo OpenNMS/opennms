@@ -38,8 +38,9 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
+import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
-import org.opennms.netmgt.spotlight.providers.Query;
+import org.opennms.netmgt.spotlight.providers.QueryUtils;
 
 public class LocationSearchServiceProvider implements SearchProvider {
 
@@ -50,11 +51,12 @@ public class LocationSearchServiceProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(String input) {
+    public List<SearchResult> query(final SearchQuery query) {
+        final String input = query.getInput();
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class)
-                .ilike("locationName", Query.ilike(input))
+                .ilike("locationName", QueryUtils.ilike(input))
                 .distinct()
-                .limit(10); // TODO MVR make configurable
+                .limit(query.getMaxResults());
         final Criteria criteria = builder.toCriteria();
         final List<OnmsMonitoringLocation> matchingResult = monitoringLocationDao.findMatching(criteria);
         final List<SearchResult> searchResults = matchingResult.stream().map(monitoringLocation -> {

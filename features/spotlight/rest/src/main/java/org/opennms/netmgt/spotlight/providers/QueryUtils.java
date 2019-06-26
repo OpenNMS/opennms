@@ -26,8 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.spotlight.api;
+package org.opennms.netmgt.spotlight.providers;
 
-// TODO MVR implement (max result, min input, etc.)
-public class SearchContext {
+public class QueryUtils {
+    public static Object ilike(String input) {
+        return String.format("%%%s%%", input);
+    }
+
+    public static boolean equals(Integer checkMe, String input) {
+        if (checkMe == null) {
+            return false;
+        }
+        return checkMe.toString().equals(input);
+    }
+
+    public static boolean matches(String checkMe, String input) {
+        if (checkMe == null) {
+            return false;
+        }
+        return checkMe.toLowerCase().contains(input.toLowerCase());
+    }
 }

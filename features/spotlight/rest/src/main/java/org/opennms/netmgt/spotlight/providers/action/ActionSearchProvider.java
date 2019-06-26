@@ -35,35 +35,46 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
+import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
-import org.opennms.netmgt.spotlight.providers.Query;
+import org.opennms.netmgt.spotlight.providers.QueryUtils;
+
+import com.google.common.collect.Lists;
 
 public class ActionSearchProvider implements SearchProvider {
 
     private static class Action {
         private final String label;
         private final String url;
+        private final List<String> privilegedRoles = Lists.newArrayList();
 
-        private Action(String label, String url) {
+        private Action(String label, String url, String... roles) {
             this.label = Objects.requireNonNull(label);
             this.url = Objects.requireNonNull(url);
+            if (roles != null) {
+                privilegedRoles.addAll(Lists.newArrayList(roles));
+            }
         }
     }
 
     private final List<Action> actions = new ArrayList<>();
 
     public ActionSearchProvider() {
-        actions.add(new Action("Configure OpenNMS", "admin/index.jsp")); // TODO MVR this is role dependant
-        actions.add(new Action("Configure Geocoder Service", "admin/geoservice/index.jsp#!/geocoding/config")); // TODO MVR this is role dependant
-        actions.add(new Action("Show System Information", "admin/sysconfig.jsp")); // TODO MVR this is role dependant
-        actions.add(new Action("Manage Flow Classification", "admin/classification/index.jsp")); // TODO MVR this is role dependant
+        actions.add(new Action("Configure OpenNMS", "admin/index.jsp", "ROLE_ADMIN"));
+        actions.add(new Action("Configure Geocoder Service", "admin/geoservice/index.jsp#!/geocoding/config", "ROLE_ADMIN"));
+        actions.add(new Action("Show System Information", "admin/sysconfig.jsp", "ROLE_ADMIN"));
+        actions.add(new Action("Manage Flow Classification", "admin/classification/index.jsp", "ROLE_ADMIN"));
         actions.add(new Action("Database Reports", "report/database/index.htm"));
     }
 
     @Override
-    public List<SearchResult> query(String input) {
+    public List<SearchResult> query(SearchQuery query) {
+        Objects.requireNonNull(query.getPrincipal());
+
+        final String input = query.getInput();
         final List<SearchResult> searchResults = actions.stream()
-                .filter(action -> Query.matches(action.label, input))
+                .filter(action -> action.privilegedRoles.isEmpty() || action.privilegedRoles.stream().anyMatch(query::isUserInRole))
+                .filter(action -> QueryUtils.matches(action.label, input))
                 .map(action -> {
                     final SearchResult searchResult = new SearchResult();
                     searchResult.setContext(Contexts.Action);
@@ -72,6 +83,7 @@ public class ActionSearchProvider implements SearchProvider {
                     searchResult.setIdentifier(action.url);
                     return searchResult;
                 })
+                .limit(query.getMaxResults())
                 .collect(Collectors.toList());
         return searchResults;
     }

@@ -39,8 +39,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
+import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
-import org.opennms.netmgt.spotlight.providers.Query;
+import org.opennms.netmgt.spotlight.providers.QueryUtils;
 import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
 
 public class NodeCategorySearchProvider implements SearchProvider {
@@ -52,19 +53,20 @@ public class NodeCategorySearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(String input) {
+    public List<SearchResult> query(final SearchQuery query) {
+        final String input = query.getInput();
         final Criteria criteria = new CriteriaBuilder(OnmsNode.class)
                 .alias("categories", "categories", Alias.JoinType.INNER_JOIN)
-                .ilike("categories.name", Query.ilike(input))
+                .ilike("categories.name", QueryUtils.ilike(input))
                 .distinct()
                 .orderBy("label")
-                .limit(10) // TODO MVR make configurable
+                .limit(query.getMaxResults())
                 .toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
         final List<SearchResult> searchResults = matchingNodes.stream().map(node -> {
             final SearchResult searchResult = new SearchResultBuilder().withOnmsNode(node).build();
             node.getCategories().stream()
-                    .filter(c -> Query.matches(c.getName(), input))
+                    .filter(c -> QueryUtils.matches(c.getName(), input))
                     .forEach(c -> searchResult.addMatch(new Match("category.name", "Category", c.getName())));
             return searchResult;
         }).collect(Collectors.toList());

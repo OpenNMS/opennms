@@ -32,6 +32,6 @@ import java.util.List;
 
 public interface SearchProvider {
 
-    List<SearchResult> query(String input);
+    List<SearchResult> query(SearchQuery query);
 
 }

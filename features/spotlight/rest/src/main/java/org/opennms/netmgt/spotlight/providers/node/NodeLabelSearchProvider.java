@@ -40,8 +40,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
+import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
-import org.opennms.netmgt.spotlight.providers.Query;
+import org.opennms.netmgt.spotlight.providers.QueryUtils;
 import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
 
 import com.google.common.collect.Lists;
@@ -55,9 +56,10 @@ public class NodeLabelSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(String input) {
+    public List<SearchResult> query(final SearchQuery query) {
+        final String input = query.getInput();
         final List<Restriction> restrictions = Lists.newArrayList(
-                Restrictions.ilike("label", Query.ilike(input)),
+                Restrictions.ilike("label", QueryUtils.ilike(input)),
                 Restrictions.eq("foreignSource", input),
                 Restrictions.eq("foreignId", input)
         );
@@ -72,21 +74,21 @@ public class NodeLabelSearchProvider implements SearchProvider {
                 .or(restrictions.toArray(new Restriction[restrictions.size()]))
                 .distinct()
                 .orderBy("label")
-                .limit(10); // TODO MVR make configurable
+                .limit(query.getMaxResults());
         final Criteria criteria = criteriaBuilder.toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
         final List<SearchResult> searchResults = matchingNodes.stream().map(node -> {
             final SearchResult searchResult = new SearchResultBuilder().withOnmsNode(node).build();
-            if (Query.equals(node.getId(), input)) {
+            if (QueryUtils.equals(node.getId(), input)) {
                 searchResult.addMatch(new Match("id", "Node ID", node.getId().toString()));
             }
-            if (Query.matches(node.getForeignId(), input)) {
+            if (QueryUtils.matches(node.getForeignId(), input)) {
                 searchResult.addMatch(new Match("foreignId", "Foreign ID", node.getForeignId()));
             }
-            if (Query.matches(node.getForeignSource(), input)) {
+            if (QueryUtils.matches(node.getForeignSource(), input)) {
                 searchResult.addMatch(new Match("foreignSource", "Foreign Source", node.getForeignSource()));
             }
-            if (Query.matches(node.getLabel(), input)) {
+            if (QueryUtils.matches(node.getLabel(), input)) {
                 searchResult.addMatch(new Match("label", "Node Label", node.getLabel()));
             }
             return searchResult;

@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
+import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
 
@@ -52,12 +53,13 @@ public class NodeIpLikeSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(String input) {
+    public List<SearchResult> query(final SearchQuery query) {
+        final String input = query.getInput();
         final List<SearchResult> searchResults = new ArrayList<>();
         if (isValidInput(input)) {
             final Map<String, Object> parameterMap = new HashMap<>();
             parameterMap.put("pattern", input);
-            parameterMap.put("limit", 10);
+            parameterMap.put("limit", query.getMaxResults());
 
             final List<Integer> nodeIds = genericPersistenceAccessor.executeNativeQuery(
                     "select node.nodeid from node join ipinterface on node.nodeid = ipinterface.nodeid where iplike(ipinterface.ipaddr, :pattern) order by node.nodelabel ASC limit :limit",
