@@ -138,7 +138,7 @@ angular.module('onms-ksc', [
 })
 .factory('graphSearchFactory', function ($rootScope, $filter) {
   var graphSearch = {};
-  graphSearch.graphs = new Array();
+  graphSearch.graphs = [];
   graphSearch.noMatchingGraphs = false;
   // Update search query and broadcast an update to controllers.
   graphSearch.updateSearchQuery = function(searchItem) {
