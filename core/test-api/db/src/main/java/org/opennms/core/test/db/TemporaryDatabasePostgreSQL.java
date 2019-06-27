@@ -28,6 +28,7 @@
 
 package org.opennms.core.test.db;
 
+import com.google.common.base.Joiner;
 import liquibase.Contexts;
 import liquibase.changelog.ChangeLogParameters;
 import liquibase.changelog.ChangeSet;
@@ -789,6 +790,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         changeLogParameters.setContexts(new Contexts(StringUtils.splitAndTrim(contexts, ",")));
 
         MessageDigest md = MessageDigest.getInstance("MD5");
+        Set<URI> seenChangeLogs = new TreeSet<>();
 
         for (Resource resource : Migrator.validateLiquibaseChangelog(context)) {
             if (!createProductionLiquibaseChangelogFilter().test(resource)) {
@@ -800,9 +802,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             ResourceAccessor accessor = new ExistingResourceAccessor(resource);
             DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance().getParser(Migration.LIQUIBASE_CHANGELOG_FILENAME, accessor).parse(Migration.LIQUIBASE_CHANGELOG_FILENAME, changeLogParameters, accessor);
 
-            Set<String> seenChangeLogs = new HashSet<String>();
             for (ChangeSet c : changeLog.getChangeSets()) {
-                if (seenChangeLogs.add(c.getFilePath())) {
+                if (seenChangeLogs.add(resource.createRelative(c.getFilePath()).getURI())) {
                     for (InputStream s : accessor.getResourcesAsStream(c.getFilePath())) {
                         DigestUtils.updateDigest(md, s);
                     }
@@ -813,7 +814,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         String hash = Hex.encodeHexString(md.digest());
 
         final long end = System.currentTimeMillis();
-        LOG.info("Computed Liquibase schema hash {} in {} seconds.", hash, (float) (end - start) / 1000);
+        LOG.info("Computed Liquibase schema hash {} in {} seconds on {}.", hash, (float) (end - start) / 1000, Joiner.on(", ").join(seenChangeLogs));
 
         return hash;
     }
