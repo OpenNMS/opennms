@@ -17,5 +17,5 @@ MODULES_TO_TEST=$(python3 .circleci/scripts/find-tests.py . | circleci tests spl
 #echo "Building modules and dependencies for: ${MODULES_TO_TEST}"
 #mvn -P'!checkstyle' -P'!enable.tarball' -DupdatePolicy=never -Dbuild.skip.tarball=true -DskipTests=true -am -pl ${MODULES_TO_TEST} install
 echo "Build complete. Verifying..."
-mvn -P'!checkstyle' -DupdatePolicy=never -DskipITs=false -DskipTests=false --batch-mode -pl ${MODULES_TO_TEST} verify
+mvn -P'!checkstyle' -DupdatePolicy=never -DskipITs=false -DskipTests=false -Dmaven.test.failure.ignore=true --batch-mode -pl ${MODULES_TO_TEST} verify
 
