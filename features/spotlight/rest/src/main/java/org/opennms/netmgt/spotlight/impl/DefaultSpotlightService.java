@@ -56,7 +56,6 @@ public class DefaultSpotlightService implements SpotlightService {
 
     private final BundleContext bundleContext;
 
-
     public DefaultSpotlightService(final BundleContext bundleContext) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
     }

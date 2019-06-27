@@ -128,7 +128,10 @@ public class NodeAssetSearchProvider implements SearchProvider {
                 final OnmsAssetRecord record = node.getAssetRecord();
                 // TODO MVR this is ugly as hell ...
                 for (Method method : OnmsAssetRecord.class.getMethods()) {
-                    if (method.getName().startsWith("get") && method.getReturnType() == String.class && method.getParameterCount() == 0) {
+                    if (method.getName().startsWith("get")
+                            && !method.getName().toLowerCase().contains("topology")
+                            && method.getReturnType() == String.class
+                            && method.getParameterCount() == 0) {
                         try {
                             Object returnedValue = method.invoke(record);
                             if (returnedValue != null && QueryUtils.matches(returnedValue.toString(), input)) {
