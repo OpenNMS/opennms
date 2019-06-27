@@ -33,24 +33,28 @@ ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting ope
 ARG ADD_YUM_PACKAGES
 
 COPY ./rpms /tmp/rpms
+COPY ./tarball /tmp/tarball
 
 SHELL ["/bin/bash", "-c"]
 
 # Install repositories, system and OpenNMS packages and do some cleanup
-RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then yum -y localinstall /tmp/rpms/*.rpm; else yum install -y ${ONMS_PACKAGES}; fi && \
+# 1. Try to install from tarball
+# 2. Try to install from local RPMS
+# 3. Try to install from public yum repository
+RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then mkdir -p /opt/opennms && tar xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then yum -y localinstall /tmp/rpms/*.rpm; else yum install -y ${ONMS_PACKAGES}; fi && \
     if [[ -n ${ADD_YUM_PACKAGES} ]]; then yum -y install ${ADD_YUM_PACKAGES}; fi && \
-    rm -rf /tmp/rpms && \
+    rm -rf /tmp/rpms /tmp/tarball && \
     yum clean all && \
     rm -rf /var/cache/yum && \
     rm -rf /opt/opennms/logs \
-           /var/opennms/rrd \
-           /var/opennms/reports && \
+           /opt/opennms/share/rrd \
+           /opt/opennms/share/reports && \
     mkdir -p /opennms-data/logs \
              /opennms-data/rrd \
              /opennms-data/reports && \
     ln -s /opennms-data/logs /opt/opennms/logs && \
-    ln -s /opennms-data/rrd /var/opennms/rrd && \
-    ln -s /opennms-data/reports /var/opennms/reports
+    ln -s /opennms-data/rrd /opt/opennms/share/rrd && \
+    ln -s /opennms-data/reports /opt/opennms/share/reports
 
 # Add templates replaced at runtime and entrypoint
 COPY ./assets/*.tpl /root/
