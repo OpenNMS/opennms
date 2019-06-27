@@ -151,7 +151,7 @@ public class MigratorIT {
         m.setCreateDatabase(false);
 
         m.prepareDatabase(migration);
-        m.migrate(migration);
+        m.migrate(migration, m_context);
 
         LOG.info("Migration complete: {}", migration);
 
@@ -183,7 +183,7 @@ public class MigratorIT {
             if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
             LOG.info("=== found resource: {} ===", resource);
             migration.setChangeLog(resource);
-            m.migrate(migration);
+            m.migrate(migration, m_context);
         }
 
         final List<ChangelogEntry> ids = getChangelogEntries();
@@ -215,7 +215,7 @@ public class MigratorIT {
         for (final Resource resource : getRealChangelog()) {
             LOG.info("=== found resource: {} ===", resource);
             migration.setChangeLog(resource);
-            m.migrate(migration);
+            m.migrate(migration, m_context);
         }
 
         final List<ChangelogEntry> ids = getChangelogEntries();
@@ -249,7 +249,7 @@ public class MigratorIT {
 
         for (final Resource resource : getTestResources()) {
             migration.setChangeLog(resource);
-            m.migrate(migration);
+            m.migrate(migration, m_context);
         }
     }
 

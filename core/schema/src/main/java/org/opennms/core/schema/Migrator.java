@@ -30,13 +30,10 @@ package org.opennms.core.schema;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,27 +42,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
-import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.ChangeLogParseException;
 import liquibase.exception.DatabaseException;
 import liquibase.integration.spring.SpringLiquibase;
-import liquibase.logging.LogFactory;
-import liquibase.logging.LogLevel;
-import liquibase.resource.ResourceAccessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -745,16 +731,18 @@ public class Migrator {
     /**
      * <p>migrate</p>
      *
-     * @param migration a {@link org.opennms.core.schema.Migration} object.
+     * @param migration a {@link Migration} object.
+     * @param context
      * @throws org.opennms.core.schema.MigrationException if any.
      */
-    public void migrate(final Migration migration) throws MigrationException {
+    public void migrate(final Migration migration, ApplicationContext context) throws MigrationException {
         Connection connection = null;
 
         try {
             connection = m_dataSource.getConnection();
 
             final SpringLiquibase lb = new SpringLiquibase();
+            lb.setResourceLoader(context);
             lb.setChangeLog(migration.getChangeLog());
             lb.setDataSource(m_dataSource);
 
@@ -764,21 +752,10 @@ public class Migrator {
             parameters.put("install.database.user", migration.getDatabaseUser());
             lb.setChangeLogParameters(parameters);
             lb.setDefaultSchema(migration.getSchemaName());
-            lb.setResourceLoader(getMigrationResourceLoader(migration));
 
             final String contexts = System.getProperty("opennms.contexts", "production");
             lb.setContexts(contexts);
             lb.afterPropertiesSet();
-        } catch (final ChangeLogParseException e) {
-            Throwable cause = e;
-            while (cause.getCause() != null) {
-                cause = cause.getCause();
-            }
-            if (cause instanceof FileNotFoundException) {
-                throw new MigrationException("unable to migrate the database: " + cause.getMessage() + "; system class loader URLs: " + getSystemClassLoaderUrls(), cause);
-            } else {
-                throw new MigrationException("unable to migrate the database: " + e.getMessage(), e);
-            }
         } catch (final Throwable e) {
             throw new MigrationException("unable to migrate the database: " + e.getMessage(), e);
         } finally {
@@ -788,28 +765,6 @@ public class Migrator {
 
     public void generateChangelog() {
 
-    }
-
-    /**
-     * <p>getMigrationResourceLoader</p>
-     *
-     * @param migration a {@link org.opennms.core.schema.Migration} object.
-     * @return a {@link org.springframework.core.io.ResourceLoader} object.
-     */
-    protected ResourceLoader getMigrationResourceLoader(final Migration migration) {
-        final File changeLog = new File(migration.getChangeLog());
-        final List<URL> urls = new ArrayList<>();
-        try {
-            if (changeLog.exists()) {
-                urls.add(changeLog.getParentFile().toURI().toURL());
-            } else {
-                LOG.info("damnit: " + changeLog);
-            }
-        } catch (final MalformedURLException e) {
-            LOG.info("unable to figure out URL for {}", migration.getChangeLog(), e);
-        }
-        final ClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]), this.getClass().getClassLoader());
-        return new DefaultResourceLoader(cl);
     }
 
     private void cleanUpDatabase(final Connection c, DatabaseConnection dbc, final Statement st, final ResultSet rs) {
@@ -896,7 +851,7 @@ public class Migrator {
                 }
                 LOG.info("- Running migration for changelog: " + resource.getDescription());
                 migration.setChangeLog(resource);
-                migrate(migration);
+                migrate(migration, context);
             }
         }
 
@@ -914,6 +869,7 @@ public class Migrator {
         if (resources.length == 0) {
             throw new MigrationException("Could not find any changelog.xml files in our classpath using '" + LIQUIBASE_CHANGELOG_LOCATION_PATTERN + "'. Combined ClassPath:" + getContextClassLoaderUrls(context) + "\nAnd system class loader for fun:" + getSystemClassLoaderUrls());
         }
+
         return resources;
     }
 
@@ -936,6 +892,10 @@ public class Migrator {
 
     public static String getSystemClassLoaderUrls() {
         return getClassLoaderUrls(ClassLoader.getSystemClassLoader());
+    }
+
+    public static String getResourceLoaderClassLoaderUrls(ResourceLoader resourceLoader) {
+        return getClassLoaderUrls(resourceLoader.getClassLoader());
     }
 
     public static String getClassLoaderUrls(ClassLoader classLoader) {

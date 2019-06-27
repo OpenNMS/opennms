@@ -214,31 +214,32 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     }
 
     public synchronized static String getIntegrationTestDatabaseName() throws Throwable {
-        if (s_templateDatabaseName == null) {
+        if (s_templateDatabaseName != null) {
+            return s_templateDatabaseName;
+        }
 //            GenericApplicationContext context = (GenericApplicationContext) BeanUtils.getBeanFactory("daoContext");
 //            context = Migrator.ensureLiquibaseFilesInClassPath(context);
 //            System.err.println("******* from getIntegrationTestDatabaseName: " + Migrator.getClassLoaderUrls(TemporaryDatabasePostgreSQL.class.getClassLoader()));
-            StaticApplicationContext staticContext = new StaticApplicationContext();
-            staticContext.setClassLoader(TemporaryDatabasePostgreSQL.class.getClassLoader());
-            GenericApplicationContext context = ensureLiquibaseFilesInClassPath(staticContext);
+        StaticApplicationContext staticContext = new StaticApplicationContext();
+        staticContext.setClassLoader(TemporaryDatabasePostgreSQL.class.getClassLoader());
+        GenericApplicationContext context = ensureLiquibaseFilesInClassPath(staticContext);
 
-            String hash = generateLiquibaseHash(context);
+        String hash = generateLiquibaseHash(context);
 
-            String dbName = TEMPLATE_DATABASE_NAME_PREFIX + hash;
+        String dbName = TEMPLATE_DATABASE_NAME_PREFIX + hash;
 
-            final Migration migration = createMigration(dbName);
+        final Migration migration = createMigration(dbName);
 
-            DataSource dataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + migration.getDatabaseName(), migration.getDatabaseUser(), migration.getDatabasePassword());
-            DataSource adminDataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + ADMIN_DATABASE, migration.getDatabaseUser(), migration.getDatabasePassword());
+        DataSource dataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + migration.getDatabaseName(), migration.getDatabaseUser(), migration.getDatabasePassword());
+        DataSource adminDataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + ADMIN_DATABASE, migration.getDatabaseUser(), migration.getDatabasePassword());
 
-            final Migrator migrator = createMigrator(dataSource, adminDataSource);
+        final Migrator migrator = createMigrator(dataSource, adminDataSource);
 
-            if (!migrator.databaseExists(migration)) {
-                createIntegrationTestDatabase(context, migration, migrator, dataSource);
-            }
-
-            s_templateDatabaseName = dbName;
+        if (!migrator.databaseExists(migration)) {
+            createIntegrationTestDatabase(context, migration, migrator, dataSource);
         }
+
+        s_templateDatabaseName = dbName;
 
         return s_templateDatabaseName;
     }
@@ -337,7 +338,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             st = adminConnection.createStatement();
             String create;
             if (m_populateSchema) {
-                dbSource = "template1";
                 dbSource = getIntegrationTestDatabaseName();
                 create = "CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + dbSource + " OWNER opennms";
             } else {
@@ -782,6 +782,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     public static String generateLiquibaseHash(ApplicationContext context)
             throws NoSuchAlgorithmException, IOException, Exception, ChangeLogParseException, LiquibaseException {
+        final long start = System.currentTimeMillis();
+
         final String contexts = System.getProperty("opennms.contexts", "production");
         ChangeLogParameters changeLogParameters = new ChangeLogParameters();
         changeLogParameters.setContexts(new Contexts(StringUtils.splitAndTrim(contexts, ",")));
@@ -808,7 +810,12 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
         }
 
-        return Hex.encodeHexString(md.digest());
+        String hash = Hex.encodeHexString(md.digest());
+
+        final long end = System.currentTimeMillis();
+        LOG.info("Computed Liquibase schema hash {} in {} seconds.", hash, (float) (end - start) / 1000);
+
+        return hash;
     }
 
     protected static void createIntegrationTestDatabase(ApplicationContext context, Migration  migration, Migrator migrator, DataSource dataSource)
