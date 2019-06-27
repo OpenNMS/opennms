@@ -1,5 +1,5 @@
 <#assign currentDate = .now>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation" ng-app="onms.spotlight">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
         <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS Horizon Logo" width="20px" height="20px" onerror="this.src='${baseHref}images/o-green-trans.png'" />

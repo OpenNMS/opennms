@@ -38,6 +38,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <c:import url="/includes/bootstrap.jsp">
+    <c:param name="ngapp" value="onms-ksc" />
     <c:param name="title" value="Resource Graph Results" />
     <c:param name="headTitle" value="Results" />
     <c:param name="headTitle" value="Resource Graphs" />
@@ -163,7 +164,7 @@
 <c:set var="showFootnote1" value="false"/>
 
 
-<div class="row" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
+<div class="row" ng-controller="AddToKscCtrl">
 
 	<div class="col-md-10">
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
