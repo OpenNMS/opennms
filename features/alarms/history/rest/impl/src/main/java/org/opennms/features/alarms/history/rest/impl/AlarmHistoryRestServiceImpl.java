@@ -30,6 +30,7 @@ package org.opennms.features.alarms.history.rest.impl;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
 import org.opennms.features.alarms.history.api.AlarmState;
@@ -50,7 +51,7 @@ public class AlarmHistoryRestServiceImpl implements AlarmHistoryRestService {
         if (REDUCTION_KEY_MATCH_TYPE.equals(matchType)) {
             return alarmHistoryRepository.getStatesForAlarmWithReductionKey(matchType);
         }
-        return alarmHistoryRepository.getStatesForAlarmWithDbId(Integer.valueOf(alarmId));
+        return alarmHistoryRepository.getStatesForAlarmWithDbId(UUID.fromString(alarmId));
     }
 
     @Override
@@ -59,7 +60,7 @@ public class AlarmHistoryRestServiceImpl implements AlarmHistoryRestService {
         if (REDUCTION_KEY_MATCH_TYPE.equals(matchType)) {
             return alarmHistoryRepository.getAlarmWithReductionKeyIdAt(alarmId, timestampInMillis).orElse(null);
         }
-        return alarmHistoryRepository.getAlarmWithDbIdAt(Integer.valueOf(alarmId), timestampInMillis).orElse(null);
+        return alarmHistoryRepository.getAlarmWithDbIdAt(UUID.fromString(alarmId), timestampInMillis).orElse(null);
     }
 
     @Override
