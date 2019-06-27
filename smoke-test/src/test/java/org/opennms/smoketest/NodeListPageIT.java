@@ -43,7 +43,7 @@ import org.openqa.selenium.WebElement;
 import com.google.common.collect.Iterables;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class NodeListPageIT extends OpenNMSSeleniumTestCase {
+public class NodeListPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         deleteTestRequisition();
@@ -79,30 +79,30 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
 
     private void createNode(final String foreignId, final String location, boolean hasFlows) throws Exception {
         final String node = "<node type=\"A\" hasFlows=\"" + hasFlows + "\" label=\"TestMachine " + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
-        "<labelSource>H</labelSource>" +
-        "<sysContact>The Owner</sysContact>" +
-        "<sysDescription>" +
-        "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
-        "</sysDescription>" +
-        "<sysLocation>DevJam</sysLocation>" +
-        "<sysName>TestMachine" + foreignId + "</sysName>" +
-        "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
-        "<location>" + location + "</location>" +
-        "</node>";
+                "<labelSource>H</labelSource>" +
+                "<sysContact>The Owner</sysContact>" +
+                "<sysDescription>" +
+                "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
+                "</sysDescription>" +
+                "<sysLocation>DevJam</sysLocation>" +
+                "<sysName>TestMachine" + foreignId + "</sysName>" +
+                "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+                "<location>" + location + "</location>" +
+                "</node>";
         sendPost("/rest/nodes", node, 201);
     }
 
     @Test
     public void testNodesWithFlows() {
-        m_driver.get(this.getBaseUrl() + "opennms/element/nodeList.htm?flows=true");
-        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+        driver.get(this.getBaseUrlInternal() + "opennms/element/nodeList.htm?flows=true");
+        assertThat(Iterables.transform(driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
                 containsInAnyOrder("TestMachine loc1node2", "TestMachine loc2node2"));
     }
 
     @Test
     public void testNodesWithoutFlows() {
-        m_driver.get(this.getBaseUrl() + "opennms/element/nodeList.htm?flows=false");
-        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+        driver.get(this.getBaseUrlInternal() + "opennms/element/nodeList.htm?flows=false");
+        assertThat(Iterables.transform(driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
                 containsInAnyOrder("TestMachine loc1node1", "TestMachine loc2node1"));
     }
 
@@ -126,39 +126,39 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
 
         // Check if default selection is 'all locations' and all locations are listed
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations' and @selected]");
-        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//select[@id='monitoringLocation']//option")), WebElement::getText),
-                   hasItems("All locations",
-                            "Pittsboro",
-                            "Fulda"));
+        assertThat(Iterables.transform(driver.findElements(By.xpath("//select[@id='monitoringLocation']//option")), WebElement::getText),
+                hasItems("All locations",
+                        "Pittsboro",
+                        "Fulda"));
 
         // Check the default lists all nodes
-        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
-                   hasItems("TestMachine loc1node1",
-                            "TestMachine loc1node2",
-                            "TestMachine loc2node1",
-                            "TestMachine loc2node2"));
+        assertThat(Iterables.transform(driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                hasItems("TestMachine loc1node1",
+                        "TestMachine loc1node2",
+                        "TestMachine loc2node1",
+                        "TestMachine loc2node2"));
 
         // Check switching to first location
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='Pittsboro']").click();
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='Pittsboro' and @selected]");
-        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
-                   containsInAnyOrder("TestMachine loc1node1",
-                                      "TestMachine loc1node2"));
+        assertThat(Iterables.transform(driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                containsInAnyOrder("TestMachine loc1node1",
+                        "TestMachine loc1node2"));
 
         // Check switching to second location
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='Fulda']").click();
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='Fulda' and @selected]");
-        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
-                   containsInAnyOrder("TestMachine loc2node1",
-                                      "TestMachine loc2node2"));
+        assertThat(Iterables.transform(driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                containsInAnyOrder("TestMachine loc2node1",
+                        "TestMachine loc2node2"));
 
         // Check switching to unfiltered
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations']").click();
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations' and @selected]");
-        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
-                   hasItems("TestMachine loc1node1",
-                            "TestMachine loc1node2",
-                            "TestMachine loc2node1",
-                            "TestMachine loc2node2"));
+        assertThat(Iterables.transform(driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                hasItems("TestMachine loc1node1",
+                        "TestMachine loc1node2",
+                        "TestMachine loc2node1",
+                        "TestMachine loc2node2"));
     }
 }

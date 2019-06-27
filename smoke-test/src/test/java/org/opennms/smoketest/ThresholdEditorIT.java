@@ -35,15 +35,15 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.Select;
 
-@Ignore("Flapping. See NMS-10129.")
+@Ignore("Flapping")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ThresholdEditorIT extends OpenNMSSeleniumTestCase {
+public class ThresholdEditorIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         thresholdsPage();
     }
     protected void thresholdsPage() {
-        m_driver.get(getBaseUrl() + "opennms/admin/thresholds/index.htm");
+        driver.get(getBaseUrlInternal() + "opennms/admin/thresholds/index.htm");
     }
     @Test
     public void a_testAllTextIsPresent() throws Exception {

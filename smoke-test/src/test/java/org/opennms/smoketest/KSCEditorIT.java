@@ -31,58 +31,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.http.client.methods.HttpGet;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.Select;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class KSCEditorIT extends OpenNMSSeleniumTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(KSCEditorIT.class);
+public class KSCEditorIT extends OpenNMSSeleniumIT {
 
-    private Integer m_nodeId;
-    private String m_shareDir; // = "/home/ranger/git/opennms/target/opennms-SNAPSHOT/share";
-    private final Path m_targetDir = Paths.get(m_shareDir, "rrd", "response", "127.0.0.1");
-
-    public static void configureTestEnvironment(final TestEnvironmentBuilder builder) {
-        OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-
-        builder.withOpenNMSEnvironment()
-        .addFiles(Paths.get("src/test/resources/ksc/"), "share/rrd/response/127.0.0.1/");
+    protected void goToMainPage() {
+        driver.get(getBaseUrlInternal() + "opennms/KSC/index.jsp");
     }
 
     @Before
     public void setUp() throws Exception {
+        // Create the test requisition, this will block until the test node is actually created
         createRequisition();
-
-        final ResponseData response = getRequest(new HttpGet(buildUrl("rest/nodes/" + REQUISITION_NAME + ":TestMachine1")));
-        final OnmsNode node = JaxbUtils.unmarshal(OnmsNode.class, response.getResponseText());
-        m_nodeId = node.getId();
-        LOG.debug("created node {}", m_nodeId);
-
-        Thread.sleep(5000);
-        if (!isDockerEnabled()) {
-            if (m_shareDir == null) {
-                throw new Exception("When running locally for testing, set 'm_shareDir' to the path to your local OpenNMS 'share' directory.");
-            }
-            FileUtils.forceMkdir(m_targetDir.toFile());
-            FileUtils.copyDirectory(Paths.get("src/test/resources/ksc/").toFile(), m_targetDir.toFile());
-        }
-    }
-
-    protected void goToMainPage() {
-        m_driver.get(getBaseUrl() + "opennms/KSC/index.jsp");
     }
 
     @Test

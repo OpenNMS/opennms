@@ -141,7 +141,7 @@ angular.module('onms-resources', [
       method: 'GET',
       params: {
         exporterNode: nodeCriteria,
-        ifIndex: resource.ifIndex,
+        ifIndex: resource.ifIndex
       }
       }).then(function succeeded(response) {
         // Update the flowGraphUrl on the associated resource

@@ -42,17 +42,17 @@ import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserIT extends OpenNMSSeleniumTestCase {
+public class UserIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(UserIT.class);
 
     @Before
     public void setUp() throws Exception {
-        m_driver.get(getBaseUrl() + "opennms/account/selfService/index.jsp");
+        driver.get(getBaseUrlInternal() + "opennms/account/selfService/index.jsp");
     }
 
     @Test
     public void testExpectedTextAndLinksArePresent() throws Exception {
-        final List<WebElement> headers = m_driver.findElements(By.xpath("//div[@class='card-header']/span"));
+        final List<WebElement> headers = driver.findElements(By.xpath("//div[@class='card-header']/span"));
         assertEquals("Account page should have 2 panels", 2, headers.size());
         assertEquals("Account page should have \"User Account Self-Service\" panel", "User Account Self-Service", headers.get(0).getText());
         assertEquals("Account page should have \"User Account Self-Service Options\" panel", "Account Self-Service Options", headers.get(1).getText());
@@ -60,11 +60,11 @@ public class UserIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testSubmitWithWrongPassword() throws InterruptedException {
-        m_driver.findElement(By.linkText("Change Password")).click();
+        driver.findElement(By.linkText("Change Password")).click();
         enterText(By.cssSelector("input[type=password][name=oldpass]"), "12345");
         enterText(By.cssSelector("input[type=password][name=pass1]"), "23456");
         enterText(By.cssSelector("input[type=password][name=pass2]"), "34567");
-        m_driver.findElement(By.cssSelector("button[type=submit]")).click();
+        driver.findElement(By.cssSelector("button[type=submit]")).click();
 
         try {
             final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
@@ -106,7 +106,7 @@ public class UserIT extends OpenNMSSeleniumTestCase {
         findElementByName("finish").click();
 
         findElementByLink(GROUP_NAME).click();
-        m_driver.findElement(By.xpath("//div[@class='card-header']/span[text()='Details for Group: " + GROUP_NAME + "']"));
+        driver.findElement(By.xpath("//div[@class='card-header']/span[text()='Details for Group: " + GROUP_NAME + "']"));
 
         findElementByLink("Group List").click();
         findElementById(GROUP_NAME + ".doDelete").click();

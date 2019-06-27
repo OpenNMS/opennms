@@ -41,7 +41,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SupportPageIT extends OpenNMSSeleniumTestCase {
+public class SupportPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         supportPage();
@@ -61,27 +61,27 @@ public class SupportPageIT extends OpenNMSSeleniumTestCase {
         };
         assertEquals(links.length, countElementsMatchingCss("div.card-body a"));
         for (final String text : links) {
-            assertNotNull("Link with text '" + text + "' must exist.", m_driver.findElement(By.linkText(text)));
+            assertNotNull("Link with text '" + text + "' must exist.", driver.findElement(By.linkText(text)));
         }
     }
 
     @Test
     public void testAllFormsArePresent() {
-        final WebElement form = m_driver.findElement(By.cssSelector("form[action='support/index.htm']"));
+        final WebElement form = driver.findElement(By.cssSelector("form[action='support/index.htm']"));
         assertNotNull(form.findElement(By.cssSelector("input[type=text][name=username]")));
         assertNotNull(form.findElement(By.cssSelector("input[type=password][name=password]")));
     }
 
     @Test
     public void testSystemReport() {
-        m_driver.findElement(By.linkText("Generate System Report")).click();
+        driver.findElement(By.linkText("Generate System Report")).click();
 
         // checkboxes are selected by default
-        final WebElement allCheckbox = m_driver.findElement(By.cssSelector("input[type=checkbox][name=all]"));
-        assertThat(m_driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(true));
+        final WebElement allCheckbox = driver.findElement(By.cssSelector("input[type=checkbox][name=all]"));
+        assertThat(driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(true));
 
         // deselect the "all" checkbox
         allCheckbox.click();
-        assertThat(m_driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(false));
+        assertThat(driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(false));
     }
 }

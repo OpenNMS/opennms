@@ -28,81 +28,47 @@
 
 package org.opennms.smoketest.sentinel;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.NetworkProtocol;
+import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.telemetry.FlowPacket;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
 import org.opennms.smoketest.telemetry.FlowTester;
 import org.opennms.smoketest.telemetry.Packets;
-import org.opennms.smoketest.telemetry.Ports;
-import org.opennms.smoketest.utils.KarafShell;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
 public class SinglePortFlowsIT {
 
-    @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
-
-    protected TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder()
-                    .opennms()
-                    .es6()
-                    .minion()
-                    .sentinel();
-
-            builder.withMinionEnvironment()
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50003-single-port.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-single-port.cfg");
-
-            builder.withSentinelEnvironment()
-                .addFile(getClass().getResource("/sentinel/features-jms.xml"), "deploy/features.xml"); // We re-use the features-jms.xml file here, as it should work as well
-
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-
-            return builder.build();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withSentinel()
+            .withTelemetryProcessing()
+            .withIpcStrategy(IpcStrategy.KAFKA)
+            .build());
 
     @Test
     public void verifySinglePort() throws Exception {
         // Determine endpoints
-        final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_6, 9200, "tcp");
-        final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        final InetSocketAddress minionSinglePortAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.SFLOW_PORT, "udp");
-
-        waitForSentinelStartup(sentinelSshAddress);
+        final InetSocketAddress elasticRestAddress = InetSocketAddress.createUnresolved(
+                stack.elastic().getContainerIpAddress(), stack.elastic().getMappedPort(9200));
+        final InetSocketAddress flowTelemetryAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
 
         // For each existing FlowPacket, create a definition to point to "minionSinglePortAddress"
         final List<FlowPacket> collect = Packets.getFlowPackets().stream()
-                .map(p -> new FlowPacket(p.getResource(), p.getFlowCount(), minionSinglePortAddress))
+                .map(p -> p.withDestinationAddress(flowTelemetryAddress))
                 .collect(Collectors.toList());
 
         // Now verify Flow creation
@@ -110,30 +76,18 @@ public class SinglePortFlowsIT {
                 .withFlowPackets(collect)
                 .verifyBeforeSendingFlows((flowTester) -> {
                     try {
-                        final SearchResult response = flowTester.getJestClient().execute(new Search.Builder("").addIndex("netflow-*").build());
-                        Assert.assertEquals(Boolean.TRUE, response.isSucceeded());
-                        Assert.assertEquals(0L, response.getTotal().longValue());
+                        final SearchResult response = flowTester.getJestClient().execute(
+                                new Search.Builder("")
+                                        .addIndex("netflow-*")
+                                        .build());
+                        assertEquals(Boolean.TRUE, response.isSucceeded());
+                        assertEquals(0L, response.getTotal().longValue());
                     } catch (IOException e) {
-                        Throwables.propagate(e);
+                        throw new RuntimeException(e);
                     }
                 })
                 .build(elasticRestAddress);
         tester.verifyFlows();
     }
 
-    // Wait for sentinel to start all queues
-    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) {
-        final String QUEUE_FORMAT = "Route: Sink.Server.Telemetry-%s started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-%s";
-        final List<String> queues = Lists.newArrayList("Netflow-5", "Netflow-9", "IPFIX", "SFlow");
-        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> {
-            for (String eachQueue : queues) {
-                final String logEntry = String.format(QUEUE_FORMAT, eachQueue, eachQueue);
-                if (!shellOutput.contains(logEntry)) {
-                    return false;
-                }
-            }
-            return true;
-        });
-    }
 }
-

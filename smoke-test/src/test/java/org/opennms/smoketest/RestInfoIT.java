@@ -28,8 +28,8 @@
 
 package org.opennms.smoketest;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,6 +37,7 @@ import java.util.Arrays;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
+import org.opennms.smoketest.selenium.ResponseData;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,10 +45,10 @@ import com.google.common.base.Strings;
 
 /**
  * Used to validate the /rest/info endpoint
- * 
+ *
  * @author jwhite
  */
-public class RestInfoIT extends OpenNMSSeleniumTestCase {
+public class RestInfoIT extends OpenNMSSeleniumIT {
 
     /**
      * Verifies that each of the known keys in the output contains some value.
@@ -57,7 +58,7 @@ public class RestInfoIT extends OpenNMSSeleniumTestCase {
     @Test
     public void canRetrieveProductInfo() throws ClientProtocolException, IOException, InterruptedException {
         // Retrieve the info summary
-        final ResponseData response = getRequest(new HttpGet(getBaseUrl() + "/opennms/rest/info"));
+        final ResponseData response = getRequest(new HttpGet(getBaseUrlExternal() + "/opennms/rest/info"));
         final String json = response.getResponseText();
 
         // The expected payload looks like:

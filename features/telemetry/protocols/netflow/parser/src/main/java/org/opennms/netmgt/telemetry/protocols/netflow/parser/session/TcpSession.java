@@ -69,7 +69,7 @@ public class TcpSession implements Session {
 
         @Override
         public List<Value<?>> lookupOptions(final List<Value<?>> values) {
-            final LinkedHashMap<String, Value<?>> options = new LinkedHashMap();
+            final LinkedHashMap<String, Value<?>> options = new LinkedHashMap<>();
 
             final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
@@ -92,7 +92,7 @@ public class TcpSession implements Session {
                 }
             }
 
-            return new ArrayList(options.values());
+            return new ArrayList<>(options.values());
         }
     }
 
@@ -148,12 +148,8 @@ public class TcpSession implements Session {
                            final int templateId,
                            final Collection<Value<?>> scopes,
                            final List<Value<?>> values) {
-        if (scopes.isEmpty()) {
-            return;
-        }
-
         final Key key = new Key(observationDomainId, templateId);
-        this.options.computeIfAbsent(key, (k) -> new HashMap()).put(new HashSet(scopes), values);
+        this.options.computeIfAbsent(key, (k) -> new HashMap<>()).put(new HashSet<>(scopes), values);
     }
 
     @Override
