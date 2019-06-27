@@ -790,20 +790,24 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         changeLogParameters.setContexts(new Contexts(StringUtils.splitAndTrim(contexts, ",")));
 
         MessageDigest md = MessageDigest.getInstance("MD5");
-        Set<URI> seenChangeLogs = new TreeSet<>();
+        List<URI> seenChangeLogs = new LinkedList<>();
 
         for (Resource resource : Migrator.validateLiquibaseChangelog(context)) {
             if (!createProductionLiquibaseChangelogFilter().test(resource)) {
+                LOG.info("skipping {} because it didn't pass the changelog filter", resource);
                 continue;
             }
 
+            seenChangeLogs.add(resource.getURI());
             DigestUtils.updateDigest(md, resource.getInputStream());
 
             ResourceAccessor accessor = new ExistingResourceAccessor(resource);
             DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance().getParser(Migration.LIQUIBASE_CHANGELOG_FILENAME, accessor).parse(Migration.LIQUIBASE_CHANGELOG_FILENAME, changeLogParameters, accessor);
 
             for (ChangeSet c : changeLog.getChangeSets()) {
-                if (seenChangeLogs.add(resource.createRelative(c.getFilePath()).getURI())) {
+                URI uri = resource.createRelative(c.getFilePath()).getURI();
+                if (!seenChangeLogs.contains(uri)) {
+                    seenChangeLogs.add(uri);
                     for (InputStream s : accessor.getResourcesAsStream(c.getFilePath())) {
                         DigestUtils.updateDigest(md, s);
                     }
@@ -811,10 +815,14 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
         }
 
+        if (seenChangeLogs.isEmpty()) {
+            throw new AssertionError("No change logs were found. ClassPath: " + Migrator.getContextClassLoaderUrls(context));
+        }
+
         String hash = Hex.encodeHexString(md.digest());
 
         final long end = System.currentTimeMillis();
-        LOG.info("Computed Liquibase schema hash {} in {} seconds on {}.", hash, (float) (end - start) / 1000, Joiner.on(", ").join(seenChangeLogs));
+        LOG.info("Computed Liquibase schema hash {} in {} seconds on change logs: {}.", hash, (float) (end - start) / 1000, Joiner.on(", ").join(seenChangeLogs));
 
         return hash;
     }
