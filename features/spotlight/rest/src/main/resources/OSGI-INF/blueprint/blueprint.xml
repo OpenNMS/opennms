@@ -46,6 +46,11 @@
     </bean>
     <service ref="nodeAssetSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
+    <bean id="nodeGeolocationSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeGeolocationSearchProvider">
+        <argument ref="nodeDao" />
+    </bean>
+    <service ref="nodeGeolocationSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
     <!-- Action Providers -->
     <bean id="actionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.StaticActionSearchProvider" />
     <service ref="actionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
