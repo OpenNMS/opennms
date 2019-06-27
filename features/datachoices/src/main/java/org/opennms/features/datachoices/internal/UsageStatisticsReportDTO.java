@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.features.datachoices.internal;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -47,6 +48,7 @@ public class UsageStatisticsReportDTO {
     private String m_osName;
     private String m_osVersion;
     private String m_osArch;
+    private long m_jvmUptime;
 
     private String m_version;
     private String m_packageName;
@@ -57,8 +59,17 @@ public class UsageStatisticsReportDTO {
     private int m_monitoredServices;
     private int m_events;
     private int m_alarms;
+    private int m_monitoringLocations;
+    private int m_minions;
+    private int m_numUsers;
+    private int m_numGroups;
+    
+    private String m_timeSeriesStrategy;
+    private String m_sinkStrategy;
+    private String m_rpcStrategy;
 
     private Map<String, Long> m_nodesBySysOid = Collections.emptyMap();
+    private List<String> m_karafFeatureList = Collections.emptyList();
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
@@ -162,6 +173,78 @@ public class UsageStatisticsReportDTO {
 
     public Map<String, Long> getNodesBySysOid() {
         return m_nodesBySysOid;
+    }
+
+    public int getMonitoringLocations() {
+        return m_monitoringLocations;
+    }
+
+    public void setMonitoringLocations(int monitoringLocations) {
+        this.m_monitoringLocations = monitoringLocations;
+    }
+
+    public int getMinions() {
+        return m_minions;
+    }
+
+    public void setMinions(int minions) {
+        this.m_minions = minions;
+    }
+
+    public String getTimeSeriesStrategy() {
+        return m_timeSeriesStrategy;
+    }
+
+    public void setTimeSeriesStrategy(String timeSeriesStrategy) {
+        this.m_timeSeriesStrategy = timeSeriesStrategy;
+    }
+
+    public long getJvmUptime() {
+        return m_jvmUptime;
+    }
+
+    public void setJvmUptime(long jvmUptime) {
+        m_jvmUptime = jvmUptime;
+    }
+
+    public int getNumUsers() {
+        return m_numUsers;
+    }
+
+    public void setNumUsers(int numUsers) {
+        m_numUsers = numUsers;
+    }
+
+    public int getNumGroups() {
+        return m_numGroups;
+    }
+
+    public void setNumGroups(int numGroups) {
+        m_numGroups = numGroups;
+    }
+
+    public String getSinkStrategy() {
+        return m_sinkStrategy;
+    }
+
+    public void setSinkStrategy(String sinkStrategy) {
+        m_sinkStrategy = sinkStrategy;
+    }
+
+    public String getRpcStrategy() {
+        return m_rpcStrategy;
+    }
+
+    public void setRpcStrategy(String rpcStrategy) {
+        m_rpcStrategy = rpcStrategy;
+    }
+
+    public List<String> getKarafFeatureList() {
+        return m_karafFeatureList;
+    }
+
+    public void setKarafFeatureList(List<String> karafFeatureList) {
+        m_karafFeatureList = karafFeatureList;
     }
 
     public String toJson() {

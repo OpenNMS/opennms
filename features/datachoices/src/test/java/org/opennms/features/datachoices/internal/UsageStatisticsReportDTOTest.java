@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,8 @@ package org.opennms.features.datachoices.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -50,9 +52,17 @@ public class UsageStatisticsReportDTOTest {
         numberOfNodesBySysOid.put(".1.2.3.4", 2L);
         numberOfNodesBySysOid.put(".1.2.3.5", 6L);
         usageStatisticsReport.setNodesBySysOid(numberOfNodesBySysOid);
+        usageStatisticsReport.setMinions(42);
+        usageStatisticsReport.setMonitoringLocations(21);
+        usageStatisticsReport.setTimeSeriesStrategy("rrd");
+        
+        final List<String> kf = new ArrayList<>();
+        kf.add("foo");
+        kf.add("bar");
+        usageStatisticsReport.setKarafFeatureList(kf);
 
         String actualJson = usageStatisticsReport.toJson();
-        String expectedJson = "{\"alarms\":0,\"events\":0,\"ipInterfaces\":0,\"monitoredServices\":0,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"snmpInterfaces\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"version\":\"10.5.7\"}";
+        String expectedJson = "{\"alarms\":0,\"events\":0,\"ipInterfaces\":0,\"jvmUptime\":0,\"karafFeatureList\":[\"foo\",\"bar\"],\"minions\":42,\"monitoredServices\":0,\"monitoringLocations\":21,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"numGroups\":0,\"numUsers\":0,\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"rpcStrategy\":null,\"sinkStrategy\":null,\"snmpInterfaces\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"timeSeriesStrategy\":\"rrd\",\"version\":\"10.5.7\"}";
         assertEquals(expectedJson, actualJson);
     }
 }
