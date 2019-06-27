@@ -121,6 +121,14 @@ const quickSearchTemplate  = require('./quicksearch.html');
                             });
                             lastContext.count++;
                         });
+
+                        // Make the label have an s at the end if it has multiple items
+                        results.forEach(function(item) {
+                            if (item.group === true && item.count > 1) {
+                                item.label += 's';
+                            }
+                        });
+
                         $scope.performSearchExecuted = true;
                         $scope.results = results;
                     },
