@@ -40,7 +40,7 @@
 
     <!-- Results -->
     <div ng-if="results.length > 0" class="bg-dark px-2 py-2 list-group spotlight-result">
-        <h6 ng-repeat-start="item in results" ng-if="item.group === true" class="mb-1 mt-2 text-muted">{{item.count == 0 ? item.label : item.label + 's'}}</h6>
+        <h6 ng-repeat-start="item in results" ng-if="item.group === true" class="mb-1 mt-2 text-muted">{{item.count <= 1 ? item.label : item.label + 's'}}</h6>
         <a ng-repeat-end ng-if="item.group === false" href="{{item.url}}" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
                 <h6 class="mb-1 mr-5">{{item.label}}</h6>

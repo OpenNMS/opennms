@@ -90,7 +90,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
                         var lastContext;
 
                         data.forEach(function(item) {
-                            // Create a "menu seperator"
+                            // Create a "menu separator"
                             if (lastContext === undefined || item.context !== lastContext.context) {
                                 lastContext = {
                                     context: item.context,
