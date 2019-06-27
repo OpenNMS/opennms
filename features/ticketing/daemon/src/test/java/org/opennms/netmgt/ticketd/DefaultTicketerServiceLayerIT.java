@@ -109,6 +109,7 @@ public class DefaultTicketerServiceLayerIT implements InitializingBean {
 
     @After
     public void tearDown() {
+
         m_databasePopulator.resetDatabase();
     }
 
@@ -200,6 +201,7 @@ public class DefaultTicketerServiceLayerIT implements InitializingBean {
         assertFalse(relatedAlarms.isEmpty());
         assertEquals(relatedAlarms.get(0).getNodeId(), testNode.getId());
 
+        m_alarmDao.delete(situation);
     }
 
 }
