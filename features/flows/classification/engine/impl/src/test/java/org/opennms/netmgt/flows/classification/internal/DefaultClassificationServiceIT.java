@@ -31,11 +31,11 @@ package org.opennms.netmgt.flows.classification.internal;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,6 +85,7 @@ public class DefaultClassificationServiceIT {
     private TransactionOperations transactionOperations;
 
     private ClassificationService classificationService;
+    private int initialCount;
 
     @Before
     public void setUp() {
@@ -96,13 +97,10 @@ public class DefaultClassificationServiceIT {
                         new DaoClassificationRuleProvider(ruleDao), filterService),
                 filterService,
                 transactionOperations);
-        groupDao.save(new GroupBuilder().withName(Groups.USER_DEFINED).build());
-        assertThat(ruleDao.countAll(), is(0));
-    }
 
-    @After
-    public void tearDown() {
-        groupDao.findAll().forEach(group -> groupDao.delete(group));
+        // Nothing of ours created yet (only default database schema)
+        initialCount = ruleDao.findAllEnabledRules().size();
+        assertTrue("initial enabled classification rules should be populated (count should be non-zero)", initialCount > 0);
     }
 
     @Test
@@ -129,7 +127,7 @@ public class DefaultClassificationServiceIT {
         classificationService.importRules(inputStream, true, true);
 
         // Verify
-        assertThat(ruleDao.countAll(), is(3));
+        assertThat(ruleDao.countAll(), is(initialCount + 3));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
                 .withName("http") // name differs
                 .withProtocol("tcp,udp")
@@ -152,7 +150,7 @@ public class DefaultClassificationServiceIT {
         classificationService.importRules(inputStream, false, true);
 
         // Verify
-        assertThat(ruleDao.countAll(), is(2));
+        assertThat(ruleDao.countAll(), is(initialCount + 2));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
                 .withName("http")
                 .withProtocol("tcp,udp")
@@ -174,7 +172,7 @@ public class DefaultClassificationServiceIT {
         ruleDao.save(rule);
 
         // verify it is created
-        assertThat(ruleDao.countAll(), is(1));
+        assertThat(ruleDao.countAll(), is(initialCount + 1));
 
         // define csv and import
         final String csv = new CsvBuilder()
@@ -184,7 +182,7 @@ public class DefaultClassificationServiceIT {
 
         // Verify original one is deleted, but count is still 1
         assertThat(ruleDao.findByDefinition(rule), hasSize(0));
-        assertThat(ruleDao.countAll(), is(1));
+        assertThat(ruleDao.countAll(), is(initialCount + 1));
     }
 
     @Test
@@ -200,7 +198,7 @@ public class DefaultClassificationServiceIT {
         ruleDao.save(rule1);
 
         // verify it is created
-        assertThat(ruleDao.countAll(), is(1));
+        assertThat(ruleDao.countAll(), is(initialCount + 1));
 
         // Define another rule, to import
         Rule rule2 = new RuleBuilder()
@@ -215,10 +213,10 @@ public class DefaultClassificationServiceIT {
         boolean deleteExistingRules = false;
         final String csv = new CsvBuilder().withRule(rule2).withHeader(hasHeader).build();
         classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), hasHeader, deleteExistingRules);
-        assertThat(ruleDao.countAll(), is(2));
+        assertThat(ruleDao.countAll(), is(initialCount + 2));
 
         // Verify original one is retained, and new one was added
-        assertThat(ruleDao.findByDefinition(rule1), hasSize(1));
+        assertThat(ruleDao.findByDefinition(rule1), hasSize(2));
         assertThat(ruleDao.findByDefinition(rule2), hasSize(1));
 
     }

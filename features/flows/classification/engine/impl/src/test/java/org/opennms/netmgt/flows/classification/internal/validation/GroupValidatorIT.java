@@ -30,6 +30,7 @@ package org.opennms.netmgt.flows.classification.internal.validation;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.flows.classification.internal.validation.ValidatorTestUtils.verify;
 
 import org.junit.After;
@@ -60,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"})
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase = false)
 @Transactional
 public class GroupValidatorIT {
 
@@ -74,21 +75,13 @@ public class GroupValidatorIT {
 
     @Before
     public void setUp() {
-        groupDao.save(new GroupBuilder().withName(Groups.USER_DEFINED).build());
-        groupDao.save(new GroupBuilder().withName(Groups.SYSTEM_DEFINED).build());
+        assertThat(groupDao.countAll(), is(2)); // out of the box groups
+
         groupValidator = new GroupValidator(ruleDao);
 
-        assertThat(groupDao.countAll(), is(2));
-        assertThat(ruleDao.countAll(), is(0));
-
-    }
-
-    @After
-    public void tearDown() {
-        groupDao.findAll().forEach(group -> groupDao.delete(group));
-
-        assertThat(groupDao.countAll(), is(0));
-        assertThat(ruleDao.countAll(), is(0));
+        // Nothing of ours created yet (only default database schema)
+        int initialCount = ruleDao.findAllEnabledRules().size();
+        assertTrue("initial enabled classification rules should be populated (count should be non-zero)", initialCount > 0);
     }
 
     @Test
