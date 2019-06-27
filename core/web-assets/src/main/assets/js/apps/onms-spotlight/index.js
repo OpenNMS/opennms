@@ -27,25 +27,42 @@ const quickSearchTemplate  = require('./quicksearch.html');
         })
         .factory('SearchResource', function($resource) {
             return $resource('api/v2/spotlight', {}, {
-                'query':      { method: 'GET', isArray: true },
+                'query':      { method: 'GET', isArray: true, cancellable: true },
             });
         })
-        .controller('QuickSearchController', ['$scope', 'SearchResource', '$timeout', function($scope, SearchResource, $timeout) {
+        .controller('QuickSearchController', ['$scope', 'SearchResource', '$timeout', '$resource', function($scope, SearchResource, $timeout, $resource) {
             console.log("QuickSearchController invoked");
             $scope.query = '';
             $scope.results = {};
             $scope.performSearchExecuted = false;
             $scope.showLoadingIndicator = false;
             $scope.showLoadingIndicatorDelay = 250;
-            $scope.performSearchDelay = 100; // in ms
+            $scope.performSearchDelay = 250; // in ms
             $scope.performSearchPromise = undefined;
+            $scope.performSearchHandle = undefined;
             $scope.showLoadingIndicatorPromise = undefined;
+
+            $scope.resetQuery = function() {
+                console.log("Reset input search query");
+                $scope.query = '';
+                $scope.results = [];
+                $scope.performSearchExecuted = false;
+                if ($scope.performSearchHandle) {
+                    $scope.performSearchHandle.$cancelRequest();
+                }
+            };
+
+            $scope.cancelRequest = function() {
+                if ($scope.performSearchHandle) {
+                    $scope.performSearchHandle.$cancelRequest();
+                }
+                $scope.showLoadingIndicator = false;
+                $timeout.cancel($scope.showLoadingIndicatorPromise);
+            };
 
             $scope.onQueryChange = function() {
                 if ($scope.query.length == 0) {
-                    $scope.results = [];
-                    $scope.performSearchExecuted = false;
-                    console.log("Query reset");
+                    $scope.resetQuery();
                     return;
                 }
                 if ($scope.query.length < 3) {
@@ -53,90 +70,87 @@ const quickSearchTemplate  = require('./quicksearch.html');
                 }
 
                 // Stop any previous loading
-                if ($scope.performSearchPromise) {
-                    $timeout.cancel($scope.performSearchPromise);
-                }
+                $timeout.cancel($scope.performSearchPromise);
+                $scope.performSearchExecuted = false;
+
                 // Start timeout before actually searching, this will allow for not invoking when the user
                 // is still typing. Fiddle with $scope.loadingDelay to make it resolve faster
                 $scope.performSearchPromise = $timeout(function() {
                     // Stop any previously started delay
-                    if ($scope.showLoadingIndicatorPromise) {
-                        $timeout.cancel($scope.showLoadingIndicatorPromise);
-                    }
+                    $timeout.cancel($scope.showLoadingIndicatorPromise);
+
                     // Kick of loading indicator
                     $scope.showLoadingIndicatorPromise = $timeout(function() {
                         $scope.showLoadingIndicator = true;
                     }, $scope.showLoadingIndicatorDelay);
 
+                    // Cancel any previous request
+                    if ($scope.performSearchHandle) {
+                        $scope.performSearchHandle.$cancelRequest();
+                    }
+
                     // Kick of the search
-                    $scope.performSearch($scope.query).$promise.then(function(x) {
-                        $scope.showLoadingIndicator = false;
-                        $timeout.cancel($scope.showLoadingIndicatorPromise);
-                    }, function(error) {
-                        // TODO MVR add error handling
-                        console.log("ERROR", error);
-                        $scope.showLoadingIndicator = false;
-                        $timeout.cancel($scope.showLoadingIndicatorPromise);
-                    });
+                    $scope.performSearchHandle = SearchResource.query({'_s' : $scope.query},
+                        function(data) {
+                            console.log('Search result', data);
+                            var results = [];
+                            var lastContext;
 
-                }, $scope.performSearchDelay);
-            };
+                            data.forEach(function(item) {
+                                // Create a "menu separator"
+                                if (lastContext === undefined || item.context !== lastContext.context) {
+                                    lastContext = {
+                                        context: item.context,
+                                        label: item.context,
+                                        group: true,
+                                        count: 0
+                                    };
+                                    results.push(lastContext);
+                                }
 
-            $scope.performSearch = function(query) {
-                return SearchResource.query({'_s' : query},
-                    function(data) {
-                        console.log('Search result', data);
-                        var results = [];
-                        var lastContext;
+                                // An item cannot be a group
+                                item.group = false;
 
-                        data.forEach(function(item) {
-                            // Create a "menu separator"
-                            if (lastContext === undefined || item.context !== lastContext.context) {
-                                lastContext = {
-                                    context: item.context,
-                                    label: item.context,
-                                    group: true,
-                                    count: 0
-                                };
-                                results.push(lastContext);
-                            }
+                                // Now add the item
+                                results.push(item);
 
-                            // An item cannot be a group
-                            item.group = false;
-
-                            // Now add the item
-                            results.push(item);
-
-                            // TODO MVR we first create this, and now we undo this, should be different
-                            var matches = item.matches;
-                            item.matches = [];
-                            matches.forEach(function(eachMatch) {
-                                eachMatch.values.forEach(function(eachValue) {
-                                    item.matches.push({
-                                        id: eachMatch.id,
-                                        label: eachMatch.label,
-                                        value: eachValue
+                                // TODO MVR we first create this, and now we undo this, should be different
+                                var matches = item.matches;
+                                item.matches = [];
+                                matches.forEach(function(eachMatch) {
+                                    eachMatch.values.forEach(function(eachValue) {
+                                        item.matches.push({
+                                            id: eachMatch.id,
+                                            label: eachMatch.label,
+                                            value: eachValue
+                                        });
                                     });
                                 });
+                                lastContext.count++;
                             });
-                            lastContext.count++;
-                        });
 
-                        // Make the label have an s at the end if it has multiple items
-                        results.forEach(function(item) {
-                            if (item.group === true && item.count > 1) {
-                                item.label += 's';
+                            // Make the label have an s at the end if it has multiple items
+                            results.forEach(function(item) {
+                                if (item.group === true && item.count > 1) {
+                                    item.label += 's';
+                                }
+                            });
+
+                            $scope.cancelRequest();
+                            $scope.performSearchExecuted = true;
+                            $scope.results = results;
+                        },
+                        function(response) {
+                            if (response.status >= 0) {
+                                // TODO MVR error handling
+                                console.log('ERROR', error);
+                                $scope.cancelRequest();
+                            } else {
+                                console.log("CANCELLED");
                             }
-                        });
-
-                        $scope.performSearchExecuted = true;
-                        $scope.results = results;
-                    },
-                    function(error) {
-                        // TODO MVR error handling
-                        console.log('ERROR', error);
-                    }
-                );
+                        }
+                    );
+                }, $scope.performSearchDelay);
             };
 
             function hashCode(s) {

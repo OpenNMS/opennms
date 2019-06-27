@@ -1,22 +1,10 @@
 <style type="text/css">
-    .spotlight-no-results {
-        position: absolute;
-        top: 100%;
-        z-index: 10000;
-    }
-
-    .spotlight-loading-indicator {
-        position: absolute;
-        top: 100%;
-        z-index: 10000;
-    }
-
     .spotlight-result {
-        min-width: 200px;
+        min-width: 280px;
         max-width: 500px;
+        z-index: 10000;
         position: absolute;
         top: 100%;
-        z-index: 10000;
     }
 </style>
 
@@ -26,16 +14,21 @@
 
     <!-- Search Input -->
     <div class="input-group">
-        <input id="query" ng-change="onQueryChange()" ng-model="query" type="text" class="form-control" placeholder="Search..." aria-label="Search">
-        <div class="input-group-append">
+        <!-- Loading Indicator -->
+        <div class="input-group-prepend">
             <span class="input-group-text"><i class="fa fa-search"></i></span>
         </div>
-    </div>
-
-    <!-- Loading Indicator -->
-    <div id="searchLoadingIndicator" class="spotlight-loading-indicator" ng-show="showLoadingIndicator">
-        <div class="spinner-border spinner-border-sm text-primary" role="status"/>
-        <span>Loading...</span>
+        <input id="query" ng-change="onQueryChange()" ng-model="query" type="text" class="form-control" placeholder="Search..." aria-label="Search">
+        <div ng-show="showLoadingIndicator" class="btn btn-secondary rounded-0">
+            <div class="spinner-border spinner-border-sm text-white" role="status"/>
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div ng-show="performSearchExecuted === true && !showLoadingIndicator" class="input-group-append">
+            <button class="btn btn-secondary" type="button" title="Reset Search" ng-click="resetQuery()"><i class="fa fa-times"></i></button>
+        </div>
+        <div ng-show="showLoadingIndicator" class="input-group-append">
+            <button class="btn btn-secondary" type="button" title="Cancel Request" ng-click="cancelRequest()"><i class="fa fa-times"></i></button>
+        </div>
     </div>
 
     <!-- Results -->
@@ -51,7 +44,7 @@
     </div>
 
     <!-- No Result -->
-    <div ng-if="performSearchExecuted === true && results.length === 0" class="alert alert-warning spotlight-no-results">
-        <i class="fa fa-times"></i> No Results found for '{{query}}'
+    <div ng-if="performSearchExecuted === true && results.length === 0" class="bg-dark px-2 py-2 spotlight-result text-light">
+        <span>No Results found</span>
     </div>
 </form>
