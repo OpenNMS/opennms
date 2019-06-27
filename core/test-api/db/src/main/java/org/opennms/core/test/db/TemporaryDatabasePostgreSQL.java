@@ -882,8 +882,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         return r -> {
             try {
                 URI uri = r.getURI();
-                return (uri.getScheme().equals("file") && uri.toString().contains("opennms/core/schema")) ||
-                        (uri.getScheme().equals("jar") && uri.toString().contains("opennms.core.schema"));
+                return (uri.getScheme().equals("file") && uri.toString().contains("core/schema")) ||
+                        (uri.getScheme().equals("jar") && uri.toString().contains("core.schema"));
             } catch (IOException e) {
                 return false;
             }

@@ -368,7 +368,7 @@ public class MigratorIT {
     }
 
     private List<Resource> getRealChangelog() throws IOException {
-        return getChangelogs("opennms/core/schema");
+        return getChangelogs("core/schema");
     }
 
     private List<Resource> getChangelogs(String fileMatch) throws IOException {
