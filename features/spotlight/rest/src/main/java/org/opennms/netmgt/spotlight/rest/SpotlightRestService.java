@@ -41,7 +41,7 @@ import javax.ws.rs.core.SecurityContext;
 @Path("spotlight")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface SearchRestService {
+public interface SpotlightRestService {
 
     @GET
     Response query(@Context SecurityContext securityContext, @QueryParam("_s") final String query);

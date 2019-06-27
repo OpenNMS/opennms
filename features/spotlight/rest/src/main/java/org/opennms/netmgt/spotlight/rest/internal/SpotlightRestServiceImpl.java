@@ -39,13 +39,13 @@ import org.json.JSONObject;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.api.SpotlightService;
-import org.opennms.netmgt.spotlight.rest.SearchRestService;
+import org.opennms.netmgt.spotlight.rest.SpotlightRestService;
 
-public class SearchRestServiceImpl implements SearchRestService {
+public class SpotlightRestServiceImpl implements SpotlightRestService {
 
     private final SpotlightService spotlightService;
 
-    public SearchRestServiceImpl(SpotlightService spotlightService) {
+    public SpotlightRestServiceImpl(SpotlightService spotlightService) {
         this.spotlightService = Objects.requireNonNull(spotlightService);
     }
 

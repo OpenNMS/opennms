@@ -74,10 +74,10 @@
     </bean>
     <service ref="spotlightService" interface="org.opennms.netmgt.spotlight.api.SpotlightService"/>
 
-    <bean id="spotlightRestService" class="org.opennms.netmgt.spotlight.rest.internal.SearchRestServiceImpl">
+    <bean id="spotlightRestService" class="org.opennms.netmgt.spotlight.rest.internal.SpotlightRestServiceImpl">
         <argument ref="spotlightService" />
     </bean>
-    <service ref="spotlightRestService" interface="org.opennms.netmgt.spotlight.rest.SearchRestService">
+    <service ref="spotlightRestService" interface="org.opennms.netmgt.spotlight.rest.SpotlightRestService">
         <service-properties>
             <entry key="application-path" value="/api/v2"/>
         </service-properties>
