@@ -127,7 +127,7 @@ public class NetworkElementFactoryIT implements InitializingBean {
         }
         m_nodeDao.flush();
 
-        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A')");
+        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A', 'test')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
         
         final List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
@@ -144,7 +144,7 @@ public class NetworkElementFactoryIT implements InitializingBean {
         }
         m_nodeDao.flush();
 
-        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A')");
+        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A', 'test')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.2', 'M')");
         
