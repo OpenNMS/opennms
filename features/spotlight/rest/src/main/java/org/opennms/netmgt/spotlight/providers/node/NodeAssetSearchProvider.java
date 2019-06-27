@@ -126,6 +126,7 @@ public class NodeAssetSearchProvider implements SearchProvider {
             .map(node -> {
                 final SearchResult result = new SearchResultBuilder().withOnmsNode(node).build();
                 final OnmsAssetRecord record = node.getAssetRecord();
+                // TODO MVR this is ugly as hell ...
                 for (Method method : OnmsAssetRecord.class.getMethods()) {
                     if (method.getName().startsWith("get") && method.getReturnType() == String.class && method.getParameterCount() == 0) {
                         try {

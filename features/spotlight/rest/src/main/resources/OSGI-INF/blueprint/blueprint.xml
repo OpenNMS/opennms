@@ -36,10 +36,10 @@
     </bean>
     <service ref="nodeServiceSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
-    <bean id="nodeIpLikeSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeIpLikeSearchProvider">
-        <argument ref="genericPersistenceAccessor" />
+    <bean id="nodeIpSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeIpSearchProvider">
+        <argument ref="nodeDao" />
     </bean>
-    <service ref="nodeIpLikeSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+    <service ref="nodeIpSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
     <bean id="nodeAssetSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeAssetSearchProvider">
         <argument ref="nodeDao" />

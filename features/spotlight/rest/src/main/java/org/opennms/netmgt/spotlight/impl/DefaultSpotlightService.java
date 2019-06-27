@@ -67,7 +67,6 @@ public class DefaultSpotlightService implements SpotlightService {
         if (query.getMaxResults() <= 0) {
             query.setMaxResults(SearchQuery.DEFAULT_MAX_RESULTS);
         }
-
         // Enforce minimum length, otherwise don't query
         if (Strings.isNullOrEmpty(query.getInput()) || query.getInput().length() < 1) {
             return Collections.emptyList();
