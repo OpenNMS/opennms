@@ -214,7 +214,7 @@ public class Migration {
     }
 
     public void setChangeLog(final Resource resource) throws IOException {
-        m_changeLog = resource.getURI().toString();
+        setChangeLog(resource.getURI().toString());
     }
 
     /**

@@ -876,34 +876,38 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     public static GenericApplicationContext ensureLiquibaseFilesInClassPath(GenericApplicationContext context)
             throws MalformedURLException, IOException, Exception {
-        String liquibaseRelativePath = "core/schema/src/main/liquibase/";
-
-        String migratorClass = "/" + Migrator.class.getName().replace('.', '/') + ".class";
-        URL migratorUrl = Migrator.class.getResource(migratorClass);
-        assert migratorUrl != null : "Could not find resource for Migrator.class anywhere in the classpath with " + migratorClass;
-        if ("file".equals(migratorUrl.getProtocol()) && migratorUrl.getPath().endsWith("core/schema/target/classes" + migratorClass)) {
-            URL[] urls = { new URL(migratorUrl.getProtocol(), migratorUrl.getHost(), migratorUrl.getFile().replaceFirst("core/schema/target/classes/.*$", liquibaseRelativePath)) };
-            context.setClassLoader(new URLClassLoader(urls, context.getClassLoader()));
-        }
-
         try {
             Migrator.validateLiquibaseChangelog(context);
         } catch (MigrationException e) {
-            File buildTop = findTopOpenNmsBuildDir();
-            if (buildTop != null) {
-                File liquibase = new File(buildTop, liquibaseRelativePath);
-                if (!liquibase.exists()) {
-                    throw new MigrationException(e.getMessage() + ", nor could we find liquibase files where we expected: " + liquibase.getAbsolutePath());
-                }
+            String liquibaseRelativePath = "core/schema/src/main/liquibase/";
 
-                URL[] urls = { liquibase.toURI().toURL() };
+            String migratorClass = "/" + Migrator.class.getName().replace('.', '/') + ".class";
+            URL migratorUrl = Migrator.class.getResource(migratorClass);
+            assert migratorUrl != null : "Could not find resource for Migrator.class anywhere in the classpath with " + migratorClass;
+            if ("file".equals(migratorUrl.getProtocol()) && migratorUrl.getPath().endsWith("core/schema/target/classes" + migratorClass)) {
+                URL[] urls = {new URL(migratorUrl.getProtocol(), migratorUrl.getHost(), migratorUrl.getFile().replaceFirst("core/schema/target/classes/.*$", liquibaseRelativePath))};
                 context.setClassLoader(new URLClassLoader(urls, context.getClassLoader()));
-                Migrator.validateLiquibaseChangelog(context);
-
-                return context;
             }
 
-            throw e;
+            try {
+                Migrator.validateLiquibaseChangelog(context);
+            } catch (MigrationException e2) {
+                File buildTop = findTopOpenNmsBuildDir();
+                if (buildTop != null) {
+                    File liquibase = new File(buildTop, liquibaseRelativePath);
+                    if (!liquibase.exists()) {
+                        throw new MigrationException(e2.getMessage() + ", nor could we find liquibase files where we expected: " + liquibase.getAbsolutePath());
+                    }
+
+                    URL[] urls = {liquibase.toURI().toURL()};
+                    context.setClassLoader(new URLClassLoader(urls, context.getClassLoader()));
+                    Migrator.validateLiquibaseChangelog(context);
+
+                    return context;
+                }
+
+                throw e;
+            }
         }
 
         return context;

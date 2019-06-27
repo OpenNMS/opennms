@@ -122,9 +122,11 @@ public class MigratorIT {
             URI uri = resource.getURI();
             if (uri.getScheme().equals("file") && uri.toString().contains("test-api/schema/a")) {
                 aResource = resource;
+                break;
             }
             if (uri.getScheme().equals("jar") && uri.toString().contains("test-api.schema.a")) {
                 aResource = resource;
+                break;
             }
         }
         assertNotNull("aResource must not be null", aResource);
@@ -240,6 +242,7 @@ public class MigratorIT {
         migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setChangeLog("changelog.xml");
 
         final Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
@@ -361,11 +364,7 @@ public class MigratorIT {
     }
 
     private List<Resource> getTestResources() throws IOException {
-        return getTestResources("test-api/schema");
-    }
-
-    private List<Resource> getTestResources(String match) throws IOException {
-        return getChangelogs(match);
+        return getChangelogs("test-api/schema");
     }
 
     private List<Resource> getRealChangelog() throws IOException {
@@ -377,8 +376,8 @@ public class MigratorIT {
         final List<Resource> resources = new ArrayList<>();
         for (final Resource resource : m_context.getResources(Migrator.LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
             URI uri = resource.getURI();
-            if (uri.getScheme().equals("file") && !uri.toString().contains("core/schema")) continue;
-            if (uri.getScheme().equals("jar") && !uri.toString().contains("core.schema")) continue;
+            if (uri.getScheme().equals("file") && !uri.toString().contains(fileMatch)) continue;
+            if (uri.getScheme().equals("jar") && !uri.toString().contains(jarMatch)) continue;
             resources.add(resource);
         }
 
