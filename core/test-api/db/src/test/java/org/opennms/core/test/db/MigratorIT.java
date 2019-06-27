@@ -382,7 +382,7 @@ public class MigratorIT {
         }
 
         if (resources.isEmpty() ) {
-            fail("Couldn't find changelog.xml in this ApplicationContext ClassLoader heirarchy:\n" +
+            fail("Couldn't find changelog.xml in this ApplicationContext ClassLoader hierarchy:\n" +
                     Joiner.on("\n").join(getClassLoaderUrls(m_context)));
         }
 
