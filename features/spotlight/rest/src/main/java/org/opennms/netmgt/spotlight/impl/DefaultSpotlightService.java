@@ -28,18 +28,18 @@
 
 package org.opennms.netmgt.spotlight.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.spotlight.api.Contexts;
-import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
+import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.api.SpotlightService;
 import org.osgi.framework.BundleContext;
@@ -66,10 +66,13 @@ public class DefaultSpotlightService implements SpotlightService {
         if (query.getMaxResults() <= 0) {
             query.setMaxResults(SearchQuery.DEFAULT_MAX_RESULTS);
         }
+
         // Enforce minimum length, otherwise don't query
         if (Strings.isNullOrEmpty(query.getInput()) || query.getInput().length() < 1) {
             return Collections.emptyList();
         }
+
+        // Fetch Results grouped by URL
         final Map<String, SearchResult> resultMap = new HashMap<>();
         try {
             final ServiceReference<SearchProvider>[] allServiceReferences = (ServiceReference<SearchProvider>[]) bundleContext.getServiceReferences(SearchProvider.class.getCanonicalName(), null);
@@ -99,10 +102,24 @@ public class DefaultSpotlightService implements SpotlightService {
         } catch (InvalidSyntaxException e) {
             LOG.error("Could not fetch search providers", e);
         }
-        final List<SearchResult> resultList = resultMap.values().stream()
-                .sorted(Comparator.comparingInt((ToIntFunction<SearchResult>) result -> Contexts.Node.equals(result.getContext()) ? 0 : Contexts.Action.equals(result.getContext()) ? 1 : 2)
-                .thenComparingInt(result -> -1 * result.getMatches().stream().mapToInt(m -> m.getValues().size()).sum()))
+
+        // Group by context
+        final Map<String, List<SearchResult>> contextResultMap = new HashMap<>();
+        resultMap.forEach((key, value) -> {
+            contextResultMap.putIfAbsent(value.getContext(), new ArrayList<>());
+            contextResultMap.get(value.getContext()).add(value);
+        });
+
+        // Sort and limit each context
+        final List<SearchResult> searchResult = contextResultMap.values().stream()
+                .map(results -> results.stream()
+                    .sorted(Comparator.comparingInt(result -> -1 * result.getMatches().stream().mapToInt(m -> m.getValues().size()).sum()))
+                    .limit(5) // TODO MVR Make this configurable
+                    .collect(Collectors.toList())
+                )
+                .flatMap(results -> results.stream())
+                .sorted(Comparator.comparingInt(result -> Contexts.Node.equals(result.getContext()) ? 0 : Contexts.Action.equals(result.getContext()) ? 1 : 2))
                 .collect(Collectors.toList());
-        return resultList.subList(0, Math.min(resultList.size(), query.getMaxResults()));
+        return searchResult;
     }
 }
