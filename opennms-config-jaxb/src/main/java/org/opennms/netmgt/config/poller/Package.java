@@ -504,7 +504,10 @@ public class Package implements Serializable {
             final Pattern pattern = Pattern.compile(service.getPattern());
             final Matcher matcher = pattern.matcher(svcName);
             if (matcher.matches()) {
-                final Map<String, String> patternVariables = Maps.asMap(RegexUtils.getNamedCaptureGroupsFromPattern(service.getPattern()), matcher::group);
+                final Map<String, String> patternVariables = Maps.filterValues(
+                        Maps.asMap(RegexUtils.getNamedCaptureGroupsFromPattern(service.getPattern()), matcher::group),
+                        Objects::nonNull
+                );
                 return Optional.of(new ServiceMatch(service, patternVariables));
             }
         }
