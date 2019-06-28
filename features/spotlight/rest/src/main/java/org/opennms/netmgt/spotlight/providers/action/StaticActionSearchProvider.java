@@ -40,6 +40,7 @@ import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 
 import com.google.common.base.Strings;
@@ -47,29 +48,37 @@ import com.google.common.base.Strings;
 public class StaticActionSearchProvider implements SearchProvider {
 
     @Override
-    public List<SearchResult> query(SearchQuery query) {
+    public boolean contributesTo(String contextName) {
+        return Contexts.Action.getName().equals(contextName);
+    }
+
+    @Override
+    public SearchResult query(SearchQuery query) {
         Objects.requireNonNull(query.getPrincipal());
 
         // TODO MVR do not reload all the time
         final Path etc = Paths.get(System.getProperty("opennms.home"), "etc", "spotlight-actions.xml");
         final Actions actions = JAXB.unmarshal(etc.toFile(), Actions.class);
         final String input = query.getInput();
-        final List<SearchResult> searchResults = actions.getActions().stream()
+        final List<SearchResultItem> allItemsForUser = actions.getActions().stream()
                 .filter(action -> action.getPrivilegedRoles().isEmpty() || action.getPrivilegedRoles().stream().anyMatch(query::isUserInRole))
                 .filter(action -> QueryUtils.matches(action.getLabel(), input))
                 .map(action -> {
-                    final SearchResult searchResult = new SearchResult();
-                    searchResult.setContext(Contexts.Action);
-                    searchResult.setLabel(action.getLabel());
-                    searchResult.setUrl(action.getUrl());
-                    searchResult.setIdentifier(action.getUrl());
+                    final SearchResultItem searchResultItem = new SearchResultItem();
+                    searchResultItem.setContext(Contexts.Action);
+                    searchResultItem.setLabel(action.getLabel());
+                    searchResultItem.setUrl(action.getUrl());
+                    searchResultItem.setIdentifier(action.getUrl());
                     if (!Strings.isNullOrEmpty(action.getIcon())) {
-                        searchResult.setIcon(action.getIcon());
+                        searchResultItem.setIcon(action.getIcon());
                     }
-                    return searchResult;
+                    return searchResultItem;
                 })
-                .limit(query.getMaxResults())
                 .collect(Collectors.toList());
-        return searchResults;
+        final List<SearchResultItem> searchResultItems = allItemsForUser.subList(0, Math.min(allItemsForUser.size(), query.getMaxResults()));
+        final SearchResult searchResult = new SearchResult(Contexts.Action)
+                .withTotalCount(allItemsForUser.size())
+                .withResults(searchResultItems);
+        return searchResult;
     }
 }

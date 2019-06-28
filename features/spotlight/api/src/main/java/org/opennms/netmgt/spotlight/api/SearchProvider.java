@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.spotlight.api;
 
-import java.util.List;
-
 public interface SearchProvider {
 
-    List<SearchResult> query(SearchQuery query);
+    boolean contributesTo(String contextName);
+
+    SearchResult query(SearchQuery query);
 
 }

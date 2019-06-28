@@ -38,12 +38,14 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
-import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
+import org.opennms.netmgt.spotlight.providers.SearchResultItemBuilder;
 
 import com.google.common.collect.Lists;
 
@@ -56,7 +58,12 @@ public class NodeLabelSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(final SearchQuery query) {
+    public boolean contributesTo(String contextName) {
+        return Contexts.Node.getName().equals(contextName);
+    }
+
+    @Override
+    public SearchResult query(final SearchQuery query) {
         final String input = query.getInput();
         final List<Restriction> restrictions = Lists.newArrayList(
                 Restrictions.ilike("label", QueryUtils.ilike(input)),
@@ -72,27 +79,27 @@ public class NodeLabelSearchProvider implements SearchProvider {
         }
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class)
                 .or(restrictions.toArray(new Restriction[restrictions.size()]))
-                .distinct()
-                .orderBy("label")
-                .limit(query.getMaxResults());
-        final Criteria criteria = criteriaBuilder.toCriteria();
+                .distinct();
+        final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
+        final Criteria criteria = criteriaBuilder.orderBy("label").limit(query.getMaxResults()).toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
-        final List<SearchResult> searchResults = matchingNodes.stream().map(node -> {
-            final SearchResult searchResult = new SearchResultBuilder().withOnmsNode(node).build();
+        final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
+            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node).build();
             if (QueryUtils.equals(node.getId(), input)) {
-                searchResult.addMatch(new Match("id", "Node ID", node.getId().toString()));
+                searchResultItem.addMatch(new Match("id", "Node ID", node.getId().toString()));
             }
             if (QueryUtils.matches(node.getForeignId(), input)) {
-                searchResult.addMatch(new Match("foreignId", "Foreign ID", node.getForeignId()));
+                searchResultItem.addMatch(new Match("foreignId", "Foreign ID", node.getForeignId()));
             }
             if (QueryUtils.matches(node.getForeignSource(), input)) {
-                searchResult.addMatch(new Match("foreignSource", "Foreign Source", node.getForeignSource()));
+                searchResultItem.addMatch(new Match("foreignSource", "Foreign Source", node.getForeignSource()));
             }
             if (QueryUtils.matches(node.getLabel(), input)) {
-                searchResult.addMatch(new Match("label", "Node Label", node.getLabel()));
+                searchResultItem.addMatch(new Match("label", "Node Label", node.getLabel()));
             }
-            return searchResult;
+            return searchResultItem;
         }).collect(Collectors.toList());
-        return searchResults;
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withTotalCount(totalCount).withResults(searchResultItems);
+        return searchResult;
     }
 }

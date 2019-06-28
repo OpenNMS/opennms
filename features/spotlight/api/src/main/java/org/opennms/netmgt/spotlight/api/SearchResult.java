@@ -29,105 +29,70 @@
 package org.opennms.netmgt.spotlight.api;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-// TODO MVR add visible to user (e.g. due to missing restrictions)
 public class SearchResult {
-    private String context;
-    private String identifier;
-    private String icon;
-    private String label;
-    private String url;
-    private final Map<String, String> properties = new HashMap<>();
-    private final List<Match> matches = new ArrayList<>();
 
-    public String getContext() {
+    public static SearchResult EMPTY = new SearchResult("$EMPTY$");
+
+    private final SearchContext context;
+    private int totalCount;
+    private final List<SearchResultItem> results = new ArrayList<>();
+
+    public SearchResult(String context) {
+        this(new SearchContext(Objects.requireNonNull(context)));
+    }
+
+    public SearchResult(SearchContext searchContext) {
+        this.context = Objects.requireNonNull(searchContext);
+    }
+
+    public void addItem(SearchResultItem item) {
+        this.results.add(item);
+    }
+
+    public SearchContext getContext() {
         return context;
     }
 
-    public void setContext(String context) {
-        this.context = context;
+    public int getTotalCount() {
+        return totalCount;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public List<SearchResultItem> getResults() {
+        return results;
     }
 
-    public String getLabel() {
-        return label;
+    public boolean isEmpty() {
+        return results.isEmpty();
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public SearchResult withResults(List<SearchResultItem> searchResultItems) {
+        this.results.addAll(searchResultItems);
+        return this;
     }
 
-    public String getUrl() {
-        return url;
+    public SearchResult withTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+        return this;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties.clear();
-        this.properties.putAll(properties);
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public List<Match> getMatches() {
-        return matches;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        if (o instanceof SearchResult) {
-            final SearchResult that = (SearchResult) o;
-            return Objects.equals(context, that.context)
-                    && Objects.equals(identifier, that.identifier)
-                    && Objects.equals(label, that.label)
-                    && Objects.equals(url, that.url)
-                    && Objects.equals(properties, that.properties)
-                    && Objects.equals(matches, that.matches)
-                    && Objects.equals(icon, that.icon);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(context, identifier, label, properties, matches, url, icon);
-    }
-
-    public void addMatch(Match match) {
-        final Optional<Match> existingMatch = matches.stream()
-                .filter(m -> match.getId().equals(m.getId()) && match.getLabel().equals(m.getLabel()))
-                .findAny();
-        if (existingMatch.isPresent()) {
-            existingMatch.get().getValues().addAll(match.getValues());
+    public void merge(SearchResultItem mergeMe) {
+        Objects.requireNonNull(mergeMe);
+        final Optional<SearchResultItem> existingItem = results.stream().filter(r -> r.getUrl().equals(mergeMe.getUrl())).findAny();// TODO MVR should be identifier instead
+        if (existingItem.isPresent()) {
+            // Merge attributes
+            mergeMe.getProperties().putAll(existingItem.get().getProperties());
+            // Merge Matches
+            mergeMe.getMatches().forEach(m -> existingItem.get().addMatch(m));
         } else {
-            matches.add(match);
+            results.add(mergeMe);
         }
     }
 }

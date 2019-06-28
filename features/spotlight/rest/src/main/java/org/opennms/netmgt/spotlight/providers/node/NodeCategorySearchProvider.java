@@ -33,16 +33,17 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
-import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
+import org.opennms.netmgt.spotlight.providers.SearchResultItemBuilder;
 
 public class NodeCategorySearchProvider implements SearchProvider {
 
@@ -53,23 +54,27 @@ public class NodeCategorySearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(final SearchQuery query) {
+    public boolean contributesTo(String contextName) {
+        return Contexts.Node.getName().equals(contextName);
+    }
+
+    @Override
+    public SearchResult query(final SearchQuery query) {
         final String input = query.getInput();
-        final Criteria criteria = new CriteriaBuilder(OnmsNode.class)
+        final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class)
                 .alias("categories", "categories", Alias.JoinType.INNER_JOIN)
                 .ilike("categories.name", QueryUtils.ilike(input))
-                .distinct()
-                .orderBy("label")
-                .limit(query.getMaxResults())
-                .toCriteria();
-        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
-        final List<SearchResult> searchResults = matchingNodes.stream().map(node -> {
-            final SearchResult searchResult = new SearchResultBuilder().withOnmsNode(node).build();
+                .distinct();
+        final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
+        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.orderBy("label").limit(query.getMaxResults()).toCriteria());
+        final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
+            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node).build();
             node.getCategories().stream()
                     .filter(c -> QueryUtils.matches(c.getName(), input))
-                    .forEach(c -> searchResult.addMatch(new Match("category.name", "Category", c.getName())));
-            return searchResult;
+                    .forEach(c -> searchResultItem.addMatch(new Match("category.name", "Category", c.getName())));
+            return searchResultItem;
         }).collect(Collectors.toList());
-        return searchResults;
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withTotalCount(totalCount).withResults(searchResultItems);
+        return searchResult;
     }
 }

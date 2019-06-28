@@ -37,12 +37,14 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
-import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
+import org.opennms.netmgt.spotlight.providers.SearchResultItemBuilder;
 
 public class NodeIpSearchProvider implements SearchProvider {
 
@@ -53,23 +55,28 @@ public class NodeIpSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(final SearchQuery query) {
+    public boolean contributesTo(String contextName) {
+        return Contexts.Node.getName().equals(contextName);
+    }
+
+    @Override
+    public SearchResult query(final SearchQuery query) {
         final String input = query.getInput();
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class)
                 .alias("ipInterfaces", "ipInterfaces")
                 .ilike("ipInterfaces.ipAddress", QueryUtils.ilike(input))
-                .orderBy("label")
-                .distinct()
-                .limit(query.getMaxResults());
-        final Criteria criteria = criteriaBuilder.toCriteria();
+                .distinct();
+        final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
+        final Criteria criteria = criteriaBuilder.orderBy("label").distinct().limit(query.getMaxResults()).toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
-        final List<SearchResult> searchResults = matchingNodes.stream().map(node -> {
-            final SearchResult searchResult = new SearchResultBuilder().withOnmsNode(node).build();
+        final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
+            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node).build();
             node.getIpInterfaces().stream()
                     .filter(ipInterface -> QueryUtils.matches(ipInterface.getIpAddress().toString(), input))
-                    .forEach(ipInterface -> searchResult.addMatch(new Match("ipInterface.ipAddress", "IP Address", InetAddressUtils.str(ipInterface.getIpAddress()))));
-            return searchResult;
+                    .forEach(ipInterface -> searchResultItem.addMatch(new Match("ipInterface.ipAddress", "IP Address", InetAddressUtils.str(ipInterface.getIpAddress()))));
+            return searchResultItem;
         }).collect(Collectors.toList());
-        return searchResults;
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withTotalCount(totalCount).withResults(searchResultItems);
+        return searchResult;
     }
 }

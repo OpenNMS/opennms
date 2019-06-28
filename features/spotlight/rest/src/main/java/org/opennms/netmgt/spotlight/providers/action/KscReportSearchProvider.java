@@ -28,17 +28,24 @@
 
 package org.opennms.netmgt.spotlight.providers.action;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.spotlight.api.Contexts;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 import org.opennms.web.svclayer.api.KscReportService;
 
 public class KscReportSearchProvider implements SearchProvider {
+
+    private final SearchContext CONTEXT = new SearchContext("KSC Report");
 
     private final KscReportService kscReportService;
 
@@ -47,12 +54,18 @@ public class KscReportSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(SearchQuery query) {
-        final List<SearchResult> results = kscReportService.getReportMap().values().stream()
+    public boolean contributesTo(String contextName) {
+        return Contexts.Action.getName().equals(contextName);
+    }
+
+    @Override
+    public SearchResult query(SearchQuery query) {
+        final Collection<Report> reportList = kscReportService.getReportMap().values();
+        final List<SearchResultItem> results = reportList.stream()
                 .filter(report -> QueryUtils.matches(report.getTitle(), query.getInput()))
                 .map(report -> {
-                    final SearchResult result = new SearchResult();
-                    result.setContext("KSC Report");
+                    final SearchResultItem result = new SearchResultItem();
+                    result.setContext(CONTEXT);
                     result.setLabel(report.getTitle());
                     result.setIdentifier(report.getTitle());
                     result.setUrl("KSC/customView.htm?type=custom&report=" + report.getId());
@@ -60,6 +73,7 @@ public class KscReportSearchProvider implements SearchProvider {
                 })
                 .limit(query.getMaxResults())
                 .collect(Collectors.toList());
-        return results;
+        final SearchResult searchResult = new SearchResult(CONTEXT).withTotalCount(reportList.size()).withResults(results);
+        return searchResult;
     }
 }

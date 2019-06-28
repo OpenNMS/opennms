@@ -33,37 +33,37 @@ import java.util.Objects;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
-import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.node.NodeRef;
 
 import com.google.common.collect.ImmutableMap;
 
-public class SearchResultBuilder {
+public class SearchResultItemBuilder {
 
-    private final SearchResult searchResult = new SearchResult();
+    private final SearchResultItem searchResultItem = new SearchResultItem();
 
-    public SearchResultBuilder withOnmsNode(OnmsNode node) {
+    public SearchResultItemBuilder withOnmsNode(OnmsNode node) {
         Objects.requireNonNull(node);
 
         final NodeRef nodeRef = new NodeRef(node);
-        searchResult.setContext(Contexts.Node);
-        searchResult.setIdentifier(nodeRef.asString());
-        searchResult.setUrl("element/node.jsp?node=" + node.getId());
-        searchResult.setLabel(node.getLabel());
-        searchResult.setProperties(ImmutableMap.<String, String>builder()
+        searchResultItem.setContext(Contexts.Node);
+        searchResultItem.setIdentifier(nodeRef.asString());
+        searchResultItem.setUrl("element/node.jsp?node=" + node.getId());
+        searchResultItem.setLabel(node.getLabel());
+        searchResultItem.setProperties(ImmutableMap.<String, String>builder()
                 .put("label", node.getLabel())
                 .put("foreignId", node.getForeignId())
                 .put("foreignSource", node.getForeignSource()).build());
         return this;
     }
 
-    public SearchResultBuilder withMatch(String id, String label, String value) {
-        searchResult.addMatch(new Match(id, label, value));
+    public SearchResultItemBuilder withMatch(String id, String label, String value) {
+        searchResultItem.addMatch(new Match(id, label, value));
         return this;
     }
 
-    public SearchResult build() {
-        return searchResult; // TODO MVR create clone?
+    public SearchResultItem build() {
+        return searchResultItem; // TODO MVR create clone?
     }
 
 }

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.spotlight.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,10 +36,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.spotlight.api.Contexts;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.api.SpotlightService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -72,25 +72,20 @@ public class DefaultSpotlightService implements SpotlightService {
             return Collections.emptyList();
         }
 
-        // Fetch Results grouped by URL
-        final Map<String, SearchResult> resultMap = new HashMap<>();
+        // Fetch Results grouped by context
+        final Map<SearchContext, SearchResult> resultMap = new HashMap<>();
         try {
             final ServiceReference<SearchProvider>[] allServiceReferences = (ServiceReference<SearchProvider>[]) bundleContext.getServiceReferences(SearchProvider.class.getCanonicalName(), null);
             if (allServiceReferences != null) {
                 for (ServiceReference<SearchProvider> eachReference : allServiceReferences) {
                     final SearchProvider service = bundleContext.getService(eachReference);
                     try {
-                        final List<SearchResult> providerResult = service.query(query);
-                        for (SearchResult eachResult : providerResult) {
-                            if (resultMap.containsKey(eachResult.getUrl())) {
-                                final SearchResult searchResult = resultMap.get(eachResult.getUrl());
-                                // Merge attributes
-                                searchResult.getProperties().putAll(eachResult.getProperties());
-                                // Merge Matches
-                                eachResult.getMatches().forEach(m -> searchResult.addMatch(m));
-                            } else {
-                                resultMap.put(eachResult.getUrl(), eachResult);
-                            }
+                        final SearchResult providerResult = service.query(query);
+                        resultMap.putIfAbsent(providerResult.getContext(), providerResult);
+                        final SearchResult mergedResult = resultMap.get(providerResult.getContext());
+                        for (SearchResultItem eachItem : providerResult.getResults()) {
+                            mergedResult.setTotalCount(Math.max(mergedResult.getTotalCount(), providerResult.getTotalCount()));
+                            mergedResult.merge(eachItem);
                         }
                     } catch (Exception ex) {
                         LOG.error("Could not execute query for provider", ex);
@@ -103,23 +98,19 @@ public class DefaultSpotlightService implements SpotlightService {
             LOG.error("Could not fetch search providers", e);
         }
 
-        // Group by context
-        final Map<String, List<SearchResult>> contextResultMap = new HashMap<>();
-        resultMap.forEach((key, value) -> {
-            contextResultMap.putIfAbsent(value.getContext(), new ArrayList<>());
-            contextResultMap.get(value.getContext()).add(value);
-        });
-
         // Sort and limit each context
-        final List<SearchResult> searchResult = contextResultMap.values().stream()
-                .map(results -> results.stream()
-                    .sorted(Comparator.comparingInt(result -> -1 * result.getMatches().stream().mapToInt(m -> m.getValues().size()).sum()))
-                    .limit(5) // TODO MVR Make this configurable
-                    .collect(Collectors.toList())
+        final List<SearchResult> searchResultList = resultMap.values().stream()
+                .filter(searchResult -> !searchResult.isEmpty())
+                .map(searchResult -> {
+                            final List<SearchResultItem> limitedAndSortedItems = searchResult.getResults().stream()
+                                    .sorted(Comparator.comparingInt(result -> -1 * result.getMatches().stream().mapToInt(m -> m.getValues().size()).sum()))
+                                    .limit(query.getMaxResults())
+                                    .collect(Collectors.toList());
+                            return new SearchResult(searchResult.getContext()).withTotalCount(searchResult.getTotalCount()).withResults(limitedAndSortedItems);
+                        }
                 )
-                .flatMap(results -> results.stream())
-                .sorted(Comparator.comparingInt(result -> Contexts.Node.equals(result.getContext()) ? 0 : Contexts.Action.equals(result.getContext()) ? 1 : 2))
+                .sorted(Comparator.comparingInt(searchResult -> searchResult.getContext().getWeight()))
                 .collect(Collectors.toList());
-        return searchResult;
+        return searchResultList;
     }
 }

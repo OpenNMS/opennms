@@ -29,6 +29,10 @@
 package org.opennms.netmgt.spotlight.api;
 
 public interface Contexts {
-    String Node = "Node";
-    String Action = "Action";
+    int NODE_WEIGHT = -1000;
+    int ACTION_WEIGHT = 1000;
+    int OTHER_WEIGHT = 0;
+
+    SearchContext Node = new SearchContext("Node", NODE_WEIGHT);
+    SearchContext Action = new SearchContext("Action", ACTION_WEIGHT);
 }

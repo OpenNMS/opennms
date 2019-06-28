@@ -55,12 +55,12 @@ public class SpotlightRestServiceImpl implements SpotlightRestService {
         searchQuery.setPrincipal(securityContext.getUserPrincipal());
         searchQuery.setUserInRoleFunction(securityContext::isUserInRole);
 
-        final List<SearchResult> result = spotlightService.query(searchQuery);
-        if (result.isEmpty()) {
+        final List<SearchResult> searchResult = spotlightService.query(searchQuery);
+        if (searchResult.isEmpty()) {
             return Response.noContent().build();
         }
         final JSONArray jsonResult = new JSONArray();
-        for (SearchResult eachResult : result) {
+        for (SearchResult eachResult : searchResult) {
             jsonResult.put(new JSONObject(eachResult));
         }
         return Response.ok().entity(jsonResult.toString()).build();

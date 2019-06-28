@@ -39,11 +39,11 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
-
-import com.google.common.collect.Lists;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 
 public class FilterSearchProvider implements SearchProvider {
 
@@ -56,7 +56,12 @@ public class FilterSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(SearchQuery query) {
+    public boolean contributesTo(String contextName) {
+        return Contexts.Node.getName().equals(contextName);
+    }
+
+    @Override
+    public SearchResult query(SearchQuery query) {
         final String input = query.getInput();
         try {
             filterDao.validateRule(input);
@@ -68,15 +73,15 @@ public class FilterSearchProvider implements SearchProvider {
                     .limit(query.getMaxResults());
             final Criteria criteria = criteriaBuilder.toCriteria();
             final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
-            final List<SearchResult> searchResults = matchingNodes.stream()
-                    .map(node -> new SearchResultBuilder()
+            final List<SearchResultItem> searchResultItems = matchingNodes.stream()
+                    .map(node -> new SearchResultItemBuilder()
                             .withOnmsNode(node)
                             .withMatch("filter.criteria", "Filter Criteria", input).build())
                     .collect(Collectors.toList());
-            return searchResults;
+            return new SearchResult(Contexts.Node).withResults(searchResultItems).withTotalCount(nodeMap.size());
         } catch (FilterParseException ex) {
             // TODO MVR Ignore for now
-            return Lists.newArrayList();
+            return SearchResult.EMPTY;
         }
     }
 }

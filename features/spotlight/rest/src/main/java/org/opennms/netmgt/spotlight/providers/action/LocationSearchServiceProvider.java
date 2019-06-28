@@ -40,6 +40,7 @@ import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 
 public class LocationSearchServiceProvider implements SearchProvider {
@@ -51,22 +52,28 @@ public class LocationSearchServiceProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(final SearchQuery query) {
+    public boolean contributesTo(String contextName) {
+        return Contexts.Action.getName().equals(contextName);
+    }
+
+    @Override
+    public SearchResult query(final SearchQuery query) {
         final String input = query.getInput();
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class)
                 .ilike("locationName", QueryUtils.ilike(input))
-                .distinct()
-                .limit(query.getMaxResults());
-        final Criteria criteria = builder.toCriteria();
+                .distinct();
+        final int totalCount = monitoringLocationDao.countMatching(builder.toCriteria());
+        final Criteria criteria = builder.limit(query.getMaxResults()).toCriteria();
         final List<OnmsMonitoringLocation> matchingResult = monitoringLocationDao.findMatching(criteria);
-        final List<SearchResult> searchResults = matchingResult.stream().map(monitoringLocation -> {
-            final SearchResult searchResult = new SearchResult();
-            searchResult.setContext(Contexts.Action);
-            searchResult.setIdentifier(monitoringLocation.getLocationName());
-            searchResult.setLabel("Show nodes in location '" + monitoringLocation.getLocationName() + "'");
-            searchResult.setUrl("element/nodeList.htm?monitoringLocation=" + monitoringLocation.getLocationName());
-            return searchResult;
+        final List<SearchResultItem> searchResultItems = matchingResult.stream().map(monitoringLocation -> {
+            final SearchResultItem searchResultItem = new SearchResultItem();
+            searchResultItem.setContext(Contexts.Action);
+            searchResultItem.setIdentifier(monitoringLocation.getLocationName());
+            searchResultItem.setLabel("Show nodes in location '" + monitoringLocation.getLocationName() + "'");
+            searchResultItem.setUrl("element/nodeList.htm?monitoringLocation=" + monitoringLocation.getLocationName());
+            return searchResultItem;
         }).collect(Collectors.toList());
-        return searchResults;
+        final SearchResult searchResult = new SearchResult(Contexts.Action).withTotalCount(totalCount).withResults(searchResultItems);
+        return searchResult;
     }
 }

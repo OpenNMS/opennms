@@ -94,51 +94,40 @@ const quickSearchTemplate  = require('./quicksearch.html');
                     $scope.performSearchHandle = SearchResource.query({'_s' : $scope.query},
                         function(data) {
                             console.log('Search result', data);
+                            $scope.cancelRequest();
+                            $scope.performSearchExecuted = true;
+
                             var results = [];
-                            var lastContext;
-
-                            data.forEach(function(item) {
-                                // Create a "menu separator"
-                                if (lastContext === undefined || item.context !== lastContext.context) {
-                                    lastContext = {
-                                        context: item.context,
-                                        label: item.context,
+                            data.forEach(function(eachResult) {
+                                // Create the header
+                                results.push({
+                                        context: eachResult.context.name,
+                                        // Make the label have an s at the end if it has multiple items
+                                        label: eachResult.results.length > 1 ? eachResult.context.name + 's' : eachResult.context.name,
                                         group: true,
-                                        count: 0
-                                    };
-                                    results.push(lastContext);
-                                }
+                                        count: eachResult.results.length,
+                                        totalCount: eachResult.totalCount
+                                    }
+                                );
 
-                                // An item cannot be a group
-                                item.group = false;
+                                eachResult.results.forEach(function(item) {
+                                    item.group = false; // result cannot be a group
+                                    results.push(item);
 
-                                // Now add the item
-                                results.push(item);
-
-                                // TODO MVR we first create this, and now we undo this, should be different
-                                var matches = item.matches;
-                                item.matches = [];
-                                matches.forEach(function(eachMatch) {
-                                    eachMatch.values.forEach(function(eachValue) {
-                                        item.matches.push({
-                                            id: eachMatch.id,
-                                            label: eachMatch.label,
-                                            value: eachValue
+                                    // TODO MVR we first create this, and now we undo this, should be different
+                                    var matches = item.matches;
+                                    item.matches = [];
+                                    matches.forEach(function(eachMatch) {
+                                        eachMatch.values.forEach(function(eachValue) {
+                                            item.matches.push({
+                                                id: eachMatch.id,
+                                                label: eachMatch.label,
+                                                value: eachValue
+                                            });
                                         });
                                     });
                                 });
-                                lastContext.count++;
                             });
-
-                            // Make the label have an s at the end if it has multiple items
-                            results.forEach(function(item) {
-                                if (item.group === true && item.count > 1) {
-                                    item.label += 's';
-                                }
-                            });
-
-                            $scope.cancelRequest();
-                            $scope.performSearchExecuted = true;
                             $scope.results = results;
                         },
                         function(response) {

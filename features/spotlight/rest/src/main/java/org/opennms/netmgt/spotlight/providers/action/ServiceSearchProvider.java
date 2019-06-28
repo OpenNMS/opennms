@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -40,6 +39,7 @@ import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 
 public class ServiceSearchProvider implements SearchProvider {
@@ -51,22 +51,28 @@ public class ServiceSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(final SearchQuery query) {
+    public boolean contributesTo(String contextName) {
+        return false;
+    }
+
+    @Override
+    public SearchResult query(final SearchQuery query) {
         final String input = query.getInput();
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsServiceType.class)
                 .ilike("name", QueryUtils.ilike(input))
-                .distinct()
-                .limit(query.getMaxResults());
-        final Criteria criteria = builder.toCriteria();
-        final List<OnmsServiceType> matchingResult = serviceTypeDao.findMatching(criteria);
-        final List<SearchResult> searchResults = matchingResult.stream().map(service -> {
-            final SearchResult searchResult = new SearchResult();
-            searchResult.setContext(Contexts.Action);
-            searchResult.setIdentifier(service.getId().toString());
-            searchResult.setLabel("Show nodes with service '" + service.getName() + "'");
-            searchResult.setUrl("element/nodeList.htm?service=" + service.getId());
-            return searchResult;
+                .distinct();
+
+        final int totalCount = serviceTypeDao.countMatching(builder.toCriteria());;
+        final List<OnmsServiceType> matchingResult = serviceTypeDao.findMatching(builder.limit(query.getMaxResults()).toCriteria());
+        final List<SearchResultItem> searchResultItems = matchingResult.stream().map(service -> {
+            final SearchResultItem searchResultItem = new SearchResultItem();
+            searchResultItem.setContext(Contexts.Action);
+            searchResultItem.setIdentifier(service.getId().toString());
+            searchResultItem.setLabel("Show nodes with service '" + service.getName() + "'");
+            searchResultItem.setUrl("element/nodeList.htm?service=" + service.getId());
+            return searchResultItem;
         }).collect(Collectors.toList());
-        return searchResults;
+        final SearchResult searchResult = new SearchResult(Contexts.Action).withTotalCount(totalCount).withResults(searchResultItems);
+        return searchResult;
     }
 }

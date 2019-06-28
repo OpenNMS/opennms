@@ -28,58 +28,40 @@
 
 package org.opennms.netmgt.spotlight.api;
 
-import java.security.Principal;
 import java.util.Objects;
-import java.util.function.Function;
 
-public class SearchQuery {
-    public static final int DEFAULT_MAX_RESULTS = 5;
+public class SearchContext {
+    private final String name;
+    private final int weight;
 
-    private String input;
-    private int maxResults =  DEFAULT_MAX_RESULTS;
-    private Principal principal;
-    private Function<String, Boolean> userInRoleFunction;
-
-    public SearchQuery(String input) {
-        this.input = Objects.requireNonNull(input);
+    public SearchContext(String name) {
+        this(name, 0);
     }
 
-    public int getMaxResults() {
-        return maxResults;
+    public SearchContext(String name, int weight) {
+        this.name = name;
+        this.weight = weight;
     }
 
-    public void setMaxResults(int maxResults) {
-        this.maxResults = maxResults;
+    public String getName() {
+        return name;
     }
 
-    public String getInput() {
-        return input;
+    public int getWeight() {
+        return weight;
     }
 
-    public void setInput(String input) {
-        if (input != null) {
-            this.input = input.trim();
-        } else {
-            this.input = null;
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final SearchContext that = (SearchContext) o;
+        // weight not included on purpose
+        return Objects.equals(name, that.name);
     }
 
-    public Principal getPrincipal() {
-        return principal;
-    }
-
-    public void setPrincipal(Principal principal) {
-        this.principal = principal;
-    }
-
-    public void setUserInRoleFunction(Function<String, Boolean> userInRoleFunction) {
-        this.userInRoleFunction = userInRoleFunction;
-    }
-
-    public boolean isUserInRole(String role) {
-        if (userInRoleFunction != null) {
-            return userInRoleFunction.apply(role);
-        }
-        return false;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

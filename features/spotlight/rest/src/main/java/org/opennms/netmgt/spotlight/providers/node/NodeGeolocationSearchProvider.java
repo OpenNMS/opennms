@@ -40,12 +40,14 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
-import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
+import org.opennms.netmgt.spotlight.providers.SearchResultItemBuilder;
 
 public class NodeGeolocationSearchProvider implements SearchProvider {
 
@@ -56,7 +58,12 @@ public class NodeGeolocationSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(SearchQuery query) {
+    public boolean contributesTo(String contextName) {
+        return Contexts.Node.getName().equals(contextName);
+    }
+
+    @Override
+    public SearchResult query(SearchQuery query) {
         final String input = query.getInput();
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class)
                 .alias("assetRecord", "assetRecord")
@@ -73,13 +80,13 @@ public class NodeGeolocationSearchProvider implements SearchProvider {
                                 Restrictions.ilike("assetRecord.geolocation.country", QueryUtils.ilike(input))
                         )
                 )
-                .distinct()
-                .limit(query.getMaxResults());
-        final Criteria criteria = criteriaBuilder.toCriteria();
+                .distinct();
+        final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
+        final Criteria criteria = criteriaBuilder.limit(query.getMaxResults()).toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
-        final List<SearchResult> results = matchingNodes.stream()
+        final List<SearchResultItem> results = matchingNodes.stream()
             .map(node -> {
-                final SearchResult result = new SearchResultBuilder().withOnmsNode(node).build();
+                final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node).build();
                 final OnmsAssetRecord record = node.getAssetRecord();
                 // TODO MVR this is ugly as hell ... and a copy of NodeAssetSearchProvider \o/
                 for (Method method : OnmsAssetRecord.class.getMethods()) {
@@ -99,6 +106,7 @@ public class NodeGeolocationSearchProvider implements SearchProvider {
                 return result;
             })
             .collect(Collectors.toList());
-        return results;
+        final SearchResult result = new SearchResult(Contexts.Node).withResults(results).withTotalCount(totalCount);
+        return result;
     }
 }

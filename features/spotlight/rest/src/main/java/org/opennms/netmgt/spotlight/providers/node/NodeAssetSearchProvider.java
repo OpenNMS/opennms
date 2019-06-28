@@ -34,18 +34,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
+import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
-import org.opennms.netmgt.spotlight.providers.SearchResultBuilder;
+import org.opennms.netmgt.spotlight.providers.SearchResultItemBuilder;
 
 public class NodeAssetSearchProvider implements SearchProvider {
 
@@ -56,7 +57,12 @@ public class NodeAssetSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchResult> query(SearchQuery query) {
+    public boolean contributesTo(String contextName) {
+        return Contexts.Node.getName().equals(contextName);
+    }
+
+    @Override
+    public SearchResult query(SearchQuery query) {
         final String input = query.getInput();
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class)
             .alias("assetRecord", "assetRecord")
@@ -118,13 +124,12 @@ public class NodeAssetSearchProvider implements SearchProvider {
                         Restrictions.ilike("assetRecord.storagectrl", QueryUtils.ilike(input))
                     )
             )
-            .distinct()
-            .limit(query.getMaxResults());
-        final Criteria criteria = criteriaBuilder.toCriteria();
-        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
-        final List<SearchResult> results = matchingNodes.stream()
+            .distinct();
+        final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
+        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.limit(query.getMaxResults()).toCriteria());
+        final List<SearchResultItem> results = matchingNodes.stream()
             .map(node -> {
-                final SearchResult result = new SearchResultBuilder().withOnmsNode(node).build();
+                final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node).build();
                 final OnmsAssetRecord record = node.getAssetRecord();
                 // TODO MVR this is ugly as hell ...
                 for (Method method : OnmsAssetRecord.class.getMethods()) {
@@ -145,6 +150,7 @@ public class NodeAssetSearchProvider implements SearchProvider {
                 return result;
             })
             .collect(Collectors.toList());
-        return results;
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withTotalCount(totalCount).withResults(results);
+        return searchResult;
     }
 }

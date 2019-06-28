@@ -34,18 +34,20 @@
     </div>
 
     <!-- Results -->
-    <div ng-if="results.length > 0" class="bg-dark spotlight-result px-2 py-2">
-    <div class="list-group">
-        <div ng-repeat-start="item in results" ng-if="item.group === true" class="list-group-item bg-dark text-grey border-0">{{item.label}}</div>
-        <a ng-repeat-end ng-if="item.group === false" href="{{item.url}}" class="list-group-item list-group-item-action flex-column align-items-start">
-            <h6 class="mb-0"><i class="{{item.icon}}" ng-if="item.icon">&nbsp;</i>{{item.label}}</h6>
-            <span class="mr-2 badge badge-secondary" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</span>
-        </a>
-    </div>
+    <div ng-if="performSearchExecuted === true" class="bg-dark spotlight-result px-2 py-2">
+        <div class="list-group" ng-if="results.length > 0">
+            <div ng-repeat-start="item in results" ng-if="item.group === true" class="list-group-item bg-dark text-grey border-0">
+                {{item.label}} <span class="pull-right" ng-show="item.count != item.totalCount"><a href>more...</a></span>
+            </div>
+            <a ng-repeat-end ng-if="item.group === false" href="{{item.url}}" class="list-group-item list-group-item-action flex-column align-items-start">
+                <h6 class="mb-0"><i class="{{item.icon}}" ng-if="item.icon">&nbsp;</i>{{item.label}}</h6>
+                <span class="mr-2 badge badge-secondary" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</span>
+            </a>
+        </div>
 
-    <!-- No Result -->
-    <div ng-if="performSearchExecuted === true && results.length === 0" class="bg-dark px-2 py-2 spotlight-result text-light">
-        <span>No Results found</span>
-    </div>
+        <!-- No Result -->
+        <div ng-if="results.length === 0" class="text-grey">
+            <span>No Results found</span>
+        </div>
     </div>
 </form>
