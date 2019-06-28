@@ -45,6 +45,9 @@ class Action {
     @XmlElement(name="url")
     private String url;
 
+    @XmlElement(name="icon")
+    private String icon;
+
     @XmlElementWrapper(name="roles")
     @XmlElement(name="role")
     private final List<String> privilegedRoles = Lists.newArrayList();
@@ -67,6 +70,14 @@ class Action {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public List<String> getPrivilegedRoles() {

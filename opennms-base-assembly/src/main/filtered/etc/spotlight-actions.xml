@@ -37,6 +37,7 @@
     </action>
     <action>
         <label>Logout</label>
+        <icon>fa fa-power-off</icon>
         <url>j_spring_security_logout</url>
     </action>
     <action>

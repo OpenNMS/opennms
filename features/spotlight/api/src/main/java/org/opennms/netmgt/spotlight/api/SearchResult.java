@@ -39,6 +39,7 @@ import java.util.Optional;
 public class SearchResult {
     private String context;
     private String identifier;
+    private String icon;
     private String label;
     private String url;
     private final Map<String, String> properties = new HashMap<>();
@@ -76,6 +77,14 @@ public class SearchResult {
         this.url = url;
     }
 
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
     public void setProperties(Map<String, String> properties) {
         this.properties.clear();
         this.properties.putAll(properties);
@@ -100,14 +109,15 @@ public class SearchResult {
                     && Objects.equals(label, that.label)
                     && Objects.equals(url, that.url)
                     && Objects.equals(properties, that.properties)
-                    && Objects.equals(matches, that.matches);
+                    && Objects.equals(matches, that.matches)
+                    && Objects.equals(icon, that.icon);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(context, identifier, label, properties, matches, url);
+        return Objects.hash(context, identifier, label, properties, matches, url, icon);
     }
 
     public void addMatch(Match match) {

@@ -1,10 +1,12 @@
 <style type="text/css">
     .spotlight-result {
+        max-height: 700px;
         min-width: 280px;
-        max-width: 500px;
-        z-index: 10000;
+        max-width: 60%;
         position: absolute;
         top: 100%;
+        z-index: 100000;
+        overflow:scroll
     }
 </style>
 
@@ -32,19 +34,18 @@
     </div>
 
     <!-- Results -->
-    <div ng-if="results.length > 0" class="bg-dark px-2 py-2 list-group spotlight-result">
-        <h6 ng-repeat-start="item in results" ng-if="item.group === true" class="mb-1 mt-2 text-muted">{{item.label}}</h6>
+    <div ng-if="results.length > 0" class="bg-dark spotlight-result px-2 py-2">
+    <div class="list-group">
+        <div ng-repeat-start="item in results" ng-if="item.group === true" class="list-group-item bg-dark text-grey border-0">{{item.label}}</div>
         <a ng-repeat-end ng-if="item.group === false" href="{{item.url}}" class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1 mr-5">{{item.label}}</h6>
-                <small class="">{{item.context}}</small>
-            </div>
-            <span class="mr-2 badge" ng-class="getClassForMatch(match)" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</span>
+            <h6 class="mb-0"><i class="{{item.icon}}" ng-if="item.icon">&nbsp;</i>{{item.label}}</h6>
+            <span class="mr-2 badge badge-secondary" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</span>
         </a>
     </div>
 
     <!-- No Result -->
     <div ng-if="performSearchExecuted === true && results.length === 0" class="bg-dark px-2 py-2 spotlight-result text-light">
         <span>No Results found</span>
+    </div>
     </div>
 </form>

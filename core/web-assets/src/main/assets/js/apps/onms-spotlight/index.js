@@ -37,7 +37,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
             $scope.performSearchExecuted = false;
             $scope.showLoadingIndicator = false;
             $scope.showLoadingIndicatorDelay = 250;
-            $scope.performSearchDelay = 250; // in ms
+            $scope.performSearchDelay = 500; // in ms
             $scope.performSearchPromise = undefined;
             $scope.performSearchHandle = undefined;
             $scope.showLoadingIndicatorPromise = undefined;
@@ -71,6 +71,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
 
                 // Stop any previous loading
                 $timeout.cancel($scope.performSearchPromise);
+                $scope.results = [];
                 $scope.performSearchExecuted = false;
 
                 // Start timeout before actually searching, this will allow for not invoking when the user

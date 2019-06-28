@@ -42,6 +42,8 @@ import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 
+import com.google.common.base.Strings;
+
 public class StaticActionSearchProvider implements SearchProvider {
 
     @Override
@@ -61,6 +63,9 @@ public class StaticActionSearchProvider implements SearchProvider {
                     searchResult.setLabel(action.getLabel());
                     searchResult.setUrl(action.getUrl());
                     searchResult.setIdentifier(action.getUrl());
+                    if (!Strings.isNullOrEmpty(action.getIcon())) {
+                        searchResult.setIcon(action.getIcon());
+                    }
                     return searchResult;
                 })
                 .limit(query.getMaxResults())
