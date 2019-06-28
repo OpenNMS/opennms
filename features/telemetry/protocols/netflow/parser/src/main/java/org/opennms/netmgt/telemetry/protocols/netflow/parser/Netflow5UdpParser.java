@@ -30,7 +30,10 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
@@ -43,22 +46,31 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Head
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
-public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispatchable {
+public class Netflow5UdpParser extends ParserBase implements UdpParser, Dispatchable {
 
     public Netflow5UdpParser(final String name, final AsyncDispatcher<TelemetryMessage> dispatcher) {
         super(Protocol.NETFLOW5, name, dispatcher);
     }
 
     @Override
-    protected RecordProvider parse(Session session, ByteBuffer buffer) throws Exception {
-        final Header header = new Header(slice(buffer, Header.SIZE));
-        final Packet packet = new Packet(header, buffer);
-
-        return packet;
-    }
-
-    @Override
     public boolean handles(final ByteBuffer buffer) {
         return BufferUtils.uint16(buffer) == 0x0005;
     }
+
+
+    @Override
+    public CompletableFuture<?> parse(final ByteBuffer buffer,
+                                      final InetSocketAddress remoteAddress,
+                                      final InetSocketAddress localAddress) throws Exception {
+        final Header header = new Header(slice(buffer, Header.SIZE));
+        final Packet packet = new Packet(header, buffer);
+
+        return this.transmit(packet, remoteAddress);
+    }
+
+    @Override
+    public void start(final ScheduledExecutorService executorService) {}
+
+    @Override
+    public void stop() {}
 }
