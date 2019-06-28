@@ -54,7 +54,6 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.MigrationException;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.test.MockLogAppender;
@@ -134,26 +133,23 @@ public class MigratorIT {
         Set<String> tables = getTables();
         assertFalse("must not contain table 'schematest'", tables.contains("schematest"));
 
-        final Migration migration = new Migration();
-        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setChangeLog(aResource);
+        final Migrator migrator = new Migrator();
+        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDataSource(m_dataSource);
+        migrator.setAdminDataSource(m_dataSource);
+        migrator.setValidateDatabaseVersion(false);
+        migrator.setCreateUser(false);
+        migrator.setCreateDatabase(false);
 
-        LOG.info("Running migration on database: {}", migration);
+        LOG.info("Running migration on database: {}", migrator.getDatabaseName());
 
-        final Migrator m = new Migrator();
-        m.setDataSource(m_dataSource);
-        m.setAdminDataSource(m_dataSource);
-        m.setValidateDatabaseVersion(false);
-        m.setCreateUser(false);
-        m.setCreateDatabase(false);
+        migrator.prepareDatabase();
+        migrator.migrate(aResource, m_context);
 
-        m.prepareDatabase(migration);
-        m.migrate(migration, m_context);
-
-        LOG.info("Migration complete: {}", migration);
+        LOG.info("Migration complete: {}", migrator.getDatabaseName());
 
         tables = getTables();
         assertTrue("must contain table 'schematest'", tables.contains("schematest"));
@@ -164,26 +160,25 @@ public class MigratorIT {
     public void testMultipleChangelogs() throws Exception {
         assertFalse(changelogExists());
 
-        final Migration migration = new Migration();
-        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        final Migrator migrator = new Migrator();
 
-        final Migrator m = new Migrator();
-        m.setDataSource(m_dataSource);
-        m.setAdminDataSource(m_dataSource);
-        m.setValidateDatabaseVersion(false);
-        m.setCreateUser(false);
-        m.setCreateDatabase(false);
+        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+
+        migrator.setDataSource(m_dataSource);
+        migrator.setAdminDataSource(m_dataSource);
+        migrator.setValidateDatabaseVersion(false);
+        migrator.setCreateUser(false);
+        migrator.setCreateDatabase(false);
 
         for (final Resource resource : getTestResources()) {
             URI uri = resource.getURI();
             if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
             if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
             LOG.info("=== found resource: {} ===", resource);
-            migration.setChangeLog(resource);
-            m.migrate(migration, m_context);
+            migrator.migrate(resource, m_context);
         }
 
         final List<ChangelogEntry> ids = getChangelogEntries();
@@ -199,23 +194,22 @@ public class MigratorIT {
 
         assertFalse(changelogExists());
 
-        final Migration migration = new Migration();
-        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        final Migrator migrator = new Migrator();
 
-        final Migrator m = new Migrator();
-        m.setDataSource(m_dataSource);
-        m.setAdminDataSource(m_dataSource);
-        m.setValidateDatabaseVersion(false);
-        m.setCreateUser(false);
-        m.setCreateDatabase(false);
+        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+
+        migrator.setDataSource(m_dataSource);
+        migrator.setAdminDataSource(m_dataSource);
+        migrator.setValidateDatabaseVersion(false);
+        migrator.setCreateUser(false);
+        migrator.setCreateDatabase(false);
 
         for (final Resource resource : getRealChangelog()) {
             LOG.info("=== found resource: {} ===", resource);
-            migration.setChangeLog(resource);
-            m.migrate(migration, m_context);
+            migrator.migrate(resource, m_context);
         }
 
         final List<ChangelogEntry> ids = getChangelogEntries();
@@ -237,19 +231,17 @@ public class MigratorIT {
     }
 
     private void doMigration() throws MigrationException, IOException {
-        final Migration migration = new Migration();
-        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setChangeLog("changelog.xml");
+        final Migrator migrator = new Migrator();
 
-        final Migrator m = new Migrator();
-        m.setDataSource(m_dataSource);
+        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+
+        migrator.setDataSource(m_dataSource);
 
         for (final Resource resource : getTestResources()) {
-            migration.setChangeLog(resource);
-            m.migrate(migration, m_context);
+            migrator.migrate(resource, m_context);
         }
     }
 

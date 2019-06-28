@@ -29,7 +29,6 @@
 package org.opennms.core.schema;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -56,7 +55,6 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
@@ -68,7 +66,8 @@ import org.springframework.core.io.ResourceLoader;
  */
 public class Migrator {
 
-    public static final String LIQUIBASE_CHANGELOG_LOCATION_PATTERN = "classpath*:/" + Migration.LIQUIBASE_CHANGELOG_FILENAME;
+    public static final String LIQUIBASE_CHANGELOG_FILENAME = "changelog.xml";
+    public static final String LIQUIBASE_CHANGELOG_LOCATION_PATTERN = "classpath*:/" + LIQUIBASE_CHANGELOG_FILENAME;
 
     private static final Logger LOG = LoggerFactory.getLogger(Migrator.class);
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
@@ -83,7 +82,15 @@ public class Migrator {
     private boolean m_validateDatabaseVersion = true;
     private boolean m_createUser = true;
     private boolean m_createDatabase = true;
-    private Predicate<Resource> m_liquibaseChangelogFilter;
+    private Predicate<Resource> m_liquibaseChangelogFilter = null;
+
+    private String m_databaseName;
+    private String m_schemaName;
+    private String m_databaseUser;
+    private String m_databasePassword;
+    private String m_adminUser;
+    private String m_adminPassword;
+    private String m_changeLog;
 
     /**
      * <p>getDataSource</p>
@@ -133,19 +140,125 @@ public class Migrator {
     /**
      * <p>setCreateUser</p>
      *
-     * @param create a boolean.
+     * @param createUser a boolean.
      */
-    public void setCreateUser(final boolean create) {
-        m_createUser = create;
+    public void setCreateUser(final boolean createUser) {
+        m_createUser = createUser;
     }
 
     /**
      * <p>setCreateDatabase</p>
      *
-     * @param create a boolean.
+     * @param createDatabase a boolean.
      */
-    public void setCreateDatabase(final boolean create) {
-        m_createDatabase = create;
+    public void setCreateDatabase(final boolean createDatabase) {
+        m_createDatabase = createDatabase;
+    }
+
+    public void setLiquibaseChangelogFilter(Predicate<Resource> tester) {
+        m_liquibaseChangelogFilter = tester;
+    }
+
+    /**
+     * <p>getDatabaseName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getDatabaseName() {
+        return m_databaseName;
+    }
+    /**
+     * <p>setDatabaseName</p>
+     *
+     * @param databaseName a {@link java.lang.String} object.
+     */
+    public void setDatabaseName(String databaseName) {
+        m_databaseName = databaseName;
+    }
+
+    public String getSchemaName() {
+    	return m_schemaName;
+    }
+
+    public void setSchemaName(final String schemaName) {
+    	m_schemaName = schemaName;
+    }
+
+    /**
+     * <p>getDatabaseUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getDatabaseUser() {
+        return m_databaseUser;
+    }
+    /**
+     * <p>setDatabaseUser</p>
+     *
+     * @param databaseUser a {@link java.lang.String} object.
+     */
+    public void setDatabaseUser(String databaseUser) {
+        m_databaseUser = databaseUser;
+    }
+
+    /**
+     * <p>getDatabasePassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getDatabasePassword() {
+        return m_databasePassword;
+    }
+    /**
+     * <p>setDatabasePassword</p>
+     *
+     * @param databasePassword a {@link java.lang.String} object.
+     */
+    public void setDatabasePassword(String databasePassword) {
+        m_databasePassword = databasePassword;
+    }
+
+    /**
+     * <p>getAdminUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAdminUser() {
+        return m_adminUser;
+    }
+    /**
+     * <p>setAdminUser</p>
+     *
+     * @param adminUser a {@link java.lang.String} object.
+     */
+    public void setAdminUser(String adminUser) {
+        m_adminUser = adminUser;
+    }
+
+    /**
+     * <p>getAdminPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAdminPassword() {
+        return m_adminPassword;
+    }
+    /**
+     * <p>setAdminPassword</p>
+     *
+     * @param adminPassword a {@link java.lang.String} object.
+     */
+    public void setAdminPassword(String adminPassword) {
+        m_adminPassword = adminPassword;
+    }
+
+    /**
+     * <p>setChangeLog</p>
+     *
+     * @param changeLog a {@link java.lang.String} object.
+     */
+    public void setChangeLog(String changeLog) {
+        m_changeLog = changeLog;
     }
 
     /**
@@ -219,10 +332,10 @@ public class Migrator {
     }
 
     /**
-     * Get the expected extension for this platform.
+     * Get the expected shared object/JNI library extension for this platform.
      * @return
      */
-    private String getExtension(final boolean jni) {
+    private String getSharedObjectExtension(final boolean jni) {
         final String osName = System.getProperty("os.name").toLowerCase();
         if (osName.startsWith("windows")) {
             return "dll";
@@ -254,7 +367,7 @@ public class Migrator {
                 LOG.info("PL/PgSQL call handler exists");
             } else {
                 LOG.info("adding PL/PgSQL call handler");
-                st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql." + getExtension(false) + "' LANGUAGE 'c'");
+                st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql." + getSharedObjectExtension(false) + "' LANGUAGE 'c'");
             }
             rs.close();
 
@@ -281,21 +394,20 @@ public class Migrator {
     /**
      * <p>databaseUserExists</p>
      *
-     * @param migration a {@link org.opennms.core.schema.Migration} object.
      * @return a boolean.
      * @throws org.opennms.core.schema.MigrationException if any.
      */
-    public boolean databaseUserExists(final Migration migration) throws MigrationException {
+    public boolean databaseUserExists() throws MigrationException {
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + migration.getDatabaseUser() + "'");
+            rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + getDatabaseUser() + "'");
             if (rs.next()) {
                 final String datname = rs.getString("usename");
-                if (datname != null && datname.equalsIgnoreCase(migration.getDatabaseUser())) {
+                if (datname != null && datname.equalsIgnoreCase(getDatabaseUser())) {
                     return true;
                 } else {
                     return false;
@@ -312,11 +424,10 @@ public class Migrator {
     /**
      * <p>createUser</p>
      *
-     * @param migration a {@link org.opennms.core.schema.Migration} object.
      * @throws org.opennms.core.schema.MigrationException if any.
      */
-    public void createUser(final Migration migration) throws MigrationException {
-        if (!m_createUser || databaseUserExists(migration)) {
+    public void createUser() throws MigrationException {
+        if (!m_createUser || databaseUserExists()) {
             return;
         }
 
@@ -327,7 +438,7 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            st.execute("CREATE USER " + migration.getDatabaseUser() + " WITH PASSWORD '" + migration.getDatabasePassword() + "'");
+            st.execute("CREATE USER " + getDatabaseUser() + " WITH PASSWORD '" + getDatabasePassword() + "'");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS user", e);
         } finally {
@@ -338,12 +449,11 @@ public class Migrator {
     /**
      * <p>databaseExists</p>
      *
-     * @param migration a {@link org.opennms.core.schema.Migration} object.
      * @return a boolean.
      * @throws org.opennms.core.schema.MigrationException if any.
      */
-    public boolean databaseExists(final Migration migration) throws MigrationException {
-        return databaseExists(migration.getDatabaseName());
+    public boolean databaseExists() throws MigrationException {
+        return databaseExists(getDatabaseName());
     }
 
     public boolean databaseExists(String databaseName) throws MigrationException {
@@ -370,13 +480,13 @@ public class Migrator {
         }
     }
 
-    public void createSchema(final Migration migration) throws MigrationException {
-        if (!m_createDatabase || schemaExists(migration)) {
+    public void createSchema() throws MigrationException {
+        if (!m_createDatabase || schemaExists()) {
             return;
         }
     }
 
-    public boolean schemaExists(final Migration migration) throws MigrationException {
+    public boolean schemaExists() throws MigrationException {
         /* FIXME: not sure how to ask postgresql for a schema
         Statement st = null;
         ResultSet rs = null;
@@ -406,16 +516,15 @@ public class Migrator {
     /**
      * <p>createDatabase</p>
      *
-     * @param migration a {@link org.opennms.core.schema.Migration} object.
      * @throws org.opennms.core.schema.MigrationException if any.
      */
-    public void createDatabase(final Migration migration) throws MigrationException {
-        if (!m_createDatabase || databaseExists(migration)) {
+    public void createDatabase() throws MigrationException {
+        if (!m_createDatabase || databaseExists()) {
             return;
         }
         LOG.info("creating OpenNMS database, if necessary");
-        if (!databaseUserExists(migration)) {
-            throw new MigrationException(String.format("database will not be created: unable to grant access (user %s does not exist)", migration.getDatabaseUser()));
+        if (!databaseUserExists()) {
+            throw new MigrationException(String.format("database will not be created: unable to grant access (user %s does not exist)", getDatabaseUser()));
         }
 
         Statement st = null;
@@ -424,8 +533,8 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            st.execute("CREATE DATABASE \"" + migration.getDatabaseName() + "\" WITH ENCODING='UNICODE'");
-            st.execute("GRANT ALL ON DATABASE \"" + migration.getDatabaseName() + "\" TO \"" + migration.getDatabaseUser() + "\"");
+            st.execute("CREATE DATABASE \"" + getDatabaseName() + "\" WITH ENCODING='UNICODE'");
+            st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + getDatabaseUser() + "\"");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS database: " + e, e);
         } finally {
@@ -438,8 +547,8 @@ public class Migrator {
      *
      * @throws java.lang.Exception if any.
      */
-    public void checkUnicode(final Migration migration) throws Exception {
-        LOG.info("checking if database \"" + migration.getDatabaseName() + "\" is unicode");
+    public void checkUnicode() throws Exception {
+        LOG.info("checking if database \"" + getDatabaseName() + "\" is unicode");
 
         Statement st = null;
         ResultSet rs = null;
@@ -448,7 +557,7 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            rs = st.executeQuery("SELECT encoding FROM pg_database WHERE LOWER(datname)='" + migration.getDatabaseName().toLowerCase() + "'");
+            rs = st.executeQuery("SELECT encoding FROM pg_database WHERE LOWER(datname)='" + getDatabaseName().toLowerCase() + "'");
             if (rs.next()) {
                 if (rs.getInt(1) == 5 || rs.getInt(1) == 6) {
                     return;
@@ -466,7 +575,7 @@ public class Migrator {
      *
      * @throws java.sql.SQLException if any.
      */
-    public void databaseSetOwner(final Migration m_migration) throws MigrationException {
+    public void databaseSetOwner() throws MigrationException {
         PreparedStatement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -484,7 +593,7 @@ public class Migrator {
             st = c.prepareStatement("ALTER TABLE ? OWNER TO ?");
             for (final String objName : objects) {
                 st.setString(1, objName);
-                st.setString(2, m_migration.getDatabaseUser());
+                st.setString(2, getDatabaseUser());
                 st.execute();
             }
         } catch (SQLException e) {
@@ -697,8 +806,8 @@ public class Migrator {
      *
      * @throws java.sql.SQLException if any.
      */
-    public void databaseRemoveDB(Migration migration) throws MigrationException {
-        LOG.info("removing database '" + migration.getDatabaseName() + "'");
+    public void databaseRemoveDB() throws MigrationException {
+        LOG.info("removing database '" + getDatabaseName() + "'");
 
         Connection c = null;
         Statement st = null;
@@ -706,9 +815,9 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            st.execute("DROP DATABASE \"" + migration.getDatabaseName() + "\"");
+            st.execute("DROP DATABASE \"" + getDatabaseName() + "\"");
         } catch (SQLException e) {
-            throw new MigrationException("could not remove database " + migration.getDatabaseName(), e);
+            throw new MigrationException("could not remove database " + getDatabaseName(), e);
         } finally {
             cleanUpDatabase(c, null, st, null);
         }
@@ -717,25 +826,24 @@ public class Migrator {
     /**
      * <p>prepareDatabase</p>
      *
-     * @param migration a {@link org.opennms.core.schema.Migration} object.
      * @throws org.opennms.core.schema.MigrationException if any.
      */
-    public void prepareDatabase(final Migration migration) throws MigrationException {
+    public void prepareDatabase() throws MigrationException {
         validateDatabaseVersion();
-        createUser(migration);
-        createSchema(migration);
-        createDatabase(migration);
+        createUser();
+        createSchema();
+        createDatabase();
         createLangPlPgsql();
     }
 
     /**
      * <p>migrate</p>
      *
-     * @param migration a {@link Migration} object.
+     * @param changelog
      * @param context
      * @throws org.opennms.core.schema.MigrationException if any.
      */
-    public void migrate(final Migration migration, ApplicationContext context) throws MigrationException {
+    public void migrate(Resource changelog, ApplicationContext context) throws MigrationException {
         Connection connection = null;
 
         try {
@@ -743,15 +851,15 @@ public class Migrator {
 
             final SpringLiquibase lb = new SpringLiquibase();
             lb.setResourceLoader(context);
-            lb.setChangeLog(migration.getChangeLog());
+            lb.setChangeLog(changelog.getURI().toString());
             lb.setDataSource(m_dataSource);
 
             final Map<String,String> parameters = new HashMap<>();
-            parameters.put("install.database.admin.user", migration.getAdminUser());
-            parameters.put("install.database.admin.password", migration.getAdminPassword());
-            parameters.put("install.database.user", migration.getDatabaseUser());
+            parameters.put("install.database.admin.user", getAdminUser());
+            parameters.put("install.database.admin.password", getAdminPassword());
+            parameters.put("install.database.user", getDatabaseUser());
             lb.setChangeLogParameters(parameters);
-            lb.setDefaultSchema(migration.getSchemaName());
+            lb.setDefaultSchema(getSchemaName());
 
             final String contexts = System.getProperty("opennms.contexts", "production");
             lb.setContexts(contexts);
@@ -801,8 +909,8 @@ public class Migrator {
 
     // Ensures that the database time and the system time running the installer match
     // If the difference is greater than 1s, it fails
-    public void checkTime(final Migration migration) throws Exception {
-        LOG.info("checking if time of database \"" + migration.getDatabaseName() + "\" is matching system time");
+    public void checkTime() throws Exception {
+        LOG.info("checking if time of database \"" + getDatabaseName() + "\" is matching system time");
 
         try (Statement st = m_adminDataSource.getConnection().createStatement()) {
             final long beforeQueryTime = System.currentTimeMillis();
@@ -828,30 +936,22 @@ public class Migrator {
         }
     }
 
-    public void setLiquibaseChangelogFilter(Predicate<Resource> tester) {
-        m_liquibaseChangelogFilter = tester;
-    }
-
-    public void setupDatabase(Migration migration, boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, ApplicationContext context) throws MigrationException, Exception, IOException {
+    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, ApplicationContext context) throws MigrationException, Exception, IOException {
         validateDatabaseVersion();
 
         if (updateDatabase) {
-            prepareDatabase(migration);
+            prepareDatabase();
         }
 
-        checkUnicode(migration);
-        checkTime(migration);
+        checkUnicode();
+        checkTime();
 
         if (updateDatabase) {
-            databaseSetOwner(migration);
+            databaseSetOwner();
 
-            for (final Resource resource : context.getResources(LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
-                if (m_liquibaseChangelogFilter != null && !m_liquibaseChangelogFilter.test(resource)) {
-                    continue;
-                }
-                LOG.info("- Running migration for changelog: " + resource.getDescription());
-                migration.setChangeLog(resource);
-                migrate(migration, context);
+            for (final Resource resource : getLiquibaseChangelogs(context, true)) {
+                LOG.info("- Running migration for changelog: {}", resource.getDescription());
+                migrate(resource, context);
             }
         }
 
@@ -862,6 +962,21 @@ public class Migrator {
         if (iplike) {
             updateIplike();
         }
+    }
+
+    public Collection<Resource> getLiquibaseChangelogs(ApplicationContext context, boolean required) throws IOException, Exception {
+        List<Resource> filtered = new LinkedList<>();
+        for (final Resource resource : context.getResources(LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
+            if (m_liquibaseChangelogFilter != null && !m_liquibaseChangelogFilter.test(resource)) {
+                LOG.debug("Skipping Liquibase changelog that doesn't pass filter: {}", resource);
+                continue;
+            }
+        }
+        if (required && filtered.size() == 0) {
+            throw new MigrationException("Could not find any '" + LIQUIBASE_CHANGELOG_FILENAME + "' files in our classpath using '" + LIQUIBASE_CHANGELOG_LOCATION_PATTERN + "'. Combined ClassPath:" + getContextClassLoaderUrls(context) + "\nAnd system class loader for fun:" + getSystemClassLoaderUrls());
+        }
+
+        return filtered;
     }
 
     public static Resource[] validateLiquibaseChangelog(ApplicationContext context) throws IOException, Exception {

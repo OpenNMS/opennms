@@ -64,7 +64,6 @@ import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
@@ -115,7 +114,6 @@ public class Installer {
 
     protected Options options = new Options();
     protected CommandLine m_commandLine;
-    private Migration m_migration = new Migration();
     private Migrator m_migrator = new Migrator();
 
     Properties m_properties = null;
@@ -168,13 +166,12 @@ public class Installer {
             m_migrator.setAdminDataSource(adminDs);
             m_migrator.setValidateDatabaseVersion(!m_ignore_database_version);
 
-            m_migration.setDatabaseName(dsConfig.getDatabaseName());
-            m_migration.setSchemaName(dsConfig.getSchemaName());
-            m_migration.setAdminUser(adminDsConfig.getUserName());
-            m_migration.setAdminPassword(adminDsConfig.getPassword());
-            m_migration.setDatabaseUser(dsConfig.getUserName());
-            m_migration.setDatabasePassword(dsConfig.getPassword());
-            m_migration.setChangeLog("classpath*:/changelog.xml"); // XXX do we need/want this?
+            m_migrator.setDatabaseName(dsConfig.getDatabaseName());
+            m_migrator.setSchemaName(dsConfig.getSchemaName());
+            m_migrator.setAdminUser(adminDsConfig.getUserName());
+            m_migrator.setAdminPassword(adminDsConfig.getPassword());
+            m_migrator.setDatabaseUser(dsConfig.getUserName());
+            m_migrator.setDatabasePassword(dsConfig.getPassword());
         }
 
         checkIPv6();
@@ -221,17 +218,17 @@ public class Installer {
         }
 
         if (doDatabase) {
-            LOG.info(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migration.getAdminUser()));
-            LOG.info(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migration.getDatabaseName()));
-            if (m_migration.getSchemaName() != null) {
-                LOG.info(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migration.getSchemaName()));
+            LOG.info(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migrator.getAdminUser()));
+            LOG.info(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migrator.getDatabaseName()));
+            if (m_migrator.getSchemaName() != null) {
+                LOG.info(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migrator.getSchemaName()));
             }
 
-            m_migrator.setupDatabase(m_migration, m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, context);
+            m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, context);
 
             // XXX why do both options need to be set to remove the database?
             if (m_update_database && m_remove_database) {
-                m_migrator.databaseRemoveDB(m_migration);
+                m_migrator.databaseRemoveDB();
             }
 
             if (m_update_database) {
@@ -508,7 +505,7 @@ public class Installer {
             usage(
                     options,
                     m_commandLine,
-                    "The 'u', 'p', 'a', 'A', 'D', and 'P' options have all been superceded.\nPlease edit $OPENNMS_HOME/etc/opennms-datasources.xml instead.", null);
+                    "The 'u', 'p', 'a', 'A', 'D', and 'P' options have all been superseded.\nPlease edit $OPENNMS_HOME/etc/opennms-datasources.xml instead.", null);
             System.exit(1);
         }
 
@@ -527,7 +524,7 @@ public class Installer {
         m_do_vacuum = m_commandLine.hasOption("v");
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
 
-        Configurator.setRootLevel(Level.WARN);
+        Configurator.setRootLevel(Level.INFO);
         if (m_commandLine.hasOption("x")) {
             Configurator.setRootLevel(Level.DEBUG);
         }
