@@ -793,27 +793,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             throws NoSuchAlgorithmException, IOException, Exception, ChangeLogParseException, LiquibaseException {
         final long start = System.currentTimeMillis();
 
-        MessageDigest foo = MessageDigest.getInstance("MD5");
-        //BufferedReader reader = new BufferedReader(new InputStreamReader(Migrator.validateLiquibaseChangelog(context)[0].getInputStream()));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File("/tmp/deej"))));
-        String url;
-        while ((url = reader.readLine()) != null) {
-            Resource resource = new FileSystemResource(new File(new URI(url)));
-        //for (Resource resource : Migrator.validateLiquibaseChangelog(context)) {
-            //if (!createProductionLiquibaseChangelogFilter().test(resource)) {
-//                LOG.info("skipping {} because it didn't pass the changelog filter", resource);
-//                continue;
-//            }
-
-            //System.out.println("top-level: " + resource.getURI());
-            DigestUtils.updateDigest(foo, resource.getInputStream());
-        }
-
-        String hasha = Hex.encodeHexString(foo.digest());
-        LOG.info("Computed Liquibase schema hash {}", hasha);
-
-        if (true) { return hasha; };
-
         final String contexts = System.getProperty("opennms.contexts", "production");
         ChangeLogParameters changeLogParameters = new ChangeLogParameters();
         changeLogParameters.setContexts(new Contexts(StringUtils.splitAndTrim(contexts, ",")));
