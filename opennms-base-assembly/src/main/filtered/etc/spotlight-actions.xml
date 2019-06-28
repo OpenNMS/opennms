@@ -29,6 +29,21 @@
             <role>ROLE_ADMIN</role>
         </roles>
     </action>
+    <action>
+        <icon>fa fa-plus-circle</icon>
+        <label>Quick Add Node</label>
+        <url>admin/ng-requisitions/quick-add-node.jsp#/</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Manage Provisioning Requisitions</label>
+        <url>admin/ng-requisitions/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
 
     <!-- Normal User Actions -->
     <action>
@@ -36,8 +51,8 @@
         <url>report/database/index.htm</url>
     </action>
     <action>
-        <label>Logout</label>
         <icon>fa fa-power-off</icon>
+        <label>Logout</label>
         <url>j_spring_security_logout</url>
     </action>
     <action>
