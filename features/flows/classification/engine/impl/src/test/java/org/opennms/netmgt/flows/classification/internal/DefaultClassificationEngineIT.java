@@ -97,8 +97,8 @@ public class DefaultClassificationEngineIT {
     public void setUp() {
         operations.execute(status -> {
             databasePopulator.populateDatabase();
-            groupDao.save(new GroupBuilder().withName(Groups.USER_DEFINED).build());
             Group userDefinedGroup = groupDao.findByName(Groups.USER_DEFINED);
+            assertNotNull("user defined group", userDefinedGroup);
 
             final ArrayList<Rule> rules = Lists.newArrayList(
                     new RuleBuilder().withName("rule1").withDstPort(80).withGroup(userDefinedGroup).build(),
@@ -118,7 +118,6 @@ public class DefaultClassificationEngineIT {
     public void tearDown() {
         operations.execute(status -> {
             databasePopulator.resetDatabase();
-            groupDao.findAll().forEach(group -> groupDao.delete(group));
             return null;
         });
     }
@@ -151,7 +150,7 @@ public class DefaultClassificationEngineIT {
         assertThat(classificationEngine.classify(classificationRequest), is("rule4"));
 
         // Update no rule matches
-        classificationRequest.setDstPort(443);
+        classificationRequest.setDstPort(0);
         assertThat(classificationEngine.classify(classificationRequest), is(nullValue()));
     }
 }
