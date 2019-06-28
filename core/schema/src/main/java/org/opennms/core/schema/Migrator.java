@@ -971,6 +971,7 @@ public class Migrator {
                 LOG.debug("Skipping Liquibase changelog that doesn't pass filter: {}", resource);
                 continue;
             }
+            filtered.add(resource);
         }
         if (required && filtered.size() == 0) {
             throw new MigrationException("Could not find any '" + LIQUIBASE_CHANGELOG_FILENAME + "' files in our classpath using '" + LIQUIBASE_CHANGELOG_LOCATION_PATTERN + "'. Combined ClassPath:" + getContextClassLoaderUrls(context) + "\nAnd system class loader for fun:" + getSystemClassLoaderUrls());
