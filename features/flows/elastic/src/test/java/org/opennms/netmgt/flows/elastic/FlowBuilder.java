@@ -42,8 +42,8 @@ public class FlowBuilder {
     private Integer snmpInterfaceId;
     private String application = null;
     private Direction direction = Direction.INGRESS;
-    private Optional<String> srcHostname = Optional.empty();
-    private Optional<String> dstHostname = Optional.empty();
+    private String srcHostname = null;
+    private String dstHostname = null;
 
     public FlowBuilder withExporter(String fs, String fid, int nodeId) {
         exporterNode = new NodeDocument();
@@ -69,8 +69,8 @@ public class FlowBuilder {
     }
 
     public FlowBuilder withHostnames(final String srcHostname, final String dstHostname) {
-        this.srcHostname = Optional.of(srcHostname);
-        this.dstHostname = Optional.of(dstHostname);
+        this.srcHostname = srcHostname;
+        this.dstHostname = dstHostname;
         return this;
     }
 
@@ -85,10 +85,14 @@ public class FlowBuilder {
         flow.setLastSwitched(lastSwitched.getTime());
         flow.setSrcAddr(sourceIp);
         flow.setSrcPort(sourcePort);
-        this.srcHostname.ifPresent(flow::setSrcAddrHostname);
+        if (this.srcHostname != null) {
+            flow.setSrcAddrHostname(this.srcHostname);
+        }
         flow.setDstAddr(destIp);
         flow.setDstPort(destPort);
-        this.dstHostname.ifPresent(flow::setDstAddrHostname);
+        if (this.dstHostname != null) {
+            flow.setDstAddrHostname(this.dstHostname);
+        };
         flow.setBytes(numBytes);
         flow.setProtocol(6); // TCP
         if (exporterNode !=  null) {
