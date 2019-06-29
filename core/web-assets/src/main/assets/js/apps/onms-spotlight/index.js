@@ -30,8 +30,17 @@ const quickSearchTemplate  = require('./quicksearch.html');
                 'query':      { method: 'GET', isArray: true, cancellable: true },
             });
         })
-        .controller('QuickSearchController', ['$scope', 'SearchResource', '$timeout', '$resource', function($scope, SearchResource, $timeout, $resource) {
-            console.log("QuickSearchController invoked");
+        .controller('QuickSearchController', ['$scope', 'SearchResource', '$timeout', '$document', function($scope, SearchResource, $timeout, $document) {
+            var KeyCodes = {
+                ENTER: 13,
+                SHIFT: 16,
+                ESC: 27,
+                KEY_LEFT: 37,
+                KEY_UP: 38,
+                KEY_RIGHT: 39,
+                KEY_DOWN: 40,
+            };
+
             $scope.query = '';
             $scope.results = {};
             $scope.performSearchExecuted = false;
@@ -41,9 +50,82 @@ const quickSearchTemplate  = require('./quicksearch.html');
             $scope.performSearchPromise = undefined;
             $scope.performSearchHandle = undefined;
             $scope.showLoadingIndicatorPromise = undefined;
+            $scope.shiftLastPressed = undefined;
+            $scope.selectedIndex = 0;
+
+            $document.bind('mousedown', function(event) {
+                var isChild = $('#onms-spotlight-form').has(event.target).length > 0;
+                var isSelf = $('#onms-spotlight-form').is(event.target);
+                var isInside = isChild || isSelf;
+                if (!isInside) {
+                    $scope.$apply(function() {
+                        $scope.resetQuery();
+                        $scope.cancelRequest();
+                    });
+                }
+            });
+
+            $document.bind('keyup', function(e) {
+                // Search Focus Field
+                $scope.$apply(function() {
+                    if (e.keyCode === KeyCodes.SHIFT && new Date() - $scope.shiftLastPressed <= 350) {
+                        angular.element('#query').focus();
+                        angular.element('#query').select();
+                        $scope.shiftLastPressed = undefined;
+                    } else if(e.keyCode === KeyCodes.SHIFT) {
+                        $scope.shiftLastPressed = new Date();
+                    }
+
+                    // Reset Search
+                    if (e.keyCode === KeyCodes.ESC) {
+                        $scope.resetQuery();
+                        $scope.cancelRequest();
+                    }
+                });
+            });
+
+            $document.bind('keydown', function(e) {
+                $scope.$apply(function() {
+                    if ($scope.results.length > 0) {
+                        if (e.keyCode === KeyCodes.KEY_UP || e.keyCode === KeyCodes.KEY_DOWN) {
+                            $scope.navigateSearchResult(e.keyCode);
+                        }
+                        if (e.keyCode === KeyCodes.ENTER) {
+                            $scope.resetQuery();
+                            $scope.cancelRequest();
+                            document.getElementById('onms-search-result-item-' + $scope.selectedIndex).click();
+                        }
+                    }
+                });
+            });
+
+            $scope.navigateSearchResult = function(keyCode) {
+                $scope.results[$scope.selectedIndex].selected = false;
+                switch(keyCode) {
+                    case KeyCodes.KEY_UP:
+                        $scope.selectedIndex--;
+                        break;
+                    case KeyCodes.KEY_DOWN:
+                        $scope.selectedIndex++;
+                        break;
+                    default:
+                        break;
+                }
+                if ($scope.selectedIndex < 1) {
+                    $scope.selectedIndex = 1;
+                }
+                if ($scope.selectedIndex >= $scope.results.length) {
+                    $scope.selectedIndex = $scope.results.length - 1;
+                }
+                if ($scope.results[$scope.selectedIndex].group) {
+                    $scope.navigateSearchResult(keyCode); // Skip group element
+                } else {
+                    $scope.results[$scope.selectedIndex].selected = true;
+                }
+            };
 
             $scope.resetQuery = function() {
-                console.log("Reset input search query");
+                console.log('Reset input search query');
                 $scope.query = '';
                 $scope.results = [];
                 $scope.performSearchExecuted = false;
@@ -129,6 +211,10 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                 });
                             });
                             $scope.results = results;
+                            if ($scope.results.length != 0) {
+                                $scope.selectedIndex = 1;
+                                $scope.results[$scope.selectedIndex].selected = true;
+                            }
                         },
                         function(response) {
                             if (response.status >= 0) {
@@ -136,7 +222,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                 console.log('ERROR', error);
                                 $scope.cancelRequest();
                             } else {
-                                console.log("CANCELLED");
+                                console.log('CANCELLED');
                             }
                         }
                     );
