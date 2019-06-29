@@ -30,8 +30,6 @@ package org.opennms.netmgt.graph.persistence;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +43,8 @@ import org.opennms.netmgt.graph.api.persistence.GraphRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.ImmutableList;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -76,22 +76,35 @@ public class DefaultGraphRepositoryIT {
         originalContainer.setLabel("I am soooo unique \\o/");
 
         // Create first graph
-        final GenericGraph graph1 = new GenericGraph(NAMESPACE);
-        graph1.setLabel("Dummy Graph");
-        graph1.setDescription("I am not so unique, I may be replaced at any time :(");
+        final GenericGraph graph1 = GenericGraph.builder()
+                .namespace(NAMESPACE)
+                .label("Dummy Graph")
+                .description("I am not so unique, I may be replaced at any time :(")
+                .build();
 
-        final GenericVertex v1 = new GenericVertex(graph1.getNamespace(), "v1");
-        v1.setLabel("Vertex 1");
-        final GenericVertex v2 = new GenericVertex(graph1.getNamespace(), "v2");
-        v2.setLabel("Vertex 2");
+        final GenericVertex v1 = GenericVertex.builder()
+        		.namespace(graph1.getNamespace())
+        		.id("v1")
+        		.label("Vertex 1")
+        		.build();
+        final GenericVertex v2 = GenericVertex.builder()
+        		.namespace(graph1.getNamespace())
+        		.id("v2")
+        		.label("Vertex 2")
+        		.build();
 
         graph1.addVertex(v1);
         graph1.addVertex(v2);
-        graph1.addEdge(new GenericEdge(NAMESPACE, v1.getVertexRef(), v2.getVertexRef()));
+        graph1.addEdge(GenericEdge.builder()
+                .namespace(NAMESPACE)
+                .source(v1.getVertexRef())
+                .target(v2.getVertexRef()).build());
 
         // Second graph is a copy of the first
-        final GenericGraph graph2 = new GenericGraph(graph1, NAMESPACE + "2");
-        graph2.setLabel(graph1.getLabel() + " 2");
+        final GenericGraph graph2 = GenericGraph.builder()
+                .properties(graph1.getProperties())
+                .namespace(NAMESPACE + "2")
+                .label(graph1.getLabel() + " 2").build();
 
         // Persist
         originalContainer.addGraph(graph1);
@@ -105,16 +118,18 @@ public class DefaultGraphRepositoryIT {
          * Update
          */
         // Add new graph which is a copy of an existing graph
-        final GenericGraph graph3 = new GenericGraph(graph1, NAMESPACE + "3");
-        graph3.setLabel(graph1.getLabel() + " 3");
+        final GenericGraph graph3 = GenericGraph.builder()
+                .properties(graph1.getProperties())
+                .namespace(NAMESPACE + "3")
+                .label(graph1.getLabel() + " 3")
+                .build();
         originalContainer.addGraph(graph3);
 
         // Remove existing graph.
         originalContainer.removeGraph(graph2.getNamespace());
 
         // Update existing graph
-        graph1.setLabel("New Dummy Graph");
-        graph1.addVertex(new GenericVertex(NAMESPACE, "v3"));
+        graph1.addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v3").build());
 
         // Persist changes
         graphRepository.save(originalContainer);
@@ -132,16 +147,19 @@ public class DefaultGraphRepositoryIT {
     @Test
     public void verifySavingCollections() {
 
-        GenericVertex vertex = new GenericVertex(NAMESPACE, "v1");
-        vertex.setProperty("collectionProperty", Arrays.asList("E", "F"));
+        GenericVertex vertex = GenericVertex.builder()
+                .namespace(NAMESPACE)
+                .id("v1")
+                .property("collectionProperty", ImmutableList.of("E", "F")).build();
 
-        final GenericGraph graph = new GenericGraph(NAMESPACE);
-        graph.setProperty("collectionProperty", Arrays.asList("C", "D"));
+        final GenericGraph graph = GenericGraph.builder()
+                .namespace(NAMESPACE)
+                .property("collectionProperty", ImmutableList.of("C", "D")).build();
         graph.addVertex(vertex);
 
         GenericGraphContainer originalContainer = new GenericGraphContainer();
         originalContainer.setId(CONTAINER_ID);
-        originalContainer.setProperty("collectionProperty", Arrays.asList("A", "B"));
+        originalContainer.setProperty("collectionProperty", ImmutableList.of("A", "B"));
         originalContainer.addGraph(graph);
 
         graphRepository.save(originalContainer);

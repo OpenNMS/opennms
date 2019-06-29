@@ -31,8 +31,10 @@ package org.opennms.netmgt.graph.simple;
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.simple.SimpleVertex.SimpleVertexBuilder;
 
 /**
  * Acts as a domain specific view on a Graph.
@@ -43,26 +45,19 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
 public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
 
 
-    public SimpleGraph(String namespace) {
-        super(namespace);
-    }
-
     public static SimpleGraph fromGraphInfo(GraphInfo graphInfo) {
         // we can't have a constructor SimpleGraph(GraphInfo graphInfo) since it conflicts with SimpleGraph(GenericGraph graph)
         // that's why we have a factory method instead
-        GenericGraph graph = new GenericGraph(graphInfo.getNamespace());
-        graph.setLabel(graphInfo.getLabel());
-        graph.setDescription(graphInfo.getDescription());
+        GenericGraph graph = GenericGraph.builder()
+                .namespace(graphInfo.getNamespace())
+                .label(graphInfo.getLabel())
+                .description(graphInfo.getDescription())
+                .build();
         return new SimpleGraph(graph);
     }
 
     public SimpleGraph(GenericGraph graph) {
         super(graph);
-    }
-
-    /** copy constructor */
-    public SimpleGraph(SimpleGraph graph) {
-        this(new GenericGraph(graph.asGenericGraph()));
     }
 
     @Override
@@ -83,5 +78,21 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
     @Override
     public Class getVertexType() {
         return SimpleVertex.class;
+    }
+    
+    public static SimpleGraphBuilder builder() {
+        return new SimpleGraphBuilder();
+    }
+    
+    public final static class SimpleGraphBuilder extends AbstractDomainElementBuilder<SimpleGraphBuilder> {
+        
+        public SimpleGraphBuilder id(String description) {
+            this.properties.put(GenericProperties.DESCRIPTION, description);
+            return this;
+        }
+        
+        public SimpleGraph build() {
+            return new SimpleGraph(GenericGraph.builder().properties(properties).build());
+        }
     }
 }

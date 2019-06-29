@@ -28,24 +28,39 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
-import org.opennms.netmgt.graph.provider.bsm.AbstractBusinessServiceVertex.AbstractBusinessServiceVertexBuilder;
+import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.simple.AbstractDomainGraph;
 
-public class GraphVertexToTopologyVertexConverter {
 
-    public static AbstractBusinessServiceVertexBuilder<?, ? extends AbstractBusinessServiceVertex> createTopologyVertexBuilder(GraphVertex graphVertex) {
-        if (graphVertex.getBusinessService() != null) {
-            return BusinessServiceVertex.builder().graphVertex(graphVertex);
-        }
-        if (graphVertex.getIpService() != null) {
-            return IpServiceVertex.builder().graphVertex(graphVertex);
-        }
-        if (graphVertex.getReductionKey() != null) {
-            return ReductionKeyVertex.builder().graphVertex(graphVertex);
-        }
-        if (graphVertex.getApplication() != null) {
-            return ApplicationVertex.builder().graphVertex(graphVertex);
-        }
-        throw new IllegalArgumentException("Cannot convert GraphVertex to BusinessServiceVertex: " + graphVertex);
+// TODO: Patrick: I am not sure we need such a complicated object structure since we only build the objects and then give them
+// as AbstractDomain* to the outside. Evaluate if the builders wouldn't be enough?
+public class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusinessServiceVertex, BusinessServiceEdge> {
+    
+    public BusinessServiceGraph(GenericGraph graph) {
+        super(graph);
     }
+    
+    @Override
+    protected Graph<AbstractBusinessServiceVertex, BusinessServiceEdge> convert(GenericGraph graph) {
+        return new BusinessServiceGraph(graph);
+    }
+
+    @Override
+    protected AbstractBusinessServiceVertex convert(GenericVertex vertex) {
+        return AbstractBusinessServiceVertex.from(vertex);
+    }
+
+    @Override
+    protected BusinessServiceEdge convert(GenericEdge edge) {
+        return new BusinessServiceEdge(edge);
+    }
+
+    @Override
+    public Class getVertexType() {
+        return AbstractBusinessServiceVertex.class;
+    }
+
 }

@@ -43,13 +43,17 @@ import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.context.DefaultGraphContext;
 import org.opennms.netmgt.graph.api.focus.Focus;
+import org.opennms.netmgt.graph.api.generic.GenericElement.GenericElementBuilder;
+import org.opennms.netmgt.graph.api.generic.GenericVertex.GenericVertexBuilder;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 import com.google.common.collect.Lists;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
-// TODO MVR enforce namespace
+/**
+ * The graph itself is not immutable (Vertices and Edges can be added and removed) but it's properties are. 
+ */
 public class GenericGraph extends GenericElement implements Graph<GenericVertex, GenericEdge> {
 
     private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph = new DirectedSparseGraph<>();
@@ -61,33 +65,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     private Focus focusStrategy;
     protected GraphInfo<GenericVertex> graphInfo;
 
-    public GenericGraph(String namespace) {
-        this(new MapBuilder<String, Object>()
-                .withProperty(GenericProperties.NAMESPACE, namespace)
-                .build());
-    }
-
-    /** Copy constructor. */
-    public GenericGraph(GenericGraph copyMe) {
-        this(copyMe, copyMe.getNamespace());
-    }
-
-    /** Copy constructor with new namespace. */
-    public GenericGraph(GenericGraph copyMe, String newNamespace) {
-        super(new MapBuilder<String, Object>()
-                .withProperties(copyMe.properties)
-                .withProperty(GenericProperties.NAMESPACE, newNamespace)
-                .build());
-        this.setFocusStrategy(copyMe.focusStrategy);
-        for(GenericVertex originalVertex : copyMe.vertexToIdMap.values()){
-            this.addVertex(new GenericVertex(originalVertex, newNamespace));
-        }
-        for(GenericEdge originalEdge : copyMe.edgeToIdMap.values()){
-            this.addEdge(new GenericEdge(originalEdge, newNamespace));
-        }
-    }
-
-    public GenericGraph(Map<String, Object> properties) {
+    private GenericGraph(Map<String, Object> properties) {
         super(properties);
         this.graphInfo = new GenericGraphInfo();
     }
@@ -95,10 +73,10 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     public static GenericGraph fromGraphInfo(GraphInfo graphInfo) {
         // we can't have a constructor GenericGraph(GraphInfo graphInfo) since it conflicts with GenericGraph(GenericGraph graph)
         // that's why we have a factory method instead
-        GenericGraph graph = new GenericGraph(graphInfo.getNamespace());
-        graph.setDescription(graphInfo.getDescription());
-        graph.setLabel(graphInfo.getLabel());
-        return graph;
+        return GenericGraph.builder()
+                .namespace(graphInfo.getNamespace())
+                .description(graphInfo.getDescription())
+                .label(graphInfo.getLabel()).build();
     }
 
     //    @Override
@@ -123,10 +101,6 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         // TODO MVR use junggraph.getEdges instead. However addEdge is adding the edges if not in same namespace
         // We have to figure out a workaround for that somehow
         return new ArrayList<>(edgeToIdMap.values());
-    }
-
-    public void setDescription(String description) {
-        setProperty(GenericProperties.DESCRIPTION, description);
     }
 
     public GraphInfo getGraphInfo(){
@@ -195,7 +169,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
 
     @Override
     public void addEdge(GenericEdge edge) {
-        Objects.requireNonNull(edge);
+        Objects.requireNonNull(edge, "GenericEdge cannot be null");
         Objects.requireNonNull(edge.getId());
         if (jungGraph.containsEdge(edge)) return; // already added
         if(!this.getNamespace().equals(edge.getNamespace())){
@@ -326,6 +300,22 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
                 vertexToIdMap, edgeToIdMap, focusStrategy);
     }
 
+    public static GenericGraphBuilder builder() {
+        return new GenericGraphBuilder();
+    }
+    
+    public final static class GenericGraphBuilder extends GenericElementBuilder<GenericGraphBuilder> {
+        
+        public GenericGraphBuilder description(String description) {
+            this.properties.put(GenericProperties.DESCRIPTION, description);
+            return this;
+        }
+        
+        public GenericGraph build() {
+            return new GenericGraph(properties);
+        }
+    }
+    
     private class GenericGraphInfo implements GraphInfo<GenericVertex> {
 
         @Override
@@ -347,7 +337,6 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         public Class<GenericVertex> getVertexType() {
             return GenericVertex.class;
         }
-
 
     }
 }

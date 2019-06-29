@@ -31,12 +31,13 @@ package org.opennms.netmgt.graph.provider.application;
 import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
+import org.opennms.netmgt.graph.simple.AbstractDomainVertex;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
-public class ApplicationVertex extends SimpleVertex {
+public class ApplicationVertex extends AbstractDomainVertex {
 
     private interface Property {
         String VERTEX_TYPE = "vertexType";
@@ -44,71 +45,34 @@ public class ApplicationVertex extends SimpleVertex {
         String IP_ADDRESS = "ipAddress";
         String SERVICE_TYPE_ID = "serviceTypeId";
     }
-
-    public ApplicationVertex(OnmsApplication application) {
-        this(createVertexId(application), application.getName());
-        setVertexType(ApplicationVertexType.Application);
-    }
-
-    public ApplicationVertex(OnmsMonitoredService monitoredService) {
-        this(createVertexId(monitoredService), monitoredService.getServiceName());
-        setVertexType(ApplicationVertexType.Service);
-        setServiceTypeId(monitoredService.getServiceType().getId());
-    }
-
+    
     public ApplicationVertex(GenericVertex vertex) {
         super(vertex);
-    }
-
-    /**
-     * Creates a new {@link ApplicationVertex}.
-     * @param id the unique id of this vertex. Must be unique overall the namespace.
-     */
-    private ApplicationVertex(String id, String name) {
-        super(ApplicationGraph.TOPOLOGY_NAMESPACE, id);
-        this.setName(name);
+        // additional specific checks: 
+        Objects.requireNonNull(getProperty(Property.VERTEX_TYPE), Property.VERTEX_TYPE + " cannot be null");
+        if(ApplicationVertexType.Service == getVertexType()) {
+            Objects.requireNonNull(getProperty(Property.SERVICE_TYPE_ID), Property.SERVICE_TYPE_ID + " cannot be null");
+        }
     }
 
     public String getName() {
         return delegate.getProperty(Property.NAME);
     }
 
-    public void setName(String name) {
-        setProperty(Property.NAME, name);
-        setLabel(name);
-    }
-
     public ApplicationVertexType getVertexType() {
         return delegate.getProperty(Property.VERTEX_TYPE);
-    }
-
-    public void setVertexType(ApplicationVertexType vertexType) {
-        setProperty(Property.VERTEX_TYPE, vertexType);
     }
 
     public String getIpAddress() {
         return delegate.getProperty(Property.IP_ADDRESS);
     }
 
-    public void setIpAddress(String ipAddress) {
-        setProperty(Property.IP_ADDRESS, ipAddress);
-    }
-
     public VertexRef getVertexRef(){
         return delegate.getVertexRef();
-    }
-    
-    public void setServiceTypeId(Integer serviceTypeId) {
-        setProperty(Property.SERVICE_TYPE_ID,  Objects.requireNonNull(serviceTypeId));
     }
 
     public Integer getServiceTypeId() {
         return getProperty(Property.SERVICE_TYPE_ID);
-    }
-
-    private <T> void setProperty(String key, T property) {
-        Objects.requireNonNull(key);
-        delegate.setProperty(key, property);
     }
 
     private <T> T getProperty(String key) {
@@ -126,4 +90,40 @@ public class ApplicationVertex extends SimpleVertex {
         return ApplicationVertexType.Service + ":" + service.getId();
     }
 
+    public static ApplicationVertexBuilder builder() {
+        return new ApplicationVertexBuilder();
+    }
+    
+    public final static class ApplicationVertexBuilder extends AbstractDomainVertexBuilder<ApplicationVertexBuilder> {
+        
+        
+        public ApplicationVertexBuilder application(OnmsApplication application) {
+            this.properties.put(GenericProperties.ID, createVertexId(application));
+            this.properties.put(Property.VERTEX_TYPE, ApplicationVertexType.Application);
+            this.properties.put(Property.NAME, application.getName());
+            return this;
+        }
+        
+        public ApplicationVertexBuilder service(OnmsMonitoredService monitoredService) {
+            this.properties.put(GenericProperties.ID, createVertexId(monitoredService));
+            this.properties.put(Property.VERTEX_TYPE, ApplicationVertexType.Service);
+            this.properties.put(Property.SERVICE_TYPE_ID, Objects.requireNonNull(monitoredService.getServiceType().getId()));
+            this.properties.put(Property.NAME, monitoredService.getServiceName());
+            this.properties.put(Property.IP_ADDRESS, monitoredService.getIpAddress().toString());
+            super.nodeRefString(Integer.toString(monitoredService.getNodeId()));
+            return this;            
+        }
+        
+        public ApplicationVertexBuilder name(String name) {
+            this.properties.put(Property.NAME, name);
+            this.label(name);
+            return this;
+        }
+        
+        public ApplicationVertex build() {
+            namespace(ApplicationGraph.TOPOLOGY_NAMESPACE); // namespace is fixed => cannot be changed
+            return new ApplicationVertex(GenericVertex.builder().properties(properties).build());
+        }
+    }
+    
 }

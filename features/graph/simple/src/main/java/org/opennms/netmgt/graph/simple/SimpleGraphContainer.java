@@ -44,6 +44,7 @@ import com.google.common.base.MoreObjects;
 // TODO MVR probably implement ContainerGraphInfo instead of a property
 // TODO MVR make more type safe
 // TODO MVR why is there a DefaultGraphContainerInfo, but no SimpleGraphContainerInfo... this is weird
+// TODO Patrick make it immutable if possible
 public class SimpleGraphContainer implements GraphContainer {
 
     private final String id;

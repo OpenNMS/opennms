@@ -46,9 +46,10 @@ public class TestObjectCreator {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(id);
 
-        NodeInfo nodeInfo = new NodeInfo();
-        nodeInfo.setId(ID_SUPPLIER.getAndIncrement());
-        nodeInfo.setLabel("Node"+nodeInfo.getId());
+        Integer nodeId = ID_SUPPLIER.getAndIncrement();
+        NodeInfo nodeInfo = NodeInfo.builder()
+                .id(nodeId)
+                .label("Node"+nodeId).build();
         return createVertex(namespace, id, nodeInfo);
     }
 
@@ -56,10 +57,12 @@ public class TestObjectCreator {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(id);
         Objects.requireNonNull(nodeInfo);
-        final SimpleVertex vertex = new SimpleVertex(namespace, id);
-        vertex.setLabel("SimpleVertex-" + namespace + "-" + id);
-        vertex.setNodeInfo(nodeInfo);
-        return vertex;
+        return SimpleVertex.builder()
+                .namespace(namespace)
+                .id(id)
+                .label("SimpleVertex-" + namespace + "-" + id)
+                .nodeInfo(nodeInfo)
+                .build();
     }
 
     public static SimpleEdge createEdge(SimpleVertex sourceVertex, SimpleVertex targetVertex) {
@@ -72,10 +75,11 @@ public class TestObjectCreator {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(sourceVertex);
         Objects.requireNonNull(targetVertex);
-        SimpleEdge edge = new SimpleEdge(namespace, sourceVertex, targetVertex);
-        edge.setLabel("SimpleEdge-" + namespace + "-" + edge.getId());
-        return edge;
+        return SimpleEdge.builder()
+                .namespace(namespace)
+                .source(sourceVertex.getVertexRef())
+                .target(targetVertex.getVertexRef())
+                .label("SimpleEdge-" + namespace + "-" + sourceVertex.getVertexRef() + "->" + targetVertex.getVertexRef())
+                .build();
     }
-
-
 }

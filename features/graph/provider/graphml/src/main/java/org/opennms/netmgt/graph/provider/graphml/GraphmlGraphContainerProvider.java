@@ -133,13 +133,15 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     }
 
     private final GenericGraph convert(GraphMLGraph graphMLGraph) {
-        final GenericGraph graph = new GenericGraph(graphMLGraph.getProperties());
+        final GenericGraph graph = GenericGraph.builder().properties(graphMLGraph.getProperties()).build();
         final List<GenericVertex> vertices = graphMLGraph.getNodes()
                 .stream().map(n -> {
                     // In case of GraphML each vertex does not have a namespace, but it is inherited from the graph
                     // Therefore here we have to manually set it
-                    final GenericVertex v = new GenericVertex(graph.getNamespace(), n.getId(), n.getProperties());
-                    return v;
+                    return GenericVertex.builder()
+                            .namespace(graph.getNamespace())
+                            .id(n.getId())
+                            .properties(n.getProperties()).build();
                 })
                 .collect(Collectors.toList());
         graph.addVertices(vertices);
@@ -147,12 +149,15 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         final List<GenericEdge> edges = graphMLGraph.getEdges().stream().map(e -> {
             final String sourceNamespace = vertexIdToGraphMapping.get(e.getSource().getId()).getProperty(GenericProperties.NAMESPACE);
             final String targetNamespace = vertexIdToGraphMapping.get(e.getTarget().getId()).getProperty(GenericProperties.NAMESPACE);
-            final GenericVertex source = new GenericVertex(sourceNamespace, e.getSource().getId());
-            final GenericVertex target = new GenericVertex(targetNamespace, e.getTarget().getId());
+            final GenericVertex source = GenericVertex.builder().namespace(sourceNamespace).id(e.getSource().getId()).build();
+            final GenericVertex target = GenericVertex.builder().namespace(targetNamespace).id(e.getTarget().getId()).build();
             // In case of GraphML each edge does not have a namespace, but it is inherited from the graph
             // Therefore here we have to manually set it
-            final GenericEdge edge = new GenericEdge(graph.getNamespace(), source.getVertexRef(), target.getVertexRef(),
-                    e.getProperties());
+            final GenericEdge edge = GenericEdge.builder()
+                    .namespace(graph.getNamespace())
+                    .source(source.getVertexRef())
+                    .target(target.getVertexRef())
+                    .properties(e.getProperties()).build();
             return edge;
         }).collect(Collectors.toList());
         graph.addEdges(edges);

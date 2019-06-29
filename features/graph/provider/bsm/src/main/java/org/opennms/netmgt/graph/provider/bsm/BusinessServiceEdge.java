@@ -28,29 +28,22 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
+import java.util.Map;
+
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
+import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
 
-public class BusinessServiceEdge extends SimpleEdge {
+public class BusinessServiceEdge extends AbstractDomainEdge {
 
     private final static String PROPERTY_MAP_FUNCTION = "mapFunction";
     private final static String PROPERTY_WEIGHT = "weight";
-
-    public BusinessServiceEdge(GraphEdge graphEdge, AbstractBusinessServiceVertex source, AbstractBusinessServiceVertex target) {
-        super(BusinessServiceGraphProvider.NAMESPACE, source, target);
-        setMapFunction(graphEdge.getMapFunction());
-        setWeight(graphEdge.getWeight());
-        // TODO MVR ToolTips are not yet supported
-//        setTooltipText(String.format("Map function: %s, Weight: %s", graphEdge.getMapFunction().getClass().getSimpleName(), graphEdge.getWeight()));
-    }
-
-    private BusinessServiceEdge(BusinessServiceEdge edgeToClone) {
-        super(edgeToClone);
-    }
-
-    private void setMapFunction(MapFunction mapFunction){
-        this.delegate.setProperty(PROPERTY_MAP_FUNCTION, mapFunction);
+    
+    public BusinessServiceEdge(GenericEdge genericEdge) {
+        super(genericEdge);
     }
 
     public MapFunction getMapFunction() {
@@ -61,7 +54,31 @@ public class BusinessServiceEdge extends SimpleEdge {
         return this.delegate.getProperty(PROPERTY_WEIGHT);
     }
 
-    private void setWeight(float weight){
-        this.delegate.setProperty(PROPERTY_WEIGHT, weight);
+    public final static BusinessServiceEdgeBuilder builder() {
+        return new BusinessServiceEdgeBuilder();
+    }
+    
+    public final static class BusinessServiceEdgeBuilder extends AbstractDomainEdgeBuilder<BusinessServiceEdgeBuilder> {
+        
+        BusinessServiceEdgeBuilder graphEdge(GraphEdge graphEdge) {
+            namespace(BusinessServiceGraphProvider.NAMESPACE);
+            mapFunction(graphEdge.getMapFunction());
+            weight(graphEdge.getWeight());
+            return this;
+        }
+        
+        BusinessServiceEdgeBuilder weight(float weight) {
+            this.properties.put(PROPERTY_WEIGHT, weight);
+            return this;
+        }
+       
+        BusinessServiceEdgeBuilder mapFunction(MapFunction mapFunction) {
+            this.properties.put(PROPERTY_MAP_FUNCTION, mapFunction);
+            return this;
+        }
+        
+        public BusinessServiceEdge build() {
+            return new BusinessServiceEdge(GenericEdge.builder().properties(properties).source(source).target(target).build());
+        }
     }
 }

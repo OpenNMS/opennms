@@ -39,6 +39,7 @@ import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 // TODO MVR we must rework the generic and simple objects a bit more... that is kinda weird how it is implemented. The graph could work as an example but is also not fully defined yet
+// TODO: Patrick discuss with mvr is we should make the GraphContaner partially immutable similar to GenericGraph?
 public class GenericGraphContainer implements GraphContainer<GenericVertex, GenericEdge, GenericGraph> {
 
     private List<GenericGraph> graphs = new ArrayList<>();

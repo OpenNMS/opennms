@@ -33,77 +33,93 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 public class NodeInfo {
 
-    private String location;
-    private Integer id;
-    private String foreignSource;
-    private String foreignId;
-    private String label;
-    private Set<String> categories = new HashSet<>();
-    private List<IpInfo> ipInterfaces = new ArrayList<>();
+    private final String location;
+    private final Integer id;
+    private final String foreignSource;
+    private final String foreignId;
+    private final String label;
+    private final Set<String> categories = new HashSet<>();
+    private final List<IpInfo> ipInterfaces = new ArrayList<>();
 
-    public NodeInfo() {
-
+    
+    public NodeInfo(final String location, final Integer id, final String foreignSource, final String foreignId, final String label) {
+        this.location = location;
+        this.id = id;
+        this.foreignSource = foreignSource;
+        this.foreignId = foreignId;
+        this.label = label;
     }
-
+    
     public String getLocation() {
         return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getForeignSource() {
         return foreignSource;
-    }
-
-    public void setForeignSource(String foreignSource) {
-        this.foreignSource = foreignSource;
     }
 
     public String getForeignId() {
         return foreignId;
     }
 
-    public void setForeignId(String foreignId) {
-        this.foreignId = foreignId;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     public String getLabel() {
         return label;
-    }
-
-    public void setCategories(Set<String> categories) {
-        this.categories = categories;
     }
 
     public Set<String> getCategories() {
         return categories;
     }
 
-    public void addIpInterface(IpInfo ipInterface) {
-        ipInterfaces.add(ipInterface);
-    }
-
     public List<IpInfo> getIpInterfaces() {
         return ipInterfaces;
     }
+    
+    public static NodeInfoBuilder builder() {
+        return new NodeInfoBuilder();
+    }
+    
+    public static class NodeInfoBuilder {
+        
+        private String location;
+        private Integer id;
+        private String foreignSource;
+        private String foreignId;
+        private String label;
+        
+        public NodeInfoBuilder location(final String location) {
+            this.location = location;
+            return this;
+        }
 
-    public void setIpInterfaces(List<IpInfo> ipInterfaces) {
-        this.ipInterfaces = ipInterfaces;
+        public NodeInfoBuilder id(final Integer id) {
+            this.id = id;
+            return this;
+        }
+
+        public NodeInfoBuilder foreignSource(final String foreignSource) {
+            this.foreignSource = foreignSource;
+            return this;
+        }
+        
+        public NodeInfoBuilder foreignId(final String foreignId) {
+            this.foreignId = foreignId;
+            return this;
+        }
+        
+        public NodeInfoBuilder label(final String label) {
+            this.label = label;
+            return this;
+        }
+        
+        public NodeInfo build() {
+            return new NodeInfo(location, id, foreignSource, foreignId, label);
+        }
     }
 }

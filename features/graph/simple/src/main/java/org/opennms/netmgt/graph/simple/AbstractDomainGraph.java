@@ -39,6 +39,7 @@ import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
 import com.google.common.base.MoreObjects;
@@ -51,13 +52,9 @@ import com.google.common.base.MoreObjects;
 // TODO MVR implement duplication detection (e.g. adding same vertex twice
 // and as well as adding different edges with different source/target vertices, should add each vertex only once,
 // maybe not here, but at some point that check should be implemented)
-public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends SimpleEdge> implements Graph<V, E> {
+public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E extends AbstractDomainEdge> implements Graph<V, E> {
 
     private final GenericGraph delegate;
-
-    public AbstractDomainGraph(String namespace) {
-        this.delegate = new GenericGraph(namespace);
-    }
 
     public AbstractDomainGraph(GenericGraph genericGraph) {
         this.delegate = genericGraph;
@@ -139,7 +136,7 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     public Graph<V, E> getSnapshot(Collection<V> verticesInFocus, int szl) {
         Objects.requireNonNull(verticesInFocus);
         Collection<GenericVertex> genericVerticesInFocus = verticesInFocus.stream()
-                .map(SimpleVertex::asGenericVertex).collect(Collectors.toList());
+                .map(AbstractDomainVertex::asGenericVertex).collect(Collectors.toList());
         GenericGraph genericGraph = this.delegate.getSnapshot(genericVerticesInFocus, szl).asGenericGraph();
         return convert(genericGraph);
     }
@@ -192,10 +189,6 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
         return delegate.getNamespace();
     }
 
-    public void setDescription(String description) {
-        delegate.setDescription(description);
-    }
-
     @Override
     public String getDescription() {
         return delegate.getDescription();
@@ -204,10 +197,6 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     @Override
     public String getLabel() {
         return delegate.getLabel();
-    }
-
-    public void setLabel(String label){
-        delegate.setLabel(label);
     }
 
     @Override
@@ -232,5 +221,13 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
         return MoreObjects.toStringHelper(this)
                 .add("delegate", delegate)
                 .toString();
+    }
+    
+    public static class AbstractDomaiGraphBuilder<T extends AbstractDomaiGraphBuilder> extends AbstractDomainElementBuilder<T> {
+       
+        public AbstractDomaiGraphBuilder<T> description(String description) {
+            this.properties.put(GenericProperties.DESCRIPTION, description);
+            return this;
+        }
     }
 }

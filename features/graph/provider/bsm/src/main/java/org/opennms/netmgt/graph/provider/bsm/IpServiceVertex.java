@@ -28,42 +28,65 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import java.util.Set;
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
-
-public class IpServiceVertex extends AbstractBusinessServiceVertex {
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
+public final class IpServiceVertex extends AbstractBusinessServiceVertex {
 
     private final static String PROPERTY_SERVICE_ID = "ipServiceId";
 
-    public IpServiceVertex(IpService ipService, int level) {
-        this(ipService.getId(),
-            ipService.getServiceName(),
-            ipService.getIpAddress(),
-            ipService.getReductionKeys(),
-            ipService.getNodeId(),
-            level);
+    private IpServiceVertex(Map<String, Object> properties) {
+        this(GenericVertex.builder().properties(properties).build());
     }
 
-    public IpServiceVertex(GraphVertex graphVertex) {
-        this(graphVertex.getIpService(), graphVertex.getLevel());
+    public IpServiceVertex(GenericVertex genericVertex) {
+        super(genericVertex);
+        Objects.requireNonNull(getIpServiceId(), String.format("%s cannot be null", PROPERTY_SERVICE_ID));
+        checkArgument(Type.IpService == genericVertex.getProperty(PROPERTY_TYPE), "%s must be %s for %s", PROPERTY_TYPE, Type.IpService, getClass());
     }
-
-    private IpServiceVertex(int ipServiceId, String ipServiceName, String ipAddress, Set<String> reductionKeys, int nodeId, int level) {
-        super(Type.IpService + ":" + ipServiceId, ipServiceName, level, Type.IpService, true, reductionKeys);
-        setIpServiceId(ipServiceId);
-
-//        setIpAddress(ipAddress); // TODO MVR this is not yet supported. Maybe IpRef or something like this could be added
-        setNodeRefString(Integer.toString(nodeId));
-    }
-
-    public void setIpServiceId(Integer ipServiceId) {
-        delegate.setProperty(PROPERTY_SERVICE_ID, ipServiceId);
-    }
-
+    
     public Integer getIpServiceId() {
         return delegate.getProperty(PROPERTY_SERVICE_ID);
+    }
+    
+    public final static IpServiceVertexBuilder builder() {
+        return new IpServiceVertexBuilder();
+    }
+    
+    public final static class IpServiceVertexBuilder extends AbstractBusinessServiceVertexBuilder<IpServiceVertexBuilder, IpServiceVertex> {
+        
+        public IpServiceVertexBuilder ipServiceId(Integer ipServiceId) {
+            properties.put(PROPERTY_SERVICE_ID, ipServiceId);
+            id(Type.IpService + ":" + ipServiceId);
+            return this;
+        }
+        
+        public IpServiceVertexBuilder graphVertex(GraphVertex graphVertex) {
+            ipService(graphVertex.getIpService());
+            level(graphVertex.getLevel());
+            return this;
+        }
+        
+        public IpServiceVertexBuilder ipService(IpService ipService) {
+            ipServiceId(ipService.getId());
+            label(ipService.getServiceName()); 
+            type(Type.IpService);
+            // ipAddress(ipAddress); // TODO MVR this is not yet supported. Maybe IpRef or something like this could be added
+            isLeaf(true);
+            reductionKeys(ipService.getReductionKeys());      
+            nodeRefString(Integer.toString(ipService.getNodeId()));
+            return this;
+        }
+        
+        public IpServiceVertex build() {
+            this.type(Type.IpService);
+            return new IpServiceVertex(properties);
+        }
     }
 
 }

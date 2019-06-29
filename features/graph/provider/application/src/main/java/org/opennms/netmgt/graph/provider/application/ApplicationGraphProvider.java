@@ -70,25 +70,27 @@ public class ApplicationGraphProvider implements GraphProvider {
     @Override
     public Graph<ApplicationVertex, SimpleEdge> loadGraph() {
         return sessionUtils.withReadOnlyTransaction(() -> {
-            final ApplicationGraph graph = new ApplicationGraph();
-            graph.setLabel(GRAPH_LABEL);
-            graph.setDescription(GRAPH_DESCRIPTION);
+            final ApplicationGraph graph = ApplicationGraph.builder()
+                    .label(GRAPH_LABEL)
+                    .description(GRAPH_DESCRIPTION)
+                    .build();
 
             for (OnmsApplication application : applicationDao.findAll()) {
-                final ApplicationVertex applicationVertex = new ApplicationVertex(application);
-                applicationVertex.setName(application.getName());
+                final ApplicationVertex applicationVertex = ApplicationVertex.builder()
+                        .application(application)
+                        .build();
                 graph.addVertex(applicationVertex);
 
                 for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
-                    final ApplicationVertex serviceVertex = new ApplicationVertex(eachMonitoredService);
-                    serviceVertex.setIpAddress(eachMonitoredService.getIpAddress().toString());
-                    serviceVertex.setName(eachMonitoredService.getServiceName());
-                    serviceVertex.setServiceTypeId(eachMonitoredService.getServiceType().getId());
-                    serviceVertex.setNodeRefString(Integer.toString(eachMonitoredService.getNodeId()));
+                    final ApplicationVertex serviceVertex = ApplicationVertex.builder().service(eachMonitoredService).build();
                     graph.addVertex(serviceVertex);
 
                     // connect with application
-                    final SimpleEdge edge = new SimpleEdge(ApplicationGraph.TOPOLOGY_NAMESPACE, applicationVertex, serviceVertex);
+                    final SimpleEdge edge = SimpleEdge.builder()
+                            .namespace(ApplicationGraph.TOPOLOGY_NAMESPACE)
+                            .source(applicationVertex.getVertexRef())
+                            .target(serviceVertex.getVertexRef())
+                            .build();
                     graph.addEdge(edge);
                 }
             }

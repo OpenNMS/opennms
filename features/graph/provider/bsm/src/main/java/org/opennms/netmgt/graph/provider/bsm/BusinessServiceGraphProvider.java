@@ -32,16 +32,19 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
+import org.opennms.netmgt.graph.provider.bsm.AbstractBusinessServiceVertex.AbstractBusinessServiceVertexBuilder;
+import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
+import org.opennms.netmgt.graph.simple.AbstractDomainVertex.AbstractDomainVertexBuilder;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.graph.simple.SimpleGraph;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
@@ -92,15 +95,15 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
     }
 
     private Graph<?, ?> createGraph() {
-        final SimpleGraph bsmGraph = SimpleGraph.fromGraphInfo(getGraphInfo());
-        final BusinessServiceGraph sourceGraph = businessServiceManager.getGraph();
+        final BusinessServiceGraph bsmGraph = new BusinessServiceGraph(GenericGraph.fromGraphInfo(getGraphInfo()));
+        final org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph = businessServiceManager.getGraph();
         for (GraphVertex topLevelBusinessService : sourceGraph.getVerticesByLevel(0)) {
             addVertex(bsmGraph, sourceGraph, topLevelBusinessService, null);
         }
         return bsmGraph;
     }
 
-    private void addVertex(SimpleGraph targetGraph, BusinessServiceGraph sourceGraph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {
+    private void addVertex(BusinessServiceGraph targetGraph, org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {
         if (topologyVertex == null) {
             // Create a topology vertex for the current vertex
             topologyVertex = createTopologyVertex(graphVertex);
@@ -111,17 +114,20 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
             GraphVertex childVertex = sourceGraph.getOpposite(graphVertex, graphEdge);
 
             // Create a topology vertex for the child vertex
-            AbstractBusinessServiceVertex childTopologyVertex = createTopologyVertex(childVertex);
+            AbstractBusinessServiceVertexBuilder<?,?> childTopologyVertexBuilder = GraphVertexToTopologyVertexConverter.createTopologyVertexBuilder(childVertex);
             sourceGraph.getInEdges(childVertex).stream()
                     .map(GraphEdge::getFriendlyName)
                     .filter(s -> !Strings.isNullOrEmpty(s))
                     .findFirst()
-                    .ifPresent(childTopologyVertex::setLabel);
-
+                    .ifPresent(childTopologyVertexBuilder::label);
+            AbstractBusinessServiceVertex childTopologyVertex = childTopologyVertexBuilder.build();
             targetGraph.addVertex(childTopologyVertex);
 
             // Connect the two
-            final SimpleEdge edge = new BusinessServiceEdge(graphEdge, topologyVertex, childTopologyVertex);
+            final BusinessServiceEdge edge = BusinessServiceEdge.builder()
+                    .graphEdge(graphEdge)
+                    .source(topologyVertex.getVertexRef())
+                    .target(childTopologyVertex.getVertexRef()).build();
             targetGraph.addEdge(edge);
 
             // Recurse
@@ -130,7 +136,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
     }
 
     private AbstractBusinessServiceVertex createTopologyVertex(GraphVertex graphVertex) {
-        return GraphVertexToTopologyVertexConverter.createTopologyVertex(graphVertex);
+        return GraphVertexToTopologyVertexConverter.createTopologyVertexBuilder(graphVertex).build();
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,20 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.generic;
+package org.opennms.netmgt.graph.simple;
 
-import static org.opennms.core.test.OnmsAssert.assertThrowsException;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.junit.Test;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 
-public class GenericVertexTest {
-
-    @Test
-    public void genericVertexMustHaveANamespaceAndId() {
-        GenericVertex.builder().namespace("not null").id("not null"); // should throw no exception
-        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace(null).id(null).build());
-        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace("not null").id(null).build());
-        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace(null).id("not null").build());
-    }
-
+public abstract class AbstractDomainElementBuilder<T extends AbstractDomainElementBuilder> {
+        protected final Map<String, Object> properties = new HashMap<>();
+        
+        public T id(String id) {
+            properties.put(GenericProperties.ID, id);
+            return (T) this;
+        }
+        
+        public T label(String label){
+            properties.put(GenericProperties.LABEL, label);
+            return (T) this;
+        }
+        
+        public T namespace(String namespace){
+            properties.put(GenericProperties.NAMESPACE, namespace);
+            return (T) this;
+        }
+        
+        public T property(String name, String value){
+            properties.put(name, value);
+            return (T) this;
+        }
 }

@@ -35,13 +35,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 public class CollectionConverterTest {
 
@@ -59,28 +59,24 @@ public class CollectionConverterTest {
 
     @Test
     public void shouldConvertDifferentCollections() {
-        shouldConvertACollectionAndBack(createCollection(ArrayList::new, "A", "B", "C"));
-        shouldConvertACollectionAndBack(createCollection(HashSet::new, "A", "B", "C"));
-        shouldConvertACollectionAndBack(createCollection(TreeSet::new, "A", "B", "C"));
-        shouldConvertACollectionAndBack(createCollection(LinkedList::new, "A", "B", "C"));
+        shouldConvertACollectionAndBack(createCollection(ImmutableList::copyOf, Arrays.asList("A", "B", "C")));
+        shouldConvertACollectionAndBack(createCollection(ImmutableSet::copyOf, Arrays.asList("A", "B", "C")));
     }
 
     @Test
     public void shouldConvertCollectionsOfCollection() {
-        shouldConvertACollectionAndBack(createNestedCollection(ArrayList::new));
-        shouldConvertACollectionAndBack(createNestedCollection(HashSet::new));
-        shouldConvertACollectionAndBack(createNestedCollection(LinkedList::new));
+        shouldConvertACollectionAndBack(createNestedCollection(ImmutableList::copyOf));
+        shouldConvertACollectionAndBack(createNestedCollection(ImmutableSet::copyOf));
     }
 
-    private Collection<Collection<String>> createNestedCollection(Supplier<Collection> constructor) {
-        Collection<String> data1 = createCollection(constructor, "A", "B");
-        Collection<String> data2 = createCollection(constructor, "C", "D");
-        return createCollection(constructor, data1, data2);
+    private Collection createNestedCollection(Function<Collection, Collection> constructor) {
+        Collection<String> data1 = createCollection(constructor, Arrays.asList("A", "B"));
+        Collection<String> data2 = createCollection(constructor, Arrays.asList("C", "D"));
+        return createCollection(constructor, Arrays.asList(data1, data2));
     }
 
-    private <T> Collection<T> createCollection(Supplier<Collection> constructor, T...data) {
-        Collection<T> collection = constructor.get();
-        Collections.addAll(collection, data);
+    private Collection createCollection(Function<Collection, Collection> constructor, Collection data) {
+        Collection collection = constructor.apply(data);
         return collection;
     }
 

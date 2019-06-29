@@ -40,6 +40,7 @@ import org.mockito.Mockito;
 import org.opennms.core.test.OnmsAssert;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.generic.GenericVertex.GenericVertexBuilder;
 import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
@@ -86,14 +87,16 @@ public class LabelSearchProviderTest {
     }
 
     private GenericVertex createVertex(String label) {
-        GenericVertex vertex = new GenericVertex(LabelSearchProviderTest.class.getSimpleName(), "v" + id++);
-        vertex.setLabel(label);
-        return vertex;
+        return GenericVertex.builder()
+            .namespace(LabelSearchProviderTest.class.getSimpleName())
+            .id("v" + id++)
+            .label(label)
+            .build();
     }
 
     private void assertSuggestions(List<GenericVertex> vertices, String input, List<SearchSuggestion> expectations) {
         GraphService graphService = Mockito.mock(GraphService.class);
-        GenericGraph graph = new GenericGraph(TOPOLOGY_NAMESPACE);
+        GenericGraph graph = GenericGraph.builder().namespace(TOPOLOGY_NAMESPACE).build();
         graph.addVertices(vertices);
         when(graphService.getGraph(any())).thenReturn(graph);
         LabelSearchProvider provider = new LabelSearchProvider();

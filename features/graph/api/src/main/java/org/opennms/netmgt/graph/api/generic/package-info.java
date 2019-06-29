@@ -29,7 +29,7 @@
 /**
  * Contains all classes/interfaces/enums for the generic API model.
  * They are basically simple key/value pairs.
- * They are not intended to be inherited, for that use objects from the simple package for a more
+ * They are not intended to be inherited, for that use classes from the simple package for a more
  * POJO friendly approach.
  */
 package org.opennms.netmgt.graph.api.generic;

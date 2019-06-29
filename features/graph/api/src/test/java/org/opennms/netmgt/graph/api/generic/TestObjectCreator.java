@@ -46,9 +46,11 @@ public class TestObjectCreator {
     public static GenericVertex createVertex(String namespace, String id) {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(id);
-        final GenericVertex vertex = new GenericVertex(namespace, id);
-        vertex.setLabel("GenericVertex-" + namespace + "-" + id);
-        return vertex;
+        return GenericVertex.builder()
+        		.namespace(namespace)
+        		.id(id)
+        		.label("GenericVertex-" + namespace + "-" + id)
+        		.build();
     }
 
     public static GenericEdge createEdge(GenericVertex sourceVertex, GenericVertex targetVertex) {
@@ -61,8 +63,12 @@ public class TestObjectCreator {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(sourceVertex);
         Objects.requireNonNull(targetVertex);
-        GenericEdge edge = new GenericEdge(namespace, sourceVertex.getVertexRef(), targetVertex.getVertexRef());
-        edge.setLabel("GenericEdge-" + namespace + "-" + edge.getId());
+        GenericEdge edge = GenericEdge.builder()
+        		.namespace(namespace)
+        		.source(sourceVertex.getVertexRef())
+        		.target(targetVertex.getVertexRef())
+        		.label("GenericEdge-" + namespace + "-" + sourceVertex.getVertexRef() + "->" + targetVertex.getVertexRef())
+        		.build();
         return edge;
     }
 
@@ -72,13 +78,14 @@ public class TestObjectCreator {
         GenericVertex vertex3 = createVertex();
         GenericEdge edge1 = createEdge(vertex1, vertex2);
         GenericEdge edge2 = createEdge(vertex1, vertex3);
-
-        GenericGraph graph = new GenericGraph(NAMESPACE);
-        graph.setId("GraphId" + UUID.randomUUID().toString());
-        graph.setDescription("GraphDescription" + UUID.randomUUID().toString());
-        graph.setLabel("GraphLabel" + UUID.randomUUID().toString());
+        GenericGraph graph = GenericGraph.builder()
+                .namespace(NAMESPACE)
+                .id("GraphId" + UUID.randomUUID().toString())
+                .description("GraphDescription" + UUID.randomUUID().toString())
+                .label("GraphLabel" + UUID.randomUUID().toString())
+                .property("someProperty", "someProperty" + UUID.randomUUID().toString())
+                .build();
         graph.setFocusStrategy(FocusStrategy.FIRST);
-        graph.setProperty("someProperty", "someProperty" + UUID.randomUUID().toString());
         graph.addVertex(vertex1);
         graph.addVertex(vertex2);
         graph.addVertex(vertex3);

@@ -30,18 +30,56 @@ package org.opennms.netmgt.graph.simple;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.aware.LocationAware;
+import org.opennms.netmgt.graph.api.aware.NodeAware;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.info.NodeInfo;
 
 /**
- * Acts as a domain specific view on a Vertex.
- * If you need more properties in your domain specific class please extend AbstractDomainVertex.
- * It contains no data of it's own but operates on the data of it's wrapped GenericVertex.
- * Since it's delegate is immutable and this class holds no data of it's own it is immutable as well.
- */
-public final class SimpleVertex extends AbstractDomainVertex {
+* Acts as a domain specific view on a vertex.
+* Can be extended by a domain specific vertex class.
+* It contains no data of it's own but operates on the data of it's wrapped Graph.
+**/
+public class AbstractDomainVertex implements Vertex, NodeAware, LocationAware  {
+    
+    protected final GenericVertex delegate;
 
-    public SimpleVertex(GenericVertex genericVertex) {
-        super(genericVertex);
+    public AbstractDomainVertex(GenericVertex genericVertex) {
+        this.delegate = genericVertex;
+    }
+
+    @Override
+    public String getNamespace() {
+        return delegate.getNamespace();
+    }
+
+    @Override
+    public String getId() {
+        return delegate.getId();
+    }
+
+    public VertexRef getVertexRef(){
+        return delegate.getVertexRef();
+    }
+
+    public String getLabel() {
+        return delegate.getProperty(GenericProperties.LABEL);
+    }
+
+    @Override
+    public final GenericVertex asGenericVertex() {
+        return delegate;
+    }
+
+    public NodeInfo getNodeInfo() {
+        return delegate.getNodeInfo();
+    }
+
+    public String getNodeRefString() {
+        return delegate.getProperty(GenericProperties.NODE_REF);
     }
 
     @Override
@@ -61,7 +99,7 @@ public final class SimpleVertex extends AbstractDomainVertex {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimpleVertex that = (SimpleVertex) o;
+        AbstractDomainVertex that = (AbstractDomainVertex) o;
         return Objects.equals(this.delegate, that.delegate);
     }
 
@@ -70,14 +108,16 @@ public final class SimpleVertex extends AbstractDomainVertex {
         return Objects.hash(delegate);
     }
     
-    public static SimpleVertexBuilder builder() {
-        return new SimpleVertexBuilder();
-    }
-    
-    public final static class SimpleVertexBuilder extends AbstractDomainVertexBuilder<SimpleVertexBuilder> {
-                
-        public SimpleVertex build() {
-            return new SimpleVertex(GenericVertex.builder().properties(properties).build());
+    public abstract static class AbstractDomainVertexBuilder<T extends AbstractDomainElementBuilder> extends AbstractDomainElementBuilder<T> { 
+        
+        public T nodeInfo(NodeInfo nodeInfo) {
+            this.properties.put(GenericProperties.NODE_INFO, nodeInfo);
+            return (T)this;
+        }
+        
+        public T nodeRefString(String nodeRefString) {
+            this.properties.put(GenericProperties.NODE_REF, nodeRefString);
+            return (T)this;           
         }
     }
 }

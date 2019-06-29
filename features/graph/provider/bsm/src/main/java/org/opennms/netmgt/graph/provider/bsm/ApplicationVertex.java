@@ -28,33 +28,59 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import java.util.Set;
+import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
-public class ApplicationVertex extends AbstractBusinessServiceVertex {
+import static com.google.common.base.Preconditions.checkArgument;
+
+public final class ApplicationVertex extends AbstractBusinessServiceVertex {
 
     private final static String PROPERTY_APPLICATION_ID = "applicationId";
 
-    public ApplicationVertex(Application application, int level) {
-        this(application.getId(),
-                application.getApplicationName(),
-                application.getReductionKeys(),
-                level);
+    public ApplicationVertex(GenericVertex genericVertex) {
+        super(genericVertex);
+        Objects.requireNonNull(getApplicationId(), String.format("%s cannot be null", PROPERTY_APPLICATION_ID));
+        checkArgument(Type.Application == genericVertex.getProperty(PROPERTY_TYPE), "%s must be %s for %s", PROPERTY_TYPE, Type.Application, getClass());
     }
-
-    public ApplicationVertex(GraphVertex graphVertex) {
-        this(graphVertex.getApplication(), graphVertex.getLevel());
-    }
-
-    private ApplicationVertex(int applicationId, String applicationName, Set<String> reductionKeys, int level) {
-        super(Type.Application + ":" + applicationId, applicationName, level, Type.Application, true, reductionKeys);
-        delegate.setProperty(PROPERTY_APPLICATION_ID, applicationId);
-    }
-
+    
     public Integer getApplicationId() {
         return delegate.getProperty(PROPERTY_APPLICATION_ID);
     }
+    
+    public static ApplicationVertexBuilder builder() {
+        return new ApplicationVertexBuilder();
+    }
 
+    public final static class ApplicationVertexBuilder extends AbstractBusinessServiceVertexBuilder<ApplicationVertexBuilder, ApplicationVertex> {
+        
+        public ApplicationVertexBuilder applicationId(Integer applicationId) {
+            this.properties.put(PROPERTY_APPLICATION_ID, applicationId);
+            this.id(Type.Application + ":" + applicationId);
+            return this;
+        }
+
+        public ApplicationVertexBuilder graphVertex(GraphVertex graphVertex) {
+            this.application(graphVertex.getApplication());
+            level(graphVertex.getLevel());
+            return this;
+        }
+        
+        public ApplicationVertexBuilder application(Application application) {
+            this.label(application.getApplicationName());
+            this.reductionKeys(application.getReductionKeys());
+            this.applicationId(application.getId());
+            this.isLeaf(true);
+            return this;
+        }
+        
+        public ApplicationVertex build() {
+            this.type(Type.Application);
+            return new ApplicationVertex(GenericVertex.builder().properties(properties).build());
+        }
+    }
+    
 }

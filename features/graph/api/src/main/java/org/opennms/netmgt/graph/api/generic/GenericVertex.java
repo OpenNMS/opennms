@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -39,31 +38,10 @@ import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
 public class GenericVertex extends GenericElement implements Vertex, NodeAware, LocationAware {
-
-    public GenericVertex(String namespace, String id) {
-        super(namespace, id);
-        Objects.requireNonNull(id, "id cannot be null");
-    }
-
-    public GenericVertex(String namespace, String id, Map<String, Object> properties) {
-        super(new MapBuilder<String, Object>()
-                .withProperties(properties)
-                .withProperty(GenericProperties.NAMESPACE, namespace)
-                .withProperty(GenericProperties.ID, id)
-                .build());
+    
+    private GenericVertex(Map<String, Object> properties) {
+        super(properties);
         Objects.requireNonNull(getId(), "id cannot be null");
-    }
-
-    /** Copy constructor */
-    public GenericVertex(GenericVertex copyMe){
-        super(new HashMap<>(copyMe.properties));
-    }
-
-    /** Copy constructor with new namespace */
-    public GenericVertex(GenericVertex copyMe, String namespace){
-        super(new MapBuilder<String, Object>()
-                .withProperties(copyMe.properties)
-                .withProperty(GenericProperties.NAMESPACE, namespace).build());
     }
 
     public VertexRef getVertexRef() {
@@ -104,5 +82,21 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware, 
     @Override
     public String getLocation() {
         return null;
+    }
+    
+    public static GenericVertexBuilder builder() {
+    	return new GenericVertexBuilder();
+    }
+    
+    public final static class GenericVertexBuilder extends GenericElementBuilder<GenericVertexBuilder> {
+    	
+    	public GenericVertexBuilder id(String id) {
+    		this.properties.put(GenericProperties.ID, id);
+    		return this;
+    	}
+    	
+    	public GenericVertex build() {
+    		return new GenericVertex(properties);
+    	}
     }
 }

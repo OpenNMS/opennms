@@ -28,20 +28,11 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import static org.junit.Assert.*;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import org.junit.Test;
 
 public class GenericGraphTest {
-
-    @Test
-    public void shouldCloneCorrectly() {
-        GenericGraph original = TestObjectCreator.createGraph();
-        GenericGraph clone = new GenericGraph(original);
-        assertEquals(original, clone);
-        assertNotSame(original, clone);
-    }
 
     @Test
     public void shouldRejectEdgesWithWrongNamespace(){

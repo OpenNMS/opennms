@@ -31,17 +31,15 @@ package org.opennms.netmgt.graph.provider.application;
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.simple.AbstractDomainGraph;
+import org.opennms.netmgt.graph.simple.AbstractDomainElementBuilder;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 
-public class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, SimpleEdge> {
+public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, SimpleEdge> {
 
     public static final String TOPOLOGY_NAMESPACE = "application";
-
-    public ApplicationGraph() {
-        super(ApplicationGraph.TOPOLOGY_NAMESPACE);
-    }
 
     public ApplicationGraph(GenericGraph graph) {
         super(graph);
@@ -62,5 +60,22 @@ public class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, Sim
     @Override
     public Class getVertexType() {
         return ApplicationVertex.class;
+    }
+    
+    public static ApplicationGraphBuilder builder() {
+        return new ApplicationGraphBuilder();
+    }
+    
+    public final static class ApplicationGraphBuilder extends AbstractDomainElementBuilder<ApplicationGraphBuilder> {
+               
+        public ApplicationGraphBuilder description(String description) {
+            this.properties.put(GenericProperties.DESCRIPTION, description);
+            return this;
+        }
+        
+        public ApplicationGraph build() {
+            namespace(TOPOLOGY_NAMESPACE); // namespace is fixed, cannot be changed
+            return new ApplicationGraph(GenericGraph.builder().properties(properties).build());
+        }
     }
 }

@@ -28,26 +28,29 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import java.util.Set;
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
 import com.google.common.collect.Sets;
 
-public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
+public final class ReductionKeyVertex extends AbstractBusinessServiceVertex {
 
     public static final int MAX_LABEL_LENGTH = 27;
     private static final Pattern REDUCTION_KEY_LABEL_PATTERN = Pattern.compile("^.*\\/(.+?):.*:(.+)$");
 
-    public ReductionKeyVertex(GraphVertex graphVertex) {
-        this(graphVertex.getReductionKey(), graphVertex.getLevel());
+    private ReductionKeyVertex(Map<String, Object> properties) {
+        this(GenericVertex.builder().properties(properties).build());
     }
-
-    public ReductionKeyVertex(String reductionKey, int level) {
-        super(Type.ReductionKey + ":" + reductionKey, getLabelFromReductionKey(reductionKey), level, Type.ReductionKey,
-                true, Sets.newHashSet(reductionKey));
+    
+    public ReductionKeyVertex(GenericVertex genericVertex) {
+        super(genericVertex);
+        checkArgument(Type.ReductionKey == genericVertex.getProperty(PROPERTY_TYPE), "%s must be %s for %s", PROPERTY_TYPE, Type.ReductionKey, getClass());
     }
 
     protected static String getLabelFromReductionKey(String reductionKey) {
@@ -62,6 +65,34 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
             return label.substring(0, MAX_LABEL_LENGTH - "...".length()) + "...";
         }
         return label;
+    }
+    
+    public final static ReductionKeyVertexBuilder builder() {
+        return new ReductionKeyVertexBuilder();
+    }
+    
+   public final static class ReductionKeyVertexBuilder extends AbstractBusinessServiceVertexBuilder<ReductionKeyVertexBuilder, ReductionKeyVertex> {
+        
+        public ReductionKeyVertexBuilder graphVertex(GraphVertex graphVertex) {
+            reductionKey(graphVertex.getReductionKey());
+            level(graphVertex.getLevel());
+            return this;
+        }
+        
+        public ReductionKeyVertexBuilder reductionKey(String reductionKey) {
+            id(Type.ReductionKey + ":" + reductionKey);
+            label(getLabelFromReductionKey(reductionKey)); 
+            type(Type.ReductionKey);
+            // ipAddress(ipAddress); // TODO MVR this is not yet supported. Maybe IpRef or something like this could be added
+            isLeaf(true);
+            reductionKeys(Sets.newHashSet(reductionKey));      
+            return this;
+        }
+        
+        public ReductionKeyVertex build() {
+            this.type(Type.ReductionKey);
+            return new ReductionKeyVertex(properties);
+        }
     }
 
 }
