@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -49,15 +48,11 @@ public final class GenericEdge extends GenericElement implements Edge {
                 .build());
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
-        if(!source.getNamespace().equals(getNamespace()) && !target.getNamespace().equals(getNamespace())) {
-            throw new IllegalArgumentException(
+        if (!source.getNamespace().equals(getNamespace()) && !target.getNamespace().equals(getNamespace())) {
+            throw new IllegalArgumentException (
                     String.format("Neither the namespace of the source VertexRef(namespace=%s) nor the target VertexRef(%s) matches our namespace=%s",
                             source.getNamespace(), target.getNamespace(), getNamespace()));
         }
-    }
-
-    public Map<String, Object> getProperties() {
-        return new HashMap<>(properties);
     }
 
     @Override

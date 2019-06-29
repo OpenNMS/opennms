@@ -37,6 +37,7 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 public final class BusinessServiceVertex extends AbstractBusinessServiceVertex {
@@ -76,13 +77,15 @@ public final class BusinessServiceVertex extends AbstractBusinessServiceVertex {
             label(businessService.getName()); 
             type(Type.BusinessService);
             isLeaf(false);
-            reductionKeys(Sets.newHashSet());           
+            reductionKeys(ImmutableSet.of());           
             return this;
         }
         
         public BusinessServiceVertex build() {
             this.type(Type.BusinessService);
-            return new BusinessServiceVertex(GenericVertex.builder().properties(properties).build());
+            return new BusinessServiceVertex(GenericVertex.builder()
+                    .namespace(BusinessServiceGraphProvider.NAMESPACE)
+                    .properties(properties).build());
         }
     }
     

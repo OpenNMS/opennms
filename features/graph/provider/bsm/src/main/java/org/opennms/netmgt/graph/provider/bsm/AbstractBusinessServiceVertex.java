@@ -36,6 +36,8 @@ import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 import org.opennms.netmgt.graph.simple.AbstractDomainVertex;
 
+import com.google.common.collect.ImmutableSet;
+
 public abstract class AbstractBusinessServiceVertex extends AbstractDomainVertex {
 
     enum Type {
@@ -102,7 +104,7 @@ public abstract class AbstractBusinessServiceVertex extends AbstractDomainVertex
         }
         
         public T reductionKeys(Set<String> reductionKeys) {
-            this.properties.put(PROPERTY_REDUCTION_KEYS, reductionKeys);// TODO MVR collections cannot be persisted
+            this.properties.put(PROPERTY_REDUCTION_KEYS, ImmutableSet.copyOf(reductionKeys));
             return (T)this;
         }
         

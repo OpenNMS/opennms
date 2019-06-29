@@ -33,6 +33,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
 
 public class NodeInfo {
 
@@ -41,16 +44,19 @@ public class NodeInfo {
     private final String foreignSource;
     private final String foreignId;
     private final String label;
-    private final Set<String> categories = new HashSet<>();
-    private final List<IpInfo> ipInterfaces = new ArrayList<>();
+    private final Set<String> categories;
+    private final List<IpInfo> ipInfos;
 
     
-    public NodeInfo(final String location, final Integer id, final String foreignSource, final String foreignId, final String label) {
+    public NodeInfo(final String location, final Integer id, final String foreignSource, final String foreignId,
+            final String label, Set<String> categories, List<IpInfo> ipInfos) {
         this.location = location;
         this.id = id;
         this.foreignSource = foreignSource;
         this.foreignId = foreignId;
         this.label = label;
+        this.categories = ImmutableSet.copyOf(categories);
+        this.ipInfos = ImmutableList.copyOf(ipInfos);    
     }
     
     public String getLocation() {
@@ -78,7 +84,7 @@ public class NodeInfo {
     }
 
     public List<IpInfo> getIpInterfaces() {
-        return ipInterfaces;
+        return ipInfos;
     }
     
     public static NodeInfoBuilder builder() {
@@ -92,6 +98,8 @@ public class NodeInfo {
         private String foreignSource;
         private String foreignId;
         private String label;
+        private final Set<String> categories = new HashSet<>();
+        private final List<IpInfo> ipInfos = new ArrayList<>();
         
         public NodeInfoBuilder location(final String location) {
             this.location = location;
@@ -118,8 +126,18 @@ public class NodeInfo {
             return this;
         }
         
+        public NodeInfoBuilder categories(Set<String> categories) {
+            this.categories.addAll(categories);
+            return this;
+        }
+
+        public NodeInfoBuilder ipInterfaces(List<IpInfo> ipInfos) {
+            this.ipInfos.addAll(ipInfos);
+            return this;
+        }
+        
         public NodeInfo build() {
-            return new NodeInfo(location, id, foreignSource, foreignId, label);
+            return new NodeInfo(location, id, foreignSource, foreignId, label, categories, ipInfos);
         }
     }
 }

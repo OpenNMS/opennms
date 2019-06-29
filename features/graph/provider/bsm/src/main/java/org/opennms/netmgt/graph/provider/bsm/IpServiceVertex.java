@@ -30,7 +30,6 @@ package org.opennms.netmgt.graph.provider.bsm;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -39,10 +38,6 @@ import org.opennms.netmgt.graph.api.generic.GenericVertex;
 public final class IpServiceVertex extends AbstractBusinessServiceVertex {
 
     private final static String PROPERTY_SERVICE_ID = "ipServiceId";
-
-    private IpServiceVertex(Map<String, Object> properties) {
-        this(GenericVertex.builder().properties(properties).build());
-    }
 
     public IpServiceVertex(GenericVertex genericVertex) {
         super(genericVertex);
@@ -85,7 +80,9 @@ public final class IpServiceVertex extends AbstractBusinessServiceVertex {
         
         public IpServiceVertex build() {
             this.type(Type.IpService);
-            return new IpServiceVertex(properties);
+            return new IpServiceVertex(GenericVertex.builder()
+                    .namespace(BusinessServiceGraphProvider.NAMESPACE) // default but can still be changed by properties
+                    .properties(properties).build());
         }
     }
 

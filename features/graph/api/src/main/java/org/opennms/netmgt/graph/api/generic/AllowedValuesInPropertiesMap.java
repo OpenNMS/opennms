@@ -51,6 +51,7 @@ public class AllowedValuesInPropertiesMap {
 		ALLOWED_VALUES.add((o)->o instanceof Boolean);
 		ALLOWED_VALUES.add((o)->o instanceof Float);
 		ALLOWED_VALUES.add((o)->o instanceof Integer);
+		ALLOWED_VALUES.add((o)->o instanceof Long);
 		ALLOWED_VALUES.add((o)->o instanceof Double);
 		ALLOWED_VALUES.add((o)->o instanceof String);
 		ALLOWED_VALUES.add((o)->o instanceof Short);

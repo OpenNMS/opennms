@@ -36,17 +36,15 @@ import java.util.regex.Pattern;
 
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.generic.GenericVertex.GenericVertexBuilder;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 public final class ReductionKeyVertex extends AbstractBusinessServiceVertex {
 
     public static final int MAX_LABEL_LENGTH = 27;
     private static final Pattern REDUCTION_KEY_LABEL_PATTERN = Pattern.compile("^.*\\/(.+?):.*:(.+)$");
-
-    private ReductionKeyVertex(Map<String, Object> properties) {
-        this(GenericVertex.builder().properties(properties).build());
-    }
     
     public ReductionKeyVertex(GenericVertex genericVertex) {
         super(genericVertex);
@@ -85,13 +83,15 @@ public final class ReductionKeyVertex extends AbstractBusinessServiceVertex {
             type(Type.ReductionKey);
             // ipAddress(ipAddress); // TODO MVR this is not yet supported. Maybe IpRef or something like this could be added
             isLeaf(true);
-            reductionKeys(Sets.newHashSet(reductionKey));      
+            reductionKeys(ImmutableSet.of(reductionKey));      
             return this;
         }
         
         public ReductionKeyVertex build() {
             this.type(Type.ReductionKey);
-            return new ReductionKeyVertex(properties);
+            return new ReductionKeyVertex(GenericVertex.builder()
+                    .namespace(BusinessServiceGraphProvider.NAMESPACE) // default but can still be changed by properties
+                    .properties(properties).build());
         }
     }
 

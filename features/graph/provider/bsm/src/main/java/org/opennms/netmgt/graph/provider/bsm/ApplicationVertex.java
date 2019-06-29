@@ -78,7 +78,9 @@ public final class ApplicationVertex extends AbstractBusinessServiceVertex {
         
         public ApplicationVertex build() {
             this.type(Type.Application);
-            return new ApplicationVertex(GenericVertex.builder().properties(properties).build());
+            return new ApplicationVertex(GenericVertex.builder()
+                    .namespace(BusinessServiceGraphProvider.NAMESPACE) // default but can still be changed by properties
+                    .properties(properties).build());
         }
     }
     
