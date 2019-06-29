@@ -14,6 +14,7 @@
     <reference id="monitoringLocationDao"       interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"        availability="mandatory"/>
     <reference id="genericPersistenceAccessor"  interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor"   availability="mandatory"/>
     <reference id="kscReportService"            interface="org.opennms.web.svclayer.api.KscReportService"           availability="mandatory"/>
+    <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="mandatory"/>
 
     <!-- Node Providers -->
     <bean id="nodeSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeLabelSearchProvider">
@@ -64,6 +65,11 @@
         <argument ref="monitoringLocationDao" />
     </bean>
     <service ref="actionLocationSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <bean id="requisitionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.RequisitionSearchProvider">
+        <argument ref="requisitionAccessService" />
+    </bean>
+    <service ref="requisitionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
     <!-- Filter Provider -->
     <bean id="filterSearchProvider" class="org.opennms.netmgt.spotlight.providers.FilterSearchProvider">

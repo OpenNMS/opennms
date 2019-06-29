@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.spotlight.providers;
 
+import java.util.List;
+import java.util.Objects;
+
 public class QueryUtils {
     public static Object ilike(String input) {
         return String.format("%%%s%%", input);
@@ -45,5 +48,11 @@ public class QueryUtils {
             return false;
         }
         return checkMe.toLowerCase().contains(input.toLowerCase());
+    }
+
+    public static <T> List<T> shrink(List<T> input, int maxResults) {
+        Objects.requireNonNull(input);
+        final List<T> subList = input.subList(0, Math.min(maxResults, input.size()));
+        return subList;
     }
 }
