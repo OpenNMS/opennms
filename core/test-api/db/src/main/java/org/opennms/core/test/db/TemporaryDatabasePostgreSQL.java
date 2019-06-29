@@ -40,17 +40,15 @@ import liquibase.resource.ResourceAccessor;
 import liquibase.util.StringUtils;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.MigrationException;
 import org.opennms.core.schema.Migrator;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.postgresql.xa.PGXADataSource;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -59,18 +57,29 @@ import org.springframework.jdbc.core.RowCountCallbackHandler;
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
-import java.io.*;
-import java.net.MalformedURLException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertTrue;
@@ -80,104 +89,43 @@ import static org.junit.Assert.assertTrue;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
-    public static class ChangelogEntry {
-        private final String m_id;
-        private final String m_md5sum;
-
-        public ChangelogEntry(final String id, final String md5sum) {
-            m_id = id;
-            m_md5sum = md5sum;
-        }
-
-        public String getId() {
-            return m_id;
-        }
-
-        @SuppressWarnings("unused")
-        public String getMd5sum() {
-            return m_md5sum;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
-            result = prime * result + ((m_md5sum == null) ? 0 : m_md5sum.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            final ChangelogEntry other = (ChangelogEntry) obj;
-            if (m_id == null) {
-                if (other.m_id != null) return false;
-            } else if (!m_id.equals(other.m_id)) {
-                return false;
-            }
-            if (m_md5sum == null) {
-                if (other.m_md5sum != null) return false;
-            } else if (!m_md5sum.equals(other.m_md5sum)) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            return m_id + "=" + m_md5sum;
-        }
-    }
-
     private static final String OPENNMS_UNIT_TEST_PROPERTY = "opennms.unit.test";
+    private static final String SAMPLE_CHANGELOG_ID = "17.0.0-remove-legacy-ipinterface-composite-key-fields";
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(TemporaryDatabasePostgreSQL.class);
 
     protected static final int MAX_DATABASE_DROP_ATTEMPTS = 10;
 
-    private static final Object TEMPLATE1_MUTEX = new Object();
+    public static final String TEMPLATE_DATABASE_NAME_PREFIX = "opennms_it_template_";
+    public static final String LIQUIBASE_RELATIVE_PATH = "core/schema/src/main/liquibase/";
 
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(TemporaryDatabasePostgreSQL.class);
+    private static final Object DATABASE_CREATION_MUTEX = new Object();
 
+    private static Set<TemporaryDatabasePostgreSQL> s_toDestroy = new HashSet<>();
+    private static boolean s_shutdownHookInstalled = false;
+    private static String s_templateDatabaseName = null;
+
+    private final Migrator m_migrator = new Migrator();
     private final String m_testDatabase;
-
     private final String m_driver;
-    private final String m_url;
-    private final String m_adminUser;
-    private final String m_adminPassword;
+    private final String m_urlBase;
     private final boolean m_useExisting;
+
+    private final JdbcTemplate m_jdbcTemplate;
+
+    private boolean m_populateSchema;
+    private boolean m_plpgsqlIplike;
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
     private PGXADataSource m_xaDataSource;
     private PGXADataSource m_adminXaDataSource;
 
-    private boolean m_populateSchema = false;
-
-    private boolean m_destroyed = false;
-
-    private JdbcTemplate jdbcTemplate; // this does not have a m_ per our naming conventions to make it similar to Spring.
-
-    private static Set<TemporaryDatabasePostgreSQL> s_toDestroy = new HashSet<>();
-
-    private static boolean s_shutdownHookInstalled = false;
-
-    private static String s_templateDatabaseName;
-
     private String m_className = "?";
-
     private String m_methodName = "?";
-
     private String m_testDetails = "?";
-
     private String m_blame = null;
 
-    private boolean m_plpgsqlIplike = false;
-
-    public static final String TEMPLATE_DATABASE_NAME_PREFIX = "opennms_it_template_";
-
-    public static final String ADMIN_DATABASE = "postgres";
+    private boolean m_destroyed = false;
 
     public TemporaryDatabasePostgreSQL() throws Exception {
         this(null);
@@ -188,10 +136,12 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     }
 
     public TemporaryDatabasePostgreSQL(String testDatabase, boolean useExisting) throws Exception {
-        this(testDatabase, System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
+        this(testDatabase,
+                System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
                 System.getProperty(URL_PROPERTY, DEFAULT_URL),
                 System.getProperty(ADMIN_USER_PROPERTY, DEFAULT_ADMIN_USER),
-                System.getProperty(ADMIN_PASSWORD_PROPERTY, DEFAULT_ADMIN_PASSWORD), useExisting);
+                System.getProperty(ADMIN_PASSWORD_PROPERTY, DEFAULT_ADMIN_PASSWORD),
+                useExisting);
     }
 
     public TemporaryDatabasePostgreSQL(String testDatabase, String driver, String url,
@@ -199,53 +149,118 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         this(testDatabase, driver, url, adminUser, adminPassword, false);
     }
 
-    public TemporaryDatabasePostgreSQL(String testDatabase, String driver, String url,
-            String adminUser, String adminPassword, boolean useExisting) {
+    public TemporaryDatabasePostgreSQL(String testDatabase, String driver, String urlBase,
+            String adminUser, String adminPassword, boolean useExisting) throws TemporaryDatabaseException {
         // Append the current object's hashcode to make this value truly unique
         m_testDatabase = testDatabase != null ? testDatabase : getDatabaseName(this);
         m_driver = driver;
-        m_url = url;
-        m_adminUser = adminUser;
-        m_adminPassword = adminPassword;
+        m_urlBase = urlBase;
         m_useExisting = useExisting;
+
+        m_jdbcTemplate = new JdbcTemplate(this);
+
+        m_migrator.setAdminUser(adminUser);
+        m_migrator.setAdminPassword(adminPassword);
+        m_migrator.setDatabaseUser(adminUser);
+        m_migrator.setDatabasePassword(adminPassword);
+
+        m_migrator.setValidateDatabaseVersion(true);
+        m_migrator.setCreateUser(false);
+        m_migrator.setCreateDatabase(true);
+
+        m_migrator.setApplicationContext(new StaticApplicationContext());
+
+        try {
+            m_dataSource = new SimpleDataSource(m_driver, m_urlBase + getTestDatabase(), m_migrator.getAdminUser(), m_migrator.getAdminPassword());
+            m_adminDataSource = new SimpleDataSource(m_driver, m_urlBase + DEFAULT_ADMIN_USER, m_migrator.getAdminUser(), m_migrator.getAdminPassword());
+            m_xaDataSource = createPgXADataSource(m_urlBase + getTestDatabase(), m_migrator.getAdminUser(), m_migrator.getAdminPassword());
+            m_adminXaDataSource = createPgXADataSource(m_urlBase + DEFAULT_ADMIN_USER, m_migrator.getAdminUser(), m_migrator.getAdminPassword());
+        } catch (final ClassNotFoundException e) {
+            throw new TemporaryDatabaseException("Failed to initialize driver " + m_driver + ": " + e.getMessage(), e);
+        }
+
+        m_migrator.setDataSource(m_dataSource);
+        m_migrator.setAdminDataSource(m_adminDataSource);
+
+        ensureLiquibaseFilesInClassPath();
     }
 
-    public synchronized static String getIntegrationTestDatabaseName() throws Throwable {
+    private PGXADataSource createPgXADataSource(String url, String adminUser, String adminPassword) {
+        PGXADataSource xaDataSource = new PGXADataSource();
+        xaDataSource.setUrl(url);
+        xaDataSource.setUser(adminUser);
+        xaDataSource.setPassword(adminPassword);
+        return xaDataSource;
+    }
+
+    @Override
+    public void setPlpgsqlIplike(final boolean iplike) {
+        m_plpgsqlIplike = iplike;
+    }
+
+    @Override
+    public void setPopulateSchema(boolean populateSchema) {
+        m_populateSchema = populateSchema;
+    }
+
+    @Override
+    public void setClassName(String className) {
+        m_className = className;
+    }
+
+    @Override
+    public void setMethodName(String methodName) {
+        m_methodName = methodName;
+    }
+
+    @Override
+    public void setTestDetails(String testDetails) {
+        m_testDetails = testDetails;
+    }
+
+    @Override
+    public void create() throws TemporaryDatabaseException {
+        failIfUnitTest();
+
+        setupDatabase();
+    }
+
+    @Override
+    public void drop() throws TemporaryDatabaseException {
+        if (!m_useExisting) {
+            destroyTestDatabase();
+            s_toDestroy.remove(this);
+        }
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return m_jdbcTemplate;
+    }
+
+    @Override
+    public int countRows(String sql, Object... values) {
+        RowCountCallbackHandler counter = new RowCountCallbackHandler();
+        getJdbcTemplate().query(sql, values, counter);
+        return counter.getRowCount();
+    }
+
+    @Override
+    public String getTestDatabase() {
+        return m_testDatabase;
+    }
+
+    public synchronized String getIntegrationTestTemplateDatabaseName() throws Throwable {
         if (s_templateDatabaseName != null) {
             return s_templateDatabaseName;
         }
-//            GenericApplicationContext context = (GenericApplicationContext) BeanUtils.getBeanFactory("daoContext");
-//            context = Migrator.ensureLiquibaseFilesInClassPath(context);
-//            System.err.println("******* from getIntegrationTestDatabaseName: " + Migrator.getClassLoaderUrls(TemporaryDatabasePostgreSQL.class.getClassLoader()));
-        StaticApplicationContext staticContext = new StaticApplicationContext();
-        staticContext.setClassLoader(TemporaryDatabasePostgreSQL.class.getClassLoader());
-        GenericApplicationContext context = ensureLiquibaseFilesInClassPath(staticContext);
 
-        String hash = generateLiquibaseHash(context);
+        String dbName = TEMPLATE_DATABASE_NAME_PREFIX + generateLiquibaseHash();
 
-        String dbName = TEMPLATE_DATABASE_NAME_PREFIX + hash;
-
-        final Migrator migrator = new Migrator();
-        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migrator.setDatabaseName(dbName);
-
-        DataSource dataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + migrator.getDatabaseName(), migrator.getDatabaseUser(), migrator.getDatabasePassword());
-        DataSource adminDataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + ADMIN_DATABASE, migrator.getDatabaseUser(), migrator.getDatabasePassword());
-
-        migrator.setDataSource(dataSource);
-        migrator.setAdminDataSource(adminDataSource);
-        migrator.setValidateDatabaseVersion(true);
-        migrator.setCreateUser(false);
-        migrator.setCreateDatabase(true);
-
-        if (!migrator.databaseExists()) {
-            createIntegrationTestDatabase(context, migrator, dataSource);
+        if (!m_migrator.databaseExists()) {
+            createIntegrationTestTemplateDatabase(dbName);
         }
 
-        s_templateDatabaseName = dbName;
+        s_templateDatabaseName = m_migrator.getDatabaseName();
 
         return s_templateDatabaseName;
     }
@@ -264,35 +279,15 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         return String.format("opennms_test_%s_%06d_%s", System.currentTimeMillis(), System.nanoTime(), Math.abs(hashMe.hashCode()));
     }
 
-    public void setPopulateSchema(boolean populateSchema) {
-        m_populateSchema = populateSchema;
-    }
-
-    public void create() throws TemporaryDatabaseException {
-        failIfUnitTest();
-
-        setupDatabase();
-    }
 
     public void setupDatabase() throws TemporaryDatabaseException {
-        try {
-            setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(), m_adminUser, m_adminPassword));
-            setAdminDataSource(new SimpleDataSource(m_driver, m_url + ADMIN_DATABASE, m_adminUser, m_adminPassword));
-            m_xaDataSource = createPgXADataSource("localhost", getTestDatabase());
-            m_adminXaDataSource = createPgXADataSource("localhost", ADMIN_DATABASE);
-        } catch (final ClassNotFoundException e) {
-            throw new TemporaryDatabaseException("Failed to initialize driver " + m_driver + ": " + e.getMessage(), e);
-        }
-
         if (!m_useExisting) {
             // Synchronize around a static mutex to prevent multiple connections
             // to the template1 database
-            synchronized(TEMPLATE1_MUTEX) {
+            synchronized(DATABASE_CREATION_MUTEX) {
                 createTestDatabase();
             }
         }
-
-        setJdbcTemplate(new JdbcTemplate(this));
 
         // Test connecting to test database and ensuring we can do a basic query
         try {
@@ -306,15 +301,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         }
     }
 
-    private PGXADataSource createPgXADataSource(String serverName, String databaseName) {
-        PGXADataSource xaDataSource = new PGXADataSource();
-        xaDataSource.setServerName(serverName);
-        xaDataSource.setDatabaseName(databaseName);
-        xaDataSource.setUser(m_adminUser);
-        xaDataSource.setPassword(m_adminPassword);
-        return xaDataSource;
-    }
-
     protected static void setupBlame(JdbcTemplate jdbcTemplate, String blame) {
         jdbcTemplate.update("CREATE TABLE blame (blame TEXT)");
         jdbcTemplate.update("INSERT INTO blame VALUES (?)", blame);
@@ -322,7 +308,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     private String getBlame() {
         if (m_blame == null) {
-            m_blame = getClassName() + "." + getMethodName() + ": " + getTestDetails();
+            m_blame = m_className + "." + m_methodName + ": " + m_testDetails;
         }
         return m_blame;
     }
@@ -334,31 +320,26 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         } catch (final SQLException e) {
             throw new TemporaryDatabaseException("Failed to get admin connection: " + e.getMessage(), e);
         }
+
+        String dbSource;
+        String create;
+        if (m_populateSchema) {
+            try {
+                dbSource = getIntegrationTestTemplateDatabaseName();
+            } catch (Throwable e) {
+                throw new TemporaryDatabaseException("Failed to get integration test template database name: " + e.getMessage(), e);
+            }
+            create = "CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + dbSource + " OWNER opennms";
+        } else {
+            dbSource = "template1";
+            create = "CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'";
+        }
+
         Statement st = null;
-        String dbSource = null;
         try {
             st = adminConnection.createStatement();
-            String create;
-            if (m_populateSchema) {
-                dbSource = getIntegrationTestDatabaseName();
-                create = "CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + dbSource + " OWNER opennms";
-            } else {
-                dbSource = "template1";
-                create = "CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'";
-            }
             st.execute(create);
-
-            if (m_plpgsqlIplike) {
-                final Migrator m1 = new Migrator();
-                m1.setDataSource(m_dataSource);
-                m1.setAdminDataSource(m_adminDataSource);
-                m1.setValidateDatabaseVersion(true);
-                m1.setCreateUser(false);
-                m1.setCreateDatabase(true);
-                final Migrator m = m1;
-                m.dropExistingIpLike();
-                m.createLangPlPgsql();
-            }
+            registerDestruction();
         } catch (final Throwable e) {
             try {
                 st = adminConnection.createStatement();
@@ -374,7 +355,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                 System.err.println("Got an exception while trying to run pg_stat_activity query after a previous exception: " + sqlE);
                 sqlE.printStackTrace();
             }
-            throw new TemporaryDatabaseException("Failed to create Unicode test database " + getTestDatabase() + ": " + e, e);
+            throw new TemporaryDatabaseException("Failed to create test database " + getTestDatabase() + ": " + e, e);
         } finally {
             SQLException failed = null;
             if (st != null) {
@@ -387,14 +368,23 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             try {
                 adminConnection.close();
             } catch (final SQLException e) {
-                if (failed == null) failed = e;
+                if (failed == null) {
+                    failed = e;
+                }
             }
             if (failed != null) {
                 throw new TemporaryDatabaseException("Failed while cleaning up database resources: " + failed, failed);
             }
         }
 
-        registerDestruction();
+        if (m_plpgsqlIplike) {
+            try {
+                m_migrator.dropExistingIpLike();
+                m_migrator.createLangPlPgsql();
+            } catch (MigrationException e) {
+                throw new TemporaryDatabaseException("Failed to load PL/pgSQL iplike function: " + e.getMessage(), e);
+            }
+        }
     }
 
     private void registerDestruction() {
@@ -431,13 +421,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         });
 
         s_shutdownHookInstalled = true;
-    }
-
-    public void drop() throws TemporaryDatabaseException {
-        if (!m_useExisting) {
-            destroyTestDatabase();
-            s_toDestroy.remove(this);
-        }
     }
 
     void destroyTestDatabase() throws TemporaryDatabaseException {
@@ -591,20 +574,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         getJdbcTemplate().update(stmt, values);
     }
 
-    public int countRows(String sql, Object... values) {
-        RowCountCallbackHandler counter = new RowCountCallbackHandler();
-        getJdbcTemplate().query(sql, values, counter);
-        return counter.getRowCount();
-    }
-
-    public String getNextSequenceValStatement(String seqName) {
-        return "select nextval('" + seqName + "')";
-    }
-
-    protected Integer getNextId(String nxtIdStmt) {
-        return getJdbcTemplate().queryForObject(nxtIdStmt, Integer.class);
-    }
-
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
         return m_dataSource.getConnection(username, password);
@@ -635,14 +604,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
-    public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
-    }
-
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     public DataSource getAdminDataSource() {
         return m_adminDataSource;
     }
@@ -651,24 +612,12 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         return m_adminXaDataSource;
     }
 
-    public void setAdminDataSource(DataSource adminDataSource) {
-        m_adminDataSource = adminDataSource;
-    }
-
     public DataSource getDataSource() {
         return m_dataSource;
     }
 
     public XADataSource getXADataSource() {
         return m_xaDataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
-    }
-
-    public String getTestDatabase() {
-        return m_testDatabase;
     }
 
     /**
@@ -713,53 +662,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         return false;  //TODO
     }
 
-    public String getDriver() {
-        return m_driver;
-    }
-
-    public String getUrl() {
-        return m_url;
-    }
-
-    public String getClassName() {
-        return m_className;
-    }
-
-    public void setClassName(String className) {
-        m_className = className;
-    }
-
-    public String getMethodName() {
-        return m_methodName;
-    }
-
-    public void setMethodName(String methodName) {
-        m_methodName = methodName;
-    }
-
-    public String getTestDetails() {
-        return m_testDetails;
-    }
-
-    public void setTestDetails(String testDetails) {
-        m_testDetails = testDetails;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("driver", m_driver)
-                .append("url", m_url)
-                .append("testDatabase", m_testDatabase)
-                .append("useExisting", m_useExisting)
-                //            .append("setupIpLike", m_setupIpLike)
-                .append("populateSchema", m_populateSchema)
-                .append("dataSource", m_dataSource)
-                .append("adminDataSource", m_adminDataSource)
-                .append("adminUser", m_adminUser)
-                .toString();
-    }
-
     @Override
     public XAConnection getXAConnection() throws SQLException {
         return m_xaDataSource.getXAConnection();
@@ -770,42 +672,17 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         return m_xaDataSource.getXAConnection(user, password);
     }
 
-    public static List<TemporaryDatabasePostgreSQL.ChangelogEntry> getChangelogEntries(DataSource dataSource) throws SQLException {
-        final Connection connection = dataSource.getConnection();
-        try {
-            PreparedStatement statement = connection.prepareStatement("SELECT id, md5sum FROM databasechangelog order by id");
-            assertTrue(statement.execute());
-            ResultSet rs = statement.getResultSet();
-            final List<TemporaryDatabasePostgreSQL.ChangelogEntry> entries = new ArrayList<TemporaryDatabasePostgreSQL.ChangelogEntry>();
-            while (rs.next()) {
-                entries.add(new TemporaryDatabasePostgreSQL.ChangelogEntry(rs.getString(1), rs.getString(2)));
-            }
-            return entries;
-        } catch (final SQLException e) {
-            LOG.warn("Failed to query changelog entries.", e);
-            return Collections.emptyList();
-        } finally {
-            connection.close();
-        }
-    }
-
-    public static String generateLiquibaseHash(ApplicationContext context)
+    public String generateLiquibaseHash()
             throws NoSuchAlgorithmException, IOException, Exception, ChangeLogParseException, LiquibaseException {
         final long start = System.currentTimeMillis();
 
-        final String contexts = System.getProperty("opennms.contexts", "production");
         ChangeLogParameters changeLogParameters = new ChangeLogParameters();
-        changeLogParameters.setContexts(new Contexts(StringUtils.splitAndTrim(contexts, ",")));
+        changeLogParameters.setContexts(new Contexts(StringUtils.splitAndTrim(Migrator.getLiquibaseContexts(), ",")));
 
         MessageDigest md = MessageDigest.getInstance("MD5");
         List<URI> seenChangeLogs = new LinkedList<>();
 
-        for (Resource resource : Migrator.validateLiquibaseChangelog(context)) {
-            if (!createProductionLiquibaseChangelogFilter().test(resource)) {
-                LOG.info("skipping {} because it didn't pass the changelog filter", resource);
-                continue;
-            }
-
+        for (Resource resource : m_migrator.getLiquibaseChangelogs(true)) {
             seenChangeLogs.add(resource.getURI());
             DigestUtils.updateDigest(md, resource.getInputStream());
 
@@ -824,7 +701,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         }
 
         if (seenChangeLogs.isEmpty()) {
-            throw new AssertionError("No change logs were found. ClassPath: " + Migrator.getContextClassLoaderUrls(context));
+            throw new AssertionError("No change logs were found. ClassPath: " + m_migrator.getContextClassLoaderUrls());
         }
 
         String hash = Hex.encodeHexString(md.digest());
@@ -835,99 +712,80 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         return hash;
     }
 
-    protected static void createIntegrationTestDatabase(ApplicationContext context, Migrator migrator, DataSource dataSource)
+    protected void createIntegrationTestTemplateDatabase(String dbName)
             throws ClassNotFoundException, MigrationException, Throwable, SQLException {
-        if (migrator.databaseExists()) {
-            migrator.databaseRemoveDB();
+        m_migrator.setDatabaseName(dbName);
+
+        if (m_migrator.databaseExists()) {
+            m_migrator.dropDatabase();
         }
 
-        migrator.setLiquibaseChangelogFilter(createProductionLiquibaseChangelogFilter());
-
         try {
-            migrator.setupDatabase(true, true, true, true, context);
+            // We temporarily use a new data source for the template database with the Migrator
+            DataSource templateDataSource;
+            try {
+                templateDataSource = new SimpleDataSource(m_driver, m_urlBase + m_migrator.getDatabaseName(), m_migrator.getAdminUser(), m_migrator.getAdminPassword());
+            } catch (final ClassNotFoundException e) {
+                throw new TemporaryDatabaseException("Failed to initialize driver " + m_driver + ": " + e.getMessage(), e);
+            }
+
+            m_migrator.setDataSource(templateDataSource);
+
+            m_migrator.setupDatabase(true, true, true, true);
+
+            Integer count = new JdbcTemplate(templateDataSource).queryForObject("SELECT count(id) FROM databasechangelog WHERE id = '" + SAMPLE_CHANGELOG_ID + "'", Integer.class);
+            assertTrue("couldn't find a sample databasechangelog entry after setting up template database. Looking for ID " + SAMPLE_CHANGELOG_ID, count == 1);
         } catch (Throwable t) {
-            if (migrator.databaseExists()) {
+            if (m_migrator.databaseExists()) {
                 try {
                     LOG.warn("Got an exception while setting up database, so removing");
-                    migrator.databaseRemoveDB();
+                    m_migrator.dropDatabase();
                 } catch (MigrationException e) {
                     System.err.println("Got an exception while setting up database and then got another exception while removing database: " + e.getMessage());
                     e.printStackTrace(System.err);
                 }
             }
             throw t;
+        } finally {
+            m_migrator.setDataSource(m_dataSource);
         }
-
-        final List<TemporaryDatabasePostgreSQL.ChangelogEntry> ids = TemporaryDatabasePostgreSQL.getChangelogEntries(dataSource);
-        assertTrue("changelog entries were expected in the newly created database", ids.size() > 0);
-
-        // Check to make sure some of the changelogs ran
-        assertTrue(ids.stream().anyMatch(id -> "17.0.0-remove-legacy-ipinterface-composite-key-fields".equals(id.getId())));
-        assertTrue(ids.stream().anyMatch(id -> "17.0.0-remove-legacy-outages-composite-key-fields".equals(id.getId())));
     }
 
-    private static Predicate<Resource> createProductionLiquibaseChangelogFilter() {
-        return r -> {
-            try {
-                URI uri = r.getURI();
-                return (uri.getScheme().equals("file") && uri.toString().contains("core/schema")) ||
-                        (uri.getScheme().equals("jar") && uri.toString().contains("core.schema"));
-            } catch (IOException e) {
-                return false;
-            }
-        };
-    }
-
-    public static GenericApplicationContext ensureLiquibaseFilesInClassPath(GenericApplicationContext context)
-            throws MalformedURLException, IOException, Exception {
+    private void ensureLiquibaseFilesInClassPath() throws TemporaryDatabaseException {
         try {
-            Migrator.validateLiquibaseChangelog(context);
-        } catch (MigrationException e) {
-            String liquibaseRelativePath = "core/schema/src/main/liquibase/";
-
+            if (!m_migrator.getLiquibaseChangelogs(false).isEmpty()) {
+                return;
+            }
+            
             String migratorClass = "/" + Migrator.class.getName().replace('.', '/') + ".class";
             URL migratorUrl = Migrator.class.getResource(migratorClass);
-            assert migratorUrl != null : "Could not find resource for Migrator.class anywhere in the classpath with " + migratorClass;
+            if (migratorUrl == null) {
+                throw new TemporaryDatabaseException("Could not find resource for Migrator.class anywhere in the classpath with " + migratorClass);
+            }
+
+            GenericApplicationContext newContext = new GenericApplicationContext(m_migrator.getApplicationContext());
+            m_migrator.setApplicationContext(newContext);
+
             if ("file".equals(migratorUrl.getProtocol()) && migratorUrl.getPath().endsWith("core/schema/target/classes" + migratorClass)) {
-                URL[] urls = {new URL(migratorUrl.getProtocol(), migratorUrl.getHost(), migratorUrl.getFile().replaceFirst("core/schema/target/classes/.*$", liquibaseRelativePath))};
-                context.setClassLoader(new URLClassLoader(urls, context.getClassLoader()));
+                URL[] urls = {new URL(migratorUrl.getProtocol(), migratorUrl.getHost(), migratorUrl.getFile().replaceFirst("core/schema/target/classes/.*$", LIQUIBASE_RELATIVE_PATH))};
+                newContext.setClassLoader(new URLClassLoader(urls, newContext.getClassLoader()));
+            }
+            if (!m_migrator.getLiquibaseChangelogs(false).isEmpty()) {
+                return;
             }
 
-            try {
-                Migrator.validateLiquibaseChangelog(context);
-            } catch (MigrationException e2) {
-                File buildTop = findTopOpenNmsBuildDir();
-                if (buildTop != null) {
-                    File liquibase = new File(buildTop, liquibaseRelativePath);
-                    if (!liquibase.exists()) {
-                        throw new MigrationException(e2.getMessage() + ", nor could we find liquibase files where we expected: " + liquibase.getAbsolutePath());
-                    }
-
-                    URL[] urls = {liquibase.toURI().toURL()};
-                    context.setClassLoader(new URLClassLoader(urls, context.getClassLoader()));
-                    Migrator.validateLiquibaseChangelog(context);
-
-                    return context;
-                }
-
-                throw e;
+            File liquibase = new File(ConfigurationTestUtils.getTopProjectDirectory(), LIQUIBASE_RELATIVE_PATH);
+            if (!liquibase.exists()) {
+                throw new TemporaryDatabaseException("Could we find liquibase files where we expected: " + liquibase.getAbsolutePath());
             }
+
+            URL[] urls = {liquibase.toURI().toURL()};
+            newContext.setClassLoader(new URLClassLoader(urls, newContext.getClassLoader()));
+
+            m_migrator.getLiquibaseChangelogs(true);
+        } catch (Exception e) {
+            throw new TemporaryDatabaseException(e.getMessage(), e);
         }
 
-        return context;
-    }
-
-    public static File findTopOpenNmsBuildDir() {
-        for (File dir = new File("").getAbsoluteFile(); dir != null; dir = dir.getParentFile()) {
-            File compilePl = new File(dir, "compile.pl");
-            if (compilePl.exists()) {
-                return dir;
-            }
-        }
-        return null;
-    }
-    
-    public void setPlpgsqlIplike(final boolean iplike) {
-        m_plpgsqlIplike = iplike;
     }
 }

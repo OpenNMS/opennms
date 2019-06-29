@@ -55,6 +55,7 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.*;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
@@ -82,7 +83,7 @@ public class Migrator {
     private boolean m_validateDatabaseVersion = true;
     private boolean m_createUser = true;
     private boolean m_createDatabase = true;
-    private Predicate<Resource> m_liquibaseChangelogFilter = null;
+    private Predicate<Resource> m_liquibaseChangelogFilter = createProductionLiquibaseChangelogFilter();
 
     private String m_databaseName;
     private String m_schemaName;
@@ -90,7 +91,22 @@ public class Migrator {
     private String m_databasePassword;
     private String m_adminUser;
     private String m_adminPassword;
-    private String m_changeLog;
+    private ApplicationContext m_context;
+
+    public static Predicate<Resource> createProductionLiquibaseChangelogFilter() {
+        return r -> {
+            try {
+                URI uri = r.getURI();
+                return (uri.getScheme().equals("file") && uri.toString().contains("core/schema")) ||
+                        (uri.getScheme().equals("jar") && uri.toString().contains("core.schema"));
+            } catch (IOException e) {
+                return false;
+            }
+        };
+    }
+
+    public Migrator() {
+    }
 
     /**
      * <p>getDataSource</p>
@@ -250,15 +266,6 @@ public class Migrator {
      */
     public void setAdminPassword(String adminPassword) {
         m_adminPassword = adminPassword;
-    }
-
-    /**
-     * <p>setChangeLog</p>
-     *
-     * @param changeLog a {@link java.lang.String} object.
-     */
-    public void setChangeLog(String changeLog) {
-        m_changeLog = changeLog;
     }
 
     /**
@@ -597,7 +604,7 @@ public class Migrator {
                 st.execute();
             }
         } catch (SQLException e) {
-            throw new MigrationException("an error occurred setting table ownership", e);
+            throw new MigrationException("an error occurred setting table ownership " + st, e);
         } finally {
             cleanUpDatabase(c, null, st, rs);
         }
@@ -802,11 +809,11 @@ public class Migrator {
     }
 
     /**
-     * <p>databaseRemoveDB</p>
+     * <p>dropDatabase</p>
      *
      * @throws java.sql.SQLException if any.
      */
-    public void databaseRemoveDB() throws MigrationException {
+    public void dropDatabase() throws MigrationException {
         LOG.info("removing database '" + getDatabaseName() + "'");
 
         Connection c = null;
@@ -817,7 +824,7 @@ public class Migrator {
             st = c.createStatement();
             st.execute("DROP DATABASE \"" + getDatabaseName() + "\"");
         } catch (SQLException e) {
-            throw new MigrationException("could not remove database " + getDatabaseName(), e);
+            throw new MigrationException("could not drop database " + getDatabaseName(), e);
         } finally {
             cleanUpDatabase(c, null, st, null);
         }
@@ -840,29 +847,21 @@ public class Migrator {
      * <p>migrate</p>
      *
      * @param changelog
-     * @param context
      * @throws org.opennms.core.schema.MigrationException if any.
      */
-    public void migrate(Resource changelog, ApplicationContext context) throws MigrationException {
+    public void migrate(Resource changelog) throws MigrationException {
         Connection connection = null;
 
         try {
             connection = m_dataSource.getConnection();
 
             final SpringLiquibase lb = new SpringLiquibase();
-            lb.setResourceLoader(context);
+            lb.setResourceLoader(m_context);
             lb.setChangeLog(changelog.getURI().toString());
             lb.setDataSource(m_dataSource);
-
-            final Map<String,String> parameters = new HashMap<>();
-            parameters.put("install.database.admin.user", getAdminUser());
-            parameters.put("install.database.admin.password", getAdminPassword());
-            parameters.put("install.database.user", getDatabaseUser());
-            lb.setChangeLogParameters(parameters);
+            lb.setChangeLogParameters(getChangeLogParameters());
             lb.setDefaultSchema(getSchemaName());
-
-            final String contexts = System.getProperty("opennms.contexts", "production");
-            lb.setContexts(contexts);
+            lb.setContexts(getLiquibaseContexts());
             lb.afterPropertiesSet();
         } catch (final Throwable e) {
             throw new MigrationException("unable to migrate the database: " + e.getMessage(), e);
@@ -871,8 +870,16 @@ public class Migrator {
         }
     }
 
-    public void generateChangelog() {
+    public static String getLiquibaseContexts() {
+        return System.getProperty("opennms.contexts", "production");
+    }
 
+    private Map<String, String> getChangeLogParameters() {
+        final Map<String,String> parameters = new HashMap<>();
+        parameters.put("install.database.admin.user", getAdminUser());
+        parameters.put("install.database.admin.password", getAdminPassword());
+        parameters.put("install.database.user", getDatabaseUser());
+        return parameters;
     }
 
     private void cleanUpDatabase(final Connection c, DatabaseConnection dbc, final Statement st, final ResultSet rs) {
@@ -906,7 +913,6 @@ public class Migrator {
         }
     }
 
-
     // Ensures that the database time and the system time running the installer match
     // If the difference is greater than 1s, it fails
     public void checkTime() throws Exception {
@@ -936,7 +942,7 @@ public class Migrator {
         }
     }
 
-    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, ApplicationContext context) throws MigrationException, Exception, IOException {
+    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike) throws MigrationException, Exception, IOException {
         validateDatabaseVersion();
 
         if (updateDatabase) {
@@ -949,9 +955,9 @@ public class Migrator {
         if (updateDatabase) {
             databaseSetOwner();
 
-            for (final Resource resource : getLiquibaseChangelogs(context, true)) {
+            for (final Resource resource : getLiquibaseChangelogs(true)) {
                 LOG.info("- Running migration for changelog: {}", resource.getDescription());
-                migrate(resource, context);
+                migrate(resource);
             }
         }
 
@@ -964,9 +970,9 @@ public class Migrator {
         }
     }
 
-    public Collection<Resource> getLiquibaseChangelogs(ApplicationContext context, boolean required) throws IOException, Exception {
+    public Collection<Resource> getLiquibaseChangelogs(boolean required) throws IOException, Exception {
         List<Resource> filtered = new LinkedList<>();
-        for (final Resource resource : context.getResources(LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
+        for (final Resource resource : m_context.getResources(LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
             if (m_liquibaseChangelogFilter != null && !m_liquibaseChangelogFilter.test(resource)) {
                 LOG.debug("Skipping Liquibase changelog that doesn't pass filter: {}", resource);
                 continue;
@@ -974,24 +980,15 @@ public class Migrator {
             filtered.add(resource);
         }
         if (required && filtered.size() == 0) {
-            throw new MigrationException("Could not find any '" + LIQUIBASE_CHANGELOG_FILENAME + "' files in our classpath using '" + LIQUIBASE_CHANGELOG_LOCATION_PATTERN + "'. Combined ClassPath:" + getContextClassLoaderUrls(context) + "\nAnd system class loader for fun:" + getSystemClassLoaderUrls());
+            throw new MigrationException("Could not find any '" + LIQUIBASE_CHANGELOG_FILENAME + "' files in our classpath using '" + LIQUIBASE_CHANGELOG_LOCATION_PATTERN + "'. Combined ClassPath:" + getContextClassLoaderUrls() + "\nAnd system class loader for fun:" + getSystemClassLoaderUrls());
         }
 
         return filtered;
     }
 
-    public static Resource[] validateLiquibaseChangelog(ApplicationContext context) throws IOException, Exception {
-        Resource[] resources = context.getResources(LIQUIBASE_CHANGELOG_LOCATION_PATTERN);
-        if (resources.length == 0) {
-            throw new MigrationException("Could not find any changelog.xml files in our classpath using '" + LIQUIBASE_CHANGELOG_LOCATION_PATTERN + "'. Combined ClassPath:" + getContextClassLoaderUrls(context) + "\nAnd system class loader for fun:" + getSystemClassLoaderUrls());
-        }
-
-        return resources;
-    }
-
-    public static String getContextClassLoaderUrls(ApplicationContext context) {
+    public String getContextClassLoaderUrls() {
         StringBuffer urls = new StringBuffer();
-        for (ApplicationContext c = context; c != null; c = c.getParent()) {
+        for (ApplicationContext c = m_context; c != null; c = c.getParent()) {
             for (ClassLoader cl = c.getClassLoader(); cl != null; cl = cl.getParent()) {
                 if (cl instanceof URLClassLoader) {
                     for (URL url : ((URLClassLoader) cl).getURLs()) {
@@ -1027,5 +1024,13 @@ public class Migrator {
             }
         }
         return urls.toString();
+    }
+
+    public void setApplicationContext(ApplicationContext context) {
+        m_context = context;
+    }
+
+    public ApplicationContext getApplicationContext() {
+        return m_context;
     }
 }

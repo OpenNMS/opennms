@@ -32,11 +32,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import javax.sql.DataSource;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.test.MockLogAppender;
 import org.springframework.context.support.GenericApplicationContext;
@@ -69,32 +66,14 @@ public class TemporaryDatabasePostgreSQLIT {
     public void testRealChangelog() throws Throwable {
         String dbName = TemporaryDatabasePostgreSQL.TEMPLATE_DATABASE_NAME_PREFIX + System.currentTimeMillis();
 
-        GenericApplicationContext context = TemporaryDatabasePostgreSQL.ensureLiquibaseFilesInClassPath(new StaticApplicationContext());
-
-        final Migrator migrator = new Migrator();
-        migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migrator.setDatabaseName(dbName);
-
-        DataSource dataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + migrator.getDatabaseName(), migrator.getDatabaseUser(), migrator.getDatabasePassword());
-        DataSource adminDataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + TemporaryDatabasePostgreSQL.ADMIN_DATABASE, migrator.getDatabaseUser(), migrator.getDatabasePassword());
-
-        migrator.setDataSource(dataSource);
-        migrator.setAdminDataSource(adminDataSource);
-        migrator.setValidateDatabaseVersion(true);
-        migrator.setCreateUser(false);
-        migrator.setCreateDatabase(true);
-
-        TemporaryDatabasePostgreSQL.createIntegrationTestDatabase(context, migrator, dataSource);
-
-        migrator.databaseRemoveDB();
+        TemporaryDatabasePostgreSQL temp = new TemporaryDatabasePostgreSQL();
+        temp.createIntegrationTestTemplateDatabase(dbName);
     }
 
     @Test
     public void testGetIntegrationTestDatabaseName() throws Throwable {
-        TemporaryDatabasePostgreSQL.getIntegrationTestDatabaseName();
+        TemporaryDatabasePostgreSQL temp = new TemporaryDatabasePostgreSQL();
+        temp.getIntegrationTestTemplateDatabaseName();
     }
 
     @Test
@@ -131,11 +110,10 @@ public class TemporaryDatabasePostgreSQLIT {
 
     @Test
     public void testHashesMatch() throws IOException, Exception {
-        GenericApplicationContext context = TemporaryDatabasePostgreSQL.ensureLiquibaseFilesInClassPath(new StaticApplicationContext());
-        assertEquals("liquibase configuration hash", TemporaryDatabasePostgreSQL.generateLiquibaseHash(context), TemporaryDatabasePostgreSQL.generateLiquibaseHash(context));
-        assertEquals("liquibase configuration hash", TemporaryDatabasePostgreSQL.generateLiquibaseHash(context), TemporaryDatabasePostgreSQL.generateLiquibaseHash(context));
-        assertEquals("liquibase configuration hash", TemporaryDatabasePostgreSQL.generateLiquibaseHash(context), TemporaryDatabasePostgreSQL.generateLiquibaseHash(context));
-        assertEquals("liquibase configuration hash", TemporaryDatabasePostgreSQL.generateLiquibaseHash(context), TemporaryDatabasePostgreSQL.generateLiquibaseHash(context));
-        assertEquals("liquibase configuration hash", TemporaryDatabasePostgreSQL.generateLiquibaseHash(context), TemporaryDatabasePostgreSQL.generateLiquibaseHash(context));
+        Migrator migrator = new Migrator();
+
+        TemporaryDatabasePostgreSQL temp = new TemporaryDatabasePostgreSQL();
+
+        assertEquals("liquibase configuration hash", temp.generateLiquibaseHash(), temp.generateLiquibaseHash());
     }
 }

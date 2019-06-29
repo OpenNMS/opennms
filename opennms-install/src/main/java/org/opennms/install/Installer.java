@@ -42,11 +42,8 @@ import java.io.Reader;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -160,7 +157,8 @@ public class Installer {
             context = new GenericApplicationContext();
             context.setClassLoader(Bootstrap.loadClasses(new File(m_opennms_home), true));
 
-            Migrator.validateLiquibaseChangelog(context);
+            m_migrator.setApplicationContext(context);
+            m_migrator.getLiquibaseChangelogs(true);
 
             m_migrator.setDataSource(ds);
             m_migrator.setAdminDataSource(adminDs);
@@ -224,11 +222,11 @@ public class Installer {
                 LOG.info(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migrator.getSchemaName()));
             }
 
-            m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, context);
+            m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike);
 
             // XXX why do both options need to be set to remove the database?
             if (m_update_database && m_remove_database) {
-                m_migrator.databaseRemoveDB();
+                m_migrator.dropDatabase();
             }
 
             if (m_update_database) {

@@ -480,6 +480,13 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public String getNextUserNotifIdSql() {
         return getNextSequenceValStatement("userNotifNxtId");
     }
-    
 
+
+    public String getNextSequenceValStatement(String seqName) {
+        return "select nextval('" + seqName + "')";
+    }
+
+    protected Integer getNextId(String nxtIdStmt) {
+        return getJdbcTemplate().queryForObject(nxtIdStmt, Integer.class);
+    }
 }
