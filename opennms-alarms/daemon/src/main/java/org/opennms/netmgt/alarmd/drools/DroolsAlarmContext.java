@@ -375,7 +375,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
         // Handle all the alarms for which an ack could be found
         Map<UUID, OnmsAcknowledgment> acksById =
-                acks.stream().collect(Collectors.toMap(OnmsAcknowledgment::getRefIdAsUuid, ack -> ack));
+                acks.stream().collect(Collectors.toMap(ack -> UUID.randomUUID(), ack -> ack));
 
         // Handle all the alarms that no ack could be found for by generating a default ack
         acksById.putAll(alarms.stream()

@@ -63,6 +63,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.events.api.EventParameterUtils;
@@ -72,6 +73,12 @@ import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsEvent class.</p>
+ *
+ *
+ *
+
+ ALTER TABLE events ALTER COLUMN eventId TYPE uuid;
+
  */
 @XmlRootElement(name="event")
 @Entity
@@ -213,8 +220,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
     @XmlAttribute(name="id")
 	@Type(type="pg-uuid")
 	@Column(name="eventId", nullable=false)
-    //@SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
-    //@GeneratedValue(generator="eventSequence")
+	@GeneratedValue(generator = "UUID")
+	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
 	public UUID getId() {
 		return m_eventId;
 	}

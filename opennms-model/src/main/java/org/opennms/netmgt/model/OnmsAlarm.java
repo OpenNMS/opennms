@@ -54,7 +54,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -70,8 +69,10 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
+
 import com.google.common.base.MoreObjects;
 
 /**
@@ -244,10 +245,10 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.util.UUID} object.
      */
     @Id
-   // @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId")
-    // @GeneratedValue(generator="alarmSequence")
     @Column(name="alarmId", nullable=false)
     @Type(type="pg-uuid")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @XmlAttribute(name="id")
     public UUID getId() {
         return this.m_id;

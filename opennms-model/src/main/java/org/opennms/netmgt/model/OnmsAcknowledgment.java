@@ -298,10 +298,6 @@ public class OnmsAcknowledgment {
         return m_refId;
     }
 
-    public UUID getRefIdAsUuid() {
-        return UUID.randomUUID();
-    }
-
     /**
      * <p>setRefId</p>
      *

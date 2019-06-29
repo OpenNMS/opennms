@@ -366,6 +366,8 @@ public class Column {
             return "timestamptz";
         } else if (column.equals("bytea")) {
             return "bytea";
+        } else if (column.equals("uuid")) {
+            return "uuid";
         } else {
             throw new Exception("cannot parse column type: '" + column + "'");
         }
@@ -387,7 +389,7 @@ public class Column {
             return 4;
         } else if (type.equals("bigint") || type.equals("timestamp") || type.equals("timestamptz")) {
             return 8;
-        } else if (type.equals("double precision") || type.equals("real") || type.equals("text") || type.equals("bytea") || type.equals("trigger")) {
+        } else if (type.equals("double precision") || type.equals("real") || type.equals("text") || type.equals("bytea") || type.equals("trigger") || type.equals("uuid")) {
             return -1;
         } else {
             throw new Exception("do not know the type size for " + "column type \"" + type + "\"");

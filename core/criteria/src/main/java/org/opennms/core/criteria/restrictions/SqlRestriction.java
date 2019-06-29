@@ -36,7 +36,8 @@ public class SqlRestriction extends AttributeRestriction {
         INTEGER,
         LONG,
         STRING,
-        TIMESTAMP
+        TIMESTAMP,
+        UUID
     }
 
     final Object[] parameters;

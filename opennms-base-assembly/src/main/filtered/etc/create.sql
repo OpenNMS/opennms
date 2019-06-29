@@ -801,7 +801,7 @@ create index ifservicves_ipInterfaceId_idx on ifservices(ipInterfaceId);
 --##################################################################
 
 create table events (
-	eventID			integer not null,
+  eventID     uuid not null,
 	eventUei		varchar(256) not null,
 	nodeID			integer,
 	eventTime		timestamp with time zone not null,
@@ -854,8 +854,8 @@ create index events_alarmid_idx on events(alarmID);
 create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, eventackuser);
 
 create table event_parameters (
-	eventID			integer not null,
-	name                text not null,
+	eventID			uuid not null,
+	name        text not null,
 	value		    text not null,
 	type		    varchar(256) not null,
 
@@ -885,8 +885,8 @@ create table event_parameters (
 
 create table outages (
 	outageID		integer not null,
-	svcLostEventID		integer,
-	svcRegainedEventID	integer,
+	svcLostEventID		uuid,
+	svcRegainedEventID	uuid,
 	ifLostService		timestamp with time zone not null,
 	ifRegainedService	timestamp with time zone,
 	suppressTime    	timestamp with time zone,
@@ -941,7 +941,7 @@ create table notifications (
        interfaceID  varchar(16),
        serviceID    integer,
        queueID		varchar(256),
-       eventID      integer,
+       eventID      uuid,
        eventUEI     varchar(256) not null,
        notifConfigName	varchar(63),
 
@@ -1043,7 +1043,7 @@ ALTER TABLE memos ADD CONSTRAINT reductionkey_type_unique_constraint UNIQUE (red
 --########################################################################
 
 create table alarms (
-    alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
+    alarmID                 uuid, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
     eventUei                VARCHAR(256) NOT NULL,
     systemId                TEXT NOT NULL, CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
@@ -1053,7 +1053,7 @@ create table alarms (
     alarmType               INTEGER,
     counter                 INTEGER NOT NULL,
     severity                INTEGER NOT NULL,
-    lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID) REFERENCES events (eventID) ON DELETE CASCADE,
+    lastEventID             uuid, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID) REFERENCES events (eventID) ON DELETE CASCADE,
     firstEventTime          timestamp with time zone,
     lastEventTime           timestamp with time zone,
     firstAutomationTime     timestamp with time zone,
@@ -1106,7 +1106,7 @@ CREATE INDEX alarm_lastautomationtime_idx on alarms(lastautomationtime);
 --########################################################################
 
 CREATE TABLE alarm_attributes (
-    alarmID         INTEGER, CONSTRAINT fk_alarmID1 FOREIGN KEY (alarmID) REFERENCES alarms (alarmID) ON DELETE CASCADE,
+    alarmID         uuid, CONSTRAINT fk_alarmID1 FOREIGN KEY (alarmID) REFERENCES alarms (alarmID) ON DELETE CASCADE,
     attributeName   VARCHAR(63),
     attributeValue  VARCHAR(255)
 );
@@ -1116,8 +1116,8 @@ CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attrib
 
 CREATE TABLE alarm_situations (
     id              INTEGER, CONSTRAINT pk_id PRIMARY KEY (id),
-    situation_id    INTEGER NOT NULL,
-    related_alarm_id  INTEGER NOT NULL,
+    situation_id    uuid NOT NULL,
+    related_alarm_id  uuid NOT NULL,
     mapped_time timestamp with time zone,
     
     CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (related_alarm_id) REFERENCES alarms (alarmid) ON DELETE CASCADE,

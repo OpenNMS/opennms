@@ -48,6 +48,8 @@ import org.hibernate.type.IntegerType;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
 import org.hibernate.type.TimestampType;
+import org.hibernate.type.UUIDBinaryType;
+import org.hibernate.type.UUIDCharType;
 import org.opennms.core.criteria.AbstractCriteriaVisitor;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
@@ -468,6 +470,8 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                         return new StringType();
                     case TIMESTAMP:
                         return new TimestampType();
+                    case UUID:
+                        return new MyUUIDType();
                     default: 
                         throw new UnsupportedOperationException("Unsupported type specified in SqlRestriction");
                     }

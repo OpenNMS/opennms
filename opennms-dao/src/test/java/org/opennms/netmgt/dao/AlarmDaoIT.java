@@ -466,7 +466,7 @@ public class AlarmDaoIT implements InitializingBean {
 		m_alarmDao.save(alarm);
 
 		CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
-		cb.sql("{alias}.alarmid in (?)", alarm.getId(), Type.INTEGER);
+		cb.sql("{alias}.alarmid in (?)", alarm.getId(), Type.UUID);
 		List<OnmsAlarm> alarms = m_alarmDao.findMatching(cb.toCriteria());
 		assertEquals(alarm.getId(), alarms.get(0).getId());
 		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());

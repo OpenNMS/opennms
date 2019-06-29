@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="jwhite" id="25.0.0-events-alarms-uuid">
+    <!-- Add a function that allows us to generate UUIDs without
+         requiring any additional extensions. -->
+    <sql>
+      CREATE OR REPLACE FUNCTION opennms_gen_uuid_unsecure()
+      RETURNS uuid AS '
+        BEGIN
+          RETURN md5(random()::text || clock_timestamp()::text)::uuid;
+        END;
+      ' LANGUAGE 'plpgsql';
+    </sql>
+
+    <!-- Test - remove me -->
+    <sql>
+      INSERT INTO events (eventid,eventuei,eventtime,eventsource,eventcreatetime,eventseverity,eventlog,eventdisplay,systemid) values (0,'',now(),'',now(),6,'','y',0);
+    </sql>
+
+    <!-- Add a new UUID column and populate it with valid UUIDs -->
+    <addColumn tableName="events">
+      <column name="id_uuid" type="uuid" defaultValueComputed="opennms_gen_uuid_unsecure()">
+        <constraints nullable="false" unique="true" />
+      </column>
+    </addColumn>
+  </changeSet>
+
+</databaseChangeLog>
