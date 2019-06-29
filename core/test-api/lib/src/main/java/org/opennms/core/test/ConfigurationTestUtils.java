@@ -192,8 +192,7 @@ public abstract class ConfigurationTestUtils extends Assert {
     /**
      * <p>getInputStreamForResourceWithReplacements</p>
      *
-     * @param obj a {@link java.lang.Object} object.
-     * @param resource a {@link java.lang.String} object.
+     * @param config a {@link java.lang.String} config file contents.
      * @param replacements an array of {@link java.lang.String} objects.
      * @return a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
@@ -350,7 +349,7 @@ public abstract class ConfigurationTestUtils extends Assert {
         File buildFile = new File(currentDirectory, "compile.pl");
         if (buildFile.exists()) {
             File pomFile = new File(currentDirectory, POM_FILE);
-            assertTrue("pom.xml in " + DAEMON_DIRECTORY + " directory should exist: " + pomFile.getAbsolutePath(), pomFile.exists());
+            assertTrue("pom.xml in top level directory should exist: " + pomFile.getAbsolutePath(), pomFile.exists());
             
             return currentDirectory;
         } else {
