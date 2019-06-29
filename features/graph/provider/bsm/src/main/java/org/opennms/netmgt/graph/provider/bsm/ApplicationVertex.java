@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.model.Application;

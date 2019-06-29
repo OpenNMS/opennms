@@ -39,9 +39,9 @@ import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
 /**
-* Acts as a domain specific view on a vertex.
+* Acts as a domain specific view on a GenericVertex.
 * Can be extended by a domain specific vertex class.
-* It contains no data of it's own but operates on the data of it's wrapped Graph.
+* It contains no data of it's own but operates on the data of it's wrapped GenericVertex.
 **/
 public class AbstractDomainVertex implements Vertex, NodeAware, LocationAware  {
     

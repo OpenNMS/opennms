@@ -37,7 +37,7 @@ import org.opennms.netmgt.graph.api.aware.LocationAware;
 import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-public class GenericVertex extends GenericElement implements Vertex, NodeAware, LocationAware {
+public final class GenericVertex extends GenericElement implements Vertex, NodeAware, LocationAware {
     
     private GenericVertex(Map<String, Object> properties) {
         super(properties);

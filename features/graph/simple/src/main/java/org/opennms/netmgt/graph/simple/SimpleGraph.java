@@ -34,13 +34,11 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
-import org.opennms.netmgt.graph.simple.SimpleVertex.SimpleVertexBuilder;
 
 /**
- * Acts as a domain specific view on a Graph.
+ * Acts as a domain specific view on a GenericGraph.
  * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own
- * domain graph. It is a final class since it exposes class information about it's associated vertex and edge types.
- * If you need more functionality please extend AbstractDomainGraph.
+ * domain graph. It is a final class. If you need more functionality please extend AbstractDomainGraph.
  */
 public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
 

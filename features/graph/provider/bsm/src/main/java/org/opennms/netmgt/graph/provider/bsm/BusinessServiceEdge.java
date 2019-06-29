@@ -27,17 +27,12 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.graph.provider.bsm;
-
-import java.util.Map;
-
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
-import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
 
-public class BusinessServiceEdge extends AbstractDomainEdge {
+public final class BusinessServiceEdge extends AbstractDomainEdge {
 
     private final static String PROPERTY_MAP_FUNCTION = "mapFunction";
     private final static String PROPERTY_WEIGHT = "weight";

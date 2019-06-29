@@ -35,6 +35,11 @@ import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 
+/**
+* Acts as a domain specific view on a GenericEdge.
+* Can be extended by a domain specific edge class.
+* It contains no data of it's own but operates on the data of it's wrapped GenericEdge.
+**/
 public abstract class AbstractDomainEdge implements Edge {
 
     protected final GenericEdge delegate;

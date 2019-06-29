@@ -37,7 +37,7 @@ import org.opennms.netmgt.graph.simple.AbstractDomainVertex;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
-public class ApplicationVertex extends AbstractDomainVertex {
+public final class ApplicationVertex extends AbstractDomainVertex {
 
     private interface Property {
         String VERTEX_TYPE = "vertexType";

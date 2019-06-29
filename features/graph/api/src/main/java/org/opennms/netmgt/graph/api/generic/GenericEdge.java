@@ -37,16 +37,16 @@ import org.opennms.netmgt.graph.api.VertexRef;
 
 import com.google.common.base.MoreObjects;
 
-public class GenericEdge extends GenericElement implements Edge {
+public final class GenericEdge extends GenericElement implements Edge {
 
     private final VertexRef source;
     private final VertexRef target;
 
     private GenericEdge(VertexRef source, VertexRef target, Map<String, Object> properties) {
         super(new MapBuilder<String, Object>()
-        		.withProperties(properties)
-        		.withProperty(GenericProperties.ID, source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId())
-        		.build());
+                .withProperties(properties)
+                .withProperty(GenericProperties.ID, source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId())
+                .build());
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
         if(!source.getNamespace().equals(getNamespace()) && !target.getNamespace().equals(getNamespace())) {
@@ -101,25 +101,25 @@ public class GenericEdge extends GenericElement implements Edge {
     }
     
     public static GenericEdgeBuilder builder() {
-    	return new GenericEdgeBuilder();
+        return new GenericEdgeBuilder();
     }
     
     public final static class GenericEdgeBuilder extends GenericElementBuilder<GenericEdgeBuilder> {
-    	private VertexRef source;
-    	private VertexRef target;
-    	
-    	public GenericEdgeBuilder source(VertexRef source) {
+        private VertexRef source;
+        private VertexRef target;
+        
+        public GenericEdgeBuilder source(VertexRef source) {
             this.source = source;
             return this;
-		}
-    	
-    	public GenericEdgeBuilder target(VertexRef target) {
+        }
+        
+        public GenericEdgeBuilder target(VertexRef target) {
             this.target = target;
             return this;
-		}
-    	
-    	public GenericEdge build() {
-    		return new GenericEdge(source, target, properties);
-    	}
+        }
+        
+        public GenericEdge build() {
+            return new GenericEdge(source, target, properties);
+        }
     }
 }

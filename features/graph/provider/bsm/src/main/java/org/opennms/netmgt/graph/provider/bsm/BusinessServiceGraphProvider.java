@@ -95,7 +95,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
     }
 
     private Graph<?, ?> createGraph() {
-        final BusinessServiceGraph bsmGraph = new BusinessServiceGraph(GenericGraph.fromGraphInfo(getGraphInfo()));
+        final BusinessServiceGraph bsmGraph = new BusinessServiceGraph(GenericGraph.builder().graphInfo(getGraphInfo()).build());
         final org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph = businessServiceManager.getGraph();
         for (GraphVertex topLevelBusinessService : sourceGraph.getVerticesByLevel(0)) {
             addVertex(bsmGraph, sourceGraph, topLevelBusinessService, null);

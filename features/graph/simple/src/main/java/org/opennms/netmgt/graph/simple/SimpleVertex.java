@@ -33,9 +33,9 @@ import java.util.Objects;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
 /**
- * Acts as a domain specific view on a Vertex.
- * If you need more properties in your domain specific class please extend AbstractDomainVertex.
- * It contains no data of it's own but operates on the data of it's wrapped GenericVertex.
+ * Acts as a domain specific view on a GenericVertex.
+ * This is the most basic concrete subclass of {@link AbstractDomainVertex} and can be used as a reference for your own
+ * domain vertex. It is a final class. If you need more functionality please extend AbstractDomainVertex.
  * Since it's delegate is immutable and this class holds no data of it's own it is immutable as well.
  */
 public final class SimpleVertex extends AbstractDomainVertex {

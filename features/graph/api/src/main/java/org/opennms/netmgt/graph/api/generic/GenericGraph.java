@@ -43,18 +43,19 @@ import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.context.DefaultGraphContext;
 import org.opennms.netmgt.graph.api.focus.Focus;
-import org.opennms.netmgt.graph.api.generic.GenericElement.GenericElementBuilder;
-import org.opennms.netmgt.graph.api.generic.GenericVertex.GenericVertexBuilder;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * The graph itself is not immutable (Vertices and Edges can be added and removed) but it's properties are. 
  */
-public class GenericGraph extends GenericElement implements Graph<GenericVertex, GenericEdge> {
+public final class GenericGraph extends GenericElement implements Graph<GenericVertex, GenericEdge> {
 
     private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph = new DirectedSparseGraph<>();
     private final Map<String, GenericVertex> vertexToIdMap = new HashMap<>();
@@ -69,20 +70,6 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         super(properties);
         this.graphInfo = new GenericGraphInfo();
     }
-
-    public static GenericGraph fromGraphInfo(GraphInfo graphInfo) {
-        // we can't have a constructor GenericGraph(GraphInfo graphInfo) since it conflicts with GenericGraph(GenericGraph graph)
-        // that's why we have a factory method instead
-        return GenericGraph.builder()
-                .namespace(graphInfo.getNamespace())
-                .description(graphInfo.getDescription())
-                .label(graphInfo.getLabel()).build();
-    }
-
-    //    @Override
-//    public Vertex getVertex(NodeRef nodeRef) {
-//        return nodeRefMap.get(nodeRef);
-//    }
 
     @Override
     public GenericGraph asGenericGraph() {
@@ -155,8 +142,9 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
 
     @Override
     public void addVertex(GenericVertex vertex) {
-        Objects.requireNonNull(vertex);
-        Objects.requireNonNull(vertex.getId());
+        Objects.requireNonNull(vertex, "Vertex can not be null");
+        checkArgument(!Strings.isNullOrEmpty(vertex.getId()) , "GenericVertex.getId() can not be empty or null. Vertex= %s", vertex);
+        Objects.requireNonNull(vertex.getId(), "Vertex id can not be null");
         if (jungGraph.containsVertex(vertex.getVertexRef())) return; // already added
         jungGraph.addVertex(vertex.getVertexRef());
         vertexToIdMap.put(vertex.getId(), vertex);
@@ -170,6 +158,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     @Override
     public void addEdge(GenericEdge edge) {
         Objects.requireNonNull(edge, "GenericEdge cannot be null");
+        checkArgument(!Strings.isNullOrEmpty(edge.getId()) , "GenericEdge.getId() can not be empty or null. Vertex= %s", edge);
         Objects.requireNonNull(edge.getId());
         if (jungGraph.containsEdge(edge)) return; // already added
         if(!this.getNamespace().equals(edge.getNamespace())){
@@ -308,6 +297,13 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         
         public GenericGraphBuilder description(String description) {
             this.properties.put(GenericProperties.DESCRIPTION, description);
+            return this;
+        }
+        
+        public GenericGraphBuilder graphInfo(GraphInfo graphInfo) {
+            namespace(graphInfo.getNamespace());
+            description(graphInfo.getDescription());
+            label(graphInfo.getLabel());
             return this;
         }
         
