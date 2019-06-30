@@ -172,7 +172,7 @@ public class DnsUtilsTest {
         Assert.assertEquals(true, addresses4.size() > 0);
     }
 
-    private abstract static class FakeBundleContext implements BundleContext {
+    public abstract static class FakeBundleContext implements BundleContext {
         public final Properties properties = new Properties();
 
         @Override
