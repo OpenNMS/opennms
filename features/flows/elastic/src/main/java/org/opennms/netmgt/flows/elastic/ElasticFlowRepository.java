@@ -376,7 +376,7 @@ public class ElasticFlowRepository implements FlowRepository {
     public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N,
                                                                                               boolean includeOther,
                                                                                               List<Filter> filters) {
-        return getTotalBytesFromTopN(N, "netflow.convo_key", null, false, filters)
+        return getTotalBytesFromTopN(N, "netflow.convo_key", null, includeOther, filters)
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                                                .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
                                                                                    .thenApply(conversation -> new TrafficSummary<>(conversation)

@@ -31,9 +31,16 @@ package org.opennms.netmgt.flows.api;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.common.base.MoreObjects;
+
 public class Host {
     private final String ip;
     private final Optional<String> hostname;
+
+    public Host(final String ip) {
+        this.ip = Objects.requireNonNull(ip);
+        this.hostname = Optional.empty();
+    }
 
     public Host(final String ip, final String hostname) {
         this.ip = Objects.requireNonNull(ip);
@@ -78,5 +85,33 @@ public class Host {
     public static Host.Builder from(final String ip) {
         return new Host.Builder()
                 .withIp(ip);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Host)) {
+            return false;
+        }
+
+        final Host host = (Host) o;
+        return Objects.equals(this.ip, host.ip) &&
+                Objects.equals(this.hostname, host.hostname);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.ip, this.hostname);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ip", this.ip)
+                .add("hostname", this.hostname)
+                .toString();
     }
 }

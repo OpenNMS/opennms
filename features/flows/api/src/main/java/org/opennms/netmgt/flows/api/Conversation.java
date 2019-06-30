@@ -31,6 +31,8 @@ package org.opennms.netmgt.flows.api;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.common.base.MoreObjects;
+
 public class Conversation {
     private final String location;
     private final Integer protocol;
@@ -134,6 +136,10 @@ public class Conversation {
         }
     }
 
+    public static Conversation.Builder builder() {
+        return new Conversation.Builder();
+    }
+
     public static Conversation.Builder from(final ConversationKey key) {
         return new Conversation.Builder()
                 .withLocation(key.getLocation())
@@ -141,5 +147,39 @@ public class Conversation {
                 .withLowerIp(key.getLowerIp())
                 .withUpperIp(key.getUpperIp())
                 .withApplication(key.getApplication());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Conversation)) {
+            return false;
+        }
+
+        final Conversation that = (Conversation) o;
+        return Objects.equals(this.location, that.location) &&
+                Objects.equals(this.protocol, that.protocol) &&
+                Objects.equals(this.lowerHost, that.lowerHost) &&
+                Objects.equals(this.upperHost, that.upperHost) &&
+                Objects.equals(this.application, that.application);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.location, this.protocol, this.lowerHost, this.upperHost, this.application);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("location", this.location)
+                .add("protocol", this.protocol)
+                .add("lowerHost", this.lowerHost)
+                .add("upperHost", this.upperHost)
+                .add("application", this.application)
+                .toString();
     }
 }

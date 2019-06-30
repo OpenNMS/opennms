@@ -300,7 +300,7 @@ public class FlowQueryIT {
         // Get first 10 hosts
         hosts = flowRepository.getHosts(".*", 10, getFilters()).get();
         assertThat(hosts, equalTo(Arrays.asList("10.1.1.11", "10.1.1.12", "10.1.1.13", "192.168.1.100",
-                "192.168.1.101", "192.168.1.102")));
+                "192.168.1.101", "192.168.1.102", "ingress.only", "la.le.lu")));
 
         // Get the first 10 hosts with a prefix
         hosts = flowRepository.getHosts("10.1.1.*", 10, getFilters()).get();
@@ -370,12 +370,12 @@ public class FlowQueryIT {
 
         assertThat(hostTrafficSummary, hasSize(2));
         TrafficSummary<Host> first = hostTrafficSummary.get(0);
-        assertThat(first.getEntity(), equalTo("10.1.1.11"));
+        assertThat(first.getEntity().getIp(), equalTo("10.1.1.11"));
         assertThat(first.getBytesIn(), equalTo(10L));
         assertThat(first.getBytesOut(), equalTo(100L));
 
         TrafficSummary<Host> second = hostTrafficSummary.get(1);
-        assertThat(second.getEntity(), equalTo("10.1.1.12"));
+        assertThat(second.getEntity().getIp(), equalTo("10.1.1.12"));
         assertThat(second.getBytesIn(), equalTo(210L));
         assertThat(second.getBytesOut(), equalTo(2100L));
 
@@ -384,12 +384,12 @@ public class FlowQueryIT {
                 flowRepository.getHostSummaries(ImmutableSet.of("10.1.1.11"), true, getFilters()).get();
         assertThat(hostTrafficSummary, hasSize(2));
         first = hostTrafficSummary.get(0);
-        assertThat(first.getEntity(), equalTo("10.1.1.11"));
+        assertThat(first.getEntity().getIp(), equalTo("10.1.1.11"));
         assertThat(first.getBytesIn(), equalTo(10L));
         assertThat(first.getBytesOut(), equalTo(100L));
 
         second = hostTrafficSummary.get(1);
-        assertThat(second.getEntity(), equalTo("Other"));
+        assertThat(second.getEntity().getIp(), equalTo("Other"));
         assertThat(second.getBytesIn(), equalTo(410L));
         assertThat(second.getBytesOut(), equalTo(2200L));
     }
@@ -411,7 +411,7 @@ public class FlowQueryIT {
         assertThat(hostTraffic.rowKeySet(), hasSize(2));
         assertThat(hostTraffic.rowKeySet(), containsInAnyOrder(new Directional<>("10.1.1.12", true),
                 new Directional<>("10.1.1.12", false)));
-        verifyHttpsSeries(hostTraffic, "10.1.1.12");
+        verifyHttpsSeries(hostTraffic, new Host("10.1.1.12"));
     }
 
     @Test
@@ -421,7 +421,7 @@ public class FlowQueryIT {
                 flowRepository.getHostSeries(Collections.singleton("10.1.1.12"), 10,
                         false, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(2));
-        verifyHttpsSeries(hostTraffic, "10.1.1.12");
+        verifyHttpsSeries(hostTraffic, new Host("10.1.1.12"));
 
         // Get just 10.1.1.12 and include others
         hostTraffic = flowRepository.getHostSeries(Collections.singleton("10.1.1.12"), 10,
@@ -502,7 +502,7 @@ public class FlowQueryIT {
         assertThat(convo.getBytesOut(), equalTo(1100L));
 
         convo = convoTrafficSummary.get(1);
-        assertThat(convo.getEntity(), equalTo(ConversationKeyUtils.forOther()));
+        assertThat(convo.getEntity(), equalTo(Conversation.from(ConversationKeyUtils.forOther()).build()));
         assertThat(convo.getBytesIn(), equalTo(310L));
         assertThat(convo.getBytesOut(), equalTo(1200L));
     }
@@ -547,7 +547,13 @@ public class FlowQueryIT {
         // Get series for specific host
         Table<Directional<Conversation>, Long, Double> convoTraffic = flowRepository.getConversationSeries(ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, false, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(2));
-        verifyHttpsSeries(convoTraffic, ConversationKeyUtils.fromJsonString("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"));
+        verifyHttpsSeries(convoTraffic, Conversation.builder()
+                .withLocation("test")
+                .withProtocol(6)
+                .withLowerIp("10.1.1.12")
+                .withLowerHostname("la.le.lu")
+                .withUpperIp("192.168.1.100")
+                .withApplication("https").build());
 
         // Get series for same host and include others
         convoTraffic = flowRepository.getConversationSeries(ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, true, getFilters()).get();
@@ -565,7 +571,7 @@ public class FlowQueryIT {
         assertThat(convoTraffic.rowKeySet(), hasSize(6));
     }
 
-    private void verifyHttpsSeries(Table<? extends Directional<?>, Long, Double> appTraffic, String label) {
+    private <L> void verifyHttpsSeries(Table<Directional<L>, Long, Double> appTraffic, L label) {
         // Pull the values from the table into arrays for easy comparision and validate
         List<Long> timestamps = getTimestampsFrom(appTraffic);
         List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), appTraffic);
@@ -591,7 +597,7 @@ public class FlowQueryIT {
                 177.41935483870967));
     }
 
-    private void verifyHttpsSeries(Table<Directional<Conversation>, Long, Double> convoTraffic, ConversationKey label) {
+    private void verifyHttpsSeries(Table<Directional<Conversation>, Long, Double> convoTraffic, Conversation label) {
         // Pull the values from the table into arrays for easy comparision and validate
         List<Long> timestamps = getTimestampsFrom(convoTraffic);
         List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), convoTraffic);
@@ -616,13 +622,13 @@ public class FlowQueryIT {
         return new IsIterableContainingInOrder(matchers);
     }
 
-    private static List<Long> getTimestampsFrom(Table<?, Long, Double> table) {
+    private static <R> List<Long> getTimestampsFrom(Table<R, Long, Double> table) {
         return table.columnKeySet().stream()
                 .sorted(Comparator.naturalOrder())
                 .collect(Collectors.toList());
     }
 
-    private static List<Double> getValuesFor(Object rowKey, Table<?, Long, Double> table) {
+    private static <R> List<Double> getValuesFor(R rowKey, Table<R, Long, Double> table) {
         final List<Long> timestamps = getTimestampsFrom(table);
         final List<Double> column = new ArrayList<>(timestamps.size());
         for (Long ts : timestamps) {
