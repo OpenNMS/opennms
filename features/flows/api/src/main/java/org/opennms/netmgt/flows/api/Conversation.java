@@ -45,7 +45,7 @@ public class Conversation {
         this.protocol = Objects.requireNonNull(builder.protocol);
         this.lowerHost = new Host(builder.lowerIp, builder.lowerHostname);
         this.upperHost = new Host(builder.upperIp, builder.upperHostname);
-        this.application = Objects.requireNonNull(builder.application);
+        this.application = builder.application;
     }
 
     public String getLocation() {
@@ -127,7 +127,7 @@ public class Conversation {
         }
 
         public Builder withApplication(final String application) {
-            this.application = Objects.requireNonNull(application);
+            this.application = application;
             return this;
         }
 
