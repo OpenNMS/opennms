@@ -603,6 +603,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testSpotlightStaticActionsConfig() {
+        ignoreConfigFile("spotlight-actions.xml");
+    }
+
+    @Test
     public void zz001testAllConfigs() {
         ConfigTester.main(new String[] { "-a" });
     }

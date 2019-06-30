@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.NONE)
-class Action {
+public class Action {
     @XmlElement(name="label")
     private String label;
 

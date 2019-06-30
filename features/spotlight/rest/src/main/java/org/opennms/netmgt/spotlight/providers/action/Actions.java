@@ -39,7 +39,7 @@ import com.google.common.collect.Lists;
 
 @XmlRootElement(name="actions")
 @XmlAccessorType(XmlAccessType.NONE)
-class Actions {
+public class Actions {
     @XmlElement(name="action")
     private List<Action> actions = Lists.newArrayList();
 

@@ -160,6 +160,12 @@
       <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.spotlight</groupId>
+      <artifactId>org.opennms.features.spotlight.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.opennms.features</groupId>
