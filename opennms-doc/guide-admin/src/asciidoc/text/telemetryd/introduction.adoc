@@ -63,10 +63,15 @@ To enable reverse hostname resolution, the following command can be used:
 $ ssh -p 8201 admin@localhost
 ...
 admin@minion()> system:property -p org.opennms.features.telemetry.dns.enable true
-admin@minion()> system:property -p org.opennms.features.telemetry.primaryServer
-admin@minion()> system:property -p org.opennms.features.telemetry.secondaryServer
+admin@minion()> system:property -p org.opennms.features.telemetry.dns.primaryServer your.primary.dns.server
+admin@minion()> system:property -p org.opennms.features.telemetry.dns.secondaryServer your.secondary.dns.server
 ----
 
 If the primary and secondary servers are not set (or set to an empty string), the servers configured by the system running the JVM will be used.
+
+The resolved host names are cached for their TTL as specified in the returned DNS records.
+The property `org.opennms.features.telemetry.dns.cache.maxttl` can be used to limit the TTL to a shorter time.
+The cache has also a maximal number of entries it will contain.
+To change the entry count, the property `org.opennms.features.telemetry.dns.cache.count` can be set (the default is 50000 entries).
 
 The following _Parsers_ support reverse hostname resolution right now: Netflow v5, Netflow v9, IPFIX and SFlow.

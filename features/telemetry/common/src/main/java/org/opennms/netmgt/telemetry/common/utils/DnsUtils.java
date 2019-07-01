@@ -33,16 +33,15 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xbill.DNS.Cache;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Name;
 import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.ReverseMap;
@@ -55,10 +54,18 @@ public class DnsUtils {
     public static final String DNS_PRIMARY_SERVER = "org.opennms.features.telemetry.dns.primaryServer";
     public static final String DNS_SECONDARY_SERVER = "org.opennms.features.telemetry.dns.secondaryServer";
     public static final String DNS_ENABLE = "org.opennms.features.telemetry.dns.enable";
+    public static final String DNS_CACHE_COUNT = "org.opennms.features.telemetry.dns.cache.count";
+    public static final String DNS_CACHE_MAX_TTL = "org.opennms.features.telemetry.dns.cache.maxttl";
+    public static final int DNS_CACHE_COUNT_DEFAULT = 50000;
+
     private static ExtendedResolver resolver;
+    private static Cache cache = new Cache();
 
     private static String primaryServer = null, secondaryServer = null;
     private static boolean enable = false;
+    private static int cacheCount = 50000;
+    private static int cacheMaxTTL = -1;
+
     static BundleContext bundleContext;
 
     static {
@@ -91,13 +98,25 @@ public class DnsUtils {
             DnsUtils.secondaryServer = secondaryServer;
             setDnsServers(DnsUtils.primaryServer, DnsUtils.secondaryServer);
         }
+
+        final int cacheCount = Optional.ofNullable(bundleContext.getProperty(DNS_CACHE_COUNT)).map(Integer::parseInt).orElse(DNS_CACHE_COUNT_DEFAULT);
+        final int cacheMaxTTL = Optional.ofNullable(bundleContext.getProperty(DNS_CACHE_MAX_TTL)).map(Integer::parseInt).orElse(-1);
+
+        if (cacheCount != DnsUtils.cacheCount || cacheMaxTTL != DnsUtils.cacheMaxTTL) {
+            DnsUtils.cacheCount = cacheCount;
+            DnsUtils.cacheMaxTTL = cacheMaxTTL;
+
+            DnsUtils.cache = new Cache();
+            DnsUtils.cache.setMaxEntries(DnsUtils.cacheCount);
+            DnsUtils.cache.setMaxCache(DnsUtils.cacheMaxTTL);
+            DnsUtils.cache.setMaxNCache(DnsUtils.cacheMaxTTL);
+        }
     }
 
     public static synchronized void setDnsServers(String... dnsServers) {
         final String[] notNullDnsServers = (dnsServers == null ? new String[]{} : Arrays.stream(dnsServers)
                 .filter(e -> !Strings.isNullOrEmpty(e))
-                .collect(Collectors.toList())
-                .toArray(new String[]{})
+                .toArray(String[]::new)
         );
 
         try {
@@ -128,6 +147,7 @@ public class DnsUtils {
 
         final Lookup lookup = new Lookup(ReverseMap.fromAddress(inetAddress), Type.PTR);
         lookup.setResolver(resolver);
+        lookup.setCache(cache);
 
         final Record records[] = lookup.run();
         if (lookup.getResult() == Lookup.SUCCESSFUL) {
