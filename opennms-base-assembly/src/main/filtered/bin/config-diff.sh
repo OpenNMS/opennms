@@ -6,16 +6,20 @@ E_ILLEGAL_ARGS=126
 
 usage() {
   echo ""
-  echo "This tool helps to identify configuration files which need to mirgrated during updates."
+  echo "This tool helps to identify configuration files which need to mirgrated during"
+  echo "updates."
   echo ""
   echo "Usage:"
   echo "  -h  Show help and usage hints."
-  echo "  -p  Path to an OpenNMS etc pristine folder, e.g. /opt/opennms/share/etc-pristine."
-  echo "      This argument is required."
-  echo "  -r  Path to a OpenNMS etc directory which need to be analysed, e.g. /opt/opennms/etc"
-  echo "      This argument is required."
+  echo "  -d  Use quick defaults and use relative script path,"
+  echo "      i.e. ../etc with ../share/etc-pristine."
+  echo "  -p  Path to an OpenNMS etc pristine folder,"
+  echo "      e.g. /opt/opennms/share/etc-pristine"
+  echo "  -r  Path to a OpenNMS etc directory which need to be analysed,"
+  echo "      e.g. /opt/opennms/etc"
   echo ""
-  echo "Example:"
+  echo "Examples:"
+  echo "  ${0} -d"
   echo "  ${0} -r /opt/opennms/etc -p /opt/opennms/share/etc-pristine"
   echo ""
 }
@@ -62,11 +66,15 @@ if [[ "${#}" == 0 ]]; then
 fi
 
 # Evaluate arguments for build script.
-while getopts "hr:p:" OPT; do
+while getopts "hdr:p:" OPT; do
   case "${OPT}" in
     h)
       usage
       exit 0
+      ;;
+    d)
+      OPENNMS_ETC_PRISTINE="../share/etc-pristine"
+      OPENNMS_ETC="../etc"
       ;;
     p)
       OPENNMS_ETC_PRISTINE="${OPTARG}"
