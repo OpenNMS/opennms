@@ -417,7 +417,7 @@ public class ElasticFlowRepository implements FlowRepository {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
 
         if (OTHER_NAME.equals(convoKey)) {
-            return CompletableFuture.completedFuture(Conversation.from(ConversationKeyUtils.forOther()).build());
+            return CompletableFuture.completedFuture(Conversation.forOther().build());
         }
 
         final ConversationKey key = ConversationKeyUtils.fromJsonString(convoKey);
@@ -490,7 +490,7 @@ public class ElasticFlowRepository implements FlowRepository {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
 
         if (OTHER_NAME.equals(host)) {
-            return CompletableFuture.completedFuture(new Host(OTHER_NAME, OTHER_NAME));
+            return CompletableFuture.completedFuture(Host.forOther().build());
         }
 
         final Host.Builder result = Host.from(host);

@@ -43,8 +43,8 @@ public class Conversation {
     private Conversation(final Builder builder) {
         this.location = Objects.requireNonNull(builder.location);
         this.protocol = Objects.requireNonNull(builder.protocol);
-        this.lowerHost = new Host(builder.lowerIp, builder.lowerHostname);
-        this.upperHost = new Host(builder.upperIp, builder.upperHostname);
+        this.lowerHost = builder.lowerHost.build();
+        this.upperHost = builder.upperHost.build();
         this.application = builder.application;
     }
 
@@ -87,10 +87,8 @@ public class Conversation {
     public static class Builder {
         private String location;
         private Integer protocol;
-        private String lowerIp;
-        private String upperIp;
-        private String lowerHostname;
-        private String upperHostname;
+        private Host.Builder lowerHost = Host.builder();
+        private Host.Builder upperHost = Host.builder();
         private String application;
 
         private Builder() {
@@ -106,23 +104,33 @@ public class Conversation {
             return this;
         }
 
+        public Builder withLowerHost(final Host.Builder lowerHost) {
+            this.lowerHost = Objects.requireNonNull(lowerHost);
+            return this;
+        }
+
+        public Builder withUpperHost(final Host.Builder upperHost) {
+            this.upperHost = Objects.requireNonNull(upperHost);
+            return this;
+        }
+
         public Builder withLowerIp(final String lowerIp) {
-            this.lowerIp = Objects.requireNonNull(lowerIp);
+            this.lowerHost.withIp(lowerIp);
             return this;
         }
 
         public Builder withUpperIp(final String upperIp) {
-            this.upperIp = Objects.requireNonNull(upperIp);
+            this.upperHost.withIp(upperIp);
             return this;
         }
 
         public Builder withLowerHostname(final String hostname) {
-            this.lowerHostname = hostname;
+            this.lowerHost.withHostname(hostname);
             return this;
         }
 
         public Builder withUpperHostname(final String hostname) {
-            this.upperHostname = hostname;
+            this.upperHost.withHostname(hostname);
             return this;
         }
 
@@ -147,6 +155,15 @@ public class Conversation {
                 .withLowerIp(key.getLowerIp())
                 .withUpperIp(key.getUpperIp())
                 .withApplication(key.getApplication());
+    }
+
+    public static Conversation.Builder forOther() {
+        return Conversation.builder()
+                .withLocation("Other")
+                .withProtocol(-1)
+                .withLowerHost(Host.forOther())
+                .withUpperHost(Host.forOther())
+                .withApplication("Other");
     }
 
     @Override

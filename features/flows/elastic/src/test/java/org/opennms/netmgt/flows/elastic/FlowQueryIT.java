@@ -300,7 +300,7 @@ public class FlowQueryIT {
         // Get first 10 hosts
         hosts = flowRepository.getHosts(".*", 10, getFilters()).get();
         assertThat(hosts, equalTo(Arrays.asList("10.1.1.11", "10.1.1.12", "10.1.1.13", "192.168.1.100",
-                "192.168.1.101", "192.168.1.102", "ingress.only", "la.le.lu")));
+                "192.168.1.101", "192.168.1.102")));
 
         // Get the first 10 hosts with a prefix
         hosts = flowRepository.getHosts("10.1.1.*", 10, getFilters()).get();
@@ -320,12 +320,12 @@ public class FlowQueryIT {
         // Expect all of the hosts, with the sum of all the bytes from all the flows
         assertThat(hostTrafficSummary, hasSize(6));
         TrafficSummary<Host> top = hostTrafficSummary.get(0);
-        assertThat(top.getEntity(), equalTo("10.1.1.12"));
+        assertThat(top.getEntity(), equalTo(new Host("10.1.1.12")));
         assertThat(top.getBytesIn(), equalTo(210L));
         assertThat(top.getBytesOut(), equalTo(2100L));
 
         TrafficSummary<Host> bottom = hostTrafficSummary.get(5);
-        assertThat(bottom.getEntity(), equalTo("10.1.1.11"));
+        assertThat(bottom.getEntity(), equalTo(new Host("10.1.1.11")));
         assertThat(bottom.getBytesIn(), equalTo(10L));
         assertThat(bottom.getBytesOut(), equalTo(100L));
 
@@ -335,12 +335,12 @@ public class FlowQueryIT {
         // Expect two summaries
         assertThat(hostTrafficSummary, hasSize(2));
         top = hostTrafficSummary.get(0);
-        assertThat(top.getEntity(), equalTo("10.1.1.12"));
+        assertThat(top.getEntity(), equalTo(new Host("10.1.1.12")));
         assertThat(top.getBytesIn(), equalTo(210L));
         assertThat(top.getBytesOut(), equalTo(2100L));
 
         TrafficSummary<Host> other = hostTrafficSummary.get(1);
-        assertThat(other.getEntity(), equalTo("Other"));
+        assertThat(other.getEntity(), equalTo(new Host("Other")));
         assertThat(other.getBytesIn(), equalTo(210L));
         assertThat(other.getBytesOut(), equalTo(200L));
 
@@ -352,7 +352,7 @@ public class FlowQueryIT {
         hostTrafficSummary = flowRepository.getTopNHostSummaries(0, true, getFilters()).get();
         assertThat(hostTrafficSummary, hasSize(1));
         other = hostTrafficSummary.get(0);
-        assertThat(other.getEntity(), equalTo("Other"));
+        assertThat(other.getEntity(), equalTo(new Host("Other")));
         assertThat(other.getBytesIn(), equalTo(420L));
         assertThat(other.getBytesOut(), equalTo(2300L));
     }
@@ -409,8 +409,8 @@ public class FlowQueryIT {
         // Top 1
         hostTraffic = flowRepository.getTopNHostSeries(1, 10, false, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(2));
-        assertThat(hostTraffic.rowKeySet(), containsInAnyOrder(new Directional<>("10.1.1.12", true),
-                new Directional<>("10.1.1.12", false)));
+        assertThat(hostTraffic.rowKeySet(), containsInAnyOrder(new Directional<>(new Host("10.1.1.12"), true),
+                new Directional<>(new Host("10.1.1.12"), false)));
         verifyHttpsSeries(hostTraffic, new Host("10.1.1.12"));
     }
 
@@ -502,7 +502,7 @@ public class FlowQueryIT {
         assertThat(convo.getBytesOut(), equalTo(1100L));
 
         convo = convoTrafficSummary.get(1);
-        assertThat(convo.getEntity(), equalTo(Conversation.from(ConversationKeyUtils.forOther()).build()));
+        assertThat(convo.getEntity(), equalTo(Conversation.forOther().build()));
         assertThat(convo.getBytesIn(), equalTo(310L));
         assertThat(convo.getBytesOut(), equalTo(1200L));
     }

@@ -48,7 +48,6 @@ import com.google.gson.GsonBuilder;
  */
 public class ConversationKeyUtils {
     private static final Gson gson = new GsonBuilder().create();
-    private static final ConversationKey otherKey = new ConversationKey("Other", -1, "Other", "Other", "Other");
 
     public static ConversationKey fromJsonString(String json) {
         final Object[] array = gson.fromJson(json, Object[].class);
@@ -59,10 +58,6 @@ public class ConversationKeyUtils {
                 (String)array[2], (String)array[3], (String)array[4]);
     }
     
-    public static ConversationKey forOther() {
-        return otherKey;
-    }
-
     public static String getConvoKeyAsJsonString(FlowDocument document) {
         // Only generate the key if all of the required fields are set
         if (document.getLocation() != null

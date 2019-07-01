@@ -82,9 +82,18 @@ public class Host {
         }
     }
 
+    public static Host.Builder builder() {
+        return new Host.Builder();
+    }
+
     public static Host.Builder from(final String ip) {
         return new Host.Builder()
                 .withIp(ip);
+    }
+
+    public static Host.Builder forOther() {
+        return builder()
+                .withIp("Other");
     }
 
     @Override
