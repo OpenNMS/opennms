@@ -6,13 +6,37 @@
         position: absolute;
         top: 100%;
         z-index: 100000;
-        overflow:scroll
+        overflow: auto;
+        border: #343a40 solid 1px;
+    }
+
+    .spotlight-result .list-group-item {
+        padding: .25rem 0.75rem;
+        font-size: 90%;
+    }
+
+    .spotlight-result .list-group-item:last-child {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
     }
 
     .spotlight-bar .form-control {
         border: none;
         outline: none;
         box-shadow: none;
+        border-radius: 1rem;
+        padding: 0px;
+    }
+
+    .spotlight-bar .input-group-text {
+        border-top-left-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+        background-color: #fff;
+        border-color: #fff;
+    }
+
+    .selected {
+        background-color: lightcyan;
     }
 </style>
 
@@ -22,32 +46,34 @@
 
     <!-- Search Input -->
     <div class="input-group spotlight-bar">
-        <!-- Loading Indicator -->
         <div class="input-group-prepend">
-            <span class="input-group-text primary"><i class="fa fa-search"></i></span>
+            <div class="input-group-text"><i class="fa fa-search"></i></div>
         </div>
         <input id="query" ng-change="onQueryChange()" ng-model="query" type="text" class="form-control" placeholder="Search..." aria-label="Search">
+        <!-- Loading Indicator -->
         <div ng-if="showLoadingIndicator" class="btn btn-secondary rounded-0">
             <div class="spinner-border spinner-border-sm text-white" role="status"/>
             <span class="sr-only">Loading...</span>
         </div>
+        <!-- Reset Search -->
         <div ng-if="performSearchExecuted === true && !showLoadingIndicator" class="input-group-append">
             <button class="btn btn-secondary" type="button" title="Reset Search" ng-click="resetQuery()"><i class="fa fa-times"></i></button>
         </div>
+        <!-- Cancel -->
         <div ng-if="showLoadingIndicator" class="input-group-append">
             <button class="btn btn-secondary" type="button" title="Cancel Request" ng-click="cancelRequest()"><i class="fa fa-times"></i></button>
         </div>
     </div>
 
     <!-- Results -->
-    <div ng-if="performSearchExecuted === true" class="bg-dark spotlight-result px-2 py-2 rounded-bottom">
+    <div ng-if="performSearchExecuted === true" class="bg-dark spotlight-result rounded-bottom" id="onms-search-result">
         <div class="list-group" ng-if="results.length > 0">
-            <div ng-repeat-start="item in results track by $index" ng-if="item.group === true" class="list-group-item bg-dark text-grey border-0">
+            <div ng-repeat-start="item in results track by $index" ng-if="item.group === true" class="list-group-item bg-dark text-grey border-0 pl-2">
                 {{item.label}} <span class="pull-right" ng-show="item.count != item.totalCount"><a href>more...</a></span>
             </div>
-            <a id="onms-search-result-item-{{$index}}" ng-class="{'active': item.selected}" ng-repeat-end ng-if="item.group === false" href="{{item.url}}" class="list-group-item list-group-item-action flex-column align-items-start">
+            <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-repeat-end ng-if="item.group === false" href="{{item.url}}" class="list-group-item list-group-item-action">
                 <h6 class="mb-0"><i class="{{item.icon}}" ng-if="item.icon">&nbsp;</i>{{item.label}}</h6>
-                <span class="mr-2 badge badge-secondary" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</span>
+                <small class="mr-4" ng-class="{'text-muted': !item.selected}" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</small>
             </a>
         </div>
 

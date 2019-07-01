@@ -87,13 +87,34 @@ const quickSearchTemplate  = require('./quicksearch.html');
             $document.bind('keydown', function(e) {
                 $scope.$apply(function() {
                     if ($scope.results.length > 0) {
+                        var element = document.getElementById('onms-search-result-item-' + $scope.selectedIndex);
                         if (e.keyCode === KeyCodes.KEY_UP || e.keyCode === KeyCodes.KEY_DOWN) {
                             $scope.navigateSearchResult(e.keyCode);
+
+                            // Ideally we would use scrollToView(), but that will also scroll the body, which
+                            // results in the header scrolling down slightly, which looks weird when using the search
+                            // So instead scrolling is implemented manually
+                            // TODO MVR make this more angular friendly
+                            var parentComponent = document.getElementById('onms-search-result');
+                            var parentHeight = parentComponent.clientHeight;
+                            var resultHeight = element.clientHeight;
+                            var resultOffset = element.offsetTop;
+                            var padding = 25;
+
+                            // Scroll down
+                            if (resultOffset + resultHeight + padding >= parentHeight + parentComponent.scrollTop) {
+                                parentComponent.scrollTop = resultOffset;
+                            }
+                            // Scroll up
+                            if (parentComponent.scrollTop !== 0
+                                && parentComponent.scrollTop > resultOffset - resultHeight) {
+                                parentComponent.scrollTop = resultOffset - resultHeight;
+                            }
                         }
                         if (e.keyCode === KeyCodes.ENTER) {
                             $scope.resetQuery();
                             $scope.cancelRequest();
-                            document.getElementById('onms-search-result-item-' + $scope.selectedIndex).click();
+                            element.click();
                         }
                     }
                 });
