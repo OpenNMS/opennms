@@ -403,7 +403,6 @@ public class FlowDocument {
     }
 
     public void setDstAddrHostname(String dstAddrHostname) {
-        addHost(dstAddrHostname);
         this.dstAddrHostname = dstAddrHostname;
     }
 
@@ -581,7 +580,6 @@ public class FlowDocument {
     }
 
     public void setSrcAddrHostname(String srcAddrHostname) {
-        addHost(srcAddrHostname);
         this.srcAddrHostname = srcAddrHostname;
     }
 
