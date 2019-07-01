@@ -65,7 +65,10 @@ public class TicketingPluginManager extends InterfaceMapper<TicketingPlugin, Plu
             public void saveOrUpdate(org.opennms.api.integration.ticketing.Ticket ticket) throws PluginException {
                 try {
                     Ticket retrieved = TicketingMapper.buildTicket(ticket);
-                    ext.saveOrUpdate(retrieved);
+                    String ticketId = ext.saveOrUpdate(retrieved);
+                    if(ticketId != null) {
+                        ticket.setId(ticketId);
+                    }
                 } catch (Exception e) {
                     throw new PluginException(e);
                 }

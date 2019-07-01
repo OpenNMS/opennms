@@ -1,6 +1,7 @@
 'use strict';
 
 /* eslint no-console: 0 */
+/* eslint @typescript-eslint/no-use-before-define: 0 */
 
 const jquery = require('vendor/jquery-js');
 const L = require('vendor/leaflet-js');
