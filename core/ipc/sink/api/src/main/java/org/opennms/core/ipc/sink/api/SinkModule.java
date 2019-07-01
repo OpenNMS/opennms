@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.api;
 
+import java.util.Optional;
+
 /**
  * Defines how the messages will be routed and marshaled/unmarshaled over the wire.
  *
@@ -93,4 +95,14 @@ public interface SinkModule<S extends Message, T extends Message> {
      * messages for this module.
      */
     AsyncPolicy getAsyncPolicy();
+
+    /**
+     * Thr routing key will be used to ensure all messages of the same group is handled by the same consumer.
+     *
+     * @param message the message to generate the routing key from
+     * @return the routing key or, {@code Optional.empty()} if no routing is required
+     */
+    default Optional<String> getRoutingKey(T message) {
+        return Optional.empty();
+    }
 }
