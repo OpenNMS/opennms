@@ -1016,9 +1016,6 @@ public class Collectd extends AbstractServiceDaemon implements
 
         LOG.debug("nodeLocationChanged: unscheduling nodeid {} completed.", nodeId);
 
-        // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
-
         scheduleNode(nodeId.intValue(), true);
     }
 
