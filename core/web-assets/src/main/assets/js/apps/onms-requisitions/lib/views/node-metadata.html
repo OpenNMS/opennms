@@ -1,0 +1,50 @@
+<div>
+
+<div class="row">
+  <div class="col">
+    <div class="mt-4 pull-right">
+      <button type="button" class="btn btn-secondary btn-sm" id="add-metadata" ng-click="addMetaData()">
+        <span class="fa fa-plus"/> Add Meta-Data
+      </button>
+    </div>
+  </div>
+</div>
+<p/>
+
+<div class="table-responsive">
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>Scope</th>
+        <th>Interface</th>
+        <th>Service</th>
+        <th>Key</th>
+        <th>Value</th>
+        <th><span class="pull-right">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="entry in node.metaData.requisition | orderBy:['scope','scoped_interface','scoped_service','key']">
+        <td>{{ entry.displayScope() }}</td>
+        <td ng-if="entry.displayInterface() != null">{{ entry.displayInterface() }}</td>
+        <td ng-if="entry.displayInterface() == null" class="text-muted">*</td>
+        <td ng-if="entry.displayService() != null">{{ entry.displayService() }}</td>
+        <td ng-if="entry.displayService() == null" class="text-muted">*</td>
+        <td>{{ entry.key }}</td>
+        <td>{{ entry.value }}</td>
+        <td>
+          <span class="pull-right">
+            <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Edit the meta-data entry" ng-click="editMetaData(entry)">
+              <span class="fa fa-pencil"/>
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Remove the meta-data entry" ng-click="removeMetaData(entry)">
+              <span class="fa fa-trash"/>
+            </button>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>

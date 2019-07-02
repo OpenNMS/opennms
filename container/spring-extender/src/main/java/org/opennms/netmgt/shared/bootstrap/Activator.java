@@ -28,16 +28,11 @@
 
 package org.opennms.netmgt.shared.bootstrap;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import org.eclipse.gemini.blueprint.extender.internal.activator.ContextLoaderListener;
 import org.eclipse.gemini.blueprint.extender.internal.activator.NamespaceHandlerActivator;
 import org.eclipse.gemini.blueprint.extender.internal.support.ExtenderConfiguration;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.springframework.util.ReflectionUtils;
 
 
 // Original the Activator simply loaded the ApplicationContext from the bundle.
@@ -51,7 +46,7 @@ public class Activator implements BundleActivator {
     public Activator() {
         final NamespaceHandlerActivator activateCustomNamespaceHandling = new NamespaceHandlerActivator();
         final ExtenderConfiguration initializeExtenderConfiguration = new ExtenderConfiguration();
-        final MyContextLoaderListener listenForSpringDmBundles = new MyContextLoaderListener(initializeExtenderConfiguration);
+        final ContextLoaderListener listenForSpringDmBundles = new ContextLoaderListener(initializeExtenderConfiguration);
 
         activators = new BundleActivator[] {
                 activateCustomNamespaceHandling,
@@ -65,34 +60,12 @@ public class Activator implements BundleActivator {
         for (int i = 0; i < activators.length; i++) {
             activators[i].start(context);
         }
-
-        // Manually trigger start of spring application context for this bundle
-        ((MyContextLoaderListener)activators[activators.length - 1]).maybeCreateApplicationContextFor(context.getBundle());
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         for (int i = activators.length - 1; i >= 0; i--) {
             activators[i].stop(context);
-        }
-    }
-
-    // UGLY HACK  !!
-    // Gemini-listeners do not start application context within the activating bundle.
-    // We use this implementation to manually invoke it
-    private static class MyContextLoaderListener extends ContextLoaderListener {
-
-        public MyContextLoaderListener(ExtenderConfiguration extenderConfiguration) {
-            super(extenderConfiguration);
-        }
-
-        public void maybeCreateApplicationContextFor(Bundle bundle) {
-            final Field field = ReflectionUtils.findField(getClass(), "lifecycleManager", null);
-            ReflectionUtils.makeAccessible(field);
-            Object target = ReflectionUtils.getField(field, this);
-            Method method = ReflectionUtils.findMethod(target.getClass(), "maybeCreateApplicationContextFor", Bundle.class);
-            ReflectionUtils.makeAccessible(method);
-            ReflectionUtils.invokeMethod(method, target, bundle);
         }
     }
 }

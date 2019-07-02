@@ -3,11 +3,12 @@ Maintainer: Benjamin Reed <ranger@opennms.org>
 Section: contrib/net
 Priority: optional
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 9), oracle-java8-installer | openjdk-8-jdk | java8-jdk, rsync
+Build-Depends: debhelper (>= 9), oracle-java8-installer | openjdk-8-jdk-headless | openjdk-8-jdk | java8-jdk, rsync
 
 Package: opennms-minion
 Architecture: all
 Depends: opennms-minion-features-default (=${binary:Version})
+Recommends: openjdk-11-jre-headless | openjdk-11-jre | oracle-java8-installer | openjdk-8-jre-headless | openjdk-8-jre | java8-runtime-headless | java8-runtime
 Description: distributed OpenNMS monitoring client
  OpenNMS Minion is a container infrastructure for distributed, scalable network
  management and monitoring.
@@ -16,7 +17,9 @@ Description: distributed OpenNMS monitoring client
 
 Package: opennms-minion-container
 Architecture: all
-Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, adduser, openssh-client, uuid-runtime, sudo, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Depends: adduser, openssh-client, uuid-runtime, sudo
+Recommends: jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Suggests: openjdk-11-jre-headless | openjdk-11-jre | oracle-java8-installer | openjdk-8-jre-headless | openjdk-8-jre | java8-runtime-headless | java8-runtime
 Description: distributed OpenNMS monitoring client (main container)
  OpenNMS Minion is a container infrastructure for distributed, scalable network
  management and monitoring.

@@ -3,9 +3,11 @@ package org.opennms.smoketest;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Base64;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +18,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author mvrueden
  */
-public class OsgiDeployedApplicationsIT extends OpenNMSSeleniumTestCase {
+public class OsgiDeployedApplicationsIT extends OpenNMSSeleniumIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(OsgiDeployedApplicationsIT.class);
 
@@ -56,12 +58,12 @@ public class OsgiDeployedApplicationsIT extends OpenNMSSeleniumTestCase {
 
     private void verifyUrls(final String[] paths, final int expectedStatus, final String expectedStatusText) throws IOException {
         for (final String eachPath : paths) {
-            final String urlString = String.format("http://%s:%s/opennms/%s", getServerAddress(), getServerHttpPort(), eachPath);
+            final String urlString = getBaseUrlExternal() + "opennms/" + eachPath;
             LOG.info("Verifying url '{}' ...", urlString);
 
             final URL url = new URL(urlString);
             final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty ("Authorization", createBasicAuthHeader());
+            connection.setRequestProperty ("Authorization", "Basic " + Base64.getEncoder().encodeToString((OpenNMSContainer.ADMIN_USER + ":" + OpenNMSContainer.ADMIN_PASSWORD).getBytes()));
             connection.setConnectTimeout(250);
             connection.setUseCaches(false);
             connection.setDoOutput(false);

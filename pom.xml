@@ -1313,7 +1313,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <karafVersion>4.2.3</karafVersion>
+    <karafVersion>4.2.6</karafVersion>
     <kafkaBundleVersion>2.2.0_1</kafkaBundleVersion>
     <kafkaVersion>2.2.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
@@ -1332,7 +1332,7 @@
     <protobuf3Version>3.5.1</protobuf3Version>
     <postgresqlVersion>42.2.5</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
-    <opennmsApiVersion>0.1.1</opennmsApiVersion>
+    <opennmsApiVersion>0.2.1-SNAPSHOT</opennmsApiVersion>
     <osgiVersion>6.0.0</osgiVersion>
     <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
@@ -1343,11 +1343,13 @@
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <quartzVersion>2.2.3</quartzVersion>
+    <rancidApiVersion>1.0.4</rancidApiVersion>
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <rocksdbjniVersion>5.15.10</rocksdbjniVersion>
     <scalaLibraryVersion>2.12.8</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.0</scalaLoggingVersion>
     <scalaVersion>2.12</scalaVersion>
+    <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.21</slf4jVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
@@ -1382,9 +1384,9 @@
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.6</frontendPluginVersion>
-    <nodeVersion>v8.11.3</nodeVersion>
-    <npmVersion>5.6.0</npmVersion>
-    <yarnVersion>v1.7.0</yarnVersion>
+    <nodeVersion>v8.16.0</nodeVersion>
+    <npmVersion>6.4.1</npmVersion>
+    <yarnVersion>v1.16.0</yarnVersion>
   </properties>
 
   <profiles>
@@ -2004,6 +2006,11 @@
       <dependency>
         <groupId>org.opennms.features.collection</groupId>
         <artifactId>org.opennms.features.collection.test-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

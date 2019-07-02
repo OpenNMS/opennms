@@ -33,18 +33,15 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.greaterThan;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.Date;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
@@ -53,13 +50,12 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.MinionProfile;
+import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
 
 /**
  * Verifies that we can issue scans on the Minion and generate newSuspect events.
@@ -67,75 +63,58 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
  * @author jwhite
  */
 public class DiscoveryIT {
-    private static TestEnvironment minionSystem;
 
     @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().all();
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            minionSystem = builder.build();
-            return minionSystem;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        OpenNMSSeleniumTestCase.assumeDockerEnabled();
-    }
+    public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinions(MinionProfile.newBuilder()
+                    // Enable ICMP support for this test
+                    .withIcmpSupportEnabled(true)
+                    .build())
+            .build());
 
     @Test
-    public void canDiscoverRemoteNodes() throws ClientProtocolException, IOException {
+    public void canDiscoverRemoteNodes() throws IOException, InterruptedException {
         Date startOfTest = new Date();
- 
-        final String tomcatIp = minionSystem.getContainerInfo(ContainerAlias.TOMCAT)
-                .networkSettings().ipAddress();
-        final InetSocketAddress opennmsHttp = minionSystem.getServiceAddress(ContainerAlias.OPENNMS, 8980);
-        final HttpHost opennmsHttpHost = new HttpHost(opennmsHttp.getAddress().getHostAddress(), opennmsHttp.getPort());
+
+        final HttpHost opennmsHttpHost = new HttpHost(stack.opennms().getContainerIpAddress(), stack.opennms().getWebPort());
 
         HttpClient instance = HttpClientBuilder.create()
                 .setRedirectStrategy(new LaxRedirectStrategy()) // Ignore the 302 response to the POST
                 .build();
 
         Executor executor = Executor.newInstance(instance)
-                .auth(opennmsHttpHost, "admin", "admin")
+                .auth(opennmsHttpHost, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)
                 .authPreemptive(opennmsHttpHost);
 
         // Configure Discovery with the specific address of our Tomcat server
         // No REST endpoint is currently available to configure the Discovery daemon
         // so we resort to POSTin nasty form data
         executor.execute(Request.Post(String.format("http://%s:%d/opennms/admin/discovery/actionDiscovery?action=AddSpecific",
-                opennmsHttp.getAddress().getHostAddress(), opennmsHttp.getPort()))
+                opennmsHttpHost.getHostName(), opennmsHttpHost.getPort()))
             .bodyForm(Form.form()
-                    .add("specificipaddress", tomcatIp)
+                    .add("specificipaddress", stack.opennms().getContainerIpAddress())
                     .add("specifictimeout", "2000")
                     .add("specificretries", "1")
                     .add("initialsleeptime", "30000")
                     .add("restartsleeptime", "86400000")
                     .add("foreignsource", "NODES")
-                    .add("location", "MINION")
+                    .add("location", stack.minion().getLocation())
                     .add("retries", "1")
                     .add("timeout", "2000")
                     .build())).returnContent();
 
         executor.execute(Request.Post(String.format("http://%s:%d/opennms/admin/discovery/actionDiscovery?action=SaveAndRestart",
-                opennmsHttp.getAddress().getHostAddress(), opennmsHttp.getPort()))
+                opennmsHttpHost.getHostName(), opennmsHttpHost.getPort()))
             .bodyForm(Form.form()
                     .add("initialsleeptime", "1")
                     .add("restartsleeptime", "86400000")
                     .add("foreignsource", "NODES")
-                    .add("location", "MINION")
+                    .add("location", stack.minion().getLocation())
                     .add("retries", "1")
                     .add("timeout", "2000")
                     .build())).returnContent();
 
-        InetSocketAddress pgsql = minionSystem.getServiceAddress(ContainerAlias.POSTGRES, 5432);
-        HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
+        HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
 
         Criteria criteria = new CriteriaBuilder(OnmsEvent.class)
@@ -143,6 +122,7 @@ public class DiscoveryIT {
                 .ge("eventTime", startOfTest)
                 .toCriteria();
 
-        await().atMost(1, MINUTES).pollInterval(10, SECONDS).until(DaoUtils.countMatchingCallable(eventDao, criteria), greaterThan(0));
+        await().atMost(1, MINUTES).pollInterval(10, SECONDS)
+                .until(DaoUtils.countMatchingCallable(eventDao, criteria), greaterThan(0));
     }
 }

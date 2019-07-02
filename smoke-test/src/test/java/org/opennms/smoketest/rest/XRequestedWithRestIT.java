@@ -34,18 +34,24 @@ import static org.hamcrest.Matchers.nullValue;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 
 import io.restassured.RestAssured;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 
 // Ensures if "X-Requeste-With" is set to "XMLHttpRequest" no "WWW-Authenticate" header is sent with the response
-public class XRequestedWithRestIT extends OpenNMSSeleniumTestCase {
+public class XRequestedWithRestIT {
+
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = getBaseUrl();
-        RestAssured.port = getServerHttpPort();
+        // Always reset the session before the test since we expect no existing session/cookies to be present
+        RestAssured.reset();
+        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+        RestAssured.port = stack.opennms().getWebPort();
         RestAssured.basePath = "/opennms/rest/";
     }
 

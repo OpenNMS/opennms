@@ -57,6 +57,12 @@ public final class OptionsTemplateRecord implements Record {
         final List<ScopeFieldSpecifier> scopeFields = new LinkedList<>();
         for (int i = 0; i < this.header.optionScopeLength; i += ScopeFieldSpecifier.SIZE) {
             final ScopeFieldSpecifier scopeField = new ScopeFieldSpecifier(buffer);
+
+            // Ignore scope fields without a value so they will always match during scope resolution
+            if (scopeField.fieldLength == 0) {
+                continue;
+            }
+
             scopeFields.add(scopeField);
         }
 

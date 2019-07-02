@@ -59,8 +59,6 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
@@ -82,6 +80,7 @@ import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmp.InetAddrUtils;
+import org.opennms.netmgt.threshd.ThresholdingService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -191,7 +190,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private PersisterFactory m_persisterFactory;
 
     @Autowired
-    private ResourceStorageDao m_resourceStorageDao;
+    private ThresholdingService m_thresholdingService;
 
     /**
      * Constructor.
@@ -225,14 +224,6 @@ public class Collectd extends AbstractServiceDaemon implements
 
         installMessageSelectors();
 
-        // since thresholding is triggered from collectd now, make sure it is initialized properly now
-        // see: https://issues.opennms.org/browse/NMS-9064
-        try {
-            ThreshdConfigFactory.init();
-            ThresholdingConfigFactory.init();
-        } catch (final Exception e) {
-            throw new RuntimeException("Unable to initialize thresholding.", e);
-        }
     }
 
     private void installMessageSelectors() {
@@ -301,6 +292,14 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
+    }
+
+    public ThresholdingService getThresholdingService() {
+        return m_thresholdingService;
+    }
+
+    public void setThresholdingService(ThresholdingService thresholdingService) {
+        m_thresholdingService = thresholdingService;
     }
 
     private ReadyRunnable ifScheduler() {
@@ -531,7 +530,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     m_schedulingCompletedFlag,
                     m_transTemplate.getTransactionManager(),
                     m_persisterFactory,
-                    m_resourceStorageDao
+                    m_thresholdingService
                 );
 
                 // Add new collectable service to the collectable service list.
@@ -997,9 +996,6 @@ public class Collectd extends AbstractServiceDaemon implements
         unscheduleNodeAndMarkForDeletion(nodeId);
 
         LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
-        
-        // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
 
         scheduleNode(nodeId.intValue(), true);
     }
@@ -1113,70 +1109,11 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkInterface(event);
         EventUtils.checkService(event);
 
-        // Before scheduling, update Thrshd packages
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
-
         // Schedule the interface
         scheduleForCollection(event);
     }
     
     private void handleReloadDaemonConfig(Event event) {
-        final String thresholdsDaemonName = "Threshd";
-        boolean isThresholds = false;
-        for (Parm parm : event.getParmCollection()) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && thresholdsDaemonName.equalsIgnoreCase(parm.getValue().getContent())) {
-                isThresholds = true;
-                break;
-            }
-        }
-        if (isThresholds) {
-            String thresholdsFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
-            String threshdFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
-            String targetFile = thresholdsFile; // Default
-            for (Parm parm : event.getParmCollection()) {
-                if (EventConstants.PARM_CONFIG_FILE_NAME.equals(parm.getParmName()) && threshdFile.equalsIgnoreCase(parm.getValue().getContent())) {
-                    targetFile = threshdFile;
-                }
-            }
-            EventBuilder ebldr = null;
-            try {
-                // Reloading Factories
-                if (targetFile.equals(thresholdsFile)) {
-                    ThresholdingConfigFactory.reload();
-                }
-                if (targetFile.equals(threshdFile)) {
-                    ThreshdConfigFactory.reload();
-                    ThresholdingConfigFactory.reload(); // This is required if the threshold packages has been changed.
-                }
-                // Sending the threshold configuration change event
-                ebldr = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, "Collectd");
-                getEventIpcManager().sendNow(ebldr.getEvent());
-                // Updating thresholding visitors to use the new configuration
-                LOG.debug("handleReloadDaemonConfig: Reloading thresholding configuration in collectd");
-                synchronized (m_collectableServices) {
-                    for(CollectableService service: m_collectableServices) {
-                        service.reinitializeThresholding();
-                    }
-                }
-                // Preparing successful event
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, thresholdsDaemonName);
-                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-            } catch (Throwable e) {
-                // Preparing failed event
-                LOG.error("handleReloadDaemonConfig: Error reloading/processing thresholds configuration: {}", e.getMessage(), e);
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, thresholdsDaemonName);
-                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-                ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
-            }
-            finally {
-                if (ebldr != null) {
-                    getEventIpcManager().sendNow(ebldr.getEvent());
-                }
-            }
-        }
-
         final String collectionDaemonName = "Collectd";
         boolean isCollection = false;
         for (Parm parm : event.getParmCollection()) {

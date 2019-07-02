@@ -5,6 +5,7 @@ require('../lib/scripts/controllers/CloneForeignSource.js');
 require('../lib/scripts/controllers/Detector.js');
 require('../lib/scripts/controllers/ForeignSource.js');
 require('../lib/scripts/controllers/Interface.js');
+require('../lib/scripts/controllers/MetaData.js');
 require('../lib/scripts/controllers/Move.js');
 require('../lib/scripts/controllers/Node.js');
 require('../lib/scripts/controllers/Policy.js');

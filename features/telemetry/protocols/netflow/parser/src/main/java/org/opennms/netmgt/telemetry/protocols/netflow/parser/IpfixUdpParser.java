@@ -31,16 +31,21 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
-import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
 public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
@@ -62,4 +67,42 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     public boolean handles(final ByteBuffer buffer) {
         return uint16(buffer) == Header.VERSION;
     }
+
+    @Override
+    protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
+        return new SessionKey(remoteAddress, localAddress);
+    }
+
+    public static class SessionKey implements UdpSessionManager.SessionKey {
+        private final InetSocketAddress remoteAddress;
+        private final InetSocketAddress localAddress;
+
+        public SessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
+            this.remoteAddress = remoteAddress;
+            this.localAddress = localAddress;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final SessionKey that = (SessionKey) o;
+            return Objects.equal(this.localAddress, that.localAddress) &&
+                    Objects.equal(this.remoteAddress, that.remoteAddress);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(this.localAddress, this.remoteAddress);
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("remoteAddress", remoteAddress)
+                    .add("localAddress", localAddress)
+                    .toString();
+        }
+    }
+
 }

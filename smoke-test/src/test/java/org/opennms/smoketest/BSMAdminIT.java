@@ -40,9 +40,10 @@ import javax.annotation.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
@@ -55,14 +56,12 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.Lists;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
-public class BSMAdminIT extends OpenNMSSeleniumTestCase {
+public class BSMAdminIT extends OpenNMSSeleniumIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
 
@@ -70,15 +69,15 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      * Class to control the inputs of the "Business Service Edit"-Window
      */
     public static class BsmAdminPageEditWindow {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
         @SuppressWarnings("unused")
         private final String businessServiceName;
 
-        private BsmAdminPageEditWindow(OpenNMSSeleniumTestCase testCase) {
+        private BsmAdminPageEditWindow(AbstractOpenNMSSeleniumHelper testCase) {
             this(testCase, null);
         }
 
-        private BsmAdminPageEditWindow(final OpenNMSSeleniumTestCase testCase, final String businessServiceName) {
+        private BsmAdminPageEditWindow(final AbstractOpenNMSSeleniumHelper testCase, final String businessServiceName) {
             this.testCase = Objects.requireNonNull(testCase);
             this.businessServiceName = businessServiceName;
         }
@@ -254,12 +253,12 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      * Class to control the inputs and workflow of the "Business Service Admin" Page
      */
     public static class BsmAdminPage {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
         private final String bsmAdminUrl;
 
-        public BsmAdminPage(final OpenNMSSeleniumTestCase testCase) {
+        public BsmAdminPage(final AbstractOpenNMSSeleniumHelper testCase) {
             this.testCase = Objects.requireNonNull(testCase);
-            this.bsmAdminUrl = testCase.getBaseUrl() + "opennms/admin/bsm-admin-page";
+            this.bsmAdminUrl = testCase.getBaseUrlInternal() + "opennms/admin/bsm-admin-page";
         }
 
         public BsmAdminPage open() {
@@ -313,9 +312,9 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     }
 
     public static class BsmAdminPageEdgeEditWindow {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
 
-        private BsmAdminPageEdgeEditWindow(final OpenNMSSeleniumTestCase testCase) {
+        private BsmAdminPageEdgeEditWindow(final AbstractOpenNMSSeleniumHelper testCase) {
             this.testCase = Objects.requireNonNull(testCase);
         }
 
@@ -375,9 +374,9 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     }
 
     public static class BsmAdminPageAttributeEditWindow {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
 
-        private BsmAdminPageAttributeEditWindow(final OpenNMSSeleniumTestCase testCase) {
+        private BsmAdminPageAttributeEditWindow(final AbstractOpenNMSSeleniumHelper testCase) {
             this.testCase = Objects.requireNonNull(testCase);
         }
 
@@ -433,14 +432,14 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     private BsmAdminPage bsmAdminPage;
 
     private void createTestSetup() throws Exception {
-        String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+        String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">\n" +
                 "<scan-interval>1d</scan-interval>\n" +
                 "<detectors/>\n" +
                 "<policies/>\n" +
                 "</foreign-source>";
         createForeignSource(REQUISITION_NAME, foreignSourceXML);
 
-        String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+        String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">" +
                 "   <node foreign-id=\"NodeA\" node-label=\"NodeA\">" +
                 "       <interface ip-addr=\"::1\" status=\"1\" snmp-primary=\"N\">" +
                 "           <monitored-service service-name=\"AAA\"/>" +
@@ -764,8 +763,8 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
     }
 
-    private static WebElement findDeleteButton(OpenNMSSeleniumTestCase testCase, String serviceName) {
-        return testCase.findElementById("deleteButton-" + serviceName);
+    private static WebElement findDeleteButton(AbstractOpenNMSSeleniumHelper testCase, String serviceName) {
+        return testCase.waitUntil(ExpectedConditions.elementToBeClickable(By.id("deleteButton-" + serviceName)));
     }
 
     private void verifyElementNotPresent(String text) {
@@ -784,7 +783,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      * Verifies that the provided element is not present.
      * @param by
      */
-    private static void verifyElementNotPresent(OpenNMSSeleniumTestCase testCase, final By by) {
+    private static void verifyElementNotPresent(AbstractOpenNMSSeleniumHelper testCase, final By by) {
         new WebDriverWait(testCase.getDriver(), 5 /* seconds */).until(
                                                                        ExpectedConditions.not(new ExpectedCondition<Boolean>() {
                                                                            @Nullable
@@ -1064,7 +1063,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      * Vaadin usually wraps the select elements around a div element.
      * This method considers this.
      */
-    private static Select getSelectWebElement(final OpenNMSSeleniumTestCase testCase, final String id) {
+    private static Select getSelectWebElement(final OpenNMSSeleniumIT testCase, final String id) {
         return testCase.getSelect(id);
     }
 }

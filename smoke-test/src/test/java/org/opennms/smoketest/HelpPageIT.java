@@ -35,11 +35,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-public class HelpPageIT extends OpenNMSSeleniumTestCase {
+public class HelpPageIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() throws Exception {
-        m_driver.get(getBaseUrl() + "opennms/help/index.jsp");
+        driver.get(getBaseUrlInternal() + "opennms/help/index.jsp");
     }
 
     @Test
@@ -67,7 +67,7 @@ public class HelpPageIT extends OpenNMSSeleniumTestCase {
         };
         assertEquals(links.length, countElementsMatchingCss("a.btn"));
         for (final String text : links) {
-            assertNotNull("Link with text '" + text + "' must exist.", m_driver.findElement(By.linkText(text)));
+            assertNotNull("Link with text '" + text + "' must exist.", driver.findElement(By.linkText(text)));
         }
     }
 }

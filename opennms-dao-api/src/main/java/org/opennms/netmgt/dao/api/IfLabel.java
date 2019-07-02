@@ -90,4 +90,6 @@ public interface IfLabel {
      * @return a {@link java.lang.String} object.
      */
     String getIfLabel(String name, String descr, String physAddr);
+
+    void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao);
 }

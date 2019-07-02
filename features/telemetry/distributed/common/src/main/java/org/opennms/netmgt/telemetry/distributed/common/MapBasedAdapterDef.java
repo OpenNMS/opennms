@@ -28,18 +28,16 @@
 
 package org.opennms.netmgt.telemetry.distributed.common;
 
+import com.google.common.collect.Lists;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import javax.xml.bind.JAXB;
-
-import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
-
-import com.google.common.collect.Lists;
 
 public class MapBasedAdapterDef implements AdapterDefinition {
     private final String name;
@@ -74,7 +72,7 @@ public class MapBasedAdapterDef implements AdapterDefinition {
     @Override
     public List<? extends PackageDefinition> getPackages() {
         try (InputStream inputStream = getClass().getResourceAsStream("/package.xml")) {
-            final org.opennms.netmgt.telemetry.config.model.PackageConfig pkg = JAXB.unmarshal(inputStream, org.opennms.netmgt.telemetry.config.model.PackageConfig.class);
+            final org.opennms.netmgt.telemetry.config.model.PackageConfig pkg = JaxbUtils.unmarshal(org.opennms.netmgt.telemetry.config.model.PackageConfig.class, inputStream);
             return Lists.newArrayList(pkg);
         } catch (IOException e) {
             throw new RuntimeException("Error while reading package.xml", e);

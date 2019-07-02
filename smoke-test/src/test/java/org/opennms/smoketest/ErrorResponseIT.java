@@ -49,13 +49,13 @@ import org.opennms.core.web.HttpClientWrapper;
  * Verifies that the OpenNMS ReST endpoints handle uncatched Exceptions accordingly and do not return the general JSP error page.
  * See HZN-1108.
  */
-public class ErrorResponseIT extends OpenNMSSeleniumTestCase {
+public class ErrorResponseIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyErrorResponseV1() throws IOException {
         try (HttpClientWrapper client = createClientWrapper()) {
             // "INVALID-XML" is not a valid graphml definition, therefore unmarshalling will fail.
-            HttpPost httpPost = new HttpPost(getBaseUrl() + "opennms/rest/graphml/test-graph");
+            HttpPost httpPost = new HttpPost(getBaseUrlExternal() + "opennms/rest/graphml/test-graph");
             httpPost.setHeader("Accept", "application/xml");
             httpPost.setHeader("Content-Type", "application/xml");
             httpPost.setEntity(new StringEntity("INVALID-XML"));
@@ -68,7 +68,7 @@ public class ErrorResponseIT extends OpenNMSSeleniumTestCase {
     public void verifyErrorResponseV2() throws IOException {
         try (HttpClientWrapper client = createClientWrapper()) {
             // The FIQL parser expects == and cannot handle =.
-            HttpGet httpGet = new HttpGet(getBaseUrl() + "opennms/api/v2/nodes?_s=label=*");
+            HttpGet httpGet = new HttpGet(getBaseUrlExternal() + "opennms/api/v2/nodes?_s=label=*");
             httpGet.setHeader("Accept", "application/json");
             CloseableHttpResponse response = client.execute(httpGet);
             verify(response);
