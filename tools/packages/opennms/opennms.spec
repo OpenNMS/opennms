@@ -533,23 +533,23 @@ if [ "%{skip_compile}" = 1 ]; then
 		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 	fi
 	TOPDIR=`pwd`
-	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads 4
+	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install --builder smart --threads 4
+		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install --builder smart --threads ${CCI_MAXCPU:-2}
 fi
 
 cd opennms-tools
 	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-	-Dopennms.home="%{instprefix}" install --builder smart --threads 4
+	-Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
 cd -
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install --builder smart --threads 4
+	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install --builder smart --threads ${CCI_MAXCPU:-2}
 
 echo "=== INSTALL COMPLETED ==="
 

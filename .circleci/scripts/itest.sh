@@ -1,27 +1,43 @@
 #!/bin/sh -e
 
+remove_paths()
+{
+    while read data; do
+        echo "$data" |\
+        sed '/^opennms-tools[/,].*/d' |\
+        sed '/^smoke-test-v2[/,].*/d' |\
+        sed '/^smoke-test[/,].*/d' |\
+        sed '/^opennms-assemblies[/,].*/d' |\
+        sed '/^opennms-full-assembly[/,].*/d' |\
+        sed '/^remote-poller-18[/,].*/d' |\
+        sed '/^org.opennms.features.topology.plugins.ssh[/,].*/d' |\
+        sed '/^opennms-install[/,].*/d'
+    done
+}
+
 find_tests()
 {
     # Generate project name list with path
     pyenv local 3.5.2
-    python3 .circleci/scripts/find-tests.py . -p > projects_with_path
+    python3 .circleci/scripts/find-tests.py . -p |\
+        remove_paths > projects_with_path
 
     # Generate surefire test list
     circleci tests glob **/src/test/java/**/*Test*.java |\
-        sed -f ./.circleci/scripts/ignore-dir.sed |\
+        remove_paths |\
         sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > surefire_classnames
     circleci tests glob **/src/test/java/**/*Test*.java |\
-        sed -f ./.circleci/scripts/ignore-dir.sed |\
+        remove_paths |\
         sed -e 's#^\(.*\)\/src/test/java/\(.*\)\.java#\1,\2#' |\
         sed -e ':a' -e 's_^\([^,]*\)/_\1\\_;t a' |\
         sed 's#/#.#g;s#\\#/#g' > surefire_classnames_with_path
 
     # Generate failsafe test list
     circleci tests glob **/src/test/java/**/*IT*.java |\
-        sed -f ./.circleci/scripts/ignore-dir.sed |\
+        remove_paths |\
         sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > failsafe_classnames
     circleci tests glob **/src/test/java/**/*IT*.java |\
-        sed -f ./.circleci/scripts/ignore-dir.sed |\
+        remove_paths |\
         sed -e 's#^\(.*\)\/src/test/java/\(.*\)\.java#\1,\2#' |\
         sed -e ':a' -e 's_^\([^,]*\)/_\1\\_;t a' |\
         sed 's#/#.#g;s#\\#/#g' > failsafe_classnames_with_path

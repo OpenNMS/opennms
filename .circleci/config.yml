@@ -284,6 +284,7 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
             ./makerpm.sh -a -d -S tools/packages/opennms/opennms.spec
       - setup_remote_docker:
           docker_layer_caching: true
@@ -314,6 +315,8 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=3
+            export CCI_VAADINJAVAMAXMEM=768m
             ./makerpm.sh -a -d -S tools/packages/minion/minion.spec
       - setup_remote_docker:
           docker_layer_caching: true
@@ -344,6 +347,8 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=3
+            export CCI_VAADINJAVAMAXMEM=768m
             ./makerpm.sh -a -d -S tools/packages/sentinel/sentinel.spec
       - setup_remote_docker:
           docker_layer_caching: true
