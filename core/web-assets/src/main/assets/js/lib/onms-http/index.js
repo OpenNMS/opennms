@@ -10,9 +10,10 @@ angular.module('onms.http', ['ui.bootstrap'])
             responseError: function (rejection) {
                 if (rejection.status === 401) {
                     if (rejection.config && rejection.config.url
-                        && (rejection.config.url.startsWith("rest/")
-                            || rejection.config.url.startsWith("api/v2/"))
+                        && (rejection.config.url.startsWith('rest/')
+                            || rejection.config.url.startsWith('api/v2/'))
                     ) {
+                        console.error('Login Required', rejection, rejection.headers); // eslint-disable-line no-console
                         $rootScope.$emit('loginRequired');
                     }
                 }
@@ -35,7 +36,7 @@ angular.module('onms.http', ['ui.bootstrap'])
             if (baseTags && baseTags.length > 0 && baseTags[0].href) {
                 window.location.href = baseTags[0].href + 'login.jsp?session_expired=true';
             } else {
-                console.log("Login is required, but cannot forward to login page due to missing base tag.");
+                console.warn('Login is required, but cannot forward to login page due to missing base tag.'); // eslint-disable-line no-console
             }
         });
 
