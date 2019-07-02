@@ -79,7 +79,7 @@ public class FilterSearchProvider implements SearchProvider {
                             .withOnmsNode(node)
                             .withMatch("filter.criteria", "Filter Criteria", input).build())
                     .collect(Collectors.toList());
-            return new SearchResult(Contexts.Node).withResults(searchResultItems).withTotalCount(nodeMap.size());
+            return new SearchResult(Contexts.Node).withResults(searchResultItems).withMore(nodeMap.size() > matchingNodes.size());
         } catch (FilterParseException ex) {
             // TODO MVR Ignore for now
             return SearchResult.EMPTY;

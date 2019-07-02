@@ -75,7 +75,7 @@ public class NodeCategorySearchProvider implements SearchProvider {
                     .forEach(c -> searchResultItem.addMatch(new Match("category.name", "Category", c.getName())));
             return searchResultItem;
         }).collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Node).withTotalCount(totalCount).withResults(searchResultItems);
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);
         return searchResult;
     }
 }

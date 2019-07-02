@@ -74,7 +74,7 @@ public class KscReportSearchProvider implements SearchProvider {
                 })
                 .limit(query.getMaxResults())
                 .collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(CONTEXT).withTotalCount(reportList.size()).withResults(results);
+        final SearchResult searchResult = new SearchResult(CONTEXT).withMore(reportList, results).withResults(results);
         return searchResult;
     }
 }

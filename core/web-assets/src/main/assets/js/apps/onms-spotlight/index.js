@@ -41,6 +41,12 @@ const quickSearchTemplate  = require('./quicksearch.html');
                 KEY_DOWN: 40,
             };
 
+            var Types = {
+                Group: 'Group',
+                Item: 'Item',
+                More: 'More'
+            };
+
             $scope.query = '';
             $scope.results = {};
             $scope.performSearchExecuted = false;
@@ -112,7 +118,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
                             }
                         }
                         if (e.keyCode === KeyCodes.ENTER) {
-                            if ($scope.results[$scope.selectedIndex].more === true) {
+                            if ($scope.results[$scope.selectedIndex].type === Types.More) {
                                 // Break out the current angular $apply cycle
                                 $timeout(function() {
                                     angular.element(element).triggerHandler('click');
@@ -145,7 +151,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
                 if ($scope.selectedIndex >= $scope.results.length) {
                     $scope.selectedIndex = $scope.results.length - 1;
                 }
-                if ($scope.results[$scope.selectedIndex].group) {
+                if ($scope.results[$scope.selectedIndex].type === Types.Group) {
                     $scope.navigateSearchResult(keyCode); // Skip group element
                 } else {
                     $scope.results[$scope.selectedIndex].selected = true;
@@ -214,14 +220,14 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                         context: eachResult.context.name,
                                         // Make the label have an s at the end if it has multiple items
                                         label: eachResult.results.length > 1 ? eachResult.context.name + 's' : eachResult.context.name,
-                                        group: true,
+                                        type: Types.Group,
                                         count: eachResult.results.length,
-                                        totalCount: eachResult.totalCount
+                                        more: eachResult.more
                                     }
                                 );
 
                                 eachResult.results.forEach(function(item) {
-                                    item.group = false; // result cannot be a group
+                                    item.type = Types.Item;
                                     results.push(item);
 
                                     // TODO MVR we first create this, and now we undo this, should be different
@@ -238,13 +244,11 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                     });
                                 });
 
-                                if (eachResult.totalCount != eachResult.results.length) {
+                                if (eachResult.more === true) {
                                     var showMoreElement = {
                                         context: eachResult.context.name,
                                         count: eachResult.results.length,
-                                        totalCount: eachResult.totalCount,
-                                        group: false,
-                                        more: true,
+                                        type: Types.More,
                                         loadMore: function() {
                                             SearchResource.query({'_s': $scope.query, '_l': this.count + 10, '_c' : this.context}, function(response) {
                                                 var endIndex = $scope.results.indexOf(showMoreElement);
@@ -253,7 +257,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                                 var searchResult = response[0];
                                                 var results = searchResult.results.slice(endIndex - 1); // Remove first elements, as they are already being showed
                                                 results.forEach(function(item, i) {
-                                                    item.group = false; // result cannot be a group
+                                                    item.type = Types.Item;
 
                                                     // TODO MVR we first create this, and now we undo this, should be different
                                                     var matches = item.matches;
@@ -276,7 +280,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                                 $scope.results[$scope.selectedIndex].selected = true;
 
                                                 // Hide element
-                                                if (showMoreElement.count === showMoreElement.totalCount) {
+                                                if (searchResult.more === false) {
                                                     $scope.results.splice($scope.results.indexOf(showMoreElement), 1);
                                                 }
                                             }, function() {

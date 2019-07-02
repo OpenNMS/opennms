@@ -101,7 +101,7 @@ public class NodeLabelSearchProvider implements SearchProvider {
             searchResultItem.setWeight(100);
             return searchResultItem;
         }).collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Node).withTotalCount(totalCount).withResults(searchResultItems);
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);
         return searchResult;
     }
 }

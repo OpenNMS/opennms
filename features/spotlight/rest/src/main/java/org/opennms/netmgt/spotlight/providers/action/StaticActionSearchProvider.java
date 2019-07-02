@@ -80,7 +80,7 @@ public class StaticActionSearchProvider implements SearchProvider {
                 .collect(Collectors.toList());
         final List<SearchResultItem> searchResultItems = QueryUtils.shrink(allItemsForUser, query.getMaxResults());
         final SearchResult searchResult = new SearchResult(Contexts.Action)
-                .withTotalCount(allItemsForUser.size())
+                .withMore(allItemsForUser, searchResultItems)
                 .withResults(searchResultItems);
         return searchResult;
     }

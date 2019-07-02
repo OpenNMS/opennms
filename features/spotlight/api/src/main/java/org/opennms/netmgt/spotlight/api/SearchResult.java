@@ -29,6 +29,7 @@
 package org.opennms.netmgt.spotlight.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,8 +39,8 @@ public class SearchResult {
     public static SearchResult EMPTY = new SearchResult("$EMPTY$");
 
     private final SearchContext context;
-    private int totalCount;
     private final List<SearchResultItem> results = new ArrayList<>();
+    private boolean more;
 
     public SearchResult(String context) {
         this(new SearchContext(Objects.requireNonNull(context)));
@@ -57,12 +58,8 @@ public class SearchResult {
         return context;
     }
 
-    public int getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
+    public boolean hasMore() {
+        return more;
     }
 
     public List<SearchResultItem> getResults() {
@@ -73,13 +70,26 @@ public class SearchResult {
         return results.isEmpty();
     }
 
+    public void setMore(boolean more) {
+        this.more = more;
+    }
+
+    public boolean isMore() {
+        return more;
+    }
+
     public SearchResult withResults(List<SearchResultItem> searchResultItems) {
         this.results.addAll(searchResultItems);
         return this;
     }
 
-    public SearchResult withTotalCount(int totalCount) {
-        this.totalCount = totalCount;
+    public SearchResult withMore(boolean hasMore) {
+        this.more = hasMore;
+        return this;
+    }
+
+    public SearchResult withMore(Collection<?> totalList, Collection<?> subList) {
+        withMore(totalList.size() > subList.size());
         return this;
     }
 

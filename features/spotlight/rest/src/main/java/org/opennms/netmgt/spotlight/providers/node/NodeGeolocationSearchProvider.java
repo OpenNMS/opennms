@@ -107,7 +107,7 @@ public class NodeGeolocationSearchProvider implements SearchProvider {
                 return result;
             })
             .collect(Collectors.toList());
-        final SearchResult result = new SearchResult(Contexts.Node).withResults(results).withTotalCount(totalCount);
+        final SearchResult result = new SearchResult(Contexts.Node).withResults(results).withMore(totalCount > results.size());
         return result;
     }
 }

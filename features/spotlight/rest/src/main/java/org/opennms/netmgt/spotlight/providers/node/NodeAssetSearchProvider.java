@@ -151,7 +151,7 @@ public class NodeAssetSearchProvider implements SearchProvider {
                 return result;
             })
             .collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Node).withTotalCount(totalCount).withResults(results);
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withMore(totalCount > results.size()).withResults(results);
         return searchResult;
     }
 }

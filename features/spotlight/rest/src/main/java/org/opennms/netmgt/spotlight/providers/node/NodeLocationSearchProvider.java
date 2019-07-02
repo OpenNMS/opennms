@@ -73,7 +73,7 @@ public class NodeLocationSearchProvider implements SearchProvider {
             searchResultItem.addMatch(new Match("location.name", "Node Location", node.getLocation().getLocationName()));
             return searchResultItem;
         }).collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Node).withResults(searchResultItems).withTotalCount(totalCount);
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withResults(searchResultItems).withMore(totalCount > searchResultItems.size());
         return searchResult;
     }
 }

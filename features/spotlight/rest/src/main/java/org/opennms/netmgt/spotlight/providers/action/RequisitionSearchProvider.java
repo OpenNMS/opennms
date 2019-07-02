@@ -77,7 +77,7 @@ public class RequisitionSearchProvider implements SearchProvider {
             })
             .collect(Collectors.toList());
         final SearchResult searchResult = new SearchResult(Contexts.Action)
-                .withTotalCount(requisitions.size())
+                .withMore(requisitions, resultItems)
                 .withResults(resultItems);
         return searchResult;
     }

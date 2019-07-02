@@ -77,7 +77,7 @@ public class NodeIpSearchProvider implements SearchProvider {
                     .forEach(ipInterface -> searchResultItem.addMatch(new Match("ipInterface.ipAddress", "IP Address", InetAddressUtils.str(ipInterface.getIpAddress()))));
             return searchResultItem;
         }).collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Node).withTotalCount(totalCount).withResults(searchResultItems);
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);
         return searchResult;
     }
 }

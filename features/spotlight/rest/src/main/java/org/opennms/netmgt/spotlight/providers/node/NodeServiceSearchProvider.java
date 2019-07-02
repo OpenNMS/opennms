@@ -78,7 +78,7 @@ public class NodeServiceSearchProvider implements SearchProvider {
                     .forEach(service -> searchResultItem.addMatch(new Match("service.name", "Monitored Service", service.getServiceName())));
             return searchResultItem;
         }).collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Node).withResults(searchResultItems).withTotalCount(totalCount);
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withResults(searchResultItems).withMore(totalCount > searchResultItems.size());
         return searchResult;
     }
 }

@@ -85,7 +85,7 @@ public class DefaultSpotlightService implements SpotlightService {
                             if (resultMap.containsKey(providerResult.getContext())) {
                                 final SearchResult mergedResult = resultMap.get(providerResult.getContext());
                                 for (SearchResultItem eachItem : providerResult.getResults()) {
-                                    mergedResult.setTotalCount(Math.max(mergedResult.getTotalCount(), providerResult.getTotalCount()));
+                                    mergedResult.setMore(providerResult.hasMore() || mergedResult.hasMore());
                                     mergedResult.merge(eachItem);
                                 }
                             } else {
@@ -107,12 +107,12 @@ public class DefaultSpotlightService implements SpotlightService {
         final List<SearchResult> searchResultList = resultMap.values().stream()
                 .filter(searchResult -> !searchResult.isEmpty())
                 .map(searchResult -> {
-                            final List<SearchResultItem> limitedAndSortedItems = searchResult.getResults().stream()
-                                    .sorted(Comparator.comparing(SearchResultItem::getWeight).reversed().thenComparing(SearchResultItem::getLabel))
-                                    .limit(query.getMaxResults())
-                                    .collect(Collectors.toList());
-                            return new SearchResult(searchResult.getContext()).withTotalCount(searchResult.getTotalCount()).withResults(limitedAndSortedItems);
-                        }
+                        final List<SearchResultItem> limitedAndSortedItems = searchResult.getResults().stream()
+                                .sorted(Comparator.comparing(SearchResultItem::getWeight).reversed().thenComparing(SearchResultItem::getLabel))
+                                .limit(query.getMaxResults())
+                                .collect(Collectors.toList());
+                        return new SearchResult(searchResult.getContext()).withMore(searchResult.hasMore()).withResults(limitedAndSortedItems);
+                    }
                 )
                 .sorted(Comparator.comparingInt(searchResult -> searchResult.getContext().getWeight()))
                 .collect(Collectors.toList());

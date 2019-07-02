@@ -74,7 +74,7 @@ public class LocationSearchServiceProvider implements SearchProvider {
             searchResultItem.setUrl("element/nodeList.htm?monitoringLocation=" + monitoringLocation.getLocationName());
             return searchResultItem;
         }).collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Action).withTotalCount(totalCount).withResults(searchResultItems);
+        final SearchResult searchResult = new SearchResult(Contexts.Action).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);
         return searchResult;
     }
 }
