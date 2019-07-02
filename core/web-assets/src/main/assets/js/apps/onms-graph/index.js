@@ -207,22 +207,18 @@ const render = () => {
         drawPngGraph(el, def, dim);
       }
       didGraphRendered = true;
-      console.log("Rendered graph " + def.graphName);
+      console.log('Rendered graph ' + def.graphName); // eslint-disable-line no-console
       // Notify other components (i.e cropper) that we have loaded a graph
       $j(document).trigger('graphLoaded', [dim.width, dim.height]);
     };
 
+    // Calculate if div is in viewport and render if it is.
     const renderGraphWhenInView = () => {
       let scrollTop = $(window).scrollTop();
       let windowBottom = scrollTop + $(window).height();
       let offsetTop = el.offset().top;
       let offsetBottom = offsetTop + el.height();
       let divIsHidden = el.parent().hasClass('ng-hide');
-      let visibleScrollbars = window.scrollbars.visible;
-      if (!visibleScrollbars) {
-        console.log('Scroll bar not visible');
-        renderGraph();
-      }
       if ((scrollTop <= offsetBottom && windowBottom >= offsetTop) && !didGraphRendered && !divIsHidden) {
         renderGraph();
       }
@@ -237,8 +233,8 @@ const render = () => {
       renderGraphWhenInView();
     });
 
-    // Also render graphs that are in view when renderGraph is triggered.
-    el.on('renderGraph', function (event) {
+    // Also render graphs that are in viewport when renderGraph is triggered.
+    el.on('renderGraph', function (event) { 
       renderGraphWhenInView();
       event.stopPropagation();
     });

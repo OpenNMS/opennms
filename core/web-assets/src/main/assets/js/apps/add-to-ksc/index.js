@@ -202,13 +202,13 @@ angular.module('onms-ksc', [
         }
       });
   };
+  // When graph search doesn't yield any results, set/reset noMatchingGraphs
   $scope.$on('handleNoMatchingGraphsFound', function () {
       $scope.nomatchingGraphs = graphSearchFactory.noMatchingGraphs;
   });
 }])
-.controller('graphSearchCtrl', ['$scope', '$filter', '$attrs', '$element', 'graphSearchFactory', function($scope,  $filter, $attrs, $element, graphSearchFactory) {
+.controller('graphSearchCtrl', ['$scope', '$timeout', '$filter', '$attrs', '$element', 'graphSearchFactory', function($scope, $timeout, $filter, $attrs, $element, graphSearchFactory) {
 
-  let resourceId = $attrs.resourceid;
   let graphName = $attrs.graphname;
   let graphTitle = $attrs.graphtitle;
   // Update service with graphname and graphtitle.
@@ -222,14 +222,15 @@ angular.module('onms-ksc', [
     if (matchingElements && matchingElements.length) {
       $scope.enableGraph = true;
       if(searchQuery) {
-        // Hack to send event after divs are reloaded.
-          setTimeout(function() {
+        // Send event for the specific div to check if they are in viewport.
+        // Hack : Triggering event without adding it to timeout actually doesn't give rendering engine to finish re-arranging divs.
+        // Sending with timeout(0) will prioritize rendering engine since it is already in event loop.
+          $timeout(function () {
             angular.element($element).find('.graph-container').trigger('renderGraph');
-          }, 200);
+          }, 0);
       }
     } else {
       $scope.enableGraph = false;
     }
   });
-
 }]);
