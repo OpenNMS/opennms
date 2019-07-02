@@ -60,6 +60,12 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class ModelMappers {
 
+    private static final InMemoryEventMapper inMemoryEventMapper = Mappers.getMapper(InMemoryEventMapper.class);
+    private static final DatabaseEventMapper databaseEventMapper = Mappers.getMapper(DatabaseEventMapper.class);
+    private static final NodeMapper nodeMapper = Mappers.getMapper(NodeMapper.class);
+    private static final SnmpInterfaceMapper snmpInterfaceMapper = Mappers.getMapper(SnmpInterfaceMapper.class);
+    private static final AlarmFeedbackMapper alarmFeedbackMapper = Mappers.getMapper(AlarmFeedbackMapper.class);
+    
     public static Alarm toAlarm(OnmsAlarm alarm) {
         return alarm == null ? null : ImmutableAlarm.newBuilder()
                 .setReductionKey(alarm.getReductionKey())
@@ -82,7 +88,7 @@ public class ModelMappers {
     }
 
     public static InMemoryEvent toEvent(Event event) {
-        return event == null ? null : Mappers.getMapper(InMemoryEventMapper.class).map(event);
+        return event == null ? null : inMemoryEventMapper.map(event);
     }
 
     public static Event toEvent(InMemoryEvent event) {
@@ -100,15 +106,15 @@ public class ModelMappers {
     }
 
     public static DatabaseEvent toEvent(OnmsEvent event) {
-        return event == null ? null : Mappers.getMapper(DatabaseEventMapper.class).map(event);
+        return event == null ? null : databaseEventMapper.map(event);
     }
 
     public static Node toNode(OnmsNode node) {
-        return node == null ? null : Mappers.getMapper(NodeMapper.class).map(node);
+        return node == null ? null : nodeMapper.map(node);
     }
 
     public static SnmpInterface toSnmpInterface(OnmsSnmpInterface snmpInterface) {
-        return snmpInterface == null ? null : Mappers.getMapper(SnmpInterfaceMapper.class).map(snmpInterface);
+        return snmpInterface == null ? null : snmpInterfaceMapper.map(snmpInterface);
     }
 
     public static Severity toSeverity(OnmsSeverity severity) {
@@ -133,7 +139,7 @@ public class ModelMappers {
     }
     
     public static AlarmFeedback toFeedback(org.opennms.features.situationfeedback.api.AlarmFeedback feedback) {
-        return feedback == null ? null : Mappers.getMapper(AlarmFeedbackMapper.class).map(feedback);
+        return feedback == null ? null : alarmFeedbackMapper.map(feedback);
     }
 
     public static org.opennms.features.situationfeedback.api.AlarmFeedback fromFeedback(AlarmFeedback feedback) {

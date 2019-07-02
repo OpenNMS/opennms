@@ -29,10 +29,16 @@
 package org.opennms.features.apilayer.model.mappers;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.opennms.integration.api.v1.model.immutables.ImmutableDatabaseEvent;
 import org.opennms.netmgt.model.OnmsEvent;
 
 @Mapper(uses = EventParameterMapper.class)
 public interface DatabaseEventMapper {
+    @Mappings({
+            @Mapping(source = "eventUei", target = "uei"),
+            @Mapping(source = "eventParameters", target = "parameters")
+    })
     ImmutableDatabaseEvent map(OnmsEvent event);
 }
