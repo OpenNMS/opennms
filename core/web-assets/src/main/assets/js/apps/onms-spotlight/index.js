@@ -176,6 +176,16 @@ const quickSearchTemplate  = require('./quicksearch.html');
                 $timeout.cancel($scope.showLoadingIndicatorPromise);
             };
 
+            // Ensure there is no difference between selected and mouseover
+            $scope.select = function(index) {
+                var selectIndex = index || 1;
+                if ($scope.selectedIndex >= 1) {
+                    $scope.results[$scope.selectedIndex].selected = false;
+                }
+                $scope.selectedIndex = selectIndex;
+                $scope.results[$scope.selectedIndex].selected = true;
+            };
+
             $scope.onQueryChange = function() {
                 if ($scope.query.length == 0) {
                     $scope.resetQuery();
