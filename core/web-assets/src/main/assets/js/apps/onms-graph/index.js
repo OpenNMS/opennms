@@ -207,9 +207,26 @@ const render = () => {
         drawPngGraph(el, def, dim);
       }
       didGraphRendered = true;
+      console.log("Rendered graph " + def.graphName);
       // Notify other components (i.e cropper) that we have loaded a graph
       $j(document).trigger('graphLoaded', [dim.width, dim.height]);
     };
+
+    const renderGraphWhenInView = () => {
+      let scrollTop = $(window).scrollTop();
+      let windowBottom = scrollTop + $(window).height();
+      let offsetTop = el.offset().top;
+      let offsetBottom = offsetTop + el.height();
+      let divIsHidden = el.parent().hasClass('ng-hide');
+      let visibleScrollbars = window.scrollbars.visible;
+      if (!visibleScrollbars) {
+        console.log('Scroll bar not visible');
+        renderGraph();
+      }
+      if ((scrollTop <= offsetBottom && windowBottom >= offsetTop) && !didGraphRendered && !divIsHidden) {
+        renderGraph();
+      }
+    }
 
     // Render immediately if no scrolling possible or first two graphs
     if ($(document).height() <= $(window).height() || index <= 1) {
@@ -217,14 +234,13 @@ const render = () => {
     }
     // Check window scroll and lazy load graphs that are in view and not hidden by 'ng-hide'
     $(window).scroll(function () {
-      let scrollTop = $(window).scrollTop();
-      let windowBottom = scrollTop + $(window).height();
-      let offsetTop = el.context.offsetTop;
-      let offsetBottom = offsetTop + el.context.offsetHeight;
-      let divIsHidden = el.parent().hasClass('ng-hide');
-      if ((scrollTop <= offsetBottom && windowBottom >= offsetTop) && !didGraphRendered && !divIsHidden) {
-        renderGraph();
-      }
+      renderGraphWhenInView();
+    });
+
+    // Also render graphs that are in view when renderGraph is triggered.
+    el.on('renderGraph', function (event) {
+      renderGraphWhenInView();
+      event.stopPropagation();
     });
 
     // If print is triggered, render graph if div is not hidden.

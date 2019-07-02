@@ -175,11 +175,6 @@
                         </div>
                     </div>
                     <input type="search" id="graphsearch" placeholder="Filter Graphs" ng-model="searchQuery" name="filter">
-                    <div class="input-group-prepend" ng-show="searchQuery.length > 0">
-                        <div class="input-group-text">
-                            <span class="fa fa-remove" ng-click="searchQuery = ''"></span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </form>

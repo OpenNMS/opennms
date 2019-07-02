@@ -206,7 +206,7 @@ angular.module('onms-ksc', [
       $scope.nomatchingGraphs = graphSearchFactory.noMatchingGraphs;
   });
 }])
-.controller('graphSearchCtrl', ['$scope', '$filter', '$attrs',  'graphSearchFactory', function($scope,  $filter, $attrs, graphSearchFactory) {
+.controller('graphSearchCtrl', ['$scope', '$filter', '$attrs', '$element', 'graphSearchFactory', function($scope,  $filter, $attrs, $element, graphSearchFactory) {
 
   let resourceId = $attrs.resourceid;
   let graphName = $attrs.graphname;
@@ -221,7 +221,12 @@ angular.module('onms-ksc', [
     let matchingElements = $filter('filter')([graphName, graphTitle], searchQuery);
     if (matchingElements && matchingElements.length) {
       $scope.enableGraph = true;
-      $(window).scroll();
+      if(searchQuery) {
+        // Hack to send event after divs are reloaded.
+          setTimeout(function() {
+            angular.element($element).find('.graph-container').trigger('renderGraph');
+          }, 200);
+      }
     } else {
       $scope.enableGraph = false;
     }
