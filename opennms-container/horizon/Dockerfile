@@ -41,7 +41,12 @@ SHELL ["/bin/bash", "-c"]
 # 1. Try to install from tarball
 # 2. Try to install from local RPMS
 # 3. Try to install from public yum repository
-RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then mkdir -p /opt/opennms && tar xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then yum -y localinstall /tmp/rpms/*.rpm; else yum install -y ${ONMS_PACKAGES}; fi && \
+RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
+        mkdir -p /opt/opennms && tar xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
+        cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
+        elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
+        yum -y localinstall /tmp/rpms/*.rpm; \
+        else yum install -y ${ONMS_PACKAGES}; fi && \
     if [[ -n ${ADD_YUM_PACKAGES} ]]; then yum -y install ${ADD_YUM_PACKAGES}; fi && \
     rm -rf /tmp/rpms /tmp/tarball && \
     yum clean all && \
