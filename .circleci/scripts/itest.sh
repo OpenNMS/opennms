@@ -9,7 +9,7 @@ remove_paths()
         sed '/^smoke-test[/,].*/d' |\
         sed '/^opennms-assemblies[/,].*/d' |\
         sed '/^opennms-full-assembly[/,].*/d' |\
-        sed '/^remote-poller-18[/,].*/d' |\
+        sed '/.*\/remote-poller-18[/,].*/d' |\
         sed '/^org.opennms.features.topology.plugins.ssh[/,].*/d' |\
         sed '/^opennms-install[/,].*/d'
     done
