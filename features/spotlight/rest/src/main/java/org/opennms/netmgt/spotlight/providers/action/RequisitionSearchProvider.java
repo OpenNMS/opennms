@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.spotlight.providers.action;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.spotlight.api.Contexts;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
@@ -52,14 +54,17 @@ public class RequisitionSearchProvider implements SearchProvider {
     }
 
     @Override
-    public boolean contributesTo(String contextName) {
-        return Contexts.Action.getName().equals(contextName);
+    public SearchContext getContext() {
+        return Contexts.Action;
     }
 
     @Override
     public SearchResult query(SearchQuery query) {
         final List<Requisition> requisitions = Lists.newArrayList(requisitionAccessService.getRequisitions())
-                .stream().filter(r -> QueryUtils.matches(r.getForeignSource(), query.getInput()))
+                .stream()
+                .filter(r -> QueryUtils.matches(r.getForeignSource(), query.getInput()))
+                .sorted(Comparator.comparing(Requisition::getForeignSource))
+                .limit(query.getMaxResults())
                 .collect(Collectors.toList());
         final List<SearchResultItem> resultItems = requisitions.stream().map(r -> {
                 final SearchResultItem searchResultItem = new SearchResultItem();
@@ -71,7 +76,9 @@ public class RequisitionSearchProvider implements SearchProvider {
                 return searchResultItem;
             })
             .collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Action).withTotalCount(requisitions.size()).withResults(resultItems);
+        final SearchResult searchResult = new SearchResult(Contexts.Action)
+                .withTotalCount(requisitions.size())
+                .withResults(resultItems);
         return searchResult;
     }
 }

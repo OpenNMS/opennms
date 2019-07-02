@@ -29,12 +29,12 @@
 package org.opennms.netmgt.spotlight.providers.action;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
@@ -49,13 +49,13 @@ public class KscReportSearchProvider implements SearchProvider {
 
     private final KscReportService kscReportService;
 
-    public KscReportSearchProvider(KscReportService kscReportService) {
-        this.kscReportService = Objects.requireNonNull(kscReportService);
+    @Override
+    public SearchContext getContext() {
+        return CONTEXT;
     }
 
-    @Override
-    public boolean contributesTo(String contextName) {
-        return Contexts.Action.getName().equals(contextName);
+    public KscReportSearchProvider(KscReportService kscReportService) {
+        this.kscReportService = Objects.requireNonNull(kscReportService);
     }
 
     @Override
@@ -63,6 +63,7 @@ public class KscReportSearchProvider implements SearchProvider {
         final Collection<Report> reportList = kscReportService.getReportMap().values();
         final List<SearchResultItem> results = reportList.stream()
                 .filter(report -> QueryUtils.matches(report.getTitle(), query.getInput()))
+                .sorted(Comparator.comparing(Report::getTitle))
                 .map(report -> {
                     final SearchResultItem result = new SearchResultItem();
                     result.setContext(CONTEXT);

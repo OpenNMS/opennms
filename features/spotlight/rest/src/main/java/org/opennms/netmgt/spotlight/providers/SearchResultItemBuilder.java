@@ -62,6 +62,11 @@ public class SearchResultItemBuilder {
         return this;
     }
 
+    public SearchResultItemBuilder withWeight(int weight) {
+        searchResultItem.setWeight(weight);
+        return this;
+    }
+
     public SearchResultItem build() {
         return searchResultItem; // TODO MVR create clone?
     }

@@ -30,7 +30,7 @@ package org.opennms.netmgt.spotlight.api;
 
 public interface SearchProvider {
 
-    boolean contributesTo(String contextName);
+    SearchContext getContext();
 
     SearchResult query(SearchQuery query);
 

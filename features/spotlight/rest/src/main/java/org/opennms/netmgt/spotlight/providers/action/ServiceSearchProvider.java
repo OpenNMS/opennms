@@ -36,6 +36,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.spotlight.api.Contexts;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
@@ -51,8 +52,8 @@ public class ServiceSearchProvider implements SearchProvider {
     }
 
     @Override
-    public boolean contributesTo(String contextName) {
-        return false;
+    public SearchContext getContext() {
+        return Contexts.Action;
     }
 
     @Override
@@ -60,8 +61,8 @@ public class ServiceSearchProvider implements SearchProvider {
         final String input = query.getInput();
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsServiceType.class)
                 .ilike("name", QueryUtils.ilike(input))
+                .orderBy("name")
                 .distinct();
-
         final int totalCount = serviceTypeDao.countMatching(builder.toCriteria());;
         final List<OnmsServiceType> matchingResult = serviceTypeDao.findMatching(builder.limit(query.getMaxResults()).toCriteria());
         final List<SearchResultItem> searchResultItems = matchingResult.stream().map(service -> {

@@ -30,6 +30,7 @@ package org.opennms.netmgt.spotlight.providers.action;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXB;
 
 import org.opennms.netmgt.spotlight.api.Contexts;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
@@ -48,8 +50,8 @@ import com.google.common.base.Strings;
 public class StaticActionSearchProvider implements SearchProvider {
 
     @Override
-    public boolean contributesTo(String contextName) {
-        return Contexts.Action.getName().equals(contextName);
+    public SearchContext getContext() {
+        return Contexts.Action;
     }
 
     @Override
@@ -63,6 +65,7 @@ public class StaticActionSearchProvider implements SearchProvider {
         final List<SearchResultItem> allItemsForUser = actions.getActions().stream()
                 .filter(action -> action.getPrivilegedRoles().isEmpty() || action.getPrivilegedRoles().stream().anyMatch(query::isUserInRole))
                 .filter(action -> QueryUtils.matches(action.getLabel(), input))
+                .sorted(Comparator.comparing(Action::getLabel)) // TODO MVR we probably want admin actions to show up first
                 .map(action -> {
                     final SearchResultItem searchResultItem = new SearchResultItem();
                     searchResultItem.setContext(Contexts.Action);

@@ -38,6 +38,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
@@ -54,8 +55,8 @@ public class NodeCategorySearchProvider implements SearchProvider {
     }
 
     @Override
-    public boolean contributesTo(String contextName) {
-        return Contexts.Node.getName().equals(contextName);
+    public SearchContext getContext() {
+        return Contexts.Node;
     }
 
     @Override

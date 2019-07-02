@@ -51,6 +51,11 @@ public class SearchContext {
         return weight;
     }
 
+    public boolean contributesTo(final String contextName) {
+        Objects.requireNonNull(contextName);
+        return getName().equals(contextName);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

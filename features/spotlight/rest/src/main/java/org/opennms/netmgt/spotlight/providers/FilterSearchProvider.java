@@ -40,6 +40,7 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Contexts;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
@@ -56,8 +57,8 @@ public class FilterSearchProvider implements SearchProvider {
     }
 
     @Override
-    public boolean contributesTo(String contextName) {
-        return Contexts.Node.getName().equals(contextName);
+    public SearchContext getContext() {
+        return Contexts.Node;
     }
 
     @Override

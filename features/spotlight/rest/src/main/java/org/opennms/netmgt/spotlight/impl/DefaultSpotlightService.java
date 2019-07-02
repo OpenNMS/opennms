@@ -64,7 +64,7 @@ public class DefaultSpotlightService implements SpotlightService {
     public List<SearchResult> query(final SearchQuery query) {
         Objects.requireNonNull(query);
         if (query.getMaxResults() <= 0) {
-            query.setMaxResults(SearchQuery.DEFAULT_MAX_RESULTS);
+            query.setMaxResults(10); // TODO MVR magic number ...
         }
 
         // Enforce minimum length, otherwise don't query
@@ -79,18 +79,23 @@ public class DefaultSpotlightService implements SpotlightService {
             if (allServiceReferences != null) {
                 for (ServiceReference<SearchProvider> eachReference : allServiceReferences) {
                     final SearchProvider service = bundleContext.getService(eachReference);
-                    try {
-                        final SearchResult providerResult = service.query(query);
-                        resultMap.putIfAbsent(providerResult.getContext(), providerResult);
-                        final SearchResult mergedResult = resultMap.get(providerResult.getContext());
-                        for (SearchResultItem eachItem : providerResult.getResults()) {
-                            mergedResult.setTotalCount(Math.max(mergedResult.getTotalCount(), providerResult.getTotalCount()));
-                            mergedResult.merge(eachItem);
+                    if (query.getContext() == null || service.getContext().contributesTo(query.getContext())) {
+                        try {
+                            final SearchResult providerResult = service.query(query);
+                            if (resultMap.containsKey(providerResult.getContext())) {
+                                final SearchResult mergedResult = resultMap.get(providerResult.getContext());
+                                for (SearchResultItem eachItem : providerResult.getResults()) {
+                                    mergedResult.setTotalCount(Math.max(mergedResult.getTotalCount(), providerResult.getTotalCount()));
+                                    mergedResult.merge(eachItem);
+                                }
+                            } else {
+                                resultMap.put(providerResult.getContext(), providerResult);
+                            }
+                        } catch (Exception ex) {
+                            LOG.error("Could not execute query for provider", ex);
+                        } finally {
+                            bundleContext.ungetService(eachReference);
                         }
-                    } catch (Exception ex) {
-                        LOG.error("Could not execute query for provider", ex);
-                    } finally {
-                        bundleContext.ungetService(eachReference);
                     }
                 }
             }
@@ -103,7 +108,7 @@ public class DefaultSpotlightService implements SpotlightService {
                 .filter(searchResult -> !searchResult.isEmpty())
                 .map(searchResult -> {
                             final List<SearchResultItem> limitedAndSortedItems = searchResult.getResults().stream()
-                                    .sorted(Comparator.comparingInt(result -> -1 * result.getMatches().stream().mapToInt(m -> m.getValues().size()).sum()))
+                                    .sorted(Comparator.comparing(SearchResultItem::getWeight).reversed().thenComparing(SearchResultItem::getLabel))
                                     .limit(query.getMaxResults())
                                     .collect(Collectors.toList());
                             return new SearchResult(searchResult.getContext()).withTotalCount(searchResult.getTotalCount()).withResults(limitedAndSortedItems);

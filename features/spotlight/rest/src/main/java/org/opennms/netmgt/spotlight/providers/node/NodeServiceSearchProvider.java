@@ -36,6 +36,7 @@ import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
@@ -54,8 +55,8 @@ public class NodeServiceSearchProvider implements SearchProvider {
     }
 
     @Override
-    public boolean contributesTo(String contextName) {
-        return Contexts.Node.getName().equals(contextName);
+    public SearchContext getContext() {
+        return Contexts.Node;
     }
 
     @Override
@@ -68,10 +69,7 @@ public class NodeServiceSearchProvider implements SearchProvider {
                 .ilike("serviceType.name", QueryUtils.ilike(input))
                 .distinct();
         final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
-
-        criteriaBuilder.orderBy("label")
-                .limit(query.getMaxResults());
-        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.toCriteria());
+        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.orderBy("label").limit(query.getMaxResults()).toCriteria());
         final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
             final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node).build();
             node.getIpInterfaces().stream()

@@ -112,9 +112,16 @@ const quickSearchTemplate  = require('./quicksearch.html');
                             }
                         }
                         if (e.keyCode === KeyCodes.ENTER) {
-                            $scope.resetQuery();
-                            $scope.cancelRequest();
-                            element.click();
+                            if ($scope.results[$scope.selectedIndex].more === true) {
+                                // Break out the current angular $apply cycle
+                                $timeout(function() {
+                                    angular.element(element).triggerHandler('click');
+                                }, 0);
+                            } else {
+                                $scope.resetQuery();
+                                $scope.cancelRequest();
+                                element.click();
+                            }
                         }
                     }
                 });
@@ -230,6 +237,57 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                         });
                                     });
                                 });
+
+                                if (eachResult.totalCount != eachResult.results.length) {
+                                    var showMoreElement = {
+                                        context: eachResult.context.name,
+                                        count: eachResult.results.length,
+                                        totalCount: eachResult.totalCount,
+                                        group: false,
+                                        more: true,
+                                        loadMore: function() {
+                                            SearchResource.query({'_s': $scope.query, '_l': this.count + 10, '_c' : this.context}, function(response) {
+                                                var endIndex = $scope.results.indexOf(showMoreElement);
+
+                                                // The result is context focused, so there is only one search result anyways
+                                                var searchResult = response[0];
+                                                var results = searchResult.results.slice(endIndex - 1); // Remove first elements, as they are already being showed
+                                                results.forEach(function(item, i) {
+                                                    item.group = false; // result cannot be a group
+
+                                                    // TODO MVR we first create this, and now we undo this, should be different
+                                                    var matches = item.matches;
+                                                    item.matches = [];
+                                                    matches.forEach(function(eachMatch) {
+                                                        eachMatch.values.forEach(function(eachValue) {
+                                                            item.matches.push({
+                                                                id: eachMatch.id,
+                                                                label: eachMatch.label,
+                                                                value: eachValue
+                                                            });
+                                                        });
+                                                    });
+                                                    // Add item
+                                                    $scope.results.splice(endIndex + i, 0, item);
+                                                    showMoreElement.count++;
+                                                });
+                                                // Toggle Selection
+                                                showMoreElement.selected = false;
+                                                $scope.results[$scope.selectedIndex].selected = true;
+
+                                                // Hide element
+                                                if (showMoreElement.count === showMoreElement.totalCount) {
+                                                    $scope.results.splice($scope.results.indexOf(showMoreElement), 1);
+                                                }
+                                            }, function() {
+                                                // TODO MVR what do we do here?
+                                                console.log("ERROR");
+                                            });
+                                        },
+                                        selected: false
+                                    };
+                                    results.push(showMoreElement);
+                                }
                             });
                             $scope.results = results;
                             if ($scope.results.length != 0) {
@@ -249,21 +307,6 @@ const quickSearchTemplate  = require('./quicksearch.html');
                     );
                 }, $scope.performSearchDelay);
             };
-
-            function hashCode(s) {
-                var h = 0;
-                for(var i = 0; i < s.length; i++) {
-                    h = Math.imul(31, h) + s.charCodeAt(i) | 0;
-                }
-                return h;
-            }
-
-            $scope.classes = ['primary', 'secondary', 'info', 'dark'];
-            $scope.getClassForMatch = function(match) {
-                var hash = hashCode(match.id);
-                var index = Math.abs(hash) % $scope.classes.length;
-                return 'badge-' + $scope.classes[index];
-            }
         }])
     ;
 }());

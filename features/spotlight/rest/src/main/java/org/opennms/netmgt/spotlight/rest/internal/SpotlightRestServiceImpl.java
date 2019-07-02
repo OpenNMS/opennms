@@ -50,10 +50,12 @@ public class SpotlightRestServiceImpl implements SpotlightRestService {
     }
 
     @Override
-    public Response query(final SecurityContext securityContext, final String query) {
+    public Response query(SecurityContext securityContext, String context, String query, int limit) {
         final SearchQuery searchQuery = new SearchQuery(query);
         searchQuery.setPrincipal(securityContext.getUserPrincipal());
         searchQuery.setUserInRoleFunction(securityContext::isUserInRole);
+        searchQuery.setContext(context);
+        searchQuery.setMaxResults(limit < 0 ? 0 : limit);
 
         final List<SearchResult> searchResult = spotlightService.query(searchQuery);
         if (searchResult.isEmpty()) {

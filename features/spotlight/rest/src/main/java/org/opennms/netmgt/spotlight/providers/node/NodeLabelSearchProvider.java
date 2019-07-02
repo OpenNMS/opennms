@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
@@ -58,8 +59,8 @@ public class NodeLabelSearchProvider implements SearchProvider {
     }
 
     @Override
-    public boolean contributesTo(String contextName) {
-        return Contexts.Node.getName().equals(contextName);
+    public SearchContext getContext() {
+        return Contexts.Node;
     }
 
     @Override
@@ -97,6 +98,7 @@ public class NodeLabelSearchProvider implements SearchProvider {
             if (QueryUtils.matches(node.getLabel(), input)) {
                 searchResultItem.addMatch(new Match("label", "Node Label", node.getLabel()));
             }
+            searchResultItem.setWeight(100);
             return searchResultItem;
         }).collect(Collectors.toList());
         final SearchResult searchResult = new SearchResult(Contexts.Node).withTotalCount(totalCount).withResults(searchResultItems);

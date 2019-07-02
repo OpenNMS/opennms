@@ -29,6 +29,7 @@
 package org.opennms.netmgt.spotlight.rest;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -44,5 +45,8 @@ import javax.ws.rs.core.SecurityContext;
 public interface SpotlightRestService {
 
     @GET
-    Response query(@Context SecurityContext securityContext, @QueryParam("_s") final String query);
+    Response query(@Context SecurityContext securityContext,
+                   @QueryParam("_c") final String context,
+                   @QueryParam("_s") final String query,
+                   @DefaultValue("10") @QueryParam("_l") final int limit);
 }

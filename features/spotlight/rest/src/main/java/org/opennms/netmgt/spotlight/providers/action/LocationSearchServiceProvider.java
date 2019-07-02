@@ -37,6 +37,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.spotlight.api.Contexts;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
@@ -52,15 +53,15 @@ public class LocationSearchServiceProvider implements SearchProvider {
     }
 
     @Override
-    public boolean contributesTo(String contextName) {
-        return Contexts.Action.getName().equals(contextName);
+    public SearchContext getContext() {
+        return Contexts.Action;
     }
-
     @Override
     public SearchResult query(final SearchQuery query) {
         final String input = query.getInput();
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class)
                 .ilike("locationName", QueryUtils.ilike(input))
+                .orderBy("locationName")
                 .distinct();
         final int totalCount = monitoringLocationDao.countMatching(builder.toCriteria());
         final Criteria criteria = builder.limit(query.getMaxResults()).toCriteria();

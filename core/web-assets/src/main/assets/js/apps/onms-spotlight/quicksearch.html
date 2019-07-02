@@ -69,9 +69,10 @@
     <div ng-if="performSearchExecuted === true" class="bg-dark spotlight-result rounded-bottom" id="onms-search-result">
         <div class="list-group" ng-if="results.length > 0">
             <div ng-repeat-start="item in results track by $index" ng-if="item.group === true" class="list-group-item bg-dark text-grey border-0 pl-2">
-                {{item.label}} <span class="pull-right" ng-show="item.count != item.totalCount"><a href>more...</a></span>
+                <span ng-if="!item.more">{{item.label}}</span>
             </div>
-            <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-repeat-end ng-if="item.group === false" href="{{item.url}}" class="list-group-item list-group-item-action">
+            <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-if="item.more" ng-click="item.loadMore()" class="list-group-item list-group-item-action" href>more...</a>
+            <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-repeat-end ng-if="item.group === false && !item.more" href="{{item.url}}" class="list-group-item list-group-item-action">
                 <h6 class="mb-0"><i class="{{item.icon}}" ng-if="item.icon">&nbsp;</i>{{item.label}}</h6>
                 <small class="mr-4" ng-class="{'text-muted': !item.selected}" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</small>
             </a>

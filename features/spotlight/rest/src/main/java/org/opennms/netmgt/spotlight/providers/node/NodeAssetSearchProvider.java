@@ -41,6 +41,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
+import org.opennms.netmgt.spotlight.api.SearchContext;
 import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
@@ -57,8 +58,8 @@ public class NodeAssetSearchProvider implements SearchProvider {
     }
 
     @Override
-    public boolean contributesTo(String contextName) {
-        return Contexts.Node.getName().equals(contextName);
+    public SearchContext getContext() {
+        return Contexts.Node;
     }
 
     @Override
@@ -126,7 +127,7 @@ public class NodeAssetSearchProvider implements SearchProvider {
             )
             .distinct();
         final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
-        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.limit(query.getMaxResults()).toCriteria());
+        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.orderBy("label").limit(query.getMaxResults()).toCriteria());
         final List<SearchResultItem> results = matchingNodes.stream()
             .map(node -> {
                 final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node).build();

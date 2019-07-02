@@ -33,12 +33,11 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class SearchQuery {
-    public static final int DEFAULT_MAX_RESULTS = 5;
-
     private String input;
-    private int maxResults =  DEFAULT_MAX_RESULTS;
+    private int maxResults;
     private Principal principal;
     private Function<String, Boolean> userInRoleFunction;
+    private String context;
 
     public SearchQuery(String input) {
         this.input = Objects.requireNonNull(input);
@@ -81,5 +80,13 @@ public class SearchQuery {
             return userInRoleFunction.apply(role);
         }
         return false;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
+
+    public String getContext() {
+        return context;
     }
 }

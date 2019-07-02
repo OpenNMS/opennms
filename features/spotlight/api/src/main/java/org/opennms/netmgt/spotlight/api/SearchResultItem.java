@@ -36,13 +36,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class SearchResultItem {
-    private SearchContext context;
+    private SearchContext context; // TODO MVR remove me?
     private String identifier;
     private String icon;
     private String label;
     private String url;
     private final Map<String, String> properties = new HashMap<>();
     private final List<Match> matches = new ArrayList<>();
+    private int weight;
 
     public SearchContext getContext() {
         return context;
@@ -109,14 +110,15 @@ public class SearchResultItem {
                     && Objects.equals(url, that.url)
                     && Objects.equals(properties, that.properties)
                     && Objects.equals(matches, that.matches)
-                    && Objects.equals(icon, that.icon);
+                    && Objects.equals(icon, that.icon)
+                    && Objects.equals(weight, that.weight);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(context, identifier, label, properties, matches, url, icon);
+        return Objects.hash(context, identifier, label, properties, matches, url, icon, weight);
     }
 
     public void addMatch(Match match) {
@@ -128,5 +130,13 @@ public class SearchResultItem {
         } else {
             matches.add(match);
         }
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public int getWeight() {
+        return weight;
     }
 }
