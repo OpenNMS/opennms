@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
@@ -50,7 +51,11 @@ public class StringValue extends Value<String> {
                        final Optional<Semantics> semantics,
                        final String value) {
         super(name, semantics);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public StringValue(final String name, final String value) {
+        this(name, Optional.empty(), value);
     }
 
     @Override

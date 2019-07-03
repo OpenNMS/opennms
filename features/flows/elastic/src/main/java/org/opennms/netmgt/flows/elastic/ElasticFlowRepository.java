@@ -37,10 +37,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.opennms.core.tracing.api.TracerConstants;
@@ -48,12 +50,14 @@ import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -74,10 +78,13 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
@@ -332,7 +339,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                                                                             boolean includeOther,
                                                                                             List<Filter> filters) {
         return getSeriesFor(applications, "netflow.application", step, includeOther, filters)
-                .thenApply((res) -> mapTable(res, s -> s));
+                .thenCompose((res) -> mapTable(res, CompletableFuture::completedFuture));
     }
 
     @Override
@@ -340,7 +347,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                                                                                 boolean includeOther,
                                                                                                 List<Filter> filters) {
         return getSeriesFromTopN(N, step, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters)
-                .thenApply((res) -> mapTable(res, s -> s));
+                .thenCompose((res) -> mapTable(res, CompletableFuture::completedFuture));
     }
 
     @Override
@@ -366,38 +373,71 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversationSummaries(int N,
-                                                                                                 boolean includeOther,
-                                                                                                 List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N,
+                                                                                              boolean includeOther,
+                                                                                              List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.convo_key", null, includeOther, filters)
-                .thenApply((res) -> res.stream()
-                        .map(ElasticFlowRepository::mapFromStringSummary)
-                        .collect(Collectors.toList()));
+                .thenCompose((summaries) -> transpose(summaries.stream()
+                                                               .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
+                                                                                   .thenApply(conversation -> new TrafficSummary<>(conversation)
+                                                                                           .withBytesFrom(summary)))
+                                                               .collect(Collectors.toList()),
+                                                      Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getConversationSummaries(Set<String> conversations,
-                                                                                             boolean includeOther,
-                                                                                             List<Filter> filters) {
-        return getTotalBytesFrom(unescapeConversations(conversations), "netflow.convo_key", null, includeOther,
-                filters).thenApply(summaries -> summaries.stream()
-                .map(ElasticFlowRepository::mapFromStringSummary)
-                .collect(Collectors.toList()));
+    public CompletableFuture<List<TrafficSummary<Conversation>>> getConversationSummaries(Set<String> conversations,
+                                                                                          boolean includeOther,
+                                                                                          List<Filter> filters) {
+        return getTotalBytesFrom(unescapeConversations(conversations), "netflow.convo_key", null, includeOther, filters)
+                .thenCompose((summaries) -> transpose(summaries.stream()
+                                                               .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
+                                                                                   .thenApply(conversation -> new TrafficSummary<>(conversation)
+                                                                                           .withBytesFrom(summary)))
+                                                               .collect(Collectors.toList()),
+                                                      Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
         return getSeriesFor(unescapeConversations(conversations), "netflow.convo_key", step, includeOther, filters)
-                .thenApply((res) -> mapTable(res, ElasticFlowRepository::getConversationKey));
+                .thenCompose((res) -> mapTable(res, convoKey -> this.resolveHostnameForConversation(convoKey, filters)));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationSeries(int N,
+    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationSeries(int N,
                                                                                                           long step,
                                                                                                           boolean includeOther,
                                                                                                           List<Filter> filters) {
         return getSeriesFromTopN(N, step, "netflow.convo_key", null, includeOther, filters)
-                .thenApply((res) -> mapTable(res, ElasticFlowRepository::getConversationKey));
+                .thenCompose((res) -> mapTable(res, convoKey -> this.resolveHostnameForConversation(convoKey, filters)));
+    }
+
+    public CompletableFuture<Conversation> resolveHostnameForConversation(final String convoKey, List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
+
+        if (OTHER_NAME.equals(convoKey)) {
+            return CompletableFuture.completedFuture(Conversation.forOther().build());
+        }
+
+        final ConversationKey key = ConversationKeyUtils.fromJsonString(convoKey);
+        final Conversation.Builder result = Conversation.from(key);
+
+        final String hostnameQuery = searchQueryProvider.getHostnameByConversationQuery(convoKey, filters);
+        return searchAsync(hostnameQuery, timeRangeFilter)
+                .thenApply(res ->  {
+                    final JsonObject hit = res.getFirstHit(JsonObject.class).source;
+                    if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), key.getLowerIp())) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withLowerHostname);
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withUpperHostname);
+
+                    } else if (Objects.equals(hit.getAsJsonPrimitive("netflow.dst_addr").getAsString(), key.getLowerIp())) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withLowerHostname);
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withUpperHostname);
+                    }
+
+                    return result.build();
+                });
     }
 
     @Override
@@ -408,30 +448,65 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther,
-                                                                                List<Filter> filters) {
-        return getTotalBytesFromTopN(N, "hosts", null, includeOther, filters);
+    public CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther,
+                                                                              List<Filter> filters) {
+        return getTotalBytesFromTopN(N, "hosts", null, includeOther, filters)
+                .thenCompose((summaries) -> transpose(summaries.stream()
+                                .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
+                                        .thenApply(host -> new TrafficSummary<>(host).withBytesFrom(summary)))
+                                .collect(Collectors.toList()),
+                        Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts,
+    public CompletableFuture<List<TrafficSummary<Host>>> getHostSummaries(Set<String> hosts,
                                                                             boolean includeOther,
                                                                             List<Filter> filters) {
-        return getTotalBytesFrom(hosts, "hosts", null, includeOther, filters);
+        return getTotalBytesFrom(hosts, "hosts", null, includeOther, filters)
+                .thenCompose((summaries) -> transpose(summaries.stream()
+                                .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
+                                        .thenApply(host -> new TrafficSummary<>(host).withBytesFrom(summary)))
+                                .collect(Collectors.toList()),
+                        Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step,
+    public CompletableFuture<Table<Directional<Host>, Long, Double>> getHostSeries(Set<String> hosts, long step,
                                                                                      boolean includeOther,
                                                                                      List<Filter> filters) {
-        return getSeriesFor(hosts, "hosts", step, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
+        return getSeriesFor(hosts, "hosts", step, includeOther, filters)
+                .thenCompose((res) -> mapTable(res, host -> this.resolveHostnameForHost(host, filters)));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step,
+    public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step,
                                                                                          boolean includeOther,
                                                                                          List<Filter> filters) {
-        return getSeriesFromTopN(N, step, "hosts", null, includeOther, filters);
+        return getSeriesFromTopN(N, step, "hosts", null, includeOther, filters)
+                .thenCompose((res) -> mapTable(res, host -> this.resolveHostnameForHost(host, filters)));
+    }
+
+    public CompletableFuture<Host> resolveHostnameForHost(final String host, List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
+
+        if (OTHER_NAME.equals(host)) {
+            return CompletableFuture.completedFuture(Host.forOther().build());
+        }
+
+        final Host.Builder result = Host.from(host);
+
+        final String hostnameQuery = searchQueryProvider.getHostnameByHostQuery(host, filters);
+        return searchAsync(hostnameQuery, timeRangeFilter)
+                .thenApply(res ->  {
+                    final JsonObject hit = res.getFirstHit(JsonObject.class).source;
+                    if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), host)) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withHostname);
+                    } else if (Objects.equals(hit.getAsJsonPrimitive("netflow.dst_addr").getAsString(), host)) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withHostname);
+                    }
+
+                    return result.build();
+                });
     }
 
     private CompletableFuture<List<String>> getTopN(int N, String groupByTerm, String keyForMissingTerm, List<Filter> filters) {
@@ -756,20 +831,28 @@ public class ElasticFlowRepository implements FlowRepository {
      * Rebuilds the table, mapping the row keys using the given function and fills
      * in missing cells with NaN values.
      */
-    private static <T> Table<Directional<T>, Long, Double> mapTable(Table<Directional<String>, Long, Double> source, Function<String, T> fn) {
-        final ImmutableTable.Builder<Directional<T>, Long, Double> target = ImmutableTable.builder();
+    private static <T> CompletableFuture<Table<Directional<T>, Long, Double>> mapTable(final Table<Directional<String>, Long, Double> source,
+                                                                                       final Function<String, CompletableFuture<T>> fn) {
         final Set<Long> columnKeys = source.columnKeySet();
-        for (Directional<String> sourceRowKey : source.rowKeySet()) {
-            final Directional<T> targetRowKey = new Directional<>(fn.apply(sourceRowKey.getValue()), sourceRowKey.isIngress());
-            for (Long columnKey : columnKeys) {
-                Double value = source.get(sourceRowKey, columnKey);
-                if (value == null) {
-                    value = Double.NaN;
-                }
-                target.put(targetRowKey, columnKey, value);
-            }
-        }
-        return target.build();
+
+        final List<CompletableFuture<Map.Entry<Directional<T>, Map<Long, Double>>>> rowKeys = source.rowKeySet().stream()
+                .map(rk -> fn.apply(rk.getValue()).thenApply(t -> Maps.immutableEntry(new Directional<>(t, rk.isIngress()), source.row(rk))))
+                .collect(Collectors.toList());
+
+        return transpose(rowKeys, Collectors.toList())
+                .thenApply(rows -> {
+                    final ImmutableTable.Builder<Directional<T>, Long, Double> target = ImmutableTable.builder();
+                    for (final Map.Entry<Directional<T>, Map<Long, Double>> row : rows) {
+                        for (final Long columnKey : columnKeys) {
+                            Double value = row.getValue().get(columnKey);
+                            if (value == null) {
+                                value = Double.NaN;
+                            }
+                            target.put(row.getKey(), columnKey, value);
+                        }
+                    }
+                    return target.build();
+                });
     }
 
     private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
@@ -798,24 +881,11 @@ public class ElasticFlowRepository implements FlowRepository {
         }
     }
 
-    private static TrafficSummary<ConversationKey> mapFromStringSummary(TrafficSummary<String> trafficSummary) {
-        final ConversationKey conversationKey = getConversationKey(trafficSummary.getEntity());
-
-        final TrafficSummary<ConversationKey> mapped = new TrafficSummary<>(conversationKey);
-        mapped.copyBytes(trafficSummary);
-        return mapped;
-    }
-    
     private static Set<String> unescapeConversations(Set<String> conversations) {
         // freemarker template is going to auto-escape the string so we need to remove the explicit escaped quotes first
         return conversations.stream()
                 .map(conversation -> conversation.replace("\\\"", "\""))
                 .collect(Collectors.toSet());
-    }
-
-    private static ConversationKey getConversationKey(String key) {
-        Objects.requireNonNull(key);
-        return key.equals(OTHER_NAME) ? ConversationKeyUtils.forOther() : ConversationKeyUtils.fromJsonString(key);
     }
 
     public Identity getIdentity() {
@@ -845,5 +915,13 @@ public class ElasticFlowRepository implements FlowRepository {
             return tracerRegistry.getTracer();
         }
         return GlobalTracer.get();
+    }
+
+    private static <T, A, R> CompletableFuture<R> transpose(final Collection<CompletableFuture<T>> futures,
+                                                            final Collector<? super T, A, R> collector) {
+        return CompletableFuture.allOf(Iterables.toArray(futures, CompletableFuture.class))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(collector));
     }
 }
