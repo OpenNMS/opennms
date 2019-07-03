@@ -28,6 +28,8 @@ _Parsers_ and _Listeners_ must work together in a tight manner.
 Therefore they can not be combined in any possible combination.
 Which _Parser_ is supported by which _Listener_ is described in the documentation of each _Parser_ accordingly.
 
+TIP: You can provide the parameter `maxClockSkew` in your parser definition to enable clock skew detection for exporters. It specifies the maximum delta in seconds between exporter and Minion timestamps. If violated an alarm will be generated for the exporting device. The default value is 0, so clock skew detection is disabled.
+
 === _Adapters_
 _Adapters_ are responsible for enriching and processing the data dispatched over a queue.
 It receives the data from queue and transforms it into a format usable by _{opennms-product-name}_.

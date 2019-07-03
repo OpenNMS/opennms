@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
 
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ import com.google.common.collect.Maps;
 
 public class UdpSessionManager {
     public interface SessionKey {
+        InetAddress getRemoteAddress();
     }
 
     private final class UdpSession implements Session {
@@ -139,6 +141,11 @@ public class UdpSessionManager {
         @Override
         public Session.Resolver getResolver(final long observationDomainId) {
             return new Resolver(observationDomainId);
+        }
+
+        @Override
+        public InetAddress getRemoteAddress() {
+            return this.sessionKey.getRemoteAddress();
         }
     }
 

@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.factory;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
@@ -43,9 +45,13 @@ import org.springframework.beans.PropertyAccessorFactory;
 public class IpfixTcpParserFactory implements ParserFactory {
 
     private final TelemetryRegistry telemetryRegistry;
+    private final EventForwarder eventForwarder;
+    private final Identity identity;
 
-    public IpfixTcpParserFactory(TelemetryRegistry telemetryRegistry) {
+    public IpfixTcpParserFactory(final TelemetryRegistry telemetryRegistry, final EventForwarder eventForwarder, final Identity identity) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
+        this.eventForwarder =  Objects.requireNonNull(eventForwarder);
+        this.identity = Objects.requireNonNull(identity);
     }
 
     @Override
@@ -56,7 +62,7 @@ public class IpfixTcpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        final IpfixTcpParser parser = new IpfixTcpParser(parserDefinition.getName(), dispatcher);
+        final IpfixTcpParser parser = new IpfixTcpParser(parserDefinition.getName(), dispatcher, eventForwarder, identity);
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(parser);
         wrapper.setPropertyValues(parserDefinition.getParameterMap());
         return parser;
