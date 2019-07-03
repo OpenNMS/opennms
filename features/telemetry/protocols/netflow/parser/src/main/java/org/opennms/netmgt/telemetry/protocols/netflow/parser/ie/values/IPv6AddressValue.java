@@ -34,6 +34,7 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
@@ -51,7 +52,11 @@ public class IPv6AddressValue extends Value<Inet6Address> {
                             final Optional<Semantics> semantics,
                             final Inet6Address value) {
         super(name, semantics);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public IPv6AddressValue(final String name, final Inet6Address value) {
+        this(name, Optional.empty(), value);
     }
 
     @Override

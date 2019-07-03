@@ -30,6 +30,9 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -37,6 +40,7 @@ import org.bson.BsonDocument;
 import org.bson.BsonDocumentWriter;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlow;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
@@ -49,21 +53,21 @@ import com.google.common.primitives.UnsignedInteger;
 
 public class BsonDocumentTest {
     private static final long CURRENT_TIME_MILLIS = System.currentTimeMillis();
-    private static final IpV4 SRC_IPV4 = new IpV4(new Opaque<byte[]>(4, new byte[]{(byte) 192, (byte) 168, (byte) 1, (byte) 1}));
+    private static final IpV4 SRC_IPV4 = new IpV4(ByteBuffer.wrap(new byte[]{(byte) 192, (byte) 168, (byte) 1, (byte) 1}));
     private static final String SRC_IPV4_STR = "192.168.1.1";
-    private static final IpV4 DST_IPV4 = new IpV4(new Opaque<byte[]>(4, new byte[]{(byte) 192, (byte) 168, (byte) 2, (byte) 1}));
+    private static final IpV4 DST_IPV4 = new IpV4(ByteBuffer.wrap(new byte[]{(byte) 192, (byte) 168, (byte) 2, (byte) 1}));
     private static final String DST_IPV4_STR = "192.168.2.1";
 
-    private static final IpV6 SRC_IPV6 = new IpV6(new Opaque<byte[]>(16, new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 1}));
+    private static final IpV6 SRC_IPV6 = new IpV6(ByteBuffer.wrap(new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 1}));
     private static final String SRC_IPV6_STR = "fe80:0:0:0:0:0:0:1";
-    private static final IpV6 DST_IPV6 = new IpV6(new Opaque<byte[]>(16, new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 2}));
+    private static final IpV6 DST_IPV6 = new IpV6(ByteBuffer.wrap(new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 2}));
     private static final String DST_IPV6_STR = "fe80:0:0:0:0:0:0:2";
 
-    private static final IpV4 ROUTER_IPV4 = new IpV4(new Opaque<byte[]>(4, new byte[]{(byte) 192, (byte) 168, (byte) 3, (byte) 1}));
+    private static final IpV4 ROUTER_IPV4 = new IpV4(ByteBuffer.wrap(new byte[]{(byte) 192, (byte) 168, (byte) 3, (byte) 1}));
     private static final String ROUTER_IPV4_STR = "192.168.3.1";
-    private static final IpV6 ROUTER_IPV6 = new IpV6(new Opaque<byte[]>(16, new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 3}));
+    private static final IpV6 ROUTER_IPV6 = new IpV6(ByteBuffer.wrap(new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 3}));
     private static final String ROUTER_IPV6_STR = "fe80:0:0:0:0:0:0:3";
-    private static final IpV4 GATEWAY_IPV4 = new IpV4(new Opaque<byte[]>(4, new byte[]{(byte) 192, (byte) 168, (byte) 4, (byte) 1}));
+    private static final IpV4 GATEWAY_IPV4 = new IpV4(ByteBuffer.wrap(new byte[]{(byte) 192, (byte) 168, (byte) 4, (byte) 1}));
 
     private static final int LENGTH = 500;
     private static final int PROTOCOL = 6;
@@ -120,7 +124,7 @@ public class BsonDocumentTest {
     }
 
     private BsonDocument createSampledHeaderIpv4() {
-        final Inet4Header inet4Header = new Inet4Header(TOS, LENGTH, PROTOCOL, SRC_IPV4_STR, DST_IPV4_STR, SRC_PORT, DST_PORT, TCP_FLAGS);
+        final Inet4Header inet4Header = new Inet4Header(TOS, LENGTH, PROTOCOL, (Inet4Address) InetAddressUtils.addr(SRC_IPV4_STR), (Inet4Address) InetAddressUtils.addr(DST_IPV4_STR), SRC_PORT, DST_PORT, TCP_FLAGS);
         final EthernetHeader ethernetHeader = new EthernetHeader(SRC_VLAN, inet4Header, null, null);
         final SampledHeader flowData = new SampledHeader(HeaderProtocol.IPv4, 1100, 1000, ethernetHeader, inet4Header, null, null);
         final FlowRecord flowRecord = new FlowRecord(Record.DataFormat.from(0, 1), new Opaque<FlowData>(1, flowData));
@@ -132,7 +136,7 @@ public class BsonDocumentTest {
     }
 
     private BsonDocument createSampledHeaderIpv6() {
-        final Inet6Header inet6Header = new Inet6Header(23, LENGTH, PROTOCOL, SRC_IPV6_STR, DST_IPV6_STR, SRC_PORT, DST_PORT, TCP_FLAGS);
+        final Inet6Header inet6Header = new Inet6Header(23, LENGTH, PROTOCOL, (Inet6Address) InetAddressUtils.addr(SRC_IPV6_STR), (Inet6Address) InetAddressUtils.addr(DST_IPV6_STR), SRC_PORT, DST_PORT, TCP_FLAGS);
         final EthernetHeader ethernetHeader = new EthernetHeader(SRC_VLAN, null, inet6Header, null);
         final SampledHeader flowData = new SampledHeader(HeaderProtocol.IPv6, 1100, 1000, ethernetHeader, null, inet6Header, null);
         final FlowRecord flowRecord = new FlowRecord(Record.DataFormat.from(0, 1), new Opaque<FlowData>(1, flowData));

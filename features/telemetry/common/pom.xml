@@ -29,6 +29,16 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>dnsjava-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.telemetry</groupId>
       <artifactId>org.opennms.features.telemetry.api</artifactId>
       <version>${project.version}</version>
@@ -55,6 +65,16 @@
       <!-- Required for the DistPollerDao -->
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
