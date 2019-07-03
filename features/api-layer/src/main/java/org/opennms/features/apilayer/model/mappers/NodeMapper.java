@@ -26,34 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.model;
+package org.opennms.features.apilayer.model.mappers;
 
-import org.opennms.integration.api.v1.model.MetaData;
-import org.opennms.netmgt.model.OnmsMetaData;
+import org.mapstruct.Mapper;
+import org.opennms.core.utils.LocationUtils;
+import org.opennms.integration.api.v1.model.immutables.ImmutableNode;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-public class MetaDataBean implements MetaData {
-    private final String context;
-    private final String key;
-    private final String value;
+@Mapper(uses = {GeolocationMapper.class, NodeAssetRecordMapper.class, IpInterfaceMapper.class,
+        SnmpInterfaceMapper.class, MetaDataMapper.class})
+public interface NodeMapper {
+    ImmutableNode map(OnmsNode onmsNode);
 
-    public MetaDataBean(OnmsMetaData metaData) {
-        this.context = metaData.getContext();
-        this.key = metaData.getKey();
-        this.value = metaData.getValue();
-    }
-
-    @Override
-    public String getContext() {
-        return context;
-    }
-
-    @Override
-    public String getKey() {
-        return key;
-    }
-
-    @Override
-    public String getValue() {
-        return value;
+    default String mapLocation(OnmsMonitoringLocation onmsMonitoringLocation) {
+        return onmsMonitoringLocation == null ? LocationUtils.DEFAULT_LOCATION_NAME :
+                LocationUtils.getEffectiveLocationName(onmsMonitoringLocation.getLocationName());
     }
 }
