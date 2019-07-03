@@ -8,6 +8,8 @@ opennms-core-ipc-rpc-jms
 opennms-core-ipc-sink-camel
 opennms-syslogd-listener-camel-netty
 opennms-trapd-listener
+minion-events-sink-disptacher
+opennms-send-event-command
 minion-shell
 minion-heartbeat-producer
 minion-snmp-proxy

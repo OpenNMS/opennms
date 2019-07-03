@@ -30,5 +30,6 @@ package org.opennms.distributed.core.api;
 
 public enum SystemType {
     Minion,
-    Sentinel
+    Sentinel,
+    OpenNMS
 }

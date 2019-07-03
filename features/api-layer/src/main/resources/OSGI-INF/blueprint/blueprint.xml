@@ -201,7 +201,7 @@
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="detectorManager" />
   </reference-list>
 
-  <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient"/>
+  <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient" availability="optional"/>
   <service ref="detectorClient" interface="org.opennms.integration.api.v1.detectors.DetectorClient" >
   </service>
   <bean id="detectorClient" class="org.opennms.features.apilayer.detectors.DetectorClientImpl">

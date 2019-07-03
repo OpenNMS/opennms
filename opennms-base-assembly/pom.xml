@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>24.1.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -614,11 +614,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>net.simon04.jelementtree</groupId>
-      <artifactId>jelementtree</artifactId>
-      <version>20100506</version>
-    </dependency>
-    <dependency>
       <groupId>opensymphony</groupId>
       <artifactId>ognl</artifactId>
     </dependency>
@@ -831,6 +826,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.opennms-identity</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
@@ -984,11 +984,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
-      <artifactId>org.opennms.features.telemetry.protocols.sflow.parser</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.telemetry.protocols.nxos</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.nxos.adapter</artifactId>
       <version>${project.version}</version>
@@ -1050,11 +1045,19 @@
 
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>http://central.maven.org/maven2/</url>
+    </repository>
+    <repository>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <id>servicemix</id>
+      <name>ServiceMix Repository</name>
+      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
     </repository>
     <repository>
       <snapshots><enabled>true</enabled></snapshots>
@@ -1062,6 +1065,18 @@
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Snapshots</name>
+      <url>http://maven.opennms.org/content/groups/sonatype.org-snapshot/</url>
+    </repository>
+    <repository>
+      <id>ibiblio</id>
+      <name>Maven Central (ibiblio)</name>
+      <url>http://central.maven.org/maven2/</url>
     </repository>
   </repositories>
 

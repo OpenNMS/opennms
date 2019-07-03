@@ -126,6 +126,29 @@
             </mbean>
 
 
+            <!-- Sink Producer Metrics -->
+
+            <mbean name="org.opennms.core.ipc.sink.producer.dispatch" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dispatch">
+                <attrib name="50thPercentile" alias="Dispatch50" type="gauge"/>
+                <attrib name="75thPercentile" alias="Dispatch75" type="gauge"/>
+                <attrib name="95thPercentile" alias="Dispatch95" type="gauge"/>
+                <attrib name="98thPercentile" alias="Dispatch98" type="gauge"/>
+                <attrib name="99thPercentile" alias="Dispatch99" type="gauge"/>
+                <attrib name="999thPercentile" alias="Dispatch999" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="DispatchRate1m" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="DispatchRate5m" type="gauge"/>
+                <attrib name="Count" alias="DispatchCounter" type="counter"/>
+            </mbean>
+
+
+            <mbean name="org.opennms.core.ipc.sink.producer.queue-size" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.queue-size">
+                <attrib name="Value" alias="QueueSize" type="gauge"/>
+            </mbean>
+
+            <mbean name="org.opennms.core.ipc.sink.producer.dropped" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dropped">
+                <attrib name="Count" alias="DroppedCounter" type="counter"/>
+            </mbean>
+
             <!--
             Example of SEDA endpoint collection that won't work well because the objectname is based on the URI which might change
 

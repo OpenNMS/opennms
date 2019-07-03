@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>24.1.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.distributed</groupId>
@@ -22,5 +22,7 @@
     <module>dao</module>
     <module>datasource</module>
     <module>coordination</module>
+    <module>opennms-identity</module>
+    <module>service-registry</module>
   </modules>
 </project>

@@ -81,7 +81,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-class="{danger: node.isModified()}" ng-repeat="node in filteredNodes | startFrom:(currentPage-1)*pageSize | limitTo:pageSize ">
+          <tr ng-class="{'table-danger': node.isModified()}" ng-repeat="node in filteredNodes | startFrom:(currentPage-1)*pageSize | limitTo:pageSize ">
             <td>{{ node.nodeLabel }}</td>
             <td>{{ node.foreignId }}</td>
             <td>{{ node.location || 'N/A' }}</td>

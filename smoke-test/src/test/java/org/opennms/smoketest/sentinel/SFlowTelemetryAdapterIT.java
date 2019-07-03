@@ -30,13 +30,10 @@ package org.opennms.smoketest.sentinel;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.file.Path;
 import java.util.function.Function;
 
+import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.telemetry.Packet;
-import org.opennms.smoketest.utils.TargetRoot;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
 
 /**
  * Verifies that sflow packets containing samples are also persisted if set up correctly
@@ -44,25 +41,9 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
 public class SFlowTelemetryAdapterIT extends AbstractAdapterIT {
 
     @Override
-    protected void customizeTestEnvironment(TestEnvironmentBuilder builder) {
-        builder.es6();
-
-        // Enable SFlow Adapters
-        final Path opennmsSourceEtcDirectory = new TargetRoot(getClass()).getPath("system-test-resources", "etc");
-        builder.withSentinelEnvironment()
-                .addFile(getClass().getResource("/sentinel/features-newts-sflow.xml"), "deploy/features.xml")
-                .addFile(opennmsSourceEtcDirectory.resolve("telemetryd-adapters/sflow-host.groovy"), "etc/sflow-host.groovy");
-
-        // Enable SFlow Listener
-        builder.withMinionEnvironment()
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50003.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-sflow.cfg")
-        ;
-    }
-
-    @Override
     protected void sendTelemetryMessage() throws IOException {
-        final InetSocketAddress minionListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 50003, "udp");
-        new Packet("/flows/sflow2.dat", minionListenerAddress).send();
+        final InetSocketAddress minionListenerAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
+        new Packet("/payloads/flows/sflow2.dat", minionListenerAddress).send();
     }
 
     @Override

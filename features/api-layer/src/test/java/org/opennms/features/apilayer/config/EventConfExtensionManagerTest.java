@@ -106,4 +106,25 @@ public class EventConfExtensionManagerTest {
         events = eventConfExtensionMgr.getObject();
         assertThat(events.getEvents(), hasSize(0));
     }
+
+    @Test
+    public void canPreserveEventNumberAndOrdering() {
+        String ueiBase = "uei.opennms.org/test/VoluminousEventConfExtension/";
+        EventConfDao eventConfDao = mock(EventConfDao.class);
+        EventConfExtensionManager eventConfExtensionMgr = new EventConfExtensionManager(eventConfDao);
+
+        // No events yet
+        Events events = eventConfExtensionMgr.getObject();
+        assertThat(events.getEvents(), hasSize(0));
+
+        // Make a bunch. Validate their number and ordering.
+        final int NUM_EVENTS = 104;
+        EventConfExtension ext3 = new VoluminousEventConfExtension(ueiBase, NUM_EVENTS);
+        eventConfExtensionMgr.onBind(ext3, new HashMap<>());
+        events = eventConfExtensionMgr.getObject();
+        assertThat(events.getEvents(), hasSize(NUM_EVENTS));
+        for (int i = 0; i < NUM_EVENTS; i++) {
+            assertThat(events.getEvents().get(i).getUei(), equalTo(String.format("%s%d", ueiBase, i)));
+        }
+    }
 }

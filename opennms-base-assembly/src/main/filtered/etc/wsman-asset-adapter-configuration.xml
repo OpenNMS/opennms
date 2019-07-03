@@ -32,9 +32,9 @@
                          <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT NumberOfLogicalProcessors FROM Win32_ComputerSystem" alias="numCores"/>
                  </wqlQueries>
          </assetField>
-         <assetField name="comment" formatString="Cluster: ${cluster}\n">
+         <assetField name="comment" formatString="Part of Cluster: ${cluster}\n">
                  <wqlQueries>
-                         <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/MSCluster_Cluster/*" query="SELECT Name FROM MSCluster_Cluster" alias="cluster"/>
+                         <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/MSCluster/*" query="SELECT Name FROM MSCluster_Cluster" alias="cluster"/>
                  </wqlQueries>
          </assetField>
    </package>

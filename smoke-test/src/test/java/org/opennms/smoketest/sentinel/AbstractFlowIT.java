@@ -31,20 +31,17 @@ package org.opennms.smoketest.sentinel;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.NetworkProtocol;
+import org.opennms.smoketest.stacks.StackModel;
+import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
 import org.opennms.smoketest.telemetry.FlowTester;
-import org.opennms.smoketest.telemetry.Ports;
 import org.opennms.smoketest.utils.KarafShell;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,60 +51,34 @@ public abstract class AbstractFlowIT {
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
     @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
+    public final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withSentinel()
+            .withIpcStrategy(getIpcStrategy())
+            .withTimeSeriesStrategy(TimeSeriesStrategy.NEWTS)
+            .withTelemetryProcessing()
+            .build());
+
+    protected abstract IpcStrategy getIpcStrategy();
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected abstract String getSentinelReadyString();
 
-    protected abstract void customizeTestEnvironment(TestEnvironmentBuilder builder);
-
-    protected TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder();
-
-            // Enable Flow-Listeners
-            builder.withMinionEnvironment()
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg")
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50001.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50001.cfg")
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50002.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50002.cfg")
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50003.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50003.cfg")
-            ;
-
-            customizeTestEnvironment(builder);
-
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            return builder.build();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
-
     @Test
     public void verifyFlowStack() throws Exception {
         // Determine endpoints
-        final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_6, 9200, "tcp");
-        final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        final InetSocketAddress minionNetflow5ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.NETFLOW5_PORT, "udp");
-        final InetSocketAddress minionNetflow9ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.NETFLOW9_PORT, "udp");
-        final InetSocketAddress minionIpfixListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.IPFIX_PORT, "udp");
-        final InetSocketAddress minionSflowListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.SFLOW_PORT, "udp");
+        final InetSocketAddress elasticRestAddress = InetSocketAddress.createUnresolved(stack.elastic().getContainerIpAddress(), stack.elastic().getMappedPort(9200));
+        final InetSocketAddress sentinelSshAddress = stack.sentinel().getSshAddress();
+        final InetSocketAddress minionFlowAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
 
         waitForSentinelStartup(sentinelSshAddress);
 
         final FlowTester flowTester = new FlowTestBuilder()
-                .withNetflow5Packet(minionNetflow5ListenerAddress)
-                .withNetflow9Packet(minionNetflow9ListenerAddress)
-                .withIpfixPacket(minionIpfixListenerAddress)
-                .withSFlowPacket(minionSflowListenerAddress)
+                .withNetflow5Packet(minionFlowAddress)
+                .withNetflow9Packet(minionFlowAddress)
+                .withIpfixPacket(minionFlowAddress)
+                .withSFlowPacket(minionFlowAddress)
                 .build(elasticRestAddress);
 
         flowTester.verifyFlows();

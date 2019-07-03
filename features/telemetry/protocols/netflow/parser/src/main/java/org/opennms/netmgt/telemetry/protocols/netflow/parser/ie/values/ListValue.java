@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
@@ -90,8 +91,8 @@ public class ListValue extends Value<List<List<Value<?>>>> {
                      final Semantic semantic,
                      final List<List<Value<?>>> values) {
         super(name, semantics);
-        this.semantic = semantic;
-        this.values = values;
+        this.semantic = Objects.requireNonNull(semantic);
+        this.values = Objects.requireNonNull(values);
     }
 
     /*

@@ -167,11 +167,27 @@ mv "%{buildroot}%{minioninstprefix}/etc/minion.conf" "%{buildroot}%{_sysconfdir}
 # container package files
 find %{buildroot}%{minioninstprefix} ! -type d | \
     grep -v %{minioninstprefix}/bin | \
+    grep -v %{minioninstprefix}/etc | \
     grep -v %{minionrepoprefix} | \
-    grep -v %{minioninstprefix}/etc/featuresBoot.d | \
-    grep -v %{minioninstprefix}/etc/org.opennms.minion.controller.cfg | \
     sed -e "s|^%{buildroot}|%attr(644,minion,minion) |" | \
     sort > %{_tmppath}/files.container
+
+# org.apache.karaf.features.cfg and org.ops4j.pax.logging.cfg should
+# be special-cased to not be replaced by default (and create .rpmnew files)
+find %{buildroot}%{minioninstprefix}/etc ! -type d | \
+    grep -E 'etc/(org.apache.karaf.features.cfg|org.ops4j.pax.logging.cfg)$' | \
+    sed -e "s|^%{buildroot}|%attr(644,minion,minion) %config(noreplace) |" | \
+    sort >> %{_tmppath}/files.container
+
+# all other etc files should replace by default (and create .rpmsave files)
+find %{buildroot}%{minioninstprefix}/etc ! -type d | \
+    grep -v etc/org.opennms. | \
+    grep -v etc/org.apache.karaf.features.cfg | \
+    grep -v etc/org.ops4j.pax.logging.cfg | \
+    grep -v etc/featuresBoot.d | \
+    sed -e "s|^%{buildroot}|%attr(644,minion,minion) %config |" | \
+    sort >> %{_tmppath}/files.container
+
 find %{buildroot}%{minioninstprefix}/bin ! -type d | \
     sed -e "s|^%{buildroot}|%attr(755,minion,minion) |" | \
     sort >> %{_tmppath}/files.container

@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-public class FooterIT extends OpenNMSSeleniumTestCase {
+public class FooterIT extends OpenNMSSeleniumIT {
     @Test
     public void verifyDisplayVersionForLoggedInUser() {
         assertNotNull(findElementByXpath("//*[@id=\"footer\"]/p"));

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,9 +32,11 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -64,11 +66,13 @@ import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
+import org.opennms.netmgt.mock.MockThresholdingService;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.threshd.ThresholdingService;
 import org.opennms.test.mock.EasyMockUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +111,8 @@ public class DuplicatePrimaryAddressIT {
 
     /** The Filter DAO instance. */
     private FilterDao m_filterDao;
+
+    private ThresholdingService m_thresholdingService;
 
     @Before
     public void setUp() {
@@ -171,7 +177,10 @@ public class DuplicatePrimaryAddressIT {
 
         m_mockUtils = new EasyMockUtils();
 
+        List<InetAddress> m_addrs = new ArrayList<>();
+        m_addrs.add(InetAddressUtils.getInetAddress("192.168.1.1"));
         m_filterDao = m_mockUtils.createMock(FilterDao.class);
+        EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(m_addrs).anyTimes();
         FilterDaoFactory.setInstance(m_filterDao);
 
         Resource resource = new ClassPathResource("etc/poll-outages.xml");
@@ -194,6 +203,7 @@ public class DuplicatePrimaryAddressIT {
 
         m_ifaceDao = m_mockUtils.createMock(IpInterfaceDao.class);
         m_nodeDao = m_mockUtils.createMock(NodeDao.class);
+        m_thresholdingService = new MockThresholdingService();
 
         m_collectd = new Collectd() {
             @Override
@@ -244,6 +254,7 @@ public class DuplicatePrimaryAddressIT {
         m_collectd.setIpInterfaceDao(m_ifaceDao);
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setFilterDao(m_filterDao);
+        m_collectd.setThresholdingService(m_thresholdingService);
         m_collectd.setPersisterFactory(new MockPersisterFactory());
         m_collectd.setServiceCollectorRegistry(new DefaultServiceCollectorRegistry());
         m_collectd.setLocationAwareCollectorClient(CollectorTestUtils.createLocationAwareCollectorClient());

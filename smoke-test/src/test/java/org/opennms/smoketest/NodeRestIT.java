@@ -32,13 +32,10 @@ package org.opennms.smoketest;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
-import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
@@ -46,10 +43,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.RestClient;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 
 /**
  * This test verifies creation/deletion of Nodes/Interfaces/Services through
@@ -57,36 +52,13 @@ import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
  */
 public class NodeRestIT {
 
-    private static TestEnvironment m_testEnvironment;
-    private static RestClient restClient;
-
     @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms();
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            m_testEnvironment = builder.build();
-            return m_testEnvironment;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-        if (m_testEnvironment == null) {
-            return;
-        }
-        final InetSocketAddress opennmsHttp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
-        restClient = new RestClient(opennmsHttp);
-    }
+    public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     @Test
     public void testRestCallsOnNodesInterfacesAndServices() {
+        RestClient restClient = stack.opennms().getRestClient();
+
         // Create a node
         OnmsNode node = new OnmsNode();
         node.setLabel("node1");

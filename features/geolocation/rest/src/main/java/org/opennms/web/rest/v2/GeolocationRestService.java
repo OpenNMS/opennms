@@ -95,7 +95,7 @@ public class GeolocationRestService {
         return Response.ok(config).build();
     }
 
-    private ServiceRegistry getServiceRegistry() {
+     private ServiceRegistry getServiceRegistry() {
         if (serviceRegistry == null) {
             serviceRegistry = BeanUtils.getBean("soaContext", "serviceRegistry", ServiceRegistry.class);
             Objects.requireNonNull(serviceRegistry);

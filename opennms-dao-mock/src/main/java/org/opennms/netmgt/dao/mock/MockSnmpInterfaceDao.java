@@ -107,7 +107,13 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
 
     @Override
     public OnmsSnmpInterface findByNodeIdAndDescription(Integer nodeId, String description) {
-        throw new UnsupportedOperationException("Not yet implemented!");
+        for (final OnmsSnmpInterface iface : findAll()) {
+            final OnmsNode node = iface.getNode();
+            if (description.equals(node.getSysDescription())) {
+                return iface;
+            }
+        }
+        return null;
     }
 
     @Override

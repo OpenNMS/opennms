@@ -33,7 +33,6 @@ import java.util.Objects;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -58,7 +57,7 @@ public class ConversationKeyUtils {
         return new ConversationKey((String)array[0], ((Number)array[1]).intValue(),
                 (String)array[2], (String)array[3], (String)array[4]);
     }
-
+    
     public static String getConvoKeyAsJsonString(FlowDocument document) {
         // Only generate the key if all of the required fields are set
         if (document.getLocation() != null
@@ -69,29 +68,33 @@ public class ConversationKeyUtils {
             // This is faster than creating some new object on which we can use gson.toJson or similar
             final StringWriter writer = new StringWriter();
             writer.write("[");
+
             // Use GSON to encode the location, since this may contain characters that need to be escape
             writer.write(gson.toJson(document.getLocation()));
             writer.write(",");
             writer.write(Integer.toString(document.getProtocol()));
-            writer.write(",\"");
+            writer.write(",");
+
             // Write out addresses in canonical format (lower one first)
-            if (Objects.compare(document.getSrcAddr(), document.getDstAddr(), String::compareTo) < 0) {
-                writer.write(document.getSrcAddr());
-                writer.write("\",\"");
-                writer.write(document.getDstAddr());
+            final String srcAddr = document.getSrcAddr();
+            final String dstAddr = document.getDstAddr();
+            if (Objects.compare(srcAddr, dstAddr, String::compareTo) < 0) {
+                writer.write(gson.toJson(srcAddr));
+                writer.write(",");
+                writer.write(gson.toJson(dstAddr));
             } else {
-                writer.write(document.getDstAddr());
-                writer.write("\",\"");
-                writer.write(document.getSrcAddr());
+                writer.write(gson.toJson(dstAddr));
+                writer.write(",");
+                writer.write(gson.toJson(srcAddr));
             }
-            writer.write("\",");
+            writer.write(",");
+
             if (document.getApplication() != null) {
-                writer.write("\"");
-                writer.write(document.getApplication());
-                writer.write("\"");
+                writer.write(gson.toJson(document.getApplication()));
             } else {
                 writer.write("null");
             }
+
             writer.write("]");
             return writer.toString();
         }

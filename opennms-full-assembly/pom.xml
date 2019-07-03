@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>24.1.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -300,8 +300,6 @@
 
                 <!-- Karaf framework features -->
                 <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
-                <!-- Karaf enterprise features -->
-                <descriptor>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</descriptor>
                 <!-- Karaf standard and Spring features, replaced by our modified versions -->
                 <!-- <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor> -->
                 <!-- <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor> -->
@@ -340,7 +338,7 @@
                 <feature>eventadmin</feature>
                 <feature>feature</feature>
                 <feature>framework-security</feature>
-                <feature>httplite</feature>
+                <feature>felix-httplite</feature>
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
                 <feature>instance</feature>
@@ -409,7 +407,7 @@
                 <feature>eventadmin</feature>
                 <feature>feature</feature>
                 <feature>framework-security</feature>
-                <feature>httplite</feature>
+                <feature>felix-httplite</feature>
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
                 <feature>instance</feature>
@@ -418,6 +416,8 @@
                 <feature>jasypt-encryption</feature>
                 <feature version="8.1.14.v20131031">jetty</feature>
                 <feature version="9.3.9.v20160517">jetty</feature>
+                <!--TODO: Needed?-->
+                <feature version="9.4.18.v20190429">jetty</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
@@ -566,7 +566,6 @@
                 <feature>org.opennms.features.bsm.shell-commands</feature>
                 <feature>vaadin-adminpage</feature>
                 <feature>opennms-jest</feature>
-                <feature>alarm-change-notifier</feature>
                 <feature>opennms-es-rest</feature>
                 <feature>ifttt-integration</feature>
                 <feature>opennms-flows</feature>
@@ -574,6 +573,8 @@
                 <feature>karaf-extender</feature>
                 <feature>opennms-alarm-history-elastic</feature>
                 <feature>org.opennms.features.topologies.service.api</feature>
+                <feature>opennms-identity</feature>
+                <feature>opennms-send-event-command</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>

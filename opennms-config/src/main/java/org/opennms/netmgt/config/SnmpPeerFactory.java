@@ -314,6 +314,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         agentConfig.setMaxRequestSize(def.getMaxRequestSize());
         agentConfig.setMaxVarsPerPdu(def.getMaxVarsPerPdu());
         agentConfig.setMaxRepetitions(def.getMaxRepetitions());
+        agentConfig.setTTL(def.getTTL());
         InetAddress proxyHost = InetAddressUtils.addr(def.getProxyHost());
 
         if (proxyHost != null) {

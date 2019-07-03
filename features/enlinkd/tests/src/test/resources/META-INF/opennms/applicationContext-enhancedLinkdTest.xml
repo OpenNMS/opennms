@@ -248,7 +248,8 @@
       <property name="annotatedListener" ref="receiver" />
       <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>
-   
+
+    <bean id="sessionUtils" class="org.opennms.netmgt.dao.hibernate.DefaultSessionUtils" />
   
   
 </beans>

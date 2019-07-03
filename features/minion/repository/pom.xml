@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>minion-parent</artifactId>
-        <version>24.1.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -49,8 +49,10 @@
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-trapd-listener</feature>
+                                <feature>opennms-send-event-command</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>
+                                <feature>minion-events-sink-disptacher</feature>
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-detectors</feature>
                                 <feature>minion-provisiond-requisitions</feature>
@@ -165,6 +167,16 @@
         <dependency>
             <groupId>org.opennms.features.minion.heartbeat</groupId>
             <artifactId>org.opennms.features.minion.heartbeat.producer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.events.sink</groupId>
+            <artifactId>org.opennms.features.events.sink.dispatcher</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.events.sink</groupId>
+            <artifactId>org.opennms.features.events.sink.command</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -317,12 +329,6 @@
             <groupId>org.opennms.protocols</groupId>
             <artifactId>org.opennms.protocols.xml</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf.karaf</groupId>
-            <artifactId>cxf-karaf-commands</artifactId>
-            <version>${cxfVersion}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

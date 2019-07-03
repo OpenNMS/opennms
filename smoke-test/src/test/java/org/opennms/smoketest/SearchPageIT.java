@@ -39,7 +39,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SearchPageIT extends OpenNMSSeleniumTestCase {
+public class SearchPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         deleteTestRequisition();
@@ -54,9 +54,9 @@ public class SearchPageIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//span[text()='Search Options']");
     }
 
-    @Test 
+    @Test
     public void testAllFormsArePresent() throws Exception {
-        assertEquals(10, countElementsMatchingCss("form"));
+        assertEquals(11, countElementsMatchingCss("form"));
         for (final String matchingElement : new String[] {
                 "input[@id='byname_nodename']",
                 "input[@id='byip_iplike']",
@@ -65,11 +65,12 @@ public class SearchPageIT extends OpenNMSSeleniumTestCase {
                 "select[@id='bymonitoringLocation_monitoringLocation']",
                 "select[@id='byservice_service']",
                 "input[@name='maclike']",
-                "input[@name='foreignSource']"
+                "input[@name='foreignSource']",
+                "select[@name='flows']"
         }) {
             findElementByXpath("//form[@action='element/nodeList.htm']//" + matchingElement);
         }
-        
+
         findElementByXpath("//form[@action='asset/nodelist.jsp']//select[@name='searchvalue']");
         findElementByXpath("//form[@action='asset/nodelist.jsp']//select[@name='column']");
     }

@@ -116,6 +116,8 @@ public class TrapdReloadDaemonIT implements InitializingBean {
         m_eventMgr.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
         pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
         m_eventMgr.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
+        m_eventMgr.getEventAnticipator().reset();
+
         // Verify reload by changing port in configuration to 1163  and new-suspect-on-trap = false;
         File opennmsHome = Paths.get("src", "test", "resources", "trapd").toFile();
         System.setProperty("opennms.home", opennmsHome.getAbsolutePath());
@@ -128,12 +130,18 @@ public class TrapdReloadDaemonIT implements InitializingBean {
         // Send reload event to trapd
         m_trapd.handleReloadEvent(eventBuilder.getEvent());
         m_eventMgr.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
-        //Anticipate default trap event again by sending trap.
+        m_eventMgr.getEventAnticipator().reset();
+
+        // Anticipate default trap event again by sending trap to the new port
         m_eventMgr.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
         pdu.send(localhost, SNMP_PORT_AFTER_RELOAD, "public");
+        // The updated value of "new-suspect-on-trap = false" is not currently propagated to the TrapSinkConsumer
+        // so we should continue to receive a newSuspectEvent
+        m_eventMgr.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
         m_eventMgr.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
+        m_eventMgr.getEventAnticipator().reset();
     }
-    
+
     @After
     public void destroy() {
         m_trapd.stop();

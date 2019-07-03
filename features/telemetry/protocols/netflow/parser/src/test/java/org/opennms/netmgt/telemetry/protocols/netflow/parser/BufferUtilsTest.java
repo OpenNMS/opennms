@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.sint;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint64;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.sfloat;
+import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.*;
 
 import java.nio.ByteBuffer;
 
@@ -78,6 +75,24 @@ public class BufferUtilsTest {
         Assert.assertEquals(0.0F, sfloat(from("00000000")), 0.0);
     }
 
+    @Test
+    public void testUnsigned() throws Exception {
+        // This is random data chosen from the serial number of the finger print of the LDAP server of the university on the applied science of the fulda
+        Assert.assertEquals(UnsignedLong.valueOf(0x20L), uint(from("207138408FABED99"), 1));
+        Assert.assertEquals(UnsignedLong.valueOf(0x2071L), uint(from("207138408FABED99"), 2));
+        Assert.assertEquals(UnsignedLong.valueOf(0x207138L), uint(from("207138408FABED99"), 3));
+        Assert.assertEquals(UnsignedLong.valueOf(0x20713840L), uint(from("207138408FABED99"), 4));
+        Assert.assertEquals(UnsignedLong.valueOf(0x207138408fL), uint(from("207138408FABED99"), 5));
+        Assert.assertEquals(UnsignedLong.valueOf(0x207138408fabL), uint(from("207138408FABED99"), 6));
+        Assert.assertEquals(UnsignedLong.valueOf(0x207138408fabedL), uint(from("207138408FABED99"), 7));
+        Assert.assertEquals(UnsignedLong.valueOf(0x207138408fabed99L), uint(from("207138408FABED99"), 8));
+
+        Assert.assertEquals(uint8(from("207138408FABED99")), uint(from("207138408FABED99"), 1).intValue());
+        Assert.assertEquals(uint16(from("207138408FABED99")), uint(from("207138408FABED99"), 2).intValue());
+        Assert.assertEquals(uint24(from("207138408FABED99")), uint(from("207138408FABED99"), 3).intValue());
+        Assert.assertEquals(uint32(from("207138408FABED99")), uint(from("207138408FABED99"), 4).intValue());
+        Assert.assertEquals(uint64(from("207138408FABED99")), uint(from("207138408FABED99"), 8));
+    }
 
     private static ByteBuffer from(final String hex) {
         return ByteBuffer.wrap(BaseEncoding.base16().decode(hex));

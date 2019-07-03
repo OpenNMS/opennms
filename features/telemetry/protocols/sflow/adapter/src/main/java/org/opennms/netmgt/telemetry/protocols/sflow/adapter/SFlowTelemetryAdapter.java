@@ -76,8 +76,8 @@ public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
         }
 
         final String address = first(
-                getString(document, "agent_address", "ipv6"),
-                getString(document, "agent_address", "ipv4"))
+                getString(document, "agent_address", "ipv6", "address"),
+                getString(document, "agent_address", "ipv4", "address"))
                 .orElseThrow(() -> new IllegalStateException("Incomplete document"));
 
         final InetAddress inetAddress;

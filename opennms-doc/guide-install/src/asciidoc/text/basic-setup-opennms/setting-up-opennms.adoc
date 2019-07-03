@@ -26,11 +26,12 @@ The following abbreviations will be used to refer to their respective entry thro
 .Operating Systems
 [width="100%", cols="1,4"]
 |===
-| _RHEL_              | Red Hat Enterprise Linux 7 or higher, CentOS 7 or higher
+| _RHEL_                       | Red Hat Enterprise Linux 7 or higher, CentOS 7 or higher
 ifndef::opennms-prime[]
-| _Debian_            | Debian 9 or higher, Ubuntu 16.04 LTS or higher
-| _Windows_           | Microsoft Windows Server 2012, Windows 10
+| _Debian_                     | Debian 9 or higher, Ubuntu 16.04 LTS or higher
+| _Windows_                    | Microsoft Windows Server 2012, Windows 10
 endif::opennms-prime[]
+| _OpenJDK 11 Development Kit_ | Installed OpenJDK 11 Development Kit
 |===
 
 It is recommended to meet the following requirements:

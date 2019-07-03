@@ -715,7 +715,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-core-db"); // System classpath
 		installFeature("opennms-events-api"); // System classpath
 		installFeature("opennms-model"); // System classpath
-		installFeature("alarm-change-notifier");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test

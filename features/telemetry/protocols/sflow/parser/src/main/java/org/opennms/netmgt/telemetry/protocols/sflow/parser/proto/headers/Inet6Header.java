@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.common.utils.DnsUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.Throwables;
@@ -44,8 +45,8 @@ public class Inet6Header {
     public final int totalLength;
     public final int protocol;
 
-    public final String srcAddress;
-    public final String dstAddress;
+    public final Inet6Address srcAddress;
+    public final Inet6Address dstAddress;
 
     public final Integer srcPort;
     public final Integer dstPort;
@@ -65,10 +66,10 @@ public class Inet6Header {
         BufferUtils.skip(buffer, 1); // Hop limit
 
         try {
-            this.srcAddress = Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16)).getHostAddress();
-            this.dstAddress = Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16)).getHostAddress();
+            this.srcAddress = (Inet6Address) Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16));
+            this.dstAddress = (Inet6Address) Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16));
         } catch (final UnknownHostException e) {
-            // This only happens if byte array length is != 4
+            // This only happens if byte array length is != 16
             throw Throwables.propagate(e);
         }
 
@@ -102,13 +103,32 @@ public class Inet6Header {
         }
     }
 
+    public Inet6Header(final int tos, final int totalLength, final int protocol, final Inet6Address srcAddress, final Inet6Address dstAddress, final Integer srcPort, final Integer dstPort, final Integer tcpFlags) {
+        this.tos = tos;
+        this.totalLength = totalLength;
+        this.protocol = protocol;
+        this.srcAddress = srcAddress;
+        this.dstAddress = dstAddress;
+        this.srcPort = srcPort;
+        this.dstPort = dstPort;
+        this.tcpFlags = tcpFlags;
+    }
+
     public void writeBson(final BsonWriter bsonWriter) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt32("tos", this.tos);
         bsonWriter.writeInt32("length", this.totalLength);
         bsonWriter.writeInt32("protocol", this.protocol);
-        bsonWriter.writeString("src_ip", this.srcAddress);
-        bsonWriter.writeString("dst_ip", this.dstAddress);
+
+        bsonWriter.writeStartDocument("src_ip");
+        bsonWriter.writeString("address", this.srcAddress.getHostAddress());
+        DnsUtils.reverseLookup(this.srcAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
+        bsonWriter.writeEndDocument();
+
+        bsonWriter.writeStartDocument("dst_ip");
+        bsonWriter.writeString("address", this.dstAddress.getHostAddress());
+        DnsUtils.reverseLookup(this.dstAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
+        bsonWriter.writeEndDocument();
 
         if (this.srcPort != null) {
             bsonWriter.writeInt32("src_port", this.srcPort);

@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.aws.sqs.client;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
+
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.aws.sqs.server.AmazonSQSMessageConsumerManager;
@@ -36,6 +38,9 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * Dispatches the messages directly the consumers.
@@ -70,12 +75,17 @@ public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispa
 
     @Override
     public String getMetricDomain() {
-        return AmazonSQSLocalMessageDispatcherFactory.class.getPackage().getName();
+        return SINK_METRIC_PRODUCER_DOMAIN;
     }
 
     @Override
     public BundleContext getBundleContext() {
         return null;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
     }
 
 }

@@ -31,8 +31,10 @@ package org.opennms.netmgt.flows.elastic;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
@@ -97,11 +99,11 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getSeriesFromTopNQuery(List<String> topN, long step, long start, long end,
-                                         String groupByTerm, List<Filter> filters) {
+    public String getSeriesFromQuery(Collection<String> from, long step, long start, long end,
+                                     String groupByTerm, List<Filter> filters) {
         return render("series_for_terms.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
-                .put("topN", topN)
+                .put("from", from)
                 .put("groupByTerm", groupByTerm)
                 .put("step", step)
                 .put("start", start)
@@ -121,17 +123,50 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getSeriesFromOthersQuery(List<String> topN, long step, long start, long end,
+    public String getSeriesFromOthersQuery(Collection<String> from, long step, long start, long end,
                                            String groupByTerm, boolean excludeMissing,
                                            List<Filter> filters) {
         return render("series_for_others.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
-                .put("topN", topN)
+                .put("from", from)
                 .put("groupByTerm", groupByTerm)
                 .put("excludeMissing", excludeMissing)
                 .put("step", step)
                 .put("start", start)
                 .put("end", end)
+                .build());
+    }
+
+    public String getApplicationsQuery(String prefix, long limit, List<Filter> filters) {
+        Objects.requireNonNull(prefix);
+        Objects.requireNonNull(filters);
+        return render("aggregate_by_fuzzed_field.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("N", limit)
+                .put("field", "netflow.application")
+                .put("prefix", prefix)
+                .build());
+    }
+
+    public String getHostsQuery(String regex, long limit, List<Filter> filters) {
+        Objects.requireNonNull(filters);
+
+        return render("aggregate_by_regex.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("regex", regex)
+                .put("limit", limit)
+                .put("field", "hosts")
+                .build());
+    }
+
+    public String getConversationsRegexQuery(String regex, long limit, List<Filter> filters) {
+        Objects.requireNonNull(filters);
+
+        return render("aggregate_by_regex.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("regex", regex)
+                .put("limit", limit)
+                .put("field", "netflow.convo_key")
                 .build());
     }
 
@@ -171,6 +206,20 @@ public class SearchQueryProvider implements FilterVisitor<String> {
     public String visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter) {
         return render("filter_snmp_interface.ftl", ImmutableMap.builder()
                 .put("snmpInterfaceId", snmpInterfaceIdFilter.getSnmpInterfaceId())
+                .build());
+    }
+
+    public String getHostnameByConversationQuery(final String convoKey, final List<Filter> filters) {
+        return render("hostname_by_convo.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("convoKey", convoKey)
+                .build());
+    }
+
+    public String getHostnameByHostQuery(final String host, final List<Filter> filters) {
+        return render("hostname_by_host.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("host", host)
                 .build());
     }
 }

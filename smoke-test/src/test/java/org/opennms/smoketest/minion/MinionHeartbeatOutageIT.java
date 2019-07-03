@@ -34,13 +34,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
-import java.io.PrintStream;
-import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -53,20 +49,11 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
-import org.opennms.smoketest.utils.HibernateDaoFactory;
-import org.opennms.test.system.api.AbstractTestEnvironment;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
+import org.opennms.smoketest.utils.TestContainerUtils;
 
 /**
  * This test starts up Minion with the default JMS sink and makes sure
@@ -76,105 +63,27 @@ import com.spotify.docker.client.exceptions.DockerException;
  * @author Seth
  */
 public class MinionHeartbeatOutageIT {
+
     @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
+    public final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withIpcStrategy(getIpcStrategy())
+            .build());
 
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
-
-    private HibernateDaoFactory m_daoFactory;
-
-    public final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            return getEnvironmentBuilder().build();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    /**
-     * Override this method to customize the test environment.
-     */
-    protected TestEnvironmentBuilder getEnvironmentBuilder() {
-        final TestEnvironmentBuilder builder = TestEnvironment.builder().all();
-        OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-        return builder;
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
-
-    protected HibernateDaoFactory getDaoFactory() {
-        if (m_daoFactory == null) {
-            // Connect to the postgresql container
-            final InetSocketAddress pgsql = testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
-            m_daoFactory = new HibernateDaoFactory(pgsql);
-        }
-        return m_daoFactory;
-    }
-
-    /**
-     * Install the Kafka features on Minion.
-     * 
-     * @param minionSshAddr
-     * @param kafkaAddress
-     * @throws Exception
-     */
-    protected static void installFeaturesOnMinion(InetSocketAddress minionSshAddr) throws Exception {
-        try (final SshClient sshClient = new SshClient(minionSshAddr, "admin", "admin")) {
-            PrintStream pipe = sshClient.openShell();
-            pipe.println("feature:list -i");
-            pipe.println("list");
-            // Set the log level to INFO
-            pipe.println("log:set INFO");
-            pipe.println("logout");
-            try {
-                await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-            } finally {
-                getLogger().info("Karaf output:\n{}", sshClient.getStdout());
-            }
-        }
-    }
-
-    protected static void installFeaturesOnOpenNMS(InetSocketAddress opennmsSshAddr) throws Exception {
-        try (final SshClient sshClient = new SshClient(opennmsSshAddr, "admin", "admin")) {
-            PrintStream pipe = sshClient.openShell();
-
-            pipe.println("feature:list -i");
-            // Set the log level to INFO
-            pipe.println("log:set INFO");//
-            pipe.println("logout");
-            try {
-                await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-            } finally {
-                getLogger().info("Karaf output:\n{}", sshClient.getStdout());
-            }
-        }
-    }
 
     @Test
     public void testHeartbeatOutages() throws Exception {
         Date startOfTest = new Date();
 
-        InetSocketAddress minionSshAddr = testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
-        InetSocketAddress opennmsSshAddr = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
-
-        installFeaturesOnMinion(minionSshAddr);
-
-        installFeaturesOnOpenNMS(opennmsSshAddr);
-
         // Wait for the Minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                 getDaoFactory().getDao(MinionDaoHibernate.class),
+                 stack.postgres().dao(MinionDaoHibernate.class),
                  new CriteriaBuilder(OnmsMinion.class)
                      .gt("lastUpdated", startOfTest)
-                     .eq("location", "MINION")
+                     .eq("location", stack.minion().getLocation())
                      .toCriteria()
                  ),
                  is(1)
@@ -183,10 +92,10 @@ public class MinionHeartbeatOutageIT {
         // Make sure that the node is available
         await().atMost(180, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                getDaoFactory().getDao(NodeDaoHibernate.class),
+                stack.postgres().dao(NodeDaoHibernate.class),
                 new CriteriaBuilder(OnmsNode.class)
                 .eq("foreignSource", "Minions")
-                .eq("foreignId", "00000000-0000-0000-0000-000000ddba11")
+                .eq("foreignId", stack.minion().getId())
                 .toCriteria()
                 ),
             equalTo(1)
@@ -196,7 +105,7 @@ public class MinionHeartbeatOutageIT {
 
         /*
         assertEquals(1, DaoUtils.countMatchingCallable(
-            getDaoFactory().getDao(EventDaoHibernate.class),
+            stack.postgres().dao(.getDao(EventDaoHibernate.class),
             new CriteriaBuilder(OnmsEvent.class)
             .eq("eventUei", EventConstants.MONITORING_SYSTEM_ADDED_UEI)
             .like("eventParms", String.format("%%%s=%s%%", EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION))
@@ -208,22 +117,22 @@ public class MinionHeartbeatOutageIT {
         */
 
         assertEquals(1,
-            getDaoFactory().getDao(EventDaoHibernate.class).findMatching(
+            stack.postgres().dao(EventDaoHibernate.class).findMatching(
                 new CriteriaBuilder(OnmsEvent.class)
                     .alias("eventParameters", "eventParameters")
                     .eq("eventUei", EventConstants.MONITORING_SYSTEM_ADDED_UEI).toCriteria()).stream()
                     .filter(e -> e.getEventParameters().stream()
                             .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_TYPE.equals(p.getName()) && OnmsMonitoringSystem.TYPE_MINION.equals(p.getValue())))
                     .filter(e -> e.getEventParameters().stream()
-                            .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_ID.equals(p.getName()) && "00000000-0000-0000-0000-000000ddba11".equals(p.getValue())))
+                            .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_ID.equals(p.getName()) && stack.minion().getId().equals(p.getValue())))
                     .filter(e -> e.getEventParameters().stream()
-                            .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_LOCATION.equals(p.getName()) && "MINION".equals(p.getValue())))
+                            .anyMatch(p -> EventConstants.PARAM_MONITORING_SYSTEM_LOCATION.equals(p.getName()) && stack.minion().getLocation().equals(p.getValue())))
                     .distinct()
                     .count()
         );
 
         assertEquals(0, DaoUtils.countMatchingCallable(
-            getDaoFactory().getDao(EventDaoHibernate.class),
+            stack.postgres().dao(EventDaoHibernate.class),
             new CriteriaBuilder(OnmsEvent.class)
             .eq("eventUei", EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI)
             .toCriteria()
@@ -231,17 +140,17 @@ public class MinionHeartbeatOutageIT {
         );
 
         for (int i = 0; i < 3; i++) {
-            restartContainer(ContainerAlias.MINION);
+            TestContainerUtils.restartContainer(stack.minion());
 
             // Reset the startOfTest timestamp
             startOfTest = new Date();
 
-            await().atMost(90, SECONDS).pollInterval(5, SECONDS)
+            await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                 .until(DaoUtils.countMatchingCallable(
-                     getDaoFactory().getDao(MinionDaoHibernate.class),
+                     stack.postgres().dao(MinionDaoHibernate.class),
                      new CriteriaBuilder(OnmsMinion.class)
                          .gt("lastUpdated", startOfTest)
-                         .eq("location", "MINION")
+                         .eq("location", stack.minion().getLocation())
                          .toCriteria()
                      ),
                      is(1)
@@ -249,17 +158,17 @@ public class MinionHeartbeatOutageIT {
         }
 
         for (int i = 0; i < 2; i++) {
-            restartContainer(ContainerAlias.OPENNMS);
+            TestContainerUtils.restartContainer(stack.opennms());
 
             // Reset the startOfTest timestamp
             startOfTest = new Date();
 
-            await().atMost(240, SECONDS).pollInterval(5, SECONDS)
+            await().atMost(5, MINUTES).pollInterval(5, SECONDS)
                 .until(DaoUtils.countMatchingCallable(
-                     getDaoFactory().getDao(MinionDaoHibernate.class),
+                     stack.postgres().dao(MinionDaoHibernate.class),
                      new CriteriaBuilder(OnmsMinion.class)
                          .gt("lastUpdated", startOfTest)
-                         .eq("location", "MINION")
+                         .eq("location", stack.minion().getLocation())
                          .toCriteria()
                      ),
                      is(1)
@@ -267,17 +176,17 @@ public class MinionHeartbeatOutageIT {
         }
 
         for (int i = 0; i < 1; i++) {
-            restartContainer(ContainerAlias.MINION);
+            TestContainerUtils.restartContainer(stack.minion());
 
             // Reset the startOfTest timestamp
             startOfTest = new Date();
 
-            await().atMost(90, SECONDS).pollInterval(5, SECONDS)
+            await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                 .until(DaoUtils.countMatchingCallable(
-                     getDaoFactory().getDao(MinionDaoHibernate.class),
+                     stack.postgres().dao(MinionDaoHibernate.class),
                      new CriteriaBuilder(OnmsMinion.class)
                          .gt("lastUpdated", startOfTest)
-                         .eq("location", "MINION")
+                         .eq("location", stack.minion().getLocation())
                          .toCriteria()
                      ),
                      is(1)
@@ -285,20 +194,7 @@ public class MinionHeartbeatOutageIT {
         }
     }
 
-    private void restartContainer(ContainerAlias alias) {
-        final DockerClient docker = ((AbstractTestEnvironment)testEnvironment).getDockerClient();
-        final String id = testEnvironment.getContainerInfo(alias).id();
-        final Logger logger = getLogger();
-        try {
-            logger.info("Restarting container: {} -> {}", alias, id);
-            docker.restartContainer(id);
-            logger.info("Container restarted: {} -> {}", alias, id);
-        } catch (DockerException | InterruptedException e) {
-            logger.warn("Unexpected exception while restarting container {}", id, e);
-        }
-    }
-
-    protected static Logger getLogger() {
-        return LoggerFactory.getLogger(MinionHeartbeatOutageIT.class);
+    public IpcStrategy getIpcStrategy() {
+        return IpcStrategy.JMS;
     }
 }

@@ -159,7 +159,7 @@ featuresBoot = \
       instance/4.2.2, \
       package/4.2.2, \
       log/4.2.2, \
-      scv/24.1.0-SNAPSHOT, \
+      scv/25.0.0-SNAPSHOT, \
       ssh/4.2.2, \
       framework/4.2.2, \
       system/4.2.2, \
@@ -321,7 +321,7 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
         -->
         <config name="org.opennms.features.telemetry.adapters-netflow5">
             name = Netflow-5
-            class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
         </config>
         <!-- Point sentinel to the correct elastic endpoint -->
         <config name="org.opennms.features.flows.persistence.elastic">
@@ -369,7 +369,7 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
         -->
         <config name="org.opennms.features.telemetry.adapters-netflow5">
             name = Netflow-5
-            class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
         </config>
         <!-- Point sentinel to the correct elastic endpoint -->
         <config name="org.opennms.features.flows.persistence.elastic">

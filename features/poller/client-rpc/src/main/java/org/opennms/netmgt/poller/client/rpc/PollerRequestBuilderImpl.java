@@ -36,9 +36,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
+import org.opennms.core.rpc.utils.MetadataConstants;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
@@ -149,6 +151,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         request.setNodeId(service.getNodeId());
         request.setNodeLabel(service.getNodeLabel());
         request.setNodeLocation(service.getNodeLocation());
+        //Overwrite if ttl exists in metadata
+        ttlInMs = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), ttlInMs);
         request.setTimeToLiveMs(ttlInMs);
         request.addAttributes(interpolatedAttributes);
         request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(service.getNodeId()));
@@ -174,5 +178,6 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             return results;
         });
     }
+
 
 }

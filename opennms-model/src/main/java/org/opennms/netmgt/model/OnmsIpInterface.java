@@ -179,6 +179,16 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         setId(Integer.valueOf(id));
     }
 
+    @Transient
+    @XmlAttribute(name="hasFlows")
+    public boolean getHasFlows() {
+        if (m_snmpInterface == null) {
+            return false;
+        }
+
+        return m_snmpInterface.getHasFlows();
+    }
+
     /**
      * <p>getIpAddress</p>
      *

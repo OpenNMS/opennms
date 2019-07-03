@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.sentinel</groupId>
         <artifactId>sentinel-parent</artifactId>
-        <version>24.1.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -64,6 +64,7 @@
                                 <feature>sentinel-coordination-zookeeper</feature>
                                 <feature>sentinel-coordination-shell</feature>
                                 <feature>sentinel-newts</feature>
+                                <feature>opennms-core-tracing-jaeger</feature>
 
                                 <!-- Other features -->
                                 <feature>hawtio-offline</feature>
@@ -263,6 +264,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.jaeger-osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.jaeger-tracer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.flows</groupId>
             <artifactId>org.opennms.features.flows.elastic</artifactId>
             <version>${project.version}</version>
@@ -387,6 +398,11 @@
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.dao-shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.serviceregistry</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

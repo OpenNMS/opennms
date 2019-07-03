@@ -39,6 +39,8 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -124,6 +126,9 @@ public class MarkerCacheIT {
         when(flow.getDstAddr()).thenReturn("192.168.2.2");
         when(flow.getOutputSnmp()).thenReturn(3);
         when(flow.getVlan()).thenReturn(null);
+        when(flow.getSrcAddrHostname()).thenReturn(Optional.empty());
+        when(flow.getDstAddrHostname()).thenReturn(Optional.empty());
+        when(flow.getNextHopHostname()).thenReturn(Optional.empty());
         return flow;
     }
 
@@ -162,6 +167,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     transactionOperations, nodeDao, snmpInterfaceDao,
+                    new MockIdentity(), new MockTracerRegistry(),
                     3, 12000);
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));

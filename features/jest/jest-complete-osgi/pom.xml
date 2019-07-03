@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.jest</artifactId>
-    <version>24.1.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
 
   <!-- Feature Definition -->
@@ -194,7 +194,7 @@
     <dependency>
       <groupId>org.opennms.features.jest</groupId>
       <artifactId>org.opennms.features.jest.dependencies</artifactId>
-      <version>${parent.version}</version>
+      <version>${project.parent.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>

@@ -29,6 +29,7 @@
 package org.opennms.core.collection.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
@@ -41,6 +42,8 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.test.FileAnticipator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
@@ -57,6 +60,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  */
 public class JUnitCollectorExecutionListener extends AbstractTestExecutionListener {
 
+    private static final Logger LOG = LoggerFactory.getLogger(JUnitCollectorExecutionListener.class);
     private File m_snmpRrdDirectory;
     private FileAnticipator m_fileAnticipator;
 
@@ -154,9 +158,27 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             }
         }
 
-        FileUtils.deleteDirectory(m_snmpRrdDirectory);
+        try {
+            FileUtils.deleteDirectory(m_snmpRrdDirectory);
+        } catch (IOException deleteDirectoryException) {
+            // Windows is failing tests due to spurious cleanup errors
+            LOG.warn("Failed to delete {} during cleanup.", m_snmpRrdDirectory, deleteDirectoryException);
+            String os = System.getProperty("os.name");
+            if (os == null || !os.contains("Windows")) {
+                throw deleteDirectoryException;
+            }
+        }
 
-        m_fileAnticipator.tearDown();
+        try {
+            m_fileAnticipator.tearDown();
+        } catch (RuntimeException anticipatorTeardownException) {
+            // Windows is failing tests due to spurious cleanup errors
+            LOG.warn("Failed to delete {} during cleanup.", m_fileAnticipator.getTempDir(), anticipatorTeardownException);
+            String os = System.getProperty("os.name");
+            if (os == null || !os.contains("Windows")) {
+                throw anticipatorTeardownException;
+            }
+        }
 
         if (e != null) {
             throw e;

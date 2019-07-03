@@ -28,18 +28,17 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
 
+import org.bson.BsonDocument;
+import org.bson.RawBsonDocument;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.proto.NetflowPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class Netflow5Adapter extends AbstractFlowAdapter<NetflowPacket> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Netflow5Adapter.class);
+public class Netflow5Adapter extends AbstractFlowAdapter<BsonDocument> {
 
     public Netflow5Adapter(final MetricRegistry metricRegistry,
                            final FlowRepository flowRepository) {
@@ -47,28 +46,7 @@ public class Netflow5Adapter extends AbstractFlowAdapter<NetflowPacket> {
     }
 
     @Override
-    protected NetflowPacket parse(TelemetryMessageLogEntry message) {
-        // Create NetflowPacket which delegates all calls to the byte array
-        final NetflowPacket flowPacket = new NetflowPacket(message.getByteArray());
-
-        // Version must match for now. Otherwise we drop the packet
-        if (flowPacket.getVersion() != NetflowPacket.VERSION) {
-            LOG.warn("Invalid Version. Expected {}, received {}. Dropping flow packet.", NetflowPacket.VERSION, flowPacket.getVersion());
-            return null;
-        }
-
-        // Empty flows are dropped for now
-        if (flowPacket.getCount() == 0) {
-            LOG.warn("Received packet has no content. Dropping flow packet.");
-            return null;
-        }
-
-        // Validates the parsed packet and drops it when not valid
-        if (!flowPacket.isValid()) {
-            LOG.warn("Received packet is not valid. Dropping flow packet.");
-            return null;
-        }
-
-        return flowPacket;
+    protected BsonDocument parse(TelemetryMessageLogEntry message) {
+        return new RawBsonDocument(message.getByteArray());
     }
 }

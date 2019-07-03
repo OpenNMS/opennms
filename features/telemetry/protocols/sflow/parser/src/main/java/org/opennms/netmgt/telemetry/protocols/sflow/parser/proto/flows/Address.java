@@ -65,6 +65,12 @@ public class Address {
         }
     }
 
+    public Address(final AddressType type, final IpV4 ipV4, final IpV6 ipV6) {
+        this.type = type;
+        this.ipV4 = ipV4;
+        this.ipV6 = ipV6;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

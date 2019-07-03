@@ -37,21 +37,28 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -116,90 +123,218 @@ public class FlowRestServiceImpl implements FlowRestService {
     }
 
     @Override
-    public FlowSummaryResponse getTopNApplications(int N, boolean includeOther, UriInfo uriInfo) {
+    public List<String> getApplications(String matchingPrefix, long limit, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        return waitForFuture(flowRepository.getApplications(matchingPrefix, limit, filters));
+    }
+
+    @Override
+    public FlowSummaryResponse getApplicationSummary(Integer N, Set<String> applications, boolean includeOther,
+                                                     UriInfo uriInfo) {
+        return getSummary(N, applications, uriInfo, "application",
+                filters -> flowRepository.getTopNApplicationSummaries(N, includeOther, filters),
+                filters -> flowRepository.getApplicationSummaries(applications, includeOther, filters),
+                this.defaultSummaryResponseConsumer("Application", Function.identity()));
+    }
+
+    @Override
+    public FlowSeriesResponse getApplicationSeries(long step, Integer N, Set<String> applications,
+                                                   boolean includeOther, UriInfo uriInfo) {
+        return getSeries(N, applications, uriInfo, "application",
+                filters -> flowRepository.getTopNApplicationSeries(N, step, includeOther, filters),
+                filters -> flowRepository.getApplicationSeries(applications, step, includeOther, filters),
+                this.defaultSeriesReponseConsumer(Function.identity()));
+    }
+
+    @Override
+    public List<String> getHosts(String regex, long limit, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        return waitForFuture(flowRepository.getHosts(regex, limit, filters));
+    }
+
+    @Override
+    public FlowSummaryResponse getHostSummary(Integer N, Set<String> hosts, boolean includeOther, UriInfo uriInfo) {
+        final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
+
+        return getSummary(N, hosts, uriInfo, "host",
+                filters -> flowRepository.getTopNHostSummaries(N, includeOther, filters),
+                filters -> flowRepository.getHostSummaries(hosts, includeOther, filters),
+                this.defaultSummaryResponseConsumer("Host", hostnameMode::buildDisplayName));
+    }
+
+    @Override
+    public FlowSeriesResponse getHostSeries(long step, Integer N, Set<String> hosts, boolean includeOther,
+                                            UriInfo uriInfo) {
+        final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
+
+        return getSeries(N, hosts, uriInfo, "host",
+                filters -> flowRepository.getTopNHostSeries(N, step, includeOther, filters),
+                filters -> flowRepository.getHostSeries(hosts, step, includeOther, filters),
+                this.defaultSeriesReponseConsumer(hostnameMode::buildDisplayName));
+    }
+
+    @Override
+    public List<String> getConversations(String locationPattern, String protocolPattern, String lowerIPPattern,
+                                         String upperIPPattern, String applicationPattern, long limit,
+                                         UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        return waitForFuture(flowRepository.getConversations(locationPattern, protocolPattern, lowerIPPattern,
+                upperIPPattern, applicationPattern, limit, filters));
+    }
+
+    @Override
+    public FlowSummaryResponse getConversationSummary(Integer N, Set<String> conversations, boolean includeOther,
+                                                      UriInfo uriInfo) {
+        final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
+
+        return getSummary(N, conversations, uriInfo, "conversation",
+                filters -> flowRepository.getTopNConversationSummaries(N, includeOther, filters),
+                filters -> flowRepository.getConversationSummaries(conversations, includeOther, filters),
+                response -> (summary) -> {
+                    response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source",
+                            "Dest.", "Application", "Bytes In", "Bytes Out"));
+                    response.setRows(summary.stream()
+                            .map(sum -> {
+                                final Conversation conversation = sum.getEntity();
+                                return Lists.newArrayList((Object) conversation.getLocation(), conversation.getProtocol(),
+                                        hostnameMode.buildDisplayName(conversation.getLowerHost()),
+                                        hostnameMode.buildDisplayName(conversation.getUpperHost()),
+                                        conversation.getApplication(),
+                                        sum.getBytesIn(), sum.getBytesOut());
+                            })
+                            .collect(Collectors.toList()));
+                });
+    }
+
+    @Override
+    public FlowSeriesResponse getConversationSeries(long step, Integer N, Set<String> conversations,
+                                                    boolean includeOther, UriInfo uriInfo) {
+        final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
+
+        return getSeries(N, conversations, uriInfo, "conversation",
+                filters -> flowRepository.getTopNConversationSeries(N, step, includeOther, filters),
+                filters -> flowRepository.getConversationSeries(conversations, step, includeOther, filters),
+                response -> series ->
+                    response.setColumns(series.rowKeySet().stream()
+                            .map(d -> {
+                                final Conversation conversation = d.getValue();
+                                final String applicationTag = conversation.getApplication() != null ? String.format(" : %s", conversation.getApplication()) : "";
+                                final FlowSeriesColumn column = new FlowSeriesColumn();
+                                column.setLabel(String.format("%s <-> %s%s",
+                                        hostnameMode.buildDisplayName(conversation.getLowerHost()),
+                                        hostnameMode.buildDisplayName(conversation.getUpperHost()),
+                                        applicationTag));
+                                column.setIngress(d.isIngress());
+                                return column;
+                            })
+                            .collect(Collectors.toList()))
+                );
+    }
+
+    @Override
+    public FlowGraphUrlInfo getFlowGraphUrlInfo(UriInfo uriInfo) {
+
+        if (Strings.isNullOrEmpty(flowGraphUrl)) {
+            return null;
+        }
+
+        long flowCount = waitForFuture(
+                flowRepository.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
+        FlowGraphUrlInfo graphUrlInfo = new FlowGraphUrlInfo();
+
+        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+        String flowUrl = getFlowGraphUrl();
+        final String formattedGraphUrl = flowUrl.replaceAll("\\$nodeId", getFirstNonNull(queryParams, "exporterNode"))
+                .replaceAll("\\$ifIndex",  getFirstNonNull(queryParams, "ifIndex"))
+                .replaceAll("\\$start",  getFirstNonNull(queryParams, "start"))
+                .replaceAll("\\$end",  getFirstNonNull(queryParams, "end"));
+        graphUrlInfo.setFlowGraphUrl(formattedGraphUrl);
+        graphUrlInfo.setFlowCount(flowCount);
+        return graphUrlInfo;
+    }
+
+    public String getFlowGraphUrl() {
+        return flowGraphUrl;
+    }
+
+    public void setFlowGraphUrl(String flowGraphUrl) {
+        this.flowGraphUrl = flowGraphUrl;
+    }
+    
+    private void withValidationAndFilters(Integer N, Set<String> entities, String entitiesLabel, UriInfo uriInfo, BiConsumer<List<Filter>, TimeRangeFilter> filterConsumer) {
+        validateNOrSetQueryParameters(N, entities, entitiesLabel);
+
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+        
+        filterConsumer.accept(filters, timeRangeFilter);
+    }
 
-        final List<TrafficSummary<String>> summary =
-                waitForFuture(flowRepository.getTopNApplications(N, includeOther, filters));
-
+    private <T> FlowSummaryResponse getSummary(Integer N, Set<String> entities, UriInfo uriInfo, String entitiesLabel,
+                                               Function<List<Filter>, CompletableFuture<List<TrafficSummary<T>>>> topNSummaryProviderFunction,
+                                               Function<List<Filter>, CompletableFuture<List<TrafficSummary<T>>>> specificEntitiesSummaryProviderFunction,
+                                               Function<FlowSummaryResponse, Consumer<List<TrafficSummary<T>>>> responseConsumer) {
         final FlowSummaryResponse response = new FlowSummaryResponse();
-        response.setStart(timeRangeFilter.getStart());
-        response.setEnd(timeRangeFilter.getEnd());
-        response.setHeaders(Lists.newArrayList("Application", "Bytes In", "Bytes Out"));
-        response.setRows(summary.stream()
-                .map(sum -> Arrays.asList((Object)sum.getEntity(), sum.getBytesIn(), sum.getBytesOut()))
-                .collect(Collectors.toList()));
+        withValidationAndFilters(N, entities, entitiesLabel, uriInfo, (filters, timeRangeFilter) -> {
+            final List<TrafficSummary<T>> summary;
+
+            if (N != null) {
+                summary = waitForFuture(topNSummaryProviderFunction.apply(filters));
+            } else {
+                summary = waitForFuture(specificEntitiesSummaryProviderFunction.apply(filters));
+            }
+
+            response.setStart(timeRangeFilter.getStart());
+            response.setEnd(timeRangeFilter.getEnd());
+            responseConsumer.apply(response).accept(summary);
+        });
         return response;
     }
 
-    @Override
-    public FlowSeriesResponse getTopNApplicationSeries(long step, int N, boolean includeOther, UriInfo uriInfo) {
-        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-        final Table<Directional<String>, Long, Double> series =
-                waitForFuture(flowRepository.getTopNApplicationsSeries(N, step, includeOther, filters));
-
+    private <T> FlowSeriesResponse getSeries(Integer N, Set<String> entities, UriInfo uriInfo, String entitiesLabel,
+                                             Function<List<Filter>, CompletableFuture<Table<Directional<T>, Long,
+                                                     Double>>> topNSeriesFutureFunction,
+                                             Function<List<Filter>, CompletableFuture<Table<Directional<T>, Long,
+                                                     Double>>> specificEntitiesSeriesFutureFunction,
+                                             Function<FlowSeriesResponse, Consumer<Table<Directional<T>, Long, Double>>> seriesResponseConsumer) {
         final FlowSeriesResponse response = new FlowSeriesResponse();
-        response.setStart(timeRangeFilter.getStart());
-        response.setEnd(timeRangeFilter.getEnd());
-        response.setColumns(series.rowKeySet().stream()
-                .map(d -> {
-                    final FlowSeriesColumn column = new FlowSeriesColumn();
-                    column.setLabel(d.getValue());
-                    column.setIngress(d.isIngress());
-                    return column;
-                })
-                .collect(Collectors.toList()));
-        populateResponseFromTable(series, response);
+        withValidationAndFilters(N, entities, entitiesLabel, uriInfo, (filters, timeRangeFilter) -> {
+            final Table<Directional<T>, Long, Double> series;
+
+            if (N != null) {
+                series = waitForFuture(topNSeriesFutureFunction.apply(filters));
+            } else {
+                series = waitForFuture(specificEntitiesSeriesFutureFunction.apply(filters));
+            }
+
+            response.setStart(timeRangeFilter.getStart());
+            response.setEnd(timeRangeFilter.getEnd());
+            seriesResponseConsumer.apply(response).accept(series);
+            populateResponseFromTable(series, response);
+        });
         return response;
     }
 
-    @Override
-    public FlowSummaryResponse getTopNConversations(int N, UriInfo uriInfo) {
-        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-
-        final List<TrafficSummary<ConversationKey>> summary =
-                waitForFuture(flowRepository.getTopNConversations(N, filters));
-
-        final FlowSummaryResponse response = new FlowSummaryResponse();
-        response.setStart(timeRangeFilter.getStart());
-        response.setEnd(timeRangeFilter.getEnd());
-        response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source IP",
-                "Dest. IP", "Application", "Bytes In", "Bytes Out"));
-        response.setRows(summary.stream()
-                .map(sum -> {
-                    final ConversationKey key = sum.getEntity();
-                    return Lists.newArrayList((Object)key.getLocation(), key.getProtocol(),
-                            key.getLowerIp(), key.getUpperIp(), key.getApplication(), sum.getBytesIn(), sum.getBytesOut());
-                })
-                .collect(Collectors.toList()));
-        return response;
+    private <K> Function<FlowSummaryResponse, Consumer<List<TrafficSummary<K>>>> defaultSummaryResponseConsumer(final String entitiesHeader, final Function<K, String> entityLabel) {
+        return response -> summary -> {
+            response.setHeaders(Lists.newArrayList(entitiesHeader, "Bytes In", "Bytes Out"));
+            response.setRows(summary.stream()
+                    .map(sum -> Arrays.asList((Object) entityLabel.apply(sum.getEntity()), sum.getBytesIn(), sum.getBytesOut()))
+                    .collect(Collectors.toList()));
+        };
     }
 
-    @Override
-    public FlowSeriesResponse getTopNConversationsSeries(long step, int N, UriInfo uriInfo) {
-        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-        final Table<Directional<ConversationKey>, Long, Double> series =
-                waitForFuture(flowRepository.getTopNConversationsSeries(N, step, filters));
-
-        final FlowSeriesResponse response = new FlowSeriesResponse();
-        response.setStart(timeRangeFilter.getStart());
-        response.setEnd(timeRangeFilter.getEnd());
-        response.setColumns(series.rowKeySet().stream()
-                .map(d -> {
-                    final ConversationKey key = d.getValue();
-                    final String applicationTag = key.getApplication() != null ? String.format(" [%s]", key.getApplication()) : "";
-                    final FlowSeriesColumn column = new FlowSeriesColumn();
-                    column.setLabel(String.format("%s <-> %s%s", key.getLowerIp(), key.getUpperIp(), applicationTag));
-                    column.setIngress(d.isIngress());
-                    return column;
-                })
-                .collect(Collectors.toList()));
-        populateResponseFromTable(series, response);
-        return response;
+    private <K> Function<FlowSeriesResponse, Consumer<Table<Directional<K>, Long, Double>>> defaultSeriesReponseConsumer(final Function<K, String> entityLabel) {
+        return response -> series -> {
+            response.setColumns(series.rowKeySet().stream()
+                    .map(d -> {
+                        final FlowSeriesColumn column = new FlowSeriesColumn();
+                        column.setLabel(entityLabel.apply(d.getValue()));
+                        column.setIngress(d.isIngress());
+                        return column;
+                    })
+                    .collect(Collectors.toList()));
+        };
     }
 
     protected static List<Filter> getFiltersFromQueryString(MultivaluedMap<String, String> queryParams) {
@@ -268,6 +403,46 @@ public class FlowRestServiceImpl implements FlowRestService {
         return end > 0 ? end : new Date().getTime();
     }
 
+    enum HostnameMode {
+        HIDE {
+            @Override
+            public String buildDisplayName(final Host host) {
+                return host.getIp();
+            }
+        },
+
+        APPEND {
+            @Override
+            public String buildDisplayName(final Host host) {
+                return host.getHostname()
+                        .map(name -> String.format("%s [%s]", host.getIp(), name))
+                        .orElse(host.getIp());
+            }
+        },
+
+        REPLACE {
+            @Override
+            public String buildDisplayName(final Host host) {
+                return host.getHostname().orElse(host.getIp());
+            }
+        };
+
+        public abstract String buildDisplayName(final Host host);
+    }
+
+    private static HostnameMode getHostnameModeFromQueryString(final MultivaluedMap<String, String> queryParams) {
+        final String hostname_mode = Strings.nullToEmpty(queryParams.getFirst("hostname_mode")).toLowerCase();
+        switch (hostname_mode) {
+            case "hide":
+                return HostnameMode.HIDE;
+            case "append":
+                return HostnameMode.APPEND;
+            case "replace":
+            default:
+                return HostnameMode.REPLACE;
+        }
+    }
+
     private static <T> T waitForFuture(CompletableFuture<T> future) {
         try {
             return future.get();
@@ -297,35 +472,33 @@ public class FlowRestServiceImpl implements FlowRestService {
         response.setTimestamps(timestamps);
         response.setValues(values);
     }
+  
+    /**
+     * Retrieve the first value from the map for the given key and convert this to a blank string
+     * if the resulting value is null, or does not exist in the map.
+     *
+     * @param map multivalued map
+     * @param key key to lookup
+     * @return non-null string
+     */
+    private static String getFirstNonNull(MultivaluedMap<String, String> map, String key) {
+        final String value = map.getFirst(key);
+        return value != null ? value : "";
+    }
 
-    @Override
-    public FlowGraphUrlInfo getFlowGraphUrlInfo(UriInfo uriInfo) {
+    private static boolean isNullOrEmptyOrContainsNullOrEmpty(Collection<String> collection) {
+        return collection == null || collection.isEmpty() || collection.contains(null) || collection.contains("");
+    }
 
-        if (Strings.isNullOrEmpty(flowGraphUrl)) {
-            return null;
+    private static void validateNOrSetQueryParameters(Integer N, Collection<String> collection, String collectionName) {
+        if (N == null && isNullOrEmptyOrContainsNullOrEmpty(collection)) {
+            // If neither the top N or the collection are set that is an error
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN)
+                    .entity(String.format("One of 'N' or '%s' query parameters must be present", collectionName)).build());
+        } else if (N != null && !isNullOrEmptyOrContainsNullOrEmpty(collection)) {
+            // If both are set that is also an error
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN)
+                    .entity(String.format("Only one of 'N' or '%s' query parameters should be set", collectionName)).build());
         }
-
-        long flowCount = waitForFuture(
-                flowRepository.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
-        FlowGraphUrlInfo graphUrlInfo = new FlowGraphUrlInfo();
-
-        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-        String flowUrl = getFlowGraphUrl();
-        final String formattedGraphUrl = flowUrl.replaceAll("\\$nodeId", queryParams.getFirst("exporterNode"))
-                .replaceAll("\\$ifIndex", queryParams.getFirst("ifIndex"))
-                .replaceAll("\\$start", queryParams.getFirst("start"))
-                .replaceAll("\\$end", queryParams.getFirst("end"));
-        graphUrlInfo.setFlowGraphUrl(formattedGraphUrl);
-        graphUrlInfo.setFlowCount(flowCount);
-        return graphUrlInfo;
     }
-
-    public String getFlowGraphUrl() {
-        return flowGraphUrl;
-    }
-
-    public void setFlowGraphUrl(String flowGraphUrl) {
-        this.flowGraphUrl = flowGraphUrl;
-    }
-
 }
