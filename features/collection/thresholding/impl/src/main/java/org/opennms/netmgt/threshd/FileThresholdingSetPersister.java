@@ -35,13 +35,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 
 /**
- * HashMap implementation of a {@link ThresholdingSetPersister}.
+ * File based implementation of a {@link ThresholdingSetPersister}. Prototype for a forthcoming distributed DB (i.e. Cassandra) implementation
  */
-public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
+public class FileThresholdingSetPersister implements ThresholdingSetPersister
 {
 
     private Map<ThresholdingSessionKey, ThresholdingSetImpl> thresholdingSets = new HashMap<>();
@@ -50,8 +49,6 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
 
     @Override
     public void persistSet(ThresholdingVisitor visitor) {
-        // should be a no-op for in memory SetPersister
-        // HACK - for now, we test with file writer
         // TODO Write the Thresholding set to disk
         ThresholdingSessionKey key = ((ThresholdingSessionImpl) visitor.getSession()).getKey();
         ThresholdingSet set = visitor.getSet();
@@ -88,22 +85,15 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
         thresholdingSets.remove(key);
     }
 
-    // HACK - remove
     private void wrtieSetToDisk(String key, ThresholdingSet set) {
         String now = String.valueOf(new Date().getTime());
-        String filePath = "thresholdSet" + "-" + key + "-" + now + ".json";
-        try (FileWriter fw = new FileWriter(filePath);) {
-            // FIXME - stack blows up - gson.toJson(set, new FileWriter(filePath));
-            SerializableThresholdingSet serializable = new SerializableThresholdingSet(((ThresholdingSetImpl) set));
-            // FIXME - gson.toJson(serializable, new FileWriter(filePath));
-            GsonBuilder builder = new GsonBuilder();
-            builder.registerTypeAdapter(SerializableThresholdingSet.class, new ThresholdingSetSerializer());
-            gson = builder.create();
-            String json = gson.toJson(serializable);
-            fw.write(json);
+        String filePath = key + "-" + now;
+        try {
+            gson.toJson(set, new FileWriter(filePath));
         } catch (JsonIOException | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
+
 }

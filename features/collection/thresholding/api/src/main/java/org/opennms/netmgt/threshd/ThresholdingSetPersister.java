@@ -30,6 +30,7 @@ package org.opennms.netmgt.threshd;
 
 public interface ThresholdingSetPersister {
 
+    @Deprecated
     void persistSet(ThresholdingSession session, ThresholdingSet set);
 
     ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException;
@@ -37,5 +38,7 @@ public interface ThresholdingSetPersister {
     void reinitializeThresholdingSets();
 
     void clear(ThresholdingSession session);
+
+    void persistSet(ThresholdingVisitor visitor);
 
 }

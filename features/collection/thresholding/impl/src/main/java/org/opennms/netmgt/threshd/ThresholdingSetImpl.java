@@ -568,4 +568,20 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         return m_scheduledOutages;
     }
 
+    public String getHostAddress() {
+        return m_hostAddress;
+    }
+
+    public String getServiceName() {
+        return m_serviceName;
+    }
+
+    public RrdRepository getRepository() {
+        return m_repository;
+    }
+
+    public ServiceParameters getServiceParameters() {
+        return m_svcParams;
+    }
+
 }

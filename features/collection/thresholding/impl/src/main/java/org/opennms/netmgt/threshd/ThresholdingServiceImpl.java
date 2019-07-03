@@ -140,7 +140,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session) throws ThresholdInitializationException {
         ThresholdingSetImpl thresholdingSet = (ThresholdingSetImpl) thresholdingSetPersister.getThresholdingSet(session, eventProxy);
-        return new ThresholdingVisitorImpl(thresholdingSet, ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy);
+        return new ThresholdingVisitorImpl(session, thresholdingSet, ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy);
     }
 
     public EventIpcManager getEventIpcManager() {
@@ -193,6 +193,11 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     private void reinitializeThresholdingSets(Event e) {
         thresholdingSetPersister.reinitializeThresholdingSets();
+    }
+
+    // Force preservation of state
+    public void saveThresholdingSet(ThresholdingVisitorImpl visitor) {
+        thresholdingSetPersister.persistSet(visitor);
     }
 
 }

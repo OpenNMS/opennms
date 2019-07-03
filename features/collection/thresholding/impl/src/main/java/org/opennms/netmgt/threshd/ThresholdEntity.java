@@ -371,4 +371,9 @@ public final class ThresholdEntity implements Cloneable {
     public void setEventProxy(ThresholdingEventProxy eventProxy) {
         m_thresholdingEventProxy = eventProxy;
     }
+
+    // For serialization
+    Map<String, List<ThresholdEvaluatorState>> getThresholdEvaluatorStates() {
+        return m_thresholdEvaluatorStates;
+    }
 }

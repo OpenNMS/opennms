@@ -81,7 +81,10 @@ public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implem
 
     private ThresholdingEventProxy m_thresholdingEventProxy;
 
-    protected ThresholdingVisitorImpl(ThresholdingSetImpl thresholdingSet, ResourceStorageDao resourceStorageDao, ThresholdingEventProxy eventProxy) {
+    private ThresholdingSession m_thresholdingSession;
+
+    protected ThresholdingVisitorImpl(ThresholdingSession session, ThresholdingSetImpl thresholdingSet, ResourceStorageDao resourceStorageDao, ThresholdingEventProxy eventProxy) {
+        m_thresholdingSession = session;
         m_thresholdingSet = thresholdingSet;
         m_thresholdingEventProxy = eventProxy;
         m_collectionTimestamp = new Date();
@@ -178,6 +181,16 @@ public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implem
 
     public int getNodeId() {
         return m_thresholdingSet.getNodeId();
+    }
+
+    @Override
+    public ThresholdingSession getSession() {
+        return m_thresholdingSession;
+    }
+
+    @Override
+    public ThresholdingSet getSet() {
+        return m_thresholdingSet;
     }
     
 }

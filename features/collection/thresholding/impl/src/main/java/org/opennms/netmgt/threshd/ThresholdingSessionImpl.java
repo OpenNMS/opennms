@@ -98,6 +98,9 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
             thresholdingVisitor.setCounterReset(collectionSet.ignorePersist()); // Required to reinitialize the counters.
 
             collectionSet.visit(thresholdingVisitor);
+
+            // If we visit a CollectionSet, persist the Thresholding Set to preserve state
+            service.saveThresholdingSet(thresholdingVisitor);
         }
     }
 

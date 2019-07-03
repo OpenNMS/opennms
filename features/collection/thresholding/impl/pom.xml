@@ -76,6 +76,11 @@
       <artifactId>org.opennms.features.collection.snmp-collector</artifactId>
       <version>${project.version}</version>
     </dependency>
+	<dependency>
+		<groupId>com.google.code.gson</groupId>
+		<artifactId>gson</artifactId>
+		<version>${gsonVersion}</version>
+	</dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.threshd;
 
 import java.util.Date;
-import java.util.List;
 
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 
@@ -71,5 +70,9 @@ public interface ThresholdingVisitor extends CollectionSetVisitor {
     public void reload();
 
     public void setCounterReset(boolean counterReset);
+
+    ThresholdingSession getSession();
+
+    ThresholdingSet getSet();
 
 }
