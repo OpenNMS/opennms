@@ -116,7 +116,7 @@ angular.module('onms-ksc', [
     });
   };
 }])
-.factory('flowsRestFactory', function ($http, $q) {
+.factory('flowsRestFactory', /* @ngInject */ function ($http, $q) {
   var resources = {};
 
   resources.getFlowGraphUrl = function(nodeId, ifIndex , start, end) {

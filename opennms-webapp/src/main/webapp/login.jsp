@@ -69,6 +69,17 @@
 
 </style>
 
+<%
+  // Spring Security remembers the requested URL and redirects after a successful login.
+  // If the session_expired parameter is set, it is known that this is a Javascript redirect.
+  // In this case, we remove the remembered request attribute so the user is forwarded to the login page instead.
+  if (request.getParameter("session_expired") != null
+          && request.getParameter("session_expired").equals("true")
+          && session != null) {
+      session.removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
+  }
+%>
+
 <div class="login-page">
   <div class="" style=""> <!-- this way it appears a bit above center which feels more natural -->
     <div class="card login-form rounded">
@@ -90,6 +101,12 @@
             <label for="j_password" class="sr-only">Password</label>
             <input type="password" class="form-control input-underline form-control-lg" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" required>
           </div>
+
+          <c:if test="${not empty param.session_expired}">
+            <div class="alert alert-warning">
+              <strong>Session expired</strong> Please log back in.
+            </div>
+          </c:if>
 
           <c:if test="${not empty param.login_error}">
             <div id="login-attempt-failed" class="alert alert-danger">

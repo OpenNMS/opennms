@@ -32,21 +32,20 @@ import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.utils.KarafShell;
-import org.opennms.test.system.api.NewTestEnvironment;
 
 /**
  * Verifies if exposing a GraphProvider will result in an exposed GraphContainerProvider
  */
-public class GraphProviderIT extends OpenNMSSeleniumTestCase {
+public class GraphProviderIT extends OpenNMSSeleniumIT {
 
     private KarafShell karafShell;
 
     @Before
     public void setUp() throws IOException, InterruptedException {
         // Install features
-        karafShell = new KarafShell(getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101));
+        karafShell = new KarafShell(stack.opennms().getSshAddress());
         karafShell.runCommand("feature:install opennms-graphs");
     }
 

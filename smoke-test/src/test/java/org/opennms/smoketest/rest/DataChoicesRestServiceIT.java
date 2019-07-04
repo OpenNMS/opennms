@@ -29,23 +29,29 @@
 package org.opennms.smoketest.rest;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.preemptive;
 import static io.restassured.RestAssured.when;
+import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
+import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 
 import io.restassured.RestAssured;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 
-public class DataChoicesRestServiceIT extends OpenNMSSeleniumTestCase {
+public class DataChoicesRestServiceIT {
+
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     @Before
     public void before() {
-        System.out.println("before");
-        RestAssured.baseURI = getBaseUrl();
-        RestAssured.port = getServerHttpPort();
+        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+        RestAssured.port = stack.opennms().getWebPort();
         RestAssured.basePath = "/opennms";
-        RestAssured.authentication = RestAssured.preemptive().basic(OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME, OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD);
+        RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
     }
 
     @Test

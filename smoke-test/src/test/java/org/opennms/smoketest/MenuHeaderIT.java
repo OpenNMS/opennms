@@ -1,4 +1,4 @@
- /*******************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
@@ -35,7 +35,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
+public class MenuHeaderIT extends OpenNMSSeleniumIT {
+
     @Test
     public void testMenuEntries() throws Exception {
         clickMenuItem("Search", null, "element/index.jsp");
@@ -67,10 +68,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
 
         clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
         // switchTo() by xpath is much faster than by ID
-        //m_driver.switchTo().frame("surveillance-view-ui");
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        //driver.switchTo().frame("surveillance-view-ui");
+        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        m_driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
         frontPage();
 
         final String reportsMenuName = "name=nav-Reports-top";
@@ -89,10 +90,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         final String dashboardsMenuName = "name=nav-Dashboards-top";
         clickMenuItem(dashboardsMenuName, "Dashboard", "dashboard.jsp");
         // switchTo() by xpath is much faster than by ID
-        //m_driver.switchTo().frame("surveillance-view-ui");
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        //driver.switchTo().frame("surveillance-view-ui");
+        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        m_driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
         frontPage();
 
         clickMenuItem(dashboardsMenuName, "Ops Board", "vaadin-wallboard");

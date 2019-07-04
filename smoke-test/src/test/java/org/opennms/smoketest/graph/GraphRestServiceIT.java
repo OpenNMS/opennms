@@ -38,16 +38,15 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
-import org.opennms.test.system.api.NewTestEnvironment;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-public class GraphRestServiceIT  extends OpenNMSSeleniumTestCase {
+public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
     private static final String CONTAINER_ID = "test";
     private KarafShell karafShell;
@@ -55,17 +54,17 @@ public class GraphRestServiceIT  extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = getBaseUrl();
-        RestAssured.port = getServerHttpPort();
+        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+        RestAssured.port = stack.opennms().getWebPort();
         RestAssured.basePath = "/opennms/api/v2/graphs";
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
 
         // Install features
-        karafShell = new KarafShell(getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101));
+        karafShell = new KarafShell(stack.opennms().getSshAddress());
         karafShell.runCommand("feature:install opennms-graphs opennms-graph-provider-graphml");
 
         // Set up rest client
-        restClient = new RestClient(getServerAddress(), getServerHttpPort());
+        restClient = stack.opennms().getRestClient();
 
         // Ensure no graph exists
         deleteGraphMLIfExists();

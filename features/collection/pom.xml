@@ -19,6 +19,8 @@
     <module>persistence-tcp</module>
     <module>persistence-osgi</module>
     <module>shell-commands</module>
+    <module>snmp-collector</module>
+    <module>thresholding</module>
     <module>test-api</module>
   </modules>
 </project>

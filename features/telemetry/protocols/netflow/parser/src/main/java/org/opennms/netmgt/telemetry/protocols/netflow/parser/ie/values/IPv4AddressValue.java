@@ -33,6 +33,7 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
@@ -50,7 +51,11 @@ public class IPv4AddressValue extends Value<Inet4Address> {
                             final Optional<Semantics> semantics,
                             final Inet4Address value) {
         super(name, semantics);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public IPv4AddressValue(final String name, final Inet4Address value) {
+        this(name, Optional.empty(), value);
     }
 
     @Override

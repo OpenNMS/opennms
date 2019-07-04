@@ -1,11 +1,6 @@
 package org.opennms.smoketest;
 
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.junit.After;
+import com.google.common.collect.Collections2;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,28 +17,25 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Verifies that the Vaadin JMX Configuration Generator Application is deployed correctly.
  */
-public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
+public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(JmxConfigurationGeneratorIT.class);
     private static final String MBEANS_VIEW_TREE_WAIT_NAME = "com.zaxxer.hikari";
 
     @Before
     public void before() throws InterruptedException {
-        m_driver.get(getBaseUrl() + "opennms/admin/jmxConfigGenerator.jsp");
+        driver.get(getBaseUrlInternal() + "opennms/admin/jmxConfigGenerator.jsp");
 
         // give the Vaadin webapp time to settle down
         Thread.sleep(2000);
         selectVaadinFrame();
-    }
-
-    @After
-    public void after() {
-        selectDefaultFrame();
     }
 
     @Test
@@ -56,14 +48,18 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         WebElement element = findElementByLink("1. Service Configuration");
         element.click();
 
-        Collection<WebElement> errorPopups = m_driver.findElements(By.cssSelector("div[class=\"v-errormessage\"]"));
+        Collection<WebElement> errorPopups = driver.findElements(By.cssSelector("div[class=\"v-errormessage\"]"));
         // sometimes empty v-errormessage divs are present, we have to filter them out
-        errorPopups = Collections2.filter(errorPopups, new Predicate<WebElement>() {
-            public boolean apply(WebElement input) {
-                return input.getText() != null && !input.getText().isEmpty();
-            }
-        });
+        errorPopups = Collections2.filter(errorPopups, input -> input.getText() != null && !input.getText().isEmpty());
         Assert.assertEquals("Error message is present.", 0, errorPopups.size());
+    }
+
+    private void waitForAndClickOnNext() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("next"))).click();
+    }
+
+    private void waitForAndClickOnPrevious() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("previous"))).click();
     }
 
     @Test
@@ -71,16 +67,16 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         configureJMXConnection(true);
 
         selectNodeByName("Pool (opennms)", false);
-        findElementById("next").click();
+        waitForAndClickOnNext();
 
         // configuration summary
         wait.until(pageContainsText("collectd-configuration.xml"));
 
         // backwards
-        findElementById("previous").click();
+        waitForAndClickOnPrevious();
         wait.until(pageContainsText(MBEANS_VIEW_TREE_WAIT_NAME));
 
-        findElementById("previous").click();
+        waitForAndClickOnPrevious();
         wait.until(pageContainsText("Skip JVM MBeans"));
     }
 
@@ -91,10 +87,10 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     public void verifyCompMemberSelection() throws Exception {
         configureJMXConnection(false);
 
-        selectNodeByName("Code Cache", true);
+        selectNodeByName("Compressed Class Space", true);
 
         // go to last page
-        findElementById("next").click();
+        waitForAndClickOnNext();
         wait.until(pageContainsText("collectd-configuration.xml"));
 
         // switch to jmx-datacollection-config.xml tab
@@ -111,7 +107,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     protected void configureJMXConnection(final boolean skipDefaultVM) throws Exception {
         final long end = System.currentTimeMillis() + LOAD_TIMEOUT;
 
-        final WebDriverWait shortWait = new WebDriverWait(m_driver, 10);
+        final WebDriverWait shortWait = new WebDriverWait(driver, 10);
 
         final String skipDefaultVMxpath = "//span[@id='skipDefaultVM']/input";
         final boolean selected = waitForElement(By.xpath(skipDefaultVMxpath)).isSelected();
@@ -163,7 +159,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
                                 return false;
                             }
                         } catch (final NoSuchElementException | StaleElementReferenceException e) {
-                            LOG.warn("Exception while checking for errors message.", e);
+                            // ignore
                         }
 
                         try {
@@ -171,7 +167,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
                             LOG.debug("Page contains '{}'? {}", MBEANS_VIEW_TREE_WAIT_NAME, contains);
                             return contains;
                         } catch (final Exception e) {
-                            LOG.warn("Exception while checking for next page.", e);
+                            LOG.info("Exception while checking for next page: {}", e.getMessage());
                         }
 
                         return false;
@@ -195,7 +191,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
 
     // switches to the embedded vaadin iframe
     protected void selectVaadinFrame() {
-        m_driver.switchTo().frame(0);
+        driver.switchTo().frame(0);
     }
 
     private void selectNodeByName(final String name, boolean select) throws InterruptedException {
@@ -212,7 +208,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         // So, ugh.  Sleep.  :/
         Thread.sleep(5000);
 
-        new Actions(m_driver).contextClick(findElementByXpath(treeNodeXpath)).perform(); // right click
+        new Actions(driver).contextClick(findElementByXpath(treeNodeXpath)).perform(); // right click
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(deselectXpath)));
 
         // deselect/select Element depending on the value of select.

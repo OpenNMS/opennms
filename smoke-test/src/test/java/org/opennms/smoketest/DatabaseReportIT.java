@@ -28,82 +28,55 @@
 
 package org.opennms.smoketest;
 
-import java.io.ByteArrayInputStream;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.cxf.helpers.FileUtils;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Throwables;
-import com.google.common.io.ByteStreams;
-
-import io.netty.handler.codec.http.HttpResponse;
-import net.lightbody.bmp.BrowserMobProxy;
-import net.lightbody.bmp.BrowserMobProxyServer;
-import net.lightbody.bmp.client.ClientUtil;
-import net.lightbody.bmp.filters.ResponseFilter;
-import net.lightbody.bmp.util.HttpMessageContents;
-import net.lightbody.bmp.util.HttpMessageInfo;
 
 /**
  * Verifies that the database reports can be generated without any exceptions.
  *
- * In order to check that the PDF report was generated we set up a proxy server and tunnel
- * all data through that proxy. A response filter is attached manually to watch out for "report download responses".
- * If such a response is detected, we hijack the response stream and save a copy of the PDF on disk.
- *
- * If we do not copy the response stream the result may be shown in the browser or downloaded (browser dependant).
- * In addition we do not have any possibilities to validate the result.
- *
- * While checking for responses we can verify the stream/result and also see if such a result is present.
+ * The browser is configured to automatically download .pdf files and places these in
+ * a downloads directory which the test verifies.
  */
 @RunWith(Parameterized.class)
-public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
+public class DatabaseReportIT extends OpenNMSSeleniumIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseReportIT.class);
-
-    private static BrowserMobProxy proxy;
 
     // Reports to verify
     @Parameterized.Parameters
     public static Object[] data() {
         return new Object[][] {
-            {"EarlyMorningReport", "PDF", "Early morning report", 1},
-            {"ResponseTimeSummaryForNode", "PDF", "Response Time Summary for node", 1},
-            {"AvailabilityByNode", "PDF", "Availability by node", 1},
-            {"AvailabilitySummaryPast7Days", "PDF", "Availability Summary -Default configuration for past 7 Days", 1},
-            {"ResponseTimeByNode", "PDF", "Response time by node", 1},
-            {"SerialInterfaceUtilizationSummary", "PDF", "Serial Interface Utilization Summary", 1},
-            {"TotalBytesTransferredByInterface", "PDF", "Total Bytes Transferred by Interface ", 1},
-            {"AverageAndPeakTrafficRatesForNodesByInterface", "PDF", "Average and Peak Traffic rates for Nodes by Interface", 1},
-            {"InterfaceAvailabilityReport", "PDF", "Interface Availability Report", 2},
-            {"SnmpInterfaceAvailabilityReport", "PDF", "Snmp Interface Availability Report", 2},
-            {"MaintenanceContractsExpired", "PDF", "Maintenance contracts expired", 2},
-            {"MaintenanceContractsStrategy", "PDF", "Maintenance contracts strategy", 2},
-            {"EventAnalysisReport", "PDF", "Event Analysis report", 2},
+                {"EarlyMorningReport", "PDF", "Early morning report", 1},
+                {"ResponseTimeSummaryForNode", "PDF", "Response Time Summary for node", 1},
+                {"AvailabilityByNode", "PDF", "Availability by node", 1},
+                {"AvailabilitySummaryPast7Days", "PDF", "Availability Summary -Default configuration for past 7 Days", 1},
+                {"ResponseTimeByNode", "PDF", "Response time by node", 1},
+                {"SerialInterfaceUtilizationSummary", "PDF", "Serial Interface Utilization Summary", 1},
+                {"TotalBytesTransferredByInterface", "PDF", "Total Bytes Transferred by Interface ", 1},
+                {"AverageAndPeakTrafficRatesForNodesByInterface", "PDF", "Average and Peak Traffic rates for Nodes by Interface", 1},
+                {"InterfaceAvailabilityReport", "PDF", "Interface Availability Report", 2},
+                {"SnmpInterfaceAvailabilityReport", "PDF", "Snmp Interface Availability Report", 2},
+                {"MaintenanceContractsExpired", "PDF", "Maintenance contracts expired", 2},
+                {"MaintenanceContractsStrategy", "PDF", "Maintenance contracts strategy", 2},
+                {"EventAnalysisReport", "PDF", "Event Analysis report", 2},
         };
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        proxy.stop(); // shutdown the proxy, we only need it for this test case
     }
 
     @Parameterized.Parameter(0)
@@ -118,49 +91,24 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
     @Parameterized.Parameter(3)
     public int page;
 
-    // setup proxy and response filter
-    @Override
-    protected void customizeCapabilities(DesiredCapabilities caps) {
-        proxy = new BrowserMobProxyServer();
-        proxy.start(0);
-
-        proxy.addResponseFilter(new ResponseFilter() {
-            @Override
-            public void filterResponse(HttpResponse response, HttpMessageContents contents, HttpMessageInfo messageInfo) {
-                if (isReportDownloadResponse(response)) {
-                    LOG.info("Report download response received with headers: {}", response.headers().entries());
-
-                    try (ByteArrayInputStream input = new ByteArrayInputStream(contents.getBinaryContents());
-                         FileOutputStream output = new FileOutputStream(getFile())
-                    ) {
-                        ByteStreams.copy(input, output);
-                    } catch (IOException e) {
-                        Throwables.propagate(e);
-                    }
-
-                }
-            }
-        });
-
-        // configure the Browser Mob Proxy as a desired capability
-        Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
-        caps.setCapability(CapabilityType.PROXY, seleniumProxy);
-    }
+    /**
+     * Fixed filename that PDF reports will have once downloaded.
+     */
+    private final File reportPdfFile = new File(getDownloadsFolder(), "report.pdf");
 
     @Before
     public void before() {
-        new File("target/reports").mkdirs();
+        cleanDownloadsFolder();
 
         // we do not want to wait 2 minutes, we only want to wait n seconds
-        m_driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-        LOG.info("Validate report generation '{}' ({})", reportName, reportFormat);
+        LOG.info("Validating report generation '{}' ({})", reportName, reportFormat);
 
         Assert.assertNotNull(reportId);
         Assert.assertNotNull(reportFormat);
         Assert.assertNotNull(reportName);
         Assert.assertNotNull(page);
-        Assert.assertFalse("Report '" + reportName + "' already exist", getFile().exists());
 
         LOG.info("Navigation to database reports page {}.", page);
         reportsPage();
@@ -173,12 +121,15 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
 
     @After
     public void after() {
-        FileUtils.removeDir(new File("target/reports"));
+        cleanDownloadsFolder();
     }
 
     @Test
     public void verifyReportExecution() {
-        LOG.info("Verify report '{}'", reportName);
+        LOG.info("Verifying report '{}'", reportName);
+
+        // the report should not exist in the downloads folder yet
+        assertThat(reportPdfFile.exists(), equalTo(false));
 
         // execute report (no custom parameter setup)
         getInstantExecutionLink(reportName).click();
@@ -191,50 +142,26 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
         // verify current page and look out for errors
         // we do not use findElementByXpath(...) on purpose, we explicitly want to use this
         // otherwise we have to wait 2 minutes each time an error already occurred
-        List<WebElement> errorElements = m_driver.findElements(By.xpath("//div[@class=\"alert alert-danger\"]"));
+        List<WebElement> errorElements = driver.findElements(By.xpath("//div[@class=\"alert alert-danger\"]"));
         if (!errorElements.isEmpty()) {
             Assert.fail("An error occurred while generating the report: " + errorElements.get(0).getText());
         }
 
-        // verify the file on disk (download might take a while, so we wait up to 2 minutes until the download or
-        // the report generation has finished
-        File file = getFile();
-        long seconds = 120;
-        int N = (int) Math.floor(seconds / 5);
-        for (int i = 0; i < N && !file.exists(); i++) {
-            LOG.info("Wait 5 seconds for the report to be generated/downloaded.");
-            waitFor(5);
-        }
+        // let's wait until this file appears in the download folder
+        await().atMost(2, MINUTES).pollInterval(5, TimeUnit.SECONDS).until(reportPdfFile::exists);
 
         // ensure it really has been downloaded and has a file size > 0
-        Assert.assertTrue("No report was generated for report '" + reportName + "'", file.exists());
-        Assert.assertTrue("The report is empty", file.length() > 0);
+        Assert.assertTrue("No report was generated for report '" + reportName + "'", reportPdfFile.exists());
+        Assert.assertTrue("The report is empty", reportPdfFile.length() > 0);
+
+        // rename the report so it remains available as an artifact
+        final File targetFile = new File(getDownloadsFolder(), reportId + ".pdf");
+        reportPdfFile.renameTo(targetFile);
     }
 
     // find the run report link
     private WebElement getInstantExecutionLink(String reportName) {
-        WebElement element = findElementByXpath(String.format("//table/tbody/tr/td[text()='%s']/../td[3]/a", reportName));
-        return element;
-    }
-
-    // is the resposne a download response?
-    private boolean isReportDownloadResponse(HttpResponse response) {
-        if (response.headers().contains("Content-disposition")
-            && response.headers().contains("Content-Type")) {
-
-            String contentType = response.headers().get("Content-Type");
-            boolean isPdfOrCsvContentType = contentType.contains("application/pdf") ||contentType.contains("text/csv");
-
-            String contentDisposition = response.headers().get("Content-disposition");
-            boolean hasFilename = contentDisposition.contains("inline") && contentDisposition.contains("filename=");
-
-            return isPdfOrCsvContentType && hasFilename;
-        }
-        return false;
-    }
-
-    private File getFile() {
-        return new File(String.format("target/reports/%s.%s", reportId, reportFormat));
+        return findElementByXpath(String.format("//table/tbody/tr/td[text()='%s']/../td[3]/a", reportName));
     }
 
 }

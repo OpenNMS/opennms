@@ -106,7 +106,7 @@
                 <feature>eventadmin</feature>
                 <feature>feature</feature>
                 <feature>framework-security</feature>
-                <feature>httplite</feature>
+                <feature>felix-httplite</feature>
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
                 <feature>instance</feature>

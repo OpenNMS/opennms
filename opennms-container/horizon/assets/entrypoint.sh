@@ -98,7 +98,8 @@ applyOverlayConfig() {
   # Overlay relative to the root of the install dir
   if [ -d "${OPENNMS_OVERLAY}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY})" ]; then
     echo "Apply custom configuration from ${OPENNMS_OVERLAY}."
-    cp -r ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/ || exit ${E_INIT_CONFIG}
+    # Use rsync so that we can overlay files into directories that are symlinked
+    rsync -K -a ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/ || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY}. Use default configuration."
   fi

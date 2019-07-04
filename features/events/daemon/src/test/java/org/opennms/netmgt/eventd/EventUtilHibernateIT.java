@@ -57,7 +57,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
+        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
+        "classpath:/META-INF/opennms/mockSinkConsumerManager.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

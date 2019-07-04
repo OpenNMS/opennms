@@ -44,10 +44,9 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.KarafShell;
-import org.opennms.test.system.api.NewTestEnvironment;
 
 import com.google.common.base.Charsets;
 
@@ -57,18 +56,18 @@ import com.google.common.base.Charsets;
  * @author mvrueden
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class GraphMLGraphProviderIT extends OpenNMSSeleniumTestCase {
+public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
 
     private static final String LABEL = "GraphML Topology Provider (test-graph)";
 
-    private final String URL = getBaseUrl() + "opennms/rest/graphml/test-graph";
+    private final String URL = stack.opennms().getBaseUrlExternal().toString() + "opennms/rest/graphml/test-graph";
 
     private KarafShell karafShell;
 
     @Before
     public void setUp() throws IOException, InterruptedException {
         // Install features
-        karafShell = new KarafShell(getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101));
+        karafShell = new KarafShell(stack.opennms().getSshAddress());
         karafShell.runCommand("feature:install opennms-graphs");
         karafShell.runCommand("feature:install opennms-graph-provider-graphml");
         karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-graphml"));

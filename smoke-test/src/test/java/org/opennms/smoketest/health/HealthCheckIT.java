@@ -28,94 +28,64 @@
 
 package org.opennms.smoketest.health;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.Timeout;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.StackModel;
+import org.opennms.smoketest.utils.SshClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 public class HealthCheckIT {
 
+    private static final Logger LOG = LoggerFactory.getLogger(HealthCheckIT.class);
+
     @ClassRule
-    public static TestEnvironment testEnvironment = getTestEnvironment();
-
-    private static TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder()
-                    .opennms()
-                    .minion()
-                    .es6()
-                    .sentinel();
-
-            // Start a Listener to ensure that a HealthCheck is actually exposed for it as well
-            builder.withMinionEnvironment()
-                    .addFile(HealthCheckIT.class.getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg");
-
-            // Install some features to have health:check process something,
-            // as by default sentinel does not start any bundles
-            builder.withSentinelEnvironment()
-                    .addFile(HealthCheckIT.class.getResource("/sentinel/features-jms.xml"), "deploy/features.xml");
-
-            // Configure elastic endpoint correctly, otherwise health:check will fail (timeout)
-            builder.withOpenNMSEnvironment()
-                    .addFile(HealthCheckIT.class.getResource("/flows/org.opennms.features.flows.persistence.elastic.cfg"), "etc/org.opennms.features.flows.persistence.elastic.cfg");
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            return builder.build();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
+    public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withSentinel()
+            .withElasticsearch()
+            .withIpcStrategy(IpcStrategy.JMS)
+            // This adds extra health checks that our test counts
+            .withTelemetryProcessing()
+            .build());
 
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
 
     @Test
     public void verifyOpenNMSHealth() {
-        final InetSocketAddress opennmsShellAddr = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101);
+        final InetSocketAddress opennmsShellAddr = stack.opennms().getSshAddress();
         verifyHealthCheck(2, opennmsShellAddr);
         verifyMetrics(opennmsShellAddr);
     }
 
     @Test
     public void verifyMinionHealth() {
-        final InetSocketAddress minionShellAddr = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 8201);
+        final InetSocketAddress minionShellAddr = stack.minion().getSshAddress();
         verifyHealthCheck(4, minionShellAddr);
         verifyMetrics(minionShellAddr);
     }
 
     @Test
     public void verifySentinelHealth() {
-        final InetSocketAddress sentinelShellAddr = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        verifyHealthCheck(9, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301));
+        final InetSocketAddress sentinelShellAddr = stack.sentinel().getSshAddress();
+        verifyHealthCheck(9, sentinelShellAddr);
         verifyMetrics(sentinelShellAddr);
     }
 
@@ -124,7 +94,7 @@ public class HealthCheckIT {
         await().atMost(5, MINUTES)
                 .pollInterval(5, SECONDS)
                 .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sshAddress, "admin", "admin")) {
+                    try (final SshClient sshClient = new SshClient(sshAddress, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
                         final PrintStream pipe = sshClient.openShell();
                         pipe.println("health:check");
                         pipe.println("logout");
@@ -138,18 +108,18 @@ public class HealthCheckIT {
                         final String shellOutput = sshClient.getStdout();
 
                         // Log what was read, to help debugging issues
-                        logger.info("log:display");
-                        logger.info("{}", shellOutput);
+                        LOG.info("log:display");
+                        LOG.info("{}", shellOutput);
 
                         final int count = StringUtils.countOccurrencesOf(shellOutput, "Success");
                         final String overallStatus = getOverallStatus(shellOutput);
-                        logger.info("{} checks are successful and overall status is {}, expected >= {} and \"Everything is awesome\"", count, overallStatus, expectedHealthCheckServices);
+                        LOG.info("{} checks are successful and overall status is {}, expected >= {} and \"Everything is awesome\"", count, overallStatus, expectedHealthCheckServices);
 
                         // We check if at least the number of expected health
                         // checks succeeded and overall status is "AWESOME". This way we avoid updating this test each time a new health check is added
                         return count >= expectedHealthCheckServices && overallStatus.contains("awesome");
                     } catch (Exception ex) {
-                        logger.error("Error while trying to verify health:check: {}", ex.getMessage());
+                        LOG.error("Error while trying to verify health:check: {}", ex.getMessage());
                         return false;
                     }
                 });
@@ -159,7 +129,7 @@ public class HealthCheckIT {
         await().atMost(2, MINUTES)
                 .pollInterval(5, SECONDS)
                 .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sshAddress, "admin", "admin")) {
+                    try (final SshClient sshClient = new SshClient(sshAddress, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
                         final PrintStream pipe = sshClient.openShell();
                         pipe.println("health:metrics-display");
                         pipe.println("logout");
@@ -170,11 +140,11 @@ public class HealthCheckIT {
                         final String shellOutput = sshClient.getStdout();
                         final int count = StringUtils.countOccurrencesOf(shellOutput, "Metric set:");
 
-                        logger.info("log:display");
-                        logger.info("{}", shellOutput);
+                        LOG.info("log:display");
+                        LOG.info("{}", shellOutput);
                         return count;
                     } catch (Exception ex) {
-                        logger.error("Error while trying to verify health:check: {}", ex.getMessage());
+                        LOG.error("Error while trying to verify health:check: {}", ex.getMessage());
                         return 0;
                     }
                 }, greaterThanOrEqualTo(1));

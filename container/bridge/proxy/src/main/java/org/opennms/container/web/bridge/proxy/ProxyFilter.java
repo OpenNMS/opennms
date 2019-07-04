@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -66,7 +68,13 @@ import org.osgi.util.tracker.ServiceTracker;
 public class ProxyFilter implements Filter, RequestHandlerRegistry {
     private BundleContext bundleContext;
     private DispatcherTracker dispatcherTracker;
-    private List<RequestHandler> handlers = new ArrayList<>();
+    /**
+     * Used to synchronize access to the list of request handlers.
+     * We expect a large number of reads with infrequent writes, so we use
+     * a ReadWriteLock as opposed to just using synchronized.
+     */
+    private final ReadWriteLock handlerRwLock = new ReentrantReadWriteLock();
+    private final List<RequestHandler> handlers = new ArrayList<>();
     private ServiceTracker<Servlet, Servlet> servletTracker;
     private ServiceTracker resourceTracker;
 
@@ -109,7 +117,13 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
             path += request.getPathInfo();
         }
         final String requestedPath = path;
-        final Optional<RequestHandler> handler = handlers.stream().filter(eachHandler -> eachHandler.canHandle(requestedPath)).findAny();
+        final Optional<RequestHandler> handler;
+        handlerRwLock.readLock().lock();
+        try {
+            handler = handlers.stream().filter(eachHandler -> eachHandler.canHandle(requestedPath)).findAny();
+        } finally {
+            handlerRwLock.readLock().unlock();
+        }
         return handler.isPresent();
     }
 
@@ -117,7 +131,12 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
     public void destroy() {
         servletTracker.close();
         resourceTracker.close();
-        handlers.clear();
+        handlerRwLock.writeLock().lock();
+        try {
+            handlers.clear();
+        } finally {
+            handlerRwLock.writeLock().unlock();
+        }
     }
 
     private DispatcherTracker createDispatcherTracker(FilterConfig filterConfig) {
@@ -130,19 +149,29 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
 
     @Override
     public void addRequestHandler(RequestHandler requestHandler) {
-        for(RequestHandler eachHandler : handlers) {
-            for (String eachPattern : requestHandler.getPatterns()) {
-                if (eachHandler.getPatterns().contains(eachPattern)) {
-                    throw new IllegalArgumentException("Cannot add request handler as another handler already handles these requestes");
+        handlerRwLock.writeLock().lock();
+        try {
+            for(RequestHandler eachHandler : handlers) {
+                for (String eachPattern : requestHandler.getPatterns()) {
+                    if (eachHandler.getPatterns().contains(eachPattern)) {
+                        throw new IllegalArgumentException("Cannot add request handler as another handler already handles these requestes");
+                    }
                 }
             }
+            handlers.add(requestHandler);
+        } finally {
+            handlerRwLock.writeLock().unlock();
         }
-        handlers.add(requestHandler);
     }
 
     @Override
     public void removeRequestHandler(RequestHandler requestHandler) {
-        handlers.remove(requestHandler);
+        handlerRwLock.writeLock().lock();
+        try {
+            handlers.remove(requestHandler);
+        } finally {
+            handlerRwLock.writeLock().unlock();
+        }
     }
 
     private static BundleContext getBundleContext(final ServletContext servletContext) throws ServletException {

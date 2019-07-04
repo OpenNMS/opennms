@@ -32,10 +32,10 @@ The configuration file is structured in the following parts:
                       serviceUnresponsiveEnabled="false"> <3>
 ----
 
-<1> Size of the _Thread Pool_ to run _Service Monitors_ in parallel
-<2> Enable or Disable _Path Outage_ functionality based on a _Critical Node_ in a network path
+<1> Size of the _Thread Pool_ to run _Service Monitors_ in parallel.
+<2> Enable or Disable _Path Outage_ functionality based on a _Critical Node_ in a network path.
 <3> In case of unresponsive service services a _serviceUnresponsive_ event is generated and not an outage.
-    It prevents to apply the _Downtime Model_ to retest the service after 30 seconds and prevents false alarms.
+    This prevents the application of the _Downtime Model_ in retesting the service after 30 seconds to help prevent false alarms.
 
 Configuration changes are applied by restarting _OpenNMS_ and _Pollerd_.
 It is also possible to send an _Event_ to _Pollerd_ reloading the configuration.
