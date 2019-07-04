@@ -58,7 +58,7 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
     }
 
     @Override
-    public Class getVertexType() {
+    public Class<ApplicationVertex> getVertexType() {
         return ApplicationVertex.class;
     }
     
@@ -68,6 +68,8 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
     
     public final static class ApplicationGraphBuilder extends AbstractDomainElementBuilder<ApplicationGraphBuilder> {
                
+        private ApplicationGraphBuilder() {}
+        
         public ApplicationGraphBuilder description(String description) {
             this.properties.put(GenericProperties.DESCRIPTION, description);
             return this;

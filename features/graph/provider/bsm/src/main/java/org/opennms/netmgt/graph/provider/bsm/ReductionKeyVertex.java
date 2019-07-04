@@ -30,16 +30,13 @@ package org.opennms.netmgt.graph.provider.bsm;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.generic.GenericVertex.GenericVertexBuilder;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
 public final class ReductionKeyVertex extends AbstractBusinessServiceVertex {
 
@@ -69,8 +66,10 @@ public final class ReductionKeyVertex extends AbstractBusinessServiceVertex {
         return new ReductionKeyVertexBuilder();
     }
     
-   public final static class ReductionKeyVertexBuilder extends AbstractBusinessServiceVertexBuilder<ReductionKeyVertexBuilder, ReductionKeyVertex> {
+    public final static class ReductionKeyVertexBuilder extends AbstractBusinessServiceVertexBuilder<ReductionKeyVertexBuilder, ReductionKeyVertex> {
         
+        private ReductionKeyVertexBuilder() {}
+       
         public ReductionKeyVertexBuilder graphVertex(GraphVertex graphVertex) {
             reductionKey(graphVertex.getReductionKey());
             level(graphVertex.getLevel());

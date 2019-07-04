@@ -100,8 +100,11 @@ public final class GenericEdge extends GenericElement implements Edge {
     }
     
     public final static class GenericEdgeBuilder extends GenericElementBuilder<GenericEdgeBuilder> {
+        
         private VertexRef source;
         private VertexRef target;
+        
+        private GenericEdgeBuilder() {}
         
         public GenericEdgeBuilder source(VertexRef source) {
             this.source = source;

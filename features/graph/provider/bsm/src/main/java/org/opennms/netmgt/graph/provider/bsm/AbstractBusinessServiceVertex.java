@@ -98,6 +98,8 @@ public abstract class AbstractBusinessServiceVertex extends AbstractDomainVertex
     public abstract static class AbstractBusinessServiceVertexBuilder<T extends AbstractDomainVertexBuilder<?>, V extends AbstractBusinessServiceVertex>
         extends AbstractDomainVertexBuilder<T> { 
         
+        protected AbstractBusinessServiceVertexBuilder() {}
+        
         public T nodeInfo(NodeInfo nodeInfo) {
             this.properties.put(GenericProperties.NODE_INFO, nodeInfo);
             return (T)this;

@@ -95,6 +95,8 @@ public abstract class AbstractDomainEdge implements Edge {
         protected VertexRef source;
         protected VertexRef target;
         
+        protected AbstractDomainEdgeBuilder() {}
+        
         public T source(VertexRef source) {
             this.source = source;
             return (T)this;

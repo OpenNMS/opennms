@@ -36,6 +36,8 @@ import org.opennms.netmgt.graph.api.generic.GenericProperties;
 public abstract class AbstractDomainElementBuilder<T extends AbstractDomainElementBuilder> {
         protected final Map<String, Object> properties = new HashMap<>();
         
+        protected AbstractDomainElementBuilder() {}
+        
         public T id(String id) {
             properties.put(GenericProperties.ID, id);
             return (T) this;

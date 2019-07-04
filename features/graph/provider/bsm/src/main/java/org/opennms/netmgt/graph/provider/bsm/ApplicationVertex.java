@@ -56,6 +56,8 @@ public final class ApplicationVertex extends AbstractBusinessServiceVertex {
 
     public final static class ApplicationVertexBuilder extends AbstractBusinessServiceVertexBuilder<ApplicationVertexBuilder, ApplicationVertex> {
         
+        private ApplicationVertexBuilder() {}
+        
         public ApplicationVertexBuilder applicationId(Integer applicationId) {
             this.properties.put(PROPERTY_APPLICATION_ID, applicationId);
             this.id(Type.Application + ":" + applicationId);

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.graph.api.generic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -46,21 +47,19 @@ import com.google.common.collect.ImmutableSet;
  */
 public class AllowedValuesInPropertiesMap {
 
-	private final static List<AllowedValue> ALLOWED_VALUES = new ArrayList<>();
-	static {
-		ALLOWED_VALUES.add((o)->o instanceof Boolean);
-		ALLOWED_VALUES.add((o)->o instanceof Float);
-		ALLOWED_VALUES.add((o)->o instanceof Integer);
-		ALLOWED_VALUES.add((o)->o instanceof Long);
-		ALLOWED_VALUES.add((o)->o instanceof Double);
-		ALLOWED_VALUES.add((o)->o instanceof String);
-		ALLOWED_VALUES.add((o)->o instanceof Short);
-		ALLOWED_VALUES.add((o)->o instanceof Byte);
-		ALLOWED_VALUES.add((o)->o instanceof Enum);
-		ALLOWED_VALUES.add(new AllowedValueCollection());
+	private final static List<AllowedValue> ALLOWED_VALUES = Arrays.asList(
+		(o)->o instanceof Boolean,
+		(o)->o instanceof Float,
+		(o)->o instanceof Integer,
+		(o)->o instanceof Long,
+		(o)->o instanceof Double,
+		(o)->o instanceof String,
+		(o)->o instanceof Short,
+		(o)->o instanceof Byte,
+		(o)->o instanceof Enum,
+		new AllowedValueCollection(),
 		// TODO: Patrick make sure NodeInfo can also be persisted, discuss with mvr the strategy
-	    ALLOWED_VALUES.add((o)->o instanceof NodeInfo);	
-	}
+	    (o)->o instanceof NodeInfo);
 	
 	public static void validate(Map<String, Object> properties) {
 		properties.values().forEach(item -> validate(item));	

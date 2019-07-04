@@ -94,6 +94,8 @@ public final class SimpleEdge extends AbstractDomainEdge {
     
     public final static class SimpleEdgeBuilder extends AbstractDomainEdgeBuilder<SimpleEdgeBuilder> {
                
+        private SimpleEdgeBuilder() {}
+        
         public SimpleEdge build() {
             return new SimpleEdge(GenericEdge.builder().properties(properties).source(source).target(target).build());
         }

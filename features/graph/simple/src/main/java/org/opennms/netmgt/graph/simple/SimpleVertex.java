@@ -76,6 +76,8 @@ public final class SimpleVertex extends AbstractDomainVertex {
     
     public final static class SimpleVertexBuilder extends AbstractDomainVertexBuilder<SimpleVertexBuilder> {
                 
+        private SimpleVertexBuilder() {}
+        
         public SimpleVertex build() {
             return new SimpleVertex(GenericVertex.builder().properties(properties).build());
         }

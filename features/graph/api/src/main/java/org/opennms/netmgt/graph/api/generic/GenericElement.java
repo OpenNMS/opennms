@@ -93,6 +93,8 @@ public abstract class GenericElement {
     public static abstract class GenericElementBuilder<T extends GenericElementBuilder> {
     	protected final Map<String, Object> properties = new HashMap<>();
     	
+        protected GenericElementBuilder() {}
+    	
         public T id(String id) {
         	properties.put(GenericProperties.ID, id);
         	return (T) this;

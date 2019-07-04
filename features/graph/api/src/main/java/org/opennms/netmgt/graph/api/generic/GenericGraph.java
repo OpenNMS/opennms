@@ -295,6 +295,8 @@ public final class GenericGraph extends GenericElement implements Graph<GenericV
     
     public final static class GenericGraphBuilder extends GenericElementBuilder<GenericGraphBuilder> {
         
+        private GenericGraphBuilder() {}
+        
         public GenericGraphBuilder description(String description) {
             this.properties.put(GenericProperties.DESCRIPTION, description);
             return this;

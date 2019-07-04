@@ -84,6 +84,8 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
     
     public final static class SimpleGraphBuilder extends AbstractDomainElementBuilder<SimpleGraphBuilder> {
         
+        private SimpleGraphBuilder() {}
+ 
         public SimpleGraphBuilder id(String description) {
             this.properties.put(GenericProperties.DESCRIPTION, description);
             return this;

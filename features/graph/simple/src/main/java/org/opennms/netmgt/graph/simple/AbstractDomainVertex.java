@@ -110,6 +110,8 @@ public class AbstractDomainVertex implements Vertex, NodeAware, LocationAware  {
     
     public abstract static class AbstractDomainVertexBuilder<T extends AbstractDomainElementBuilder> extends AbstractDomainElementBuilder<T> { 
         
+        protected AbstractDomainVertexBuilder() {}
+        
         public T nodeInfo(NodeInfo nodeInfo) {
             this.properties.put(GenericProperties.NODE_INFO, nodeInfo);
             return (T)this;

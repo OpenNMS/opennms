@@ -55,6 +55,8 @@ public final class IpServiceVertex extends AbstractBusinessServiceVertex {
     
     public final static class IpServiceVertexBuilder extends AbstractBusinessServiceVertexBuilder<IpServiceVertexBuilder, IpServiceVertex> {
         
+        private IpServiceVertexBuilder() {}
+        
         public IpServiceVertexBuilder ipServiceId(Integer ipServiceId) {
             properties.put(PROPERTY_SERVICE_ID, ipServiceId);
             id(Type.IpService + ":" + ipServiceId);

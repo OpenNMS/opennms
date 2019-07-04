@@ -225,6 +225,8 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
     
     public static class AbstractDomaiGraphBuilder<T extends AbstractDomaiGraphBuilder> extends AbstractDomainElementBuilder<T> {
        
+        protected AbstractDomaiGraphBuilder() {}
+        
         public AbstractDomaiGraphBuilder<T> description(String description) {
             this.properties.put(GenericProperties.DESCRIPTION, description);
             return this;

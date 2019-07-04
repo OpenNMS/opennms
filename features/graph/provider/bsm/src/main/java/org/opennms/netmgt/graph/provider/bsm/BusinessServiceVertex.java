@@ -38,7 +38,6 @@ import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
 public final class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
@@ -59,6 +58,8 @@ public final class BusinessServiceVertex extends AbstractBusinessServiceVertex {
     }
     
     public final static class BusinessServiceVertexBuilder extends AbstractBusinessServiceVertexBuilder<BusinessServiceVertexBuilder, BusinessServiceVertex> {
+        
+        private BusinessServiceVertexBuilder() {}
         
         public BusinessServiceVertexBuilder serviceId(Long serviceId) {
             properties.put(PROPERTY_SERVICE_ID, serviceId);

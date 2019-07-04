@@ -96,6 +96,7 @@ public final class ApplicationVertex extends AbstractDomainVertex {
     
     public final static class ApplicationVertexBuilder extends AbstractDomainVertexBuilder<ApplicationVertexBuilder> {
         
+        private ApplicationVertexBuilder() {}
         
         public ApplicationVertexBuilder application(OnmsApplication application) {
             this.properties.put(GenericProperties.ID, createVertexId(application));

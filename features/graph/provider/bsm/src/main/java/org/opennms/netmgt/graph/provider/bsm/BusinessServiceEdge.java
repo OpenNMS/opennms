@@ -55,6 +55,8 @@ public final class BusinessServiceEdge extends AbstractDomainEdge {
     
     public final static class BusinessServiceEdgeBuilder extends AbstractDomainEdgeBuilder<BusinessServiceEdgeBuilder> {
         
+        private BusinessServiceEdgeBuilder() {}
+        
         BusinessServiceEdgeBuilder graphEdge(GraphEdge graphEdge) {
             mapFunction(graphEdge.getMapFunction());
             weight(graphEdge.getWeight());
