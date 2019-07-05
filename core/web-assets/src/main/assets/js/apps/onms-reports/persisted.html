@@ -1,34 +1,55 @@
-<span ng-if="persistedReports.length == 0">No Data available</span>
+<div class="mx-2 my-2">
+    <div class="">
+        <button class="btn btn-secondary" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
+        <button class="btn btn-secondary"
+                ng-if="userInfo.isReportDesigner() || userInfo.isAdmin() && persistedReports.length > 0"
+                mwl-confirm
+                message="Do you really want to delete all persisted reports?"
+                on-confirm="deleteAll()"
+                placement="right"
+                confirm-button-type="danger"
+                cancel-button-type="secondary"
+                confirm-text="Yes"
+                cancel-text="No"
+                title="Delete All">
+            <i class="fa fa-trash"></i>
+        </button>
+    </div>
+    <div ng-if="persistedReports.length == 0" class="mt-4">
+        <span>No Data available</span>
+    </div>
+    <div ng-if="persistedReports.length > 0" class="mt-4">
+        <table class="table table-sm table-striped">
+            <thead>
+            <tr>
+                <th ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">Action</th>
+                <th>View Report</th>
+                <th>Title</th>
+                <th>Report ID</th>
+                <th>Run Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="report in persistedReports">
+                <td ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">
+                    <button class="btn btn-sm btn-danger" ng-click="delete(report)"><i class="fa fa-trash"></i></button>
+                </td>
+                <td>
+                    <!-- TODO MVR migrate to rest endpoint or similar -->
+                    <a href="report/database/downloadReport.htm?locatorId={{report.id}}&amp;format=PDF" class="mr-4"><i class="fa fa-file-pdf-o"></i> PDF</a>
+                    <a href="report/database/downloadReport.htm?locatorId={{report.id}}&amp;format=CSV"><i class="fa fa-file-text-o"></i> CSV</a>
+                </td>
+                <td>{{report.title}}</td>
+                <td>{{report.reportId}}</td>
+                <td>{{report.date}}</td>
+                <td>
 
-<div class="pull-right" ng-if="persistedReports.length > 0">
-    <button class="btn btn-secondary" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
-    <button class="btn btn-secondary" ng-click="deleteAll()" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" title="Delete All"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="mt-2">
+            <span class="text-muted">{{persistedReports.length}} persisted Report(s)</span>
+        </div>
+    </div>
 </div>
-
-<table class="table table-sm table-striped" ng-if="persistedReports.length > 0">
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Report ID</th>
-        <th>Run Date</th>
-        <th>View Report</th>
-        <th ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="report in persistedReports">
-        <td>{{report.title}}</td>
-        <td>{{report.reportId}}</td>
-        <td>{{report.date}}</td>
-        <td>
-            <!-- TODO MVR migrate to rest endpoint or similar -->
-            <a href="report/database/downloadReport.htm?locatorId={{report.id}}&amp;format=PDF"><i class="fa fa-file-pdf-o"></i> PDF</a>
-            <a href="report/database/downloadReport.htm?locatorId={{report.id}}&amp;format=CSV"><i class="fa fa-file-text-o"></i> CSV</a>
-        </td>
-        <td ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" class="text-right">
-            <button class="btn btn-danger" ng-click="delete(report)"><i class="fa fa-trash"></i></button>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<span class="text-muted">{{persistedReports.length}} persisted Report(s)</span>

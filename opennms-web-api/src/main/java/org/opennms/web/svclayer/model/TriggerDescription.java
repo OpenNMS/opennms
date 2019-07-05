@@ -48,6 +48,7 @@ public class TriggerDescription {
     private Date m_nextFireTime;
     private DeliveryOptions m_deliveryOptions;
     private Map<String,Object> m_reportParameters;
+    private String cronExpression;
 
     /**
      * <p>getTriggerName</p>
@@ -157,4 +158,11 @@ public class TriggerDescription {
         this.m_reportParameters = reportParameters;
     }
 
+    public void setCronExpression(String cronExpression) {
+        this.cronExpression = cronExpression;
+    }
+
+    public String getCronExpression() {
+        return cronExpression;
+    }
 }

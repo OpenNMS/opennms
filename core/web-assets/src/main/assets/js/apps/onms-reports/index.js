@@ -1,6 +1,7 @@
 const angular = require('vendor/angular-js');
 require('../../lib/onms-http');
 require('angular-ui-router');
+require('angular-bootstrap-confirm');
 
 const indexTemplate  = require('./index.html');
 const templatesTemplate  = require('./templates.html');
@@ -9,6 +10,8 @@ const schedulesTemplate  = require('./schedules.html');
 const detailsTemplate  = require('./details.html');
 const successModalTemplate  = require('./modals/success-modal.html');
 const errorModalTemplate  = require('./modals/error-modal.html');
+
+const confirmTopoverTemplate = require('../onms-classifications/views/modals/popover.html');
 
 (function() {
     'use strict';
@@ -19,12 +22,16 @@ const errorModalTemplate  = require('./modals/error-modal.html');
             'angular-loading-bar',
             'ngResource',
             'ui.router',
+            'mwl.confirm',
             'onms.http',
         ])
         .config( ['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
             $locationProvider.html5Mode(false);
         }])
+        .run(function(confirmationPopoverDefaults) {
+            confirmationPopoverDefaults.templateUrl = confirmTopoverTemplate;
+        })
         .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
             $stateProvider
                 .state('report', {
@@ -37,7 +44,7 @@ const errorModalTemplate  = require('./modals/error-modal.html');
                     controller: 'ReportTemplatesController',
                     templateUrl: templatesTemplate
                 })
-                .state('report.details', {
+                .state('report.templates.details', {
                     url: '/:id?type',
                     controller: 'ReportDetailController',
                     templateUrl: detailsTemplate,
@@ -419,6 +426,14 @@ const errorModalTemplate  = require('./modals/error-modal.html');
             $scope.$watch("userInfo", function(newVal, oldVal) {
                 if (newVal) {
                     $scope.loadDetails();
+                }
+            });
+
+            // Ensure the format matches
+            $scope.$watch('report.format', function(newVal) {
+                console.log(newVal);
+                if ($scope.deliveryOptions) {
+                    $scope.deliveryOptions.format = newVal;
                 }
             });
         }])

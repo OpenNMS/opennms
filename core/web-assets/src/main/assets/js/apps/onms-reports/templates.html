@@ -1,37 +1,43 @@
 <span ng-if="reports.length == 0">No Data available</span>
-<table class="table table-sm table-striped" ng-if="reports.length > 0">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Action(s)</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="report in reports">
-        <td class="col-4">{{report.name}}</td>
-        <td class="col-6">{{report.description}}</td>
-        <td class="col-2 text-right">
-            <button ui-sref="report.details({'id': report.id, 'type': 'online'})"
-                    class="btn btn-sm btn-secondary"
-                    title="Execute this report instantly"
-                    ng-if="report.online === true">
-                <i class="fa fa-play"></i>
-            </button>
-            <button ui-sref="report.details({'id': report.id, 'type': 'deliver'})"
-                    class="btn btn-sm btn-secondary"
-                    title="Deliver report to file system or via e-mail"
-                    ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">
-                <i class="fa fa-share"></i>
-            </button>
-            <button ui-sref="report.details({'id': report.id, 'type': 'schedule'})"
-                    class="btn btn-sm btn-secondary"
-                    title="Create a schedule for this report"
-                    ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">
-                <i class="fa fa-clock-o"></i>
-            </button>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<span class="text-muted">{{reports.length}} Report(s)</span>
+
+<div class="row">
+    <div class="col-5">
+        <div class="mx-2 my-2">
+            <table class="table table-sm table-striped" ng-if="reports.length > 0">
+                <tbody>
+                <tr ng-repeat="report in reports" ui-sref-active="table-primary">
+                    <td>
+                        <h5>{{report.name}}</h5>
+                        <p class="text-muted">{{report.description}}</p>
+                    </td>
+                    <td class="text-right">
+                        <button ui-sref="report.templates.details({'id': report.id, 'type': 'online'})"
+                                class="btn btn-sm btn-link"
+                                title="Execute this report instantly"
+                                ng-if="report.online === true">
+                            <i class="fa fa-play"></i>
+                        </button>
+                        <button ui-sref="report.templates.details({'id': report.id, 'type': 'deliver'})"
+                                class="btn btn-sm btn-link"
+                                title="Deliver report to file system or via e-mail"
+                                ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">
+                            <i class="fa fa-share"></i>
+                        </button>
+                        <button ui-sref="report.templates.details({'id': report.id, 'type': 'schedule'})"
+                                class="btn btn-sm btn-link"
+                                title="Create a schedule for this report"
+                                ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">
+                            <i class="fa fa-clock-o"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="">
+                <span class="text-muted">{{reports.length}} Report(s)</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-7" ui-view>
+    </div>
+</div>

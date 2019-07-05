@@ -1,101 +1,99 @@
 
-<div class="alert alert-danger" ng-if="errorMessage">
+<div class="alert alert-danger mx-4" ng-if="errorMessage">
     <span>{{errorMessage}}</span>
 </div>
 
-<form name="reportForm" class="form" role="form" novalidate>
-    <div class="card" ng-if="parameters && parameters.length > 0">
-        <div class="card-header">
-            <span>Report Parameters</span>
+<form name="reportForm" class="form mx-4" role="form" novalidate>
+    <div class="" ng-if="parameters && parameters.length > 0">
+        <h3 class="">Report Parameters</h3>
+        <div ng-show="parametersByName['GRAFANA_ENDPOINT_UID']" class="form-group">
+            <label>Grafana Endpoint</label>
+                <a ng-if="endpoints.length > 0" href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
+                <a ng-if="endpoints.length == 0" href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>
+            <select class="form-control custom-select"
+                    ng-model="selected.endpoint"
+                    ng-show="endpoints.length > 0"
+                    ng-change="endpointChanged()"
+                    ng-options="endpoint as endpoint.label for endpoint in endpoints"
+                    >
+            </select>
+            <p class="alert alert-warning" ng-if="endpoints.length == 0">
+                There is no Grafana Endpoint defined.
+                Please <a href="/opennms/admin/endpoint/index.jsp">add a Grafana Endpoint</a>.
+            </p>
         </div>
-        <div class="card-body">
-            <div ng-show="parametersByName['GRAFANA_ENDPOINT_UID']" class="form-group">
-                <label>Grafana Endpoint</label>
-                    <a ng-if="endpoints.length > 0" href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
-                    <a ng-if="endpoints.length == 0" href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>
-                <select class="form-control custom-select"
-                        ng-model="selected.endpoint"
-                        ng-show="endpoints.length > 0"
-                        ng-change="endpointChanged()"
-                        ng-options="endpoint as endpoint.label for endpoint in endpoints"
-                        >
-                </select>
-                <p class="alert alert-warning" ng-if="endpoints.length == 0">
-                    There is no Grafana Endpoint defined.
-                    Please <a href="/opennms/admin/endpoint/index.jsp">add a Grafana Endpoint</a>.
-                </p>
-            </div>
-            <div ng-show="parametersByName['GRAFANA_DASHBOARD_UID'] && selected.endpoint" class="form-group">
-                <label>Grafana Dashboard</label>
-                    <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dasbhoard" target="_blank"> <i class="fa fa-dashboard"></i></a>
-                    <a ng-if="dashboards.length == 0" href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
-                <select class="form-control custom-select"
-                        ng-model="selected.dashboard"
-                        ng-show="dashboards.length > 0"
-                        ng-options="dashboard as dashboard.title for dashboard in dashboards">
-                </select>
-                <p class="alert alert-warning" ng-if="dashboards.length == 0">
-                    There is no Grafana Dashboard defined.
-                    Please <a href="{{selected.endpoint.url}}/dashboards" target="_blank">add a Dashboard</a>.
-                </p>
-            </div>
-            <div ng-if="parameter.type === 'string' && parameter.hidden === false" class="form-group" ng-repeat="parameter in parameters">
-                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+        <div ng-show="parametersByName['GRAFANA_DASHBOARD_UID'] && selected.endpoint" class="form-group">
+            <label>Grafana Dashboard</label>
+                <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dasbhoard" target="_blank"> <i class="fa fa-dashboard"></i></a>
+                <a ng-if="dashboards.length == 0" href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
+            <select class="form-control custom-select"
+                    ng-model="selected.dashboard"
+                    ng-show="dashboards.length > 0"
+                    ng-options="dashboard as dashboard.title for dashboard in dashboards">
+            </select>
+            <p class="alert alert-warning" ng-if="dashboards.length == 0">
+                There is no Grafana Dashboard defined.
+                Please <a href="{{selected.endpoint.url}}/dashboards" target="_blank">add a Dashboard</a>.
+            </p>
+        </div>
 
-                <!--String -->
-                <select id="{{parameter.name}}"
-                        name="p{{parameter.name}}"
-                        ng-if="parameter.inputType === 'reportCategorySelector'"
-                        class="form-control custom-select"
-                        ng-class="{ 'is-invalid' : reportForm['p' + parameter.name].$invalid || error[parameter.name]}"
-                        ng-model="parameter.value"
-                        ng-options="option for option in surveillanceCategories">
-                </select>
+        <div ng-if="parameter.type === 'string' && parameter.hidden === false" class="form-group" ng-repeat-start="parameter in parameters">
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
 
-                <select id="{{parameter.name}}" ng-if="parameter.inputType === 'onmsCategorySelector'" class="form-control custom-select" ng-model="parameter.value">
-                    <option ng-repeat="option in categories">{{option}}</option>
-                </select>
-                <input id="{{parameter.name}}"
-                       ng-if="parameter.inputType !== 'reportCategorySelector' && parameter.inputType !== 'onmsCategorySelector'"
-                       class="form-control" type="text" ng-model="parameter.value"/>
-            </div>
-            <!-- INT -->
-            <div  ng-if="parameter.type === 'integer'" class="form-group" ng-repeat="parameter in parameters">
-                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
-                <input id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.value"/>
-            </div>
-            <!-- FLOAT -->
-            <div ng-if="parameter.type === 'float'" class="form-group" ng-repeat="parameter in parameters">
-                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
-                <input id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.value"/>
-            </div>
-            <!-- DOUBLE -->
-            <div ng-if="parameter.type === 'double'" class="form-group" ng-repeat="parameter in parameters">
-                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
-                <input id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.value"/>
-            </div>
-            <!-- TODO MVR absolute vs relative dates -->
-            <!-- DATE -->
-            <div ng-if="parameter.type === 'date'" class="form-group" ng-repeat="parameter in parameters">
-                <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
-                <div class="input-group">
-                    <span ng-if="type === 'schedule' && parameter.useAbsoluteDate === false">
-                        <input type="number" min="0" max="31" class="form-control" ng-model="parameter.count" />
-                        <select class="form-control custom-select" ng-model="parameter.interval">
-                            <option value="day">day</option>
-                            <option value="month">month</option>
-                            <option value="year">year</option>
-                        </select>
-                        <div class="pull-left">
-                            <label style="margin-top: 13%; margin-left:5px; margin-right:5px;"> ago, at </label>
-                        </div>
-                    </span>
-                    <input ng-if="type !== 'schedule' || parameter.useAbsoluteDate === true" id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.date" />
-                    <input class="form-control" type="number" min="0" max="23" ng-model="parameter.hours" />
-                    <input class="form-control" type="number" min="0" max="59" ng-model="parameter.minutes" />
-                </div>
+            <!--String -->
+            <select id="{{parameter.name}}"
+                    name="p{{parameter.name}}"
+                    ng-if="parameter.inputType === 'reportCategorySelector'"
+                    class="form-control custom-select"
+                    ng-class="{ 'is-invalid' : reportForm['p' + parameter.name].$invalid || error[parameter.name]}"
+                    ng-model="parameter.value"
+                    ng-options="option for option in surveillanceCategories">
+            </select>
+
+            <select id="{{parameter.name}}" ng-if="parameter.inputType === 'onmsCategorySelector'" class="form-control custom-select" ng-model="parameter.value">
+                <option ng-repeat="option in categories">{{option}}</option>
+            </select>
+            <input id="{{parameter.name}}"
+                   ng-if="parameter.inputType !== 'reportCategorySelector' && parameter.inputType !== 'onmsCategorySelector'"
+                   class="form-control" type="text" ng-model="parameter.value"/>
+        </div>
+        <!-- INT -->
+        <div  ng-if="parameter.type === 'integer'" class="form-group">
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <input id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.value"/>
+        </div>
+        <!-- FLOAT -->
+        <div ng-if="parameter.type === 'float'" class="form-group">
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <input id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.value"/>
+        </div>
+        <!-- DOUBLE -->
+        <div ng-if="parameter.type === 'double'" class="form-group">
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <input id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.value"/>
+        </div>
+        <!-- TODO MVR absolute vs relative dates -->
+        <!-- DATE -->
+        <div ng-if="parameter.type === 'date'" class="form-group" ng-repeat-end>
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <div class="input-group">
+                <span ng-if="type === 'schedule' && parameter.useAbsoluteDate === false">
+                    <input type="number" min="0" max="31" class="form-control" ng-model="parameter.count" />
+                    <select class="form-control custom-select" ng-model="parameter.interval">
+                        <option value="day">day</option>
+                        <option value="month">month</option>
+                        <option value="year">year</option>
+                    </select>
+                    <div class="pull-left">
+                        <label style="margin-top: 13%; margin-left:5px; margin-right:5px;"> ago, at </label>
+                    </div>
+                </span>
+                <input ng-if="type !== 'schedule' || parameter.useAbsoluteDate === true" id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.date" />
+                <input class="form-control" type="number" min="0" max="23" ng-model="parameter.hours" />
+                <input class="form-control" type="number" min="0" max="59" ng-model="parameter.minutes" />
             </div>
         </div>
+        <hr class="mb-4" ng-if="type !== 'online'"/>
     </div>
 
     <!-- FORMAT -->
@@ -107,101 +105,91 @@
                 ng-model="report.format"
                 ng-options="format as format for format in formats">
         </select>
+        <hr class="mb-4"/>
     </div>
 
-    <div class="card" ng-if="type !== 'online' && deliveryOptions">
-        <div class="card-header">
-            <span>Report Delivery Options</span>
-        </div>
-        <div class="card-body">
+    <div class="" ng-if="type !== 'online' && deliveryOptions">
+        <h3>Report Delivery Options</h3>
+        <div class="">
             <div class="form-group">
-                <div class="col-md-6">
-                    <label for="instanceId">Unique name</label>
-                    <!-- TODO MVR tooltip? -->
-                    <input id="instanceId" ng-model="deliveryOptions.instanceId" class="form-control" data-toggle="tooltip" data-placement="right" title="A name to identify this report. Must be unique overall reports."/>
-                </div>
+                <label for="instanceId">Unique name</label>
+                <!-- TODO MVR tooltip? -->
+                <input id="instanceId" ng-model="deliveryOptions.instanceId" class="form-control" data-toggle="tooltip" data-placement="right" title="A name to identify this report. Must be unique overall reports."/>
             </div>
             <div class="form-group">
-                <div class="col-md-6">
-                    <label for="format" class="">Format</label>
-                    <!-- TODO MVR tooltip? -->
-                    <select id="format"
-                            name="format"
-                            class="form-control custom-select"
-                            ng-model="report.format"
-                            data-toggle="tooltip"
-                            data-placement="right"
-                            title="The output format of the generated report."
-                            ng-options="format as format for format in formats">
-                    </select>
-                </div>
-
+                <label for="format" class="">Format</label>
+                <!-- TODO MVR tooltip? -->
+                <select id="format"
+                        name="format"
+                        class="form-control custom-select"
+                        ng-model="report.format"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        title="The output format of the generated report."
+                        ng-options="format as format for format in formats">
+                </select>
             </div>
-            <div class="form-group">
-                <div class="col-md-6 ml-4">
-                    <input type="checkbox" id="persistToggle" ng-model="deliveryOptions.persist" class="form-check-input"/>
-                    <!-- TODO MVR tooltip? -->
-                    <label class="form-check-label"
-                           data-toggle="tooltip"
-                           data-placement="right"
-                           title="Indicates whether a copy of the generated report is stored on disk."
-                           for="persistToggle" >
-                        Save a copy of this report
-                    </label>
-                </div>
+            <div class="form-group ml-4">
+                <input type="checkbox" id="persistToggle" ng-model="deliveryOptions.persist" class="form-check-input"/>
+                <!-- TODO MVR tooltip? -->
+                <label class="form-check-label"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       title="Indicates whether a copy of the generated report is stored on disk."
+                       for="persistToggle" >
+                    Save a copy of this report
+                </label>
             </div>
-            <div class="form-group">
-                <div class="col-md-6 ml-4">
-                    <input type="checkbox" id="sendMailToggle" ng-model="deliveryOptions.sendMail" class="form-check-input"/>
-                    <!-- TODO MVR tooltip? -->
-                    <label class="form-check-label" for="sendMailToggle" data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
-                        Email report
-                    </label>
-                </div>
+            <div class="form-group ml-4">
+                <input type="checkbox" id="sendMailToggle" ng-model="deliveryOptions.sendMail" class="form-check-input"/>
+                <!-- TODO MVR tooltip? -->
+                <label class="form-check-label" for="sendMailToggle" data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
+                    Email report
+                </label>
             </div>
 
             <div class="form-group" ng-if="deliveryOptions.sendMail">
-                <div class="col-md-6">
-                    <!-- TODO MVR tooltip? -->
-                    <label for="mailRecipient">Recipient</label>
-                    <input id="mailRecipient"
-                           name="mailRecipient"
-                           ng-model="deliveryOptions.mailTo"
-                           placeholder="some@email.org"
-                           type="email"
-                           class="form-control"
-                           ng-class="{ 'is-invalid' : reportForm.mailRecipient.$invalid }"
-                           data-toggle="tooltip"
-                           data-placement="right"
-                           title="The recipient of the generated report if 'Email report' is enabled."
-                           required />
-                    <div ng-show="reportForm.mailRecipient.$invalid" class="invalid-feedback">Please provide a valid email.</div>
-
-                </div>
+                <!-- TODO MVR tooltip? -->
+                <label for="mailRecipient">Recipient</label>
+                <input id="mailRecipient"
+                       name="mailRecipient"
+                       ng-model="deliveryOptions.mailTo"
+                       placeholder="some@email.org"
+                       type="email"
+                       class="form-control"
+                       ng-class="{ 'is-invalid' : reportForm.mailRecipient.$invalid }"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       title="The recipient of the generated report if 'Email report' is enabled."
+                       required />
+                <div ng-show="reportForm.mailRecipient.$invalid" class="invalid-feedback">Please provide a valid email.</div>
             </div>
         </div>
+        <hr class="mb-4"/>
     </div>
 
-    <div class="card" ng-if="type === 'schedule'">
-        <div class="card-header">
-            <span>Cron Expression</span>
+    <div class="" ng-if="type === 'schedule'">
+        <h3>Cron Expression</h3>
+        <div class="">
+            <p>
+                We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial
+                <a href="http://www.quartz-scheduler.org/documentation/quartz-2.2.2/tutorials/crontrigger.html" target="_blank">here</a>.
+            </p>
+            <div class="form-group">
+                <label for="cronExpression" class="form-check-label">
+                    Cron Expression
+                </label>
+                <input id="cronExpression"
+                       name="cronExpression"
+                       type="text"
+                       class="form-control"
+                       ng-class="{ 'is-invalid' : reportForm.cronExpression.$invalid }"
+                       ng-model="cron.expression"
+                       required />
+                <div ng-show="reportForm.cronExpression.$invalid" class="invalid-feedback">Please provide a value.</div>
+            </div>
         </div>
-        <div class="card-body">
-            <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/documentation/quartz-2.2.2/tutorials/crontrigger.html" target="_blank">here</a>.</p>
-                <div class="form-group">
-                    <label for="cronExpression" class="form-check-label">
-                        Cron Expression
-                    </label>
-                    <input id="cronExpression"
-                           name="cronExpression"
-                           type="text"
-                           class="form-control"
-                           ng-class="{ 'is-invalid' : reportForm.cronExpression.$invalid }"
-                           ng-model="cron.expression"
-                           required />
-                    <div ng-show="reportForm.cronExpression.$invalid" class="invalid-feedback">Please provide a value.</div>
-                </div>
-        </div>
+        <hr />
     </div>
 
     <div class="alert alert-warning" ng-if="isGrafanaReport() && !isGrafanaReady()">
@@ -212,7 +200,11 @@
             <i class="fa fa-times"></i> Cancel
         </button>
         <button class="btn btn-primary" name="run" id="execute" ng-click="execute()" ng-disabled="reportForm.$invalid || (isGrafanaReport() && !isGrafanaReady())">
-            <i class="fa fa-play"></i> Proceed
+            <span ng-if="type==='online'"><i class="fa fa-play"></i> Create</span>
+            <span ng-if="type==='deliver'"><i class="fa fa-share"></i> Deliver</span>
+            <span ng-if="type==='schedule'"><i class="fa fa-clock-o"></i> Schedule</span>
+
+            Report
         </button>
     </div>
 </form>
