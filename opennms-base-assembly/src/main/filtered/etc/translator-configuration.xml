@@ -121,7 +121,7 @@
     </event-translation-spec>
 
     <!-- Translations for clock skew detection -->
-    <event-translation-spec uei="uei.opennms.org/telemetry/clockSkewDetected" >
+    <event-translation-spec uei="uei.opennms.org/internal/telemetry/clockSkewDetected" >
       <mappings>
         <mapping>
           <assignment name="uei" type="field" >
