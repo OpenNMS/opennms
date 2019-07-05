@@ -21,6 +21,14 @@ RUN rpm --import "${REPO_KEY_URL}" && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
+# Allow to send ICMP messages as non-root user
+RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
+    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
+    ldconfig
+
+# Set gid=0 and make group perms==owner perms
+RUN groupadd -g 10001 opennms && \
+    adduser -u 10001 -g 10001 -d /opt/opennms -s /usr/bin/bash opennms
 ##
 # Install and setup OpenNMS RPMS
 ##
@@ -32,10 +40,15 @@ ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting ope
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
 
+ARG OPENNMS_UID
+
 COPY ./rpms /tmp/rpms
 COPY ./tarball /tmp/tarball
 
 SHELL ["/bin/bash", "-c"]
+
+RUN groupadd -g 1000 elasticsearch && \
+adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
 
 # Install repositories, system and OpenNMS packages and do some cleanup
 # 1. Try to install from tarball
@@ -61,6 +74,10 @@ RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
     ln -s /opennms-data/rrd /opt/opennms/share/rrd && \
     ln -s /opennms-data/reports /opt/opennms/share/reports
 
+RUN chown opennms:opennms -R /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
+    chgrp -R 0 /opt/opennms /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
+    chmod -R g=u /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay
+
 # Add templates replaced at runtime and entrypoint
 COPY ./assets/*.tpl /root/
 COPY ./assets/entrypoint.sh /
@@ -85,6 +102,8 @@ LABEL maintainer="The OpenNMS Group" \
       cicd.build.sha1="${CIRCLE_SHA1}"
 
 WORKDIR /opt/opennms
+
+USER 10001
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
