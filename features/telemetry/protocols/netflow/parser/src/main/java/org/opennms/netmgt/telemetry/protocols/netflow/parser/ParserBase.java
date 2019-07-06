@@ -160,7 +160,7 @@ public class ParserBase {
             if (delta > getMaxClockSkew() * 1000L) {
                 final Optional<Instant> instant = eventCache.getUnchecked(remoteAddress);
 
-                if (!instant.isPresent() || Duration.between(Instant.now(), instant.get()).toHours() > 0) {
+                if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).toHours() > 0) {
                     eventCache.put(remoteAddress, Optional.of(Instant.now()));
 
                     eventForwarder.sendNow(new EventBuilder()
