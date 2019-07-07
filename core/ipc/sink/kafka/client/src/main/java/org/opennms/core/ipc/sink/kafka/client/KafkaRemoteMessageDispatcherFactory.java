@@ -77,6 +77,7 @@ import io.opentracing.util.GlobalTracer;
 public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<String> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRemoteMessageDispatcherFactory.class);
 
+    private final static int INVALID_PARTITION = -1;
     private final Properties kafkaConfig = new Properties();
 
     private ConfigurationAdmin configAdmin;
@@ -103,41 +104,80 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             LOG.trace("dispatch({}): sending message {}", topic, message);
             byte[] sinkMessageContent = module.marshal(message);
             String messageId = UUID.randomUUID().toString();
-            int totalChunks = IntMath.divide(sinkMessageContent.length, maxBufferSize, RoundingMode.UP);
-            for (int chunk = 0; chunk < totalChunks; chunk++) {
-                byte[] messageInBytes = wrapMessageToProto(messageId, chunk, totalChunks, sinkMessageContent);
-                final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, messageId, messageInBytes);
-                // Add tags to tracer active span.
-                Span activeSpan = getTracer().activeSpan();
-                if (activeSpan != null && (chunk + 1 == totalChunks)) {
-                    activeSpan.setTag(TracerConstants.TAG_TOPIC, topic);
-                    activeSpan.setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageContent.length);
-                }
-                // Keep sending record till it delivers successfully.
-                while (true) {
-                    try {
-                        // From KafkaProducer's JavaDoc: The producer is thread safe and should generally be shared among all threads for best performance.
-                        final Future<RecordMetadata> future = producer.send(record);
-                        // The call to dispatch() is synchronous, so we block until the message was sent
-                        future.get();
-                        break;
-                    } catch (InterruptedException e) {
-                        LOG.warn("Interrupted while sending message to topic {}.", topic, e);
-                        Thread.currentThread().interrupt();
-                        break;
-                    } catch (ExecutionException e) {
-                        // Timeout typically happens when Kafka is Offline or it didn't initialize yet.
-                        // For this case keep sending the message until it delivers, will cause sink messages to buffer.
-                        if (e.getCause() != null && e.getCause() instanceof TimeoutException) {
-                            LOG.warn("Timeout occured while sending message to topic {}, it will be attempted again.", topic);
-                        } else {
-                            LOG.error("Exception occured while sending message to topic {} ", e);
-                            break;
-                        }
-                    }
+            // Send this message to Kafka, If partition changed in between sending chunks of a larger message,
+            // try to send message again.
+            boolean partitionChanged = false;
+            do {
+                partitionChanged = sendMessage(topic, messageId, sinkMessageContent);
+            } while (partitionChanged);
+        }
+    }
+
+    /**
+     * This method will divide message into chunks and send each chunk to kafka.
+     * This will return false by default. If this is large buffer (total chunks > 1) and if different chunks have
+     * been sent to different partitions, method will return true indicating partition change in between.
+     * @param topic    The kafka topic message needs to be sent
+     * @param messageId  The messageId message associated with
+     * @param sinkMessageContent  The sink message
+     * @return partitionChanged  return true if partition changed in between else return false by default.
+     */
+    private boolean sendMessage(String topic, String messageId, byte[] sinkMessageContent) {
+        int partitionNum = INVALID_PARTITION;
+        boolean partitionChanged = false;
+        int totalChunks = IntMath.divide(sinkMessageContent.length, maxBufferSize, RoundingMode.UP);
+        for (int chunk = 0; chunk < totalChunks; chunk++) {
+            byte[] messageInBytes = wrapMessageToProto(messageId, chunk, totalChunks, sinkMessageContent);
+            final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, messageId, messageInBytes);
+            // Add tags to tracer active span.
+            Span activeSpan = getTracer().activeSpan();
+            if (activeSpan != null && (chunk + 1 == totalChunks)) {
+                activeSpan.setTag(TracerConstants.TAG_TOPIC, topic);
+                activeSpan.setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageContent.length);
+            }
+            // Keep sending record till it delivers successfully.
+            int partition = sendMessageChunkToKafka(topic, record);
+            if (totalChunks > 1 && chunk == 0) {
+                partitionNum = partition;
+            } else if (totalChunks > 1 && partitionNum != partition) {
+                partitionChanged = true;
+                break;
+            }
+        }
+        return partitionChanged;
+    }
+
+    /**
+     *  This method will send one chunk of message to kafka and returns the partition number the message has been sent to.
+     * @param topic   The kafka topic message needs to be sent
+     * @param record message
+     * @return  partition number
+     */
+    private int sendMessageChunkToKafka(String topic, ProducerRecord<String, byte[]> record) {
+
+        while (true) {
+            try {
+                // From KafkaProducer's JavaDoc: The producer is thread safe and should generally be shared among all threads for best performance.
+                final Future<RecordMetadata> future = producer.send(record);
+                // The call to dispatch() is synchronous, so we block until the message was sent
+                RecordMetadata recordMetadata = future.get();
+                return recordMetadata.partition();
+            } catch (InterruptedException e) {
+                LOG.warn("Interrupted while sending message to topic {}.", topic, e);
+                Thread.currentThread().interrupt();
+                break;
+            } catch (ExecutionException e) {
+                // Timeout typically happens when Kafka is Offline or it didn't initialize yet.
+                // For this case keep sending the message until it delivers, will cause sink messages to buffer.
+                if (e.getCause() != null && e.getCause() instanceof TimeoutException) {
+                    LOG.warn("Timeout occured while sending message to topic {}, it will be attempted again.", topic);
+                } else {
+                    LOG.error("Exception occured while sending message to topic {} ", e);
+                    break;
                 }
             }
         }
+      return INVALID_PARTITION;
     }
 
     private byte[] wrapMessageToProto(String messageId, int chunk, int totalChunks, byte[] sinkMessageContent) {
