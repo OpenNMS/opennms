@@ -33,7 +33,6 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 
 import java.util.concurrent.TimeUnit;
-
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -43,16 +42,11 @@ import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
 import org.opennms.test.system.api.NewTestEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
-    private final static Logger LOG = LoggerFactory.getLogger(GraphRestServiceIT.class);
     private static final String CONTAINER_ID = "test";
     private KarafShell karafShell;
     private RestClient restClient;
@@ -136,48 +130,51 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     @Test
     public void verifySuggest() {
     	createGraphMLAndWaitUntilDone();
-        given().params("s", "unknown")
+        given().log().ifValidationFails()
+               .params("s", "unknown")
                .accept(ContentType.JSON)
                .get("/search/suggestions/{namespace}/", "acme:regions")
-               .then().statusCode(204);
+               .then().log().ifValidationFails()
+               .statusCode(204);
 
-        Response response = given().params("s", "North Region")
+        given().log().ifValidationFails()
+               .params("s", "North Region")
                .accept(ContentType.JSON)
-               .get("/search/suggestions/{namespace}/", "acme:regions");
-        LOG.info("Results from search:" + response.asString());
-
-        response
-               .then().statusCode(200)
+               .get("/search/suggestions/{namespace}/", "acme:regions")
+               .then().log().ifValidationFails()
+               .statusCode(200)
                .contentType(ContentType.JSON)
                .content("[0].context", Matchers.is("GenericVertex"))
-               .content("[0].label", Matchers.is("North Region"))
-               .content("[0].provider", Matchers.is("LabelSearchProvider"));
+               .content("[0].label", Matchers.is("North Region"))      
+               .content("[0].provider", Matchers.is("LabelSearchProvider"))
+               .content("", Matchers.hasSize(1));
     }
 
     @Test
     public void verifySearch() {
     	createGraphMLAndWaitUntilDone();
-        given()
+        given().log().ifValidationFails()
                .params("providerId", "LabelSearchProvider")
                .params("criteria", "unknown")
                .params("context", "GenericVertex")
                .accept(ContentType.JSON)
                .get("/search/results/{namespace}/", "acme:regions")
-               .then().statusCode(204);
+               .then().log().ifValidationFails()
+               .statusCode(204);
 
-        Response response = given()
+        given().log().ifValidationFails()
                .params("providerId", "LabelSearchProvider")
                .params("criteria", "North Region")
                .params("context", "GenericVertex")
                .accept(ContentType.JSON)
-               .get("/search/results/{namespace}/", "acme:regions");
-        LOG.info("Results from search:" + response.asString());
-
-        response.then().statusCode(200)
+               .get("/search/results/{namespace}/", "acme:regions")
+               .then().log().ifValidationFails()
+               .statusCode(200)
                .contentType(ContentType.JSON)
                .content("[0].properties.namespace", Matchers.is("acme:regions"))
-               .content("[0].label", Matchers.is("North Region"))
-               .content("[0].id", Matchers.is("north"));
+               .content("[0].label", Matchers.is("North Region"))      
+               .content("[0].id", Matchers.is("north"))
+               .content("", Matchers.hasSize(1));
     }
 
     private void createGraphMLAndWaitUntilDone() {
