@@ -114,6 +114,7 @@
         "moment": "^2.24.0",
         "popper.js": "^1.15.0",
         "regenerator-runtime": "^0.13.2",
+        "tempusdominus-bootstrap-4": "^5.1.2",
         "ui-bootstrap4": "^3.0.6",
         "underscore": "^1.9.1"
     },

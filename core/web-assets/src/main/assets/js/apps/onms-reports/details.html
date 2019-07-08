@@ -72,26 +72,26 @@
             <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
             <input id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.value"/>
         </div>
-        <!-- TODO MVR absolute vs relative dates -->
         <!-- DATE -->
         <div ng-if="parameter.type === 'date'" class="form-group" ng-repeat-end>
             <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
-            <div class="input-group">
-                <span ng-if="type === 'schedule' && parameter.useAbsoluteDate === false">
-                    <input type="number" min="0" max="31" class="form-control" ng-model="parameter.count" />
-                    <select class="form-control custom-select" ng-model="parameter.interval">
-                        <option value="day">day</option>
-                        <option value="month">month</option>
-                        <option value="year">year</option>
-                    </select>
-                    <div class="pull-left">
-                        <label style="margin-top: 13%; margin-left:5px; margin-right:5px;"> ago, at </label>
-                    </div>
-                </span>
-                <input ng-if="type !== 'schedule' || parameter.useAbsoluteDate === true" id="{{parameter.name}}" class="form-control" type="text" ng-model="parameter.date" />
+            <div class="input-group" ng-if="type === 'schedule' && parameter.useAbsoluteDate === false">
+                <input type="number" min="0" max="31" class="form-control" ng-model="parameter.count" />
+                <select class="form-control custom-select" ng-model="parameter.interval">
+                    <option value="day">day</option>
+                    <option value="month">month</option>
+                    <option value="year">year</option>
+                </select>
+                <label class="my-auto mx-2"> ago, at </label>
                 <input class="form-control" type="number" min="0" max="23" ng-model="parameter.hours" />
                 <input class="form-control" type="number" min="0" max="59" ng-model="parameter.minutes" />
             </div>
+            <datetimepicker ng-if="type !== 'schedule' || parameter.useAbsoluteDate === true"
+                            locale="parameter.internalLocale"
+                            format="parameter.internalFormat"
+                            ng-model="parameter.internalValue"
+                            expand="true"
+            ></datetimepicker>
         </div>
         <hr class="mb-4" ng-if="type !== 'online'"/>
     </div>
