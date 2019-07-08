@@ -112,6 +112,7 @@ public class ClockSkewTest {
         long current = System.currentTimeMillis();
 
         parserBase.setMaxClockSkew(300);
+        parserBase.setClockSkewEventRate(3600);
         parserBase.detectClockSkew(current - 299000, InetAddress.getLoopbackAddress());
         Assert.assertEquals(0, eventCount);
 
@@ -120,5 +121,29 @@ public class ClockSkewTest {
 
         parserBase.detectClockSkew(current - 301000, InetAddress.getLoopbackAddress());
         Assert.assertEquals(1, eventCount);
+    }
+
+    @Test
+    public void testClockSkewEventRate() throws Exception {
+        long current = System.currentTimeMillis();
+
+        parserBase.setMaxClockSkew(300);
+        parserBase.setClockSkewEventRate(1);
+        parserBase.detectClockSkew(current - 299000, InetAddress.getLoopbackAddress());
+        Assert.assertEquals(0, eventCount);
+
+        parserBase.detectClockSkew(current - 301000, InetAddress.getLoopbackAddress());
+        Assert.assertEquals(1, eventCount);
+
+        parserBase.detectClockSkew(current - 301000, InetAddress.getLoopbackAddress());
+        Assert.assertEquals(1, eventCount);
+
+        parserBase.detectClockSkew(current - 301000, InetAddress.getLoopbackAddress());
+        Assert.assertEquals(1, eventCount);
+
+        Thread.sleep(1000);
+
+        parserBase.detectClockSkew(current - 301000, InetAddress.getLoopbackAddress());
+        Assert.assertEquals(2, eventCount);
     }
 }

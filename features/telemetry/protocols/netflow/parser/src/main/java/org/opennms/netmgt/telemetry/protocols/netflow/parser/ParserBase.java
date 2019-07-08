@@ -86,7 +86,9 @@ public class ParserBase {
 
     private long maxClockSkew = 0;
 
-    private final LoadingCache<InetAddress, Optional<Instant>> eventCache;
+    private long clockSkewEventRate = 0;
+
+    private LoadingCache<InetAddress, Optional<Instant>> eventCache;
 
     public ParserBase(final Protocol protocol,
                       final String name,
@@ -99,24 +101,34 @@ public class ParserBase {
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
 
-        this.eventCache =  CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
-            @Override
-            public Optional<Instant> load(InetAddress key) throws Exception {
-                return Optional.empty();
-            }
-        });
+        setClockSkewEventRate(3600);
     }
 
     public String getName() {
         return this.name;
     }
 
-    public void setMaxClockSkew(long maxClockSkew) {
+    public void setMaxClockSkew(final long maxClockSkew) {
         this.maxClockSkew = maxClockSkew;
     }
 
     public long getMaxClockSkew() {
         return this.maxClockSkew;
+    }
+
+    public long getClockSkewEventRate() {
+        return clockSkewEventRate;
+    }
+
+    public void setClockSkewEventRate(final long clockSkewEventRate) {
+        this.clockSkewEventRate = clockSkewEventRate;
+
+        this.eventCache =  CacheBuilder.newBuilder().expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
+            @Override
+            public Optional<Instant> load(InetAddress key) throws Exception {
+                return Optional.empty();
+            }
+        });
     }
 
     protected CompletableFuture<?> transmit(final RecordProvider packet, final InetSocketAddress remoteAddress) throws Exception {
@@ -160,7 +172,7 @@ public class ParserBase {
             if (delta > getMaxClockSkew() * 1000L) {
                 final Optional<Instant> instant = eventCache.getUnchecked(remoteAddress);
 
-                if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).toHours() > 0) {
+                if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getClockSkewEventRate()) {
                     eventCache.put(remoteAddress, Optional.of(Instant.now()));
 
                     eventForwarder.sendNow(new EventBuilder()
