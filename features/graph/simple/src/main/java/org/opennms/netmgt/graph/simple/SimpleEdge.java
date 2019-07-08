@@ -31,7 +31,6 @@ package org.opennms.netmgt.graph.simple;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 
 /**
@@ -44,35 +43,6 @@ public final class SimpleEdge extends AbstractDomainEdge {
 
     public SimpleEdge(GenericEdge genericEdge) {
         super(genericEdge);
-    }
-    
-    @Override
-    public String getNamespace() {
-        return delegate.getNamespace();
-    }
-
-    @Override
-    public String getId() {
-        return delegate.getId();
-    }
-
-    @Override
-    public VertexRef getSource() {
-        return delegate.getSource();
-    }
-
-    @Override
-    public VertexRef getTarget() {
-        return delegate.getTarget();
-    }
-
-    @Override
-    public GenericEdge asGenericEdge() {
-        return delegate;
-    }
-
-    public String getLabel(){
-        return delegate.getLabel();
     }
 
     @Override
@@ -90,6 +60,10 @@ public final class SimpleEdge extends AbstractDomainEdge {
     
     public static SimpleEdgeBuilder builder() {
         return new SimpleEdgeBuilder();
+    }
+    
+    public static SimpleEdge from(GenericEdge genericEdge) {
+        return new SimpleEdge(genericEdge);
     }
     
     public final static class SimpleEdgeBuilder extends AbstractDomainEdgeBuilder<SimpleEdgeBuilder> {

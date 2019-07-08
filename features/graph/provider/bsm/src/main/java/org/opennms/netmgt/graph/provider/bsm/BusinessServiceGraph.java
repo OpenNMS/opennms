@@ -72,6 +72,10 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusi
     public static BusinessServiceGraphBuilder builder() {
         return new BusinessServiceGraphBuilder();
     }
+    
+    public static BusinessServiceGraph from(GenericGraph genericGraph) {
+        return new BusinessServiceGraph(genericGraph);
+    }
 
     public final static class BusinessServiceGraphBuilder extends AbstractDomainGraphBuilder<BusinessServiceGraphBuilder,
         AbstractBusinessServiceVertex, BusinessServiceEdge> {

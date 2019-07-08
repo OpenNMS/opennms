@@ -94,6 +94,10 @@ public final class ApplicationVertex extends AbstractDomainVertex {
         return new ApplicationVertexBuilder();
     }
     
+    public static ApplicationVertex from(GenericVertex genericVertex) {
+        return new ApplicationVertex(genericVertex);
+    }
+    
     public final static class ApplicationVertexBuilder extends AbstractDomainVertexBuilder<ApplicationVertexBuilder> {
         
         private ApplicationVertexBuilder() {}

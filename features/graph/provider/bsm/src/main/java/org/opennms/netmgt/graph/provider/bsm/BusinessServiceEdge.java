@@ -53,6 +53,10 @@ public final class BusinessServiceEdge extends AbstractDomainEdge {
         return new BusinessServiceEdgeBuilder();
     }
     
+    public static BusinessServiceEdge from(GenericEdge genericEdge) {
+        return new BusinessServiceEdge(genericEdge);
+    }
+    
     public final static class BusinessServiceEdgeBuilder extends AbstractDomainEdgeBuilder<BusinessServiceEdgeBuilder> {
         
         private BusinessServiceEdgeBuilder() {}

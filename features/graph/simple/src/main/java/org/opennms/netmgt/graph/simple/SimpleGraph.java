@@ -69,6 +69,10 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
         return new SimpleGraphBuilder();
     }
     
+    public static SimpleGraph from(GenericGraph genericGraph) {
+        return new SimpleGraph(genericGraph);
+    }
+    
     public final static class SimpleGraphBuilder extends AbstractDomainGraphBuilder<SimpleGraphBuilder, SimpleVertex, SimpleEdge> {
         
         private SimpleGraphBuilder() {}

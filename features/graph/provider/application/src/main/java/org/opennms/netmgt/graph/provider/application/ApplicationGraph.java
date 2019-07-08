@@ -65,6 +65,10 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
         return new ApplicationGraphBuilder();
     }
     
+    public static ApplicationGraph from(GenericGraph genericGraph) {
+        return new ApplicationGraph(genericGraph);
+    }
+    
     public final static class ApplicationGraphBuilder extends AbstractDomainGraphBuilder<ApplicationGraphBuilder, ApplicationVertex, SimpleEdge> {
                
         private ApplicationGraphBuilder() {

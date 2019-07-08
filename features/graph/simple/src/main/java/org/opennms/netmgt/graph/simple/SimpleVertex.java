@@ -74,6 +74,10 @@ public final class SimpleVertex extends AbstractDomainVertex {
         return new SimpleVertexBuilder();
     }
     
+    public static SimpleVertex from(GenericVertex genericVertex) {
+        return new SimpleVertex(genericVertex);
+    }
+    
     public final static class SimpleVertexBuilder extends AbstractDomainVertexBuilder<SimpleVertexBuilder> {
                 
         private SimpleVertexBuilder() {}
