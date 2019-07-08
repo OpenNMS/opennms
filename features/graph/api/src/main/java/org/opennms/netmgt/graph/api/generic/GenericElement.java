@@ -38,9 +38,11 @@ import com.google.common.collect.ImmutableMap;
 public abstract class GenericElement {
     protected final Map<String, Object> properties;
 
+   /**
+    * All values of properties need to be immutable.
+    */
     protected GenericElement (Map<String, Object> properties) {
         Objects.requireNonNull(properties);
-        AllowedValuesInPropertiesMap.validate(properties);
         this.properties = ImmutableMap.copyOf(properties);
         Objects.requireNonNull(getNamespace(), "namespace cannot be null");
     }
