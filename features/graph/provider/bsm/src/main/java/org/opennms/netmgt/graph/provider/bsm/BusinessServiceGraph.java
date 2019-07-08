@@ -32,13 +32,7 @@ import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.simple.AbstractDomainGraph;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
-import org.opennms.netmgt.graph.simple.SimpleGraph;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
-import org.opennms.netmgt.graph.simple.AbstractDomainGraph.AbstractDomainGraphBuilder;
-import org.opennms.netmgt.graph.simple.SimpleGraph.SimpleGraphBuilder;
 
 
 // TODO: Patrick: I am not sure we need such a complicated object structure since we only build the objects and then give them

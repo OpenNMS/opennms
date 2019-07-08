@@ -75,8 +75,6 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
     protected abstract V convert(GenericVertex vertex);
     protected abstract E convert(GenericEdge edge);
 
-
-
     @Override
     public V getVertex(String id) {
         Objects.requireNonNull(id);
