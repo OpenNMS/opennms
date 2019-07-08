@@ -30,6 +30,7 @@ package org.opennms.netmgt.endpoints.grafana.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Panel implements PanelContainer {
 
@@ -90,6 +91,24 @@ public class Panel implements PanelContainer {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Panel panel = (Panel) o;
+        return Objects.equals(id, panel.id) &&
+                Objects.equals(title, panel.title) &&
+                Objects.equals(type, panel.type) &&
+                Objects.equals(datasource, panel.datasource) &&
+                Objects.equals(description, panel.description) &&
+                Objects.equals(panels, panel.panels);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, type, datasource, description, panels);
+    }
+
+    @Override
     public String toString() {
         return "Panel{" +
                 "id=" + id +
@@ -100,5 +119,4 @@ public class Panel implements PanelContainer {
                 ", panels=" + panels +
                 '}';
     }
-
 }

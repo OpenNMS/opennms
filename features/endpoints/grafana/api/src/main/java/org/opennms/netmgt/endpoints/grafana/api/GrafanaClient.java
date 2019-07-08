@@ -31,6 +31,7 @@ package org.opennms.netmgt.endpoints.grafana.api;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public interface GrafanaClient {
 
@@ -38,5 +39,5 @@ public interface GrafanaClient {
 
     Dashboard getDashboardByUid(String uid) throws IOException;
 
-    byte[] renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, Map<String, String> variables) throws IOException;
+    CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, Map<String, String> variables);
 }

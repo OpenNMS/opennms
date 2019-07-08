@@ -29,20 +29,31 @@
 package org.opennms.netmgt.jasper.grafana;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.opennms.netmgt.endpoints.grafana.api.Dashboard;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaClient;
 import org.opennms.netmgt.endpoints.grafana.api.Panel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 public class GrafanaPanelDatasource implements JRRewindableDataSource {
+    private static final Logger LOG = LoggerFactory.getLogger(GrafanaPanelDatasource.class);
+
     public static final String IMAGE_FIELD_NAME = "png";
     public static final String WIDTH_FIELD_NAME = "width";
     public static final String HEIGHT_FIELD_NAME = "height";
@@ -55,19 +66,16 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
     private final GrafanaQuery query;
 
     // state
+    private final List<Panel> panels;
     private Iterator<Panel> iterator;
     private Panel currentPanel;
+    private Map<Panel, CompletableFuture<byte[]>> panelRenders;
 
     public GrafanaPanelDatasource(GrafanaClient client, Dashboard dashboard, GrafanaQuery query) {
         this.client = Objects.requireNonNull(client);
         this.dashboard = Objects.requireNonNull(dashboard);
         this.query = Objects.requireNonNull(query);
-        moveFirst();
-    }
-
-    @Override
-    public void moveFirst() {
-        iterator = dashboard.getPanels().stream()
+        panels = dashboard.getPanels().stream()
                 .flatMap(p -> {
                     if ("row".equals(p.getType())) {
                         return p.getPanels().stream();
@@ -75,8 +83,13 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
                         return Stream.of(p);
                     }
                 })
-                .collect(Collectors.toList())
-                .iterator();
+                .collect(Collectors.toList());
+        moveFirst();
+    }
+
+    @Override
+    public void moveFirst() {
+        iterator = panels.iterator();
     }
 
     @Override
@@ -103,13 +116,34 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
             return currentPanel.getDescription();
         } else if (Objects.equals(IMAGE_FIELD_NAME, fieldName)) {
             try {
-                return client.renderPngForPanel(dashboard, currentPanel, query.getWidth(), query.getHeight(),
-                        query.getFrom().getTime(), query.getTo().getTime(), query.getVariables());
-            } catch (IOException e) {
+                maybeRenderPanels();
+                LOG.debug("Waiting for panel with id: {} on dashboard with uid: {} to finish rendering.", currentPanel.getId(), dashboard.getUid());
+                final byte[] pngBytes = panelRenders.get(currentPanel).get(5, TimeUnit.MINUTES);
+                LOG.debug("PNG successfully rendered ({} bytes) for panel with id: {} on dashboard with uid: {}", pngBytes.length, currentPanel.getId(), dashboard.getUid());
+                return pngBytes;
+            } catch (TimeoutException|InterruptedException|ExecutionException e) {
+                // TODO: We should render the exception details to an image for inclusion in the report rather
+                // than aborting the report altogether
                 throw new JRException("Exception while rendering panel: " + currentPanel.getTitle(), e);
             }
         }
         return "<unknown field name: " + fieldName + ">" ;
+    }
+
+    private void maybeRenderPanels() {
+        if (panelRenders != null) {
+            // We already rendered the panels
+            return;
+        }
+        panelRenders = new HashMap<>();
+
+        // Issue the requests for all of the panels simultaneously
+        LOG.debug("Triggering asynchronous rendering of PNGs for {} panels for dashboard: {}", panels.size(), dashboard.getTitle());
+        for (Panel panel : panels) {
+            final CompletableFuture<byte[]> panelImageBytes = client.renderPngForPanel(dashboard, panel, query.getWidth(), query.getHeight(),
+                    query.getFrom().getTime(), query.getTo().getTime(), query.getVariables());
+            panelRenders.put(panel, panelImageBytes);
+        }
     }
 
 }

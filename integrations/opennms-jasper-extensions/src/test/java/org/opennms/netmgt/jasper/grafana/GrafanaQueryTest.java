@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.jasper.grafana;
 
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -68,5 +69,26 @@ public class GrafanaQueryTest {
                 .put("node", "1")
                 .put("interface", "2")
                 .build()));
+    }
+
+    @Test
+    public void canParseQueryWithNoVariables() {
+        final String queryJson = "{\n" +
+                "  \"dashboard\": {\n" +
+                "    \"uid\": \"eWsVEL6zz\"\n" +
+                "  },\n" +
+                "  \"time\": {\n" +
+                "    \"from\": 1,\n" +
+                "    \"to\": 2\n" +
+                "  },\n" +
+                "  \"render\": {\n" +
+                "    \"width\": 4,\n" +
+                "    \"height\": 5,\n" +
+                "    \"theme\": \"light\"\n" +
+                "  }\n" +
+                "}";
+        final GrafanaQuery query = new GrafanaQuery(queryJson);
+        assertThat(query.getDashboardUid(), equalTo("eWsVEL6zz"));
+        assertThat(query.getVariables(), anEmptyMap());
     }
 }

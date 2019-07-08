@@ -39,6 +39,7 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.junit.Rule;
@@ -56,7 +57,7 @@ public class GrafanaClientImplIT {
     public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.wireMockConfig().dynamicPort());
 
     @Test
-    public void canGetDashboardAndRenderPng() throws IOException {
+    public void canGetDashboardAndRenderPng() throws IOException, ExecutionException, InterruptedException {
         stubFor(get(urlEqualTo("/api/dashboards/uid/eWsVEL6zz"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -81,12 +82,12 @@ public class GrafanaClientImplIT {
         assertThat(panel.getDatasource(), equalTo("minion-dev (Flow)"));
         assertThat(panel.getDescription(), equalTo("igb0"));
 
-        stubFor(get(urlEqualTo("/render/d-solo/eWsVEL6zz/flow?panelId=3&from=0&to=1&width=128&height=128&theme=light"))
+        stubFor(get(urlEqualTo("/render/d-solo/eWsVEL6zz/z?panelId=3&from=0&to=1&width=128&height=128&theme=light"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "image/png")
                         .withBodyFile("panel.png")));
 
-        byte[] pngBytes = client.renderPngForPanel(dashboard, panel, 128, 128, 0L, 1L, Collections.emptyMap());
+        byte[] pngBytes = client.renderPngForPanel(dashboard, panel, 128, 128, 0L, 1L, Collections.emptyMap()).get();
         assertThat(pngBytes.length, equalTo(6401));
     }
 
