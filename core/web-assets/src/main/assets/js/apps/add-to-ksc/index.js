@@ -19,7 +19,6 @@ angular.module('onms-ksc', [
   growlProvider.globalTimeToLive(5000);
   growlProvider.globalPosition('bottom-center');
 }])
-
 .controller('AddToKscModalInstanceCtrl', ['$scope', '$http', '$uibModalInstance', 'resourceLabel', 'graphTitle', function ($scope, $http, $uibModalInstance, resourceLabel, graphTitle) {
 
   $scope.resourceLabel = resourceLabel;
@@ -137,11 +136,53 @@ angular.module('onms-ksc', [
 
   return resources;
 })
-.controller('checkFlowsCtrl', ['$scope', '$http', '$filter', 'flowsRestFactory', function($scope, $http, $filter, flowsRestFactory) {
+.factory('graphSearchFactory', function ($rootScope, $filter) {
+  var graphSearch = {};
+  graphSearch.graphs = [];
+  graphSearch.noMatchingGraphs = false;
+  // Update search query and broadcast an update to controllers.
+  graphSearch.updateSearchQuery = function(searchItem) {
+      this.searchQuery = searchItem;
+      this.updateGraphsWithSearchItem();
+  };
+   
+  graphSearch.initialize = function(graphName, graphTitle) {
+      graphSearch.graphs.push(graphName);
+      graphSearch.graphs.push(graphTitle);
+  }
+
+  graphSearch.updateGraphsWithSearchItem = function() {
+    $rootScope.$broadcast('handleSearchQuery');
+    // Check if there is atleast one matching graph else update correponding controller.
+    let matchingGraphs = $filter('filter')(graphSearch.graphs, graphSearch.searchQuery);
+    if (!(matchingGraphs && matchingGraphs.length)) {
+      graphSearch.noMatchingGraphs = true;
+      $rootScope.$broadcast('handleNoMatchingGraphsFound');
+    } else if(graphSearch.noMatchingGraphs){
+      graphSearch.noMatchingGraphs = false;
+      $rootScope.$broadcast('handleNoMatchingGraphsFound');
+    }
+  }
+
+  return graphSearch;
+})
+.controller('graphSearchBoxCtrl', ['$scope', 'graphSearchFactory', function($scope, graphSearchFactory) {
+ 
+  // Update search query in service.
+  $scope.$watch('searchQuery', function () {
+    if (!angular.isUndefined($scope.searchQuery)) {
+      graphSearchFactory.updateSearchQuery($scope.searchQuery);
+    }
+  });
+  
+}])
+.controller('checkFlowsCtrl', ['$scope', '$http', '$filter', 'flowsRestFactory', 'graphSearchFactory', function($scope, $http, $filter, flowsRestFactory ,
+   graphSearchFactory) {
 
   $scope.flowCount = 0;
   $scope.flowsEnabled = false;
   $scope.hasFlows = false;
+  $scope.nomatchingGraphs = false;
   $scope.flowGraphUrl = '';
   $scope.getFlowInfo = function(nodeId, ifIndex , start, end) {
     if (nodeId === 0 || ifIndex === 0) {
@@ -157,9 +198,39 @@ angular.module('onms-ksc', [
                      $scope.hasFlows = true;
             } else {
               $scope.flowGraphUrl = null;
-            }
+            } 
         }
-
       });
   };
+  // When graph search doesn't yield any results, set/reset noMatchingGraphs
+  $scope.$on('handleNoMatchingGraphsFound', function () {
+      $scope.nomatchingGraphs = graphSearchFactory.noMatchingGraphs;
+  });
+}])
+.controller('graphSearchCtrl', ['$scope', '$timeout', '$filter', '$attrs', '$element', 'graphSearchFactory', function($scope, $timeout, $filter, $attrs, $element, graphSearchFactory) {
+
+  let graphName = $attrs.graphname;
+  let graphTitle = $attrs.graphtitle;
+  // Update service with graphname and graphtitle.
+  graphSearchFactory.initialize(graphName, graphTitle);
+  $scope.enableGraph = true;
+  // Handle search query update and enable graphs with matching search query.
+  $scope.$on('handleSearchQuery', function () {
+    let searchQuery = graphSearchFactory.searchQuery;
+    // Filter on graphName or graphTitle.
+    let matchingElements = $filter('filter')([graphName, graphTitle], searchQuery);
+    if (matchingElements && matchingElements.length) {
+      $scope.enableGraph = true;
+      if(searchQuery) {
+        // Send event for the specific div to check if they are in viewport.
+        // Hack : Triggering event without adding it to timeout actually doesn't give rendering engine to finish re-arranging divs.
+        // Sending with timeout(0) will prioritize rendering engine since it is already in event loop.
+          $timeout(function () {
+            angular.element($element).find('.graph-container').trigger('renderGraph');
+          }, 0);
+      }
+    } else {
+      $scope.enableGraph = false;
+    }
+  });
 }]);
