@@ -2728,3 +2728,13 @@ CREATE TABLE user_defined_links (
 ALTER TABLE ONLY user_defined_links ADD CONSTRAINT user_defined_links_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_a FOREIGN KEY (node_id_a) REFERENCES node(nodeid) ON DELETE CASCADE;
 ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_z FOREIGN KEY (node_id_z) REFERENCES node(nodeid) ON DELETE CASCADE;
+
+--##################################################################
+--# Effective Configuration
+--##################################################################
+CREATE TABLE effective_configuration (
+    id integer default nextval('opennmsNxtId') not null,
+    key text NOT NULL,
+    document jsonb NOT NULL,
+    last_updated timestamp with time zone not null
+);

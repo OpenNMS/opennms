@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="smith" id="25.0.0-configuration_documents">
+    <createTable tableName="effective_config">
+
+        <column name="id" type="integer">
+          <constraints nullable="false"/>
+        </column>
+
+        <column name="key" type="text">
+          <constraints nullable="false"/>
+        </column>
+
+        <column name="document" type="jsonb">
+          <constraints nullable="false"/>
+        </column>
+
+        <column name="last_updated" type="timestamp">
+          <constraints nullable="false"/>
+        </column>
+
+    </createTable>
+
+  </changeSet>
+
+</databaseChangeLog>

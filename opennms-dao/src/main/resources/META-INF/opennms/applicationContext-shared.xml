@@ -131,6 +131,11 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.EventDao" ref="eventDao" />
 
+    <bean id="effectiveConfigurationDao" class="org.opennms.netmgt.dao.hibernate.EffectiveConfigurationDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.EffectiveConfigurationDao" ref="effectiveConfigurationDao" />
+
     <bean id="ifLabel" class="org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.IfLabel" ref="ifLabel" />
 
