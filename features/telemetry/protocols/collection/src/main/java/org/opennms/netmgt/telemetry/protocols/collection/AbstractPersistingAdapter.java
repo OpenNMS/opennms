@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import javax.script.ScriptException;
@@ -85,10 +86,10 @@ public abstract class AbstractPersistingAdapter implements Adapter {
     private ThresholdingService thresholdingService;
 
     // Changed to False if no ThresholdingService has been wired.
-    private boolean isThresholdingEnabled = true;
+    private AtomicBoolean isThresholdingEnabled = new AtomicBoolean(true);
 
     // Default TTL for ThresholdingSessions is one day.
-    private Integer thresholdingSessionTtlMinutes = SystemProperties.getInteger("org.opennms.netmgt.telemetry.protocols.collection.thresholdingSessionTtlminutes", 1440);
+    private Integer thresholdingSessionTtlMinutes = SystemProperties.getInteger("org.opennms.netmgt.telemetry.protocols.collection.thresholdingSessionTtlMinutes", 1440);
 
     private Cache<String, ThresholdingSession> agentThresholdingSessions = CacheBuilder.newBuilder().expireAfterAccess(thresholdingSessionTtlMinutes, TimeUnit.MINUTES).build();
 
@@ -206,12 +207,12 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
                 // Thresholding
                 try {
-                    if (isThresholdingEnabled) {
+                    if (isThresholdingEnabled.get()) {
                         ThresholdingSession session = getSessionForAgent(result.getAgent(), repository);
                         session.accept(collectionSet);
                     }
                 } catch (ThresholdInitializationException e) {
-                    LOG.warn("Failed Thresholding of CollectionSet: {} ", e.getMessage());
+                    LOG.warn("Failed Thresholding of CollectionSet : {} for agent: {}", e.getMessage(), result.getAgent());
                 }
             });
         }
@@ -222,7 +223,7 @@ public abstract class AbstractPersistingAdapter implements Adapter {
             // If we don't have a ThresholdingService,
             // we are running in the OSGi container (i.e. on a Sentinal) with no Thresholding Service Configured
             // Disable Thresholding.
-            isThresholdingEnabled = false;
+            isThresholdingEnabled.set(false);
             throw new ThresholdInitializationException("No ThresholdingService available. No future Threshholding will be done");
         }
         // Map of sessions keyed by agent
@@ -231,7 +232,7 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         String serviceName = adapterConfig.getName();
         String sessionKey = getSessionKey(nodeId, hostAddress, serviceName);
 
-        ThresholdingSession session = agentThresholdingSessions.asMap().get(sessionKey);
+        ThresholdingSession session = agentThresholdingSessions.getIfPresent(sessionKey);
         if (session == null) {
             session = thresholdingService.createSession(nodeId, hostAddress, serviceName, repository, EMPTY_SERVICE_PARAMETERS);
             agentThresholdingSessions.put(sessionKey, session);

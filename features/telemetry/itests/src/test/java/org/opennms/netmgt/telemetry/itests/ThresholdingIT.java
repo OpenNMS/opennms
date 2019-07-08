@@ -191,7 +191,7 @@ public class ThresholdingIT {
         EventBuilder threshBldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "Test");
         threshBldr.setNodeid(1);
         threshBldr.setInterface(addr("192.0.2.1"));
-        threshBldr.setService("JTI-GBP");
+        threshBldr.setService("JTI-GPB");
         eventAnticipator.anticipateEvent(threshBldr.getEvent());
 
         // Send another message - this time with ifIn1SecPkts > threshold
@@ -306,7 +306,7 @@ public class ThresholdingIT {
 
         AdapterConfig jtiGbpAdapter = new AdapterConfig();
         jtiGbpAdapter.setEnabled(true);
-        jtiGbpAdapter.setName("JTI-GBP");
+        jtiGbpAdapter.setName("JTI-GPB");
         jtiGbpAdapter.setClassName(JtiGpbAdapter.class.getCanonicalName());
         jtiGbpAdapter.getParameters().add(new Parameter("script", scriptFile.getAbsolutePath()));
         jtiQueue.getAdapters().add(jtiGbpAdapter);
