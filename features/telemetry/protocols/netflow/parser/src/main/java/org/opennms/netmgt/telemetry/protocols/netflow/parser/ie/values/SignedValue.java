@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.sint;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
@@ -47,7 +48,11 @@ public class SignedValue extends Value<Long> {
                        final Optional<Semantics> semantics,
                        final long value) {
         super(name, semantics);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public SignedValue(final String name, final long value) {
+        this(name, Optional.empty(), value);
     }
 
     @Override

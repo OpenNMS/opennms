@@ -36,6 +36,7 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getT
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
@@ -80,9 +81,15 @@ class IpfixFlow implements Flow {
 
     @Override
     public String getDstAddr() {
-        return first(getString(this.document, "destinationIPv6Address"),
-                getString(this.document, "destinationIPv4Address"))
+        return first(getString(this.document, "destinationIPv6Address", "address"),
+                getString(this.document, "destinationIPv4Address", "address"))
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<String> getDstAddrHostname() {
+        return first(getString(this.document, "destinationIPv6Address", "hostname"),
+                getString(this.document, "destinationIPv4Address", "hostname"));
     }
 
     @Override
@@ -182,11 +189,19 @@ class IpfixFlow implements Flow {
 
     @Override
     public String getNextHop() {
-        return first(getString(this.document, "ipNextHopIPv6Address"),
-                getString(this.document, "ipNextHopIPv4Address"),
-                getString(this.document, "bgpNextHopIPv6Address"),
-                getString(this.document, "bgpNextHopIPv4Address"))
+        return first(getString(this.document, "ipNextHopIPv6Address", "address"),
+                getString(this.document, "ipNextHopIPv4Address", "address"),
+                getString(this.document, "bgpNextHopIPv6Address", "address"),
+                getString(this.document, "bgpNextHopIPv4Address", "address"))
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<String> getNextHopHostname() {
+        return first(getString(this.document, "ipNextHopIPv6Address", "hostname"),
+                getString(this.document, "ipNextHopIPv4Address", "hostname"),
+                getString(this.document, "bgpNextHopIPv6Address", "hostname"),
+                getString(this.document, "bgpNextHopIPv4Address", "hostname"));
     }
 
     @Override
@@ -344,9 +359,15 @@ class IpfixFlow implements Flow {
 
     @Override
     public String getSrcAddr() {
-        return first(getString(this.document, "sourceIPv6Address"),
-                getString(this.document, "sourceIPv4Address"))
+        return first(getString(this.document, "sourceIPv6Address", "address"),
+                getString(this.document, "sourceIPv4Address", "address"))
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<String> getSrcAddrHostname() {
+        return first(getString(this.document, "sourceIPv6Address", "hostname"),
+                getString(this.document, "sourceIPv4Address", "hostname"));
     }
 
     @Override

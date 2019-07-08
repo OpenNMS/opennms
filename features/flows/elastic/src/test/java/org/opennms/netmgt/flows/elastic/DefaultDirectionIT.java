@@ -37,6 +37,8 @@ import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertEquals;
 
 
+import java.util.Optional;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -86,6 +88,9 @@ public class DefaultDirectionIT {
         when(flow.getIpProtocolVersion()).thenReturn(4);
         when(flow.getSrcAddr()).thenReturn("192.168.1.2");
         when(flow.getDstAddr()).thenReturn("192.168.2.2");
+        when(flow.getSrcAddrHostname()).thenReturn(Optional.empty());
+        when(flow.getDstAddrHostname()).thenReturn(Optional.empty());
+        when(flow.getNextHopHostname()).thenReturn(Optional.empty());
         when(flow.getVlan()).thenReturn(null);
         return flow;
     }

@@ -71,5 +71,4 @@ public class ConversationKeyUtilsTest {
         ConversationKey actualKey = ConversationKeyUtils.fromJsonString(inKey);
         assertThat(actualKey, equalTo(expectedKey));
     }
-
 }
