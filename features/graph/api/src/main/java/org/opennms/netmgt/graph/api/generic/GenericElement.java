@@ -108,6 +108,7 @@ public abstract class GenericElement {
         }
         
         public T namespace(String namespace){
+            Objects.requireNonNull(namespace, "namespace cannot be null.");
         	properties.put(GenericProperties.NAMESPACE, namespace);
         	return (T) this;
         }

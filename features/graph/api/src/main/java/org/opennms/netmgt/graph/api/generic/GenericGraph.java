@@ -228,7 +228,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     }
     
     public final static class GenericGraphBuilder extends GenericElementBuilder<GenericGraphBuilder> {
-        
+         
         private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph = new DirectedSparseGraph<>();
         private final Map<String, GenericVertex> vertexToIdMap = new HashMap<>();
         private final Map<String, GenericEdge> edgeToIdMap = new HashMap<>();
@@ -295,6 +295,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         }
 
         public GenericGraphBuilder addEdge(GenericEdge edge) {
+            Objects.requireNonNull(getNamespace(), "Please set a namespace before adding elements to this graph.");
             Objects.requireNonNull(edge, "GenericEdge cannot be null");
             checkArgument(!Strings.isNullOrEmpty(edge.getId()) , "GenericEdge.getId() can not be empty or null. Vertex= %s", edge);
             Objects.requireNonNull(edge.getId());
@@ -314,17 +315,17 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         private void assertVertexFromSameNamespaceIsKnown(VertexRef vertex){
             if (vertex.getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(vertex.getId()) == null) {
                 throw new IllegalArgumentException(
-                        String.format("Adding an VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
+                        String.format("Adding a VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
                                 vertex.getId(), this.getNamespace()));
             }
         }
-
+        
         public void removeEdge(GenericEdge edge) {
             Objects.requireNonNull(edge);
             jungGraph.removeEdge(edge);
             edgeToIdMap.remove(edge.getId());
         }
-
+        
         public void removeVertex(GenericVertex vertex) {
             Objects.requireNonNull(vertex);
             jungGraph.removeVertex(vertex.getVertexRef());
@@ -337,6 +338,31 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         
         public GenericVertex getVertex(String id) {
             return vertexToIdMap.get(id);
+        }
+        
+        public GenericGraphBuilder namespace(String namespace) {
+            checkIfNamespaceChangeIsAllowed(namespace);
+            return super.namespace(namespace);
+        }
+    
+        public GenericGraphBuilder property(String name, Object value) {
+            if(GenericProperties.NAMESPACE.equals(name)) {
+                checkIfNamespaceChangeIsAllowed((String)value);
+            }
+            return super.property(name, value);
+        }
+        
+        public GenericGraphBuilder properties(Map<String, Object> properties) {
+            if(properties != null && properties.containsKey(GenericProperties.NAMESPACE)) {
+                checkIfNamespaceChangeIsAllowed((String)properties.get(GenericProperties.NAMESPACE));
+            }
+            return super.properties(properties);
+        }
+        
+        private void checkIfNamespaceChangeIsAllowed(String newNamespace) {
+            if(!this.edgeToIdMap.isEmpty() && !Objects.equals(getNamespace(), newNamespace)) {
+                throw new IllegalStateException("Cannot change namespace after adding Elements to Graph.");
+            }
         }
         
         public GenericGraph build() {
