@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.opennms.core.test.OnmsAssert;
 
 public class GenericElementTest {
 	
@@ -47,9 +46,5 @@ public class GenericElementTest {
     	
     	// make sure we can't sneak a new element into the properties (size would be 2):
     	assertEquals(1, element.getProperties().size());
-    	
-    	// make sure we can't add a mutable value
-    	properties.put("newKey", new StringBuffer());
-    	OnmsAssert.assertThrowsException(IllegalArgumentException.class, () -> new GenericElement(properties) {});
     }
 }
