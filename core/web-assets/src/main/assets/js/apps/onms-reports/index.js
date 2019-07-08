@@ -1,5 +1,6 @@
 const angular = require('vendor/angular-js');
 require('../../lib/onms-http');
+require('../../lib/onms-datetimepicker');
 require('angular-ui-router');
 require('angular-bootstrap-confirm');
 
@@ -24,6 +25,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             'ui.router',
             'mwl.confirm',
             'onms.http',
+            'onms.datetimepicker'
         ])
         .config( ['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
@@ -236,6 +238,14 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                         $scope.parametersByName[parameter.name] = parameter;
                     });
 
+                    $scope.parameters.filter(function(parameter) {
+                        return parameter.type === 'date'
+                    }).forEach(function(parameter) {
+                        parameter.internalFormat = 'YYYY-MM-DD HH:mm'; // TODO MVR use user time zone
+                        parameter.internalLocale = 'en'; // TODO MVR use user locale
+                        parameter.internalValue = moment(parameter.date, parameter.internalFormat).hours(parameter.hours).minutes(parameter.minutes).toDate();
+                    });
+
                     if ($scope.isGrafanaReport()) {
                         $scope.loadEndpoints();
                     }
@@ -289,6 +299,16 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     $scope.parametersByName['GRAFANA_ENDPOINT_UID'].value = $scope.selected.endpoint.uid;
                     $scope.parametersByName['GRAFANA_DASHBOARD_UID'].value = $scope.selected.dashboard.uid;
                 }
+
+                // Set the date value
+                $scope.parameters.filter(function(parameter) {
+                    return parameter.type === 'date';
+                }).forEach(function(p) {
+                    var momentDate = moment(p.internalValue, p.internalFormat);
+                    p.date = moment(p.internalValue, p.internalFormat).format('YYYY-MM-DD');
+                    p.hours = momentDate.hours();
+                    p.minutes = momentDate.minutes();
+                });
             };
 
             // TODO MVR use ReportTemplateResource for this, but somehow only $http works :-/
