@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.graph.updates;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.updates.change.ChangeSet;
 
 public interface GraphNotificationService {
 
-    void graphChanged(Graph oldGraph, Graph newGraph);
+    void graphChanged(ImmutableGraph oldGraph, ImmutableGraph newGraph);
 
     void graphChanged(ChangeSet changeSet);
 }

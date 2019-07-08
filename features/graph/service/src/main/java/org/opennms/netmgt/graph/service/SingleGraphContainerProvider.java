@@ -30,7 +30,7 @@ package org.opennms.netmgt.graph.service;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -51,7 +51,7 @@ public class SingleGraphContainerProvider implements GraphContainerProvider {
     @Override
     public GraphContainer loadGraphContainer() {
         final SimpleGraphContainer container = new SimpleGraphContainer(getContainerInfo());
-        final Graph<?, ?> graph = graphProvider.loadGraph();
+        final ImmutableGraph<?, ?> graph = graphProvider.loadGraph();
         if (graph != null) {
             container.addGraph(graph);
         }

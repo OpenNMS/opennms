@@ -32,10 +32,11 @@ import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
+import org.opennms.netmgt.graph.provider.application.ApplicationGraph.ApplicationGraphBuilder;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -68,22 +69,21 @@ public class ApplicationGraphProvider implements GraphProvider {
     }
 
     @Override
-    public Graph<ApplicationVertex, SimpleEdge> loadGraph() {
+    public ImmutableGraph<ApplicationVertex, SimpleEdge> loadGraph() {
         return sessionUtils.withReadOnlyTransaction(() -> {
-            final ApplicationGraph graph = ApplicationGraph.builder()
+            final ApplicationGraphBuilder graphBuilder = ApplicationGraph.builder()
                     .label(GRAPH_LABEL)
-                    .description(GRAPH_DESCRIPTION)
-                    .build();
+                    .description(GRAPH_DESCRIPTION);
 
             for (OnmsApplication application : applicationDao.findAll()) {
                 final ApplicationVertex applicationVertex = ApplicationVertex.builder()
                         .application(application)
                         .build();
-                graph.addVertex(applicationVertex);
+                graphBuilder.addVertex(applicationVertex);
 
                 for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
                     final ApplicationVertex serviceVertex = ApplicationVertex.builder().service(eachMonitoredService).build();
-                    graph.addVertex(serviceVertex);
+                    graphBuilder.addVertex(serviceVertex);
 
                     // connect with application
                     final SimpleEdge edge = SimpleEdge.builder()
@@ -91,10 +91,10 @@ public class ApplicationGraphProvider implements GraphProvider {
                             .source(applicationVertex.getVertexRef())
                             .target(serviceVertex.getVertexRef())
                             .build();
-                    graph.addEdge(edge);
+                    graphBuilder.addEdge(edge);
                 }
             }
-            return graph;
+            return graphBuilder.build();
         });
     }
 }

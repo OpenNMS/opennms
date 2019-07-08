@@ -37,12 +37,13 @@ import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
 import org.opennms.netmgt.graph.provider.bsm.AbstractBusinessServiceVertex.AbstractBusinessServiceVertexBuilder;
+import org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraph.BusinessServiceGraphBuilder;
 import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
 import org.opennms.netmgt.graph.simple.AbstractDomainVertex.AbstractDomainVertexBuilder;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
@@ -68,7 +69,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
 
     private boolean initialized = false;
 
-    private Graph graph;
+    private ImmutableGraph graph;
 
     public BusinessServiceGraphProvider(BusinessServiceManager businessServiceManager, EventIpcManager eventIpcManager) {
         this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
@@ -77,7 +78,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
 
     // TODO MVR We may need some kind of caching strategy implementation allowing each provider to deal with reloads individually if they so choose
     @Override
-    public Graph<?, ?> loadGraph() {
+    public ImmutableGraph<?, ?> loadGraph() {
         // TODO MVR this is not thread safe
         if (!initialized) {
             graph = createGraph();
@@ -94,20 +95,20 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         return graphInfo;
     }
 
-    private Graph<?, ?> createGraph() {
-        final BusinessServiceGraph bsmGraph = new BusinessServiceGraph(GenericGraph.builder().graphInfo(getGraphInfo()).build());
+    private ImmutableGraph<?, ?> createGraph() {
+        final BusinessServiceGraphBuilder bsmGraph = BusinessServiceGraph.builder().graphInfo(getGraphInfo());
         final org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph = businessServiceManager.getGraph();
         for (GraphVertex topLevelBusinessService : sourceGraph.getVerticesByLevel(0)) {
             addVertex(bsmGraph, sourceGraph, topLevelBusinessService, null);
         }
-        return bsmGraph;
+        return bsmGraph.build();
     }
 
-    private void addVertex(BusinessServiceGraph targetGraph, org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {
+    private void addVertex(BusinessServiceGraphBuilder targetGraphBuilder, org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {
         if (topologyVertex == null) {
             // Create a topology vertex for the current vertex
             topologyVertex = createTopologyVertex(graphVertex);
-            targetGraph.addVertex(topologyVertex);
+            targetGraphBuilder.addVertex(topologyVertex);
         }
 
         for (GraphEdge graphEdge : sourceGraph.getOutEdges(graphVertex)) {
@@ -121,17 +122,17 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
                     .findFirst()
                     .ifPresent(childTopologyVertexBuilder::label);
             AbstractBusinessServiceVertex childTopologyVertex = childTopologyVertexBuilder.build();
-            targetGraph.addVertex(childTopologyVertex);
+            targetGraphBuilder.addVertex(childTopologyVertex);
 
             // Connect the two
             final BusinessServiceEdge edge = BusinessServiceEdge.builder()
                     .graphEdge(graphEdge)
                     .source(topologyVertex.getVertexRef())
                     .target(childTopologyVertex.getVertexRef()).build();
-            targetGraph.addEdge(edge);
+            targetGraphBuilder.addEdge(edge);
 
             // Recurse
-            addVertex(targetGraph, sourceGraph, childVertex, childTopologyVertex);
+            addVertex(targetGraphBuilder, sourceGraph, childVertex, childTopologyVertex);
         }
     }
 

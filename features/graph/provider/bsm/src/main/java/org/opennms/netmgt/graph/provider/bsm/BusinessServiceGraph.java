@@ -28,11 +28,17 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.simple.AbstractDomainGraph;
+import org.opennms.netmgt.graph.simple.SimpleEdge;
+import org.opennms.netmgt.graph.simple.SimpleGraph;
+import org.opennms.netmgt.graph.simple.SimpleVertex;
+import org.opennms.netmgt.graph.simple.AbstractDomainGraph.AbstractDomainGraphBuilder;
+import org.opennms.netmgt.graph.simple.SimpleGraph.SimpleGraphBuilder;
 
 
 // TODO: Patrick: I am not sure we need such a complicated object structure since we only build the objects and then give them
@@ -44,7 +50,7 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusi
     }
     
     @Override
-    protected Graph<AbstractBusinessServiceVertex, BusinessServiceEdge> convert(GenericGraph graph) {
+    protected ImmutableGraph<AbstractBusinessServiceVertex, BusinessServiceEdge> convert(GenericGraph graph) {
         return new BusinessServiceGraph(graph);
     }
 
@@ -62,5 +68,19 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusi
     public Class getVertexType() {
         return AbstractBusinessServiceVertex.class;
     }
+    
+    public static BusinessServiceGraphBuilder builder() {
+        return new BusinessServiceGraphBuilder();
+    }
 
+    public final static class BusinessServiceGraphBuilder extends AbstractDomainGraphBuilder<BusinessServiceGraphBuilder,
+        AbstractBusinessServiceVertex, BusinessServiceEdge> {
+        
+        private BusinessServiceGraphBuilder() {}
+ 
+        public BusinessServiceGraph build() {
+            return new BusinessServiceGraph(delegate.build());
+        }
+    }
+    
 }

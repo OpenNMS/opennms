@@ -96,8 +96,10 @@ public class LabelSearchProviderTest {
 
     private void assertSuggestions(List<GenericVertex> vertices, String input, List<SearchSuggestion> expectations) {
         GraphService graphService = Mockito.mock(GraphService.class);
-        GenericGraph graph = GenericGraph.builder().namespace(TOPOLOGY_NAMESPACE).build();
-        graph.addVertices(vertices);
+        GenericGraph graph = GenericGraph.builder()
+            .namespace(TOPOLOGY_NAMESPACE)
+            .addVertices(vertices)
+            .build();
         when(graphService.getGraph(any())).thenReturn(graph);
         LabelSearchProvider provider = new LabelSearchProvider();
         List<SearchSuggestion> results = provider.getSuggestions(

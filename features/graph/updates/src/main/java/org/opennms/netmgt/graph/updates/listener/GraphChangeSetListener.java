@@ -29,11 +29,11 @@
 package org.opennms.netmgt.graph.updates.listener;
 
 import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.updates.change.ChangeSet;
 
-public interface GraphChangeSetListener<G extends Graph<V, E>, V extends Vertex, E extends Edge> {
+public interface GraphChangeSetListener<G extends ImmutableGraph<V, E>, V extends Vertex, E extends Edge> {
 
     void graphChanged(ChangeSet<G, V, E> changeSet);
 }

@@ -33,6 +33,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
+import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 
 public class TestObjectCreator {
 
@@ -72,27 +73,24 @@ public class TestObjectCreator {
         return edge;
     }
 
-    public static GenericGraph createGraph() {
+    public static GenericGraphBuilder createGraphBuilder() {
         GenericVertex vertex1 = createVertex();
         GenericVertex vertex2 = createVertex();
         GenericVertex vertex3 = createVertex();
         GenericEdge edge1 = createEdge(vertex1, vertex2);
         GenericEdge edge2 = createEdge(vertex1, vertex3);
-        GenericGraph graph = GenericGraph.builder()
-                .namespace(NAMESPACE)
-                .id("GraphId" + UUID.randomUUID().toString())
-                .description("GraphDescription" + UUID.randomUUID().toString())
-                .label("GraphLabel" + UUID.randomUUID().toString())
-                .property("someProperty", "someProperty" + UUID.randomUUID().toString())
-                .build();
-        graph.setFocusStrategy(FocusStrategy.FIRST);
-        graph.addVertex(vertex1);
-        graph.addVertex(vertex2);
-        graph.addVertex(vertex3);
-        graph.addEdge(edge1);
-        graph.addEdge(edge2);
-
-        return graph;
+        return GenericGraph.builder()
+            .namespace(NAMESPACE)
+            .id("GraphId" + UUID.randomUUID().toString())
+            .description("GraphDescription" + UUID.randomUUID().toString())
+            .label("GraphLabel" + UUID.randomUUID().toString())
+            .property("someProperty", "someProperty" + UUID.randomUUID().toString())
+            .setFocusStrategy(FocusStrategy.FIRST)
+            .addVertex(vertex1)
+            .addVertex(vertex2)
+            .addVertex(vertex3)
+            .addEdge(edge1)
+            .addEdge(edge2);
     }
 
 }

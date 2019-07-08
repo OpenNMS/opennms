@@ -65,7 +65,6 @@ public class EntityToGenericMapper {
             final Object value = convert(property);
             genericGraphBuilder.property(property.getName(), value);
         });
-        final GenericGraph genericGraph = genericGraphBuilder.build();
         
         graphEntity.getVertices().stream().forEach(vertexEntity -> {
             final GenericVertexBuilder genericVertex = GenericVertex.builder()
@@ -75,7 +74,7 @@ public class EntityToGenericMapper {
                 final Object value = convert(property);
                 genericVertex.property(property.getName(), value);
             });
-            genericGraph.addVertex(genericVertex.build());
+            genericGraphBuilder.addVertex(genericVertex.build());
         });
 
         graphEntity.getEdges().stream().forEach(edgeEntity -> {
@@ -88,10 +87,10 @@ public class EntityToGenericMapper {
                 final Object value = convert(property);
                 genericEdge.property(property.getName(), value);
             });
-            genericGraph.addEdge(genericEdge.build());
+            genericGraphBuilder.addEdge(genericEdge.build());
         });
 
-        return genericGraph;
+        return genericGraphBuilder.build();
     }
 
     private Object convert(final PropertyEntity propertyEntity) {

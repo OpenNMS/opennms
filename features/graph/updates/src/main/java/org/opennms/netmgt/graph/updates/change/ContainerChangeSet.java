@@ -33,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.updates.listener.GraphContainerChangeListener;
 import org.opennms.netmgt.graph.updates.listener.GraphContainerChangeSetListener;
@@ -44,8 +44,8 @@ public class ContainerChangeSet {
 
     private final Date changeSetDate;
     // TODO MVR adding and removing may be sufficient to just persist the namespace
-    private List<Graph<?, ?>> addedGraphs = new ArrayList<>();
-    private List<Graph<?, ?>> removedGraphs = new ArrayList<>();
+    private List<ImmutableGraph<?, ?>> addedGraphs = new ArrayList<>();
+    private List<ImmutableGraph<?, ?>> removedGraphs = new ArrayList<>();
     private List<ChangeSet<?, ?, ?>> graphChanges = new ArrayList<>();
 
     public ContainerChangeSet(GraphContainer oldGraphContainer, GraphContainer newGraphContainer) {
@@ -60,11 +60,11 @@ public class ContainerChangeSet {
         return changeSetDate;
     }
 
-    public List<Graph<?, ?>> getGraphsAdded() {
+    public List<ImmutableGraph<?, ?>> getGraphsAdded() {
         return new ArrayList<>(addedGraphs);
     }
 
-    public List<Graph<?, ?>> getGraphsRemoved() {
+    public List<ImmutableGraph<?, ?>> getGraphsRemoved() {
         return new ArrayList<>(removedGraphs);
     }
 
@@ -110,7 +110,7 @@ public class ContainerChangeSet {
             final List<String> removedNamespaces = new ArrayList<>(oldNamespaces);
             removedNamespaces.removeAll(newNamespaces);
             removedNamespaces.forEach(ns -> {
-                final Graph removedGraph = oldGraphContainer.getGraph(ns);
+                final ImmutableGraph removedGraph = oldGraphContainer.getGraph(ns);
                 graphRemoved(removedGraph);
             });
 
@@ -118,7 +118,7 @@ public class ContainerChangeSet {
             final List<String> addedNamespaces = new ArrayList<>(newNamespaces);
             addedNamespaces.removeAll(oldNamespaces);
             addedNamespaces.forEach(ns -> {
-                final Graph addedGraph = newGraphContainer.getGraph(ns);
+                final ImmutableGraph addedGraph = newGraphContainer.getGraph(ns);
                 graphAdded(addedGraph);
             });
 
@@ -127,8 +127,8 @@ public class ContainerChangeSet {
             sharedNamespaces.removeAll(addedNamespaces);
             sharedNamespaces.removeAll(removedNamespaces);
             sharedNamespaces.forEach(ns -> {
-                final Graph oldGraph = oldGraphContainer.getGraph(ns);
-                final Graph newGraph = newGraphContainer.getGraph(ns);
+                final ImmutableGraph oldGraph = oldGraphContainer.getGraph(ns);
+                final ImmutableGraph newGraph = newGraphContainer.getGraph(ns);
                 final ChangeSet changeSet = new ChangeSet(oldGraph, newGraph, changeSetDate);
                 if (changeSet.hasChanges()) {
                     graphChanged(changeSet);
@@ -137,11 +137,11 @@ public class ContainerChangeSet {
         }
     }
 
-    private void graphAdded(Graph<?, ?> newGraph) {
+    private void graphAdded(ImmutableGraph<?, ?> newGraph) {
         addedGraphs.add(newGraph);
     }
 
-    private void graphRemoved(Graph<?, ?> removedGraph) {
+    private void graphRemoved(ImmutableGraph<?, ?> removedGraph) {
         removedGraphs.add(removedGraph);
     }
 

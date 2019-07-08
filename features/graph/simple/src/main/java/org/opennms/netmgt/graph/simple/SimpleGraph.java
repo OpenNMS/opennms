@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.graph.simple;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
@@ -41,18 +40,6 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
  * domain graph. It is a final class. If you need more functionality please extend AbstractDomainGraph.
  */
 public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
-
-
-    public static SimpleGraph fromGraphInfo(GraphInfo graphInfo) {
-        // we can't have a constructor SimpleGraph(GraphInfo graphInfo) since it conflicts with SimpleGraph(GenericGraph graph)
-        // that's why we have a factory method instead
-        GenericGraph graph = GenericGraph.builder()
-                .namespace(graphInfo.getNamespace())
-                .label(graphInfo.getLabel())
-                .description(graphInfo.getDescription())
-                .build();
-        return new SimpleGraph(graph);
-    }
 
     public SimpleGraph(GenericGraph graph) {
         super(graph);
@@ -69,7 +56,7 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
     }
 
     @Override
-    protected Graph<SimpleVertex, SimpleEdge> convert(GenericGraph graph) {
+    protected ImmutableGraph<SimpleVertex, SimpleEdge> convert(GenericGraph graph) {
         return new SimpleGraph(graph);
     }
 
@@ -82,17 +69,12 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
         return new SimpleGraphBuilder();
     }
     
-    public final static class SimpleGraphBuilder extends AbstractDomainElementBuilder<SimpleGraphBuilder> {
+    public final static class SimpleGraphBuilder extends AbstractDomainGraphBuilder<SimpleGraphBuilder, SimpleVertex, SimpleEdge> {
         
         private SimpleGraphBuilder() {}
- 
-        public SimpleGraphBuilder id(String description) {
-            this.properties.put(GenericProperties.DESCRIPTION, description);
-            return this;
-        }
         
         public SimpleGraph build() {
-            return new SimpleGraph(GenericGraph.builder().properties(properties).build());
+            return new SimpleGraph(delegate.build());
         }
     }
 }

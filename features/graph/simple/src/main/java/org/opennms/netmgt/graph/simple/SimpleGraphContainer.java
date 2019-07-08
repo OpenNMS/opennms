@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -50,7 +50,7 @@ public class SimpleGraphContainer implements GraphContainer {
     private final String id;
     private String description;
     private String label;
-    private List<Graph<?,?>> graphs = new ArrayList<>();
+    private List<ImmutableGraph<?,?>> graphs = new ArrayList<>();
 
     public SimpleGraphContainer(String containerId) {
         this.id = Objects.requireNonNull(containerId);
@@ -63,17 +63,17 @@ public class SimpleGraphContainer implements GraphContainer {
     }
 
     @Override
-    public List<Graph<?, ?>> getGraphs() {
+    public List<ImmutableGraph<?, ?>> getGraphs() {
         return graphs;
     }
 
     @Override
-    public Graph<?, ?> getGraph(String namespace) {
+    public ImmutableGraph<?, ?> getGraph(String namespace) {
         return graphs.stream().filter(g -> g.getNamespace().equalsIgnoreCase(namespace)).findFirst().orElse(null);
     }
 
     @Override
-    public void addGraph(Graph graph) {
+    public void addGraph(ImmutableGraph graph) {
         this.graphs.add(graph);
     }
 

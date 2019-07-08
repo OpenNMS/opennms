@@ -31,11 +31,11 @@ package org.opennms.netmgt.graph.api.context;
 import java.util.function.Supplier;
 
 import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.Vertex;
 
 // TODO MVR it seems that the abstract -> simple/generic/<domain> naming is the best choice
-public class DefaultGraphContext<V extends Vertex, E extends Edge, G extends Graph<V, E>> implements GraphContext<V, E, G> {
+public class DefaultGraphContext<V extends Vertex, E extends Edge, G extends ImmutableGraph<V, E>> implements GraphContext<V, E, G> {
 
     private final String containerId;
     private final String graphNamespace;

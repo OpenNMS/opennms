@@ -37,6 +37,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.persistence.GraphRepository;
@@ -76,29 +77,29 @@ public class DefaultGraphRepositoryIT {
         originalContainer.setLabel("I am soooo unique \\o/");
 
         // Create first graph
-        final GenericGraph graph1 = GenericGraph.builder()
+        final GenericGraphBuilder graph1Builder = GenericGraph.builder()
                 .namespace(NAMESPACE)
                 .label("Dummy Graph")
-                .description("I am not so unique, I may be replaced at any time :(")
-                .build();
+                .description("I am not so unique, I may be replaced at any time :(");
 
         final GenericVertex v1 = GenericVertex.builder()
-        		.namespace(graph1.getNamespace())
+        		.namespace(NAMESPACE)
         		.id("v1")
         		.label("Vertex 1")
         		.build();
         final GenericVertex v2 = GenericVertex.builder()
-        		.namespace(graph1.getNamespace())
+        		.namespace(NAMESPACE)
         		.id("v2")
         		.label("Vertex 2")
         		.build();
 
-        graph1.addVertex(v1);
-        graph1.addVertex(v2);
-        graph1.addEdge(GenericEdge.builder()
+        graph1Builder.addVertex(v1);
+        graph1Builder.addVertex(v2);
+        graph1Builder.addEdge(GenericEdge.builder()
                 .namespace(NAMESPACE)
                 .source(v1.getVertexRef())
                 .target(v2.getVertexRef()).build());
+        final GenericGraph graph1 = graph1Builder.build();
 
         // Second graph is a copy of the first
         final GenericGraph graph2 = GenericGraph.builder()
@@ -128,9 +129,13 @@ public class DefaultGraphRepositoryIT {
         // Remove existing graph.
         originalContainer.removeGraph(graph2.getNamespace());
 
-        // Update existing graph
-        graph1.addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v3").build());
-
+        // Update existing graph 
+        GenericGraph graph1Updated = GenericGraph.builder()
+                .graph(graph1)
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v3").build())
+                .build();
+        originalContainer.addGraph(graph1Updated);
+        
         // Persist changes
         graphRepository.save(originalContainer);
 
@@ -154,8 +159,9 @@ public class DefaultGraphRepositoryIT {
 
         final GenericGraph graph = GenericGraph.builder()
                 .namespace(NAMESPACE)
-                .property("collectionProperty", ImmutableList.of("C", "D")).build();
-        graph.addVertex(vertex);
+                .property("collectionProperty", ImmutableList.of("C", "D"))
+                .addVertex(vertex)
+                .build();
 
         GenericGraphContainer originalContainer = new GenericGraphContainer();
         originalContainer.setId(CONTAINER_ID);

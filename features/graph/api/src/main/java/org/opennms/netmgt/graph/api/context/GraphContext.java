@@ -29,10 +29,10 @@
 package org.opennms.netmgt.graph.api.context;
 
 import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.Vertex;
 
-public interface GraphContext<V extends Vertex, E extends Edge, G extends Graph<V, E>> {
+public interface GraphContext<V extends Vertex, E extends Edge, G extends ImmutableGraph<V, E>> {
     String getNamespace();
     String getContainerId();
     G getGraph(); // should load it at this point

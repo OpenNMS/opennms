@@ -32,9 +32,11 @@ import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
+import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.graph.simple.SimpleGraph;
+import org.opennms.netmgt.graph.simple.SimpleGraph.SimpleGraphBuilder;
 import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
 
@@ -44,14 +46,15 @@ public class DummyGraphContainerProvider implements GraphContainerProvider {
     public GraphContainer loadGraphContainer() {
         final GraphContainerInfo containerInfo = getContainerInfo();
         final SimpleGraphContainer container = new SimpleGraphContainer(containerInfo);
-        final SimpleGraph graph = SimpleGraph.fromGraphInfo(containerInfo.getGraphInfo("graph1"));
-        final SimpleVertex v1 = SimpleVertex.builder().namespace(graph.getNamespace()).id("v1").build();
-        final SimpleVertex v2 = SimpleVertex.builder().namespace(graph.getNamespace()).id("v2").build();
-        final SimpleEdge e1 = SimpleEdge.builder().namespace(graph.getNamespace()).source(v1.getVertexRef()).target(v2.getVertexRef()).build();
-        graph.addVertex(v1);
-        graph.addVertex(v2);
-        graph.addEdge(e1);
-        container.addGraph(graph);
+        final GraphInfo<SimpleVertex> graphInfo = containerInfo.getGraphInfo("graph1");
+        final SimpleGraphBuilder graphBuilder = SimpleGraph.builder().graphInfo(graphInfo);
+        final SimpleVertex v1 = SimpleVertex.builder().namespace(graphInfo.getNamespace()).id("v1").build();
+        final SimpleVertex v2 = SimpleVertex.builder().namespace(graphInfo.getNamespace()).id("v2").build();
+        final SimpleEdge e1 = SimpleEdge.builder().namespace(graphInfo.getNamespace()).source(v1.getVertexRef()).target(v2.getVertexRef()).build();
+        graphBuilder.addVertex(v1);
+        graphBuilder.addVertex(v2);
+        graphBuilder.addEdge(e1);
+        container.addGraph(graphBuilder.build());
         return container;
     }
 

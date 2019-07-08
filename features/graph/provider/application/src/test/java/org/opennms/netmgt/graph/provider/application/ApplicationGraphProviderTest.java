@@ -45,7 +45,7 @@ import org.mockito.Mockito;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -62,7 +62,7 @@ public class ApplicationGraphProviderTest {
         when(dao.findAll()).thenReturn(applications);
 
         final ApplicationGraphProvider provider = new ApplicationGraphProvider(new MockSessionUtils(), dao);
-        final Graph<ApplicationVertex, SimpleEdge> graph = provider.loadGraph();
+        final ImmutableGraph<ApplicationVertex, SimpleEdge> graph = provider.loadGraph();
         assertEquals(30, graph.getVertices().size());
         assertEquals(25, graph.getEdges().size());
 
@@ -111,7 +111,7 @@ public class ApplicationGraphProviderTest {
         return service;
     }
 
-    private static void verifyLinkingBetweenNodes(Graph<ApplicationVertex, SimpleEdge>  graph, ApplicationVertex left, ApplicationVertex right) {
+    private static void verifyLinkingBetweenNodes(ImmutableGraph<ApplicationVertex, SimpleEdge>  graph, ApplicationVertex left, ApplicationVertex right) {
         final Collection<SimpleEdge> edgesLeft = graph.getConnectingEdges(left);
         final Collection<SimpleEdge> edgesRight = graph.getConnectingEdges(right);
 

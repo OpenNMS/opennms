@@ -34,14 +34,14 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.updates.listener.GraphChangeListener;
 import org.opennms.netmgt.graph.updates.listener.GraphChangeSetListener;
 
-public class ChangeSet<G extends Graph<V, E>, V extends Vertex, E extends Edge> {
+public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E extends Edge> {
     private final String namespace;
     private final Date changeSetDate;
     private List<V> verticesAdded = new ArrayList<>();

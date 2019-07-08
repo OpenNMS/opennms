@@ -36,38 +36,43 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-public class SemanticZoomLevelTransformer<V extends Vertex, E extends Edge, G extends Graph<V, E>> {
-    private final Collection<V> verticesInFocus;
+public class SemanticZoomLevelTransformer {
+    private final Collection<GenericVertex> verticesInFocus;
     private final int szl;
 
-    public SemanticZoomLevelTransformer(Collection<V> verticesInFocus, int szl) {
+    public SemanticZoomLevelTransformer(Collection<GenericVertex> verticesInFocus, int szl) {
         Preconditions.checkArgument(szl >= 0, "Semantic Zoom Level must be >= 0");
         this.verticesInFocus = Objects.requireNonNull(verticesInFocus);
         this.szl = szl;
     }
 
-    public G transform(G sourceGraph, Supplier<G> snapshotGraphFactory) {
-        final G snapshot = snapshotGraphFactory.get();
-        snapshot.addVertices(verticesInFocus);
+    public GenericGraph transform(GenericGraph sourceGraph, Supplier<GenericGraph> snapshotGraphFactory) {
+        final GenericGraph snapshot = snapshotGraphFactory.get();
+        GenericGraphBuilder snapshotBuilder = GenericGraph.builder().graph(snapshot.asGenericGraph())
+                .addVertices(verticesInFocus);
 
         final List<Vertex> alreadyProcessedVertices = new ArrayList<>();
 
         // Determine all vertices according to szl
-        final List<V> verticesToProcess = Lists.newArrayList(verticesInFocus);
+        final List<GenericVertex> verticesToProcess = Lists.newArrayList(verticesInFocus);
         for (int i=0; i<szl; i++) {
-            final List<V> tmpVertices = new ArrayList<>();
-            for (V eachVertex : verticesToProcess) {
-                final Collection<V> neighbors = sourceGraph.getNeighbors(eachVertex);
-                snapshot.addVertices(neighbors);
+            final List<GenericVertex> tmpVertices = new ArrayList<>();
+            for (GenericVertex eachVertex : verticesToProcess) {
+                final Collection<GenericVertex> neighbors = sourceGraph.getNeighbors(eachVertex);
+                snapshotBuilder.addVertices(neighbors);
 
                 // Mark for procession
-                for (V eachNeighbor : neighbors) {
+                for (GenericVertex eachNeighbor : neighbors) {
                     // but only if not already processed or are processing in this iteration
                     if (!alreadyProcessedVertices.contains(eachNeighbor) && !verticesToProcess.contains(eachNeighbor)) {
                         tmpVertices.add(eachNeighbor);
@@ -81,16 +86,16 @@ public class SemanticZoomLevelTransformer<V extends Vertex, E extends Edge, G ex
 
         // Add all edges now
         // First determine all edges
-        final List<E> edges = new ArrayList<>();
-        for (V eachVertex : snapshot.getVertices()) {
+        final List<GenericEdge> edges = new ArrayList<>();
+        for (GenericVertex eachVertex : snapshot.getVertices()) {
             edges.addAll(sourceGraph.getConnectingEdges(eachVertex));
         }
 
         // Second remove all edges which are "on the edge"
-        final List<E> edgesToAdd = edges.stream().filter(e -> snapshot.getVertex(e.getSource().getId()) != null)
+        final List<GenericEdge> edgesToAdd = edges.stream().filter(e -> snapshot.getVertex(e.getSource().getId()) != null)
                 .filter(e -> snapshot.getVertex(e.getTarget().getId()) != null)
                 .collect(Collectors.toList());
-        snapshot.addEdges(edgesToAdd);
-        return snapshot;
+        snapshotBuilder.addEdges(edgesToAdd);
+        return snapshotBuilder.build();
     }
 }

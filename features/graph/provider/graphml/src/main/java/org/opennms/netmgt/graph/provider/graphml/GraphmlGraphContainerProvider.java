@@ -44,6 +44,7 @@ import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
@@ -133,18 +134,18 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     }
 
     private final GenericGraph convert(GraphMLGraph graphMLGraph) {
-        final GenericGraph graph = GenericGraph.builder().properties(graphMLGraph.getProperties()).build();
+        final GenericGraphBuilder graphBuilder = GenericGraph.builder().properties(graphMLGraph.getProperties());
         final List<GenericVertex> vertices = graphMLGraph.getNodes()
                 .stream().map(n -> {
                     // In case of GraphML each vertex does not have a namespace, but it is inherited from the graph
                     // Therefore here we have to manually set it
                     return GenericVertex.builder()
-                            .namespace(graph.getNamespace())
+                            .namespace(graphBuilder.getNamespace())
                             .id(n.getId())
                             .properties(n.getProperties()).build();
                 })
                 .collect(Collectors.toList());
-        graph.addVertices(vertices);
+        graphBuilder.addVertices(vertices);
 
         final List<GenericEdge> edges = graphMLGraph.getEdges().stream().map(e -> {
             final String sourceNamespace = vertexIdToGraphMapping.get(e.getSource().getId()).getProperty(GenericProperties.NAMESPACE);
@@ -154,14 +155,14 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
             // In case of GraphML each edge does not have a namespace, but it is inherited from the graph
             // Therefore here we have to manually set it
             final GenericEdge edge = GenericEdge.builder()
-                    .namespace(graph.getNamespace())
+                    .namespace(graphBuilder.getNamespace())
                     .source(source.getVertexRef())
                     .target(target.getVertexRef())
                     .properties(e.getProperties()).build();
             return edge;
         }).collect(Collectors.toList());
-        graph.addEdges(edges);
-        return graph;
+        graphBuilder.addEdges(edges);
+        return graphBuilder.build();
     }
 
     // TODO MVR FocusStrategy or Focus concept is not fully implemented yet
