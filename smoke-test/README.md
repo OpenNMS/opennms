@@ -68,6 +68,12 @@ To fix this issue you have change the tmpdir path for Java with:
 mvn -DskipITs=false integration-test -Djava.io.tmpdir=/tmp
 ```
 
+### Run tests from local tarball
+
+If you have the code compiled and assembled locally, you can use the tarball build for container images, so you don't have to wait for the CI/CD to download the container image artifact.
+Drop the assembled OpenNMS-tar.gz file in `opennms-container/horizon/tarball` and run `docker build -t horizon .`
+Smoke tests will run the image named `horizon` in your local Docker image repo.
+
 ## Writing system tests
 
 When writing a new test, use the stack rule to setup the environment:
@@ -108,7 +114,7 @@ If a test is failing and we have a patched .jar we want to deploy, how can we re
 #### OSGi
 
 1. Link m2s by setting `-Dorg.opennms.dev.m2=/home/jesse/.m2/repository`
-1. Set a breakpoink in the test before the exercised feature is used and re-run it in debug mode
+2. Set a breakpoink in the test before the exercised feature is used and re-run it in debug mode
 3. Reload the bundles in Karaf using: `bundle:watch *`
 
 #### Filesystem
