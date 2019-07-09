@@ -129,6 +129,6 @@ VOLUME [ "/opt/opennms/etc", "/opt/opennms-etc-overlay", "/opennms-data" ]
 ## -- OpenNMS KARAF SSH   8101/TCP
 ## -- OpenNMS MQ         61616/TCP
 ## -- OpenNMS Eventd      5817/TCP
-## -- SNMP Trapd           162/UDP
-## -- Syslog Receiver      514/UDP
+## -- SNMP Trapd          1162/UDP
+## -- Syslog Receiver    10514/UDP
 EXPOSE 8980 8101 1162/udp 10514/udp
