@@ -73,6 +73,7 @@ import com.google.common.cache.LoadingCache;
 
 public class ParserBase {
     private static final Logger LOG = LoggerFactory.getLogger(ParserBase.class);
+    public static final String CLOCK_SKEW_EVENT_UEI = "uei.opennms.org/internal/telemetry/clockSkewDetected";
 
     private final Protocol protocol;
 
@@ -166,24 +167,25 @@ public class ParserBase {
         return output.getByteBuffers().get(0).asNIO();
     }
 
-    protected void detectClockSkew(final long packetTimestamp, final InetAddress remoteAddress) {
+    protected void detectClockSkew(final long packetTimestampMs, final InetAddress remoteAddress) {
         if (getMaxClockSkew() > 0) {
-            long delta = Math.abs(packetTimestamp - System.currentTimeMillis());
-            if (delta > getMaxClockSkew() * 1000L) {
+            long deltaMs = Math.abs(packetTimestampMs - System.currentTimeMillis());
+            if (deltaMs > getMaxClockSkew() * 1000L) {
                 final Optional<Instant> instant = eventCache.getUnchecked(remoteAddress);
 
                 if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getClockSkewEventRate()) {
                     eventCache.put(remoteAddress, Optional.of(Instant.now()));
 
                     eventForwarder.sendNow(new EventBuilder()
-                            .setUei("uei.opennms.org/internal/telemetry/clockSkewDetected")
+                            .setUei(CLOCK_SKEW_EVENT_UEI)
                             .setTime(new Date())
                             .setSource(getName())
                             .setInterface(remoteAddress)
                             .setDistPoller(identity.getId())
                             .addParam("monitoringSystemId", identity.getId())
                             .addParam("monitoringSystemLocation", identity.getLocation())
-                            .setParam("delta", (int) delta)
+                            .setParam("delta", (int) deltaMs)
+                            .setParam("clockSkewEventRate", (int) getClockSkewEventRate())
                             .setParam("maxClockSkew", (int) getMaxClockSkew())
                             .getEvent());
                 }
