@@ -60,7 +60,7 @@ import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
-import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.Identity;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -87,7 +87,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     private TracerRegistry tracerRegistry;
 
-    private MinionIdentity minionIdentity;
+    private Identity identity;
 
     private int maxBufferSize;
 
@@ -154,7 +154,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         if (tracer.activeSpan() != null && (chunk + 1 == totalChunks)) {
             TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
-            tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, minionIdentity.getLocation());
+            tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, identity.getLocation());
             tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
                 SinkMessageProtos.TracingInfo tracingInfo = SinkMessageProtos.TracingInfo.newBuilder()
                         .setKey(key).setValue(value).build();
@@ -177,8 +177,8 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             LOG.info("KafkaRemoteMessageDispatcherFactory: initializing the Kafka producer with: {}", kafkaConfig);
             producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
             maxBufferSize = getMaxBufferSize();
-            if (tracerRegistry != null && minionIdentity != null) {
-                tracerRegistry.init(minionIdentity.getLocation() + "@" + minionIdentity.getId());
+            if (tracerRegistry != null && identity != null) {
+                tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
             }
             onInit();
         }
@@ -249,11 +249,11 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         return  GlobalTracer.get();
     }
 
-    public MinionIdentity getMinionIdentity() {
-        return minionIdentity;
+    public Identity getIdentity() {
+        return identity;
     }
 
-    public void setMinionIdentity(MinionIdentity minionIdentity) {
-        this.minionIdentity = minionIdentity;
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
     }
 }

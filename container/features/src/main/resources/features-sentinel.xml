@@ -34,10 +34,17 @@
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
 
         <feature>opennms-core-ipc-sink-camel-server</feature>
+        <!-- Sink Client-->
+        <feature>opennms-core-ipc-sink-camel</feature>
+        <feature>sentinel-events-forwarder</feature>
     </feature>
 
     <feature name="sentinel-kafka" description="Sentinel :: Core :: Kafka" version="${project.version}">
+        <feature>sentinel-core</feature>
+        <!-- Sink Client-->
+        <feature>opennms-core-ipc-sink-kafka</feature>
         <feature>opennms-core-ipc-sink-kafka-server</feature>
+        <feature>sentinel-events-forwarder</feature>
     </feature>
 
     <feature name="sentinel-core" description="OpenNMS :: Sentinel :: Core" version="${project.version}">
@@ -60,6 +67,12 @@
         <!-- Core Sentinel -->
         <bundle>mvn:org.opennms.features.distributed/shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.sentinel/core/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-events-forwarder" description="OpenNMS :: Sentinel :: Events Forwarder" version="${project.version}">
+        <feature>sentinel-core</feature>
+        <feature>opennms-events-sink-dispatcher</feature>
+        <feature>opennms-send-event-command</feature>
     </feature>
 
     <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
