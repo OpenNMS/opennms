@@ -94,6 +94,7 @@ public class UserRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("whoami")
     public OnmsUser whoami(@Context final SecurityContext securityContext) {
+        // TODO MVR probably add timezone here
         final String userName = securityContext.getUserPrincipal().getName();
         final OnmsUser user = getOnmsUser(userName);
         // Don't expose the user's password
