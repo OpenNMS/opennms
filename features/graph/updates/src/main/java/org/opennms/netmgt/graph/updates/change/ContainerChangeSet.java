@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.updates.listener.GraphContainerChangeListener;
 import org.opennms.netmgt.graph.updates.listener.GraphContainerChangeSetListener;
 
@@ -48,10 +48,10 @@ public class ContainerChangeSet {
     private List<ImmutableGraph<?, ?>> removedGraphs = new ArrayList<>();
     private List<ChangeSet<?, ?, ?>> graphChanges = new ArrayList<>();
 
-    public ContainerChangeSet(GraphContainer oldGraphContainer, GraphContainer newGraphContainer) {
+    public ContainerChangeSet(ImmutableGraphContainer oldGraphContainer, ImmutableGraphContainer newGraphContainer) {
         this(oldGraphContainer, newGraphContainer, new Date());
     }
-    public ContainerChangeSet(GraphContainer oldGraphContainer, GraphContainer newGraphContainer, Date changeSetDate) {
+    public ContainerChangeSet(ImmutableGraphContainer oldGraphContainer, ImmutableGraphContainer newGraphContainer, Date changeSetDate) {
         this.changeSetDate = changeSetDate;
         detectChanges(oldGraphContainer, newGraphContainer);
     }
@@ -89,7 +89,7 @@ public class ContainerChangeSet {
         return !addedGraphs.isEmpty() || !removedGraphs.isEmpty() || !graphChanges.isEmpty();
     }
 
-    protected void detectChanges(GraphContainer<?, ?, ?> oldGraphContainer, GraphContainer<?, ?, ?> newGraphContainer) {
+    protected void detectChanges(ImmutableGraphContainer<?> oldGraphContainer, ImmutableGraphContainer<?> newGraphContainer) {
         // no old container exists, add all graphs
         if (oldGraphContainer == null && newGraphContainer != null) {
             newGraphContainer.getGraphs().forEach(g -> graphAdded(g));

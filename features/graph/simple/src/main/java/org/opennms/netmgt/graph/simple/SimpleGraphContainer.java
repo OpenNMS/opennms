@@ -28,140 +28,38 @@
 
 package org.opennms.netmgt.graph.simple;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
-import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
-
-import com.google.common.base.MoreObjects;
 
 // TODO MVR probably implement ContainerGraphInfo instead of a property
 // TODO MVR make more type safe
 // TODO MVR why is there a DefaultGraphContainerInfo, but no SimpleGraphContainerInfo... this is weird
-// TODO Patrick make it immutable if possible
-public class SimpleGraphContainer implements GraphContainer {
-
-    private final String id;
-    private String description;
-    private String label;
-    private List<ImmutableGraph<?,?>> graphs = new ArrayList<>();
-
-    public SimpleGraphContainer(String containerId) {
-        this.id = Objects.requireNonNull(containerId);
-    }
-
-    public SimpleGraphContainer(GraphContainerInfo containerInfo) {
-        this(containerInfo.getId());
-        setLabel(containerInfo.getLabel());
-        setDescription(containerInfo.getDescription());
+public class SimpleGraphContainer extends AbstractDomainGraphContainer<SimpleGraph> {
+    
+    private SimpleGraphContainer(GenericGraphContainer genericGraphContainer){
+        super(genericGraphContainer);
     }
 
     @Override
-    public List<ImmutableGraph<?, ?>> getGraphs() {
-        return graphs;
+    protected SimpleGraph convert(GenericGraph graph) {
+        return new SimpleGraph(graph);
+    }
+     
+    public static SimpleGraphContainerBuilder builder() {
+        return new SimpleGraphContainerBuilder();
+    }
+    
+    public static SimpleGraphContainer from(GenericGraphContainer genericGraphContainer) {
+        return new SimpleGraphContainer(genericGraphContainer);
     }
 
-    @Override
-    public ImmutableGraph<?, ?> getGraph(String namespace) {
-        return graphs.stream().filter(g -> g.getNamespace().equalsIgnoreCase(namespace)).findFirst().orElse(null);
+    public final static class SimpleGraphContainerBuilder extends AbstractDomainGraphContainerBuilder<SimpleGraphContainerBuilder, SimpleGraph> {
+        
+        private SimpleGraphContainerBuilder() {}
+        
+        public SimpleGraphContainer build() {
+            return new SimpleGraphContainer(this.builder.build());
+        }
     }
-
-    @Override
-    public void addGraph(ImmutableGraph graph) {
-        this.graphs.add(graph);
-    }
-
-    @Override
-    public void removeGraph(String namespace) {
-        graphs.stream()
-                .filter(g -> g.getNamespace().equalsIgnoreCase(namespace))
-                .findAny()
-                .ifPresent(graph -> this.graphs.remove(graph));
-    }
-
-    @Override
-    public List<String> getNamespaces() {
-        return graphs.stream().map(graph -> graph.getNamespace()).collect(Collectors.toList());
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public String getLabel() {
-        return label;
-    }
-
-    @Override
-    public GraphInfo getGraphInfo(String namespace) {
-        Objects.requireNonNull(namespace);
-        return graphs.stream().filter(gi -> namespace.equalsIgnoreCase(gi.getNamespace())).findFirst().orElse(null);
-    }
-
-    @Override
-    public GraphInfo getPrimaryGraphInfo() {
-        return graphs.get(0);
-    }
-
-    @Override
-    public List<GraphInfo> getGraphInfos() {
-        return new ArrayList<>(graphs);
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    @Override
-    public GenericGraphContainer asGenericGraphContainer() {
-        final GenericGraphContainer genericGraphContainer = new GenericGraphContainer();
-        genericGraphContainer.setId(id);
-        genericGraphContainer.setDescription(description);
-        genericGraphContainer.setLabel(label);
-        getGraphs().forEach(g -> genericGraphContainer.addGraph(g.asGenericGraph()));
-        return genericGraphContainer;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SimpleGraphContainer that = (SimpleGraphContainer) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(label, that.label) &&
-                Objects.equals(graphs, that.graphs);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, description, label, graphs);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("description", description)
-                .add("label", label)
-                .add("graphs", graphs)
-                .toString();
-    }
+    
 }

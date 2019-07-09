@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.api.service;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 
 // TODO MVR implement me
@@ -50,7 +50,7 @@ public interface GraphContainerProvider {
      * TODO MVR We may need to add eviction strategies or custom caching strategies, e.g. for bsm or vmware, etc.
      * @return The populated container
      */
-    GraphContainer loadGraphContainer();
+    ImmutableGraphContainer loadGraphContainer();
 
     /**
      * Invoking {@link #loadGraphContainer()} may take some time, so it is not feasible to invoke it, if only the meta data

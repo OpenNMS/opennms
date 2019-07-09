@@ -35,16 +35,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
 // TODO MVR we must rework the generic and simple objects a bit more... that is kinda weird how it is implemented. The graph could work as an example but is also not fully defined yet
-// TODO: Patrick discuss with mvr is we should make the GraphContaner partially immutable similar to GenericGraph?
-public class GenericGraphContainer implements GraphContainer<GenericVertex, GenericEdge, GenericGraph> {
+public class GenericGraphContainer implements ImmutableGraphContainer<GenericGraph> {
 
     private List<GenericGraph> graphs = new ArrayList<>();
     private Map<String, Object> properties = new HashMap<>();
 
+    private GenericGraphContainer(GenericGraphContainerBuilder builder) {
+        this.properties = ImmutableMap.copyOf(builder.properties);
+        this.graphs = ImmutableList.copyOf(builder.graphs);
+        Objects.requireNonNull(getId(), "id cannot be null.");
+    }
+    
     @Override
     public List<GenericGraph> getGraphs() {
         return new ArrayList<>(graphs);
@@ -56,16 +65,6 @@ public class GenericGraphContainer implements GraphContainer<GenericVertex, Gene
     }
 
     @Override
-    public void addGraph(GenericGraph graph) {
-        graphs.add(graph);
-    }
-
-    @Override
-    public void removeGraph(String namespace) {
-        graphs.stream().filter(g -> g.getNamespace().equals(namespace)).findAny().ifPresent(g -> graphs.remove(g));
-    }
-
-    @Override
     public GenericGraphContainer asGenericGraphContainer() {
         return this;
     }
@@ -73,10 +72,6 @@ public class GenericGraphContainer implements GraphContainer<GenericVertex, Gene
     @Override
     public String getId() {
         return (String) properties.get(GenericProperties.ID);
-    }
-
-    public void setId(String id) {
-        properties.put(GenericProperties.ID, id);
     }
 
     @Override
@@ -98,10 +93,6 @@ public class GenericGraphContainer implements GraphContainer<GenericVertex, Gene
         return (String) properties.get(GenericProperties.LABEL);
     }
 
-    public void setLabel(String label) {
-        properties.put(GenericProperties.LABEL, label);
-    }
-
     @Override
     public GraphInfo getGraphInfo(String namespace) {
         Objects.requireNonNull(namespace);
@@ -119,11 +110,7 @@ public class GenericGraphContainer implements GraphContainer<GenericVertex, Gene
     }
 
     public Map<String, Object> getProperties() {
-        return new HashMap<>(properties);
-    }
-
-    public void setProperty(String key, Object value) {
-        properties.put(key, value);
+        return properties;
     }
 
     @Override
@@ -138,5 +125,58 @@ public class GenericGraphContainer implements GraphContainer<GenericVertex, Gene
     @Override
     public int hashCode() {
         return Objects.hash(graphs, properties);
+    }
+    
+    public static GenericGraphContainerBuilder builder() {
+        return new GenericGraphContainerBuilder();
+    }
+    
+    public static class GenericGraphContainerBuilder {
+        
+        private final List<GenericGraph> graphs = new ArrayList<>();
+        private final Map<String, Object> properties = new HashMap<>();
+        
+        private GenericGraphContainerBuilder() {}
+        
+        public GenericGraphContainerBuilder id(String id) {
+            properties.put(GenericProperties.ID, id);
+            return this;
+        }
+        
+        public GenericGraphContainerBuilder label(String label){
+            properties.put(GenericProperties.LABEL, label);
+            return this;
+        }
+        
+        public GenericGraphContainerBuilder description(String description) {
+            properties.put(GenericProperties.DESCRIPTION, description);
+            return this;
+        }
+       
+        public GenericGraphContainerBuilder property(String name, Object value){
+            properties.put(name, value);
+            return this;
+        }
+        
+        public GenericGraphContainerBuilder properties(Map<String, Object> properties){
+            this.properties.putAll(properties);
+            return this;
+        }
+        
+        public GenericGraphContainerBuilder containerInfo(GraphContainerInfo containerInfo) {
+            this.id(containerInfo.getId());
+            this.label(containerInfo.getLabel());
+            this.description(containerInfo.getDescription());
+            return this;
+        }
+        
+        public GenericGraphContainerBuilder addGraph(GenericGraph graph) {
+            graphs.add(graph);
+            return this;
+        }
+        
+        public GenericGraphContainer build() {
+            return new GenericGraphContainer(this);
+        }
     }
 }

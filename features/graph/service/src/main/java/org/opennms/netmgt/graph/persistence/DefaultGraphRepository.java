@@ -32,12 +32,13 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -110,7 +111,7 @@ public class DefaultGraphRepository implements GraphRepository {
     }
 
     @Override
-    public void save(final GraphContainer graphContainer) {
+    public void save(final ImmutableGraphContainer graphContainer) {
         sessionUtils.withTransaction(() -> {
             final GenericGraphContainer persistedGraphContainer = findContainerById(graphContainer.getId());
             final GenericGraphContainer genericGraphContainer = graphContainer.asGenericGraphContainer();
@@ -192,17 +193,17 @@ public class DefaultGraphRepository implements GraphRepository {
     @Override
     public void save(GraphContainerInfo containerInfo) {
         // We simply convert to a container and persist it
-        final GenericGraphContainer genericGraphContainer = new GenericGraphContainer();
-        genericGraphContainer.setDescription(containerInfo.getDescription());
-        genericGraphContainer.setLabel(containerInfo.getLabel());
-        genericGraphContainer.setId(containerInfo.getId());
+        final GenericGraphContainerBuilder genericGraphContainerBuilder = GenericGraphContainer.builder()
+            .description(containerInfo.getDescription())
+            .label(containerInfo.getLabel())
+            .id(containerInfo.getId());
         containerInfo.getGraphInfos().forEach(graphInfo -> {
             final GenericGraph genericGraph = GenericGraph.builder()
                     .namespace(graphInfo.getNamespace())
                     .property(GenericProperties.LABEL, graphInfo.getLabel())
                     .property(GenericProperties.DESCRIPTION, graphInfo.getDescription()).build();
-            genericGraphContainer.addGraph(genericGraph);
+            genericGraphContainerBuilder.addGraph(genericGraph);
         });
-        save(genericGraphContainer);
+        save(genericGraphContainerBuilder.build());
     }
 }

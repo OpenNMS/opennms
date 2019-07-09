@@ -30,10 +30,10 @@ package org.opennms.netmgt.graph.rest.impl.renderer;
 
 import java.util.List;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 
 public interface GraphRenderer {
     String render(List<GraphContainerInfo> containerInfos);
-    String render(GraphContainer<?, ?, ?> graphContainer);
+    String render(ImmutableGraphContainer<?> graphContainer);
 }

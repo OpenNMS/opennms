@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.dummy;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -43,9 +43,8 @@ import org.opennms.netmgt.graph.simple.SimpleVertex;
 public class DummyGraphContainerProvider implements GraphContainerProvider {
 
     @Override
-    public GraphContainer loadGraphContainer() {
+    public ImmutableGraphContainer loadGraphContainer() {
         final GraphContainerInfo containerInfo = getContainerInfo();
-        final SimpleGraphContainer container = new SimpleGraphContainer(containerInfo);
         final GraphInfo<SimpleVertex> graphInfo = containerInfo.getGraphInfo("graph1");
         final SimpleGraphBuilder graphBuilder = SimpleGraph.builder().graphInfo(graphInfo);
         final SimpleVertex v1 = SimpleVertex.builder().namespace(graphInfo.getNamespace()).id("v1").build();
@@ -54,8 +53,10 @@ public class DummyGraphContainerProvider implements GraphContainerProvider {
         graphBuilder.addVertex(v1);
         graphBuilder.addVertex(v2);
         graphBuilder.addEdge(e1);
-        container.addGraph(graphBuilder.build());
-        return container;
+        return SimpleGraphContainer.builder()
+                .containerInfo(containerInfo)
+                .addGraph(graphBuilder.build())
+                .build();
     }
 
     @Override

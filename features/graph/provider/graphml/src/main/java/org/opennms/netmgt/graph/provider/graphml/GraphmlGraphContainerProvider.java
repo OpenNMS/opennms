@@ -39,13 +39,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -95,7 +96,7 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 //    }
 
     @Override
-    public GraphContainer loadGraphContainer() {
+    public ImmutableGraphContainer loadGraphContainer() {
         if (graphContainer == null) {
             vertexIdToGraphMapping = new HashMap<>();
             // Index vertex id to graph mapping
@@ -110,17 +111,17 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 
             // Convert graph
             final String graphContainerId = determineGraphContainerId(graphML);
-            final GenericGraphContainer graphContainer = new GenericGraphContainer();
-            graphContainer.setId(graphContainerId);
-            graphContainer.setLabel(graphML.getProperty(GenericProperties.LABEL));
-            graphContainer.setDescription(graphML.getProperty(GenericProperties.DESCRIPTION));
+            final GenericGraphContainerBuilder graphContainerBuilder = GenericGraphContainer.builder()
+                .id(graphContainerId)
+                .label(graphML.getProperty(GenericProperties.LABEL))
+                .description(graphML.getProperty(GenericProperties.DESCRIPTION));
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
                 final GenericGraph convertedGraph = convert(eachGraph);
                 final Focus focus = getFocusStrategy(eachGraph);
 //                convertedGraph.setDefaultFocus(focus);
-                graphContainer.addGraph(convertedGraph);
+                graphContainerBuilder.addGraph(convertedGraph);
             }
-            this.graphContainer = graphContainer;
+            this.graphContainer = graphContainerBuilder.build();
         }
         return this.graphContainer;
     }

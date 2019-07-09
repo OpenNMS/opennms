@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -65,7 +65,7 @@ public class JsonGraphRenderer implements GraphRenderer {
     }
 
     @Override
-    public String render(GraphContainer<?, ?, ?> graphContainer) {
+    public String render(ImmutableGraphContainer<?> graphContainer) {
         final JSONObject jsonContainer = new JSONObject();
         final JSONArray jsonGraphArray = new JSONArray();
         jsonContainer.put("graphs", jsonGraphArray);

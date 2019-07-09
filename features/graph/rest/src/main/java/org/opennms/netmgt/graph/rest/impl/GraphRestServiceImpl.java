@@ -34,7 +34,7 @@ import java.util.Objects;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.rest.api.GraphRestService;
@@ -60,7 +60,7 @@ public class GraphRestServiceImpl implements GraphRestService {
 
     @Override
     public Response getContainer(String containerId) {
-        final GraphContainer container = graphService.getGraphContainer(containerId);
+        final ImmutableGraphContainer container = graphService.getGraphContainer(containerId);
         if (container == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -72,7 +72,7 @@ public class GraphRestServiceImpl implements GraphRestService {
         return new JsonGraphRenderer().render(infos);
     }
 
-    private static String render(GraphContainer graphContainer) {
+    private static String render(ImmutableGraphContainer graphContainer) {
         return new JsonGraphRenderer().render(graphContainer);
     }
 }

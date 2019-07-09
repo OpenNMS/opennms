@@ -30,7 +30,7 @@ package org.opennms.netmgt.graph.provider.dummy;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -50,7 +50,7 @@ public class PersistentDummyGraphContainerProvider implements GraphContainerProv
     }
 
     @Override
-    public GraphContainer loadGraphContainer() {
+    public ImmutableGraphContainer loadGraphContainer() {
         return graphRepository.findContainerById(CONTAINER_ID);
     }
 

@@ -32,6 +32,7 @@ import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericEdge.GenericEdgeBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
@@ -47,16 +48,16 @@ public class EntityToGenericMapper {
     private ConverterService converterService = new ConverterService();
 
     public GenericGraphContainer fromEntity(GraphContainerEntity entity) {
-        final GenericGraphContainer genericGraphContainer = new GenericGraphContainer();
+        final GenericGraphContainerBuilder genericGraphContainerBuilder = GenericGraphContainer.builder();
         entity.getProperties().forEach(property -> { // will set id and namespace
             final Object value = convert(property);
-            genericGraphContainer.setProperty(property.getName(), value);
+            genericGraphContainerBuilder.property(property.getName(), value);
         });
         entity.getGraphs().forEach(graphEntity -> {
             GenericGraph genericGraph = fromEntity(graphEntity);
-            genericGraphContainer.addGraph(genericGraph);
+            genericGraphContainerBuilder.addGraph(genericGraph);
         });
-        return genericGraphContainer;
+        return genericGraphContainerBuilder.build();
     }
 
     public GenericGraph fromEntity(final GraphEntity graphEntity) {
