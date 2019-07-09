@@ -71,9 +71,8 @@ RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
              /opennms-data/mibs && \
     ln -s /opennms-data/rrd /opt/opennms/share/rrd && \
     ln -s /opennms-data/reports /opt/opennms/share/reports && \
-    ln -s /opennms-data/mibs /opt/opennms/share/mibs
-
-RUN chown 10001:10001 -R /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
+    ln -s /opennms-data/mibs /opt/opennms/share/mibs && \
+    chown 10001:10001 -R /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
     chgrp -R 0 /opt/opennms /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
     chmod -R g=u /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay
 
