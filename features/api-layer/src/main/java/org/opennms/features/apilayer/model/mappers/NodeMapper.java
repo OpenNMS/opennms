@@ -26,8 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.features.apilayer.model.mappers;
 
-public interface ThresholdingSet {
+import org.mapstruct.Mapper;
+import org.opennms.core.utils.LocationUtils;
+import org.opennms.integration.api.v1.model.immutables.ImmutableNode;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
+@Mapper(uses = {GeolocationMapper.class, NodeAssetRecordMapper.class, IpInterfaceMapper.class,
+        SnmpInterfaceMapper.class, MetaDataMapper.class})
+public interface NodeMapper {
+    ImmutableNode map(OnmsNode onmsNode);
+
+    default String mapLocation(OnmsMonitoringLocation onmsMonitoringLocation) {
+        return onmsMonitoringLocation == null ? LocationUtils.DEFAULT_LOCATION_NAME :
+                LocationUtils.getEffectiveLocationName(onmsMonitoringLocation.getLocationName());
+    }
 }

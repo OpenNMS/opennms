@@ -80,7 +80,7 @@ import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmp.InetAddrUtils;
-import org.opennms.netmgt.threshd.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;

@@ -26,20 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.features.apilayer.model.mappers;
 
-import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
-import org.opennms.netmgt.threshd.api.ThresholdingService;
-import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.opennms.integration.api.v1.model.immutables.ImmutableEventParameter;
+import org.opennms.netmgt.model.OnmsEventParameter;
+import org.opennms.netmgt.xml.event.Parm;
 
-public class MockThresholdingService implements ThresholdingService {
+@Mapper
+public interface EventParameterMapper {
+    ImmutableEventParameter map(OnmsEventParameter onmsEventParameter);
 
-    @Override
-    public ThresholdingSession createSession(int m_nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters)
-            throws ThresholdInitializationException {
-        return new MockThresholdingSession();
-    }
+    @Mappings({
+            @Mapping(source = "parmName", target = "name"),
+            @Mapping(source = "value.content", target = "value")
+    })
+    ImmutableEventParameter map(Parm parm);
 
 }

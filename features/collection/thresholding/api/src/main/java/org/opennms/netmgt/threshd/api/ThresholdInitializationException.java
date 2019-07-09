@@ -26,50 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.model;
+package org.opennms.netmgt.threshd.api;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+public class ThresholdInitializationException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-import org.opennms.integration.api.v1.model.DatabaseEvent;
-import org.opennms.integration.api.v1.model.EventParameter;
-import org.opennms.netmgt.model.OnmsEvent;
-
-import com.google.common.collect.ImmutableList;
-
-public class DatabaseEventBean implements DatabaseEvent {
-
-    private final OnmsEvent event;
-
-    private final List<EventParameter> parameters;
-
-    public DatabaseEventBean(OnmsEvent event) {
-        this.event = Objects.requireNonNull(event);
-        this.parameters = ImmutableList.copyOf(event.getEventParameters().stream()
-                .map(EventParameterBean::new)
-                .collect(Collectors.toList()));
+    public ThresholdInitializationException() {
+        super();
     }
 
-    @Override
-    public String getUei() {
-        return event.getEventUei();
+    public ThresholdInitializationException(final String message) {
+        super(message);
     }
 
-    @Override
-    public Integer getId() {
-        return event.getId();
+    public ThresholdInitializationException(final Throwable cause) {
+        super(cause);
     }
 
-    @Override
-    public List<EventParameter> getParameters() {
-        return parameters;
+    public ThresholdInitializationException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 
-    @Override
-    public List<EventParameter> getParametersByName(String name) {
-        return parameters.stream()
-                .filter(p -> Objects.equals(name, p.getName()))
-                .collect(Collectors.toList());
+    public ThresholdInitializationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
+
 }

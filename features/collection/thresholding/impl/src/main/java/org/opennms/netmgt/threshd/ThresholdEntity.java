@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
+import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;

@@ -34,6 +34,7 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.telemetry.api.adapter.AdapterFactory;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
@@ -57,6 +58,9 @@ public abstract class AbstractCollectionAdapterFactory implements AdapterFactory
 
     @Autowired
     private PersisterFactory persisterFactory;
+
+    @Autowired(required = false)
+    private ThresholdingService thresholdingService;
 
     private final BundleContext bundleContext;
 
@@ -116,5 +120,19 @@ public abstract class AbstractCollectionAdapterFactory implements AdapterFactory
         this.persisterFactory = persisterFactory;
     }
 
+    public ThresholdingService getThresholdingService() {
+        return thresholdingService;
+    }
 
+    public void setThresholdingService(ThresholdingService thresholdingService) {
+        this.thresholdingService = thresholdingService;
+    }
+
+    public void bind(ThresholdingService thresholdingService) {
+        this.thresholdingService = thresholdingService;
+    }
+
+    public void unbind(ThresholdingService thresholdingService) {
+        this.thresholdingService = null;
+    }
 }

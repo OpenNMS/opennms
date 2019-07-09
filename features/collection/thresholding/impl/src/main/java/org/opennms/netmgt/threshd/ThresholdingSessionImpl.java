@@ -32,6 +32,8 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

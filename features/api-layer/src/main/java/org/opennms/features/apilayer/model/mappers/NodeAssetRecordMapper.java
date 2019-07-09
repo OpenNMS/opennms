@@ -26,21 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.features.apilayer.model.mappers;
 
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.xml.event.Event;
+import org.mapstruct.Mapper;
+import org.opennms.integration.api.v1.model.immutables.ImmutableNodeAssetRecord;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 
-public interface ThresholdingSession extends AutoCloseable {
-
-    /**
-     * Accepts a {@link CollectionSet} for threshold evaluation. The service will send {@link Event}s if Thresholds are triggered or re-armed.
-     * 
-     * @param collectionSet
-     * @throws ThresholdInitializationException
-     *             if the Thresholding Configuration has not yet been initialized ot there is an error initializing it. 
-     *             I.E. reading as parsing the configuration files.
-     */
-    void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
-
+@Mapper(uses = GeolocationMapper.class)
+public interface NodeAssetRecordMapper {
+    ImmutableNodeAssetRecord map(OnmsAssetRecord onmsAssetRecord);
 }

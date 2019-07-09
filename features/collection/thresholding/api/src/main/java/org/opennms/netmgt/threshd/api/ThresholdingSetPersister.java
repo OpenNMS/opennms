@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,33 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.model;
+package org.opennms.netmgt.threshd.api;
 
-import java.util.Objects;
+public interface ThresholdingSetPersister {
 
-import org.opennms.integration.api.v1.model.SnmpInterface;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
+    void persistSet(ThresholdingSession session, ThresholdingSet set);
 
-public class SnmpInterfaceBean implements SnmpInterface {
+    ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException;
 
-    private final OnmsSnmpInterface snmpInterface;
+    void reinitializeThresholdingSets();
 
-    public SnmpInterfaceBean(OnmsSnmpInterface snmpInterface) {
-        this.snmpInterface = Objects.requireNonNull(snmpInterface);
-    }
+    void clear(ThresholdingSession session);
 
-    @Override
-    public String getIfDescr() {
-        return snmpInterface.getIfDescr();
-    }
-
-    @Override
-    public String getIfName() {
-        return snmpInterface.getIfName();
-    }
-
-    @Override
-    public Integer getIfIndex() {
-        return snmpInterface.getIfIndex();
-    }
 }

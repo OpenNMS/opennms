@@ -26,16 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.features.apilayer.model.mappers;
 
-public interface ThresholdingSetPersister {
+import org.mapstruct.Mapper;
+import org.opennms.features.situationfeedback.api.AlarmFeedback;
+import org.opennms.integration.api.v1.model.immutables.ImmutableAlarmFeedback;
 
-    void persistSet(ThresholdingSession session, ThresholdingSet set);
+import com.google.common.base.Enums;
 
-    ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException;
+@Mapper
+public interface AlarmFeedbackMapper {
+    ImmutableAlarmFeedback map(AlarmFeedback alarmFeedback);
 
-    void reinitializeThresholdingSets();
-
-    void clear(ThresholdingSession session);
-
+    default org.opennms.integration.api.v1.model.AlarmFeedback.Type map(AlarmFeedback.FeedbackType feedbackType) {
+        return feedbackType == null ? null :
+                Enums.getIfPresent(org.opennms.integration.api.v1.model.AlarmFeedback.Type.class,
+                        feedbackType.name()).orNull();
+    }
 }

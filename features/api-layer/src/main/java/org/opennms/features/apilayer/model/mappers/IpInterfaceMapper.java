@@ -26,20 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.features.apilayer.model.mappers;
 
-import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
-import org.opennms.netmgt.threshd.api.ThresholdingService;
-import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.mapstruct.Mapper;
+import org.opennms.integration.api.v1.model.immutables.ImmutableIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface;
 
-public class MockThresholdingService implements ThresholdingService {
-
-    @Override
-    public ThresholdingSession createSession(int m_nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters)
-            throws ThresholdInitializationException {
-        return new MockThresholdingSession();
-    }
-
+@Mapper(uses = MetaDataMapper.class)
+public interface IpInterfaceMapper {
+    ImmutableIpInterface map(OnmsIpInterface onmsIpInterface);
 }

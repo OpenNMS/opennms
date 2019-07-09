@@ -26,19 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.features.apilayer.model.mappers;
 
-import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.xml.event.Event;
+import org.mapstruct.Mapper;
+import org.opennms.integration.api.v1.model.immutables.ImmutableMetaData;
+import org.opennms.netmgt.model.OnmsMetaData;
 
-/**
- * <p>ThresholdingEventProxy class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public interface ThresholdingEventProxy extends EventProxy {
-    
-    public void sendEvent(Event event);
-
+@Mapper
+public interface MetaDataMapper {
+    ImmutableMetaData map(OnmsMetaData onmsMetaData);
 }

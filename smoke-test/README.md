@@ -48,8 +48,31 @@ docker image load -i sentinel.oci
 Once the containers are available, you can run the tests using:
 ```
 cd smoke-test
-mvn -DskipITs=false integration-test```
+mvn -DskipITs=false integration-test
 ```
+**Hint for running on OSX**
+
+It's very likely you will get the following error message:
+
+```
+Caused by: com.github.dockerjava.api.exception.DockerException: Mounts denied:
+The path /var/folders/cj/_yzj5k7d6d11gl5frcn2yqhh0000gn/T/opennms690045176960825494/
+is not shared from OS X and is not known to Docker.
+You can configure shared paths from Docker -> Preferences... -> File Sharing.
+See https://docs.docker.com/docker-for-mac/osxfs/#namespaces for more info.
+```
+
+To fix this issue you have change the tmpdir path for Java with:
+
+```
+mvn -DskipITs=false integration-test -Djava.io.tmpdir=/tmp
+```
+
+### Run tests from local tarball
+
+If you have the code compiled and assembled locally, you can use the tarball build for container images, so you don't have to wait for the CI/CD to download the container image artifact.
+Drop the assembled OpenNMS-tar.gz file in `opennms-container/horizon/tarball` and run `docker build -t horizon .`
+Smoke tests will run the image named `horizon` in your local Docker image repo.
 
 ## Writing system tests
 
@@ -91,7 +114,7 @@ If a test is failing and we have a patched .jar we want to deploy, how can we re
 #### OSGi
 
 1. Link m2s by setting `-Dorg.opennms.dev.m2=/home/jesse/.m2/repository`
-1. Set a breakpoink in the test before the exercised feature is used and re-run it in debug mode
+2. Set a breakpoink in the test before the exercised feature is used and re-run it in debug mode
 3. Reload the bundles in Karaf using: `bundle:watch *`
 
 #### Filesystem

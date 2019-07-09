@@ -83,6 +83,8 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.FileAnticipator;

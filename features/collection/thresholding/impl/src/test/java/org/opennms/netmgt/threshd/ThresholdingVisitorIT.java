@@ -119,6 +119,8 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.FileAnticipator;

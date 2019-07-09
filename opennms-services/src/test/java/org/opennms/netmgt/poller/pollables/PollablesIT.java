@@ -85,7 +85,7 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.scheduler.mock.MockScheduler;
 import org.opennms.netmgt.scheduler.mock.MockTimer;
-import org.opennms.netmgt.threshd.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.JUnitConfigurationEnvironment;
