@@ -45,12 +45,12 @@ import com.google.common.collect.ImmutableMap;
 // TODO MVR we must rework the generic and simple objects a bit more... that is kinda weird how it is implemented. The graph could work as an example but is also not fully defined yet
 public class GenericGraphContainer implements ImmutableGraphContainer<GenericGraph> {
 
-    private List<GenericGraph> graphs = new ArrayList<>();
-    private Map<String, Object> properties = new HashMap<>();
+    private List<GenericGraph> graphs;
+    private Map<String, Object> properties;
 
     private GenericGraphContainer(GenericGraphContainerBuilder builder) {
         this.properties = ImmutableMap.copyOf(builder.properties);
-        this.graphs = ImmutableList.copyOf(builder.graphs);
+        this.graphs = ImmutableList.copyOf(builder.graphs.values());
         Objects.requireNonNull(getId(), "id cannot be null.");
     }
     
@@ -132,8 +132,9 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
     }
     
     public static class GenericGraphContainerBuilder {
-        
-        private final List<GenericGraph> graphs = new ArrayList<>();
+
+        // allow graphs to be replaced in builder : use a Map
+        private final Map<String, GenericGraph> graphs = new HashMap<>();
         private final Map<String, Object> properties = new HashMap<>();
         
         private GenericGraphContainerBuilder() {}
@@ -171,7 +172,8 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
         }
         
         public GenericGraphContainerBuilder addGraph(GenericGraph graph) {
-            graphs.add(graph);
+            Objects.requireNonNull(graph, "Graph cannot be null");
+            graphs.put(graph.getNamespace(), graph);
             return this;
         }
         
