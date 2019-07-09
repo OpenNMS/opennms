@@ -40,15 +40,10 @@ ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting ope
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
 
-ARG OPENNMS_UID
-
 COPY ./rpms /tmp/rpms
 COPY ./tarball /tmp/tarball
 
 SHELL ["/bin/bash", "-c"]
-
-RUN groupadd -g 1000 elasticsearch && \
-adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
 
 # Install repositories, system and OpenNMS packages and do some cleanup
 # 1. Try to install from tarball
@@ -66,21 +61,25 @@ RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
     rm -rf /var/cache/yum && \
     rm -rf /opt/opennms/logs \
            /opt/opennms/share/rrd \
-           /opt/opennms/share/reports && \
-    mkdir -p /opennms-data/logs \
-             /opennms-data/rrd \
-             /opennms-data/reports && \
-    ln -s /opennms-data/logs /opt/opennms/logs && \
+           /opt/opennms/share/reports \
+           /opt/opennms/share/mibs && \
+    mkdir -p /opt/opennms-etc-overlay \
+             /opt/opennms-jetty-webinf-overlay \
+             /opt/opennms/logs && \
+    mkdir -p /opennms-data/rrd \
+             /opennms-data/reports \
+             /opennms-data/mibs && \
     ln -s /opennms-data/rrd /opt/opennms/share/rrd && \
-    ln -s /opennms-data/reports /opt/opennms/share/reports
+    ln -s /opennms-data/reports /opt/opennms/share/reports && \
+    ln -s /opennms-data/mibs /opt/opennms/share/mibs
 
-RUN chown opennms:opennms -R /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
+RUN chown 10001:10001 -R /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
     chgrp -R 0 /opt/opennms /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
     chmod -R g=u /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay
 
 # Add templates replaced at runtime and entrypoint
-COPY ./assets/*.tpl /root/
-COPY ./assets/entrypoint.sh /
+COPY --chown=10001:0 ./assets/*.tpl /tmp/
+COPY --chown=10001:0 ./assets/entrypoint.sh /
 
 # Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
@@ -115,7 +114,8 @@ CMD [ "-h" ]
 
 ENV OPENNMS_KARAF_SSH_HOST="0.0.0.0" \
     OPENNMS_KARAF_SSH_PORT="8101" \
-    JAVA_OPTS=""
+    JAVA_OPTS="" \
+    OPENNMS_TRAPD_PORT=1162
 
 # Volumes for storing data outside of the container
 VOLUME [ "/opt/opennms/etc", "/opt/opennms-etc-overlay", "/opennms-data" ]
@@ -131,4 +131,4 @@ VOLUME [ "/opt/opennms/etc", "/opt/opennms-etc-overlay", "/opennms-data" ]
 ## -- OpenNMS Eventd      5817/TCP
 ## -- SNMP Trapd           162/UDP
 ## -- Syslog Receiver      514/UDP
-EXPOSE 8980 8101 61616 162/udp 514/udp
+EXPOSE 8980 8101 1162/udp 10514/udp
