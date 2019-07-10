@@ -21,12 +21,12 @@ The service is considered available if a successful connection is made.
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                                                        | Required | Default value
-| `brokerURL`      | The ActiveMQ Broker URL to connect to.                                                             | required | `vm://localhost?create=false&broker.persistent=false`
+| `broker-url`     | The ActiveMQ Broker URL to connect to.                                                             | required | `vm://localhost?create=false&broker.persistent=false`
 | `user`           | The user name used to login to the ActiveMQ broker.                                                | optional | `-`
 | `password`       | The password used to authenticate the user on the ActiveMQ broker.                                 | optional | `-`
 | `use-nodelabel`  | A boolean to enable using the nodelabel when connecting to the ActiveMQ broker.                    | optional | `false`
 | `create-session` | A boolean to enable creating a JMS Session when connecting to the ActiveMQ broker.                 | optional | `false`
-| `clientID`       | The client ID to use when connecting to the ActiveMQ broker.                                       | optional | `-`
+| `client-id`      | The client ID to use when connecting to the ActiveMQ broker.                                       | optional | `-`
 |===
 
 
@@ -39,6 +39,6 @@ Some example configuration how to configure the monitor in the `poller-configura
 
 [source, xml]
 ----
-<parameter key="brokerURL" value="failover://auto+ssl://192.168.1.1:61616/"/>
+<parameter key="broker-url" value="failover://auto+ssl://192.168.1.1:61616/"/>
 <parameter key="use-nodelabel" value="true"/>
 ----

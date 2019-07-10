@@ -19,15 +19,15 @@ This detector is used to find and assigns services based on _ActiveMQ_.
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                                                        | Required | Default value
-| `brokerURL`      | The connection URL used to connect to the ActiveMQ Broker                                          | required | `vm://localhost?create=false`
+| `broker-url`     | The connection URL used to connect to the ActiveMQ Broker                                          | required | `vm://localhost?create=false`
 | `user`           | The username to authentication with when connecting to the broker.                                 | optional | `-`
 | `password`       | The password to authentication with when connecting to the broker.                                 | optional | `-`
-| `useNodeLabel`   | If true, modify the brokerURL to use the nodelabel in the brokerURL instead of the IP address.     | optional | `false`
+| `use-nodelabel`  | If true, modify the brokerURL to use the nodelabel in the brokerURL instead of the IP address.     | optional | `false`
 |===
 
 
 ===== Examples
 
-====== Example for useNodeLabel=true
+====== Example for use-nodelabel=true
 
-This flag is here so that if you are using an SSL based connector, the detector will adjust the brokerURL to reflect the nodelabel as the hostname.
+This flag is here so that if you are using an SSL based connector, the detector will adjust the broker-url to reflect the nodelabel as the hostname.

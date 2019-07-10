@@ -57,11 +57,11 @@ public class ActiveMQMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_TIMEOUT = 3000;
     private static final String DEFAULT_BROKERURL = "vm://localhost?create=false&broker.persistent=false";
 
-    private static final String PARAMETER_BROKERURL = "brokerURL";
+    private static final String PARAMETER_BROKERURL = "broker-url";
     private static final String PARAMETER_USER = "user";
     private static final String PARAMETER_PASSWORD = "password";
     private static final String PARAMETER_USE_NODELABEL = "use-nodelabel";
-    private static final String PARAMETER_CLIENTID = "clientID";
+    private static final String PARAMETER_CLIENTID = "client-id";
     private static final String PARAMETER_CREATE_SESSION = "create-session";
 
     @Override

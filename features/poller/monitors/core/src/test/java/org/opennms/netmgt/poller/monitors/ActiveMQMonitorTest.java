@@ -85,7 +85,7 @@ public class ActiveMQMonitorTest {
     public void testPollNodeLabel() {
         MonitoredService svc = new SimpleMonitoredService(InetAddressUtils.addr("127.0.0.1"), 0, "localhost", "ActiveMQ");
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("brokerURL", "tcp://169.254.0.0:61616?trace=false&soTimeout=20000");
+        parameters.put("broker-url", "tcp://169.254.0.0:61616?trace=false&soTimeout=20000");
         parameters.put("use-nodelabel", Boolean.TRUE);
         ActiveMQMonitor instance = new ActiveMQMonitor();
         PollStatus result = instance.poll(svc, parameters);
@@ -96,9 +96,9 @@ public class ActiveMQMonitorTest {
     public void testPollClientID() {
         MonitoredService svc = new SimpleMonitoredService(InetAddressUtils.addr("127.0.0.1"), 0, "localhost", "ActiveMQ");
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("brokerURL", "tcp://169.254.0.0:61616?trace=false&soTimeout=20000");
+        parameters.put("broker-url", "tcp://169.254.0.0:61616?trace=false&soTimeout=20000");
         parameters.put("use-nodelabel", Boolean.TRUE);
-        parameters.put("clientID", "clientID-"+System.currentTimeMillis());
+        parameters.put("client-id", "clientID-"+System.currentTimeMillis());
         ActiveMQMonitor instance = new ActiveMQMonitor();
         PollStatus result = instance.poll(svc, parameters);
         assertEquals(PollStatus.SERVICE_AVAILABLE, result.getStatusCode());
@@ -108,9 +108,9 @@ public class ActiveMQMonitorTest {
     public void testPollWithSession() {
         MonitoredService svc = new SimpleMonitoredService(InetAddressUtils.addr("127.0.0.1"), 0, "localhost", "ActiveMQ");
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("brokerURL", "tcp://169.254.0.0:61616?trace=false&soTimeout=20000");
+        parameters.put("broker-url", "tcp://169.254.0.0:61616?trace=false&soTimeout=20000");
         parameters.put("use-nodelabel", Boolean.TRUE);
-        parameters.put("clientID", "clientID-"+System.currentTimeMillis());
+        parameters.put("client-id", "clientID-"+System.currentTimeMillis());
         parameters.put("create-session", Boolean.TRUE);
         ActiveMQMonitor instance = new ActiveMQMonitor();
         PollStatus result = instance.poll(svc, parameters);
