@@ -9,10 +9,14 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
     <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" availability="mandatory" />
+    <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+    <reference id="identity" interface="org.opennms.distributed.core.api.Identity" />
 
     <!-- Netflow 5 UDP Parser Factory -->
     <bean id="netflow5UdpParserFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.Netflow5UdpParserFactory">
         <argument ref="telemetryRegistry" />
+        <argument ref="eventForwarder" />
+        <argument ref="identity" />
     </bean>
     <service ref="netflow5UdpParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
         <service-properties>
@@ -23,6 +27,8 @@
     <!-- Netflow 9 UDP Parser Factory -->
     <bean id="netflow9UdpParserFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.Netflow9UdpParserFactory">
         <argument ref="telemetryRegistry" />
+        <argument ref="eventForwarder" />
+        <argument ref="identity" />
     </bean>
     <service ref="netflow9UdpParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
         <service-properties>
@@ -33,6 +39,8 @@
     <!-- IPFIX TCP Parser Factory -->
     <bean id="ipfixTcpParserFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.IpfixTcpParserFactory">
         <argument ref="telemetryRegistry" />
+        <argument ref="eventForwarder" />
+        <argument ref="identity" />
     </bean>
     <service ref="ipfixTcpParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
         <service-properties>
@@ -43,6 +51,8 @@
     <!-- IPFIX UDP Parser Factory -->
     <bean id="ipfixUdpParserFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.IpfixUdpParserFactory">
         <argument ref="telemetryRegistry" />
+        <argument ref="eventForwarder" />
+        <argument ref="identity" />
     </bean>
     <service ref="ipfixUdpParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
         <service-properties>

@@ -37,6 +37,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
@@ -50,8 +52,12 @@ public abstract class UdpParserBase extends ParserBase {
     private ScheduledFuture<?> housekeepingFuture;
     private Duration templateTimeout = Duration.ofMinutes(30);
 
-    public UdpParserBase(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher) {
-        super(protocol, name, dispatcher);
+    public UdpParserBase(final Protocol protocol,
+                         final String name,
+                         final AsyncDispatcher<TelemetryMessage> dispatcher,
+                         final EventForwarder eventForwarder,
+                         final Identity identity) {
+        super(protocol, name, dispatcher, eventForwarder, identity);
     }
 
     protected abstract RecordProvider parse(final Session session, final ByteBuffer buffer) throws Exception;

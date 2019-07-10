@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
 
+import java.net.InetAddress;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -55,4 +57,5 @@ public interface Session {
 
     Resolver getResolver(final long observationDomainId);
 
+    InetAddress getRemoteAddress();
 }

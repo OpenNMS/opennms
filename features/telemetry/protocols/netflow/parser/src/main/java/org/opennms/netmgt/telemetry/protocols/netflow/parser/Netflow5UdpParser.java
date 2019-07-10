@@ -36,20 +36,22 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
+import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
-import org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 public class Netflow5UdpParser extends ParserBase implements UdpParser, Dispatchable {
 
-    public Netflow5UdpParser(final String name, final AsyncDispatcher<TelemetryMessage> dispatcher) {
-        super(Protocol.NETFLOW5, name, dispatcher);
+    public Netflow5UdpParser(final String name,
+                             final AsyncDispatcher<TelemetryMessage> dispatcher,
+                             final EventForwarder eventForwarder,
+                             final Identity identity) {
+        super(Protocol.NETFLOW5, name, dispatcher, eventForwarder, identity);
     }
 
     @Override
@@ -57,13 +59,14 @@ public class Netflow5UdpParser extends ParserBase implements UdpParser, Dispatch
         return BufferUtils.uint16(buffer) == 0x0005;
     }
 
-
     @Override
     public CompletableFuture<?> parse(final ByteBuffer buffer,
                                       final InetSocketAddress remoteAddress,
                                       final InetSocketAddress localAddress) throws Exception {
         final Header header = new Header(slice(buffer, Header.SIZE));
         final Packet packet = new Packet(header, buffer);
+
+        detectClockSkew(header.unixSecs * 1000L + header.unixNSecs / 1000L, remoteAddress.getAddress());
 
         return this.transmit(packet, remoteAddress);
     }
