@@ -48,7 +48,7 @@ public class LabelSearchProvider implements SearchProvider {
 
     @Override
     public boolean canSuggest(GraphService graphService, String namespace) {
-        return true; // every vertex has a label, therefor we can search any graph
+        return true; // every vertex has a label, therefore we can search any graph
     }
 
     @Override
