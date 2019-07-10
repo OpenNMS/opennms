@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,10 @@
 
 package org.opennms.features.datachoices.shell.internal;
 
-import java.util.Objects;
-
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.datachoices.internal.StateManager;
 
 /**
@@ -47,9 +44,8 @@ import org.opennms.features.datachoices.internal.StateManager;
  * </ul>
  */
 @Command(scope = "datachoices", name = "reset-system-id", description="Regenerate the system id.")
-@org.apache.karaf.shell.commands.Command(scope = "datachoices", name = "reset-system-id", description="Regenerate the system id.")
 @Service
-public class ResetSystemIdCommand extends OsgiCommandSupport implements Action {
+public class ResetSystemIdCommand implements Action {
 
     @Reference
     public StateManager m_stateManager;
@@ -60,14 +56,4 @@ public class ResetSystemIdCommand extends OsgiCommandSupport implements Action {
         return null;
     }
 
-    @Override
-    @Deprecated
-    protected Object doExecute() throws Exception {
-        return execute();
-    }
-
-    @Deprecated
-    public void setStateManager(StateManager stateManager) {
-        m_stateManager = Objects.requireNonNull(stateManager);
-    }
 }

@@ -28,13 +28,12 @@
 
 package org.opennms.features.datachoices.shell.internal;
 
-import java.util.Objects;
-
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opennms.features.datachoices.internal.StateManager;
 import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
 
 /**
@@ -47,31 +46,25 @@ import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
  * </ul>
  */
 @Command(scope = "datachoices", name = "display-usage-report", description="Displays the usage statistics report.")
-@org.apache.karaf.shell.commands.Command(scope = "datachoices", name = "display-usage-report", description="Displays the usage statistics report.")
 @Service
-public class DisplayUsageReportCommand extends OsgiCommandSupport implements Action {
+public class DisplayUsageReportCommand implements Action {
 
     @Reference
     public UsageStatisticsReporter m_usageStatisticsReporter;
+    
+    @Reference
+    public StateManager m_stateManager;
+    
+    @Option(name="-d", aliases="--detailed", description="Include sensitive detailed information in output.")
+    private boolean m_includeSensitiveDetails;
 
     @Override
     public Object execute() throws Exception {
         long then = System.currentTimeMillis();
-        String reportAsJson = m_usageStatisticsReporter.generateReport().toJson(true);
+        String reportAsJson = m_usageStatisticsReporter.generateReport(m_includeSensitiveDetails).toJson(true);
         long delta = System.currentTimeMillis() - then;
 
         System.out.printf("Generated usage statitics reports in %.2f seconds:\n%s\n", delta / 1000f, reportAsJson);
         return null;
-    }
-
-    @Override
-    @Deprecated
-    protected Object doExecute() throws Exception {
-        return execute();
-    }
-
-    @Deprecated
-    public void setUsageStatisticsReporter(UsageStatisticsReporter usageStatisticsReporter) {
-        m_usageStatisticsReporter = Objects.requireNonNull(usageStatisticsReporter);
     }
 }

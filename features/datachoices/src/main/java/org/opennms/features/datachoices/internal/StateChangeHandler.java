@@ -28,18 +28,8 @@
 
 package org.opennms.features.datachoices.internal;
 
-import java.io.IOException;
+public interface StateChangeHandler {
 
-public interface StateManager {
-
-    Boolean isEnabled() throws IOException;
-
-    void setEnabled(boolean enabled, String user) throws Exception;
-
-    String getOrGenerateSystemId() throws IOException;
-
-    String getAndRegenerateSystemId() throws IOException;
-    
-    public void onIsEnabledChanged(StateChangeHandler callback);
+    void onIsEnabledChanged(boolean isEnabled);
 
 }

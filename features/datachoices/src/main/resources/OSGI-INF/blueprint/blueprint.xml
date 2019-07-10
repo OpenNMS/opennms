@@ -17,6 +17,7 @@
             <cm:property name="url" value="http://stats.opennms.org/datachoices/"/>
             <cm:property name="interval" value="86400000"/> <!-- 24 hours -->
             <cm:property name="useSystemProxy" value="false"/>
+            <cm:property name="includeSensitiveDetails" value="false"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -30,7 +31,7 @@
     <reference id="monitoringLocationDao" interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" availability="mandatory"/>
         
     <!-- The state manager will manually pull properties from the configuration file -->
-    <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManager"/>
+    <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManagerImpl"/>
 
 	<bean id="usageStatisticsReporter" class="org.opennms.features.datachoices.internal.UsageStatisticsReporter"
         init-method="init" destroy-method="destroy">
@@ -45,7 +46,10 @@
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
         <property name="minionDao" ref="minionDao"/>
         <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
+        <property name="includeSensitiveDetails" value="${includeSensitiveDetails}"/>
     </bean>
+    
+    <bean id="dataSource" class="org.opennms.core.db.DataSourceFactory" factory-method="getInstance"/>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">
         <property name="stateManager" ref="stateManager"/>
@@ -56,6 +60,8 @@
             <entry key="application-path" value="/rest" />
         </service-properties>
     </service>
+    <service interface="org.opennms.features.datachoices.internal.StateChangeHandler" ref="usageStatisticsReporter"/>
+    <service interface="org.opennms.features.datachoices.internal.StateManager" ref="stateManager"/>
 
     <bean id="modalInjector" class="org.opennms.features.datachoices.web.internal.ModalInjector">
         <property name="stateManager" ref="stateManager"/>
@@ -74,23 +80,4 @@
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
-
-    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
-        <command>
-            <action class="org.opennms.features.datachoices.shell.internal.SendUsageReportCommand">
-                <property name="usageStatisticsReporter" ref="usageStatisticsReporter"/>
-            </action>
-        </command>
-        <command>
-            <action class="org.opennms.features.datachoices.shell.internal.DisplayUsageReportCommand">
-                <property name="usageStatisticsReporter" ref="usageStatisticsReporter"/>
-            </action>
-        </command>
-        <command>
-            <action class="org.opennms.features.datachoices.shell.internal.ResetSystemIdCommand">
-                <property name="stateManager" ref="stateManager"/>
-            </action>
-        </command>
-    </command-bundle>
-
 </blueprint>

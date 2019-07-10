@@ -52,8 +52,8 @@ public class UsageStatisticsReportDTOTest {
         numberOfNodesBySysOid.put(".1.2.3.4", 2L);
         numberOfNodesBySysOid.put(".1.2.3.5", 6L);
         usageStatisticsReport.setNodesBySysOid(numberOfNodesBySysOid);
-        usageStatisticsReport.setMinions(42);
-        usageStatisticsReport.setMonitoringLocations(21);
+        usageStatisticsReport.setNumMinions(42);
+        usageStatisticsReport.setNumMonitoringLocations(21);
         usageStatisticsReport.setTimeSeriesStrategy("rrd");
         
         final List<String> kf = new ArrayList<>();
@@ -62,7 +62,7 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setKarafFeatureList(kf);
 
         String actualJson = usageStatisticsReport.toJson();
-        String expectedJson = "{\"alarms\":0,\"events\":0,\"ipInterfaces\":0,\"jvmUptime\":0,\"karafFeatureList\":[\"foo\",\"bar\"],\"minions\":42,\"monitoredServices\":0,\"monitoringLocations\":21,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"numGroups\":0,\"numUsers\":0,\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"rpcStrategy\":null,\"sinkStrategy\":null,\"snmpInterfaces\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"timeSeriesStrategy\":\"rrd\",\"version\":\"10.5.7\"}";
+        String expectedJson = "{\"alarms\":0,\"events\":0,\"ipInterfaces\":0,\"jvmMaxHeapSize\":0,\"jvmRuntimeVersion\":null,\"jvmSpecVersion\":null,\"jvmUptime\":0,\"jvmVendor\":null,\"karafFeatureList\":[\"foo\",\"bar\"],\"keyPathFsUsedPct\":null,\"monitoredServices\":0,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"numMinions\":42,\"numMonitoringLocations\":21,\"numOnmsGroups\":0,\"numOnmsUsers\":0,\"osArch\":null,\"osCpus\":0,\"osMemSize\":0,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"rpcStrategy\":null,\"sinkStrategy\":null,\"snmpInterfaces\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"timeSeriesStrategy\":\"rrd\",\"version\":\"10.5.7\"}";
         assertEquals(expectedJson, actualJson);
     }
 }

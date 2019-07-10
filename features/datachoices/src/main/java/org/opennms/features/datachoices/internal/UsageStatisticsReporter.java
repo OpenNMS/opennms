@@ -35,25 +35,36 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystems;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.sql.DataSource;
 
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.ipc.sink.common.SinkStrategy;
 import org.opennms.core.rpc.common.RpcStrategy;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.TimeSeries;
 import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.features.datachoices.internal.StateChangeHandler;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -67,10 +78,13 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Service
 public class UsageStatisticsReporter implements StateChangeHandler {
     private static final Logger LOG = LoggerFactory.getLogger(UsageStatisticsReporter.class);
 
     public static final String USAGE_REPORT = "usage-report";
+    
+    private Pattern XMX_PAT = Pattern.compile("^(?:-XX:MaxHeapSize=|-Xmx)(\\d+)([KkMmGg]?)$");
 
     private String m_url;
 
@@ -96,8 +110,12 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     
     private MinionDao m_minionDao;
     
+    private DataSource m_dataSource;
+    
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
+    private boolean m_includeSensitiveDetails = false;
+    
     public synchronized void init() {
         if (m_timer != null) {
             LOG.warn("Usage statistic reporter was already initialized.");
@@ -146,7 +164,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private class Task extends TimerTask {
         @Override
         public void run() {
-            final UsageStatisticsReportDTO usageStatsReport = generateReport();
+            final UsageStatisticsReportDTO usageStatsReport = generateReport(m_includeSensitiveDetails);
             final String usageStatsReportJson = usageStatsReport.toJson();
 
             final HttpClientWrapper clientWrapper = HttpClientWrapper.create()
@@ -176,9 +194,15 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         thread.start();
     }
 
-    public UsageStatisticsReportDTO generateReport() {
+    public UsageStatisticsReportDTO generateReport(boolean detailed) {
+        m_includeSensitiveDetails = detailed;
         final SystemInfoUtils sysInfoUtils = new SystemInfoUtils();
-        final UsageStatisticsReportDTO usageStatisticsReport = new UsageStatisticsReportDTO();
+        final UsageStatisticsReportDTO usageStatisticsReport;
+        if (m_includeSensitiveDetails) {
+            usageStatisticsReport = new DetailedUsageStatisticsReportDTO();
+        } else {
+            usageStatisticsReport = new UsageStatisticsReportDTO();
+        }
         // Unique system identifier
         try {
             usageStatisticsReport.setSystemId(m_stateManager.getOrGenerateSystemId());
@@ -190,8 +214,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setOsName(System.getProperty("os.name"));
         usageStatisticsReport.setOsArch(System.getProperty("os.arch"));
         usageStatisticsReport.setOsVersion(System.getProperty("os.version"));
-        // JVM uptime
-        usageStatisticsReport.setJvmUptime(ManagementFactory.getRuntimeMXBean().getUptime());
+        usageStatisticsReport.setOsMemSize(determineOsMemSize());
+        usageStatisticsReport.setOsCpus(determineOsCpus());
+        usageStatisticsReport.setKeyPathFsUsedPct(determineKeyPathFsUsedPct());
         // OpenNMS version and flavor
         usageStatisticsReport.setVersion(sysInfoUtils.getVersion());
         usageStatisticsReport.setPackageName(sysInfoUtils.getPackageName());
@@ -206,7 +231,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
         // Location and Minion statistics
         usageStatisticsReport.setMonitoredServices(m_monitoringLocationDao.countAll());
-        usageStatisticsReport.setMinions(m_minionDao.countAll());
+        usageStatisticsReport.setNumMinions(m_minionDao.countAll());
         // Time-series, sink, and RPC strategies
         usageStatisticsReport.setTimeSeriesStrategy(TimeSeries.getTimeseriesStrategy().toString());
         usageStatisticsReport.setSinkStrategy(SinkStrategy.getSinkStrategy().toString());
@@ -214,16 +239,27 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         // User and group counts
         try {
             UserFactory.init();
-            usageStatisticsReport.setNumUsers(UserFactory.getInstance().getUserNames().size());
+            usageStatisticsReport.setNumOnmsUsers(UserFactory.getInstance().getUserNames().size());
             GroupFactory.init();
-            usageStatisticsReport.setNumGroups(GroupFactory.getInstance().getGroupNames().size());
+            usageStatisticsReport.setNumOnmsGroups(GroupFactory.getInstance().getGroupNames().size());
         } catch (IOException e) {
             LOG.error("Encountered IOException while computing user and/or group counts. Setting both to -1.");
-            usageStatisticsReport.setNumUsers(-1);
-            usageStatisticsReport.setNumGroups(-1);
+            usageStatisticsReport.setNumOnmsUsers(-1);
+            usageStatisticsReport.setNumOnmsGroups(-1);
         }
         // Karaf features
         usageStatisticsReport.setKarafFeatureList(computeKarafFeatureList());
+        
+        // JVM details
+        usageStatisticsReport.setJvmMaxHeapSize(determineXmxValue());
+        usageStatisticsReport.setJvmVendor(System.getProperty("java.vm.vendor"));
+        usageStatisticsReport.setJvmSpecVersion(System.getProperty("java.specification.version"));
+        usageStatisticsReport.setJvmRuntimeVersion(System.getProperty("java.runtime.version"));
+        usageStatisticsReport.setJvmUptime(ManagementFactory.getRuntimeMXBean().getUptime());
+
+        if (m_includeSensitiveDetails) {
+            populateSensitiveDetails((DetailedUsageStatisticsReportDTO) usageStatisticsReport);
+        }
         return usageStatisticsReport;
     }
     
@@ -233,6 +269,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         File featuresBootDotDDir = new File(etcDir, "featuresBoot.d");
         File featuresCfgFile = new File(etcDir, "org.apache.karaf.features.cfg");
         Properties featuresProp = new Properties();
+        if (!featuresCfgFile.canRead()) {
+            LOG.error("Features config file {} does not exist or is not readable. Returning empty feature list.", featuresCfgFile.getAbsolutePath());
+            return Collections.emptyList();
+        }
         try (FileInputStream fis = new FileInputStream(featuresCfgFile)) {
             featuresProp.load(fis);
             String bootProp = featuresProp.getProperty("featuresBoot");
@@ -248,7 +288,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                 }
             }
         } catch (IOException e) {
-            LOG.error("Encountered IOException while loading Karaf features config. Features list will be empty.");
+            LOG.error("Encountered IOException while loading Karaf features. Features list will be empty.");
         }
         for (File featureDotDFile : featuresBootDotDDir.listFiles()) {
             if (featureDotDFile.isDirectory() || featureDotDFile.getName().startsWith(".")) {
@@ -280,6 +320,200 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         List<String> featureList = new ArrayList<>(featureSet);
         Collections.sort(featureList);
         return featureList;
+    }
+    
+    private void populateSensitiveDetails(DetailedUsageStatisticsReportDTO usageStatisticsReport) {
+        usageStatisticsReport.setHostname(determineHostname());
+        usageStatisticsReport.setJvmUserName(System.getProperty("user.name"));
+        usageStatisticsReport.setSeLinuxEnforce(determineSELinuxEnforce());
+        usageStatisticsReport.setFsUtilInfo(determineFilesystemUsage());
+        // RDBMS details
+        try (Connection conn = m_dataSource.getConnection()) {
+            usageStatisticsReport.setRdbmsType(conn.getMetaData().getDatabaseProductName());
+            usageStatisticsReport.setRdbmsVersion(conn.getMetaData().getDatabaseProductVersion());
+            final String dbUrl = conn.getMetaData().getURL().toLowerCase();
+            if (dbUrl.contains("://localhost") || dbUrl.contains("://127.0.0.1")) {
+                usageStatisticsReport.setRdbmsOnLocalhost(true);
+            }
+        } catch (SQLException e) {
+            LOG.error("Encountered SQLException while fetching RDBMS details");
+        }
+    }
+    
+    private String determineHostname() {
+        String hostname = "";
+        File hostnameFile = new File("/proc/sys/kernel/hostname");
+        if (!hostnameFile.canRead()) {
+            return hostname;
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(hostnameFile))) {
+            hostname = br.readLine();
+        } catch (IOException e) {
+            LOG.error("Failed to determine hostname via /proc. Hostname will be empty.");
+        }
+        return hostname;
+    }
+    
+    private long determineXmxValue() {
+        final List<String> inputArgs = ManagementFactory.getRuntimeMXBean().getInputArguments();
+        final String xmxString;
+        long xmxVal = -1L;
+        long xmxMult = 1L;
+        for (String arg : inputArgs) {
+            Matcher xmxMat = XMX_PAT.matcher(arg);
+            if (xmxMat.matches()) {
+                xmxString = xmxMat.group(1);
+                try {
+                    xmxVal = Long.parseLong(xmxString);
+                } catch (NumberFormatException nfe) {
+                    LOG.error("Failed to parse Xmx / MaxHeapSize numeric value '{}'. Using -1 as a placeholder.", xmxString);
+                }
+                final String xmxSuffix = xmxMat.group(2).toLowerCase();
+                if ("k".contentEquals(xmxSuffix)) {
+                    xmxMult = 1024L;
+                } else if ("m".contentEquals(xmxSuffix)) {
+                    xmxMult = 1024L*1024L;
+                } else if ("g".contentEquals(xmxSuffix)) {
+                    xmxMult = 1024L*1024L*1024L;
+                }
+                break;
+            }
+        }
+        if (xmxVal == -1L) {
+            LOG.error("Failed to extract Xmx / MaxHeapSize value from JVM input args '{}'. Using -1 as a placeholder.", ManagementFactory.getRuntimeMXBean().getInputArguments());
+            return xmxVal;
+        } else {
+            return xmxVal * xmxMult;
+        }
+    }
+    
+    private long determineOsMemSize() {
+        String memtotalStr = "";
+        Long memtotal = -1L;
+        File meminfoFile = new File("/proc/meminfo");
+        if (!meminfoFile.canRead()) {
+            return memtotal;
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(meminfoFile))) {
+            String line = br.readLine();
+            while (line != null) {
+                if (line.startsWith("MemTotal:")) {
+                    final String memtotalWithUnits = line.split(":")[1].trim();  // e.g. "1882220 kB"
+                    memtotalStr = memtotalWithUnits.split(" ")[0];
+                    break;
+                }
+                line = br.readLine();
+            }
+        } catch (IOException e) {
+            LOG.error("Failed to determine MemTotal via /proc. osMemSize will be -1.");
+        }
+        if (! "".equals(memtotalStr)) {
+            try {
+                memtotal = Long.parseLong(memtotalStr) * 1024L;
+            } catch (NumberFormatException nfe) {
+                LOG.error("Failed to parse MemTotal value '{}' for osMemSize. Using -1 as a placeholder.", memtotalStr);
+            }
+        }
+        return memtotal;
+    }
+    
+    private long determineOsCpus() {
+        long cpus = -1L;
+        File cpuinfoFile = new File("/proc/cpuinfo");
+        if (!cpuinfoFile.canRead()) {
+            return cpus;
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(cpuinfoFile))) {
+            cpus = 0;
+            String line = br.readLine();
+            while (line != null) {
+                if (line.startsWith("processor")) {
+                    cpus++;
+                }
+                line = br.readLine();
+            }
+        } catch (IOException e) {
+            LOG.error("Encountered IOException while counting CPUs via /proc. osCpus will be -1.");
+            cpus = -1L;
+        }
+        if (cpus == 0) {
+            LOG.error("Failed to count any CPUs via /proc. Using -1 as a placeholder.");
+            cpus = -1L;
+        }
+        return cpus;
+    }
+    
+    private int determineSELinuxEnforce() {
+        String enforceStr = "";
+        int enforce = -1;
+        File enforceFile = new File("/sys/fs/selinux/enforce");
+        if (!enforceFile.canRead()) {
+            return enforce;
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(enforceFile))) {
+            enforceStr = br.readLine();
+        } catch (IOException e) {
+            LOG.error("Failed to determine SELinux enforcement status via /sys. seLinuxEnforce will be -1.");
+            return -1;
+        }
+        try {
+            enforce = Integer.parseInt(enforceStr, 10);
+        } catch (NumberFormatException nfe) {
+            LOG.error("Failed to parse value '{}' for SELinux enforcement status via /sys. seLinuxEnforce will be -1.", enforceStr);
+            return -1;
+        }
+        return enforce;
+    }
+    
+    private Map<String,Map<String,Number>> determineFilesystemUsage() {
+        final long oneGig = 1024L*1024L*1024L;
+        Map<String,Map<String,Number>> fsUsage = new LinkedHashMap<>(); 
+        for (FileStore fs : FileSystems.getDefault().getFileStores()) {
+            Map<String,Number> fsEntry = new LinkedHashMap<>();
+            final long totalB, totalGB, usedB, usedGB, availB, availGB, usedPct;
+            try {
+                totalB = fs.getTotalSpace();
+                totalGB = totalB / oneGig;
+                usedB = (totalB - fs.getUsableSpace());
+                usedGB = usedB / oneGig;
+                availB = fs.getUsableSpace();
+                availGB = availB / oneGig;
+                if (totalB >= oneGig) {
+                    usedPct = new Double(new Double(usedB) / new Double(totalB) * 100).longValue();
+                    fsEntry.put("sizeGB", totalGB);
+                    fsEntry.put("usedGB", usedGB);
+                    fsEntry.put("availGB", availGB);
+                    fsEntry.put("usedPct", usedPct);
+                    fsUsage.put(fs.name(), fsEntry);
+                } else {
+                    LOG.info("Omitting stats for filesystem {} because total size is smaller than 1GB", fs.name());
+                }
+            } catch (IOException e) {
+                LOG.error("Encountered IOException while retrieving filesystem utilization data for FS '{}'", fs.name());
+                return fsUsage;
+            }
+        }
+        return fsUsage;
+    }
+    
+    private Map<String,Number> determineKeyPathFsUsedPct() {
+        Map<String,Number> stats = new LinkedHashMap<>();
+        Map<String,File> paths = new LinkedHashMap<>();
+        paths.put("onmsHome", new File(System.getProperty("opennms.home")));
+        paths.put("onmsShare", new File(paths.get("onmsHome"), "share"));
+        paths.put("onmsLogs", new File(paths.get("onmsHome"), "logs"));
+        for (String pathToken : paths.keySet()) {
+            Double total = new Double(paths.get(pathToken).getTotalSpace());
+            Double usable = new Double(paths.get(pathToken).getUsableSpace());
+            if (usable > 0) {
+                Double usedPct = (total - usable) / total * 100;
+                stats.put(pathToken, usedPct.longValue());
+            } else {
+                LOG.error("totalSpace on path {} is zero. Returning -1 for utilization.", pathToken);
+                stats.put(pathToken, -1);
+            }
+        }
+        return stats;
     }
 
     public void setUrl(String url) {
@@ -337,5 +571,17 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setUseSystemProxy(boolean useSystemProxy){
         m_useSystemProxy = useSystemProxy;
+    }
+    
+    public DataSource getDataSource() {
+        return m_dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
+    }
+
+    public void setIncludeSensitiveDetails(boolean includeSensitiveDetails) {
+        m_includeSensitiveDetails = includeSensitiveDetails;
     }
 }

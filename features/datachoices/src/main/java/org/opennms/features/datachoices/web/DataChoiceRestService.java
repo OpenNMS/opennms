@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -50,5 +51,5 @@ public interface DataChoiceRestService {
 
     @GET
     @Produces(value={MediaType.APPLICATION_JSON})
-    UsageStatisticsReportDTO getUsageStatistics() throws ServletException, IOException;
+    UsageStatisticsReportDTO getUsageStatistics(@QueryParam("detailed") @DefaultValue("false") boolean detailed) throws ServletException, IOException;
 }

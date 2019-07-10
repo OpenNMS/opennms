@@ -78,8 +78,8 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     }
 
     @Override
-    public UsageStatisticsReportDTO getUsageStatistics() throws ServletException, IOException {
-        return m_usageStatisticsReporter.generateReport();
+    public UsageStatisticsReportDTO getUsageStatistics(boolean detailed) throws ServletException, IOException {
+        return m_usageStatisticsReporter.generateReport(detailed);
     }
 
     public void setStateManager(StateManager stateManager) {

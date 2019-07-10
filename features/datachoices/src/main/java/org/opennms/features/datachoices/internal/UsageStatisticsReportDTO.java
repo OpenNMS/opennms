@@ -59,18 +59,32 @@ public class UsageStatisticsReportDTO {
     private int m_monitoredServices;
     private int m_events;
     private int m_alarms;
-    private int m_monitoringLocations;
-    private int m_minions;
-    private int m_numUsers;
-    private int m_numGroups;
+    private int m_numMonitoringLocations;
+    private int m_numMinions;
+    private int m_numOnmsUsers;
+    private int m_numOnmsGroups;
     
     private String m_timeSeriesStrategy;
     private String m_sinkStrategy;
     private String m_rpcStrategy;
+    
+    private Map<String,Number> m_keyPathFsUsedPct;
 
     private Map<String, Long> m_nodesBySysOid = Collections.emptyMap();
     private List<String> m_karafFeatureList = Collections.emptyList();
 
+    private long m_jvmMaxHeapSize;
+
+    private long m_osMemSize;
+
+    private long m_osCpus;
+
+    private String m_jvmVendor;
+
+    private String m_jvmSpecVersion;
+
+    private String m_jvmRuntimeVersion;
+    
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -175,20 +189,20 @@ public class UsageStatisticsReportDTO {
         return m_nodesBySysOid;
     }
 
-    public int getMonitoringLocations() {
-        return m_monitoringLocations;
+    public int getNumMonitoringLocations() {
+        return m_numMonitoringLocations;
     }
 
-    public void setMonitoringLocations(int monitoringLocations) {
-        this.m_monitoringLocations = monitoringLocations;
+    public void setNumMonitoringLocations(int monitoringLocations) {
+        this.m_numMonitoringLocations = monitoringLocations;
     }
 
-    public int getMinions() {
-        return m_minions;
+    public int getNumMinions() {
+        return m_numMinions;
     }
 
-    public void setMinions(int minions) {
-        this.m_minions = minions;
+    public void setNumMinions(int minions) {
+        this.m_numMinions = minions;
     }
 
     public String getTimeSeriesStrategy() {
@@ -207,20 +221,20 @@ public class UsageStatisticsReportDTO {
         m_jvmUptime = jvmUptime;
     }
 
-    public int getNumUsers() {
-        return m_numUsers;
+    public int getNumOnmsUsers() {
+        return m_numOnmsUsers;
     }
 
-    public void setNumUsers(int numUsers) {
-        m_numUsers = numUsers;
+    public void setNumOnmsUsers(int numUsers) {
+        m_numOnmsUsers = numUsers;
     }
 
-    public int getNumGroups() {
-        return m_numGroups;
+    public int getNumOnmsGroups() {
+        return m_numOnmsGroups;
     }
 
-    public void setNumGroups(int numGroups) {
-        m_numGroups = numGroups;
+    public void setNumOnmsGroups(int numGroups) {
+        m_numOnmsGroups = numGroups;
     }
 
     public String getSinkStrategy() {
@@ -262,5 +276,61 @@ public class UsageStatisticsReportDTO {
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    public String getJvmVendor() {
+        return m_jvmVendor;
+    }
+
+    public void setJvmVendor(String jvmVendor) {
+        m_jvmVendor = jvmVendor;
+    }
+
+    public String getJvmSpecVersion() {
+        return m_jvmSpecVersion;
+    }
+
+    public void setJvmSpecVersion(String jvmSpecVersion) {
+        m_jvmSpecVersion = jvmSpecVersion;
+    }
+
+    public String getJvmRuntimeVersion() {
+        return m_jvmRuntimeVersion;
+    }
+
+    public void setJvmRuntimeVersion(String jvmRuntimeVersion) {
+        m_jvmRuntimeVersion = jvmRuntimeVersion;
+    }
+
+    public long getJvmMaxHeapSize() {
+        return m_jvmMaxHeapSize;
+    }
+
+    public void setJvmMaxHeapSize(long maxHeapSize) {
+        this.m_jvmMaxHeapSize = maxHeapSize;
+    }
+
+    public long getOsMemSize() {
+        return m_osMemSize;
+    }
+
+    public void setOsMemSize(long osMemSize) {
+        this.m_osMemSize = osMemSize;
+    }
+
+    public long getOsCpus() {
+        return m_osCpus;
+    }
+
+    public void setOsCpus(long osCpus) {
+        m_osCpus = osCpus;
+    }
+
+    public Map<String, Number> getKeyPathFsUsedPct() {
+        return m_keyPathFsUsedPct;
+    }
+
+    public void setKeyPathFsUsedPct(Map<String, Number> keyPathUsedPct) {
+        this.m_keyPathFsUsedPct = keyPathUsedPct;
     }
 }
