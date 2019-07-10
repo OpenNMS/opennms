@@ -59,22 +59,33 @@ RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
     rm -rf /tmp/rpms /tmp/tarball && \
     yum clean all && \
     rm -rf /var/cache/yum && \
-    rm -rf /opt/opennms/logs \
-           /opt/opennms/share/rrd \
+    rm -rf /opt/opennms/share/rrd \
            /opt/opennms/share/reports \
            /opt/opennms/share/mibs && \
     mkdir -p /opt/opennms-etc-overlay \
              /opt/opennms-jetty-webinf-overlay \
-             /opt/opennms/logs && \
+             /opt/opennms-overlay && \
     mkdir -p /opennms-data/rrd \
              /opennms-data/reports \
              /opennms-data/mibs && \
     ln -s /opennms-data/rrd /opt/opennms/share/rrd && \
     ln -s /opennms-data/reports /opt/opennms/share/reports && \
     ln -s /opennms-data/mibs /opt/opennms/share/mibs && \
-    chown 10001:10001 -R /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
-    chgrp -R 0 /opt/opennms /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay && \
-    chmod -R g=u /opt/opennms /opennms-data /opt/opennms-etc-overlay /opt/opennms-jetty-webinf-overlay
+    chown 10001:10001 -R /opt/opennms \
+                         /opennms-data \
+                         /opt/opennms-overlay \
+                         /opt/opennms-etc-overlay \
+                         /opt/opennms-jetty-webinf-overlay && \
+    chgrp -R 0 /opt/opennms \
+               /opennms-data \
+               /opt/opennms-overlay \
+               /opt/opennms-etc-overlay \
+               /opt/opennms-jetty-webinf-overlay && \
+    chmod -R g=u /opt/opennms \
+                 /opennms-data \
+                 /opt/opennms-overlay \
+                 /opt/opennms-etc-overlay \
+                 /opt/opennms-jetty-webinf-overlay
 
 # Add templates replaced at runtime and entrypoint
 COPY --chown=10001:0 ./assets/*.tpl /tmp/
