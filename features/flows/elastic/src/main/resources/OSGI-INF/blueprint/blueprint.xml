@@ -143,7 +143,8 @@
         <argument ref="tracerRegistry"/>
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
-        <property name="eventIndexName" value="${eventIndexName}" />
+        <property name="eventIndexName"
+	value="${eventIndexName}" />
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">

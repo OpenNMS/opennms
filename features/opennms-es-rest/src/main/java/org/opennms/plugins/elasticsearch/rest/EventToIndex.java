@@ -98,7 +98,7 @@ public class EventToIndex implements AutoCloseable {
 
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
 	
-	private String eventIndexName = "";
+    private String eventIndexName = "";
 
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 			threads,
@@ -148,10 +148,10 @@ public class EventToIndex implements AutoCloseable {
 		}
 	}
 
-	public void setEventIndexName(String eventIndexName) {
-		Objects.requireNonNull(eventIndexName);
-		this.eventIndexName = eventIndexName;
-	}
+    public void setEventIndexName(String eventIndexName) {
+        Objects.requireNonNull(eventIndexName);
+        this.eventIndexName = eventIndexName;
+    }
 
 	public void setNodeCache(NodeCache cache) {
 		this.nodeCache = cache;
@@ -161,13 +161,13 @@ public class EventToIndex implements AutoCloseable {
 		this.groupOidParameters = groupOidParameters;
 	}
 	
-	public String getModifiedIndex() {
-		if (!eventIndexName.isEmpty()) {
-			return String.format("%s-%s", eventIndexName, INDEX_PREFIX);
-		}
-		return INDEX_PREFIX;
+    private String getModifiedIndex() {
+        if (!eventIndexName.isEmpty()) {
+            return String.format("%s-%s", eventIndexName, INDEX_PREFIX);
+        }
+        return INDEX_PREFIX;
 
-	}
+    }
 
 	@Override
 	public void close(){
@@ -285,9 +285,9 @@ public class EventToIndex implements AutoCloseable {
 		// Parse event parameters
 		handleParameters(event, body);
 
-		if (!eventIndexName.isEmpty()) {
-			body.put("EventForwarder", eventIndexName);
-		}
+        if (!eventIndexName.isEmpty()) {
+            body.put("EventForwarder", eventIndexName);
+        }
 		body.put("interface", event.getInterface());
 		body.put("logmsg", ( event.getLogmsg()!=null ? event.getLogmsg().getContent() : null ));
 		body.put("logmsgdest", ( event.getLogmsg()!=null ? event.getLogmsg().getDest() : null ));
@@ -312,7 +312,8 @@ public class EventToIndex implements AutoCloseable {
 		}
 
 					
-		String completeIndexName = indexStrategy.getIndex(getModifiedIndex(), cal.toInstant());
+        String completeIndexName = indexStrategy.getIndex(getModifiedIndex(),
+                                                          cal.toInstant());
 
 		if (LOG.isDebugEnabled()){
 			String str = "populateEventIndexBodyFromEvent - index:"

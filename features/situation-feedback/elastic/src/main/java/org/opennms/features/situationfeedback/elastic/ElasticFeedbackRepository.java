@@ -75,25 +75,25 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private IndexStrategy indexStrategy;
     
-	private String eventIndexName = "";
+    private String eventIndexName = "";
 
-	public void setEventIndexName(String eventIndexName) {
-		Objects.requireNonNull(eventIndexName);
-		this.eventIndexName = eventIndexName;
-	}
+    public void setEventIndexName(String eventIndexName) {
+        Objects.requireNonNull(eventIndexName);
+        this.eventIndexName = eventIndexName;
+    }
 
 	/**
      * The collection of listeners interested in alarm feedback, populated via runtime binding.
      */
     private final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
 
-	public String getModifiedIndex() {
-		if (!eventIndexName.isEmpty()) {
-			return String.format("%s-%s", eventIndexName, TYPE);
-		}
-		return TYPE;
+    private String getModifiedIndex() {
+        if (!eventIndexName.isEmpty()) {
+            return String.format("%s-%s", eventIndexName, TYPE);
+        }
+        return TYPE;
 
-	}
+    }
     public ElasticFeedbackRepository(JestClient jestClient, IndexStrategy indexStrategy, int bulkRetryCount, ElasticFeedbackRepositoryInitializer initializer) {
         this.client = jestClient;
         this.indexStrategy = indexStrategy;
@@ -111,16 +111,19 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         }
 
         List<FeedbackDocument> feedbackDocuments = feedback.stream().map(FeedbackDocument::from).collect(Collectors.toList());
-        BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
-            final Bulk.Builder bulkBuilder = new Bulk.Builder();
-            for (FeedbackDocument document : documents) {
-				final String index = indexStrategy.getIndex(getModifiedIndex(),
-						Instant.ofEpochMilli(document.getTimestamp()));
-				final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
-                bulkBuilder.addAction(indexBuilder.build());
-            }
-            return new BulkWrapper(bulkBuilder);
-        }, bulkRetryCount);
+        BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client,
+                                                                      feedbackDocuments,
+                                                                      (documents) -> {
+                                                                          final Bulk.Builder bulkBuilder = new Bulk.Builder();
+                                                                          for (FeedbackDocument document : documents) {
+                                                                              final String index = indexStrategy.getIndex(getModifiedIndex(),
+                                                                                                                          Instant.ofEpochMilli(document.getTimestamp()));
+                                                                              final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
+                                                                              bulkBuilder.addAction(indexBuilder.build());
+                                                                          }
+                                                                          return new BulkWrapper(bulkBuilder);
+                                                                      },
+                                                                      bulkRetryCount);
         // the bulk request considers retries
         try {
             bulkRequest.execute();
