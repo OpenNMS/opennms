@@ -33,6 +33,7 @@ import static org.junit.Assert.assertThat;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
@@ -87,7 +88,7 @@ public class BlackboxTest {
 
     @Test
     public void testFiles() throws Exception {
-        final Session session = new TcpSession();
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress());
 
         for (final String file : this.files) {
             try (final FileChannel channel = FileChannel.open(FOLDER.resolve(file))) {

@@ -269,6 +269,9 @@ public class Collectd extends AbstractServiceDaemon implements
         
         // node category membership changes
         ueiList.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
+
+        // node location changed event
+        ueiList.add(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI);
         
         getEventIpcManager().addEventListener(this, ueiList);
     }
@@ -618,8 +621,6 @@ public class Collectd extends AbstractServiceDaemon implements
      *            TODO
      * @param spec
      *            TODO
-     * @param svcName
-     *            TODO
      */
     private boolean alreadyScheduled(OnmsIpInterface iface, CollectionSpecification spec) {
         String ipAddress = str(iface.getIpAddress());
@@ -733,6 +734,8 @@ public class Collectd extends AbstractServiceDaemon implements
                 handleReloadDaemonConfig(event);
             } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
                 handleNodeCategoryMembershipChanged(event);
+            } else if (event.getUei().equals(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI)) {
+                handleNodeLocationChanged(event);
             }
         } catch (InsufficientInformationException e) {
             handleInsufficientInfo(e);
@@ -993,6 +996,25 @@ public class Collectd extends AbstractServiceDaemon implements
         unscheduleNodeAndMarkForDeletion(nodeId);
 
         LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
+
+        scheduleNode(nodeId.intValue(), true);
+    }
+
+    /**
+     * This method is responsible for handling NodeLocationChanged events.
+     *
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException if the event does not have a nodeId
+     */
+    private void handleNodeLocationChanged(Event event) throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+
+        Long nodeId = event.getNodeid();
+
+        unscheduleNodeAndMarkForDeletion(nodeId);
+
+        LOG.debug("nodeLocationChanged: unscheduling nodeid {} completed.", nodeId);
 
         scheduleNode(nodeId.intValue(), true);
     }
@@ -1400,7 +1422,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>getScheduler</p>
      *
-     * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
+     * @return a {@link org.opennms.netmgt.scheduler.Scheduler} object.
      */
     public Scheduler getScheduler() {
         if (m_scheduler == null) {

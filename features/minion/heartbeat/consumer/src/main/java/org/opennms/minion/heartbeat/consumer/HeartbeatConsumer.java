@@ -240,6 +240,10 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
             alteredForeignSources.add(nextForeignSource);
         } else {
+            // Change location in requisition.
+            if(!prevLocation.equals(nextLocation)) {
+                requisitionNode.setLocation(nextLocation);
+            }
             // The node already exists in the requisition
             RequisitionInterface requisitionInterface = requisitionNode.getInterface(MINION_INTERFACE);
             if (requisitionInterface == null) {

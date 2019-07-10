@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,14 +37,13 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
@@ -118,14 +118,16 @@ public class TcpSession implements Session {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(this.observationDomainId, this.templateId);
+            return Objects.hash(this.observationDomainId, this.templateId);
         }
     }
 
+    private final InetAddress remoteAddress;
     private final Map<Key, Template> templates = Maps.newHashMap();
     private final Map<Key, Map<Set<Value<?>>, List<Value<?>>>> options = Maps.newHashMap();
 
-    public TcpSession() {
+    public TcpSession(final InetAddress remoteAddress) {
+        this.remoteAddress = Objects.requireNonNull(remoteAddress);
     }
 
     @Override
@@ -155,5 +157,10 @@ public class TcpSession implements Session {
     @Override
     public Session.Resolver getResolver(final long observationDomainId) {
         return new Resolver(observationDomainId);
+    }
+
+    @Override
+    public InetAddress getRemoteAddress() {
+        return this.remoteAddress;
     }
 }

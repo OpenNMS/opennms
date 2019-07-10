@@ -28,16 +28,25 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.bson.BsonBinary;
 import org.bson.BsonBinaryWriter;
 import org.bson.BsonWriter;
 import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.common.utils.DnsUtils;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
@@ -58,8 +67,13 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedV
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 public class ParserBase {
     private static final Logger LOG = LoggerFactory.getLogger(ParserBase.class);
+    public static final String CLOCK_SKEW_EVENT_UEI = "uei.opennms.org/internal/telemetry/clockSkewDetected";
 
     private final Protocol protocol;
 
@@ -67,16 +81,55 @@ public class ParserBase {
 
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
 
+    private final EventForwarder eventForwarder;
+
+    private final Identity identity;
+
+    private long maxClockSkew = 0;
+
+    private long clockSkewEventRate = 0;
+
+    private LoadingCache<InetAddress, Optional<Instant>> eventCache;
+
     public ParserBase(final Protocol protocol,
                       final String name,
-                      final AsyncDispatcher<TelemetryMessage> dispatcher) {
+                      final AsyncDispatcher<TelemetryMessage> dispatcher,
+                      final EventForwarder eventForwarder,
+                      final Identity identity) {
         this.protocol = Objects.requireNonNull(protocol);
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
+        this.eventForwarder = Objects.requireNonNull(eventForwarder);
+        this.identity = Objects.requireNonNull(identity);
+
+        setClockSkewEventRate(3600);
     }
 
     public String getName() {
         return this.name;
+    }
+
+    public void setMaxClockSkew(final long maxClockSkew) {
+        this.maxClockSkew = maxClockSkew;
+    }
+
+    public long getMaxClockSkew() {
+        return this.maxClockSkew;
+    }
+
+    public long getClockSkewEventRate() {
+        return clockSkewEventRate;
+    }
+
+    public void setClockSkewEventRate(final long clockSkewEventRate) {
+        this.clockSkewEventRate = clockSkewEventRate;
+
+        this.eventCache =  CacheBuilder.newBuilder().expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
+            @Override
+            public Optional<Instant> load(InetAddress key) throws Exception {
+                return Optional.empty();
+            }
+        });
     }
 
     protected CompletableFuture<?> transmit(final RecordProvider packet, final InetSocketAddress remoteAddress) throws Exception {
@@ -95,6 +148,7 @@ public class ParserBase {
         }).toArray(CompletableFuture[]::new));
     }
 
+
     public static ByteBuffer serialize(final Protocol protocol, final Iterable<Value<?>> record) {
         // Build BSON document from flow
         final BasicOutputBuffer output = new BasicOutputBuffer();
@@ -111,6 +165,33 @@ public class ParserBase {
         }
 
         return output.getByteBuffers().get(0).asNIO();
+    }
+
+    protected void detectClockSkew(final long packetTimestampMs, final InetAddress remoteAddress) {
+        if (getMaxClockSkew() > 0) {
+            long deltaMs = Math.abs(packetTimestampMs - System.currentTimeMillis());
+            if (deltaMs > getMaxClockSkew() * 1000L) {
+                final Optional<Instant> instant = eventCache.getUnchecked(remoteAddress);
+
+                if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getClockSkewEventRate()) {
+                    eventCache.put(remoteAddress, Optional.of(Instant.now()));
+
+                    eventForwarder.sendNow(new EventBuilder()
+                            .setUei(CLOCK_SKEW_EVENT_UEI)
+                            .setTime(new Date())
+                            .setSource(getName())
+                            .setInterface(remoteAddress)
+                            .setDistPoller(identity.getId())
+                            .addParam("monitoringSystemId", identity.getId())
+                            .addParam("monitoringSystemLocation", identity.getLocation())
+                            .setParam("delta", (int) deltaMs)
+                            .setParam("clockSkewEventRate", (int) getClockSkewEventRate())
+                            .setParam("maxClockSkew", (int) getMaxClockSkew())
+                            .getEvent());
+                }
+
+            }
+        }
     }
 
     private static class FlowBuilderVisitor implements Value.Visitor {
