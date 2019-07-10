@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -48,7 +49,6 @@ import org.bson.BsonDocument;
 import org.bson.RawBsonDocument;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Converter;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
@@ -102,7 +102,7 @@ public class Netflow9ConverterTest {
 
     private List<Flow> getFlowsForPayloadsInSession(List<byte[]> payloads) {
         final List<Flow> flows = new ArrayList<>();
-        final Session session = new TcpSession();
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress());
         for (byte[] payload : payloads) {
             final ByteBuffer buffer = ByteBuffer.wrap(payload);
             final Header header;

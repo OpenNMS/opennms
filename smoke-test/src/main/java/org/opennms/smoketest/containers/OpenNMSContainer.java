@@ -164,7 +164,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .withEnv("OPENNMS_CASSANDRA_PORT", Integer.toString(CassandraContainer.CQL_PORT))
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
-                .withEnv("JAVA_OPTS", "-Xms1g -Xmx1g -Djava.security.egd=file:/dev/./urandom")
+                .withEnv("JAVA_OPTS", "-Xms1536m -Xmx1536m -Djava.security.egd=file:/dev/./urandom")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
