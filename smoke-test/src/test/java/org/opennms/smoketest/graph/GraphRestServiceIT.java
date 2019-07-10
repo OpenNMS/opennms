@@ -41,7 +41,6 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
-import org.opennms.test.system.api.NewTestEnvironment;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
