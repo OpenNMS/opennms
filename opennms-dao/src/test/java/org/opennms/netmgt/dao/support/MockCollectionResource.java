@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,13 +51,26 @@ public class MockCollectionResource implements CollectionResource {
     
     private final ResourcePath parent;
     private String instance;
+    private String unmodifiedInstance;
     private final String type;
     private final Map<String,String> attributes = new HashMap<String,String>();
     
     public MockCollectionResource(ResourcePath parent, String instance, String type) {
+        this(parent, instance, instance, type);
+    }
+
+    public MockCollectionResource(ResourcePath parent, String instance, String unmodifiedInstance, String type) {
         this.parent = parent;
-        this.instance = instance;
+        this.instance = sanitizeInstance(instance);
+        this.unmodifiedInstance = unmodifiedInstance;
         this.type = type;
+    }
+
+    /**
+     * Copied from GenericTypeResource
+     */
+    public static String sanitizeInstance(String instance) {
+        return instance.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_");
     }
 
     @Override
@@ -135,6 +148,15 @@ public class MockCollectionResource implements CollectionResource {
     
     public void setInstance(String instance) {
         this.instance = instance;
+    }
+
+    @Override
+    public String getUnmodifiedInstance() {
+        return unmodifiedInstance;
+    }
+
+    public void setUnmodifiedInstance(String instance) {
+        this.unmodifiedInstance = instance;
     }
 
     @Override

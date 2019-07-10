@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -97,6 +97,25 @@ public class ObjectNameStorageStrategyTest {
 
         String expResult = "java.lang_typeMemoryPool,nameSurvivor_Space";
         String result = instance.getResourceNameFromIndex(resource);
+        assertEquals(expResult, result);
+    }
+
+    /*
+     * This test verifies that if we try to use a sanitized instance string we get an IllegalArgumentException back
+     * when we try to get the resource name of our index.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidInstance() {
+        ResourcePath parentResource = ResourcePath.get("1");
+        String instance = "java.lang:type=MemoryPool,name=Survivor Space";
+        String expResult = MockCollectionResource.sanitizeInstance(instance);
+        CollectionResource resource = new MockCollectionResource(parentResource, instance, expResult, "");
+        List<org.opennms.netmgt.collection.api.Parameter> params = new ArrayList<>();
+        params.add(new Parameter("index-format", "${ObjectName.toString()}"));
+        ObjectNameStorageStrategy storageStrategy = new ObjectNameStorageStrategy();
+        storageStrategy.setParameters(params);
+
+        String result = storageStrategy.getResourceNameFromIndex(resource);
         assertEquals(expResult, result);
     }
 
