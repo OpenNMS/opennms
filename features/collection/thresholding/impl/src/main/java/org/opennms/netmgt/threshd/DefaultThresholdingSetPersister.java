@@ -31,6 +31,12 @@ package org.opennms.netmgt.threshd;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdingSet;
+import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
+
 /**
  * HashMap implementation of a {@link ThresholdingSetPersister}.
  */

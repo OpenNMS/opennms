@@ -30,7 +30,9 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
 
+import java.net.Inet4Address;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
@@ -48,7 +50,11 @@ public class BooleanValue extends Value<Boolean> {
                         final Optional<Semantics> semantics,
                         final boolean value) {
         super(name, semantics);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public BooleanValue(final String name, final boolean value) {
+        this(name, Optional.empty(), value);
     }
 
     @Override

@@ -30,9 +30,9 @@ package org.opennms.netmgt.mock;
 
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.threshd.ThresholdInitializationException;
-import org.opennms.netmgt.threshd.ThresholdingService;
-import org.opennms.netmgt.threshd.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 
 public class MockThresholdingService implements ThresholdingService {
 

@@ -781,6 +781,9 @@
                         "dst_addr": {
                             "type": "ip"
                         },
+                        "dst_addr_hostname": {
+                            "type": "keyword"
+                        },
                         "dst_mask_len": {
                             "type": "integer"
                         },
@@ -803,6 +806,9 @@
                         "next_hop": {
                             "type": "ip"
                         },
+                        "next_hop_hostname": {
+                            "type": "keyword"
+                        },
                         "output_snmp": {
                             "type": "integer"
                         },
@@ -822,6 +828,9 @@
                         },
                         "src_addr": {
                             "type": "ip"
+                        },
+                        "src_addr_hostname": {
+                            "type": "keyword"
                         },
                         "src_mask_len": {
                             "type": "integer"

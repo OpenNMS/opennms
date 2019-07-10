@@ -29,7 +29,7 @@
 package org.opennms.netmgt.mock;
 
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.threshd.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 
 public class MockThresholdingSession implements ThresholdingSession {
 

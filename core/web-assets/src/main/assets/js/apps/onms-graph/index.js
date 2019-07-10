@@ -144,7 +144,6 @@ const getDimensionsForElement = (el, def) => {
 };
 
 const render = () => {
-  console.log('GraphContainer: rendering'); // eslint-disable-line no-console
   let didDrawOneOrMorePlaceholders = false;
 
   let graphingEngine = 'png';
@@ -158,7 +157,7 @@ const render = () => {
 
   $j('.graph-container').each((index, e) => {
     const el = $j(e);
-
+    let didGraphRendered = false;
     // Extract the attributes
     let def = {
       'resourceId': el.data('resource-id'),
@@ -197,23 +196,74 @@ const render = () => {
     // Determine the target dimensions
     const dim = getDimensionsForElement(el, def);
 
-    if (graphingEngine === 'placeholder') {
-      drawPlaceholderGraph(el, def, dim);
-      didDrawOneOrMorePlaceholders = true;
-    } else if (graphingEngine === 'backshift') {
-      drawBackshiftGraph(el, def, dim);
-    } else {
-      drawPngGraph(el, def, dim);
+    // RenderGraph based on graphingEngine used.
+    const renderGraph = () =>  {
+      if (graphingEngine === 'placeholder') {
+        drawPlaceholderGraph(el, def, dim);
+        didDrawOneOrMorePlaceholders = true;
+      } else if (graphingEngine === 'backshift') {
+        drawBackshiftGraph(el, def, dim);
+      } else {
+        drawPngGraph(el, def, dim);
+      }
+      didGraphRendered = true;
+      console.log('Rendered graph ' + def.graphName); // eslint-disable-line no-console
+      // Notify other components (i.e cropper) that we have loaded a graph
+      $j(document).trigger('graphLoaded', [dim.width, dim.height]);
+    };
+
+    // Calculate if div is in viewport and render if it is.
+    const renderGraphWhenInView = () => {
+      let scrollTop = $(window).scrollTop();
+      let windowBottom = scrollTop + $(window).height();
+      let offsetTop = el.offset().top;
+      let offsetBottom = offsetTop + el.height();
+      let divIsHidden = el.parent().hasClass('ng-hide');
+      if ((scrollTop <= offsetBottom && windowBottom >= offsetTop) && !didGraphRendered && !divIsHidden) {
+        renderGraph();
+      }
     }
 
-    // Notify other components (i.e cropper) that we have loaded a graph
-    $j(document).trigger('graphLoaded', [dim.width, dim.height]);
+    // Render immediately if no scrolling possible or first two graphs
+    if ($(document).height() <= $(window).height() || index <= 1) {
+      renderGraph();
+    }
+    // Check window scroll and lazy load graphs that are in view and not hidden by 'ng-hide'
+    $(window).scroll(function () {
+      renderGraphWhenInView();
+    });
+
+    // Also render graphs that are in viewport when renderGraph is triggered.
+    el.on('renderGraph', function (event) { 
+      renderGraphWhenInView();
+      event.stopPropagation();
+    });
+
+    // If print is triggered, render graph if div is not hidden.
+    (function () {
+      var beforePrint = function () {
+        let divIsHidden = el.parent().hasClass('ng-hide');
+        if (!didGraphRendered && !divIsHidden) {
+          renderGraph();
+        }
+      };
+      if (window.matchMedia) {
+        var mediaQueryList = window.matchMedia('print');
+        mediaQueryList.addListener(function (mql) {
+          if (mql.matches) {
+            beforePrint();
+          }
+        });
+      }
+      window.onbeforeprint = beforePrint;
+    }());
+
   });
 
   if (didDrawOneOrMorePlaceholders) {
-    holder.run({images: '.graph-placeholder'});
+    holder.run({ images: '.graph-placeholder' });
   }
-  console.log('GraphContainer: finished rendering'); // eslint-disable-line no-console
+
 };
 
 // Automatically trigger a render on load

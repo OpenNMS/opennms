@@ -28,6 +28,8 @@ _Parsers_ and _Listeners_ must work together in a tight manner.
 Therefore they can not be combined in any possible combination.
 Which _Parser_ is supported by which _Listener_ is described in the documentation of each _Parser_ accordingly.
 
+TIP: You can provide the parameter `maxClockSkew` in your parser definition to enable clock skew detection for exporters. It specifies the maximum delta in seconds between exporter and Minion timestamps. If violated an alarm will be generated for the exporting device. The default value is 0, so clock skew detection is disabled. Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events. The default is `3600` seconds, so every hour an event will be sent.
+
 === _Adapters_
 _Adapters_ are responsible for enriching and processing the data dispatched over a queue.
 It receives the data from queue and transforms it into a format usable by _{opennms-product-name}_.
@@ -50,3 +52,28 @@ If a _Listener_ its _Parsers_ is running on _Minion_, the received messages will
 
 .Running _Listener_ on a _Minion_ forwarding packets using the messaging system
 image::telemetryd/telemetryd-minion.png[]
+
+[[telemetryd-reverse-hostname-resolution]]
+=== Enabling reverse hostname resolution
+Some _Parsers_ support reverse hostname resolution to annotate IP addresses with the actual hostname.
+If enabled, the reverse name lookup will be done on the _Minion_ while parsing the protocol data.
+The resolved hostname, if found, is attached to the address information and both will be sent to the _Adapter_ for further processing.
+
+To enable reverse hostname resolution, the following command can be used:
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> system:property -p org.opennms.features.telemetry.dns.enable true
+admin@minion()> system:property -p org.opennms.features.telemetry.dns.primaryServer your.primary.dns.server
+admin@minion()> system:property -p org.opennms.features.telemetry.dns.secondaryServer your.secondary.dns.server
+----
+
+If the primary and secondary servers are not set (or set to an empty string), the servers configured by the system running the JVM will be used.
+
+The resolved host names are cached for their TTL as specified in the returned DNS records.
+The property `org.opennms.features.telemetry.dns.cache.maxttl` can be used to limit the TTL to a shorter time.
+The cache has also a maximal number of entries it will contain.
+To change the entry count, the property `org.opennms.features.telemetry.dns.cache.count` can be set (the default is 50000 entries).
+
+The following _Parsers_ support reverse hostname resolution right now: Netflow v5, Netflow v9, IPFIX and SFlow.
