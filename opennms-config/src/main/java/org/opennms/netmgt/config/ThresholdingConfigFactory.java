@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,8 +51,14 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
+import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
+import org.opennms.netmgt.model.EffectiveConfiguration;
+import org.opennms.netmgt.model.OnmsJsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * This class is the main repository for thresholding configuration information
@@ -90,6 +97,10 @@ public final class ThresholdingConfigFactory {
      * name.
      */
     private Map<String, Group> m_groupMap;
+
+    private EffectiveConfigurationDao m_configDao;
+
+    private Gson gson;
 
     /**
      * Private constructor
@@ -177,6 +188,7 @@ public final class ThresholdingConfigFactory {
                 }
             }
         }
+
         m_singleton = tcf;
         m_loaded = true;
     }
@@ -295,7 +307,26 @@ public final class ThresholdingConfigFactory {
             fileWriter.close();
 
             update();
+
+            saveEffective();
         }
+    }
+
+    private synchronized void saveEffective() {
+        EffectiveConfiguration effective = new EffectiveConfiguration();
+        effective.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
+        effective.setConfiguration(getJsonConfig());
+        effective.setLastUpdated(new Date());
+        m_configDao.save(effective);
+
+    }
+
+    private OnmsJsonDocument getJsonConfig() {
+        JsonObject document = new JsonObject();
+        document.addProperty("groups", gson.toJson(m_groupMap));
+        OnmsJsonDocument onmsJson = new OnmsJsonDocument();
+        onmsJson.setDocument(document);
+        return onmsJson;
     }
 
     /**

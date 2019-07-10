@@ -34,8 +34,16 @@ import org.opennms.netmgt.model.EffectiveConfiguration;
 
 public interface EffectiveConfigurationDao extends OnmsDao<EffectiveConfiguration, Integer> {
 
-    public EffectiveConfiguration findEffectiveConfigurationByKey(String key);
+    /**
+     * Returns the matching configuration for the provided key.
+     * By convention, the key value is the filename of the preexisting configuration.
+     */
+    public EffectiveConfiguration getByKey(String key);
 
+    /**
+     * Returns the last update date for the object with the given key.
+     * Returns null if there is no matching configuration in the db.
+     */
     public Date getLastUpdated(String key);
 
 }

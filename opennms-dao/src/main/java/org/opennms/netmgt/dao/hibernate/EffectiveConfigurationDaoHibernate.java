@@ -32,25 +32,24 @@ import java.util.Date;
 
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EffectiveConfigurationDaoHibernate extends AbstractDaoHibernate<EffectiveConfiguration, Integer> implements EffectiveConfigurationDao {
-    private static final Logger LOG = LoggerFactory.getLogger(EffectiveConfigurationDaoHibernate.class);
 
     public EffectiveConfigurationDaoHibernate() {
         super(EffectiveConfiguration.class);
     }
 
     @Override
-    public EffectiveConfiguration findEffectiveConfigurationByKey(String key) {
-        // TODO Auto-generated method stub
-        return null;
+    public EffectiveConfiguration getByKey(String key) {
+        return super.findUnique("from EffectiveConfiguration config where config.key = ?", key);
     }
 
     @Override
     public Date getLastUpdated(String key) {
-        // TODO Auto-generated method stub
-        return null;
+        EffectiveConfiguration config = getByKey(key);
+        if (config == null) {
+            return null;
+        }
+        return config.getLastUpdated();
     }
 }

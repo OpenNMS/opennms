@@ -38,6 +38,9 @@ import org.hibernate.annotations.TypeDefs;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+/**
+ * OnmsJsonDocument is simply a wrapper for a JSON object that is mapped to a database type.
+ */
 @MappedSuperclass
 @TypeDefs({
     @TypeDef(name = "jsonb", typeClass = OnmsJsonbType.class)

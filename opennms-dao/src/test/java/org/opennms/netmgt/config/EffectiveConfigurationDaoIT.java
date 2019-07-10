@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertThat;
+
 import java.util.Date;
 
 import org.junit.Before;
@@ -39,13 +41,17 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
 import org.opennms.netmgt.model.OnmsJsonDocument;
-import org.opennms.netmgt.model.OnmsJsonbType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonObject;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -81,6 +87,7 @@ public class EffectiveConfigurationDaoIT implements InitializingBean {
     }
     
     @Test
+    @Transactional
     @JUnitTemporaryDatabase
     public void testCanPersistEffectiveConfiguation() {
         EffectiveConfiguration ef = new EffectiveConfiguration();
@@ -93,6 +100,17 @@ public class EffectiveConfigurationDaoIT implements InitializingBean {
         Date lastUpdated = new Date();
         ef.setLastUpdated(lastUpdated);
         
+        // Save the effectiveConfiguration
         dao.save(ef);
+        
+        // Should not find any for a non-existing key
+        EffectiveConfiguration retrieved = dao.getByKey("foo");
+        assertThat(retrieved, is(nullValue()));
+        
+        // but Should be able to retrieve the persisted value
+        retrieved = dao.getByKey("org.opennms.ef.test");
+        assertThat(retrieved, is(not(nullValue())));
+        assertThat(retrieved.getConfiguration().toString(), is("{\"foo\":\"bar\"}"));
+        assertThat(retrieved.getLastUpdated(), is(lastUpdated));
     }
 }

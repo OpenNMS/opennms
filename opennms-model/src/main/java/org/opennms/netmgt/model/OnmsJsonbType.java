@@ -97,7 +97,6 @@ public class OnmsJsonbType implements UserType {
 
     @Override
     public boolean isMutable() {
-        // TODO Auto-generated method stub
         return false;
     }
 
