@@ -36,10 +36,10 @@ import org.junit.Test;
 
 import io.restassured.http.ContentType;
 
-public class UserRestIT extends AbstractRestIT {
+public class WhoamiRestIT extends AbstractRestIT {
 
-    public UserRestIT() {
-        super(Version.V1, "users/whoami");
+    public WhoamiRestIT() {
+        super(Version.V1, "whoami");
     }
 
     @Test
@@ -47,9 +47,9 @@ public class UserRestIT extends AbstractRestIT {
         given().accept(ContentType.JSON).get()
                 .then().log().all()
                 .assertThat().statusCode(200)
-                .body("user-id", is("admin"))
-                .body("full-name", is("Administrator"))
-                .body("role", hasItem("ROLE_ADMIN"));
+                .body("id", is("admin"))
+                .body("fullName", is("Administrator"))
+                .body("roles", hasItem("ROLE_ADMIN"));
     }
 
 }
