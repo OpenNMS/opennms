@@ -56,6 +56,7 @@ import org.opennms.netmgt.model.EffectiveConfiguration;
 import org.opennms.netmgt.model.OnmsJsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -75,12 +76,13 @@ import com.google.gson.JsonObject;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
-public final class ThresholdingConfigFactory {
-    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingConfigFactory.class);
+public final class ThresholdsConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdsConfigFactory.class);
+
     /**
      * The singleton instance of this factory
      */
-    private static ThresholdingConfigFactory m_singleton = null;
+    private static ThresholdsConfigFactory m_singleton = null;
 
     /**
      * The config class loaded from the config file
@@ -98,9 +100,10 @@ public final class ThresholdingConfigFactory {
      */
     private Map<String, Group> m_groupMap;
 
+    @Autowired
     private EffectiveConfigurationDao m_configDao;
 
-    private Gson gson;
+    private Gson gson = new Gson();
 
     /**
      * Private constructor
@@ -108,7 +111,7 @@ public final class ThresholdingConfigFactory {
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      */
-    private ThresholdingConfigFactory(String configFile) throws IOException {
+    private ThresholdsConfigFactory(String configFile) throws IOException {
         InputStream stream = null;
 
         try {
@@ -128,7 +131,7 @@ public final class ThresholdingConfigFactory {
      * @param stream a {@link java.io.InputStream} object.
      * @throws IOException 
      */
-    public ThresholdingConfigFactory(InputStream stream) throws IOException {
+    public ThresholdsConfigFactory(InputStream stream) throws IOException {
         parseXML(stream);
     }
 
@@ -171,11 +174,12 @@ public final class ThresholdingConfigFactory {
             return;
         }
 
+        // FIXME File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDS_CONF_FILE_NAME);
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
         LOG.debug("init: config file path: {}", cfgFile.getPath());
 
-        ThresholdingConfigFactory tcf = new ThresholdingConfigFactory(cfgFile.getPath());
+        ThresholdsConfigFactory tcf = new ThresholdsConfigFactory(cfgFile.getPath());
 
         for (String groupName : tcf.getGroupNames()) {
             Group g = tcf.getGroup(groupName);
@@ -215,7 +219,7 @@ public final class ThresholdingConfigFactory {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized ThresholdingConfigFactory getInstance() {
+    public static synchronized ThresholdsConfigFactory getInstance() {
         if (!m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
         }
@@ -223,14 +227,17 @@ public final class ThresholdingConfigFactory {
         return m_singleton;
     }
 
-    /**
-     * <p>setInstance</p>
-     *
-     * @param instance a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
-     */
-    public static synchronized void setInstance(ThresholdingConfigFactory instance) {
+    public static synchronized void setInstance(ThresholdsConfigFactory instance) {
         m_loaded = true;
         m_singleton = instance;
+    }
+
+    public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
+        m_configDao = effectiveConfigurationDao;
+    }
+
+    public EffectiveConfigurationDao getEffectiveConfigurationDao() {
+        return m_configDao;
     }
     /**
      * Retrieves the configured path to the RRD file repository for the
@@ -334,7 +341,7 @@ public final class ThresholdingConfigFactory {
      *
      * @throws java.io.IOException if any.
      */
-    public void update() throws IOException {
+    private void update() throws IOException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
         InputStream stream = null;

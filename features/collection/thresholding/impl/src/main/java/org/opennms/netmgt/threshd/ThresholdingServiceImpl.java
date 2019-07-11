@@ -35,7 +35,7 @@ import javax.annotation.PostConstruct;
 
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -83,7 +83,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     private void init() {
         try {
             ThreshdConfigFactory.init();
-            ThresholdingConfigFactory.init();
+            ThresholdsConfigFactory.init();
             eventIpcManager.addEventListener(this, UEI_LIST);
         } catch (final Exception e) {
             throw new RuntimeException("Unable to initialize thresholding.", e);
@@ -188,7 +188,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         if (isThresholds) {
             try {
                 ThreshdConfigFactory.reload();
-                ThresholdingConfigFactory.reload();
+                ThresholdsConfigFactory.reload();
                 thresholdingSetPersister.reinitializeThresholdingSets();
             } catch (final Exception e) {
                 throw new RuntimeException("Unable to reload thresholding.", e);

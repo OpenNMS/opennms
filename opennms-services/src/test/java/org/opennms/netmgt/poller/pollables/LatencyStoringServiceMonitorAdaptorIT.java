@@ -56,7 +56,7 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -140,7 +140,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
 
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         PollOutagesConfigFactory.init();
-        ThresholdingConfigFactory.reload();
+        ThresholdsConfigFactory.reload();
         ThreshdConfigFactory.reload();
         System.setProperty("opennms.home", previousOpennmsHome);
 

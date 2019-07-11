@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.ThresholdsConfigFactory;
 
 /**
  * <p>ThresholdsDao interface.</p>
@@ -58,7 +58,7 @@ public interface ThresholdsDao {
     /**
      * <p>getThresholdingConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
+     * @return a {@link org.opennms.netmgt.config.ThresholdsConfigFactory} object.
      */
-    ThresholdingConfigFactory getThresholdingConfigFactory();
+    ThresholdsConfigFactory getThresholdingConfigFactory();
 }

@@ -75,15 +75,6 @@ public class EffectiveConfigurationDaoIT implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        ThreshdConfigFactory threshdConfigFactory;
-        ThresholdingConfigFactory thresholdingConfigFactory;
-        // FIXME outageConfig
-
-        // TODO read conf from files
-        // PERSIT in JSON
-        // READ out JSON
-        // Assert equivelent to input
-
     }
     
     @Test

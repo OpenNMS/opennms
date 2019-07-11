@@ -89,8 +89,7 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigManager;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
@@ -267,7 +266,7 @@ public class ThresholdingVisitorIT {
     
     private void initFactories(String threshd, String thresholds) throws Exception {
         LOG.info("Initialize Threshold Factories");
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
+        ThresholdsConfigFactory.setInstance(new ThresholdsConfigFactory(getClass().getResourceAsStream(thresholds)));
         ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
     }
 
@@ -995,8 +994,8 @@ public class ThresholdingVisitorIT {
         initFactories("/threshd-configuration-bug3390.xml","/test-thresholds-bug3390.xml");
         
         // Validating threshd-configuration.xml
-        ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
-        final List<Package> packages = configManager.getConfiguration().getPackages();
+        ThreshdConfigFactory configFactory = ThreshdConfigFactory.getInstance();
+        final List<Package> packages = configFactory.getConfiguration().getPackages();
         assertEquals(1, packages.size());
         org.opennms.netmgt.config.threshd.Package pkg = packages.get(0);
         final List<Service> services = pkg.getServices();

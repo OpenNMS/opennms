@@ -151,6 +151,14 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
   </bean>
 
+  <bean id="thresholdsConfig" class="org.opennms.netmgt.config.ThresholdsConfigFactory" depends-on="thresholdsConfig-init" lazy-init="true" factory-method="getInstance">
+      <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
+  </bean>
+  <bean id="thresholdsConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.ThresholdsConfigFactory.init</value></property>
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.config.ThresholdsConfigFactory" ref="thresholdsConfig" />
+
   <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
   
   <onmsgi:service interface="org.opennms.netmgt.config.TrapdConfig" ref="trapdConfig" />

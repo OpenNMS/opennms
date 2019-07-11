@@ -51,8 +51,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigManager;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.threshd.FilterOperator;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
@@ -144,20 +143,20 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     void reinitialize(final boolean reloadThresholdConfig) {
         m_initialized = false;
 
-        final ThresholdingConfigFactory tcf = ThresholdingConfigFactory.getInstance();
+        final ThresholdsConfigFactory tcf = ThresholdsConfigFactory.getInstance();
         final boolean hasThresholds = m_hasThresholds;
         final List<ThresholdGroup> thresholdGroups = new ArrayList<>(m_thresholdGroups);
         final List<String> scheduledOutages = new ArrayList<>(m_scheduledOutages);
         try {
             if (reloadThresholdConfig) {
-                ThresholdingConfigFactory.reload();
+                ThresholdsConfigFactory.reload();
             }
             initThresholdsDao();
             mergeThresholdGroups(m_nodeId, m_hostAddress, m_serviceName);
             updateScheduledOutages();
         } catch (final Exception e) {
             LOG.error("Failed to reinitialize thresholding set.  Reverting to previous configuration.", e);
-            ThresholdingConfigFactory.setInstance(tcf);
+            ThresholdsConfigFactory.setInstance(tcf);
             m_hasThresholds = hasThresholds;
             if (!thresholdGroups.equals(m_thresholdGroups)) {
                 m_thresholdGroups.clear();
@@ -390,8 +389,8 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             LOG.debug("initThresholdsDao: Initializing Factories and DAOs");
             final DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
             try {
-                ThresholdingConfigFactory.init();
-                defaultThresholdsDao.setThresholdingConfigFactory(ThresholdingConfigFactory.getInstance());
+                ThresholdsConfigFactory.init();
+                defaultThresholdsDao.setThresholdingConfigFactory(ThresholdsConfigFactory.getInstance());
                 defaultThresholdsDao.setEventProxy(m_eventProxy);
                 defaultThresholdsDao.afterPropertiesSet();
             } catch (final Throwable t) {
@@ -421,7 +420,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     private static final List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) throws ThresholdInitializationException {
         List<String> groupNameList = new LinkedList<>();
 
-        ThreshdConfigManager configManager = null;
+        ThreshdConfigFactory configManager = null;
 
         try { 
             configManager = ThreshdConfigFactory.getInstance();
@@ -465,7 +464,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     protected void updateScheduledOutages() throws ThresholdInitializationException {
         synchronized (m_scheduledOutages) {
             m_scheduledOutages.clear();
-            ThreshdConfigManager configManager = null;
+            ThreshdConfigFactory configManager = null;
             try {
                 configManager = ThreshdConfigFactory.getInstance();
             } catch (final IllegalStateException e) {

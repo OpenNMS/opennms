@@ -70,7 +70,7 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -142,6 +142,9 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     private IfLabel m_ifLabelDao;
 
     private Map<String, String> mockIfInfo;
+
+    @Autowired
+    private ThresholdsConfigFactory m_thresholdsConfigFactory;
 
     @Autowired
     private ThresholdingService m_thresholdingService;
@@ -279,7 +282,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     
     private void initFactories(String threshd, String thresholds) throws Exception {
         LOG.info("Initialize Threshold Factories");
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
+        ThresholdsConfigFactory.setInstance(new ThresholdsConfigFactory(getClass().getResourceAsStream(thresholds)));
         ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
     }
 

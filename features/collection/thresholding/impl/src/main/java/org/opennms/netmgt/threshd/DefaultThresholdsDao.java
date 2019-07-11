@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     
     private static final Logger LOG = LoggerFactory.getLogger(DefaultThresholdsDao.class);
     
-    private ThresholdingConfigFactory m_thresholdingConfigFactory;
+    private ThresholdsConfigFactory m_thresholdingConfigFactory;
 
     private ThresholdingEventProxy m_eventProxy;
     
@@ -185,19 +185,19 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     /**
      * <p>getThresholdingConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
+     * @return a {@link org.opennms.netmgt.config.ThresholdsConfigFactory} object.
      */
     @Override
-    public ThresholdingConfigFactory getThresholdingConfigFactory() {
+    public ThresholdsConfigFactory getThresholdingConfigFactory() {
         return m_thresholdingConfigFactory;
     }
 
     /**
      * <p>setThresholdingConfigFactory</p>
      *
-     * @param thresholdingConfigFactory a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
+     * @param thresholdingConfigFactory a {@link org.opennms.netmgt.config.ThresholdsConfigFactory} object.
      */
-    public void setThresholdingConfigFactory(ThresholdingConfigFactory thresholdingConfigFactory) {
+    public void setThresholdingConfigFactory(ThresholdsConfigFactory thresholdingConfigFactory) {
         m_thresholdingConfigFactory = thresholdingConfigFactory;
     }
 
