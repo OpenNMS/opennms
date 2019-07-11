@@ -104,7 +104,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         m_svcParams = svcParams;
         m_resourceStorageDao = resourceStorageDao;
         m_eventProxy = eventProxy;
-        initThresholdsDao();
+        initThresholdsDao(); // FIXME - remove
         initialize();
         if (!m_initialized) {
             throw new ThresholdInitializationException("Failed to initialize thresholding set.");

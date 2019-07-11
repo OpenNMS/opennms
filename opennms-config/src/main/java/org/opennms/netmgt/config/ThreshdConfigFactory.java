@@ -59,9 +59,13 @@ import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.config.threshd.ServiceStatus;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
+import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.Gson;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -106,6 +110,11 @@ public final class ThreshdConfigFactory {
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
+
+    @Autowired
+    private EffectiveConfigurationDao m_configDao;
+
+    private Gson gson = new Gson();
 
     /**
      * <p>Constructor for ThreshdConfigFactory.</p>

@@ -29,9 +29,18 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.util.Date;
+
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
+import org.opennms.netmgt.model.EffectiveConfiguration;
+import org.opennms.netmgt.model.OnmsJsonDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * This is the singleton class used to load the configuration for the poller
@@ -53,6 +62,11 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
+
+    @Autowired
+    private EffectiveConfigurationDao effectiveConfiguationDao;
+
+    private Gson gson = new Gson();
 
     /**
      * Private constructor
@@ -136,4 +150,25 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
 
     }
 
+    @Override
+    public void saveCurrent() throws IOException {
+        super.saveCurrent();
+        persistEffectiveConfig();
+    }
+
+    private void persistEffectiveConfig() {
+        EffectiveConfiguration entity = new EffectiveConfiguration();
+        entity.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
+        entity.setConfiguration(getJsonConfig());
+        entity.setLastUpdated(new Date());
+        effectiveConfiguationDao.save(entity);
+    }
+
+    private OnmsJsonDocument getJsonConfig() {
+        JsonObject object = new JsonObject();
+        object.addProperty("outages", gson.toJson(getOutages()));
+        OnmsJsonDocument document = new OnmsJsonDocument();
+        document.setDocument(object);
+        return document;
+    }
 }

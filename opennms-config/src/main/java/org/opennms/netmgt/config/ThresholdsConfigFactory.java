@@ -106,26 +106,6 @@ public final class ThresholdsConfigFactory {
     private Gson gson = new Gson();
 
     /**
-     * Private constructor
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     */
-    private ThresholdsConfigFactory(String configFile) throws IOException {
-        InputStream stream = null;
-
-        try {
-            stream = new FileInputStream(configFile);
-            parseXML(stream);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
-        }
-
-    }
-    
-    /**
      * <p>Constructor for ThresholdingConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
@@ -174,27 +154,9 @@ public final class ThresholdsConfigFactory {
             return;
         }
 
-        // FIXME File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDS_CONF_FILE_NAME);
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
-        LOG.debug("init: config file path: {}", cfgFile.getPath());
-
-        ThresholdsConfigFactory tcf = new ThresholdsConfigFactory(cfgFile.getPath());
-
-        for (String groupName : tcf.getGroupNames()) {
-            Group g = tcf.getGroup(groupName);
-            for (org.opennms.netmgt.config.threshd.Threshold threshold :  g.getThresholds()) {
-                if (threshold.getDsName().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
-                    throw new IllegalStateException(
-                        String.format("ds-name '%s' in group '%s' is greater than %d characters",
-                            threshold.getDsName(), groupName, ConfigFileConstants.RRD_DS_MAX_SIZE)
-                    );
-                }
-            }
-        }
-
-        m_singleton = tcf;
-        m_loaded = true;
+        loadConfigFile(cfgFile);
     }
 
 
@@ -227,9 +189,38 @@ public final class ThresholdsConfigFactory {
         return m_singleton;
     }
 
+    @Deprecated // use @loadThresholds()
     public static synchronized void setInstance(ThresholdsConfigFactory instance) {
         m_loaded = true;
         m_singleton = instance;
+    }
+
+    private static void loadConfigFile(File cfgFile) throws IOException {
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
+
+        try (InputStream stream = new FileInputStream(cfgFile.getPath());) {
+
+            ThresholdsConfigFactory tcf = new ThresholdsConfigFactory(stream);
+
+            for (String groupName : tcf.getGroupNames()) {
+                Group g = tcf.getGroup(groupName);
+                for (org.opennms.netmgt.config.threshd.Threshold threshold : g.getThresholds()) {
+                    if (threshold.getDsName().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
+                        throw new IllegalStateException(String.format("ds-name '%s' in group '%s' is greater than %d characters", threshold.getDsName(), groupName,
+                                                                      ConfigFileConstants.RRD_DS_MAX_SIZE));
+                    }
+                }
+            }
+
+            m_singleton = tcf;
+            m_loaded = true;
+        }
+    }
+
+    public synchronized void loadThresholds(File thresholdsFile) throws IOException {
+        m_loaded = true;
+        m_singleton = null;
+        loadConfigFile(thresholdsFile);
     }
 
     public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
