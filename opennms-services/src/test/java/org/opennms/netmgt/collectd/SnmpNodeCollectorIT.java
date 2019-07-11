@@ -47,7 +47,8 @@ public class SnmpNodeCollectorIT extends SnmpCollectorITCase {
 
 	public SnmpNodeCollectorIT(int config) {
 		setVersion(config);
-	}
+        m_allowWarnings = true; // Don't fail because of SocketException from SNMP4J
+    }
 
 	@Parameters
 	public static Collection<Object[]> params() {
