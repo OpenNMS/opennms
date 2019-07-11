@@ -249,7 +249,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         }
         
         public GenericGraphBuilder description(String description) {
-            this.properties.put(GenericProperties.DESCRIPTION, description);
+            property(GenericProperties.DESCRIPTION, description);
             return this;
         }
         

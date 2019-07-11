@@ -93,7 +93,7 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeA
         private GenericVertexBuilder() {}
         
     	public GenericVertexBuilder id(String id) {
-    		this.properties.put(GenericProperties.ID, id);
+    		property(GenericProperties.ID, id);
     		return this;
     	}
     	

@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -133,6 +135,8 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
     
     public static class GenericGraphContainerBuilder {
 
+        private final static Logger LOG = LoggerFactory.getLogger(GenericGraphContainerBuilder.class);
+
         // allow graphs to be replaced in builder : use a Map
         private final Map<String, GenericGraph> graphs = new HashMap<>();
         private final Map<String, Object> properties = new HashMap<>();
@@ -140,27 +144,34 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
         private GenericGraphContainerBuilder() {}
         
         public GenericGraphContainerBuilder id(String id) {
-            properties.put(GenericProperties.ID, id);
+            property(GenericProperties.ID, id);
             return this;
         }
         
         public GenericGraphContainerBuilder label(String label){
-            properties.put(GenericProperties.LABEL, label);
+            property(GenericProperties.LABEL, label);
             return this;
         }
         
         public GenericGraphContainerBuilder description(String description) {
-            properties.put(GenericProperties.DESCRIPTION, description);
+            property(GenericProperties.DESCRIPTION, description);
             return this;
         }
-       
+
         public GenericGraphContainerBuilder property(String name, Object value){
+            if(name == null || value == null) {
+                LOG.debug("Property name ({}) or value ({}) is null => ignoring it.", name, value);
+                return this;
+            }
             properties.put(name, value);
             return this;
         }
         
         public GenericGraphContainerBuilder properties(Map<String, Object> properties){
-            this.properties.putAll(properties);
+            Objects.requireNonNull(properties, "properties cannot be null");
+            for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
+                property(entry.getKey(), entry.getValue());
+            }
             return this;
         }
         

@@ -32,10 +32,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 
 public abstract class GenericElement {
+
+    private final static Logger LOG = LoggerFactory.getLogger(GenericElement.class);
+
     protected final Map<String, Object> properties;
 
    /**
@@ -98,28 +104,35 @@ public abstract class GenericElement {
         protected GenericElementBuilder() {}
     	
         public T id(String id) {
-        	properties.put(GenericProperties.ID, id);
+            property(GenericProperties.ID, id);
         	return (T) this;
         }
         
         public T label(String label){
-        	properties.put(GenericProperties.LABEL, label);
+            property(GenericProperties.LABEL, label);
         	return (T) this;
         }
         
         public T namespace(String namespace){
             Objects.requireNonNull(namespace, "namespace cannot be null.");
-        	properties.put(GenericProperties.NAMESPACE, namespace);
+            property(GenericProperties.NAMESPACE, namespace);
         	return (T) this;
         }
         
         public T property(String name, Object value){
+            if(name == null || value == null) {
+                LOG.debug("Property name ({}) or value ({}) is null => ignoring it.", name, value);
+                return (T) this;
+            }
             properties.put(name, value);
             return (T) this;
         }
         
         public T properties(Map<String, Object> properties){
-            this.properties.putAll(properties);
+            Objects.requireNonNull(properties, "properties cannot be null");
+            for (Map.Entry<String, Object> entry : properties.entrySet()) {
+                property(entry.getKey(), entry.getValue());
+            }
             return (T) this;
         }
     }
