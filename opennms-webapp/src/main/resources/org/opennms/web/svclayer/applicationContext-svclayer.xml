@@ -201,12 +201,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     </property>
     <property name="durability" value="true"/>
   </bean>
-  <!-- Validators for Database Report web flow -->
-  <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator">
-    <property name="reportSchedulerService" ref="reportSchedulerService"/>
-  </bean>
-  <bean id="reportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator"/>
-  <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator"/>
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>
