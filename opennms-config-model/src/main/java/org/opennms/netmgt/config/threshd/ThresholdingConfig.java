@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.ReadOnlyConfig;
 
 /**
  * Top-level element for the thresholds.xml configuration file.
@@ -46,7 +47,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name = "thresholding-config")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("thresholding.xsd")
-public class ThresholdingConfig implements Serializable {
+public class ThresholdingConfig implements Serializable, ReadOnlyConfig {
     private static final long serialVersionUID = 2L;
 
     /**

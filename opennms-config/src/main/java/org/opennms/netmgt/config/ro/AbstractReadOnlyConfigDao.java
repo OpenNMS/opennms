@@ -26,27 +26,45 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.hibernate;
+package org.opennms.netmgt.config.ro;
 
+import java.io.IOException;
 import java.util.Date;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.opennms.netmgt.config.ReadOnlyConfig;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
+import org.opennms.netmgt.model.OnmsJsonDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class EffectiveConfigurationDaoHibernate extends AbstractDaoHibernate<EffectiveConfiguration, Integer> implements EffectiveConfigurationDao {
+public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implements ReadOnlyConfigDao<T> {
 
-    public EffectiveConfigurationDaoHibernate() {
-        super(EffectiveConfiguration.class);
-    }
+    @Autowired
+    private EffectiveConfigurationDao dao;
 
     @Override
-    public EffectiveConfiguration getByKey(String key) {
-        return super.findUnique("from EffectiveConfiguration config where config.key = ?", key);
+    public T getByKey(Class<T> type, String key) {
+        EffectiveConfiguration config = dao.getByKey(key);
+        if (config == null) {
+            return null;
+        }
+        return unMarshallConfig(type, config.getConfiguration());
     }
 
     @Override
     public Date getLastUpdated(String key) {
-        EffectiveConfiguration config = getByKey(key);
-        return config == null ? null : config.getLastUpdated();
+        return dao.getLastUpdated(key);
     }
+
+    private T unMarshallConfig(Class<T> type, OnmsJsonDocument onmsJsonDocument) {
+        try {
+            return new ObjectMapper().readValue(onmsJsonDocument.getDocument().getAsString(), type);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

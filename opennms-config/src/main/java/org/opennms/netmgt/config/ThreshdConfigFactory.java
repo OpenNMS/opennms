@@ -43,6 +43,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -61,11 +62,14 @@ import org.opennms.netmgt.config.threshd.ServiceStatus;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.model.EffectiveConfiguration;
+import org.opennms.netmgt.model.OnmsJsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -162,6 +166,7 @@ public final class ThreshdConfigFactory {
                 IOUtils.closeQuietly(stream);
             }
         }
+        m_singleton.saveEffective();
     }
 
     /**
@@ -284,6 +289,7 @@ public final class ThreshdConfigFactory {
             saveXML(xmlString);
             reloadXML();
         }
+        saveEffective();
     }
 
     /**
@@ -442,6 +448,22 @@ public final class ThreshdConfigFactory {
             }
         }
         return result;
+    }
+
+    private synchronized void saveEffective() {
+        EffectiveConfiguration effective = new EffectiveConfiguration();
+        effective.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
+        effective.setConfiguration(getJsonConfig());
+        effective.setLastUpdated(new Date());
+        m_configDao.save(effective);
+    }
+
+    private OnmsJsonDocument getJsonConfig() {
+        JsonObject document = new JsonObject();
+        document.addProperty("packages", gson.toJson(m_urlIPMap));
+        OnmsJsonDocument onmsJson = new OnmsJsonDocument();
+        onmsJson.setDocument(document);
+        return onmsJson;
     }
 
 }

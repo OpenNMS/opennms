@@ -316,7 +316,6 @@ public final class ThresholdsConfigFactory {
         effective.setConfiguration(getJsonConfig());
         effective.setLastUpdated(new Date());
         m_configDao.save(effective);
-
     }
 
     private OnmsJsonDocument getJsonConfig() {

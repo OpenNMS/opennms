@@ -26,27 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.hibernate;
+package org.opennms.netmgt.config.ro;
 
-import java.util.Date;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
-import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
-import org.opennms.netmgt.model.EffectiveConfiguration;
-
-public class EffectiveConfigurationDaoHibernate extends AbstractDaoHibernate<EffectiveConfiguration, Integer> implements EffectiveConfigurationDao {
-
-    public EffectiveConfigurationDaoHibernate() {
-        super(EffectiveConfiguration.class);
-    }
+public class ThreshdConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThresholdingConfig> {
 
     @Override
-    public EffectiveConfiguration getByKey(String key) {
-        return super.findUnique("from EffectiveConfiguration config where config.key = ?", key);
+    public ThresholdingConfig getConfig() {
+        return getByKey(ThresholdingConfig.class, ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
     }
 
-    @Override
-    public Date getLastUpdated(String key) {
-        EffectiveConfiguration config = getByKey(key);
-        return config == null ? null : config.getLastUpdated();
-    }
 }

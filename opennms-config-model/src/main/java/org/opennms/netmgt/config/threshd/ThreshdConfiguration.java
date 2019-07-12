@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.ReadOnlyConfig;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
@@ -49,7 +50,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlRootElement(name = "threshd-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("thresholding.xsd")
-public class ThreshdConfiguration implements Serializable {
+public class ThreshdConfiguration implements Serializable, ReadOnlyConfig {
     private static final long serialVersionUID = 2L;
 
     /**

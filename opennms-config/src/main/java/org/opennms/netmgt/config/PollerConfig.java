@@ -53,7 +53,7 @@ import org.opennms.netmgt.poller.ServiceMonitorRegistry;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public interface PollerConfig extends PathOutageConfig {
+public interface PollerConfig extends PathOutageConfig, ReadOnlyConfig {
 
     /**
      * This method returns the configured critical service name.

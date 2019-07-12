@@ -26,27 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.hibernate;
+package org.opennms.netmgt.config.ro;
 
 import java.util.Date;
 
-import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
-import org.opennms.netmgt.model.EffectiveConfiguration;
+import org.opennms.netmgt.config.ReadOnlyConfig;
 
-public class EffectiveConfigurationDaoHibernate extends AbstractDaoHibernate<EffectiveConfiguration, Integer> implements EffectiveConfigurationDao {
+/**
+ * Read the Efffective Configuration from the realtional datastore.
+ */
+public interface ReadOnlyConfigDao<T extends ReadOnlyConfig> {
 
-    public EffectiveConfigurationDaoHibernate() {
-        super(EffectiveConfiguration.class);
-    }
+    /**
+     * Returns the matching configuration for the provided key and type.
+     * By convention, the key value is the filename of the preexisting configuration.
+     */
+    public T getByKey(Class<T> type, String key);
 
-    @Override
-    public EffectiveConfiguration getByKey(String key) {
-        return super.findUnique("from EffectiveConfiguration config where config.key = ?", key);
-    }
+    /**
+     * Returns the last update date for the object with the given key.
+     * Returns null if there is no matching configuration in the db.
+     */
+    public Date getLastUpdated(String key);
 
-    @Override
-    public Date getLastUpdated(String key) {
-        EffectiveConfiguration config = getByKey(key);
-        return config == null ? null : config.getLastUpdated();
-    }
+    /**
+     * Returns the current configuration unmarshalled from the datastore.
+     * Each ReadOnlyConfigDao will implement a type approriate version of this method.
+     */
+    public T getConfig();
+
 }
