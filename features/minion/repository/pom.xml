@@ -50,9 +50,9 @@
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-send-event-command</feature>
+                                <feature>opennms-events-sink-dispatcher</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>
-                                <feature>minion-events-sink-disptacher</feature>
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-detectors</feature>
                                 <feature>minion-provisiond-requisitions</feature>
