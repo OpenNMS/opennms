@@ -1132,6 +1132,8 @@
       However, we need to set the default in a profile (NMS-8838).
     <runPingTests>true</runPingTests> -->
 
+    <maxCpus>2</maxCpus>
+
     <build.skip.tarball>false</build.skip.tarball>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -1379,6 +1381,8 @@
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinAddonContextMenuVersion>2.0.0</vaadinAddonContextMenuVersion>
     <vaadinAddonConfirmDialogVersion>3.2.0</vaadinAddonConfirmDialogVersion>
+    <vaadinJavaMaxMemory>1g</vaadinJavaMaxMemory>
+    <vaddinLocalWorkers>${maxCpus}</vaddinLocalWorkers>
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
 
