@@ -14,11 +14,24 @@ When enabled, the following anonymous statistics will be collected and publish o
 * System ID (a randomly generated UUID)
 * {opennms-product-name} Release
 * {opennms-product-name} Version
-* OS Architecture
-* OS Name
-* OS Version
-. Number of Alarms in the `alarms` table
-. Number of Events in the `events` table
-. Number of IP Interfaces in the `ipinterface` table
-. Number of Nodes in the `node` table
-. Number of Nodes, grouped by System OID
+* OS architecture
+* OS name
+* OS version
+* OS total memory size
+* Number of CPUs recognized by OS kernel
+* Number of Alarms in the `alarms` table
+* Number of Events in the `events` table
+* Number of IP Interfaces in the `ipinterface` table
+* Number of Nodes in the `node` table
+* Number of Nodes, grouped by System OID
+* Number of monitored services in the `ifservices` table
+* Currently active strategy for storing time-series data
+* Currently active strategy for distributed Sink and RPC operations
+* Number of Minions and monitoring locations
+* Vendor, spec version, and runtime version of the {opennms-product-name} JVM
+* Time since the {opennms-product-name} JVM started
+* Number of {opennms-product-name} users and groups defined in `users.xml` and `groups.xml`
+* List of features loaded in the {opennms-product-name} Karaf OSGi container
+* Percent utilization of filesystem(s) underlying the directories `OPENNMS_HOME/etc`, `OPENNMS_HOME/share`, and `OPENNMS_HOME/logs`
+
+The `Data Choices` module is able to gather additional, sensitive details about the system to aid in troubleshooting, but those details are never reported automatically.
