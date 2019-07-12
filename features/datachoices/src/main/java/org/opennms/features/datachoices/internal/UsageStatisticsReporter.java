@@ -58,6 +58,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.ipc.sink.common.SinkStrategy;
 import org.opennms.core.rpc.common.RpcStrategy;
@@ -65,6 +66,8 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.TimeSeries;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateChangeHandler;
+import org.opennms.karaf.extender.Feature;
+import org.opennms.karaf.extender.KarafExtender;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -80,6 +83,10 @@ import org.slf4j.LoggerFactory;
 
 @Service
 public class UsageStatisticsReporter implements StateChangeHandler {
+    
+    @Reference
+    private KarafExtender m_extender;
+    
     private static final Logger LOG = LoggerFactory.getLogger(UsageStatisticsReporter.class);
 
     public static final String USAGE_REPORT = "usage-report";
@@ -290,31 +297,13 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         } catch (IOException e) {
             LOG.error("Encountered IOException while loading Karaf features. Features list will be empty.");
         }
-        for (File featureDotDFile : featuresBootDotDDir.listFiles()) {
-            if (featureDotDFile.isDirectory() || featureDotDFile.getName().startsWith(".")) {
-                // Ignore directories and dot-files
-                continue;
+        
+        try {
+            for (Feature feature: m_extender.getFeaturesBoot()) {
+                featureSet.add(feature.getName());
             }
-            try (BufferedReader br = new BufferedReader(new FileReader(featureDotDFile))) {
-                String line = br.readLine();
-                while (line != null) {
-                    if (line.matches("^\\s*#.*")) {
-                        // Ignore comments
-                        line = br.readLine();
-                        continue;
-                    }
-                    String lineBody = line.trim();
-                    if (lineBody.startsWith("!") && lineBody.length() > 1) {
-                        String removeFeature = lineBody.substring(1).trim();
-                        featureSet.remove(removeFeature);
-                    } else {
-                        featureSet.add(lineBody);
-                    }
-                    line = br.readLine();
-                }
-            } catch (IOException e) {
-                LOG.error("Encountered IOException while loading Karaf featuresBoot.d directory contents. Feature list may be inaccurate.");
-            }
+        } catch (IOException e1) {
+            LOG.error("Encountered IOException while loading Karaf featuresBoot.d directory contents. Feature list may be inaccurate.");
         }
 
         List<String> featureList = new ArrayList<>(featureSet);
