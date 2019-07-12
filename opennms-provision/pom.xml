@@ -31,6 +31,7 @@
     <module>opennms-detectorclient-rpc</module>
     <module>opennms-requisition-dns</module>
     <module>opennms-requisition-service</module>
+    <module>opennms-detector-jms</module>
   </modules>
   <dependencyManagement>
     <dependencies>
