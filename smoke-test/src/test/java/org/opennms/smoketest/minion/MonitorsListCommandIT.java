@@ -104,6 +104,7 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.JDBCMonitor",
             "org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor",
             "org.opennms.netmgt.poller.monitors.BSFMonitor",
+            "org.opennms.netmgt.poller.monitors.ActiveMQMonitor",
             "org.opennms.netmgt.poller.monitors.OmsaStorageMonitor",
             "org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor",
             "org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor",

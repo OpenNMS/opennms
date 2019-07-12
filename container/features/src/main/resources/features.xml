@@ -823,6 +823,7 @@
         <bundle>mvn:org.opennms/opennms-detector-generic/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-jdbc/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-jmx/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-detector-jms/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-lineoriented/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-simple/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-ssh/${project.version}</bundle>
