@@ -36,7 +36,9 @@
             <property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
     </bean>
 
-    <bean id="pollOutagesConfig" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="init-pollOutagesConfig-factory" factory-method="getInstance"/>
+    <bean id="pollOutagesConfig" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="init-pollOutagesConfig-factory" factory-method="getInstance">
+		<property name="effectiveConfigurationDao" ref="effectiveConfigurationDao"/>
+	</bean>
 
 	<onmsgi:service interface="org.opennms.netmgt.config.PollOutagesConfig" ref="pollOutagesConfig" />
 
@@ -150,6 +152,14 @@
   <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
     <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
   </bean>
+
+  <bean id="threshdConfig" class="org.opennms.netmgt.config.ThreshdConfigFactory" depends-on="threshdConfig-init" lazy-init="true" factory-method="getInstance">
+      <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
+  </bean>
+  <bean id="threshdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.ThreshdConfigFactory.init</value></property>
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.config.ThreshdConfigFactory" ref="threshdConfig" />
 
   <bean id="thresholdsConfig" class="org.opennms.netmgt.config.ThresholdsConfigFactory" depends-on="thresholdsConfig-init" lazy-init="true" factory-method="getInstance">
       <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />

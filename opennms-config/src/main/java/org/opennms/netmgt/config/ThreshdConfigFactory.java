@@ -450,6 +450,10 @@ public final class ThreshdConfigFactory {
         return result;
     }
 
+    public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
+        m_configDao = effectiveConfigurationDao;
+    }
+
     private synchronized void saveEffective() {
         EffectiveConfiguration effective = new EffectiveConfiguration();
         effective.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));

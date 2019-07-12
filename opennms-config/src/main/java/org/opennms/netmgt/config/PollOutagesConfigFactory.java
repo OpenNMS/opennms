@@ -64,7 +64,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
     private static boolean m_loaded = false;
 
     @Autowired
-    private EffectiveConfigurationDao effectiveConfiguationDao;
+    private EffectiveConfigurationDao effectiveConfigurationDao;
 
     private Gson gson = new Gson();
 
@@ -156,12 +156,16 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
         persistEffectiveConfig();
     }
 
+    public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
+        this.effectiveConfigurationDao = effectiveConfigurationDao;
+    }
+
     private void persistEffectiveConfig() {
         EffectiveConfiguration entity = new EffectiveConfiguration();
         entity.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
         entity.setConfiguration(getJsonConfig());
         entity.setLastUpdated(new Date());
-        effectiveConfiguationDao.save(entity);
+        effectiveConfigurationDao.save(entity);
     }
 
     private OnmsJsonDocument getJsonConfig() {

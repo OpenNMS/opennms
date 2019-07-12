@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.ReadOnlyConfig;
 
 
 /**
@@ -50,7 +51,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="outages", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("poll-outages.xsd")
-public class Outages implements Serializable {
+public class Outages implements Serializable, ReadOnlyConfig {
     private static final long serialVersionUID = 2L;
 
     /**

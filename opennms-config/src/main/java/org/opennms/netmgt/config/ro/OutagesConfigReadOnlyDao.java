@@ -29,13 +29,13 @@
 package org.opennms.netmgt.config.ro;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.poller.outages.Outages;
 
-public class PollerConfigReadOnlyDao extends AbstractReadOnlyConfigDao<PollerConfig> {
+public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages> {
 
     @Override
-    public PollerConfig getConfig() {
-        return getByKey(PollerConfig.class, ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONFIG_FILE_NAME));
+    public Outages getConfig() {
+        return getByKey(Outages.class, ConfigFileConstants.getFileName(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME));
     }
 
 }
