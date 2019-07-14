@@ -48,11 +48,13 @@ public class RegexUtils {
      *
      * Derived from https://stackoverflow.com/questions/15588903/get-group-names-in-java-regex
      *
+     * The returned {@code Set} preserves the order of capture groups as found in the pattern.
+     *
      * @param pattern the pattern from which to extract the named capture groups
      * @return an ordered list of named capture group candidates
      */
     public static Set<String> getNamedCaptureGroupsFromPattern(String pattern) {
-        final Set<String> namedGroups = Sets.newHashSet();
+        final Set<String> namedGroups = Sets.newLinkedHashSet();
         final Matcher m = NAMED_CAPTURE_GROUPS_REGEX.matcher(pattern);
         while (m.find()) {
             namedGroups.add(m.group(1));

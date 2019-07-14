@@ -148,8 +148,6 @@ public class Test implements Action {
                 return null;
             }
 
-            // TODO fooker: Print matching pattern fields...
-
             monitor = pollerConfig.getServiceMonitor(service.get().service.getName());
             if (monitor == null) {
                 System.err.printf("Error: Service %s doesn't have a monitor class defined%n", serviceName);

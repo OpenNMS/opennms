@@ -42,6 +42,6 @@ public class RegexUtilsTest {
         assertThat(RegexUtils.getNamedCaptureGroupsFromPattern(""), hasSize(0));
         assertThat(RegexUtils.getNamedCaptureGroupsFromPattern("(?<user>.*)"), contains("user"));
         assertThat(RegexUtils.getNamedCaptureGroupsFromPattern("Node /(?<poolName>.*?)/(?<poolMember>\\S+) address (?<poolAddr>\\S+) monitor status down. .*\\(slot(?<slotNum>[0-9]+)\\)"),
-                containsInAnyOrder("poolName", "poolMember", "poolAddr", "slotNum"));
+                contains("poolName", "poolMember", "poolAddr", "slotNum"));
     }
 }

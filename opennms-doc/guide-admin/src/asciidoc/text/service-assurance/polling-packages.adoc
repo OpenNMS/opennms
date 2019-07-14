@@ -160,7 +160,7 @@ If so, the poller is used for all services matching the _RegEx_ pattern, too.
 
 The _RegEx_ pattern allows to specify named capture groups.
 There can be multiple capture groups inside of a pattern, but each must have a unique name.
-Please not, that the _RegEx_ must be escaped or be wrapped in a CDATA-Tag inside the configuration XML to make it a valid property.
+Please note, that the _RegEx_ must be escaped or be wrapped in a CDATA-Tag inside the configuration XML to make it a valid property.
 
 If a poller is matched using its pattern, the parts of the service name which matches the capture groups of the pattern are available as parameters to the link:#ga-pollerd-configuration-meta-data[Meta-Data-DSL] using the context `pattern` and the capture group name as key.
 
