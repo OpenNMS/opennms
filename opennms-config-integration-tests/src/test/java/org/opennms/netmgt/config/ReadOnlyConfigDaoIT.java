@@ -71,30 +71,31 @@ public class ReadOnlyConfigDaoIT {
 
     @Autowired
     PollOutagesConfigFactory outagesConfig;
-
+    
     @Autowired
-    ThresholdsConfigFactory thresholdsConfig;
+    OutagesConfigReadOnlyDao outagesReadOnly;
 
     @Autowired
     ThreshdConfigFactory threshdConfig;
 
     @Autowired
-    OutagesConfigReadOnlyDao outagesReadOnly;
+    ThreshdConfigReadOnlyDao threshdReadOnly;
+
+    @Autowired
+    ThresholdsConfigFactory thresholdsConfig;
     
     @Autowired
     ThresholdsConfigReadOnlyDao thresholdsReadOnly;
 
-    @Autowired
-    ThreshdConfigReadOnlyDao threshdReadOnly;
-
     @Before
     public void setup() {
-        System.setProperty("opennms.home", getClass().getResource("resources").getFile());
+        // System.setProperty("opennms.home", getClass().getResource("resources").getFile());
     }
+
 
     @Test
     public void testOutages() throws IOException {
-        PollOutagesConfigFactory.reload();// FIXME - not working - loads from base assembly which is empty....
+        // PollOutagesConfigFactory.reload();// FIXME - not working - loads from base assembly which is empty....
         Outages outages = outagesReadOnly.getConfig();
         assertNotNull(outages);
         assertEquals(outagesConfig.getOutages(), outages.getOutages());
@@ -102,7 +103,7 @@ public class ReadOnlyConfigDaoIT {
 
     @Test
     public void testThreshd() throws IOException {
-        ThreshdConfiguration threshdConfiguration = thresholdsReadOnly.getConfig();
+        ThreshdConfiguration threshdConfiguration = threshdReadOnly.getConfig();
         assertNotNull(threshdConfiguration);
         assertEquals(threshdConfig.getConfiguration().getThreads(), threshdConfiguration.getThreads());
         assertEquals(threshdConfig.getConfiguration().getPackages(), threshdConfiguration.getPackages());
@@ -111,7 +112,7 @@ public class ReadOnlyConfigDaoIT {
 
     @Test
     public void testThresholds() throws IOException {
-        ThresholdingConfig thresholdingConfig = threshdReadOnly.getConfig();
+        ThresholdingConfig thresholdingConfig = thresholdsReadOnly.getConfig();
         assertNotNull(thresholdingConfig);
         assertEquals(thresholdingConfig.getGroups(), thresholdingConfig.getGroups());
     }

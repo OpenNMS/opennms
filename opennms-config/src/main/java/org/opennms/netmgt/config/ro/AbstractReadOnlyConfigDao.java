@@ -30,6 +30,7 @@ package org.opennms.netmgt.config.ro;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.netmgt.config.ReadOnlyConfig;

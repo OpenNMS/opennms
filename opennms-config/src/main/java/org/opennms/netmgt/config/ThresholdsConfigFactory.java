@@ -220,6 +220,7 @@ public final class ThresholdsConfigFactory {
 
     public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
         m_configDao = effectiveConfigurationDao;
+        saveEffective();
     }
 
     public EffectiveConfigurationDao getEffectiveConfigurationDao() {

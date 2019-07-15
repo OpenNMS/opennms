@@ -161,7 +161,6 @@ public final class ThreshdConfigFactory {
                 IOUtils.closeQuietly(stream);
             }
         }
-        m_singleton.saveEffective();
     }
 
     /**
@@ -447,11 +446,12 @@ public final class ThreshdConfigFactory {
 
     public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
         m_configDao = effectiveConfigurationDao;
+        saveEffective();
     }
 
     private synchronized void saveEffective() {
         EffectiveConfiguration effective = new EffectiveConfiguration();
-        effective.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
+        effective.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME));
         effective.setConfiguration(getJsonConfig());
         effective.setLastUpdated(new Date());
         m_configDao.save(effective);

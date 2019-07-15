@@ -29,13 +29,13 @@
 package org.opennms.netmgt.config.ro;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
+import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
-public class ThresholdsConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThreshdConfiguration> {
+public class ThresholdsConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThresholdingConfig> {
 
     @Override
-    public ThreshdConfiguration getConfig() {
-        return getByKey(ThreshdConfiguration.class, ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME));
+    public ThresholdingConfig getConfig() {
+        return getByKey(ThresholdingConfig.class, ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
     }
 
 }
