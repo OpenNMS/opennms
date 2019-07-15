@@ -375,7 +375,7 @@
         <span>Duty Schedules</span>
       </div>
       <div class="card-body">
-      <table class="table table-sm table-responsive table-striped">
+      <table class="table table-sm table-striped">
             <tr>
               <th>#</th>
               <th>Delete</th>
