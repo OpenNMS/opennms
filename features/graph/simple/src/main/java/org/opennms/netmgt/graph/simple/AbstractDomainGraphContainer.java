@@ -155,7 +155,7 @@ public abstract class AbstractDomainGraphContainer<G extends AbstractDomainGraph
         }
         
         public T containerInfo(GraphContainerInfo containerInfo) {
-            builder.containerInfo(containerInfo);
+            builder.applyContainerInfo(containerInfo);
             return (T)this;
         }
         

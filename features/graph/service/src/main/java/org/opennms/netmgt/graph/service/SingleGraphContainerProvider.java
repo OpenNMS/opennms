@@ -51,7 +51,7 @@ public class SingleGraphContainerProvider implements GraphContainerProvider {
 
     @Override
     public ImmutableGraphContainer loadGraphContainer() {
-        final GenericGraphContainerBuilder containerBuilder = GenericGraphContainer.builder().containerInfo(getContainerInfo());
+        final GenericGraphContainerBuilder containerBuilder = GenericGraphContainer.builder().applyContainerInfo(getContainerInfo());
         final GenericGraph graph = graphProvider.loadGraph().asGenericGraph();
         if (graph != null) {
             containerBuilder.addGraph(graph);

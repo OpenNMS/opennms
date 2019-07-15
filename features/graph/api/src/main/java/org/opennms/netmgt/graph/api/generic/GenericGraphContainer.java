@@ -47,8 +47,8 @@ import com.google.common.collect.ImmutableMap;
 // TODO MVR we must rework the generic and simple objects a bit more... that is kinda weird how it is implemented. The graph could work as an example but is also not fully defined yet
 public class GenericGraphContainer implements ImmutableGraphContainer<GenericGraph> {
 
-    private List<GenericGraph> graphs;
-    private Map<String, Object> properties;
+    private final List<GenericGraph> graphs;
+    private final Map<String, Object> properties;
 
     private GenericGraphContainer(GenericGraphContainerBuilder builder) {
         this.properties = ImmutableMap.copyOf(builder.properties);
@@ -175,7 +175,7 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
             return this;
         }
         
-        public GenericGraphContainerBuilder containerInfo(GraphContainerInfo containerInfo) {
+        public GenericGraphContainerBuilder applyContainerInfo(GraphContainerInfo containerInfo) {
             this.id(containerInfo.getId());
             this.label(containerInfo.getLabel());
             this.description(containerInfo.getDescription());
