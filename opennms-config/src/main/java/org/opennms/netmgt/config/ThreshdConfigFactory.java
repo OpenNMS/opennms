@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -63,13 +64,9 @@ import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.EffectiveConfiguration;
-import org.opennms.netmgt.model.OnmsJsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -117,8 +114,6 @@ public final class ThreshdConfigFactory {
 
     @Autowired
     private EffectiveConfigurationDao m_configDao;
-
-    private Gson gson = new Gson();
 
     /**
      * <p>Constructor for ThreshdConfigFactory.</p>
@@ -462,12 +457,13 @@ public final class ThreshdConfigFactory {
         m_configDao.save(effective);
     }
 
-    private OnmsJsonDocument getJsonConfig() {
-        JsonObject document = new JsonObject();
-        document.addProperty("packages", gson.toJson(m_urlIPMap));
-        OnmsJsonDocument onmsJson = new OnmsJsonDocument();
-        onmsJson.setDocument(document);
-        return onmsJson;
+    private String getJsonConfig() {
+        try {
+            return new ObjectMapper().writeValueAsString(m_config);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return "";
+        }
     }
-
 }

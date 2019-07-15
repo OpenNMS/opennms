@@ -35,7 +35,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.netmgt.config.ReadOnlyConfig;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
-import org.opennms.netmgt.model.OnmsJsonDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implements ReadOnlyConfigDao<T> {
@@ -57,14 +56,17 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
         return dao.getLastUpdated(key);
     }
 
-    private T unMarshallConfig(Class<T> type, OnmsJsonDocument onmsJsonDocument) {
+    private T unMarshallConfig(Class<T> type, String json) {
         try {
-            return new ObjectMapper().readValue(onmsJsonDocument.getDocument().getAsString(), type);
+            return new ObjectMapper().readValue(json, type);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void setDao(EffectiveConfigurationDao dao) {
+        this.dao = dao;
     }
 
 }

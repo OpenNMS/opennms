@@ -41,6 +41,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import com.google.common.base.MoreObjects;
 
@@ -55,6 +56,7 @@ import com.google.common.base.MoreObjects;
  */
 @Entity
 @Table(name = "effective_configuration")
+@TypeDef(name = "jsonb", typeClass = OnmsJsonbType.class)
 public class EffectiveConfiguration implements Serializable {
     
     private static final long serialVersionUID = -2278390290606190530L;
@@ -63,7 +65,9 @@ public class EffectiveConfiguration implements Serializable {
 
     private String key;
     
-    private OnmsJsonDocument configuration;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private String configuration;
     
     private Date lastUpdated;
     
@@ -90,12 +94,12 @@ public class EffectiveConfiguration implements Serializable {
     }
 
     @Type(type = "jsonb")
-    @Column(name = "document")
-    public OnmsJsonDocument getConfiguration() {
+    @Column(name = "document", columnDefinition = "jsonb")
+    public String getConfiguration() {
         return configuration;
     }
 
-    public void setConfiguration(OnmsJsonDocument configuration) {
+    public void setConfiguration(String configuration) {
         this.configuration = configuration;
     }
 

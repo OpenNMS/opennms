@@ -55,7 +55,7 @@ public class OnmsJsonbType implements UserType {
 
     @Override
     public Class returnedClass() {
-        return OnmsJsonDocument.class;
+        return String.class;
     }
 
     @Override
@@ -72,8 +72,10 @@ public class OnmsJsonbType implements UserType {
 
     @Override
     public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
-        // TODO Auto-generated method stub
-        return null;
+        if (rs.wasNull()) {
+            return null;
+        }
+        return rs.getString(names[0]);
     }
 
     @Override
@@ -83,8 +85,7 @@ public class OnmsJsonbType implements UserType {
             return;
         }
         try {
-            String json = gson.toJson(value);
-            st.setObject(index, json, Types.OTHER);
+            st.setObject(index, (String) value, Types.OTHER);
         } catch (final Exception e) {
             throw new RuntimeException("Failed to convert document to String: " + e.getMessage(), e);
         }

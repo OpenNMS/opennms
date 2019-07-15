@@ -133,6 +133,16 @@
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" ref="dataCollectionConfigDao" />
   
+  <bean id="readOnlyOutagesConfig" class="org.opennms.netmgt.config.ro.OutagesConfigReadOnlyDao">
+    <property name="dao" ref="effectiveConfigurationDao" />
+  </bean>
+  <bean id="readOnlyThreshdConfig" class="org.opennms.netmgt.config.ro.ThreshdConfigReadOnlyDao">
+    <property name="dao" ref="effectiveConfigurationDao" />
+  </bean>
+  <bean id="readOnlyThresholdsConfig" class="org.opennms.netmgt.config.ro.ThresholdsConfigReadOnlyDao">
+    <property name="dao" ref="effectiveConfigurationDao" />
+  </bean>
+
   <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
   </bean>

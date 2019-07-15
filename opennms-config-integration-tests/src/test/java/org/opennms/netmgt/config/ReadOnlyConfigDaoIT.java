@@ -29,18 +29,26 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.ro.OutagesConfigReadOnlyDao;
 import org.opennms.netmgt.config.ro.ThreshdConfigReadOnlyDao;
 import org.opennms.netmgt.config.ro.ThresholdsConfigReadOnlyDao;
+import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
+import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -57,7 +65,9 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties={// We don't need a real pinger here
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
-@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)public class ReadOnlyConfigDaoIT {
+@JUnitTemporaryDatabase(tempDbClass = MockDatabase.class, reuseDatabase = false)
+@Transactional
+public class ReadOnlyConfigDaoIT {
 
     @Autowired
     PollOutagesConfigFactory outagesConfig;
@@ -76,10 +86,34 @@ import org.springframework.test.context.ContextConfiguration;
 
     @Autowired
     ThreshdConfigReadOnlyDao threshdReadOnly;
-    
+
+    @Before
+    public void setup() {
+        System.setProperty("opennms.home", getClass().getResource("resources").getFile());
+    }
+
     @Test
-    public void testOutages() {
-        assertEquals(outagesConfig.getOutages(), equals(outagesReadOnly.getConfig().getOutages()));
+    public void testOutages() throws IOException {
+        PollOutagesConfigFactory.reload();// FIXME - not working - loads from base assembly which is empty....
+        Outages outages = outagesReadOnly.getConfig();
+        assertNotNull(outages);
+        assertEquals(outagesConfig.getOutages(), outages.getOutages());
+    }
+
+    @Test
+    public void testThreshd() throws IOException {
+        ThreshdConfiguration threshdConfiguration = thresholdsReadOnly.getConfig();
+        assertNotNull(threshdConfiguration);
+        assertEquals(threshdConfig.getConfiguration().getThreads(), threshdConfiguration.getThreads());
+        assertEquals(threshdConfig.getConfiguration().getPackages(), threshdConfiguration.getPackages());
+        assertEquals(threshdConfig.getConfiguration().getThresholders(), threshdConfiguration.getThresholders());
+    }
+
+    @Test
+    public void testThresholds() throws IOException {
+        ThresholdingConfig thresholdingConfig = threshdReadOnly.getConfig();
+        assertNotNull(thresholdingConfig);
+        assertEquals(thresholdingConfig.getGroups(), thresholdingConfig.getGroups());
     }
 
 }

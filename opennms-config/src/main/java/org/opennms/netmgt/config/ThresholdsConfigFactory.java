@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
@@ -53,13 +54,9 @@ import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
-import org.opennms.netmgt.model.OnmsJsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 /**
  * This class is the main repository for thresholding configuration information
@@ -102,8 +99,6 @@ public final class ThresholdsConfigFactory {
 
     @Autowired
     private EffectiveConfigurationDao m_configDao;
-
-    private Gson gson = new Gson();
 
     /**
      * <p>Constructor for ThresholdingConfigFactory.</p>
@@ -318,14 +313,15 @@ public final class ThresholdsConfigFactory {
         m_configDao.save(effective);
     }
 
-    private OnmsJsonDocument getJsonConfig() {
-        JsonObject document = new JsonObject();
-        document.addProperty("groups", gson.toJson(m_groupMap));
-        OnmsJsonDocument onmsJson = new OnmsJsonDocument();
-        onmsJson.setDocument(document);
-        return onmsJson;
+    private String getJsonConfig() {
+        try {
+            return new ObjectMapper().writeValueAsString(m_config);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return "";
+        }
     }
-
     /**
      * <p>update</p>
      *

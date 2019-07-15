@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.config;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
@@ -40,18 +43,11 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
-import org.opennms.netmgt.model.OnmsJsonDocument;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.gson.JsonObject;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -83,11 +79,7 @@ public class EffectiveConfigurationDaoIT implements InitializingBean {
     public void testCanPersistEffectiveConfiguation() {
         EffectiveConfiguration ef = new EffectiveConfiguration();
         ef.setKey("org.opennms.ef.test");
-        OnmsJsonDocument configuration = new OnmsJsonDocument();
-        JsonObject document = new JsonObject();
-        document.addProperty("foo", "bar");
-        configuration.setDocument(document);
-        ef.setConfiguration(configuration);
+        ef.setConfiguration("{\"foo\":\"bar\"}");
         Date lastUpdated = new Date();
         ef.setLastUpdated(lastUpdated);
         
