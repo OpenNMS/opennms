@@ -146,11 +146,5 @@
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-events-sink-disptacher" version="${project.version}" description="Minion :: Events :: Sink Dispatcher">
-      <feature>opennms-config-api</feature>
-      <feature>opennms-events-api</feature>
-      <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.dispatcher/${project.version}</bundle>
-    </feature>
-
 
 </features>

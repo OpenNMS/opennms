@@ -49,6 +49,7 @@ import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.AlarmTextFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
+import org.opennms.web.alarm.filter.CategoryFilter;
 import org.opennms.web.alarm.filter.IPAddrLikeFilter;
 import org.opennms.web.alarm.filter.LocationFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
@@ -83,7 +84,7 @@ public class AlarmQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the {@link AlarmFilterController AlarmFilterController}.
      */
-    protected static String[] IGNORE_LIST = new String[] { "alarmtext", "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[] { "alarmtext", "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear", "category" };
 
     /**
      * The URL for the {@link AlarmFilterController AlarmFilterController}. The
@@ -231,6 +232,11 @@ public class AlarmQueryServlet extends HttpServlet {
         String situation = WebSecurityUtils.sanitizeString(request.getParameter("situation"));
         if (situation != null && !situation.equalsIgnoreCase("any")) {
             filterArray.add(new SituationFilter(Boolean.valueOf(situation)));
+        }
+
+        String category = WebSecurityUtils.sanitizeString(request.getParameter("category"));
+        if (category != null && category.length() > 0) {
+            filterArray.add(new CategoryFilter(category));
         }
 
         String queryString = "";

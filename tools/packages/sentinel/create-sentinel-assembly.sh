@@ -46,7 +46,7 @@ done
 
 # always build the root POM, just to be sure inherited properties/plugin/dependencies are right
 echo "=== Building checkstyle & root POM ==="
-"${TOPDIR}/compile.pl" $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY --projects org.opennms:org.opennms.checkstyle,org.opennms:opennms install
+"${TOPDIR}/compile.pl" $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY --projects org.opennms:org.opennms.checkstyle,org.opennms:opennms install --builder smart --threads ${CCI_MAXCPU:-2}
 
 get_maven_artifact() {
 	xsltproc "${MYDIR}/get-id.xsl" "$1/pom.xml" || exit 1
@@ -77,9 +77,11 @@ fi
 echo "Projects: ${PROJECTS}"
 echo ""
 ./compile.pl $OPTS_MAVEN $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PROFILES $OPTS_ASSEMBLIES \
+	-DvaadinJavaMaxMemory=${CCI_VAADINJAVAMAXMEM:-1g} \
+	-DmaxCpus=${CCI_MAXCPU:-2} \
 	--projects "${PROJECTS}" \
 	--also-make \
-	install
+	install --builder smart --threads ${CCI_MAXCPU:-2}
 
 echo "=== Finished ==="
 echo "Your tarball is in:" opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz

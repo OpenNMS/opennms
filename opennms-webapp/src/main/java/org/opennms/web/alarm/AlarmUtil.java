@@ -36,7 +36,6 @@ import java.util.NoSuchElementException;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
@@ -52,6 +51,7 @@ import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmTextFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
+import org.opennms.web.alarm.filter.CategoryFilter;
 import org.opennms.web.alarm.filter.EventParmLikeFilter;
 import org.opennms.web.alarm.filter.ExactUEIFilter;
 import org.opennms.web.alarm.filter.IPAddrLikeFilter;
@@ -283,6 +283,8 @@ public abstract class AlarmUtil extends Object {
             filter = new NegativeNodeLocationFilter(value);
         } else if (type.equals(SituationFilter.TYPE)) {
             filter = new SituationFilter(Boolean.valueOf(value));
+        } else if (type.equals(CategoryFilter.TYPE)) {
+            filter = new CategoryFilter(value);
         }
 
         return filter;

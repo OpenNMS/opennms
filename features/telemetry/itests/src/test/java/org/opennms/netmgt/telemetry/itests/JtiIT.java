@@ -95,7 +95,8 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class JtiIT {
 

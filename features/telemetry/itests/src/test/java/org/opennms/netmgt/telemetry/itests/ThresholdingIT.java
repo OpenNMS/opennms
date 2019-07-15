@@ -29,8 +29,11 @@
 package org.opennms.netmgt.telemetry.itests;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -55,6 +58,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
@@ -66,6 +70,7 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
 import org.opennms.netmgt.telemetry.config.model.ListenerConfig;
@@ -105,7 +110,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class ThresholdingIT {
 
@@ -128,6 +134,9 @@ public class ThresholdingIT {
 
     @Autowired
     private ThresholdingService thresholdingService;
+
+    @Autowired
+    private RrdStrategy rrdStrategy;
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -173,18 +182,35 @@ public class ThresholdingIT {
         ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
         mockEventIpcManager.addEventListener((EventListener) thresholdingService, ThresholdingServiceImpl.UEI_LIST);
 
+        // Compute the path to the RRD file
+        final File interfaceDir = rrdBaseDir.toPath().resolve("1" + File.separator + "ge_0_0_3").toFile();
+        final File ifIn1SecPktsRrdFile = new File(interfaceDir, CollectorTestUtils.rrd(rrdStrategy, "ifIn1SecPkts"));
+        // The file should not exist yet
+        assertThat(ifIn1SecPktsRrdFile.exists(), equalTo(false));
+
         EventAnticipator eventAnticipator = mockEventIpcManager.getEventAnticipator();
 
         // Send an initial message
         sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 0);
 
+        // Wait for the RRD file to be created
+        await().atMost(60, TimeUnit.SECONDS).until(ifIn1SecPktsRrdFile::exists, equalTo(true));
+        long lastModified = ifIn1SecPktsRrdFile.lastModified();
+
         // There should be no thresholding Events
         assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
+
+        // Wait one second before sending the next message (RRDs require at least a one second step)
+        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
 
         // Send another message
         ifInOctets += 10000000;
         ifOutOctets += 10000000;
         sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 5);
+
+        // Wait for the RRD file to be updated
+        await().atMost(60, TimeUnit.SECONDS).until(ifIn1SecPktsRrdFile::lastModified, greaterThan(lastModified));
+
         // There should still be no thresholding Events
         assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
 
@@ -193,6 +219,9 @@ public class ThresholdingIT {
         threshBldr.setInterface(addr("192.0.2.1"));
         threshBldr.setService("JTI-GPB");
         eventAnticipator.anticipateEvent(threshBldr.getEvent());
+
+        // Wait one second before sending the next message (RRDs require at least a one second step)
+        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
 
         // Send another message - this time with ifIn1SecPkts > threshold
         ifInOctets += 10000000;
@@ -204,7 +233,6 @@ public class ThresholdingIT {
 
         // There should be no unexpected Thresholding Events
         assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
-
     }
 
     private void sendTelemetryMessage(String ipAddress, String ifName, long ifInOctets, long ifOutOctets, long ifIn1SecPkts) throws IOException {

@@ -20,10 +20,10 @@
       </cm:default-properties>
     </cm:property-placeholder>
 
-    <!-- Provided by minion-core -->
-    <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity" />
+    <!-- Provided by minion-core or sentinel-->
+    <reference id="identity" interface="org.opennms.distributed.core.api.Identity" />
 
-    <!-- Provided by minion-core -->
+    <!-- Provided by minion-core or sentinel jms service-->
     <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)" />
 
   <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
@@ -32,7 +32,7 @@
           init-method="init" destroy-method="destroy">
         <property name="bundleContext" ref="blueprintBundleContext"/>
         <property name="tracerRegistry" ref="tracerRegistry"/>
-        <property name="minionIdentity" ref="minionIdentity"/>
+        <property name="identity" ref="identity"/>
     </bean>
     <service ref="camelRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 

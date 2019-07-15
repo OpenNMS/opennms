@@ -58,7 +58,7 @@
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.plugin.version}</version>
                 <configuration>
-                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
+                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx${vaadinJavaMaxMemory} -Xss1024k</extraJvmArgs>
                     <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
                     <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets</hostedWebapp>
                     <noServer>true</noServer>
@@ -68,6 +68,7 @@
                     <strict>true</strict>
                     <runTarget>http://localhost:8980/opennms/topology</runTarget>
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+                    <localWorkers>${vaddinLocalWorkers}</localWorkers>
                 </configuration>
                 <executions>
                     <execution>

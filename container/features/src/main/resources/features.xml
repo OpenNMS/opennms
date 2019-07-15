@@ -588,11 +588,17 @@
         <feature>guava</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.commands/${project.version}</bundle>
     </feature>
-    <!--This feature lives both on minion and OpenNMS is the reason it needs separate feature.-->
+    <!--This feature lives on Minion, OpenNMS and Sentinel is the reason it needs separate feature.-->
     <feature name="opennms-send-event-command" version="${project.version}" description="OpenNMS :: Events :: Send :: Command">
         <feature>opennms-events-api</feature>
         <feature>opennms-model</feature>
         <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.command/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-events-sink-dispatcher" version="${project.version}" description="OpenNMS :: Events :: Sink Dispatcher">
+        <feature>opennms-config-api</feature>
+        <feature>opennms-events-api</feature>
+        <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.dispatcher/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-icmp-api" version="${project.version}" description="OpenNMS :: ICMP :: API">
@@ -823,6 +829,7 @@
         <bundle>mvn:org.opennms/opennms-detector-generic/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-jdbc/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-jmx/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-detector-jms/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-lineoriented/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-simple/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-ssh/${project.version}</bundle>
