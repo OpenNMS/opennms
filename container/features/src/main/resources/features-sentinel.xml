@@ -58,7 +58,7 @@
         <!-- Used for the REST client in core-impl -->
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
+        <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
 
         <!-- CORE Distributed -->
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
