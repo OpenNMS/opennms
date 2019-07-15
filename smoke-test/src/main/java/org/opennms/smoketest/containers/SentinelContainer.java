@@ -162,6 +162,12 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                         .put("acks", "1")
                         .build());
 
+        writeProps(etc.resolve("org.opennms.core.ipc.sink.kafka.cfg"),
+                ImmutableMap.<String,String>builder()
+                        .put("bootstrap.servers", OpenNMSContainer.KAFKA_ALIAS + ":9092")
+                        .put("acks", "1")
+                        .build());
+
         writeProps(etc.resolve("org.opennms.features.flows.persistence.elastic.cfg"),
                 ImmutableMap.<String,String>builder()
                         .put("elasticUrl", "http://" + OpenNMSContainer.ELASTIC_ALIAS + ":9200")

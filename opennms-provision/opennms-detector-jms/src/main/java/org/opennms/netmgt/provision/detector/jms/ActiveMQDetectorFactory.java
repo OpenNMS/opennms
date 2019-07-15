@@ -21,26 +21,30 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.netmgt.provision.detector.jms;
 
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.xml.event.Event;
+import java.util.Map;
+import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
+import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface ThresholdingSession extends AutoCloseable {
+@Component
+public class ActiveMQDetectorFactory extends GenericServiceDetectorFactory<ActiveMQDetector> {
+    private static final Logger LOG = LoggerFactory.getLogger(ActiveMQDetectorFactory.class);
 
-    /**
-     * Accepts a {@link CollectionSet} for threshold evaluation. The service will send {@link Event}s if Thresholds are triggered or re-armed.
-     * 
-     * @param collectionSet
-     * @throws ThresholdInitializationException
-     *             if the Thresholding Configuration has not yet been initialized ot there is an error initializing it. 
-     *             I.E. reading as parsing the configuration files.
-     */
-    void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
+    public ActiveMQDetectorFactory() {
+        super(ActiveMQDetector.class);
+    }
 
+    @Override
+    public ActiveMQDetector createDetector(Map<String, String> properties) {
+        final ActiveMQDetector detector = new ActiveMQDetector();
+        return detector;
+    }
 }

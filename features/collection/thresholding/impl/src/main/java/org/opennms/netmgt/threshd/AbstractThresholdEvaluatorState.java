@@ -84,7 +84,10 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
                 dsLabelValue = resource.getIfLabel();
             // Set interface specific parameters
             bldr.addParam("ifLabel", resource.getIfLabel());
-            bldr.addParam("ifIndex", resource.getIfIndex());
+            // will be null for telemetry resources
+            if (resource.getIfIndex() != null) {
+                bldr.addParam("ifIndex", resource.getIfIndex());
+            }
             String ipaddr = resource.getIfInfoValue("ipaddr");
             if (ipaddr != null && !"0.0.0.0".equals(ipaddr)) {
                 bldr.addParam("ifIpAddress", ipaddr);

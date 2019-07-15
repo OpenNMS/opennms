@@ -55,8 +55,8 @@ config:property-set http-url http://127.0.0.1:8980/opennms <3>
 config:property-set broker-url failover:tcp://127.0.0.1:61616 <4>
 config:update
 ----
-<1> Not used at the moment, but must be provided
-<2> Not used at the moment, may be omitted
+<1> used only for tracing, must be provided
+<2> used only for tracing, must be provided
 <3> url which points to {opennms-product-name} (required)
 <4> url which points to the {opennms-product-name} Active MQ Broker (only required if using feature `sentinel-jms`, otherwise may be omitted)
 

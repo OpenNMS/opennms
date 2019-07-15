@@ -95,7 +95,8 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class JtiIT {
 
@@ -151,8 +152,9 @@ public class JtiIT {
         final byte[] jtiMsgBytes = Resources.toByteArray(Resources.getResource("jti_15.1F4_ifd_ae_40000.raw"));
         InetAddress address = InetAddressUtils.getLocalHostAddress();
         DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, address, port);
-        DatagramSocket socket = new DatagramSocket();
-        socket.send(packet);
+        try (DatagramSocket socket = new DatagramSocket();) {
+            socket.send(packet);
+        }
 
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
@@ -176,8 +178,9 @@ public class JtiIT {
         final byte[] jtiMsgBytes = Resources.toByteArray(Resources.getResource("jti_15.1F4_ifd_ae_40000.raw"));
         InetAddress address = InetAddressUtils.getLocalHostAddress();
         DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, address, port);
-        DatagramSocket socket = new DatagramSocket();
-        socket.send(packet);
+        try (DatagramSocket socket = new DatagramSocket();) {
+            socket.send(packet);
+        }
 
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
@@ -191,8 +194,9 @@ public class JtiIT {
         await().pollDelay(1, TimeUnit.SECONDS).atMost(30, TimeUnit.SECONDS).until(() -> {
             final InetAddress newAddress = InetAddressUtils.getLocalHostAddress();
             final DatagramPacket newPacket = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, newAddress, port);
-            final DatagramSocket newSocket = new DatagramSocket();
-            newSocket.send(newPacket);
+            try (final DatagramSocket newSocket = new DatagramSocket();) {
+                newSocket.send(newPacket);
+            }
 
             return rrdBaseDir.toPath()
                     .resolve(Paths.get("1", "ge_0_0_3", "FooBar.jrb"))

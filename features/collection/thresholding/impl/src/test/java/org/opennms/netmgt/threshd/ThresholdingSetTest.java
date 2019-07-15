@@ -48,6 +48,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 
 public class ThresholdingSetTest {
     @Before

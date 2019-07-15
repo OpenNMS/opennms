@@ -50,9 +50,9 @@
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-send-event-command</feature>
+                                <feature>opennms-events-sink-dispatcher</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>
-                                <feature>minion-events-sink-disptacher</feature>
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-detectors</feature>
                                 <feature>minion-provisiond-requisitions</feature>
@@ -150,6 +150,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>core-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.minion.shell</groupId>
             <artifactId>org.opennms.features.minion.shell.collection</artifactId>
             <version>${project.version}</version>
@@ -210,6 +215,10 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-jmx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-jms</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
