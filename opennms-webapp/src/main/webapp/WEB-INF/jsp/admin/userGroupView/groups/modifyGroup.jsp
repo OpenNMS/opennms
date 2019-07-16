@@ -426,9 +426,9 @@
       <div class="form-row">
           <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
           <select name="numSchedules" class="form-control custom-select col-xs-6 col-sm-2 col-md-1 mr-2">
-            <option value="1">1</option>
+            <option value="1" selected="selected">1</option>
             <option value="2">2</option>
-            <option value="3" selected="selected">3</option>
+            <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
