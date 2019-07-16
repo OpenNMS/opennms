@@ -13,7 +13,7 @@
   </parameter>
   <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
     <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
-    <defaultValueExpression><![CDATA["/opt/opennms/etc/report-templates/"]]></defaultValueExpression>
+    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/"]]></defaultValueExpression>
   </parameter>
   <parameter name="startDate" class="java.util.Date">
     <parameterDescription><![CDATA[Report Start Date]]></parameterDescription>

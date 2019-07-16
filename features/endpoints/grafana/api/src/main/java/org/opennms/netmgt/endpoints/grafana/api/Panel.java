@@ -91,10 +91,11 @@ public class Panel implements PanelContainer {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Panel panel = (Panel) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Panel)) return false;
+        if (!super.equals(object)) return false;
+        Panel panel = (Panel) object;
         return Objects.equals(id, panel.id) &&
                 Objects.equals(title, panel.title) &&
                 Objects.equals(type, panel.type) &&

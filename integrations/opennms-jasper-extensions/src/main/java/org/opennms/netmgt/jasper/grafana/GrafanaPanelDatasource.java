@@ -123,7 +123,7 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
                 return pngBytes;
             } catch (TimeoutException|InterruptedException|ExecutionException e) {
                 // TODO: We should render the exception details to an image for inclusion in the report rather
-                // than aborting the report altogether
+                // than aborting the report altogether. See NMS-12170.
                 throw new JRException("Exception while rendering panel: " + currentPanel.getTitle(), e);
             }
         }
