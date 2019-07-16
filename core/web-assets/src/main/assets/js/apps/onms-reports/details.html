@@ -79,7 +79,7 @@
         <!-- DATE -->
         <div ng-if="parameter.type === 'date'" class="form-group" ng-repeat-end>
             <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
-            <div class="input-group" ng-if="options.isScheduleReport() && parameter.useAbsoluteDate === false">
+            <div class="input-group" ng-if="options.scheduleReport && parameter.useAbsoluteDate === false">
                 <input type="number" min="0" max="31" class="form-control" ng-model="parameter.count" />
                 <select class="form-control custom-select" ng-model="parameter.interval">
                     <option value="day">day</option>
@@ -90,7 +90,7 @@
                 <input class="form-control" type="number" min="0" max="23" ng-model="parameter.hours" />
                 <input class="form-control" type="number" min="0" max="59" ng-model="parameter.minutes" />
             </div>
-            <datetimepicker ng-if="!options.isScheduleReport() || parameter.useAbsoluteDate === true"
+            <datetimepicker ng-if="!options.scheduleReport || parameter.useAbsoluteDate === true"
                             locale="parameter.internalLocale"
                             format="parameter.internalFormat"
                             ng-model="parameter.internalValue"
@@ -122,7 +122,7 @@
             <i class="fa fa-share"></i> Deliver this report
         </label>
     </div>
-    <div class="" ng-if="options.isDeliverReport()">
+    <div class="" ng-if="options.deliverReport">
         <h3>Report Delivery Options</h3>
         <div class="">
             <div class="form-group">
@@ -192,7 +192,7 @@
             <i class="fa fa-clock-o"></i> Schedule this report
         </label>
     </div>
-    <div class="" ng-if="options.isScheduleReport()">
+    <div class="" ng-if="options.scheduleReport">
         <h3>Cron Expression</h3>
         <div class="">
             <p>
