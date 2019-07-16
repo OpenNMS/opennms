@@ -101,7 +101,7 @@
     </div>
 
     <!-- FORMAT -->
-    <div class="form-group" ng-if="report.online">
+    <div class="form-group" ng-if="report.online && options.isExecuteReport()">
         <label for="reportFormat" class="">Report Format</label>
         <select id="reportFormat"
                 name="reportFormat"
