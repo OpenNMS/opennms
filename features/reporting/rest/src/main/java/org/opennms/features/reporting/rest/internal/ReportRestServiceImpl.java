@@ -32,7 +32,6 @@ import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +42,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -56,6 +56,7 @@ import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.features.reporting.rest.ReportRestService;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.dao.api.CategoryDao;
@@ -65,14 +66,14 @@ import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.web.svclayer.DatabaseReportListService;
+import org.opennms.web.svclayer.SchedulerMessage;
+import org.opennms.web.svclayer.SchedulerMessageSeverity;
+import org.opennms.web.svclayer.SchedulerRequestContext;
 import org.opennms.web.svclayer.SchedulerService;
 import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.model.DatabaseReportDescription;
 import org.opennms.web.svclayer.model.ReportRepositoryDescription;
 import org.opennms.web.svclayer.model.TriggerDescription;
-import org.springframework.binding.message.Message;
-import org.springframework.binding.message.Severity;
-import org.springframework.webflow.execution.RequestContext;
 
 import com.google.common.base.Strings;
 
@@ -230,10 +231,10 @@ public class ReportRestServiceImpl implements ReportRestService {
     public Response scheduleReport(final Map<String, Object> parameters) {
         final ReportParameters reportParameters = convertParameters(parameters);
         final DeliveryOptions deliveryOptions = convertDeliveryOptions(parameters);
-        final RequestContext requestContext = new DummyRequestContext();
+        final SchedulerRequestContext requestContext = new DummyRequestContext();
 
         schedulerService.addCronTrigger(reportParameters.getReportId(), reportParameters, deliveryOptions, (String) parameters.get("cronExpression"), requestContext);
-        final Message errorMessage = extractErrorMessage(requestContext);
+        final SchedulerMessage errorMessage = extractErrorMessage(requestContext);
         if (errorMessage != null) {
             return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
         }
@@ -245,9 +246,9 @@ public class ReportRestServiceImpl implements ReportRestService {
     public Response deliverReport(final Map<String, Object> parameters) {
         final ReportParameters reportParameters = convertParameters(parameters);
         final DeliveryOptions deliveryOptions = convertDeliveryOptions(parameters);
-        final RequestContext requestContext = new DummyRequestContext();
+        final SchedulerRequestContext requestContext = new DummyRequestContext();
         schedulerService.execute(reportParameters.getReportId(), reportParameters, deliveryOptions, requestContext);
-        final Message errorMessage = extractErrorMessage(requestContext);
+        final SchedulerMessage errorMessage = extractErrorMessage(requestContext);
         if (errorMessage != null) {
             return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
         }
@@ -350,6 +351,61 @@ public class ReportRestServiceImpl implements ReportRestService {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+    @Override
+    public Response downloadReport(final String format, final String locatorId) {
+        if (Strings.isNullOrEmpty(format)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .type(MediaType.APPLICATION_JSON_TYPE)
+                    .entity(createErrorObject("entity", "Property 'format' is null or empty").toString())
+                    .build();
+        }
+        if (Strings.isNullOrEmpty(locatorId)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .type(MediaType.APPLICATION_JSON_TYPE)
+                    .entity(createErrorObject("entity", "Property 'locatorId' is null or empty").toString())
+                    .build();
+        }
+        try {
+            final Integer reportCatalogEntryId = Integer.valueOf(WebSecurityUtils.safeParseInt(locatorId));
+            final StreamingOutput streamingOutput = outputStream -> {
+                reportStoreService.render(reportCatalogEntryId, ReportFormat.valueOf(format), outputStream);
+                outputStream.flush();
+            };
+            final Response.ResponseBuilder responseBuilder = Response.ok()
+                    .header("Pragma", "public")
+                    .header("Cache-Control", "cache")
+                    .header("Cache-Control", "must-revalidate")
+                    .entity(streamingOutput);
+            if ((ReportFormat.PDF == ReportFormat.valueOf(format)) || (ReportFormat.SVG == ReportFormat.valueOf(format)) ) {
+                return responseBuilder.type("application/pdf;charset=UTF-8")
+                        .header("Content-disposition", "inline; filename=" + reportCatalogEntryId.toString() + ".pdf")
+                        .build();
+            }
+            if (ReportFormat.CSV == ReportFormat.valueOf(format)) {
+                responseBuilder.type("text/csv;charset=UTF-8")
+                .header("Content-disposition", "inline; filename=" + reportCatalogEntryId.toString() + ".csv");
+            }
+            return responseBuilder.build();
+        } catch (NumberFormatException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                        .type(MediaType.APPLICATION_JSON_TYPE)
+                        .entity(createErrorObject(e).toString()).build();
+        }
+    }
+
+    // TODO MVR this is duplicated all over the place
+    private JSONObject createErrorObject(Exception exception) {
+        return createErrorObject("entity", exception.getMessage());
+    }
+
+    // TODO MVR this is duplicated all over the place
+    private JSONObject createErrorObject(String message, String context) {
+        final JSONObject errorObject = new JSONObject()
+                .put("message", message)
+                .put("context", context);
+        return errorObject;
+    }
+
     private static <T> List<T> parseParameters(JSONArray inputParameters, String type, Function<JSONObject, T> converter) {
         Objects.requireNonNull(inputParameters);
         Objects.requireNonNull(type);
@@ -368,11 +424,10 @@ public class ReportRestServiceImpl implements ReportRestService {
         return parsedParameters;
     }
 
-    private JSONObject convert(Message message) {
+    private JSONObject convert(SchedulerMessage message) {
         final JSONObject errorMessage = new JSONObject();
         errorMessage.put("severity", message.getSeverity().name());
         errorMessage.put("message", message.getText());
-        errorMessage.put("source", message.getSource() != null ? message.getSource().getClass().getSimpleName() : null);
         return errorMessage;
     }
 
@@ -459,9 +514,9 @@ public class ReportRestServiceImpl implements ReportRestService {
         return options;
     }
 
-    private Message extractErrorMessage(RequestContext requestContext) {
-        return Arrays.stream(requestContext.getMessageContext().getAllMessages())
-                .filter(message -> message.getSeverity() == Severity.ERROR || message.getSeverity() == Severity.FATAL)
+    private SchedulerMessage extractErrorMessage(SchedulerRequestContext requestContext) {
+        return requestContext.getAllMessages().stream()
+                .filter(message -> message.getSeverity() == SchedulerMessageSeverity.ERROR || message.getSeverity() == SchedulerMessageSeverity.FATAL)
                 .findFirst().orElse(null);
     }
 }

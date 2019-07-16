@@ -30,10 +30,12 @@ package org.opennms.smoketest;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@Ignore("TODO MVR implement me")
 public class ReportsPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
@@ -64,7 +66,7 @@ public class ReportsPageIT extends OpenNMSSeleniumIT {
         findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
 
         reportsPage();
-        findElementByLink("Database Reports (Legacy)").click();
+        findElementByLink("Database Reports").click();
         findElementByXpath("//div[@class='card-header']/span[text()='Database Reports']");
         findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
         findElementByLink("List reports");

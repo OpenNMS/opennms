@@ -39,6 +39,9 @@ import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
+import org.opennms.web.svclayer.SchedulerMessage;
+import org.opennms.web.svclayer.SchedulerMessageSeverity;
+import org.opennms.web.svclayer.SchedulerRequestContext;
 import org.opennms.web.svclayer.SchedulerService;
 import org.opennms.web.svclayer.model.TriggerDescription;
 import org.quartz.JobDetail;
@@ -52,8 +55,6 @@ import org.quartz.impl.triggers.SimpleTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.binding.message.MessageBuilder;
-import org.springframework.webflow.execution.RequestContext;
 
 /**
  * <p>DefaultSchedulerService class.</p>
@@ -173,28 +174,18 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.opennms.web.svclayer.support.SchedulerService#addCronTrigger(org
-     * .opennms.web.report.database.model.DatabaseReportCriteria,
-     * java.lang.String, java.lang.String, java.lang.String,
-     * org.springframework.webflow.execution.RequestContext)
-     */
     /** {@inheritDoc} */
     @Override
     public String addCronTrigger(String id, ReportParameters criteria,
-            DeliveryOptions deliveryOptions,
-            String cronExpression, RequestContext context) {
+                                 DeliveryOptions deliveryOptions,
+                                 String cronExpression, SchedulerRequestContext context) {
 
         CronTriggerImpl cronTrigger = null;
         
         try {            
             if (m_reportWrapperService.validate(criteria,id) == false ) {
                 LOG.error(PARAMETER_ERROR);
-                context.getMessageContext().addMessage(
-                                                       new MessageBuilder().error().defaultText(
-                                                                                                PARAMETER_ERROR).build());
+                context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, PARAMETER_ERROR));
                 return ERROR;
             } else {
                 try {
@@ -207,25 +198,22 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                     // cronExpression);
                 } catch (ParseException e) {
                     LOG.error(TRIGGER_PARSE_ERROR, e);
-                    context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(TRIGGER_PARSE_ERROR).build());
-                    context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(e.getMessage()).build());
+                    context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, TRIGGER_PARSE_ERROR));
+                    context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, e.getMessage()));
                     return ERROR;
                 }
 
                 cronTrigger.setJobName(m_jobDetail.getKey().getName());
-                cronTrigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
+                cronTrigger.getJobDataMap().put("criteria", criteria);
                 cronTrigger.getJobDataMap().put("reportId", id);
                 cronTrigger.getJobDataMap().put("mode", ReportMode.SCHEDULED);
-                cronTrigger.getJobDataMap().put("deliveryOptions",
-                                                (DeliveryOptions) deliveryOptions);
+                cronTrigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
                 cronTrigger.getJobDataMap().put("cronExpression", cronExpression);
                 try {
                     m_scheduler.scheduleJob(cronTrigger);
                 } catch (SchedulerException e) {
                     LOG.error(SCHEDULER_ERROR, e);
-                    context.getMessageContext().addMessage(
-                                                           new MessageBuilder().error().defaultText(
-                                                                                                    SCHEDULER_ERROR).build());
+                    context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, SCHEDULER_ERROR));
                     return ERROR;
                 }
 
@@ -233,43 +221,34 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             }
         } catch (ReportServiceLocatorException e) {
             LOG.error(REPORTID_ERROR);
-            context.getMessageContext().addMessage(
-                                                   new MessageBuilder().error().defaultText(
-                                                                                            REPORTID_ERROR).build());
+            context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, REPORTID_ERROR));
             return ERROR;
         }
 
         
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.opennms.web.svclayer.support.SchedulerService#execute(org.opennms
-     * .web.report.database.model.DatabaseReportCriteria, java.lang.String,
-     * org.springframework.webflow.execution.RequestContext)
-     */
     /** {@inheritDoc} */
     @Override
     public String execute(String id, ReportParameters criteria,
-            DeliveryOptions deliveryOptions, RequestContext context) {
+            DeliveryOptions deliveryOptions, SchedulerRequestContext context) {
 
         try {
             if (m_reportWrapperService.validate(criteria,id) == false ) {
-                context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(PARAMETER_ERROR).build());
+                context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, PARAMETER_ERROR));
                 return ERROR;
             } else {
                 SimpleTriggerImpl trigger = new SimpleTriggerImpl(deliveryOptions.getInstanceId(), m_triggerGroup, new Date(), null, 0, 0L);
                 trigger.setJobName(m_jobDetail.getKey().getName());
-                trigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
+                trigger.getJobDataMap().put("criteria", criteria);
                 trigger.getJobDataMap().put("reportId", id);
                 trigger.getJobDataMap().put("mode", ReportMode.IMMEDIATE);
-                trigger.getJobDataMap().put("deliveryOptions", (DeliveryOptions) deliveryOptions);
+                trigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
                 try {
                     m_scheduler.scheduleJob(trigger);
                 } catch (SchedulerException e) {
                     LOG.warn(SCHEDULER_ERROR, e);
-                    context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(SCHEDULER_ERROR).build());
+                    context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, SCHEDULER_ERROR));
                     return ERROR;
                 }
 
@@ -277,14 +256,11 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             }
         } catch (ReportServiceLocatorException e) {
             LOG.error(REPORTID_ERROR, e);
-            context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(REPORTID_ERROR).build());
+            context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, REPORTID_ERROR));
             return ERROR;
         }
-
-
     }
 
-    
 
     /**
      * <p>setScheduler</p>

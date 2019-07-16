@@ -87,4 +87,8 @@ public interface ReportRestService {
     @DELETE
     @Path("/scheduled/{id}")
     Response deleteScheduledReport(@PathParam("id") final String triggerName);
+
+    @GET
+    @Path("/download")
+    Response downloadReport(@QueryParam("format") final String format, @QueryParam("locatorId") final String locatorId);
 }

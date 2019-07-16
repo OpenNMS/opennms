@@ -35,9 +35,8 @@
                     <button class="btn btn-sm btn-danger" ng-click="delete(report)"><i class="fa fa-trash"></i></button>
                 </td>
                 <td>
-                    <!-- TODO MVR migrate to rest endpoint or similar -->
-                    <a href="report/database/downloadReport.htm?locatorId={{report.id}}&amp;format=PDF" class="mr-4"><i class="fa fa-file-pdf-o"></i> PDF</a>
-                    <a href="report/database/downloadReport.htm?locatorId={{report.id}}&amp;format=CSV"><i class="fa fa-file-text-o"></i> CSV</a>
+                    <a href="rest/reports/download?locatorId={{report.id}}&amp;format=PDF" class="mr-4"><i class="fa fa-file-pdf-o"></i> PDF</a>
+                    <a href="rest/reports/download?locatorId={{report.id}}&amp;format=CSV"><i class="fa fa-file-text-o"></i> CSV</a>
                 </td>
                 <td>{{report.title}}</td>
                 <td>{{report.reportId}}</td>

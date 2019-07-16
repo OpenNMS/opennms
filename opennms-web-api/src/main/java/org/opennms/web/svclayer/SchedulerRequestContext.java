@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,39 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.report.database.model;
+package org.opennms.web.svclayer;
 
-import java.io.Serializable;
+import java.util.List;
 
-/**
- * <p>TriggerDetails class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public class TriggerDetails  implements Serializable {
-    
-    private static final long serialVersionUID = 3258199709023045243L;
-    
-    String m_cronExpression;
-    
-    /**
-     * <p>getCronExpression</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCronExpression() {
-        return m_cronExpression;
-    }
-    
-    /**
-     * <p>setCronExpression</p>
-     *
-     * @param cronExpression a {@link java.lang.String} object.
-     */
-    public void setCronExpression(String cronExpression) {
-        m_cronExpression = cronExpression;
-    }
-
+// TODO MVR remove me
+public interface SchedulerRequestContext {
+    void addMessage(SchedulerMessage message);
+    List<SchedulerMessage> getAllMessages();
 }

@@ -249,13 +249,6 @@
         <bundle>mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
         <bundle>mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
     </feature>
-    <feature name="spring-webflow" version="${springWebFlowVersion}" description="Spring :: Web Flow">
-        <bundle>wrap:mvn:opensymphony/ognl/2.6.11</bundle>
-        <bundle>wrap:mvn:org.springframework.webflow/spring-binding/${springWebFlowVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.webflow/spring-js/${springWebFlowVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.webflow/spring-js-resources/${springWebFlowVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
-    </feature>
     <feature name="jicmp" version="2.0.1" description="jicmp">
         <feature>guava</feature>
         <bundle>mvn:org.opennms/jicmp-api/2.0.1</bundle>

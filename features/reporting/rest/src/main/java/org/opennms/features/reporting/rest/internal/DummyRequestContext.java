@@ -28,111 +28,26 @@
 
 package org.opennms.features.reporting.rest.internal;
 
-import org.springframework.binding.message.DefaultMessageContext;
-import org.springframework.binding.message.MessageContext;
-import org.springframework.webflow.context.ExternalContext;
-import org.springframework.webflow.core.collection.MutableAttributeMap;
-import org.springframework.webflow.core.collection.ParameterMap;
-import org.springframework.webflow.definition.FlowDefinition;
-import org.springframework.webflow.definition.StateDefinition;
-import org.springframework.webflow.definition.TransitionDefinition;
-import org.springframework.webflow.execution.Event;
-import org.springframework.webflow.execution.FlowExecutionContext;
-import org.springframework.webflow.execution.RequestContext;
-import org.springframework.webflow.execution.View;
+import java.util.Collections;
+import java.util.List;
+
+import org.opennms.web.svclayer.SchedulerMessage;
+import org.opennms.web.svclayer.SchedulerRequestContext;
+
+import com.google.common.collect.Lists;
 
 // TODO MVR get rid of this ugly beast
-public class DummyRequestContext implements RequestContext {
+public class DummyRequestContext implements SchedulerRequestContext {
 
-    private final MessageContext messageContext = new DefaultMessageContext();
+    private List<SchedulerMessage> messages = Lists.newArrayList();
 
     @Override
-    public FlowDefinition getActiveFlow() throws IllegalStateException {
-        return null;
+    public void addMessage(SchedulerMessage message) {
+        messages.add(message);
     }
 
     @Override
-    public StateDefinition getCurrentState() throws IllegalStateException {
-        return null;
-    }
-
-    @Override
-    public TransitionDefinition getMatchingTransition(String eventId) throws IllegalStateException {
-        return null;
-    }
-
-    @Override
-    public boolean inViewState() {
-        return false;
-    }
-
-    @Override
-    public MutableAttributeMap getRequestScope() {
-        return null;
-    }
-
-    @Override
-    public MutableAttributeMap getFlashScope() {
-        return null;
-    }
-
-    @Override
-    public MutableAttributeMap getViewScope() throws IllegalStateException {
-        return null;
-    }
-
-    @Override
-    public MutableAttributeMap getFlowScope() throws IllegalStateException {
-        return null;
-    }
-
-    @Override
-    public MutableAttributeMap getConversationScope() {
-        return null;
-    }
-
-    @Override
-    public ParameterMap getRequestParameters() {
-        return null;
-    }
-
-    @Override
-    public ExternalContext getExternalContext() {
-        return null;
-    }
-
-    @Override
-    public MessageContext getMessageContext() {
-        return messageContext;
-    }
-
-    @Override
-    public FlowExecutionContext getFlowExecutionContext() {
-        return null;
-    }
-
-    @Override
-    public Event getCurrentEvent() {
-        return null;
-    }
-
-    @Override
-    public TransitionDefinition getCurrentTransition() {
-        return null;
-    }
-
-    @Override
-    public View getCurrentView() {
-        return null;
-    }
-
-    @Override
-    public MutableAttributeMap getAttributes() {
-        return null;
-    }
-
-    @Override
-    public String getFlowExecutionUrl() throws IllegalStateException {
-        return null;
+    public List<SchedulerMessage> getAllMessages() {
+        return Collections.unmodifiableList(messages);
     }
 }

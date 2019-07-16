@@ -1,8 +1,9 @@
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,37 +27,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer.model;
+--%>
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+    <jsp:param name="norequirejs" value="true" />
 
-import java.util.Arrays;
+    <jsp:param name="title" value="Database Reports" />
+    <jsp:param name="headTitle" value="Database Reports" />
+    <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+    <jsp:param name="breadcrumb" value="Database" />
+</jsp:include>
 
-/**
- * <p>ManageReportScheduleCommand class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public class ManageReportScheduleCommand {
-    
-    private String[] m_triggerNames;
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="onms-reports" />
+</jsp:include>
 
-    /**
-     * <p>setTriggerNames</p>
-     *
-     * @param triggerNames an array of {@link java.lang.String} objects.
-     */
-    public void setTriggerNames(String[] triggerNames) {
-        m_triggerNames = Arrays.copyOf(triggerNames, triggerNames.length);
-    }
+<div ng-app="onms.reports" ui-view>
 
-    /**
-     * <p>getTriggerNames</p>
-     *
-     * @return an array of {@link java.lang.String} objects.
-     */
-    public String[] getTriggerNames() {
-        return m_triggerNames;
-    }
+</div>
 
-}
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

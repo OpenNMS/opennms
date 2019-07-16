@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.spring.web;
+package org.opennms.web.svclayer;
 
-import org.springframework.binding.convert.converters.StringToDate;
-import org.springframework.binding.convert.service.DefaultConversionService;
+import java.util.Objects;
 
-/**
- * <p>ApplicationConversionService class.</p>
- *
- * @deprecated This class is only used in commented-out segments of the webflow context.
- */
-public class ApplicationConversionService extends DefaultConversionService {
+// TODO MVR delete me
+public class SchedulerMessage {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void addDefaultConverters() {
-    super.addDefaultConverters();
-    StringToDate dateConverter = new StringToDate();
-    dateConverter.setPattern("MM-dd-yyyy");
-    addConverter("shortDate", dateConverter);
+    private final SchedulerMessageSeverity severity;
+    private final String message;
+
+    public SchedulerMessage(SchedulerMessageSeverity severity, String message) {
+        this.severity = Objects.requireNonNull(severity);
+        this.message = message;
     }
 
+    public SchedulerMessageSeverity getSeverity() {
+        return severity;
+    }
+
+    public String getText() {
+        return message;
+    }
 }
