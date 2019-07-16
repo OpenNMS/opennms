@@ -247,7 +247,8 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         pkg.setName("SFO");
         pkg.setRemote(true);
         Poller poller = new Poller();
-        assertFalse(poller.pollableServiceInPackage(null, null, pkg));
+		poller.setPollerConfig(new MockPollerConfig(m_network));
+        assertFalse(poller.getPollerConfig().pollableServiceInPackage(null, null, pkg));
         poller = null;
     }
 

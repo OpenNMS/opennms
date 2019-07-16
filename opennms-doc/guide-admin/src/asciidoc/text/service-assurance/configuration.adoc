@@ -51,8 +51,6 @@ cd $OPENNMS_HOME/bin
 .Send configuration reload event with the Web User Interface
 image::service-assurance/04_send-event-WebUI.png[]
 
-IMPORTANT: If you define *new* services in `poller-configuration.xml` a service restart of _OpenNMS_ is necessary.
-
 [[ga-pollerd-configuration-meta-data]]
 ===== Meta-Data-DSL
 Each parameter value can leverage dynamic configuration by using the link:#ga-meta-data-dsl[Meta-Data-DSL].

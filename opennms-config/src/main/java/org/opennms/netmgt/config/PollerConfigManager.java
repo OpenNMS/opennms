@@ -44,11 +44,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.network.IpListFromUrl;
@@ -73,6 +75,8 @@ import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 /**
  * <p>Abstract PollerConfigManager class.</p>
@@ -129,7 +133,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws java.io.IOException if any.
      */
     @Override
-    public abstract void update() throws IOException;
+    public void update() throws IOException {
+        this.setUpInternalData();
+    }
 
     /**
      * <p>saveXml</p>
@@ -613,6 +619,17 @@ abstract public class PollerConfigManager implements PollerConfig {
                     }
                 }
             }
+
+            // Find service by pattern
+            for(final Service svc : services(pkg)) {
+                if (!Strings.isNullOrEmpty(svc.getPattern())
+                        && Pattern.matches(svc.getPattern(), svcName)) {
+                    final String status = svc.getStatus();
+                    if (status == null || status.equals("on")) {
+                        return true;
+                    }
+                }
+            }
         } finally {
             getReadLock().unlock();
         }
@@ -985,11 +1002,20 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link java.util.Map} object.
      */
-    @Override
     public Map<String, ServiceMonitor> getServiceMonitors() {
         try {
             getReadLock().lock();
             return Collections.unmodifiableMap(m_svcMonitors);
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public Set<String> getServiceMonitorNames() {
+        try {
+            getReadLock().lock();
+            return Collections.unmodifiableSet(m_svcMonitors.keySet());
         } finally {
             getReadLock().unlock();
         }

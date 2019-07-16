@@ -57,11 +57,6 @@ public class ReadOnlyPollerConfigManager extends PollerConfigManager {
     }
 
     @Override
-    public void update() throws IOException {
-        // pass
-    }
-
-    @Override
     protected void saveXml(String xml) throws IOException {
         // pass
     }
