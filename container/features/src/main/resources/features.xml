@@ -1417,7 +1417,7 @@
     </feature>
     <feature name="opennms-jest" version="${project.version}" description="OpenNMS :: Features :: Jest :: Feature definition">
         <details>Feature definition for Jest (ElasticSearch Java ReST Client)</details>
-        <bundle>wrap:mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
         <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/4.4.6</bundle>
         <bundle>mvn:org.opennms.features.jest/org.opennms.features.jest.client/${project.version}</bundle>
         <bundle>mvn:io.searchbox/jest-complete-osgi/${jestVersion}</bundle>

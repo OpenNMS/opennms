@@ -6,9 +6,10 @@ We currently leverage Docker and the TestContainers framework for running the su
 
 ## Running the system tests manually
 
-The tests require Docker images to run.
+### Getting the Docker Images
+The tests require Docker images to run. There are two alternatives to get them, a) or b):
 
-### A) Pull existing images from DockerHub
+#### a) Pull existing images from DockerHub
 
 You can pull existing images down with:
 ```
@@ -26,7 +27,7 @@ docker tag opennms/minion:24.0.0-rc minion
 docker tag opennms/sentinel:24.0.0-rc sentinel
 ```
 
-### B) Pull images from build artifacts
+#### b) Pull images from build artifacts
 
 ```
 export ARTIFACT_URL="https://2866-9377198-gh.circle-artifacts.com/0"
