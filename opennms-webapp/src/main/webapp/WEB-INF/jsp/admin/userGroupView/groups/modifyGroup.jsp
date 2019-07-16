@@ -429,9 +429,9 @@
           <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
           <button id="addSchedule" class="btn btn-default" name="addSchedule" onclick="addGroupDutySchedules()">Add This Many Schedules</button>
           <select name="numSchedules" class="btn btn-default">
-            <option value="1">1</option>
+            <option value="1" selected="selected">1</option>
             <option value="2">2</option>
-            <option value="3" selected="selected">3</option>
+            <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
