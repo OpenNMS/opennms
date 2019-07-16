@@ -1,9 +1,13 @@
 
-<div class="alert alert-danger mx-4" ng-if="errorMessage">
+<div class="alert alert-danger mx-2 my-2" ng-if="errorMessage">
     <span>{{errorMessage}}</span>
 </div>
 
-<form name="reportForm" class="form mx-4 mt-2" role="form" novalidate>
+<div class="alert alert-warning mx-2 my-2" ng-if="!report.online && !(userInfo.isAdmin() || userInfo.isReportDesigner())">
+    <span>This report cannot be executed adhoc and you do not have permissions to deliver/schedule this report.</span>
+</div>
+
+<form name="reportForm" class="form mx-4 mt-2" role="form" novalidate ng-if="report.online || userInfo.isAdmin() || userInfo.isReportDesigner()">
     <div class="" ng-if="parameters && parameters.length > 0">
         <h3 class="">Report Parameters</h3>
         <div ng-show="parametersByName['GRAFANA_ENDPOINT_UID']" class="form-group">
