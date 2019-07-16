@@ -28,14 +28,12 @@
 
 package org.opennms.netmgt.provision.requisition.command;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -44,7 +42,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 
 import com.google.common.base.Strings;
 
-@Command(scope = "provision", name = "import-requisition", description = "Load the requisition from given parameters")
+@Command(scope = "provision", name = "import-requisition", description = "Import the requisition from given url")
 @Service
 public class ImportRequisition implements Action {
 
@@ -53,43 +51,34 @@ public class ImportRequisition implements Action {
     @Reference
     private EventForwarder eventForwarder;
 
-    @Argument(index = 0, name = "type", description = "Type", required = true, multiValued = false)
-    @Completion(ProviderTypeNameCompleter.class)
-    String type;
+    @Argument(index = 0, name = "url", description = "Provide requisition url", required = true)
+    private String url;
 
-    @Argument(index = 1, name = "requisition", description = "Provide requisition in key=value format", required = true, multiValued = false)
-    String requisition;
+    @Argument(index = 1, name = "rescanExisting", description = "Specify rescanExisting value, valid values : 'yes', 'no', 'dbonly'")
+    private String rescanExisting;
 
     @Override
     public Object execute() throws Exception {
 
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, EVENT_SOURCE);
 
-        if((!Strings.isNullOrEmpty(requisition)) && (!Strings.isNullOrEmpty(type)) && requisition.contains("=")) {
-            String url = String.format("requisition://%s?%s", type, requisition);
-            eventBuilder.addParam("url", url);
+        if (!Strings.isNullOrEmpty(url)) {
+            eventBuilder.addParam(EventConstants.PARM_URL, url);
+            if (!Strings.isNullOrEmpty(rescanExisting)) {
+                List<String> validValues = Arrays.asList("yes", "dbonly", "no");
+                if(validValues.contains(rescanExisting)) {
+                    eventBuilder.addParam(EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
+                } else {
+                    System.out.printf("Not a valid rescanExisting value, valid values are : 'yes', 'no', 'dbonly'\n");
+                    return null;
+                }
+            }
             eventForwarder.sendNow(eventBuilder.getEvent());
-            System.out.printf("Import Requisition Event sent with URL : %s \n ", url);
+            System.out.printf("\"Requisition import triggered asynchronously for URL : %s\n", url);
         } else {
-            System.out.printf("No valid requisition specified, It should be specified in 'name=myServer' format \n");
+            System.out.printf("No valid requisition url specified\n");
         }
         return null;
     }
 
-    private static Map<String, String> parse(List<String> params) {
-        Map<String, String> properties = new HashMap<>();
-        if (params != null) {
-            for (String keyValue : params) {
-                int splitAt = keyValue.indexOf("=");
-                if (splitAt <= 0) {
-                    throw new IllegalArgumentException("Invalid param " + keyValue);
-                } else {
-                    String key = keyValue.substring(0, splitAt);
-                    String value = keyValue.substring(splitAt + 1, keyValue.length());
-                    properties.put(key, value);
-                }
-            }
-        }
-        return properties;
-    }
 }
