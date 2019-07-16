@@ -102,6 +102,11 @@ Bootstrap Theme Specific Stylesheet
 /* =9.0 List Groups
 ----------------------------------------------- */
 
+.list-group-item.active {
+  color:            #212529; // Equivalent to gray-900 (or body-color)
+  background-color: #d6d8db; // Equivalent to table-secondary
+}
+
 /* =10.0 Dropdowns
 ----------------------------------------------- */
 

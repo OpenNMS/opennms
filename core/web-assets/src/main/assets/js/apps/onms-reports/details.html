@@ -3,7 +3,7 @@
     <span>{{errorMessage}}</span>
 </div>
 
-<form name="reportForm" class="form mx-4" role="form" novalidate>
+<form name="reportForm" class="form mx-4 mt-2" role="form" novalidate>
     <div class="" ng-if="parameters && parameters.length > 0">
         <h3 class="">Report Parameters</h3>
         <div ng-show="parametersByName['GRAFANA_ENDPOINT_UID']" class="form-group">
@@ -75,7 +75,7 @@
         <!-- DATE -->
         <div ng-if="parameter.type === 'date'" class="form-group" ng-repeat-end>
             <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
-            <div class="input-group" ng-if="type === 'schedule' && parameter.useAbsoluteDate === false">
+            <div class="input-group" ng-if="options.isScheduleReport() && parameter.useAbsoluteDate === false">
                 <input type="number" min="0" max="31" class="form-control" ng-model="parameter.count" />
                 <select class="form-control custom-select" ng-model="parameter.interval">
                     <option value="day">day</option>
@@ -86,18 +86,18 @@
                 <input class="form-control" type="number" min="0" max="23" ng-model="parameter.hours" />
                 <input class="form-control" type="number" min="0" max="59" ng-model="parameter.minutes" />
             </div>
-            <datetimepicker ng-if="type !== 'schedule' || parameter.useAbsoluteDate === true"
+            <datetimepicker ng-if="!options.isScheduleReport() || parameter.useAbsoluteDate === true"
                             locale="parameter.internalLocale"
                             format="parameter.internalFormat"
                             ng-model="parameter.internalValue"
                             expand="true"
             ></datetimepicker>
         </div>
-        <hr class="mb-4" ng-if="type !== 'online'"/>
+        <hr class="mb-4" ng-if="!report.online"/>
     </div>
 
     <!-- FORMAT -->
-    <div class="form-group" ng-if="type === 'online'">
+    <div class="form-group" ng-if="report.online">
         <label for="reportFormat" class="">Report Format</label>
         <select id="reportFormat"
                 name="reportFormat"
@@ -108,7 +108,17 @@
         <hr class="mb-4"/>
     </div>
 
-    <div class="" ng-if="type !== 'online' && deliveryOptions">
+    <div class="form-group ml-4" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">
+        <input type="checkbox" id="deliverReport" ng-model="options.deliverReport" class="form-check-input" ng-disabled="report.online === false" ng-change="options.scheduleReport = options.deliverReport && options.scheduleReport" />
+        <label class="form-check-label"
+               data-toggle="tooltip"
+               data-placement="right"
+               title="Deliver report to file system or via e-mail"
+               for="deliverReport" >
+            <i class="fa fa-share"></i> Deliver this report
+        </label>
+    </div>
+    <div class="" ng-if="options.isDeliverReport()">
         <h3>Report Delivery Options</h3>
         <div class="">
             <div class="form-group">
@@ -168,7 +178,17 @@
         <hr class="mb-4"/>
     </div>
 
-    <div class="" ng-if="type === 'schedule'">
+    <div class="form-group ml-4" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">
+        <input type="checkbox" id="createSchedule" ng-model="options.scheduleReport" class="form-check-input" ng-change="options.deliverReport = options.deliverReport || options.scheduleReport" />
+        <label class="form-check-label"
+               data-toggle="tooltip"
+               data-placement="right"
+               title="Schedule this report"
+               for="createSchedule" >
+            <i class="fa fa-clock-o"></i> Schedule this report
+        </label>
+    </div>
+    <div class="" ng-if="options.isScheduleReport()">
         <h3>Cron Expression</h3>
         <div class="">
             <p>
@@ -184,7 +204,7 @@
                        type="text"
                        class="form-control"
                        ng-class="{ 'is-invalid' : reportForm.cronExpression.$invalid }"
-                       ng-model="cron.expression"
+                       ng-model="options.cronExpression"
                        required />
                 <div ng-show="reportForm.cronExpression.$invalid" class="invalid-feedback">Please provide a value.</div>
             </div>
@@ -200,9 +220,9 @@
             <i class="fa fa-times"></i> Cancel
         </button>
         <button class="btn btn-primary" name="run" id="execute" ng-click="execute()" ng-disabled="reportForm.$invalid || (isGrafanaReport() && !isGrafanaReady())">
-            <span ng-if="type==='online'"><i class="fa fa-play"></i> Create</span>
-            <span ng-if="type==='deliver'"><i class="fa fa-share"></i> Deliver</span>
-            <span ng-if="type==='schedule'"><i class="fa fa-clock-o"></i> Schedule</span>
+            <span ng-if="report.online && options.isExecuteReport()"><i class="fa fa-play"></i> Create</span>
+            <span ng-if="options.isDeliverReport()"><i class="fa fa-share"></i> Deliver</span>
+            <span ng-if="options.isScheduleReport()"><i class="fa fa-clock-o"></i> Schedule</span>
 
             Report
         </button>
