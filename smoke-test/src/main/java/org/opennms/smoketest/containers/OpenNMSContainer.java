@@ -366,7 +366,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         protected void waitUntilReady() {
             LOG.info("Waiting for startup to begin.");
             final Path managerLog = Paths.get("/opt", "opennms", "logs", "manager.log");
-            await().atMost(2, MINUTES).ignoreExceptions()
+            await().atMost(3, MINUTES).ignoreExceptions()
                     .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                     containsString("Starter: Beginning startup"));
             LOG.info("OpenNMS has begun starting up.");

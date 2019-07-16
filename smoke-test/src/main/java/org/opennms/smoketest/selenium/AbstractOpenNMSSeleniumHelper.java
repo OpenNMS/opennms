@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -174,7 +175,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     LOG.debug("Screenshot saved to: {}", from);
                     try {
                         Files.createDirectories(to.getParent());
-                        Files.move(from, to);
+                        Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
                         LOG.debug("Screenshot moved to: {}", to);
                     } catch (final IOException ioe) {
                         LOG.debug("Failed to move screenshot from {} to {}", from, to, ioe);
@@ -863,13 +864,24 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             throw new OpenNMSTestException(e);
         }
     }
-
-    protected void waitForValue(final By selector, final String value) {
-        wait.until(new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(final WebDriver driver) {
-                return value.equals(driver.findElement(selector).getAttribute("value"));
+    protected void waitForValue(final By selector, final String expectedValue) {
+        LOG.debug("waitForValue({}, \"{}\")", selector, expectedValue);
+        wait.until((ExpectedCondition<Boolean>) driver -> {
+            String value;
+            try {
+                setImplicitWait(200, TimeUnit.MILLISECONDS);
+                value = driver.findElement(selector).getAttribute("value");
+            } catch(NoSuchElementException nse) {
+                LOG.debug("Element not found yet.");
+                throw nse;
+            } catch (StaleElementReferenceException sere) {
+                LOG.debug("Element was found but was already stale by the time we queried the attribute. Trying again.");
+                value = driver.findElement(selector).getAttribute("value");
+            } finally {
+                setImplicitWait();
             }
+            LOG.debug("Found element with value: {}", value);
+            return expectedValue.equals(value);
         });
     }
 
