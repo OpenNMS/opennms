@@ -31,6 +31,7 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Before;
@@ -47,6 +48,8 @@ import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,7 +98,12 @@ public class ReadOnlyConfigDaoIT {
 
     @Test
     public void testOutages() throws IOException {
-        // PollOutagesConfigFactory.reload();// FIXME - not working - loads from base assembly which is empty....
+        /*FIXME - below updates config - but does not save new effective value
+        File outagesFile = new File("src/test/resources/poll-outages.xml");
+        Resource configResource = new FileSystemResource(outagesFile.getPath());
+        outagesConfig.setConfigResource(configResource);
+        outagesConfig.afterPropertiesSet();*/
+        // FIXME - this reads from base assembly which is empty outage config
         Outages outages = outagesReadOnly.getConfig();
         assertNotNull(outages);
         assertEquals(outagesConfig.getOutages(), outages.getOutages());
@@ -105,16 +113,14 @@ public class ReadOnlyConfigDaoIT {
     public void testThreshd() throws IOException {
         ThreshdConfiguration threshdConfiguration = threshdReadOnly.getConfig();
         assertNotNull(threshdConfiguration);
-        assertEquals(threshdConfig.getConfiguration().getThreads(), threshdConfiguration.getThreads());
-        assertEquals(threshdConfig.getConfiguration().getPackages(), threshdConfiguration.getPackages());
-        assertEquals(threshdConfig.getConfiguration().getThresholders(), threshdConfiguration.getThresholders());
+        assertEquals(threshdConfig.getConfiguration(), threshdConfiguration);
     }
 
     @Test
     public void testThresholds() throws IOException {
         ThresholdingConfig thresholdingConfig = thresholdsReadOnly.getConfig();
         assertNotNull(thresholdingConfig);
-        assertEquals(thresholdingConfig.getGroups(), thresholdingConfig.getGroups());
+        assertEquals(thresholdsConfig.getConfiguration(), thresholdingConfig);
     }
 
 }

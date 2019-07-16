@@ -46,7 +46,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
@@ -57,6 +56,9 @@ import org.opennms.netmgt.model.EffectiveConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /**
  * This class is the main repository for thresholding configuration information
@@ -316,7 +318,9 @@ public final class ThresholdsConfigFactory {
 
     private String getJsonConfig() {
         try {
-            return new ObjectMapper().writeValueAsString(m_config);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(objectMapper.getTypeFactory()));
+            return objectMapper.writeValueAsString(m_config);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -340,5 +344,10 @@ public final class ThresholdsConfigFactory {
                 IOUtils.closeQuietly(stream);
             }
         }
+    }
+
+    ThresholdingConfig getConfiguration() {
+        // for testing
+        return m_config;
     }
 }

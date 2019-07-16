@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -67,6 +66,9 @@ import org.opennms.netmgt.model.EffectiveConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -459,7 +461,9 @@ public final class ThreshdConfigFactory {
 
     private String getJsonConfig() {
         try {
-            return new ObjectMapper().writeValueAsString(m_config);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(objectMapper.getTypeFactory()));
+            return objectMapper.writeValueAsString(m_config);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

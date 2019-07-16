@@ -81,6 +81,10 @@
       <artifactId>commons-codec</artifactId>
     </dependency>
     <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-jaxb-annotations</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
       <version>${dropwizardMetricsVersion}</version>

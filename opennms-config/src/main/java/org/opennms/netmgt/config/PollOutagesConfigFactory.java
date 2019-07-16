@@ -31,13 +31,15 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.util.Date;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /**
  * This is the singleton class used to load the configuration for the poller
@@ -147,15 +149,15 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
     @Override
     public void saveCurrent() throws IOException {
         super.saveCurrent();
-        persistEffectiveConfig();
+        saveEffective();
     }
 
     public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
         this.effectiveConfigurationDao = effectiveConfigurationDao;
-        persistEffectiveConfig();
+        saveEffective();
     }
 
-    private void persistEffectiveConfig() {
+    private void saveEffective() {
         EffectiveConfiguration entity = new EffectiveConfiguration();
         entity.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME));
         entity.setConfiguration(getJsonConfig());
@@ -165,7 +167,9 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
 
     private String getJsonConfig() {
         try {
-            return new ObjectMapper().writeValueAsString(getObject());
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(objectMapper.getTypeFactory()));
+            return objectMapper.writeValueAsString(getObject());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

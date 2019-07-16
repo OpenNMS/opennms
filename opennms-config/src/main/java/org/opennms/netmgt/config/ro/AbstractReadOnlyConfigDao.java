@@ -32,11 +32,13 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.netmgt.config.ReadOnlyConfig;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implements ReadOnlyConfigDao<T> {
 
@@ -59,7 +61,9 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
 
     private T unMarshallConfig(Class<T> type, String json) {
         try {
-            return new ObjectMapper().readValue(json, type);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(objectMapper.getTypeFactory()));
+            return objectMapper.readValue(json, type);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
