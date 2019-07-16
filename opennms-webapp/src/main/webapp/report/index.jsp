@@ -151,6 +151,8 @@
 </div>
   <hr />
 
-<jsp:include page="/js/angular.min.jsp" flush="false" />
-<jsp:include page="/js/search.min.jsp" flush="false" />
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="search" />
+</jsp:include>
+
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
