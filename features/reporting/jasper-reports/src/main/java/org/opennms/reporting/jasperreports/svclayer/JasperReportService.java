@@ -236,40 +236,11 @@ public class JasperReportService implements ReportService {
                                 continue;
                             }
 
-                            if (reportParm.getValueClassName().equals("java.util.Date")) {
-                                LOG.debug("adding a java.util.Date parm name {}", reportParm.getName());
-                                final ReportDateParm dateParm = new ReportDateParm();
-                                dateParm.setUseAbsoluteDate(false);
-                                if (reportParm.getDescription() != null) {
-                                    dateParm.setDisplayName(reportParm.getDescription());
-                                } else {
-                                    dateParm.setDisplayName(reportParm.getName());
-                                }
-                                dateParm.setName(reportParm.getName());
-                                dateParm.setCount(Integer.valueOf(1));
-                                dateParm.setInterval("day");
-                                dateParm.setHours(0);
-                                dateParm.setMinutes(0);
-                                if (defaultValues.containsKey(reportParm.getName()) && (defaultValues.get(reportParm.getName()) != null)) {
-                                    dateParm.setDate((Date) defaultValues.get(reportParm.getName()));
-                                    Calendar cal = Calendar.getInstance();
-                                    cal.setTime(dateParm.getDate());
-                                    dateParm.setMinutes(cal.get(Calendar.MINUTE));
-                                    dateParm.setHours(cal.get(Calendar.HOUR_OF_DAY));
-                                } else {
-                                    final Calendar cal = Calendar.getInstance();
-                                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                                    cal.set(Calendar.MINUTE, 0);
-                                    cal.set(Calendar.SECOND, 0);
-                                    cal.set(Calendar.MILLISECOND, 0);
-                                    dateParm.setDate(cal.getTime());
-                                }
-                                dateParms.add(dateParm);
-                                continue;
-                            }
-
-                            if (reportParm.getValueClassName().equals("java.sql.Date") || reportParm.getValueClassName().equals("java.sql.Timestamp")) {
-                                LOG.debug("adding a java.sql.Date or Timestamp parm name {}", reportParm.getName());
+                            if (reportParm.getValueClassName().equals("java.util.Date")
+                                || reportParm.getValueClassName().equals("java.sql.Date")
+                                || reportParm.getValueClassName().equals("java.sql.Timestamp")
+                            ) {
+                                LOG.debug("adding a {} parm name {}", reportParm.getValueClassName(), reportParm.getName());
                                 final ReportDateParm dateParm = new ReportDateParm();
                                 dateParm.setUseAbsoluteDate(false);
                                 if (reportParm.getDescription() != null) {
