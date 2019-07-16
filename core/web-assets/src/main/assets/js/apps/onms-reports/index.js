@@ -96,8 +96,8 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 }
             );
         })
-        .factory('UserResource', function($resource) {
-            return $resource('rest/users/whoami', {}, {'whoami': {method: 'GET'}});
+        .factory('WhoamiResource', function($resource) {
+            return $resource('rest/whoami', {}, {'whoami': {method: 'GET'}});
         })
         .factory('GrafanaResource', function($resource) {
             return $resource('rest/endpoints/grafana/:id', {id: '@id'},
@@ -107,15 +107,15 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     'dashboards':   { method: 'GET', isArray:true, url: 'rest/endpoints/grafana/:uid/dashboards', params: {uid: '@uid'} },
                 });
         })
-        .factory('UserService', function(UserResource) {
+        .factory('UserService', function(WhoamiResource) {
             return {
                 whoami: function(successCallback, errorCallback) {
-                    return UserResource.whoami(function(data) {
+                    return WhoamiResource.whoami(function(data) {
                         var user = {
-                            id: data['user-id'],
-                            name: data['full-name'],
+                            id: data['id'],
+                            name: data['fullName'],
                             email: data['email'],
-                            roles: data['role'],
+                            roles: data['roles'],
 
                             isAdmin: function() {
                                 return this.roles.indexOf("ROLE_ADMIN") >= 0;
