@@ -28,7 +28,6 @@
 
 package org.opennms.features.distributed.kvstore.api;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
@@ -40,32 +39,47 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * Keys should uniquely identify the object being persisted/retrieved globally since this API does not define any key
  * hierarchy.
+ * <p>
+ * Exceptions during serialization or during persistence/retrieval by implementations will be caught and rethrown as a
+ * {@link RuntimeException}.
  *
  * @param <T> the type that will be serialized and deserialized by this store
  */
 public interface SerializedKVStore<T> {
     /**
      * @return the timestamp the value was persisted with
-     * @throws IOException if serialization failed
+     * @throws RuntimeException if serialization failed or if persisting to the store failed
      */
-    long put(String key, T value) throws IOException;
+    long put(String key, T value);
 
     /**
      * @return an Optional either containing the value if present or empty if the key did not exist
-     * @throws IOException            if deserialization failed
-     * @throws ClassNotFoundException if deserialization failed
+     * @throws RuntimeException if deserialization failed or if persisting to the store failed
      */
-    Optional<T> get(String key) throws IOException, ClassNotFoundException;
+    Optional<T> get(String key);
 
     /**
      * @return an optional containing either the timestamp the key's value was last updated or empty if the key did
      * not exist
+     * @throws RuntimeException if retrieving from the store failed
      */
     OptionalLong getLastUpdated(String key);
 
+    /**
+     * @return a future containing the timestamp or completed exceptionally in the case of a failure to serialize or
+     * persist
+     */
     CompletableFuture<Long> putAsync(String key, T value);
 
+    /**
+     * @return a future containing an optional of the value or completed exceptionally in the case of a failure to
+     * deserialize or retrieve
+     */
     CompletableFuture<Optional<T>> getAsync(String key);
 
+    /**
+     * @return a future containing an optional of the last updated time or completed exceptionally in the case of a
+     * failure to retrieve
+     */
     CompletableFuture<OptionalLong> getLastUpdatedAsync(String key);
 }

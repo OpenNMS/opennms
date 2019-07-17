@@ -28,8 +28,6 @@
 
 package org.opennms.features.distributed.kvstore.api;
 
-import java.io.IOException;
-
 /**
  * A strategy for serializing/deserializing objects of a given type.
  *
@@ -38,7 +36,7 @@ import java.io.IOException;
  * @param <U> the type before serialization
  */
 public interface SerializationStrategy<T, S, U> {
-    T serialize(U rawValue) throws IOException;
+    T serialize(U rawValue);
 
-    U deserialize(S serializedValue) throws IOException, ClassNotFoundException;
+    U deserialize(S serializedValue);
 }

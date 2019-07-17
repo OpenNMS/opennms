@@ -47,7 +47,7 @@ public enum CassandraJavaSerializationStrategy implements SerializationStrategy<
     INSTANCE;
 
     @Override
-    public ByteBuffer serialize(Serializable rawValue) throws IOException {
+    public ByteBuffer serialize(Serializable rawValue) {
         ByteBuffer serializedValue;
 
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
@@ -55,18 +55,22 @@ public enum CassandraJavaSerializationStrategy implements SerializationStrategy<
             out.writeObject(rawValue);
             out.flush();
             serializedValue = ByteBuffer.wrap(bos.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         return serializedValue;
     }
 
     @Override
-    public Serializable deserialize(byte[] serializedValue) throws IOException, ClassNotFoundException {
+    public Serializable deserialize(byte[] serializedValue) {
         Serializable value;
 
         try (ByteArrayInputStream bis = new ByteArrayInputStream(serializedValue)) {
             ObjectInput in = new ObjectInputStream(bis);
             value = (Serializable) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
 
         return value;

@@ -28,7 +28,6 @@
 
 package org.opennms.features.distributed.kvstore.api;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -55,7 +54,7 @@ public abstract class AbstractSerializedKVStore<T, S, U> implements SerializedKV
     }
 
     @Override
-    public final long put(String key, U value) throws IOException {
+    public final long put(String key, U value) {
         long timestamp = timestampGenerator.now();
 
         putSerializedValueWithTimestamp(key, serializationStrategy.serialize(value), timestamp);
@@ -64,14 +63,11 @@ public abstract class AbstractSerializedKVStore<T, S, U> implements SerializedKV
     }
 
     @Override
-    public final Optional<U> get(String key) throws IOException, ClassNotFoundException {
+    public final Optional<U> get(String key){
         Optional<S> deserializedValue = getSerializedValue(key);
 
-        if (deserializedValue.isPresent()) {
-            return Optional.of(serializationStrategy.deserialize(deserializedValue.get()));
-        }
+        return deserializedValue.map(serializationStrategy::deserialize);
 
-        return Optional.empty();
     }
 
     @Override
@@ -84,7 +80,7 @@ public abstract class AbstractSerializedKVStore<T, S, U> implements SerializedKV
 
         try {
             serializedValue = serializationStrategy.serialize(value);
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             CompletableFuture<Long> putFuture = new CompletableFuture<>();
             putFuture.completeExceptionally(e);
             return putFuture;
@@ -95,17 +91,7 @@ public abstract class AbstractSerializedKVStore<T, S, U> implements SerializedKV
 
     @Override
     public final CompletableFuture<Optional<U>> getAsync(String key) {
-        return getSerializedValueAsync(key).thenApply(o -> {
-            if (o.isPresent()) {
-                try {
-                    return Optional.of(serializationStrategy.deserialize(o.get()));
-                } catch (IOException | ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            return Optional.empty();
-        });
+        return getSerializedValueAsync(key).thenApply(opt -> opt.map(serializationStrategy::deserialize));
     }
 
     @Override
