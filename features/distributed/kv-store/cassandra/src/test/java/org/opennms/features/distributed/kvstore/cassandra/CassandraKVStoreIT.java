@@ -28,6 +28,7 @@
 
 package org.opennms.features.distributed.kvstore.cassandra;
 
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -43,6 +44,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.cassandraunit.CassandraCQLUnit;
 import org.cassandraunit.dataset.CQLDataSet;
@@ -210,6 +213,31 @@ public class CassandraKVStoreIT {
                 })
                 .findAny()
                 .ifPresent(f -> fail("Should not have found empty optional"));
+    }
+
+    @Test
+    public void canDetermineIfLatest() throws IOException, InterruptedException, ClassNotFoundException {
+        String key = "test";
+        State originalState = new State(1, "test");
+        long originalTimestamp = kvStore.put(key, originalState);
+        
+        Thread.sleep(10);
+        
+        assertThat(originalTimestamp, equalTo(kvStore.getLastUpdated(key).getAsLong()));
+        assertThat(kvStore.get(key).get(), equalTo(originalState));
+        
+        State updatedState = new State(1, "test2");
+        long updatedTimestamp = kvStore.put(key, updatedState);
+        assertThat(originalTimestamp, lessThan(updatedTimestamp));
+        assertThat(kvStore.get(key).get(), equalTo(updatedState));
+    }
+    
+    @Test
+    public void canGetLastUpdatedAsync() throws InterruptedException, ExecutionException, TimeoutException {
+        String key = "test";
+        long timestamp = kvStore.putAsync(key, new State(1,"test")).get(5, TimeUnit.SECONDS);
+        long lastUpdated = kvStore.getLastUpdatedAsync(key).get(5, TimeUnit.SECONDS).getAsLong();
+        assertThat(timestamp, equalTo(lastUpdated));
     }
 
     static class State implements Serializable {
