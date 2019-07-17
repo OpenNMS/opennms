@@ -67,6 +67,11 @@ public class GrafanaClientImplIT {
         GrafanaClientImpl client = new GrafanaClientImpl(config);
         Dashboard dashboard = client.getDashboardByUid("eWsVEL6zz");
 
+        assertThat(dashboard.getMeta().getSlug(), equalTo("flows"));
+        assertThat(dashboard.getMeta().isStarred(), equalTo(true));
+        assertThat(dashboard.getMeta().getVersion(), equalTo(6));
+        assertThat(dashboard.getTags(), contains("cool", "dude"));
+
         assertThat(panelTitles(dashboard), contains("Traffic (Flows)", "Traffic by Application",
                 "Traffic by Application",
                 "Traffic (SNMP via MIB-2)",
@@ -82,7 +87,7 @@ public class GrafanaClientImplIT {
         assertThat(panel.getDatasource(), equalTo("minion-dev (Flow)"));
         assertThat(panel.getDescription(), equalTo("igb0"));
 
-        stubFor(get(urlEqualTo("/render/d-solo/eWsVEL6zz/z?panelId=3&from=0&to=1&width=128&height=128&theme=light"))
+        stubFor(get(urlEqualTo("/render/d-solo/eWsVEL6zz/flows?panelId=3&from=0&to=1&width=128&height=128&theme=light"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "image/png")
                         .withBodyFile("panel.png")));

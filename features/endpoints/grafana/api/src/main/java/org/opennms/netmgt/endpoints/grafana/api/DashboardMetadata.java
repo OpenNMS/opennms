@@ -28,32 +28,42 @@
 
 package org.opennms.netmgt.endpoints.grafana.api;
 
-public class DashboardWithMeta {
+public class DashboardMetadata {
 
-    private DashboardMetadata meta;
-    private Dashboard dashboard;
+    private Boolean isStarred;
+    private String slug;
+    private Integer version;
 
-    public DashboardMetadata getMeta() {
-        return meta;
+    public Boolean isStarred() {
+        return isStarred;
     }
 
-    public void setMeta(DashboardMetadata meta) {
-        this.meta = meta;
+    public void setStarred(Boolean starred) {
+        isStarred = starred;
     }
 
-    public Dashboard getDashboard() {
-        return dashboard;
+    public String getSlug() {
+        return slug;
     }
 
-    public void setDashboard(Dashboard dashboard) {
-        this.dashboard = dashboard;
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     @Override
     public String toString() {
-        return "DashboardWithMeta{" +
-                "meta=" + meta +
-                ", dashboard=" + dashboard +
+        return "DashboardMetadata{" +
+                "isStarred=" + isStarred +
+                ", slug='" + slug + '\'' +
+                ", version=" + version +
                 '}';
     }
 }

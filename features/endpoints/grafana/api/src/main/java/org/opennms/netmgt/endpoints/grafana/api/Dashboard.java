@@ -31,7 +31,6 @@ package org.opennms.netmgt.endpoints.grafana.api;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO MVR add tags, isStarred, etc.
 public class Dashboard implements PanelContainer {
 
     private String uid;
@@ -39,6 +38,8 @@ public class Dashboard implements PanelContainer {
     private String uri;
     private String url;
     private List<Panel> panels = new ArrayList<>();
+    private List<String> tags = new ArrayList<>();
+    private DashboardMetadata meta;
 
     public String getUid() {
         return uid;
@@ -79,5 +80,34 @@ public class Dashboard implements PanelContainer {
 
     public void setPanels(List<Panel> panels) {
         this.panels = panels;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public DashboardMetadata getMeta() {
+        return meta;
+    }
+
+    public void setMeta(DashboardMetadata meta) {
+        this.meta = meta;
+    }
+
+    @Override
+    public String toString() {
+        return "Dashboard{" +
+                "uid='" + uid + '\'' +
+                ", title='" + title + '\'' +
+                ", uri='" + uri + '\'' +
+                ", url='" + url + '\'' +
+                ", panels=" + panels +
+                ", tags=" + tags +
+                ", meta=" + meta +
+                '}';
     }
 }

@@ -121,6 +121,8 @@ public class GrafanaClientImpl implements GrafanaClient {
             }
             final String json = response.body().string();
             final DashboardWithMeta dashboardWithMeta = gson.fromJson(json, DashboardWithMeta.class);
+            // Copy the meta-data over to the dashboard for ease of use
+            dashboardWithMeta.getDashboard().setMeta(dashboardWithMeta.getMeta());
             return dashboardWithMeta.getDashboard();
         }
     }
@@ -131,7 +133,7 @@ public class GrafanaClientImpl implements GrafanaClient {
                 .addPathSegment("render")
                 .addPathSegment("d-solo")
                 .addPathSegment(dashboard.getUid())
-                .addPathSegments("z"); // We need some string here, but it doesn't seem to matter what it is
+                .addPathSegments(dashboard.getMeta().getSlug());
 
         // Query parameters
         builder.addQueryParameter("panelId", Integer.toString(panel.getId()))
