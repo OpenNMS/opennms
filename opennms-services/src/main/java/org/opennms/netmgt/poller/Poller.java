@@ -40,8 +40,8 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -246,7 +246,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>getPollOutagesConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
+     * @return a {@link org.opennms.netmgt.config.api.PollOutagesConfig} object.
      */
     public PollOutagesConfig getPollOutagesConfig() {
         return m_pollOutagesConfig;
@@ -255,7 +255,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>setPollOutagesConfig</p>
      *
-     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
+     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.api.PollOutagesConfig} object.
      */
     public void setPollOutagesConfig(PollOutagesConfig pollOutagesConfig) {
         m_pollOutagesConfig = pollOutagesConfig;

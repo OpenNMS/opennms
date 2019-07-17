@@ -28,14 +28,38 @@
 
 package org.opennms.netmgt.config.ro;
 
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.api.ThreshdConfig;
+import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 
-public class ThreshdConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThreshdConfiguration> {
+public class ThreshdConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThreshdConfiguration> implements ThreshdConfig {
+
+    private final String fileName = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
+
+    private final long cacheLengthInMillis = SystemProperties.getLong("org.opennms.netmgt.config.ro.ThreshdConfig.cacheTtlMillis", 1440);
 
     @Override
     public ThreshdConfiguration getConfig() {
-        return getByKey(ThreshdConfiguration.class, ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME));
+        return getByKey(ThreshdConfiguration.class, fileName, cacheLengthInMillis);
+    }
+
+    @Override
+    public ThreshdConfiguration getConfiguration() {
+        return getConfig();
+    }
+
+    @Override
+    public boolean interfaceInPackage(String iface, Package pkg) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean serviceInPackageAndEnabled(String svcName, Package pkg) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

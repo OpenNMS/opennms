@@ -187,7 +187,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         }
         if (isThresholds) {
             try {
-                ThreshdConfigFactory.reload();
+                ThreshdConfigFactory.getInstance().reload();
                 ThresholdsConfigFactory.reload();
                 thresholdingSetPersister.reinitializeThresholdingSets();
             } catch (final Exception e) {

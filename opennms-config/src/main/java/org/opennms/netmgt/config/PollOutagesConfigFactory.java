@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.api.PollOutagesConfigModifiable;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
+public final class PollOutagesConfigFactory extends PollOutagesConfigManager implements PollOutagesConfigModifiable {
     /**
      * The singleton instance of this factory
      */

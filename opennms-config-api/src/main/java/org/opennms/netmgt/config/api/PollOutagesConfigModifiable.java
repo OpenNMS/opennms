@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.ro;
+package org.opennms.netmgt.config.api;
 
-import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.api.ThresholdsConfig;
-import org.opennms.netmgt.config.threshd.ThresholdingConfig;
+public interface PollOutagesConfigModifiable extends PollOutagesConfig {
 
-public class ThresholdsConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThresholdingConfig> implements ThresholdsConfig {
-
-    private final String fileName = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
-
-    private final long cacheLengthInMillis = SystemProperties.getLong("org.opennms.netmgt.config.ro.ThresholdsConfig.cacheTtlMillis", DEFAULT_CACHE_MILLIS);
-
-    @Override
-    public ThresholdingConfig getConfig() {
-        return getByKey(ThresholdingConfig.class, fileName, cacheLengthInMillis);
-    }
 
 }

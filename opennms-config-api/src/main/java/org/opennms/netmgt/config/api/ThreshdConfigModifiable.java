@@ -26,22 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.ro;
+package org.opennms.netmgt.config.api;
 
-import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.api.ThresholdsConfig;
-import org.opennms.netmgt.config.threshd.ThresholdingConfig;
+import java.io.IOException;
 
-public class ThresholdsConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThresholdingConfig> implements ThresholdsConfig {
+public interface ThreshdConfigModifiable extends ThreshdConfig {
 
-    private final String fileName = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
+    /**
+     * Saves the current in-memory configuration to disk and reloads
+     *
+     * @throws java.io.IOException
+     *             if any.
+     */
+    void saveCurrent() throws IOException;
 
-    private final long cacheLengthInMillis = SystemProperties.getLong("org.opennms.netmgt.config.ro.ThresholdsConfig.cacheTtlMillis", DEFAULT_CACHE_MILLIS);
-
-    @Override
-    public ThresholdingConfig getConfig() {
-        return getByKey(ThresholdingConfig.class, fileName, cacheLengthInMillis);
-    }
+    /**
+     * Reload the config from the default config file
+     *
+     * @throws java.io.IOException
+     *             if the specified config file cannot be read/loaded
+     */
+    void reload() throws IOException;
+    
+    /**
+     * This nethod is used to rebuild the package agaist iplist mapping when needed. When a node gained service event occurs, threshd has to determine which package the ip/service
+     * combination is in, but if the interface is a newly added one, the package iplist should be rebuilt so that threshd could know which package this ip/service pair is in.
+     */
+    void rebuildPackageIpListMap();
 
 }

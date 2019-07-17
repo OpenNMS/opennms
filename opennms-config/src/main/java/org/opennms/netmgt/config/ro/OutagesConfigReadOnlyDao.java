@@ -28,14 +28,50 @@
 
 package org.opennms.netmgt.config.ro;
 
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.poller.outages.Outages;
 
-public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages> {
+public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages> implements PollOutagesConfig {
+
+    private final String fileName = ConfigFileConstants.getFileName(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
+
+    private final long cacheLengthInMillis = SystemProperties.getLong("org.opennms.netmgt.config.ro.OutagesConfig.cacheTtlMillis", DEFAULT_CACHE_MILLIS);
 
     @Override
     public Outages getConfig() {
-        return getByKey(Outages.class, ConfigFileConstants.getFileName(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME));
+        return getByKey(Outages.class, fileName, cacheLengthInMillis);
+    }
+
+    @Override
+    public boolean isNodeIdInOutage(long lnodeid, String outName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isInterfaceInOutage(String linterface, String outName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isCurTimeInOutage(String outName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isTimeInOutage(long time, String outName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void update() throws Exception {
+        // TODO Auto-generated method stub
+
     }
 
 }

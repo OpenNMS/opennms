@@ -38,10 +38,13 @@ import org.opennms.netmgt.config.ReadOnlyConfig;
 public interface ReadOnlyConfigDao<T extends ReadOnlyConfig> {
 
     /**
-     * Returns the matching configuration for the provided key and type.
+     * Returns the matching configuration for the provided key and type. 
      * By convention, the key value is the filename of the preexisting configuration.
+     * If the config has been read from the DB less than <i>cacheLengthInMillis</i> ago, a cached version of the
+     * configuration will be returned. The default cache length is 5 minutes and 
+     * can be overwritten for each ReadOnly Config Dao. 
      */
-    public T getByKey(Class<T> type, String key);
+    public T getByKey(Class<T> type, String key, long cacheLengthInMillis);
 
     /**
      * Returns the last update date for the object with the given key.

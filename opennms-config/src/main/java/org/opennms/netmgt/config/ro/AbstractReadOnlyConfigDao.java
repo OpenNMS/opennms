@@ -30,7 +30,6 @@ package org.opennms.netmgt.config.ro;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import org.opennms.netmgt.config.ReadOnlyConfig;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
@@ -42,21 +41,49 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implements ReadOnlyConfigDao<T> {
 
+    protected static final long DEFAULT_CACHE_MILLIS = 300000; // 5 minutes
+
     @Autowired
     private EffectiveConfigurationDao dao;
 
+    // A cached view of the Configuration
+    private T cached;
+
+    // Time in millis when Configuration was last read from DB and Cached
+    private long cachedAt;
+
+    // Time the config was last written to the DB.
+    private long configWriteTime;
+
     @Override
-    public T getByKey(Class<T> type, String key) {
+    public T getByKey(Class<T> type, String key, long cacheLengthInMillis) {
+        if (cacheIsValid(cacheLengthInMillis)) {
+            return cached;
+        }
         EffectiveConfiguration config = dao.getByKey(key);
         if (config == null) {
             return null;
         }
-        return unMarshallConfig(type, config.getConfiguration());
+        if (config.getLastUpdated().getTime() == configWriteTime) {
+            // config hasn't changed
+            return cached;
+        }
+        cached = unMarshallConfig(type, config.getConfiguration());
+        cachedAt = System.currentTimeMillis();
+        return cached;
     }
 
     @Override
     public Date getLastUpdated(String key) {
         return dao.getLastUpdated(key);
+    }
+
+    public void setDao(EffectiveConfigurationDao dao) {
+        this.dao = dao;
+    }
+
+    private boolean cacheIsValid(long cacheLengthInMillis) {
+        return System.currentTimeMillis() - cachedAt < cacheLengthInMillis;
     }
 
     private T unMarshallConfig(Class<T> type, String json) {
@@ -68,10 +95,6 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
             e.printStackTrace();
             return null;
         }
-    }
-
-    public void setDao(EffectiveConfigurationDao dao) {
-        this.dao = dao;
     }
 
 }

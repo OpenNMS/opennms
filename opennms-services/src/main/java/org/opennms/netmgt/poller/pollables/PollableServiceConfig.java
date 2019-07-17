@@ -42,8 +42,8 @@ import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.core.utils.RegexUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -91,7 +91,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      *
      * @param svc a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
-     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
+     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.api.PollOutagesConfig} object.
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */

@@ -416,9 +416,13 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     }
 
     private static org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) {
-        org.opennms.netmgt.config.threshd.Package pkg = ThreshdConfigFactory.getInstance().getPackage(packageName);
-        if (pkg == null) throw getException(Status.NOT_FOUND, "Threshold package {} does not exist.", packageName);
-        return pkg;
+        for (org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+            if (thisPackage.getName().equals(packageName)) {
+                return thisPackage;
+            }
+        }
+        // not found
+        throw getException(Status.NOT_FOUND, "Threshold package {} does not exist.", packageName);
     }
 
     private void updateNotifd(ConfigAction action, String outageName) {

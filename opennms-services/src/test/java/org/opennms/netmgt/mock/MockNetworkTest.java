@@ -37,8 +37,8 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.mock.EventAnticipator;

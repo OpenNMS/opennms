@@ -33,6 +33,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.opennms.core.xml.AbstractWritableJaxbConfigDao;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.poller.outages.Interface;
 import org.opennms.netmgt.config.poller.outages.Node;
 import org.opennms.netmgt.config.poller.outages.Outage;

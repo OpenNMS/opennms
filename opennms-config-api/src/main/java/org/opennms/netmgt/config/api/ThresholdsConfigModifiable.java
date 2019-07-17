@@ -26,22 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.ro;
+package org.opennms.netmgt.config.api;
 
-import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.api.ThresholdsConfig;
-import org.opennms.netmgt.config.threshd.ThresholdingConfig;
-
-public class ThresholdsConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThresholdingConfig> implements ThresholdsConfig {
-
-    private final String fileName = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
-
-    private final long cacheLengthInMillis = SystemProperties.getLong("org.opennms.netmgt.config.ro.ThresholdsConfig.cacheTtlMillis", DEFAULT_CACHE_MILLIS);
-
-    @Override
-    public ThresholdingConfig getConfig() {
-        return getByKey(ThresholdingConfig.class, fileName, cacheLengthInMillis);
-    }
-
+public interface ThresholdsConfigModifiable extends ThresholdsConfig {
+    
 }

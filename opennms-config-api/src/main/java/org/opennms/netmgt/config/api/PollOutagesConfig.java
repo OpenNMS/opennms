@@ -26,18 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.config.api;
 
-
-/**
- * <p>PollOutagesConfig interface.</p>
- *
- * @author brozow
- *
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- * @version $Id: $
- */
 public interface PollOutagesConfig {
     
     /**
@@ -49,7 +39,7 @@ public interface PollOutagesConfig {
      *            the outage name
      * @return the node is part of the specified outage
      */
-    public abstract boolean isNodeIdInOutage(long lnodeid, String outName);
+    boolean isNodeIdInOutage(long lnodeid, String outName);
 
     /**
      * Return if interfaces is part of specified outage.
@@ -60,7 +50,7 @@ public interface PollOutagesConfig {
      *            the outage name
      * @return the interface is part of the specified outage
      */
-    public abstract boolean isInterfaceInOutage(String linterface, String outName);
+    boolean isInterfaceInOutage(String linterface, String outName);
 
     /**
      * Return if current time is part of specified outage.
@@ -69,7 +59,7 @@ public interface PollOutagesConfig {
      *            the outage name
      * @return true if current time is in outage
      */
-    public abstract boolean isCurTimeInOutage(String outName);
+    boolean isCurTimeInOutage(String outName);
     
     /**
      * Return if time is part of specified outage.
@@ -80,7 +70,7 @@ public interface PollOutagesConfig {
      *            the outage name
      * @return true if time is in outage
      */
-    public abstract boolean isTimeInOutage(long time, String outName);
+    boolean isTimeInOutage(long time, String outName);
 
     /**
      * <p>update</p>
@@ -89,5 +79,4 @@ public interface PollOutagesConfig {
      */
     public abstract void update() throws Exception;
     
-
 }

@@ -48,6 +48,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.ThresholdsConfigModifiable;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
@@ -75,7 +76,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
-public final class ThresholdsConfigFactory {
+public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable {
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdsConfigFactory.class);
 
     /**
@@ -220,14 +221,12 @@ public final class ThresholdsConfigFactory {
         loadConfigFile(thresholdsFile);
     }
 
+    // injection of EffectiveConfigurationDao
     public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
         m_configDao = effectiveConfigurationDao;
         saveEffective();
     }
 
-    public EffectiveConfigurationDao getEffectiveConfigurationDao() {
-        return m_configDao;
-    }
     /**
      * Retrieves the configured path to the RRD file repository for the
      * specified thresholding group.
