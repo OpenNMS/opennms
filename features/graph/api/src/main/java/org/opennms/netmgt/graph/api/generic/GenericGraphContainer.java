@@ -29,6 +29,7 @@
 package org.opennms.netmgt.graph.api.generic;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
 
     private GenericGraphContainer(GenericGraphContainerBuilder builder) {
         this.properties = ImmutableMap.copyOf(builder.properties);
-        this.graphs = ImmutableList.copyOf(builder.graphs.values());
+        this.graphs = ImmutableList.copyOf(builder.graphs.values().stream().sorted(Comparator.comparing(GenericGraph::getNamespace)).collect(Collectors.toList()));
         Objects.requireNonNull(getId(), "id cannot be null.");
     }
     
