@@ -40,7 +40,7 @@
 		<property name="effectiveConfigurationDao" ref="effectiveConfigurationDao"/>
 	</bean>
 
-	<onmsgi:service interface="org.opennms.netmgt.config.PollOutagesConfig" ref="pollOutagesConfig" />
+	<onmsgi:service interface="org.opennms.netmgt.config.api.PollOutagesConfig" ref="pollOutagesConfig" />
 
 	<bean id="init-pollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>

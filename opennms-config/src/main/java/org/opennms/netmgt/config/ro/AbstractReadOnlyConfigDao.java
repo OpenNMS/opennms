@@ -68,6 +68,7 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
             // config hasn't changed
             return cached;
         }
+        configWriteTime = config.getLastUpdated().getTime();
         cached = unMarshallConfig(type, config.getConfiguration());
         cachedAt = System.currentTimeMillis();
         return cached;

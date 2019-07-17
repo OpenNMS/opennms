@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,40 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.ro;
+package org.opennms.netmgt.dao.mock;
 
-import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.api.ThreshdConfig;
-import org.opennms.netmgt.config.threshd.Package;
-import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class ThreshdConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThreshdConfiguration> implements ThreshdConfig {
+import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
+import org.opennms.netmgt.model.EffectiveConfiguration;
 
-    private final String fileName = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
-
-    private final long cacheLengthInMillis = SystemProperties.getLong("org.opennms.netmgt.config.ro.ThreshdConfig.cacheTtlMillis", DEFAULT_CACHE_MILLIS);
+public class MockEffectiveConfigurationDao extends AbstractMockDao<EffectiveConfiguration, Integer> implements EffectiveConfigurationDao {
+    private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
-    public ThreshdConfiguration getConfig() {
-        return getByKey(ThreshdConfiguration.class, fileName, cacheLengthInMillis);
+    protected void generateId(final EffectiveConfiguration config) {
+        config.setId(m_id.incrementAndGet());
     }
 
     @Override
-    public ThreshdConfiguration getConfiguration() {
-        return getConfig();
+    protected Integer getId(final EffectiveConfiguration config) {
+        return config.getId();
     }
 
     @Override
-    public boolean interfaceInPackage(String iface, Package pkg) {
+    public EffectiveConfiguration getByKey(String key) {
         // TODO Auto-generated method stub
-        return false;
+        return null;
     }
 
     @Override
-    public boolean serviceInPackageAndEnabled(String svcName, Package pkg) {
+    public Date getLastUpdated(String key) {
         // TODO Auto-generated method stub
-        return false;
+        return null;
     }
 
 }
