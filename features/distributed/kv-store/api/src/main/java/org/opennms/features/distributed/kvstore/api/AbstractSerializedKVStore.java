@@ -39,22 +39,21 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * All {@link SerializedKVStore} implementations should inherit from this class.
  *
- * @param <T> the serialized type that is being persisted to the store
- * @param <S> the deserialized type that is retrieved from the store
- * @param <U> the persisted type before being serialized
+ * @param <T> the serialized type
+ * @param <S> the type before serialization
  */
-public abstract class AbstractSerializedKVStore<T, S, U> implements SerializedKVStore<U> {
-    private final SerializationStrategy<T, S, U> serializationStrategy;
+public abstract class AbstractSerializedKVStore<T, S> implements SerializedKVStore<S> {
+    private final SerializationStrategy<T, S> serializationStrategy;
     private final TimestampGenerator timestampGenerator;
 
-    protected AbstractSerializedKVStore(SerializationStrategy<T, S, U> serializationStrategy,
+    protected AbstractSerializedKVStore(SerializationStrategy<T, S> serializationStrategy,
                                         TimestampGenerator timestampGenerator) {
         this.serializationStrategy = Objects.requireNonNull(serializationStrategy);
         this.timestampGenerator = Objects.requireNonNull(timestampGenerator);
     }
 
     @Override
-    public final long put(String key, U value) {
+    public final long put(String key, S value) {
         long timestamp = timestampGenerator.now();
 
         putSerializedValueWithTimestamp(key, serializationStrategy.serialize(value), timestamp);
@@ -63,8 +62,8 @@ public abstract class AbstractSerializedKVStore<T, S, U> implements SerializedKV
     }
 
     @Override
-    public final Optional<U> get(String key){
-        Optional<S> deserializedValue = getSerializedValue(key);
+    public final Optional<S> get(String key) {
+        Optional<T> deserializedValue = getSerializedValue(key);
 
         return deserializedValue.map(serializationStrategy::deserialize);
 
@@ -74,7 +73,7 @@ public abstract class AbstractSerializedKVStore<T, S, U> implements SerializedKV
     public abstract OptionalLong getLastUpdated(String key);
 
     @Override
-    public final CompletableFuture<Long> putAsync(String key, U value) {
+    public final CompletableFuture<Long> putAsync(String key, S value) {
         long timestamp = timestampGenerator.now();
         T serializedValue;
 
@@ -90,7 +89,7 @@ public abstract class AbstractSerializedKVStore<T, S, U> implements SerializedKV
     }
 
     @Override
-    public final CompletableFuture<Optional<U>> getAsync(String key) {
+    public final CompletableFuture<Optional<S>> getAsync(String key) {
         return getSerializedValueAsync(key).thenApply(opt -> opt.map(serializationStrategy::deserialize));
     }
 
@@ -99,10 +98,10 @@ public abstract class AbstractSerializedKVStore<T, S, U> implements SerializedKV
 
     protected abstract void putSerializedValueWithTimestamp(String key, T serializedValue, long timestamp);
 
-    protected abstract Optional<S> getSerializedValue(String key);
+    protected abstract Optional<T> getSerializedValue(String key);
 
     protected abstract CompletableFuture<Void> putSerializedValueWithTimestampAsync(String key, T serializedValue,
                                                                                     long timestamp);
 
-    protected abstract CompletableFuture<Optional<S>> getSerializedValueAsync(String key);
+    protected abstract CompletableFuture<Optional<T>> getSerializedValueAsync(String key);
 }

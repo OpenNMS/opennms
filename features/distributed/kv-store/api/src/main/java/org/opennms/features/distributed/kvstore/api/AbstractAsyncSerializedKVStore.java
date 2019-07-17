@@ -43,22 +43,22 @@ import java.util.concurrent.Executors;
  * <p>
  * A separate thread will be used by this implementation by each blocked async call while waiting for the response.
  */
-public abstract class AbstractAsyncSerializedKVStore<T, S, U> extends AbstractSerializedKVStore<T, S, U> {
+public abstract class AbstractAsyncSerializedKVStore<T, U> extends AbstractSerializedKVStore<T, U> {
     private final Executor executor;
 
-    protected AbstractAsyncSerializedKVStore(SerializationStrategy<T, S, U> serializationStrategy,
+    protected AbstractAsyncSerializedKVStore(SerializationStrategy<T, U> serializationStrategy,
                                              TimestampGenerator timestampGenerator, Executor executor) {
         super(serializationStrategy, timestampGenerator);
         this.executor = Objects.requireNonNull(executor);
     }
 
-    protected AbstractAsyncSerializedKVStore(SerializationStrategy<T, S, U> serializationStrategy,
+    protected AbstractAsyncSerializedKVStore(SerializationStrategy<T, U> serializationStrategy,
                                              TimestampGenerator timestampGenerator) {
         // Default impl using a cached thread pool
         this(serializationStrategy, timestampGenerator, Executors.newCachedThreadPool(r -> new Thread(r,
                 "kvstore-async-thread")));
     }
-    
+
     @Override
     protected CompletableFuture<Void> putSerializedValueWithTimestampAsync(String key, T serializedValue,
                                                                            long timestamp) {
@@ -69,7 +69,7 @@ public abstract class AbstractAsyncSerializedKVStore<T, S, U> extends AbstractSe
     }
 
     @Override
-    protected CompletableFuture<Optional<S>> getSerializedValueAsync(String key) {
+    protected CompletableFuture<Optional<T>> getSerializedValueAsync(String key) {
         return CompletableFuture.supplyAsync(() -> getSerializedValue(key), executor);
     }
 

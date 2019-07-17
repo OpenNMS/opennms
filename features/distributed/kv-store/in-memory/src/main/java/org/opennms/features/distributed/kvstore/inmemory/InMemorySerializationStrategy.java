@@ -30,7 +30,7 @@ package org.opennms.features.distributed.kvstore.inmemory;
 
 import org.opennms.features.distributed.kvstore.api.SerializationStrategy;
 
-public class InMemorySerializationStrategy<T> implements SerializationStrategy<Object, Object, T> {
+public class InMemorySerializationStrategy<T> implements SerializationStrategy<Object, T> {
     @Override
     public Object serialize(T rawValue) {
         return rawValue;

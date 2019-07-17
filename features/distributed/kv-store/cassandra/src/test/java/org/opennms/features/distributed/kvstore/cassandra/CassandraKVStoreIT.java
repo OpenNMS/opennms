@@ -60,13 +60,13 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.RegularStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
+import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 
 public class CassandraKVStoreIT {
     private static final String KEYSPACE = "opennms";
 
-    @Rule
-    public CassandraCQLUnit cassandraUnit = new CassandraCQLUnit(new CQLDataSet() {
+    private final CQLDataSet testSet = new CQLDataSet() {
         @Override
         public List<String> getCQLStatements() {
             return Collections.emptyList();
@@ -86,44 +86,23 @@ public class CassandraKVStoreIT {
         public boolean isKeyspaceDeletion() {
             return false;
         }
-    });
+    };
+
+    @Rule
+    public CassandraCQLUnit cassandraUnit = new CassandraCQLUnit(testSet);
 
     private SerializedKVStore<Serializable> kvStore;
 
-    private final CassandraSession cassandraSession = new CassandraSession() {
-        @Override
-        public PreparedStatement prepare(String statement) {
-            return cassandraUnit.getSession().prepare(statement);
-        }
-
-        @Override
-        public PreparedStatement prepare(RegularStatement statement) {
-            return cassandraUnit.getSession().prepare(statement);
-        }
-
-        @Override
-        public ResultSetFuture executeAsync(Statement statement) {
-            return cassandraUnit.getSession().executeAsync(statement);
-        }
-
-        @Override
-        public ResultSet execute(Statement statement) {
-            return cassandraUnit.getSession().execute(statement);
-        }
-
-        @Override
-        public ResultSet execute(String statement) {
-            return cassandraUnit.getSession().execute(statement);
-        }
-
-        @Override
-        public Future<Void> shutdown() {
-            return CompletableFuture.completedFuture(null);
-        }
-    };
+    private CassandraSession cassandraSession;
 
     @Before
     public void initStore() throws IOException {
+        if (cassandraUnit.getSession().isClosed()) {
+            cassandraSession = getSession(cassandraUnit.getCluster().connect());
+        } else if (cassandraSession == null) {
+            cassandraSession = getSession(cassandraUnit.getSession());
+        }
+
         kvStore = new CassandraKVStore(() -> {
             cassandraSession.execute(String.format("USE %s;", KEYSPACE));
             return cassandraSession;
@@ -142,9 +121,8 @@ public class CassandraKVStoreIT {
     }
 
     @Test
-    public void canPersistAndRetrieve() throws IOException,
-            ClassNotFoundException {
-        String key = "test";
+    public void canPersistAndRetrieve() {
+        String key = "canPersistAndRetrieve";
         int i = 100;
         String s = "Tubessss";
         State state = new State(i, s);
@@ -155,24 +133,24 @@ public class CassandraKVStoreIT {
     }
 
     @Test
-    public void emptyWhenKeyDoesNotExist() throws IOException, ClassNotFoundException {
+    public void emptyWhenKeyDoesNotExist() {
         // If Cassandra is available, but the key does not exist we should get an empty optional back
-        assertThat(kvStore.get("test"), equalTo(Optional.empty()));
+        assertThat(kvStore.get("emptyWhenKeyDoesNotExist"), equalTo(Optional.empty()));
     }
 
     @Test
     public void exceptionWhenCassandraUnavailable() {
         cassandraUnit.getSession().close();
         try {
-            kvStore.put("test", new State(1, "a"));
+            kvStore.put("exceptionWhenCassandraUnavailable", new State(1, "a"));
             fail("Should have triggered an exception");
-        } catch (Exception ignore) {
+        } catch (RuntimeException ignore) {
         }
 
         try {
-            kvStore.get("test");
+            kvStore.get("exceptionWhenCassandraUnavailable");
             fail("Should have triggered an exception");
-        } catch (Exception ignore) {
+        } catch (RuntimeException ignore) {
         }
     }
 
@@ -216,28 +194,62 @@ public class CassandraKVStoreIT {
     }
 
     @Test
-    public void canDetermineIfLatest() throws IOException, InterruptedException, ClassNotFoundException {
-        String key = "test";
+    public void canDetermineIfLatest() throws InterruptedException {
+        String key = "canDetermineIfLatest";
         State originalState = new State(1, "test");
         long originalTimestamp = kvStore.put(key, originalState);
-        
+
         Thread.sleep(10);
-        
+
         assertThat(originalTimestamp, equalTo(kvStore.getLastUpdated(key).getAsLong()));
         assertThat(kvStore.get(key).get(), equalTo(originalState));
-        
+
         State updatedState = new State(1, "test2");
         long updatedTimestamp = kvStore.put(key, updatedState);
         assertThat(originalTimestamp, lessThan(updatedTimestamp));
         assertThat(kvStore.get(key).get(), equalTo(updatedState));
     }
-    
+
     @Test
     public void canGetLastUpdatedAsync() throws InterruptedException, ExecutionException, TimeoutException {
-        String key = "test";
-        long timestamp = kvStore.putAsync(key, new State(1,"test")).get(5, TimeUnit.SECONDS);
+        String key = "canGetLastUpdatedAsync";
+        long timestamp = kvStore.putAsync(key, new State(1, "test")).get(5, TimeUnit.SECONDS);
         long lastUpdated = kvStore.getLastUpdatedAsync(key).get(5, TimeUnit.SECONDS).getAsLong();
         assertThat(timestamp, equalTo(lastUpdated));
+    }
+
+    private CassandraSession getSession(Session session) {
+        return new CassandraSession() {
+            @Override
+            public PreparedStatement prepare(String statement) {
+                return session.prepare(statement);
+            }
+
+            @Override
+            public PreparedStatement prepare(RegularStatement statement) {
+                return session.prepare(statement);
+            }
+
+            @Override
+            public ResultSetFuture executeAsync(Statement statement) {
+                return session.executeAsync(statement);
+            }
+
+            @Override
+            public ResultSet execute(Statement statement) {
+                return session.execute(statement);
+            }
+
+            @Override
+            public ResultSet execute(String statement) {
+                return session.execute(statement);
+            }
+
+            @Override
+            public Future<Void> shutdown() {
+                return CompletableFuture.completedFuture(null);
+            }
+        };
     }
 
     static class State implements Serializable {

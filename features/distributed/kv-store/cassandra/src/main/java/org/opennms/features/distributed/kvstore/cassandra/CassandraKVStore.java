@@ -60,7 +60,7 @@ import com.google.common.util.concurrent.MoreExecutors;
  * This implementation does not initiate its own {@link com.datastax.driver.core.Session Cassandra session} and must be
  * provided with one via a {@link CassandraSessionFactory session factory}.
  */
-public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, byte[], Serializable> {
+public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, Serializable> {
     private static final String KEY_COLUMN = "key";
     private static final String VALUE_COLUMN = "value";
     private static final String TIMESTAMP_COLUMN = "lastUpdated";
@@ -96,8 +96,8 @@ public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, byte
     }
 
     @Override
-    protected Optional<byte[]> getSerializedValue(String key) {
-        byte[] serializedValue;
+    protected Optional<ByteBuffer> getSerializedValue(String key) {
+        ByteBuffer serializedValue;
 
         // Cassandra will throw a runtime exception here if the execution fails
         ResultSet resultSet = session.execute(selectStmt.bind(key));
@@ -108,7 +108,7 @@ public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, byte
             return Optional.empty();
         }
 
-        serializedValue = row.getBytes(VALUE_COLUMN).array();
+        serializedValue = ByteBuffer.wrap(row.getBytes(VALUE_COLUMN).array());
 
         return Optional.of(serializedValue);
     }
@@ -146,8 +146,8 @@ public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, byte
     }
 
     @Override
-    protected CompletableFuture<Optional<byte[]>> getSerializedValueAsync(String key) {
-        CompletableFuture<Optional<byte[]>> getFuture = new CompletableFuture<>();
+    protected CompletableFuture<Optional<ByteBuffer>> getSerializedValueAsync(String key) {
+        CompletableFuture<Optional<ByteBuffer>> getFuture = new CompletableFuture<>();
 
         try {
             // Cassandra will throw a runtime exception here if the execution fails
@@ -178,7 +178,7 @@ public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, byte
         return tsFuture;
     }
 
-    private void processGetFutureResult(CompletableFuture<Optional<byte[]>> future,
+    private void processGetFutureResult(CompletableFuture<Optional<ByteBuffer>> future,
                                         ResultSet resultSet) {
         Row row = resultSet.one();
 
@@ -188,7 +188,7 @@ public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, byte
             return;
         }
 
-        future.complete(Optional.of(row.getBytes(VALUE_COLUMN).array()));
+        future.complete(Optional.of(ByteBuffer.wrap(row.getBytes(VALUE_COLUMN).array())));
     }
 
     private void processLastUpdatedFutureResult(CompletableFuture<OptionalLong> future, ResultSet resultSet) {

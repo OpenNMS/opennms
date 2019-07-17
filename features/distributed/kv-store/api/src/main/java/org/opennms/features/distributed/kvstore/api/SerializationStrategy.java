@@ -31,12 +31,11 @@ package org.opennms.features.distributed.kvstore.api;
 /**
  * A strategy for serializing/deserializing objects of a given type.
  *
- * @param <T> the type to serialize to
- * @param <S> the type to deserialize from
- * @param <U> the type before serialization
+ * @param <T> the serialized type
+ * @param <S> the type before serialization
  */
-public interface SerializationStrategy<T, S, U> {
-    T serialize(U rawValue);
+public interface SerializationStrategy<T, S> {
+    T serialize(S rawValue);
 
-    U deserialize(S serializedValue);
+    S deserialize(T serializedValue);
 }

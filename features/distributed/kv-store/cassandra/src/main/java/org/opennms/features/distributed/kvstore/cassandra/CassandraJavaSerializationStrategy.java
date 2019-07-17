@@ -43,7 +43,7 @@ import org.opennms.features.distributed.kvstore.api.SerializationStrategy;
 /**
  * A strategy for serializing/deserializing to a Cassandra 'blob' column using vanilla Java serialization.
  */
-public enum CassandraJavaSerializationStrategy implements SerializationStrategy<ByteBuffer, byte[], Serializable> {
+public enum CassandraJavaSerializationStrategy implements SerializationStrategy<ByteBuffer, Serializable> {
     INSTANCE;
 
     @Override
@@ -63,10 +63,10 @@ public enum CassandraJavaSerializationStrategy implements SerializationStrategy<
     }
 
     @Override
-    public Serializable deserialize(byte[] serializedValue) {
+    public Serializable deserialize(ByteBuffer serializedValue) {
         Serializable value;
 
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(serializedValue)) {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(serializedValue.array())) {
             ObjectInput in = new ObjectInputStream(bis);
             value = (Serializable) in.readObject();
         } catch (IOException | ClassNotFoundException e) {

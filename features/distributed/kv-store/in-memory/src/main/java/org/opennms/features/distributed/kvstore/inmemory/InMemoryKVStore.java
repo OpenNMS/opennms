@@ -42,7 +42,7 @@ import org.opennms.features.distributed.kvstore.api.TimestampGenerator;
  * This is a test implementation of {@link org.opennms.features.distributed.kvstore.api.SerializedKVStore} that stores
  * values directly in memory via a map without actually serializing/deserializing.
  */
-public class InMemoryKVStore<T> extends AbstractAsyncSerializedKVStore<Object, Object, T> {
+public class InMemoryKVStore<T> extends AbstractAsyncSerializedKVStore<Object, T> {
     private final Map<String, Map.Entry<Object, Long>> inMemoryStore = new HashMap<>();
 
     public InMemoryKVStore(TimestampGenerator timestampGenerator) {

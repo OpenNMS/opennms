@@ -41,9 +41,9 @@ import org.opennms.features.distributed.kvstore.api.SerializedKVStore;
  * will always return an empty {@link Optional optional}. This implies any clients using this will also be holding onto
  * their own local copies of the key-values since persisting to this won't store them.
  */
-public class NoOpKVStore extends AbstractAsyncSerializedKVStore<Object, Object, Serializable> {
-    private static final SerializationStrategy<Object, Object, Serializable> serializationStrategy =
-            new SerializationStrategy<Object, Object, Serializable>() {
+public class NoOpKVStore extends AbstractAsyncSerializedKVStore<Object, Serializable> {
+    private static final SerializationStrategy<Object, Serializable> serializationStrategy =
+            new SerializationStrategy<Object, Serializable>() {
                 @Override
                 public Object serialize(Serializable rawValue) {
                     return null;
