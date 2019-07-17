@@ -1321,7 +1321,7 @@
     <vaadinAddonContextMenuVersion>2.0.0</vaadinAddonContextMenuVersion>
     <vaadinAddonConfirmDialogVersion>3.2.0</vaadinAddonConfirmDialogVersion>
     <vaadinJavaMaxMemory>1g</vaadinJavaMaxMemory>
-    <vaddinLocalWorkers>${maxCpus}</vaddinLocalWorkers>
+    <vaadinLocalWorkers>${maxCpus}</vaadinLocalWorkers>
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
 
@@ -1333,7 +1333,7 @@
 
     <!-- CircleCI Settings -->
     <circleci.instance>0</circleci.instance>
-    <circleci.rerunFailingTestsCount>1</circleci.rerunFailingTestsCount>
+    <circleci.rerunFailingTestsCount>0</circleci.rerunFailingTestsCount>
   </properties>
 
   <profiles>
@@ -1569,7 +1569,7 @@
       <id>code-coverage</id>
       <activation>
         <property>
-          <name>code-coverage</name>
+          <name>code.coverage</name>
           <value>true</value>
         </property>
       </activation>

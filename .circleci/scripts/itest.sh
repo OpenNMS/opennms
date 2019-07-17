@@ -75,8 +75,8 @@ mvn verify -P'!checkstyle' \
            -DfailIfNoTests=false \
            -DskipITs=false \
            -Dcircleci.instance=$CIRCLE_NODE_INDEX \
-           -Dcircleci.rerunFailingTestsCount=${CCI_RERUN_FAILTEST:-1} \
-           -Dcode-coverage=${CCI_CODE_COVERAGE:-false} \
+           -Dcircleci.rerunFailingTestsCount=${CCI_RERUN_FAILTEST:-0} \
+           -Dcode.coverage=${CCI_CODE_COVERAGE:-false} \
            -B \
            -fae \
            -Dtest=$(cat /tmp/this_node_tests | paste -s -d, -) \
