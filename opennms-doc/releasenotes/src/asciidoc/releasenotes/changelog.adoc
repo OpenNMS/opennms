@@ -4,14 +4,14 @@
 
 [releasenotes-changelog-24.1.2]
 
+==== Release 24.1.2
+
 Release 24.1.2 is the latest stable release of OpenNMS.
 It contains bug fixes for flow processing, Debian package startup, the minion UI, and more.
 
 For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.2/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
 
-The codename for 24.1.2 is _link:https://en.wikipedia.org/wiki/Watson_(computer)[Watson]_.
-
-==== Release 24.1.2
+The codename for 24.1.2 is _link:https://en.wikipedia.org/wiki/$$Watson_(computer)$$[Watson]_.
 
 ===== Bug
 
