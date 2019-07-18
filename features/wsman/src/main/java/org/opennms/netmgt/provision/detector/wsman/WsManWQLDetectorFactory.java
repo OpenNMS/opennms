@@ -62,6 +62,7 @@ public class WsManWQLDetectorFactory extends GenericServiceDetectorFactory<WsMan
     @Override
     public WsManWQLDetector createDetector(Map<String, String> properties) {
         final WsManWQLDetector detector = new WsManWQLDetector();
+        setBeanProperties(detector, properties);
         detector.setClientFactory(m_factory);
         return detector;
     }
