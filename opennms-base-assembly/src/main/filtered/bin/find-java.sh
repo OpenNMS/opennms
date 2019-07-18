@@ -51,7 +51,7 @@ get_real_path() {
 	file_to_find="$1"
 	readlink="$(command -v readlink 2>/dev/null)"
 	if [ -n "$readlink" ] && [ -n "$file_to_find" ] && [ -e "$file_to_find" ]; then
-		"$readlink" "$file_to_find" || echo "$file_to_find"
+		"$readlink" --canonicalize "$file_to_find" || echo "$file_to_find"
 	else
 		echo "$file_to_find"
 	fi
