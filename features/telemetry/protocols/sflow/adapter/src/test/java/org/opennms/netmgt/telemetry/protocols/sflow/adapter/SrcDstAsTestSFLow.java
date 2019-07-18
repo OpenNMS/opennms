@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.adapter;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWriter;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class SrcDstAsTestSFLow {
@@ -53,8 +56,7 @@ public class SrcDstAsTestSFLow {
         long value = 2147483648L;
         final BsonDocument bson = getBsonDocument(value);
         final SFlow flow = new SFlow(null, bson);
-        Assert.assertTrue(flow.getSrcAs() > 0);
-        Assert.assertEquals(value, flow.getSrcAs().longValue());
-        Assert.assertNull(flow.getDstAs());
+        assertThat(flow.getSrcAs(), is(equalTo(value)));
+        assertThat(flow.getDstAs(), is(equalTo(null)));
     }
 }

@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWriter;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class SrcDstAsTestIpFix {
@@ -52,9 +55,7 @@ public class SrcDstAsTestIpFix {
         long value2 = 2147483649L;
         final BsonDocument bson = getBsonDocument("bgpSourceAsNumber", value1, "bgpDestinationAsNumber", value2);
         final IpfixFlow flow = new IpfixFlow(bson);
-        Assert.assertTrue(flow.getSrcAs() > 0);
-        Assert.assertEquals(value1, flow.getSrcAs().longValue());
-        Assert.assertTrue(flow.getDstAs() > 0);
-        Assert.assertEquals(value2, flow.getDstAs().longValue());
+        assertThat(flow.getSrcAs(), is(equalTo(value1)));
+        assertThat(flow.getDstAs(), is(equalTo(value2)));
     }
 }
