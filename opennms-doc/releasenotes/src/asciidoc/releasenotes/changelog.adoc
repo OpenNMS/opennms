@@ -9,7 +9,7 @@ It contains bug fixes for flow processing, Debian package startup, the minion UI
 
 For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.2/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
 
-The codename for 24.1.2 is _link:https://en.wikipedia.org/wiki/Watson_(computer)[Watson]_.
+The codename for 24.1.2 is _link:https://en.wikipedia.org/wiki/$$Watson_(computer)$$[Watson]_.
 
 ==== Release 24.1.2
 
