@@ -2736,5 +2736,6 @@ CREATE TABLE effective_configuration (
     id integer default nextval('opennmsNxtId') not null,
     key text NOT NULL,
     document jsonb NOT NULL,
+    hash_code integer NOT NULL,
     last_updated timestamp with time zone not null
 );

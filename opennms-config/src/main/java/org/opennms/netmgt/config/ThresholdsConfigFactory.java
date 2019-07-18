@@ -260,6 +260,7 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
         EffectiveConfiguration effective = new EffectiveConfiguration();
         effective.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
         effective.setConfiguration(getJsonConfig());
+        effective.setHashCode(m_config.hashCode());
         effective.setLastUpdated(new Date());
         m_configDao.save(effective);
     }

@@ -49,6 +49,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
@@ -90,116 +92,43 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
     private static final Logger LOG = LoggerFactory.getLogger(ThreshdConfigFactory.class);
 
-    /**
-     * The config class loaded from the config file
-     */
     protected ThreshdConfiguration m_config;
 
-    /**
-     * A mapping of the configured URLs to a list of the specific IPs configured in each - so as to avoid file reads
-     */
+    private File configFile;
+
+    // A mapping of the configured URLs to a list of the specific IPs configured in each
     private Map<String, List<String>> m_urlIPMap;
 
-    /**
-     * A mapping of the configured package to a list of IPs selected via filter rules, so as to avoid repetitive database access.
-     */
+    // A mapping of the configured package to a list of IPs selected via filter rules
     private Map<Package, List<InetAddress>> m_pkgIpMap;
-
-    /**
-     * The singleton instance of this factory
-     */
-    private static ThreshdConfigFactory m_singleton = null;
-
-    /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
 
     @Autowired
     private EffectiveConfigurationDao m_configDao;
 
-    /**
-     * <p>Constructor for ThreshdConfigFactory.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws java.io.IOException if any.
-     */
-    public ThreshdConfigFactory(InputStream stream) throws IOException {
-        try (final Reader reader = new InputStreamReader(stream)) {
-            m_config = JaxbUtils.unmarshal(ThreshdConfiguration.class, reader);
-        }
-
-        createUrlIpMap();
-
-        createPackageIpListMap();
+    // @PostConstruct
+    public void init() throws IOException {
+        configFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
+        loadConfigFile(configFile);
     }
 
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void init() throws IOException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
+    public void loadConfigFile(File configFile) throws IOException {
+        LOG.debug("init: config file path: {}", configFile.getPath());
+        try (final Reader reader = new InputStreamReader(new FileInputStream(configFile));) {
+            m_config = JaxbUtils.unmarshal(ThreshdConfiguration.class, reader);
         }
-        
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
-
-        LOG.debug("init: config file path: {}", cfgFile.getPath());
-
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(cfgFile);
-            m_singleton = new ThreshdConfigFactory(stream);
-            m_loaded = true;
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
-        }
+        createUrlIpMap();
+        createPackageIpListMap();
+        saveEffective();
     }
 
     @Override
     public synchronized void reload() {
-        m_singleton = null;
-        m_loaded = false;
         try {
-            init();
+            loadConfigFile(configFile);
         } catch (IOException e) {
             // TODO Log ERROR and continue with existing config
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized ThreshdConfigFactory getInstance() {
-        if (!m_loaded) {
-            throw new IllegalStateException("The factory has not been initialized");
-        }
-        return m_singleton;
-    }
-    
-    /**
-     * <p>setInstance</p>
-     *
-     * @param configFactory a {@link org.opennms.netmgt.config.ThreshdConfigFactory} object.
-     */
-    public static void setInstance(ThreshdConfigFactory configFactory) {
-    	m_loaded = true;
-    	m_singleton = configFactory;
     }
 
     @Override
@@ -209,7 +138,6 @@ public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
 
     @Override
     public synchronized void saveCurrent() throws IOException {
-        // marshall to a string first, then write the string to the file. This way the original config
         final String xmlString = JaxbUtils.marshal(m_config);
         if (xmlString != null) {
             saveXML(xmlString);
@@ -225,7 +153,6 @@ public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
 
     @Override
     public synchronized boolean interfaceInPackage(String iface, Package pkg) {
-
         final InetAddress ifaceAddr = addr(iface);
         boolean filterPassed = false;
 
@@ -306,8 +233,12 @@ public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
         saveEffective();
     }
 
-    // Go through the configuration and build a mapping of each configured URL to a list of IPs configured in that URL - done at init() time so that repeated file reads can be
-    // avoided
+    // Allows test subclassing to inject test configuration files
+    public void setConfigFile(File file) {
+        configFile = file;
+    }
+
+    // Build a map of each configured URL to a list of IPs configured in that URL
     private void createUrlIpMap() {
         m_urlIPMap = new HashMap<String, List<String>>();
 
@@ -321,7 +252,7 @@ public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
         }
     }
 
-    // This method is used to establish package against an iplist iplist mapping, with which, the iplist is selected per package via the configured filter rules from the database.
+    // Map package against an iplist iplist mapping, with which, the iplist is selected per package via the configured filter rules from the database.
     private void createPackageIpListMap() {
         m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
 
@@ -348,7 +279,7 @@ public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
         }
     }
 
-    // This method is used to determine if the named interface is included in the passed package's url includes.
+    // Is the named interface included in the passed package's url includes.
     private boolean interfaceInUrl(String addr, String url) {
         List<String> iplist = m_urlIPMap.get(url);
         if (iplist != null && iplist.size() > 0) {
@@ -358,8 +289,7 @@ public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
     }
 
     private void saveXML(String xmlString) throws IOException {
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
-        Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
+        Writer fileWriter = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8);
         fileWriter.write(xmlString);
         fileWriter.flush();
         fileWriter.close();
@@ -369,6 +299,7 @@ public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
         EffectiveConfiguration effective = new EffectiveConfiguration();
         effective.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME));
         effective.setConfiguration(getJsonConfig());
+        effective.setHashCode(m_config.hashCode());
         effective.setLastUpdated(new Date());
         m_configDao.save(effective);
     }

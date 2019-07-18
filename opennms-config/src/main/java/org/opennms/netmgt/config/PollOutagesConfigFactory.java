@@ -155,6 +155,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager imp
         EffectiveConfiguration entity = new EffectiveConfiguration();
         entity.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME));
         entity.setConfiguration(getJsonConfig());
+        entity.setHashCode(getObject().hashCode());
         entity.setLastUpdated(new Date());
         effectiveConfigurationDao.save(entity);
     }

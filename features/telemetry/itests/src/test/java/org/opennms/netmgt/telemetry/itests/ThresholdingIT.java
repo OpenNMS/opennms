@@ -60,7 +60,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -354,7 +354,7 @@ public class ThresholdingIT {
     }
 
     private void initThreshdFactories(String threshd, String thresholds) throws Exception {
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
+        ThresholdsConfigFactory.setInstance(new ThresholdsConfigFactory(getClass().getResourceAsStream(thresholds)));
         ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
     }
 

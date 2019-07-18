@@ -47,7 +47,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.api.ThreshdConfigModifiable;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Outages;
@@ -102,6 +102,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @Autowired
     protected CollectdConfigFactory m_collectdConfigFactory;
+
+    @Autowired
+    protected ThreshdConfigModifiable m_threshdConfig;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -404,19 +407,19 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+            for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdConfig.getConfiguration().getPackages()) {
                 pkg.removeOutageCalendar(outageName);
             }
         }
         try {
-            ThreshdConfigFactory.getInstance().saveCurrent();
+            m_threshdConfig.saveCurrent();
         } catch (Exception e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save thresholds configuration: {}", e.getMessage());
         }
     }
 
-    private static org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) {
-        for (org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+    private org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) {
+        for (org.opennms.netmgt.config.threshd.Package thisPackage : m_threshdConfig.getConfiguration().getPackages()) {
             if (thisPackage.getName().equals(packageName)) {
                 return thisPackage;
             }

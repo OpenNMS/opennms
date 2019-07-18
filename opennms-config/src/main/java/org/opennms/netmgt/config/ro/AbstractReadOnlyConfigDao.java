@@ -59,6 +59,9 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
     // Time the config was last written to the DB.
     private long configWriteTime;
 
+    // hashcode of cached configuration.
+    private int cachedHashCode;
+
     @Override
     public T getByKey(Class<T> type, String key, long cacheLengthInMillis) {
         if (cacheIsValid(cacheLengthInMillis)) {
@@ -68,11 +71,13 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
         if (config == null) {
             return null;
         }
-        if (config.getLastUpdated().getTime() == configWriteTime) {
+        if (config.getHashCode() == cachedHashCode) {
             // config hasn't changed
             return cached;
         }
+        // Cache the retrieved value before returning it.
         configWriteTime = config.getLastUpdated().getTime();
+        cachedHashCode = config.getHashCode();
         cached = unMarshallConfig(type, config.getConfiguration());
         cachedAt = System.currentTimeMillis();
         return cached;

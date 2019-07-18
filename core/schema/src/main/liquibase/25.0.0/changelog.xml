@@ -20,6 +20,10 @@
           <constraints nullable="false"/>
         </column>
 
+        <column name="hash_code" type="integer">
+          <constraints nullable="false"/>
+        </column>
+
         <column name="last_updated" type="timestamp">
           <constraints nullable="false"/>
         </column>

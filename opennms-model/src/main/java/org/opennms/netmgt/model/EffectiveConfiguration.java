@@ -65,6 +65,8 @@ public class EffectiveConfiguration implements Serializable {
 
     private String key;
     
+    private int hashCode;
+
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     private String configuration;
@@ -72,9 +74,9 @@ public class EffectiveConfiguration implements Serializable {
     private Date lastUpdated;
     
     @Id
-    @Column(nullable=false)
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")
+    @Column(nullable = false)
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @GeneratedValue(generator = "opennmsSequence")
     public Integer getId() {
         return id;
     }
@@ -113,6 +115,15 @@ public class EffectiveConfiguration implements Serializable {
         return lastUpdated;
     }
 
+    @Column(name = "hash_code", nullable = false)
+    public int getHashCode() {
+        return hashCode;
+    }
+
+    public void setHashCode(int hashCode) {
+        this.hashCode = hashCode;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -122,7 +133,5 @@ public class EffectiveConfiguration implements Serializable {
             .add("lastUpdated",lastUpdated)
             .toString();
     }
-
-    
  
 }

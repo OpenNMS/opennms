@@ -30,6 +30,7 @@ package org.opennms.web.rest.v1;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
 
 import javax.servlet.ServletContext;
@@ -54,7 +55,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.api.ThreshdConfigModifiable;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -71,9 +72,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @WebAppConfiguration
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
@@ -96,6 +97,9 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
     @Autowired
     private PollOutagesConfigManager m_pollOutagesConfigManager;
 
+    @Autowired
+    private ThreshdConfigModifiable m_threshdConfig;
+
     @Override
     protected void beforeServletStart() throws Exception {
         MockLogAppender.setupLogging();
@@ -114,7 +118,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<interface address='match-any'/>"
                 + "<node id='18'/><node id='40'/>"
                 + "</outage>"
-                + "</outages>");
+                + "</outages>", Charset.defaultCharset());
         m_pollOutagesConfigManager.setConfigResource(new FileSystemResource(outagesConfig));
         m_pollOutagesConfigManager.afterPropertiesSet();
 
@@ -138,7 +142,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "</service>"
                 + "</package>"
                 + "<collector service=\"SNMP\" class-name=\"org.opennms.netmgt.collectd.SnmpCollector\"/>"
-                + "</collectd-configuration>");
+                + "</collectd-configuration>", Charset.defaultCharset());
         CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory(new FileInputStream(collectdConfig));
 
         // Setup Pollerd Configuration
@@ -158,7 +162,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<downtime begin=\"0\" end=\"30000\"/>"
                 + "</package>"
                 + "<monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.mock.MockMonitor\"/>"
-                + "</poller-configuration>");
+                + "</poller-configuration>", Charset.defaultCharset());
         PollerConfigFactory.setInstance(new PollerConfigFactory(1, new FileInputStream(pollerdConfig)));
 
         // Setup Threshd Configuration
@@ -172,8 +176,9 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<parameter key=\"thresholding-group\" value=\"mib2\"/>"
                 + "</service>"
                 + "</package>"
-                + "</threshd-configuration>");
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(new FileInputStream(threshdConfig)));
+                + "</threshd-configuration>", Charset.defaultCharset());
+        m_threshdConfig.setConfigFile(threshdConfig);
+        m_threshdConfig.reload();
 
         // Setup Notifid Configuration
         FileUtils.writeStringToFile(new File(etc, "notifd-configuration.xml"), "<?xml version=\"1.0\"?>"
@@ -181,7 +186,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<queue><queue-id>default</queue-id><interval>20s</interval>"
                 + "<handler-class><name>org.opennms.netmgt.notifd.DefaultQueueHandler</name></handler-class>"
                 + "</queue>"
-                + "</notifd-configuration>");
+                + "</notifd-configuration>", Charset.defaultCharset());
         NotifdConfigFactory.init();
 
         m_jaxbContext = JaxbUtils.getContextFor(Outages.class);
