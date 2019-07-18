@@ -10,6 +10,7 @@ const angular = require('vendor/angular-js');
 const jQuery = require('vendor/jquery-js');
 require('vendor/bootstrap-js');
 
+const editInPlaceTemplate = require('../templates/angular-onms-elementList-editInPlace.html');
 const editListInPlaceTemplate = require('../templates/angular-onms-elementList-editListInPlace.html');
 const editMapInPlaceTemplate = require('../templates/angular-onms-elementList-editMapInPlace.html');
 
@@ -296,7 +297,7 @@ angular.module(MODULE_NAME, [])
 			step: '=',
 			onSubmit: '&onSubmit'
 		},
-		templateUrl: editListInPlaceTemplate,
+		templateUrl: editInPlaceTemplate,
 		transclude: true
 	};
 })
