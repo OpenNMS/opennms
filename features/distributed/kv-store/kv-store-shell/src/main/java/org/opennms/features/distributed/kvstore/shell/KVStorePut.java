@@ -28,7 +28,6 @@
 
 package org.opennms.features.distributed.kvstore.shell;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import org.apache.karaf.shell.api.action.Action;
@@ -36,27 +35,32 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.features.distributed.kvstore.api.SerializedKVStore;
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 
 @Command(scope = "kvstore", name = "put", description = "Insert a record into the key value store")
 @Service
 public class KVStorePut implements Action {
     @Reference
-    private SerializedKVStore kvStore;
+    private KeyValueStore kvStore;
 
     @Argument(index = 0, description = "The key")
     private String key;
 
-    @Argument(index = 1, description = "The value to put")
+    @Argument(index = 1, description = "The key's context")
+    private String context;
+
+    @Argument(index = 2, description = "The value to put")
     private String value;
 
     @Override
-    public Object execute() throws IOException {
+    public Object execute() {
         Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
         Objects.requireNonNull(value);
 
-        kvStore.put(key, value);
-        
+        // Note: This will fail if the key value store referenced is not capable of storing strings
+        kvStore.put(key, value, context);
+
         return null;
     }
 }

@@ -28,8 +28,6 @@
 
 package org.opennms.features.distributed.kvstore.shell;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -38,21 +36,26 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.features.distributed.kvstore.api.SerializedKVStore;
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 
 @Command(scope = "kvstore", name = "get", description = "Get a record from the key value store")
 @Service
 public class KVStoreGet implements Action {
     @Reference
-    private SerializedKVStore kvStore;
+    private KeyValueStore kvStore;
 
-    @Argument(description = "The key to look up")
+    @Argument(index = 0, description = "The key to look up")
     private String key;
 
+    @Argument(index = 1, description = "The key's context")
+    private String context;
+
     @Override
-    public Object execute() throws IOException, ClassNotFoundException {
+    public Object execute() {
         Objects.requireNonNull(key);
-        Optional<Serializable> value = kvStore.get(key);
+        Objects.requireNonNull(context);
+
+        Optional value = kvStore.get(key, context);
 
         if (value.isPresent()) {
             System.out.println(value.get());

@@ -40,17 +40,18 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.features.distributed.cassandra.api.CassandraSchemaManagerFactory;
 import org.opennms.features.distributed.cassandra.api.CassandraSession;
 import org.opennms.features.distributed.cassandra.api.CassandraSessionFactory;
-import org.opennms.features.distributed.kvstore.api.AbstractSerializedKVStore;
-import org.opennms.features.distributed.kvstore.api.SerializedKVStore;
+import org.opennms.features.distributed.kvstore.api.AbstractSerializedKeyValueStore;
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Statement;
 import com.google.common.util.concurrent.MoreExecutors;
 
 /**
- * A {@link SerializedKVStore key value store} that is backed by Cassandra.
+ * A {@link KeyValueStore key value store} that is backed by Cassandra.
  * <p>
  * This implementation persists values that implement {@link Serializable} by using vanilla Java serialization.
  * <p>
@@ -60,14 +61,18 @@ import com.google.common.util.concurrent.MoreExecutors;
  * This implementation does not initiate its own {@link com.datastax.driver.core.Session Cassandra session} and must be
  * provided with one via a {@link CassandraSessionFactory session factory}.
  */
-public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, Serializable> {
+public class CassandraKVStore extends AbstractSerializedKeyValueStore<ByteBuffer, Serializable> {
     private static final String KEY_COLUMN = "key";
+    private static final String CONTEXT_COLUMN = "context";
     private static final String VALUE_COLUMN = "value";
     private static final String TIMESTAMP_COLUMN = "lastUpdated";
     private static final String TABLE_NAME = "kvstore";
+    
+    private static final long ASYNC_TIMEOUT_SECONDS = 10;
 
     private final CassandraSession session;
     private final PreparedStatement insertStmt;
+    private final PreparedStatement insertWithTtlStmt;
     private final PreparedStatement selectStmt;
     private final PreparedStatement timestampStmt;
 
@@ -80,27 +85,30 @@ public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, Seri
         cassandraSchemaManagerFactory.getSchemaManager()
                 .create(() -> getClass().getResourceAsStream("/cql/kv.cql"));
         session = sessionFactory.getSession();
-        insertStmt = session.prepare(String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)", TABLE_NAME,
-                KEY_COLUMN,
-                VALUE_COLUMN, TIMESTAMP_COLUMN));
-        selectStmt = session.prepare(String.format("SELECT %s FROM %s where %s = ?", VALUE_COLUMN, TABLE_NAME,
-                KEY_COLUMN));
-        timestampStmt = session.prepare(String.format("SELECT %s FROM %s where %s = ?", TIMESTAMP_COLUMN, TABLE_NAME,
-                KEY_COLUMN));
+        insertStmt = session.prepare(String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)", TABLE_NAME,
+                KEY_COLUMN, CONTEXT_COLUMN, VALUE_COLUMN, TIMESTAMP_COLUMN));
+        insertWithTtlStmt = session.prepare(String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) USING " +
+                "TTL ?", TABLE_NAME, KEY_COLUMN, CONTEXT_COLUMN, VALUE_COLUMN, TIMESTAMP_COLUMN));
+        selectStmt = session.prepare(String.format("SELECT %s FROM %s WHERE %s = ? AND %s = ?", VALUE_COLUMN,
+                TABLE_NAME, KEY_COLUMN, CONTEXT_COLUMN));
+        timestampStmt = session.prepare(String.format("SELECT %s FROM %s WHERE %s = ? AND %s = ?", TIMESTAMP_COLUMN,
+                TABLE_NAME, KEY_COLUMN, CONTEXT_COLUMN));
     }
 
     @Override
-    protected void putSerializedValueWithTimestamp(String key, ByteBuffer serializedValue, long timestamp) {
+    protected void putSerializedValueWithTimestamp(String key, ByteBuffer serializedValue, long timestamp,
+                                                   String context, Integer ttlInSeconds) {
+        Statement statement = getStatementForInsert(key, context, serializedValue, timestamp, ttlInSeconds);
         // Cassandra will throw a runtime exception here if the execution fails
-        session.execute(insertStmt.bind(key, serializedValue, new Date(timestamp)));
+        session.execute(statement);
     }
 
     @Override
-    protected Optional<ByteBuffer> getSerializedValue(String key) {
+    protected Optional<ByteBuffer> getSerializedValue(String key, String context) {
         ByteBuffer serializedValue;
 
         // Cassandra will throw a runtime exception here if the execution fails
-        ResultSet resultSet = session.execute(selectStmt.bind(key));
+        ResultSet resultSet = session.execute(selectStmt.bind(key, context));
         Row row = resultSet.one();
 
         // Could not find the key
@@ -114,9 +122,12 @@ public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, Seri
     }
 
     @Override
-    public OptionalLong getLastUpdated(String key) {
+    public OptionalLong getLastUpdated(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
         // Cassandra will throw a runtime exception here if the execution fails
-        ResultSet resultSet = session.execute(timestampStmt.bind(key));
+        ResultSet resultSet = session.execute(timestampStmt.bind(key, context));
         Row row = resultSet.one();
 
         // Could not find the key
@@ -131,30 +142,49 @@ public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, Seri
 
     @Override
     protected CompletableFuture<Void> putSerializedValueWithTimestampAsync(String key, ByteBuffer serializedValue,
-                                                                           long timestamp) {
+                                                                           long timestamp, String context,
+                                                                           Integer ttlInSeconds) {
         CompletableFuture<Void> putFuture = new CompletableFuture<>();
 
         try {
+            Statement statement = getStatementForInsert(key, context, serializedValue, timestamp, ttlInSeconds);
             // Cassandra will throw a runtime exception here if the execution fails
-            session.executeAsync(insertStmt.bind(key, serializedValue, new Date(timestamp)))
+            session.executeAsync(statement)
                     .addListener(() -> putFuture.complete(null), MoreExecutors.directExecutor());
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             putFuture.completeExceptionally(e);
         }
 
         return putFuture;
     }
 
+    private Statement getStatementForInsert(String key, String context, ByteBuffer serializedValue, long timestamp,
+                                            Integer ttlInSeconds) {
+        Statement statement;
+
+        if (ttlInSeconds != null) {
+            if (ttlInSeconds <= 0) {
+                throw new IllegalArgumentException("TTL must be positive and greater than 0");
+            }
+
+            statement = insertWithTtlStmt.bind(key, context, serializedValue, new Date(timestamp), ttlInSeconds);
+        } else {
+            statement = insertStmt.bind(key, context, serializedValue, new Date(timestamp));
+        }
+
+        return statement;
+    }
+
     @Override
-    protected CompletableFuture<Optional<ByteBuffer>> getSerializedValueAsync(String key) {
+    protected CompletableFuture<Optional<ByteBuffer>> getSerializedValueAsync(String key, String context) {
         CompletableFuture<Optional<ByteBuffer>> getFuture = new CompletableFuture<>();
 
         try {
             // Cassandra will throw a runtime exception here if the execution fails
-            ResultSetFuture resultSetFuture = session.executeAsync(selectStmt.bind(key));
+            ResultSetFuture resultSetFuture = session.executeAsync(selectStmt.bind(key, context));
             resultSetFuture.addListener(() -> processGetFutureResult(getFuture, resultSetFuture.getUninterruptibly()),
                     MoreExecutors.directExecutor());
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             getFuture.completeExceptionally(e);
         }
 
@@ -162,16 +192,19 @@ public class CassandraKVStore extends AbstractSerializedKVStore<ByteBuffer, Seri
     }
 
     @Override
-    public CompletableFuture<OptionalLong> getLastUpdatedAsync(String key) {
+    public CompletableFuture<OptionalLong> getLastUpdatedAsync(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
         CompletableFuture<OptionalLong> tsFuture = new CompletableFuture<>();
 
         try {
             // Cassandra will throw a runtime exception here if the execution fails
-            ResultSetFuture resultSetFuture = session.executeAsync(timestampStmt.bind(key));
+            ResultSetFuture resultSetFuture = session.executeAsync(timestampStmt.bind(key, context));
             resultSetFuture.addListener(() -> processLastUpdatedFutureResult(tsFuture,
                     resultSetFuture.getUninterruptibly()),
                     MoreExecutors.directExecutor());
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             tsFuture.completeExceptionally(e);
         }
 

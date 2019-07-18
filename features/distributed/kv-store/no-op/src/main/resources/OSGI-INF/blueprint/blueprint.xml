@@ -1,5 +1,5 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-    <service id="kvStore" interface="org.opennms.features.distributed.kvstore.api.SerializedKVStore">
+    <service id="kvStore" interface="org.opennms.features.distributed.kvstore.api.KeyValueStore">
         <bean class="org.opennms.features.distributed.kvstore.noop.NoOpKVStore" factory-method="getInstance"/>
     </service>
 </blueprint>

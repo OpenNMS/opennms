@@ -7,5 +7,5 @@
         <argument ref="schemaManagerFactory"/>
     </bean>
 
-    <service ref="cassandraKvStore" interface="org.opennms.features.distributed.kvstore.api.SerializedKVStore"/>
+    <service ref="cassandraKvStore" interface="org.opennms.features.distributed.kvstore.api.KeyValueStore"/>
 </blueprint>

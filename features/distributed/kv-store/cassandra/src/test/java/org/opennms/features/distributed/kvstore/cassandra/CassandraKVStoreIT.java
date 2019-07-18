@@ -53,7 +53,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.features.distributed.cassandra.api.CassandraSession;
-import org.opennms.features.distributed.kvstore.api.SerializedKVStore;
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 import org.opennms.newts.cassandra.SchemaManager;
 
 import com.datastax.driver.core.PreparedStatement;
@@ -62,6 +62,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.exceptions.DriverException;
 
 public class CassandraKVStoreIT {
     private static final String KEYSPACE = "opennms";
@@ -91,7 +92,7 @@ public class CassandraKVStoreIT {
     @Rule
     public CassandraCQLUnit cassandraUnit = new CassandraCQLUnit(testSet);
 
-    private SerializedKVStore<Serializable> kvStore;
+    private KeyValueStore<Serializable> kvStore;
 
     private CassandraSession cassandraSession;
 
@@ -122,65 +123,108 @@ public class CassandraKVStoreIT {
 
     @Test
     public void canPersistAndRetrieve() {
-        String key = "canPersistAndRetrieve";
+        String key = "test";
+        String context = "canPersistAndRetrieve";
         int i = 100;
         String s = "Tubessss";
         State state = new State(i, s);
 
-        kvStore.put(key, state);
-        Optional<Serializable> value = kvStore.get(key);
+        kvStore.put(key, state, context);
+        Optional<Serializable> value = kvStore.get(key, context);
         assertThat(value.get(), equalTo(state));
     }
 
     @Test
     public void emptyWhenKeyDoesNotExist() {
         // If Cassandra is available, but the key does not exist we should get an empty optional back
-        assertThat(kvStore.get("emptyWhenKeyDoesNotExist"), equalTo(Optional.empty()));
+        assertThat(kvStore.get("test", "emptyWhenKeyDoesNotExist"), equalTo(Optional.empty()));
     }
 
     @Test
-    public void exceptionWhenCassandraUnavailable() {
+    public void completesExceptionallyWithCassandraError() throws InterruptedException, IOException {
+        KeyValueStore<Serializable> exceptionalKvStore = new CassandraKVStore(() -> new CassandraSession() {
+            @Override
+            public PreparedStatement prepare(String statement) {
+                return null;
+            }
+
+            @Override
+            public PreparedStatement prepare(RegularStatement statement) {
+                return null;
+            }
+
+            @Override
+            public ResultSetFuture executeAsync(Statement statement) {
+                throw new DriverException("test");
+            }
+
+            @Override
+            public ResultSet execute(Statement statement) {
+                throw new DriverException("test");
+            }
+
+            @Override
+            public ResultSet execute(String statement) {
+                throw new DriverException("test");
+            }
+
+            @Override
+            public Future<Void> shutdown() {
+                return null;
+            }
+        }, () -> (schema) -> {});
         cassandraUnit.getSession().close();
+        
         try {
-            kvStore.put("exceptionWhenCassandraUnavailable", new State(1, "a"));
-            fail("Should have triggered an exception");
-        } catch (RuntimeException ignore) {
+            exceptionalKvStore.putAsync("test", new State(1, "a"), "completesExceptionallyWithCassandraError").get();
+            fail("Should have triggered an ExecutionException");
+        } catch (ExecutionException e) {
         }
 
         try {
-            kvStore.get("exceptionWhenCassandraUnavailable");
-            fail("Should have triggered an exception");
-        } catch (RuntimeException ignore) {
+            exceptionalKvStore.getAsync("test", "completesExceptionallyWithCassandraError").get();
+            fail("Should have triggered an ExecutionException");
+        } catch (ExecutionException e) {
         }
     }
 
     @Test
-    public void canPersistAndRetrieveAsync() throws ExecutionException, InterruptedException {
+    public void keysExpire() throws InterruptedException {
+        String key = "test";
+        String context = "keysExpire";
+        String value = "test";
+        int ttl = 1;
+        kvStore.put(key, value, context, ttl);
+        assertThat(kvStore.get(key, context).get(), equalTo(value));
+        Thread.sleep(ttl * 1000);
+        assertThat(kvStore.get(key, context), equalTo(Optional.empty()));
+    }
+
+    @Test
+    public void canPersistAndRetrieveAsync() throws ExecutionException, InterruptedException, TimeoutException {
         List<CompletableFuture<Long>> putFutures = new ArrayList<>();
+
+        String context = "canPersistAndRetrieveAsync";
 
         for (int i = 0; i < 1000; i++) {
             String iStr = Integer.toString(i);
-            putFutures.add(kvStore.putAsync(iStr, new CassandraKVStoreIT.State(i, iStr)));
+            putFutures.add(kvStore.putAsync(iStr, new CassandraKVStoreIT.State(i, iStr), context));
         }
 
-        // Since we did 1000 puts async they shouldn't be all done immediately but we should be able to wait for them
-        // to finish
+        // Verify that all the puts finish
         CompletableFuture[] allPutFutures = putFutures.toArray(new CompletableFuture[0]);
-        assertThat(CompletableFuture.allOf(allPutFutures).isDone(), equalTo(false));
-        CompletableFuture.allOf(allPutFutures).get();
+        CompletableFuture.allOf(allPutFutures).get(1, TimeUnit.MINUTES);
 
         List<CompletableFuture<Optional<Serializable>>> getFutures = new ArrayList<>();
 
         for (int i = 0; i < 1000; i++) {
             String iStr = Integer.toString(i);
-            getFutures.add(kvStore.getAsync(iStr));
+            getFutures.add(kvStore.getAsync(iStr, context));
         }
 
-        // Since we did 1000 gets async they shouldn't be all done immediately but we should be able to wait for them
-        // to finish and they should all have non-empty values once complete
+        // Verify that all the gets finish
         CompletableFuture[] allGetFutures = getFutures.toArray(new CompletableFuture[0]);
-        assertThat(CompletableFuture.allOf(allGetFutures).isDone(), equalTo(false));
-        CompletableFuture.allOf(allGetFutures).get();
+        CompletableFuture.allOf(allGetFutures).get(1, TimeUnit.MINUTES);
         getFutures.stream()
                 .filter(f -> {
                     try {
@@ -195,26 +239,28 @@ public class CassandraKVStoreIT {
 
     @Test
     public void canDetermineIfLatest() throws InterruptedException {
-        String key = "canDetermineIfLatest";
+        String key = "tesT";
+        String context = "canDetermineIfLatest";
         State originalState = new State(1, "test");
-        long originalTimestamp = kvStore.put(key, originalState);
+        long originalTimestamp = kvStore.put(key, originalState, context);
 
         Thread.sleep(10);
 
-        assertThat(originalTimestamp, equalTo(kvStore.getLastUpdated(key).getAsLong()));
-        assertThat(kvStore.get(key).get(), equalTo(originalState));
+        assertThat(originalTimestamp, equalTo(kvStore.getLastUpdated(key, context).getAsLong()));
+        assertThat(kvStore.get(key, context).get(), equalTo(originalState));
 
         State updatedState = new State(1, "test2");
-        long updatedTimestamp = kvStore.put(key, updatedState);
+        long updatedTimestamp = kvStore.put(key, updatedState, context);
         assertThat(originalTimestamp, lessThan(updatedTimestamp));
-        assertThat(kvStore.get(key).get(), equalTo(updatedState));
+        assertThat(kvStore.get(key, context).get(), equalTo(updatedState));
     }
 
     @Test
     public void canGetLastUpdatedAsync() throws InterruptedException, ExecutionException, TimeoutException {
-        String key = "canGetLastUpdatedAsync";
-        long timestamp = kvStore.putAsync(key, new State(1, "test")).get(5, TimeUnit.SECONDS);
-        long lastUpdated = kvStore.getLastUpdatedAsync(key).get(5, TimeUnit.SECONDS).getAsLong();
+        String key = "test";
+        String context = "canGetLastUpdatedAsync";
+        long timestamp = kvStore.putAsync(key, new State(1, "test"), context).get(5, TimeUnit.SECONDS);
+        long lastUpdated = kvStore.getLastUpdatedAsync(key, context).get(5, TimeUnit.SECONDS).getAsLong();
         assertThat(timestamp, equalTo(lastUpdated));
     }
 

@@ -36,55 +36,37 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * An implementation of {@link SerializedKVStore} to extend for implementations that do not otherwise have access to
+ * An implementation of {@link KeyValueStore} to extend for implementations that do not otherwise have access to
  * async get/put operations.
  * <p>
  * This implementation wraps the synchronous get/put calls in a {@link CompletableFuture} and executes them async.
  * <p>
  * A separate thread will be used by this implementation by each blocked async call while waiting for the response.
  */
-public abstract class AbstractAsyncSerializedKVStore<T, U> extends AbstractSerializedKVStore<T, U> {
+public abstract class AbstractAsyncKeyValueStore<T> extends AbstractKeyValueStore<T> {
     private final Executor executor;
 
-    protected AbstractAsyncSerializedKVStore(SerializationStrategy<T, U> serializationStrategy,
-                                             TimestampGenerator timestampGenerator, Executor executor) {
-        super(serializationStrategy, timestampGenerator);
+    protected AbstractAsyncKeyValueStore(Executor executor) {
         this.executor = Objects.requireNonNull(executor);
     }
 
-    protected AbstractAsyncSerializedKVStore(SerializationStrategy<T, U> serializationStrategy,
-                                             TimestampGenerator timestampGenerator) {
+    protected AbstractAsyncKeyValueStore() {
         // Default impl using a cached thread pool
-        this(serializationStrategy, timestampGenerator, Executors.newCachedThreadPool(r -> new Thread(r,
-                "kvstore-async-thread")));
+        this(Executors.newCachedThreadPool(r -> new Thread(r, "kvstore-async-thread")));
     }
 
     @Override
-    protected CompletableFuture<Void> putSerializedValueWithTimestampAsync(String key, T serializedValue,
-                                                                           long timestamp) {
-        return CompletableFuture.supplyAsync(() -> {
-            putSerializedValueWithTimestamp(key, serializedValue, timestamp);
-            return null;
-        }, executor);
+    public final CompletableFuture<Long> putAsync(String key, T value, String context, Integer ttlInSeconds) {
+        return CompletableFuture.supplyAsync(() -> put(key, value, context, ttlInSeconds), executor);
     }
 
     @Override
-    protected CompletableFuture<Optional<T>> getSerializedValueAsync(String key) {
-        return CompletableFuture.supplyAsync(() -> getSerializedValue(key), executor);
+    public final CompletableFuture<Optional<T>> getAsync(String key, String context) {
+        return CompletableFuture.supplyAsync(() -> get(key, context), executor);
     }
 
     @Override
-    public final CompletableFuture<OptionalLong> getLastUpdatedAsync(String key) {
-        CompletableFuture<OptionalLong> lastUpdatedFuture = new CompletableFuture<>();
-
-        CompletableFuture.runAsync(() -> {
-            try {
-                lastUpdatedFuture.complete(getLastUpdated(key));
-            } catch (RuntimeException e) {
-                lastUpdatedFuture.completeExceptionally(e);
-            }
-        }, executor);
-
-        return lastUpdatedFuture;
+    public final CompletableFuture<OptionalLong> getLastUpdatedAsync(String key, String context) {
+        return CompletableFuture.supplyAsync(() -> getLastUpdated(key, context), executor);
     }
 }

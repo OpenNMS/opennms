@@ -35,44 +35,50 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 
-import org.opennms.features.distributed.kvstore.api.AbstractAsyncSerializedKVStore;
+import org.opennms.features.distributed.kvstore.api.AbstractAsyncKeyValueStore;
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 import org.opennms.features.distributed.kvstore.api.TimestampGenerator;
 
 /**
- * This is a test implementation of {@link org.opennms.features.distributed.kvstore.api.SerializedKVStore} that stores
- * values directly in memory via a map without actually serializing/deserializing.
+ * This is a test implementation of {@link KeyValueStore} that stores values directly in memory via a map.
  */
-public class InMemoryKVStore<T> extends AbstractAsyncSerializedKVStore<Object, T> {
-    private final Map<String, Map.Entry<Object, Long>> inMemoryStore = new HashMap<>();
+public class InMemoryMapKeyValueStore<T> extends AbstractAsyncKeyValueStore<T> {
+    private final Map<Map.Entry<String, String>, Map.Entry<T, Long>> inMemoryStore = new HashMap<>();
+    private final TimestampGenerator timestampGenerator;
 
-    public InMemoryKVStore(TimestampGenerator timestampGenerator) {
-        super(new InMemorySerializationStrategy<>(), Objects.requireNonNull(timestampGenerator));
+    public InMemoryMapKeyValueStore(TimestampGenerator timestampGenerator) {
+        this.timestampGenerator = Objects.requireNonNull(timestampGenerator);
     }
 
     @Override
-    public OptionalLong getLastUpdated(String key) {
-        Map.Entry<Object, Long> entry = inMemoryStore.get(key);
+    public long put(String key, T value, String context, Integer ttlInSeconds) {
+        long timestamp = timestampGenerator.now();
 
-        if (entry == null) {
-            return OptionalLong.empty();
-        }
+        inMemoryStore.put(new AbstractMap.SimpleImmutableEntry<>(key, context),
+                new AbstractMap.SimpleImmutableEntry<>(value, timestamp));
 
-        return OptionalLong.of(entry.getValue());
+        return timestamp;
     }
 
     @Override
-    protected void putSerializedValueWithTimestamp(String key, Object serializedValue, long timestamp) {
-        inMemoryStore.put(key, new AbstractMap.SimpleImmutableEntry<>(serializedValue, timestamp));
-    }
+    public Optional<T> get(String key, String context) {
+        Map.Entry<T, Long> valueEntry = inMemoryStore.get(new AbstractMap.SimpleImmutableEntry<>(key, context));
 
-    @Override
-    protected Optional<Object> getSerializedValue(String key) {
-        Map.Entry<Object, Long> entry = inMemoryStore.get(key);
-
-        if (entry == null) {
+        if (valueEntry == null) {
             return Optional.empty();
         }
 
-        return Optional.of(entry.getKey());
+        return Optional.of(valueEntry.getKey());
+    }
+
+    @Override
+    public OptionalLong getLastUpdated(String key, String context) {
+        Map.Entry<T, Long> valueEntry = inMemoryStore.get(new AbstractMap.SimpleImmutableEntry<>(key, context));
+
+        if (valueEntry == null) {
+            return OptionalLong.empty();
+        }
+
+        return OptionalLong.of(valueEntry.getValue());
     }
 }

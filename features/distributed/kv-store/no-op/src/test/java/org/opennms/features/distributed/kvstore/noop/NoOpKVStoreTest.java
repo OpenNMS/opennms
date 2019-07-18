@@ -31,20 +31,19 @@ package org.opennms.features.distributed.kvstore.noop;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Optional;
 
 import org.junit.Test;
-import org.opennms.features.distributed.kvstore.api.SerializedKVStore;
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 
 public class NoOpKVStoreTest {
     @Test
-    public void doesNotPersist() throws IOException, ClassNotFoundException {
-        SerializedKVStore<Serializable> kvStore = NoOpKVStore.getInstance();
-        
-        kvStore.put("test", new Serializable() {});
-        Optional<Serializable> result = kvStore.get("test");
+    public void doesNotPersist() {
+        KeyValueStore<Serializable> kvStore = NoOpKVStore.getInstance();
+        String keyContext = "test";
+        kvStore.put(keyContext, new Serializable() {}, keyContext);
+        Optional<Serializable> result = kvStore.get(keyContext, keyContext);
         
         assertThat(result.isPresent(), is(false));
     }

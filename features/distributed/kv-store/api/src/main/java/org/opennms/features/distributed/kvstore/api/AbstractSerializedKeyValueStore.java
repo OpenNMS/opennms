@@ -34,46 +34,55 @@ import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * A skeleton implementation of {@link SerializedKVStore} that delegates serialization/deserialization and timestamp
- * generation to a {@link SerializationStrategy} and {@link TimestampGenerator}.
- * <p>
- * All {@link SerializedKVStore} implementations should inherit from this class.
+ * A skeleton implementation of {@link KeyValueStore} that persists values in a serialized form.
+ * Serialization/deserialization is delegated to a {@link SerializationStrategy}.
  *
  * @param <T> the serialized type
  * @param <S> the type before serialization
  */
-public abstract class AbstractSerializedKVStore<T, S> implements SerializedKVStore<S> {
+public abstract class AbstractSerializedKeyValueStore<T, S> extends AbstractKeyValueStore<S> {
     private final SerializationStrategy<T, S> serializationStrategy;
     private final TimestampGenerator timestampGenerator;
 
-    protected AbstractSerializedKVStore(SerializationStrategy<T, S> serializationStrategy,
-                                        TimestampGenerator timestampGenerator) {
+    protected AbstractSerializedKeyValueStore(SerializationStrategy<T, S> serializationStrategy,
+                                              TimestampGenerator timestampGenerator) {
         this.serializationStrategy = Objects.requireNonNull(serializationStrategy);
         this.timestampGenerator = Objects.requireNonNull(timestampGenerator);
     }
 
     @Override
-    public final long put(String key, S value) {
+    public long put(String key, S value, String context, Integer ttlInSeconds) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+        Objects.requireNonNull(context);
+
         long timestamp = timestampGenerator.now();
 
-        putSerializedValueWithTimestamp(key, serializationStrategy.serialize(value), timestamp);
+        putSerializedValueWithTimestamp(key, serializationStrategy.serialize(value), timestamp, context, ttlInSeconds);
 
         return timestamp;
     }
 
     @Override
-    public final Optional<S> get(String key) {
-        Optional<T> deserializedValue = getSerializedValue(key);
+    public final Optional<S> get(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
+        Optional<T> deserializedValue = getSerializedValue(key, context);
 
         return deserializedValue.map(serializationStrategy::deserialize);
 
     }
 
     @Override
-    public abstract OptionalLong getLastUpdated(String key);
+    public abstract OptionalLong getLastUpdated(String key, String context);
 
     @Override
-    public final CompletableFuture<Long> putAsync(String key, S value) {
+    public CompletableFuture<Long> putAsync(String key, S value, String context, Integer ttlInSeconds) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+        Objects.requireNonNull(context);
+
         long timestamp = timestampGenerator.now();
         T serializedValue;
 
@@ -85,23 +94,28 @@ public abstract class AbstractSerializedKVStore<T, S> implements SerializedKVSto
             return putFuture;
         }
 
-        return putSerializedValueWithTimestampAsync(key, serializedValue, timestamp).thenApply(v -> timestamp);
+        return putSerializedValueWithTimestampAsync(key, serializedValue, timestamp, context, ttlInSeconds).thenApply(v -> timestamp);
     }
 
     @Override
-    public final CompletableFuture<Optional<S>> getAsync(String key) {
-        return getSerializedValueAsync(key).thenApply(opt -> opt.map(serializationStrategy::deserialize));
+    public final CompletableFuture<Optional<S>> getAsync(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
+        return getSerializedValueAsync(key, context).thenApply(opt -> opt.map(serializationStrategy::deserialize));
     }
 
     @Override
-    public abstract CompletableFuture<OptionalLong> getLastUpdatedAsync(String key);
+    public abstract CompletableFuture<OptionalLong> getLastUpdatedAsync(String key, String context);
 
-    protected abstract void putSerializedValueWithTimestamp(String key, T serializedValue, long timestamp);
+    protected abstract void putSerializedValueWithTimestamp(String key, T serializedValue, long timestamp,
+                                                            String context, Integer ttlInSeconds);
 
-    protected abstract Optional<T> getSerializedValue(String key);
+    protected abstract Optional<T> getSerializedValue(String key, String context);
 
     protected abstract CompletableFuture<Void> putSerializedValueWithTimestampAsync(String key, T serializedValue,
-                                                                                    long timestamp);
+                                                                                    long timestamp, String context,
+                                                                                    Integer ttlInSeconds);
 
-    protected abstract CompletableFuture<Optional<T>> getSerializedValueAsync(String key);
+    protected abstract CompletableFuture<Optional<T>> getSerializedValueAsync(String key, String context);
 }

@@ -32,50 +32,33 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.OptionalLong;
 
-import org.opennms.features.distributed.kvstore.api.AbstractAsyncSerializedKVStore;
-import org.opennms.features.distributed.kvstore.api.SerializationStrategy;
-import org.opennms.features.distributed.kvstore.api.SerializedKVStore;
+import org.opennms.features.distributed.kvstore.api.AbstractAsyncKeyValueStore;
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 
 /**
- * A {@link SerializedKVStore key value store} that does nothing. Since no puts result in any operation, all retrieves
+ * A {@link KeyValueStore key value store} that does nothing. Since no puts result in any operation, all retrieves
  * will always return an empty {@link Optional optional}. This implies any clients using this will also be holding onto
  * their own local copies of the key-values since persisting to this won't store them.
  */
-public class NoOpKVStore extends AbstractAsyncSerializedKVStore<Object, Serializable> {
-    private static final SerializationStrategy<Object, Serializable> serializationStrategy =
-            new SerializationStrategy<Object, Serializable>() {
-                @Override
-                public Object serialize(Serializable rawValue) {
-                    return null;
-                }
-
-                @Override
-                public Serializable deserialize(Object serializedValue) {
-                    return null;
-                }
-            };
+public class NoOpKVStore extends AbstractAsyncKeyValueStore<Serializable> {
     private static final NoOpKVStore INSTANCE = new NoOpKVStore();
 
-    private NoOpKVStore() {
-        super(serializationStrategy, System::currentTimeMillis);
-    }
-
-    public static SerializedKVStore<Serializable> getInstance() {
+    public static KeyValueStore<Serializable> getInstance() {
         return INSTANCE;
     }
 
     @Override
-    public OptionalLong getLastUpdated(String key) {
-        return OptionalLong.empty();
+    public long put(String key, Serializable value, String context, Integer ttlInSeconds) {
+        return 0;
     }
 
     @Override
-    protected void putSerializedValueWithTimestamp(String key, Object serializedValue, long timestamp) {
-        // no-op
-    }
-
-    @Override
-    protected Optional<Object> getSerializedValue(String key) {
+    public Optional<Serializable> get(String key, String context) {
         return Optional.empty();
+    }
+
+    @Override
+    public OptionalLong getLastUpdated(String key, String context) {
+        return OptionalLong.empty();
     }
 }
