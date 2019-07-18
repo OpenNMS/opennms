@@ -47,7 +47,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     templateUrl: templatesTemplate
                 })
                 .state('report.templates.details', {
-                    url: '/:id?type',
+                    url: '/:id?online',
                     controller: 'ReportDetailController',
                     templateUrl: detailsTemplate,
                     resolve: {
@@ -172,13 +172,38 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
 
         }])
         .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', '$uibModal', 'ReportTemplateResource', 'GrafanaResource', function($scope, $http, $window, $state, $stateParams, $uibModal, ReportTemplateResource, GrafanaResource) {
-            $scope.type = $stateParams.type;
             $scope.report = {
                 id : $stateParams.id,
-                format: 'PDF'
+                format: 'PDF',
+                online: $stateParams.online === 'true',
             };
-            $scope.cron = {
-                expression :  "0 */5 * * * ?"  // TODO MVR default value for this should be what ???
+
+            $scope.options = {
+                deliverReport: !$scope.report.online,
+                scheduleReport: false,
+                cronExpression:  "0 */5 * * * ?", // TODO MVR default value for this should be what ???
+
+                isExecuteReport: function() {
+                    return !this.deliverReport && !this.scheduleReport;
+                },
+
+                isDeliverReport: function() {
+                    return this.deliverReport && !this.scheduleReport;
+                },
+
+                isScheduleReport: function() {
+                    return this.deliverReport && this.scheduleReport;
+                },
+
+                getType: function() {
+                    if (this.isScheduleReport()) {
+                        return 'schedule';
+                    }
+                    if (this.isDeliverReport()) {
+                        return 'deliver';
+                    }
+                    return 'online';
+                }
             };
             $scope.parametersByName = {};
 
@@ -200,8 +225,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
 
                 var requestParameters = {
                     id: $scope.report.id,
-                    adhoc: $scope.type === 'online',
-                    userId: $scope.type !== 'online' ? $scope.userInfo.id : undefined
+                    userId: $scope.userInfo.id
                 };
 
                 ReportTemplateResource.get(requestParameters, function(response) {
@@ -361,7 +385,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     },
                     resolve: {
                         type: function() {
-                            return scope.type;
+                            return scope.options.getType();
                         }
                     },
                 });
@@ -381,7 +405,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     },
                     resolve: {
                         type: function() {
-                            return scope.type;
+                            return scope.options.getType();
                         },
                         errorResponse: function() {
                             return errorResponse;
@@ -417,7 +441,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                         parameters: $scope.parameters,
                         format: $scope.report.format,
                         deliveryOptions: $scope.deliveryOptions,
-                        cronExpression: $scope.cron.expression
+                        cronExpression: $scope.options.cronExpression,
                     }
                 }).then(function(response) {
                     $scope.showSuccessModal($scope);
@@ -430,14 +454,15 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 // Before sending the report we must replace the values of some parameters
                 // e.g. the Endpoint UID or Dashboard UID
                 $scope.fillParameters();
-                if ($scope.type === 'online') {
+
+                if ($scope.report.online && $scope.options.isExecuteReport()) {
                     $scope.runReport();
                 }
-                if ($scope.type === 'schedule') {
-                    $scope.scheduleReport();
-                }
-                if ($scope.type === 'deliver') {
+                if ($scope.options.isDeliverReport()) {
                     $scope.deliverReport();
+                }
+                if ($scope.options.isScheduleReport()) {
+                    $scope.scheduleReport();
                 }
             };
 

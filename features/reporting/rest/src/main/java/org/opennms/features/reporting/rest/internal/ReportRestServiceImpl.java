@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -119,12 +120,11 @@ public class ReportRestServiceImpl implements ReportRestService {
     }
 
     @Override
-    public Response getReportDetails(String reportId, String adhoc, String userId) {
+    public Response getReportDetails(String reportId, String userId) {
         final List<ReportFormat> formats = reportWrapperService.getFormats(reportId);
         final ReportParameters parameters = reportWrapperService.getParameters(reportId);
         final Collection<Category> categories = categoryConfigDao.findAll();
         final List<OnmsCategory> surveillanceCategories = categoryDao.findAll();
-        final boolean adhocReport = !Strings.isNullOrEmpty(adhoc) ? Boolean.valueOf(adhoc.toLowerCase()) : false;
 
         // Convert formats
         final JSONArray jsonFormats = new JSONArray();
@@ -143,13 +143,19 @@ public class ReportRestServiceImpl implements ReportRestService {
                 jsonDateParm.put("type", "date");
                 jsonDateParm.put("name", dateParm.getName());
                 jsonDateParm.put("displayName", dateParm.getDisplayName());
-                jsonDateParm.put("count", dateParm.getCount());
-                jsonDateParm.put("date", new SimpleDateFormat("yyyy-MM-dd").format(dateParm.getDate()));
-                jsonDateParm.put("value", dateParm.getValue(adhocReport ? ReportMode.IMMEDIATE : ReportMode.SCHEDULED));
-                jsonDateParm.put("hours", dateParm.getHours());
-                jsonDateParm.put("interval", dateParm.getInterval());
-                jsonDateParm.put("minutes", dateParm.getMinutes());
+
+                // This value is mostly false. Only Availability Reports can set this to true.
+                // This also means, that Jasper Reports can never have an absolute date parameter when run scheduled.
                 jsonDateParm.put("useAbsoluteDate", dateParm.getUseAbsoluteDate());
+
+                // Relative date values
+                jsonDateParm.put("count", dateParm.getCount());
+                jsonDateParm.put("interval", dateParm.getInterval());
+                jsonDateParm.put("hours", dateParm.getHours()); // also used for absolute dates
+                jsonDateParm.put("minutes", dateParm.getMinutes()); // also used for absolute dates
+
+                // Absolute date values
+                jsonDateParm.put("date", new SimpleDateFormat("yyyy-MM-dd").format(dateParm.getDate()));
                 jsonParameters.put(jsonDateParm);
             }
         }
@@ -219,7 +225,8 @@ public class ReportRestServiceImpl implements ReportRestService {
         jsonObject.put("categories", jsonCategories);
         jsonObject.put("surveillanceCategories", jsonSurveillanceCategories);
 
-        if (!adhocReport && userId != null) {
+        // Apply delivery Options if user Id is provided
+        if (userId != null) {
             final DeliveryOptions deliveryOptions = reportWrapperService.getDeliveryOptions(reportId, userId);
             jsonObject.put("deliveryOptions", new JSONObject(deliveryOptions));
         }
@@ -486,15 +493,19 @@ public class ReportRestServiceImpl implements ReportRestService {
             parm.setName(jsonObject.getString("name"));
             parm.setDisplayName(jsonObject.getString("displayName"));
             parm.setCount(jsonObject.getInt("count"));
-            try {
-                parm.setDate(new SimpleDateFormat("yyyy-MM-dd").parse(jsonObject.getString("date")));
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
+            parm.setInterval(jsonObject.getString("interval"));
+            if (jsonObject.has("date")) {
+                try {
+                    final String dateString = jsonObject.getString("date");
+                    final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+                    parm.setDate(parsedDate);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
             }
             parm.setHours(jsonObject.getInt("hours"));
-            parm.setInterval(jsonObject.getString("interval"));
             parm.setMinutes(jsonObject.getInt("minutes"));
-            parm.setUseAbsoluteDate(jsonObject.getBoolean("useAbsoluteDate"));
+            parm.setUseAbsoluteDate(jsonObject.getBoolean("useAbsoluteDate")); // TODO MVR this is already known and should not be overriden
             return parm;
         }));
         return parameters;

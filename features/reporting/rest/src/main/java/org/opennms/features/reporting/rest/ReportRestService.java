@@ -50,7 +50,7 @@ public interface ReportRestService {
 
     @GET
     @Path("/{id}")
-    Response getReportDetails(@PathParam("id") String reportId, @QueryParam("adhoc") String adhoc, @QueryParam("userId") String userId);
+    Response getReportDetails(@PathParam("id") String reportId, @QueryParam("userId") String userId);
 
     @POST
     @Path("/{id}")
