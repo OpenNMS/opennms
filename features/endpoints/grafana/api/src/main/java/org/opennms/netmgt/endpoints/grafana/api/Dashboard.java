@@ -31,6 +31,8 @@ package org.opennms.netmgt.endpoints.grafana.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.MoreObjects;
+
 public class Dashboard implements PanelContainer {
 
     private String uid;
@@ -100,14 +102,14 @@ public class Dashboard implements PanelContainer {
 
     @Override
     public String toString() {
-        return "Dashboard{" +
-                "uid='" + uid + '\'' +
-                ", title='" + title + '\'' +
-                ", uri='" + uri + '\'' +
-                ", url='" + url + '\'' +
-                ", panels=" + panels +
-                ", tags=" + tags +
-                ", meta=" + meta +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("uid", uid)
+                .add("title", title)
+                .add("uri", uri)
+                .add("url", url)
+                .add("panels", panels)
+                .add("tags", tags)
+                .add("meta", meta)
+                .toString();
     }
 }

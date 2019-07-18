@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.endpoints.grafana.api;
 
+import com.google.common.base.MoreObjects;
+
 public class DashboardWithMeta {
 
     private DashboardMetadata meta;
@@ -51,9 +53,9 @@ public class DashboardWithMeta {
 
     @Override
     public String toString() {
-        return "DashboardWithMeta{" +
-                "meta=" + meta +
-                ", dashboard=" + dashboard +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("meta", meta)
+                .add("dashboard", dashboard)
+                .toString();
     }
 }

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.endpoints.grafana.api;
 
+import com.google.common.base.MoreObjects;
+
 public class DashboardMetadata {
 
     private Boolean isStarred;
@@ -60,10 +62,10 @@ public class DashboardMetadata {
 
     @Override
     public String toString() {
-        return "DashboardMetadata{" +
-                "isStarred=" + isStarred +
-                ", slug='" + slug + '\'' +
-                ", version=" + version +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("isStarred", isStarred)
+                .add("slug", slug)
+                .add("version", version)
+                .toString();
     }
 }

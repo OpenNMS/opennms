@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.base.MoreObjects;
+
 public class Panel implements PanelContainer {
 
     private Integer id;
@@ -111,13 +113,13 @@ public class Panel implements PanelContainer {
 
     @Override
     public String toString() {
-        return "Panel{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", type='" + type + '\'' +
-                ", datasource='" + datasource + '\'' +
-                ", description='" + description + '\'' +
-                ", panels=" + panels +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("title", title)
+                .add("type", type)
+                .add("datasource", datasource)
+                .add("description", description)
+                .add("panels", panels)
+                .toString();
     }
 }
