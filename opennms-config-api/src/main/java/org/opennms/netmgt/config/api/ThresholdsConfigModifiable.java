@@ -29,5 +29,5 @@
 package org.opennms.netmgt.config.api;
 
 public interface ThresholdsConfigModifiable extends ThresholdsConfig {
-    
+
 }

@@ -36,6 +36,8 @@ import javax.annotation.PostConstruct;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdsConfigFactory;
+import org.opennms.netmgt.config.api.ThreshdConfig;
+import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -79,11 +81,15 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     @Autowired
     private EventIpcManager eventIpcManager;
 
+    @Autowired
+    private ThresholdsConfig thresholdsConfig;
+
+    @Autowired
+    private ThreshdConfig threshdConfig;
+
     @PostConstruct
     private void init() {
         try {
-            ThreshdConfigFactory.init();
-            ThresholdsConfigFactory.init();
             eventIpcManager.addEventListener(this, UEI_LIST);
         } catch (final Exception e) {
             throw new RuntimeException("Unable to initialize thresholding.", e);
@@ -187,8 +193,9 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         }
         if (isThresholds) {
             try {
-                ThreshdConfigFactory.getInstance().reload();
-                ThresholdsConfigFactory.reload();
+                threshdConfig.reload();
+                thresholdsConfig.reload();
+                // TODO add pollOutagesConfig
                 thresholdingSetPersister.reinitializeThresholdingSets();
             } catch (final Exception e) {
                 throw new RuntimeException("Unable to reload thresholding.", e);

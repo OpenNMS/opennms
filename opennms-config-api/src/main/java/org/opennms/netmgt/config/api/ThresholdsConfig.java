@@ -28,6 +28,49 @@
 
 package org.opennms.netmgt.config.api;
 
+import java.util.Collection;
+
+import org.opennms.netmgt.config.threshd.Basethresholddef;
+import org.opennms.netmgt.config.threshd.Group;
+import org.opennms.netmgt.config.threshd.ThresholdingConfig;
+
 public interface ThresholdsConfig {
+
+    /**
+     * Instruct the configuration to reload from its datasource.
+     */
+    void reload();
+
+    ThresholdingConfig getConfig();
     
+    /**
+     * Get the {@link Group} named by the parameter
+     *
+     * @throws IllegalArgumentException
+     *             is no {@link Group} exists with that name.
+     */
+    Group getGroup(String groupName);
+
+    /**
+     * Retrieves the configured path to the RRD file repository for the specified thresholding group.
+     *
+     * @param groupName
+     *            Group name to lookup
+     * @return RRD repository path.
+     * @throws java.lang.IllegalArgumentException
+     *             if group name does not exist in the group map.
+     */
+    String getRrdRepository(String groupName);
+
+    /**
+     * Retrieves a Collection object consisting of all the org.opennms.netmgt.config.Threshold objects which make up the specified thresholding group.
+     *
+     * @param groupName
+     *            Group name to lookup
+     * @return Collection consisting of all the Threshold objects for the specified group..
+     * @throws java.lang.IllegalArgumentException
+     *             if group name does not exist in the group map.
+     */
+    Collection<Basethresholddef> getThresholds(String groupName);
+
 }

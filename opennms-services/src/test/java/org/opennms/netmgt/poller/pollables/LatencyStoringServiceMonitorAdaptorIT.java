@@ -56,7 +56,9 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdsConfigFactory;
+import org.opennms.netmgt.config.api.PollOutagesConfigModifiable;
+import org.opennms.netmgt.config.api.ThreshdConfigModifiable;
+import org.opennms.netmgt.config.api.ThresholdsConfigModifiable;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -109,6 +111,15 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
     @Autowired
     private ThresholdingService m_thresholdingService;
 
+    @Autowired
+    private ThresholdsConfigModifiable m_thresholdsConfig;
+
+    @Autowired
+    private ThreshdConfigModifiable m_threshdConfig;
+
+    @Autowired
+    private PollOutagesConfigModifiable m_pollOutageConfig;
+
     @Override
     public void setTemporaryDatabase(MockDatabase database) {
         m_db = database;
@@ -139,9 +150,9 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         MockLogAppender.setupLogging();
 
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
-        PollOutagesConfigFactory.init();
-        ThresholdsConfigFactory.reload();
-        ThreshdConfigFactory.reload();
+        m_pollOutageConfig.reload();
+        m_thresholdsConfig.reload();
+        m_threshdConfig.reload();
         System.setProperty("opennms.home", previousOpennmsHome);
 
         MockNetwork network = new MockNetwork();

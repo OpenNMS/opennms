@@ -96,6 +96,8 @@ public class ThresholdController extends AbstractController implements Initializ
 
     private boolean eventConfChanged = false;
 
+    private ThresholdsConfigFactory m_configFactory;
+
     /**
      * {@inheritDoc}
      */
@@ -157,9 +159,8 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoGroupEdit(String groupName) {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", m_configFactory.getGroup(groupName));
         return modelAndView;
     }
 
@@ -224,9 +225,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewThreshold(String groupName) {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
-
-        final Group group = configFactory.getGroup(groupName);
+        final Group group = m_configFactory.getGroup(groupName);
         final List<Threshold> thresholds = group.getThresholds();
 
         //We're assuming that adding a threshold puts it at the end of the current list (i.e. that the Group implementation
@@ -279,9 +278,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewExpression(String groupName) {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
-
-        final Group group = configFactory.getGroup(groupName);
+        final Group group = m_configFactory.getGroup(groupName);
         final List<Expression> expressions = group.getExpressions();
 
         //We're assuming that adding a expression puts it at the end of the current list (i.e. that the Group implementation
@@ -334,14 +331,13 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoEditThreshold(String thresholdIndexString, String groupName) throws ServletException {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to edit a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
 
-        Threshold threshold = configFactory.getGroup(groupName).getThresholds().get(thresholdIndex);
+        Threshold threshold = m_configFactory.getGroup(groupName).getThresholds().get(thresholdIndex);
         modelAndView = new ModelAndView("admin/thresholds/editThreshold");
 
         modelAndView.addObject("threshold", threshold);
@@ -466,14 +462,13 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoEditExpression(String expressionIndexString, String groupName) throws ServletException {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to edit a threshold");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
 
-        Expression expression = configFactory.getGroup(groupName).getExpressions().get(expressionIndex);
+        Expression expression = m_configFactory.getGroup(groupName).getExpressions().get(expressionIndex);
         modelAndView = new ModelAndView("admin/thresholds/editExpression");
 
         modelAndView.addObject("expression", expression);
@@ -501,9 +496,8 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private void saveChanges() throws ServletException {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
         try {
-            configFactory.saveCurrent();
+            m_configFactory.saveCurrent();
             EventBuilder ebldr = createEventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
             ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, "thresholds.xml");
@@ -525,17 +519,16 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView deleteThreshold(String thresholdIndexString, String groupName) throws ServletException {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to delete a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
-        Group group = configFactory.getGroup(groupName);
+        Group group = m_configFactory.getGroup(groupName);
         group.removeThreshold(group.getThresholds().get(thresholdIndex));
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", m_configFactory.getGroup(groupName));
         saveChanges();
         return modelAndView;
     }
@@ -553,19 +546,18 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView deleteExpression(String expressionIndexString, String groupName) throws ServletException {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to delete a threshold expression");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
-        Group group = configFactory.getGroup(groupName);
+        Group group = m_configFactory.getGroup(groupName);
         group.removeExpression(group.getExpressions().get(expressionIndex));
         saveChanges();
 
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", m_configFactory.getGroup(groupName));
         return modelAndView;
     }
 
@@ -701,11 +693,10 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView finishThresholdEdit(HttpServletRequest request) throws ServletException {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = configFactory.getGroup(groupName);
+        Group group = m_configFactory.getGroup(groupName);
         String thresholdIndexString = request.getParameter("thresholdIndex");
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to modify or delete a threshold");
@@ -750,11 +741,10 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView finishExpressionEdit(HttpServletRequest request) throws ServletException {
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = configFactory.getGroup(groupName);
+        Group group = m_configFactory.getGroup(groupName);
         String expressionIndexString = request.getParameter("expressionIndex");
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to modify or delete a threshold expression");
@@ -795,7 +785,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
         //and got back to the editGroup page
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", m_configFactory.getGroup(groupName));
         return modelAndView;
     }
 
@@ -803,16 +793,15 @@ public class ThresholdController extends AbstractController implements Initializ
         //Always reload to get a consistent view of the thresholds before we start editing.  
         //Otherwise we'll be dealing with questions on the mailing lists for the rest of our lives
         try {
-            ThresholdsConfigFactory.reload();
+            m_configFactory.reload();
         } catch (Throwable e) {
             throw new ServletException("Could not reload ThresholdingConfigFactory because " + e.getMessage(), e);
         }
-        ThresholdsConfigFactory configFactory = ThresholdsConfigFactory.getInstance();
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/list");
 
         Map<String, Group> groupMap = new TreeMap<String, Group>();
-        for (String aName : configFactory.getGroupNames()) {
-            groupMap.put(aName, configFactory.getGroup(aName));
+        for (String aName : m_configFactory.getGroupNames()) {
+            groupMap.put(aName, m_configFactory.getGroup(aName));
         }
 
         modelAndView.addObject("groupMap", groupMap);
@@ -850,6 +839,10 @@ public class ThresholdController extends AbstractController implements Initializ
      */
     public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;
+    }
+
+    public void setConfigFactory(ThresholdsConfigFactory configFactory) {
+        m_configFactory = configFactory;
     }
 
 }

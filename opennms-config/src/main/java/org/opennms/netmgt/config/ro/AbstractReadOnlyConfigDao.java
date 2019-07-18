@@ -30,8 +30,10 @@ package org.opennms.netmgt.config.ro;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 import org.opennms.netmgt.config.ReadOnlyConfig;
+import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,8 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implements ReadOnlyConfigDao<T> {
 
     protected static final long DEFAULT_CACHE_MILLIS = 300000; // 5 minutes
+
+    private Map<String, Group> groupMap;
 
     @Autowired
     private EffectiveConfigurationDao dao;
@@ -97,5 +101,19 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
             return null;
         }
     }
+
+    public void reload() {
+        // simply set cachedAt to zero and next get() will retrieve latest version
+        cachedAt = 0;
+    }
+
+    protected Group getGroup(String groupName) {
+        Group group = groupMap.get(groupName);
+        if (group == null) {
+            throw new IllegalArgumentException("Thresholding group " + groupName + " does not exist.");
+        }
+        return group;
+    }
+
 
 }

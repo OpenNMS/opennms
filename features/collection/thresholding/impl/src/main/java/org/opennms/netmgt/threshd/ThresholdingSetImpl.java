@@ -52,9 +52,11 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdsConfigFactory;
+import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.threshd.FilterOperator;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
+import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
@@ -93,6 +95,8 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
     protected final List<ThresholdGroup> m_thresholdGroups = new LinkedList<>();
     protected final List<String> m_scheduledOutages = new ArrayList<>();
+
+    private ThresholdsConfig thresholdsConfig;
 
     public ThresholdingSetImpl(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao,
             ThresholdingEventProxy eventProxy)
@@ -143,20 +147,20 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     void reinitialize(final boolean reloadThresholdConfig) {
         m_initialized = false;
 
-        final ThresholdsConfigFactory tcf = ThresholdsConfigFactory.getInstance();
+        final ThresholdingConfig config = thresholdsConfig.getConfig();
         final boolean hasThresholds = m_hasThresholds;
         final List<ThresholdGroup> thresholdGroups = new ArrayList<>(m_thresholdGroups);
         final List<String> scheduledOutages = new ArrayList<>(m_scheduledOutages);
         try {
             if (reloadThresholdConfig) {
-                ThresholdsConfigFactory.reload();
+                thresholdsConfig.reload();
             }
             initThresholdsDao();
             mergeThresholdGroups(m_nodeId, m_hostAddress, m_serviceName);
             updateScheduledOutages();
         } catch (final Exception e) {
             LOG.error("Failed to reinitialize thresholding set.  Reverting to previous configuration.", e);
-            ThresholdsConfigFactory.setInstance(tcf);
+            // FIXME ThresholdsConfigFactory.setInstance(config);
             m_hasThresholds = hasThresholds;
             if (!thresholdGroups.equals(m_thresholdGroups)) {
                 m_thresholdGroups.clear();
@@ -386,26 +390,8 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
     protected final void initThresholdsDao() throws ThresholdInitializationException {
         if (!m_initialized) {
-            LOG.debug("initThresholdsDao: Initializing Factories and DAOs");
-            final DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
-            try {
-                ThresholdsConfigFactory.init();
-                defaultThresholdsDao.setThresholdingConfigFactory(ThresholdsConfigFactory.getInstance());
-                defaultThresholdsDao.setEventProxy(m_eventProxy);
-                defaultThresholdsDao.afterPropertiesSet();
-            } catch (final Throwable t) {
-                final ThresholdInitializationException tie = new ThresholdInitializationException("Could not initialize DefaultThresholdsDao.", t);
-                LOG.error("initThresholdsDao: " + tie.getLocalizedMessage(), t);
-                throw tie;
-            }
-            try {
-                ThreshdConfigFactory.init();
-            } catch (final Throwable t) {
-                final ThresholdInitializationException tie = new ThresholdInitializationException("Could not initialize ThreshdConfigFactory.", t);
-                LOG.error("initThresholdsDao: " + tie.getLocalizedMessage(), t);
-                throw tie;
-            }
-            m_thresholdsDao = defaultThresholdsDao;
+            LOG.debug("initThresholdsDao: Initializing Threshold DAO");
+            m_thresholdsDao = new DefaultThresholdsDao(thresholdsConfig, m_eventProxy);
             m_initialized = true;
         }
     }

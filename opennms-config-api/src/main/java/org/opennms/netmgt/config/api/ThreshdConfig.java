@@ -64,4 +64,9 @@ public interface ThreshdConfig {
      * @return a boolean.
      */
     boolean serviceInPackageAndEnabled(String svcName, Package pkg);
+
+    /**
+     * Instruct the configuration to reload from its datasource.
+     */
+    void reload();
 }

@@ -104,16 +104,9 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager imp
         setInstance(factory);
     }
 
-    /**
-     * Reload the config from the default config file
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be
-     *                read/loaded
-     * @throws java.io.IOException
-     *             if any.
-     */
-    public static void reload() throws IOException {
+    @Override
+    public void reload() throws IOException {
+        m_loaded = false;
         init();
         getInstance().update();
     }

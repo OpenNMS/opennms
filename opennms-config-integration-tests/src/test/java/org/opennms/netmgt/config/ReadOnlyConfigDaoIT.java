@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Before;
@@ -48,8 +47,6 @@ import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -120,7 +117,7 @@ public class ReadOnlyConfigDaoIT {
     public void testThresholds() throws IOException {
         ThresholdingConfig thresholdingConfig = thresholdsReadOnly.getConfig();
         assertNotNull(thresholdingConfig);
-        assertEquals(thresholdsConfig.getConfiguration(), thresholdingConfig);
+        assertEquals(thresholdsConfig.getConfig(), thresholdingConfig);
     }
 
 }

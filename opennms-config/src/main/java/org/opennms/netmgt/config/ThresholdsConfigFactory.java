@@ -158,33 +158,16 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
     }
 
 
-    /**
-     * Reload the config from the default config file
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read/loaded
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void reload() throws IOException {
+    @Override
+    public void reload() {
         m_singleton = null;
         m_loaded = false;
-
-        init();
-    }
-
-    /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized ThresholdsConfigFactory getInstance() {
-        if (!m_loaded) {
-            throw new IllegalStateException("The factory has not been initialized");
+        try {
+            init();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-
-        return m_singleton;
     }
 
     @Deprecated // use @loadThresholds()
@@ -228,20 +211,6 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
     }
 
     /**
-     * Retrieves the configured path to the RRD file repository for the
-     * specified thresholding group.
-     *
-     * @param groupName
-     *            Group name to lookup
-     * @return RRD repository path.
-     * @throws java.lang.IllegalArgumentException
-     *             if group name does not exist in the group map.
-     */
-    public String getRrdRepository(String groupName) {
-        return getGroup(groupName).getRrdRepository();
-    }
-
-    /**
      * <p>getGroup</p>
      *
      * @param groupName a {@link java.lang.String} object.
@@ -255,26 +224,6 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
         return group;
     }
 
-    /**
-     * Retrieves a Collection object consisting of all the
-     * org.opennms.netmgt.config.Threshold objects which make up the specified
-     * thresholding group.
-     *
-     * @param groupName
-     *            Group name to lookup
-     * @return Collection consisting of all the Threshold objects for the
-     *         specified group..
-     * @throws java.lang.IllegalArgumentException
-     *             if group name does not exist in the group map.
-     */
-    public Collection<Basethresholddef> getThresholds(String groupName) {
-        Group group=getGroup(groupName);
-        Collection<Basethresholddef> result=new ArrayList<>();
-        result.addAll(group.getThresholds());
-        result.addAll(group.getExpressions());
-        return result;
-    }
-    
     /**
      * <p>getGroupNames</p>
      *
@@ -345,8 +294,22 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
         }
     }
 
-    ThresholdingConfig getConfiguration() {
-        // for testing
+    @Override
+    public ThresholdingConfig getConfig() {
         return m_config;
+    }
+
+    @Override
+    public String getRrdRepository(String groupName) {
+        return getGroup(groupName).getRrdRepository();
+    }
+
+    @Override
+    public Collection<Basethresholddef> getThresholds(String groupName) {
+        Group group = getGroup(groupName);
+        Collection<Basethresholddef> result = new ArrayList<>();
+        result.addAll(group.getThresholds());
+        result.addAll(group.getExpressions());
+        return result;
     }
 }

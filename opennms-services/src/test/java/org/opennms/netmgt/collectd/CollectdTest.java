@@ -163,7 +163,7 @@ public class CollectdTest {
         m_collectd.setServiceCollectorRegistry(new DefaultServiceCollectorRegistry());
         m_collectd.setLocationAwareCollectorClient(CollectorTestUtils.createLocationAwareCollectorClient());
 
-        ThresholdsConfigFactory.getInstance().loadThresholds(ConfigurationTestUtils.getFileForConfigFile("thresholds.xml"));
+        // FIXME ThresholdsConfigFactory.getInstance().loadThresholds(ConfigurationTestUtils.getFileForConfigFile("thresholds.xml"));
     }
 
     private static Package getCollectionPackageThatMatchesSNMP() {

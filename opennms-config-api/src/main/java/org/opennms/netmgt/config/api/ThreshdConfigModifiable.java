@@ -41,14 +41,6 @@ public interface ThreshdConfigModifiable extends ThreshdConfig {
     void saveCurrent() throws IOException;
 
     /**
-     * Reload the config from the default config file
-     *
-     * @throws java.io.IOException
-     *             if the specified config file cannot be read/loaded
-     */
-    void reload() throws IOException;
-    
-    /**
      * This nethod is used to rebuild the package agaist iplist mapping when needed. When a node gained service event occurs, threshd has to determine which package the ip/service
      * combination is in, but if the interface is a newly added one, the package iplist should be rebuilt so that threshd could know which package this ip/service pair is in.
      */

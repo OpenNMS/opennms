@@ -167,10 +167,15 @@ public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
     }
 
     @Override
-    public synchronized void reload() throws IOException {
+    public synchronized void reload() {
         m_singleton = null;
         m_loaded = false;
-        init();
+        try {
+            init();
+        } catch (IOException e) {
+            // TODO Log ERROR and continue with existing config
+            e.printStackTrace();
+        }
     }
 
     /**

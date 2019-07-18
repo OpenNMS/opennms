@@ -28,9 +28,14 @@
 
 package org.opennms.netmgt.config.ro;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.api.ThresholdsConfig;
+import org.opennms.netmgt.config.threshd.Basethresholddef;
+import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
 public class ThresholdsConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThresholdingConfig> implements ThresholdsConfig {
@@ -44,4 +49,27 @@ public class ThresholdsConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Thres
         return getByKey(ThresholdingConfig.class, fileName, cacheLengthInMillis);
     }
 
+    @Override
+    public Group getGroup(String groupName) {
+        return super.getGroup(groupName);
+    }
+
+    @Override
+    public void reload() {
+        super.reload();
+    }
+
+    @Override
+    public String getRrdRepository(String groupName) {
+        return getGroup(groupName).getRrdRepository();
+    }
+
+    @Override
+    public Collection<Basethresholddef> getThresholds(String groupName) {
+        Group group = getGroup(groupName);
+        Collection<Basethresholddef> result = new ArrayList<>();
+        result.addAll(group.getThresholds());
+        result.addAll(group.getExpressions());
+        return result;
+    }
 }
