@@ -92,7 +92,7 @@ public class JsonGraphRenderer implements GraphRenderer {
                     });
 
                     // TODO MVR enrich me
-//                    enrichmentService.enrich(graph.getVertices());
+                    // enrichmentService.enrich(graph.getVertices());
                     graph.getVertices().stream().forEach(vertex -> {
                         final JSONObject jsonVertex = new JSONObject(vertex.asGenericVertex().getProperties());
                         jsonVerticesArray.put(jsonVertex);
