@@ -84,6 +84,23 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.10]
+
+==== Release Meridian-2018.1.10
+
+Release 2018.1.10 is a small update to 2018.1.9 that fixes a KSC report search issue, and adds a tool for
+evaluating config changes.
+
+The codename for 2018.1.10 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_10[Storm]_.
+
+===== Bug
+
+* KSC Reports search box on home page is case sensitive (Issue http://issues.opennms.org/browse/NMS-12137[NMS-12137])
+
+===== Enhancement
+
+* Add a command to show configuration diffs (Issue http://issues.opennms.org/browse/NMS-12129[NMS-12129])
+
 [releasenotes-changelog-Meridian-2018.1.9]
 
 ==== Release Meridian-2018.1.9
