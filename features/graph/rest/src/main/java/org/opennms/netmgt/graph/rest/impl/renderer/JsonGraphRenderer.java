@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.rest.impl.renderer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +84,7 @@ public class JsonGraphRenderer implements GraphRenderer {
                     graph.asGenericGraph().getProperties().forEach((key, value) -> jsonGraph.put(key, value));
                     graph.getEdges().stream().forEach(edge -> {
                         final GenericEdge genericEdge = edge.asGenericEdge();
-                        final Map<String, Object> edgeProperties = genericEdge.getProperties();
+                        final Map<String, Object> edgeProperties = new HashMap<>(genericEdge.getProperties());
                         edgeProperties.put("source", genericEdge.getSource().getId());
                         edgeProperties.put("target", genericEdge.getTarget().getId());
                         final JSONObject jsonEdge = new JSONObject(edgeProperties);
