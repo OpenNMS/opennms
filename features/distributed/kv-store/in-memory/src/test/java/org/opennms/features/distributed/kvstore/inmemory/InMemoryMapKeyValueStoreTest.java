@@ -28,11 +28,11 @@
 
 package org.opennms.features.distributed.kvstore.inmemory;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static com.jayway.awaitility.Awaitility.await;
 
 import java.util.Optional;
 import java.util.OptionalLong;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class InMemoryMapKeyValueStoreTest {
 
             return null;
         });
-        assertThat(caughtException.get(), equalTo(true));
+        await().atMost(1, TimeUnit.SECONDS).until(caughtException::get);
 
         caughtException.set(false);
         kvStore.getAsync("test", "test").exceptionally(t -> {
@@ -67,7 +67,7 @@ public class InMemoryMapKeyValueStoreTest {
 
             return Optional.empty();
         });
-        assertThat(caughtException.get(), equalTo(true));
+        await().atMost(1, TimeUnit.SECONDS).until(caughtException::get);
 
         caughtException.set(false);
         kvStore.getLastUpdatedAsync("test", "test").exceptionally(t -> {
@@ -77,7 +77,7 @@ public class InMemoryMapKeyValueStoreTest {
 
             return OptionalLong.empty();
         });
-        assertThat(caughtException.get(), equalTo(true));
+        await().atMost(1, TimeUnit.SECONDS).until(caughtException::get);
     }
 
     private class ExceptionThrowingKVStore extends InMemoryMapKeyValueStore<String> {
