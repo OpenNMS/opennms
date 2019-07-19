@@ -31,6 +31,8 @@ package org.opennms.netmgt.threshd.api;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.config.api.ThreshdConfig;
+import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
@@ -60,4 +62,8 @@ public interface ThresholdingService {
      */
     ThresholdingSession createSession(int nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters)
             throws ThresholdInitializationException;
+
+    ThreshdConfig getThreshdConfig();
+
+    ThresholdsConfig getThresholdsConfig();
 }

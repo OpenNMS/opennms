@@ -34,6 +34,8 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.config.api.ThreshdConfig;
 import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
@@ -118,20 +120,6 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         }
     }
 
-    public void nodeGainedService(Event event) {
-        LOG.debug(event.toString());
-        // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        threshdConfig.rebuildPackageIpListMap();
-        reinitializeThresholdingSets(event);
-    }
-
-    public void handleNodeCategoryChanged(Event event) {
-        LOG.debug(event.toString());
-        // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        threshdConfig.rebuildPackageIpListMap();
-        reinitializeThresholdingSets(event);
-    }
-
     @Override
     public ThresholdingSession createSession(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters serviceParams)
             throws ThresholdInitializationException {
@@ -143,6 +131,16 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         }
         ThresholdingSessionKey sessionKey = new ThresholdingSessionKey(nodeId, hostAddress, serviceName, resource);
         return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams);
+    }
+
+    @Override
+    public ThreshdConfig getThreshdConfig() {
+        return threshdConfig;
+    }
+
+    @Override
+    public ThresholdsConfig getThresholdsConfig() {
+        return thresholdsConfig;
     }
 
     public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session) throws ThresholdInitializationException {
@@ -205,6 +203,20 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
                 throw new RuntimeException("Unable to reload thresholding.", e);
             }
         }
+    }
+
+    private void handleNodeCategoryChanged(Event event) {
+        LOG.debug(event.toString());
+        // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
+        threshdConfig.rebuildPackageIpListMap();
+        reinitializeThresholdingSets(event);
+    }
+
+    private void nodeGainedService(Event event) {
+        LOG.debug(event.toString());
+        // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
+        threshdConfig.rebuildPackageIpListMap();
+        reinitializeThresholdingSets(event);
     }
 
     private void reinitializeThresholdingSets(Event e) {

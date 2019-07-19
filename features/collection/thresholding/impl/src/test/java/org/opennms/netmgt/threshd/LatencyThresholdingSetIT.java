@@ -36,6 +36,8 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.InetAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -278,7 +280,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         writer.close();
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
-        initFactories("/threshd-configuration.xml","/test-thresholds.xml");
+        initFactories("threshd-configuration.xml", "test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<>();
     };
 
@@ -555,10 +557,10 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
 
     private void initFactories(String threshd, String thresholds) throws Exception {
         LOG.info("Initialize Threshold Factories");
-        m_thresholdsConfig.setConfigFile(new File(thresholds));
-        m_thresholdsConfig.reload();
-        m_threshdConfig.setConfigFile(new File(threshd));
-        m_threshdConfig.reload();
+        File thresholdsXml = Paths.get("src", "test", "resources", thresholds).toFile();
+        m_thresholdsConfig.setConfigFile(thresholdsXml);
+        File threshdXml = Paths.get("src", "test", "resources", threshd).toFile();
+        m_threshdConfig.setConfigFile(threshdXml);
     }
 
     private void setupSnmpInterfaceDatabase(MockDatabase db, String ipAddress, String ifName) throws Exception {

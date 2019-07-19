@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -55,7 +56,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.api.PollOutagesConfigModifiable;
 import org.opennms.netmgt.config.api.ThreshdConfigModifiable;
 import org.opennms.netmgt.config.api.ThresholdsConfigModifiable;
@@ -111,10 +111,8 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
     @Autowired
     private ThresholdingService m_thresholdingService;
 
-    @Autowired
     private ThresholdsConfigModifiable m_thresholdsConfig;
 
-    @Autowired
     private ThreshdConfigModifiable m_threshdConfig;
 
     @Autowired
@@ -151,9 +149,15 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
 
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         m_pollOutageConfig.reload();
-        m_thresholdsConfig.reload();
-        m_threshdConfig.reload();
         System.setProperty("opennms.home", previousOpennmsHome);
+
+        m_thresholdsConfig = (ThresholdsConfigModifiable) m_thresholdingService.getThresholdsConfig();
+        File thresholdsXml = Paths.get("src", "test", "resources", "etc", "thresholds.xml").toFile();
+        m_thresholdsConfig.setConfigFile(thresholdsXml);
+
+        m_threshdConfig = (ThreshdConfigModifiable) m_thresholdingService.getThreshdConfig();
+        File threshdXml = Paths.get("src", "test", "resources", "etc", "threshd-configuration.xml").toFile();
+        m_threshdConfig.setConfigFile(threshdXml);
 
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
@@ -232,7 +236,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         parameters.put("thresholding-enabled", "true");
 
         FilterDao filterDao = m_mocks.createMock(FilterDao.class);
-        expect(filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
+        expect(filterDao.getActiveIPAddressList((String) EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
         filterDao.flushActiveIpAddressListCache();
         EasyMock.expectLastCall().anyTimes();
         FilterDaoFactory.setInstance(filterDao);
@@ -261,15 +265,15 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
                                                                                               pkg, 
                                                                                               m_persisterFactory, 
                                                                                               m_thresholdingService);
-        // Make sure that the ThresholdingSet initializes with test settings
-        String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+
+        // Mock FilterDao was set after ThreshdConfig loaded - need to call this to reevaluate the filter
+        m_threshdConfig.rebuildPackageIpListMap();
 
         for (int i=0; i<rtValues.length; i++) {
             adaptor.handlePollResult(svc, parameters, service.poll(svc, parameters));
             Thread.sleep(1000 * step); // Emulate the appropriate wait time prior inserting another value into the RRD files.
         }
-        System.setProperty("opennms.home", previousOpennmsHome);
+
         m_mocks.verifyAll();
     }
 }

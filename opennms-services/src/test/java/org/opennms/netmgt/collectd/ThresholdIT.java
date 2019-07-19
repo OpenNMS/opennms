@@ -35,11 +35,13 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -62,6 +64,8 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdsConfigFactory;
+import org.opennms.netmgt.config.api.ThreshdConfig;
+import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -144,6 +148,16 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
     @Autowired
     private ThresholdingService thresholdingService;
 
+    private ThreshdConfig m_threshdConfig;
+
+    private ThresholdsConfig m_thresholdsConfig;
+
+    @Before
+    public void setUp() throws Exception {
+        m_threshdConfig = thresholdingService.getThreshdConfig();
+        m_thresholdsConfig = thresholdingService.getThresholdsConfig();
+    }
+
     @Test
     public void canTriggerThreshold() throws Exception {
         // Load our custom config
@@ -156,8 +170,7 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
         MockServiceCollector.setDelegate(collector);
 
         // Load custom threshd configuration
-        initThreshdFactories("threshd-configuration.xml","test-thresholds.xml");
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        initFactories("threshd-configuration.xml", "test-thresholds.xml");
         mockEventIpcManager.addEventListener((EventListener) thresholdingService, ThresholdingServiceImpl.UEI_LIST);
 
         // Wire and initialize collectd
@@ -272,9 +285,11 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
         collectd.stop();
     }
 
-    private void initThreshdFactories(String threshd, String thresholds) throws Exception {
-        ThresholdsConfigFactory.setInstance(new ThresholdsConfigFactory(getClass().getResourceAsStream(thresholds)));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
+    private void initFactories(String threshd, String thresholds) throws Exception {
+        File thresholdsXml = Paths.get("src", "test", "resources", thresholds).toFile();
+        ((ThresholdsConfigFactory) m_thresholdsConfig).setConfigFile(thresholdsXml);
+        File threshdXml = Paths.get("src", "test", "resources", threshd).toFile();
+        ((ThreshdConfigFactory) m_threshdConfig).setConfigFile(threshdXml);
     }
 
     @Override

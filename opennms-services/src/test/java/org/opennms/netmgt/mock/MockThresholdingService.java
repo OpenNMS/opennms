@@ -29,6 +29,8 @@
 package org.opennms.netmgt.mock;
 
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.config.api.ThreshdConfig;
+import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -40,6 +42,16 @@ public class MockThresholdingService implements ThresholdingService {
     public ThresholdingSession createSession(int m_nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters)
             throws ThresholdInitializationException {
         return new MockThresholdingSession();
+    }
+
+    @Override
+    public ThreshdConfig getThreshdConfig() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public ThresholdsConfig getThresholdsConfig() {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
 }

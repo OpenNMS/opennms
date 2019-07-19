@@ -250,5 +250,6 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
     @Override
     public void setConfigFile(File file) {
         configFile = file;
+        reload();
     }
 }

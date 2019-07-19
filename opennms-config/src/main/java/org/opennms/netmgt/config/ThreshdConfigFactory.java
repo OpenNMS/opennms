@@ -228,9 +228,10 @@ public final class ThreshdConfigFactory implements ThreshdConfigModifiable {
         m_configDao = effectiveConfigurationDao;
     }
 
-    // Allows test subclassing to inject test configuration files
+    // Allows tests to inject test configuration files
     public void setConfigFile(File file) {
         configFile = file;
+        reload();
     }
 
     // Build a map of each configured URL to a list of IPs configured in that URL

@@ -104,7 +104,6 @@ public class ThresholdController extends AbstractController implements Initializ
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView;
-        ThresholdsConfigFactory.init();
         String editGroup = request.getParameter("editGroup");
         String deleteThreshold = request.getParameter("deleteThreshold");
         String editThreshold = request.getParameter("editThreshold");
