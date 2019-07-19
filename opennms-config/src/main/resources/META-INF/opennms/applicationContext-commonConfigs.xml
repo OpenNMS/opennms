@@ -136,17 +136,14 @@
   <bean id="readOnlyOutagesConfig" class="org.opennms.netmgt.config.ro.OutagesConfigReadOnlyDao">
     <property name="dao" ref="effectiveConfigurationDao" />
   </bean>
-  <onmsgi:service interface="org.opennms.netmgt.config.api.PollOutagesConffig" ref="readOnlyOutagesConfig" />
 
   <bean id="readOnlyThreshdConfig" class="org.opennms.netmgt.config.ro.ThreshdConfigReadOnlyDao">
     <property name="dao" ref="effectiveConfigurationDao" />
   </bean>
-  <onmsgi:service interface="org.opennms.netmgt.config.api.ThreshdConfig" ref="readOnlyThreshdConfig" />
 
   <bean id="readOnlyThresholdsConfig" class="org.opennms.netmgt.config.ro.ThresholdsConfigReadOnlyDao">
     <property name="dao" ref="effectiveConfigurationDao" />
   </bean>
-  <onmsgi:service interface="org.opennms.netmgt.config.api.ThresholdsConfig" ref="readOnlyThresholdsConfig" />
 
   <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
@@ -176,7 +173,7 @@
   <bean id="thresholdsConfigModifiable" class="org.opennms.netmgt.config.ThresholdsConfigFactory">
       <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
   </bean>
-  <onmsgi:service interface="org.opennms.netmgt.config.api.ThreshdConfigModifiable" ref="thresholdsConfigModifiable" />
+  <onmsgi:service interface="org.opennms.netmgt.config.api.ThresholdsConfigModifiable" ref="thresholdsConfigModifiable" />
 
   <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
   

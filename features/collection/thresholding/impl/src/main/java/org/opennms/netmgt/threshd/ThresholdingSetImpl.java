@@ -405,6 +405,9 @@ public class ThresholdingSetImpl implements ThresholdingSet {
      * - For each match, create new ThresholdableService object and schedule it for collection
      */
     private final List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) throws ThresholdInitializationException {
+        if (m_threshdConfig.getConfiguration() == null) {
+            throw new ThresholdInitializationException("no threshd configuration");
+        }
         List<String> groupNameList = new LinkedList<>();
         for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdConfig.getConfiguration().getPackages()) {
             // Make certain the the current service is in the package and enabled!

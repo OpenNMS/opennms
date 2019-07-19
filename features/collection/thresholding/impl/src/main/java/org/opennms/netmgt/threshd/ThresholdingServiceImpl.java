@@ -79,10 +79,8 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     @Autowired
     private EventIpcManager eventIpcManager;
 
-    @Autowired
     private ThresholdsConfig thresholdsConfig;
 
-    @Autowired
     private ThreshdConfig threshdConfig;
 
     @PostConstruct
@@ -178,6 +176,14 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     public void close(ThresholdingSessionImpl session) {
         thresholdingSetPersister.clear(session);
+    }
+
+    public void setThresholdsConfig(ThresholdsConfig thresholdsConfig) {
+        this.thresholdsConfig = thresholdsConfig;
+    }
+
+    public void setThreshdConfig(ThreshdConfig threshdConfig) {
+        this.threshdConfig = threshdConfig;
     }
 
     private void daemonReload(Event event) {
