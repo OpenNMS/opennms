@@ -39,6 +39,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -96,6 +98,7 @@ import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
+import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
@@ -143,6 +146,10 @@ public class ThresholdingVisitorIT {
     private LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 
     private MockEventIpcManager eventMgr;
+
+    private ThreshdConfigFactory m_threshdConfig;
+
+    private ThresholdsConfigFactory m_thresholdsConfig;
 
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
@@ -241,6 +248,20 @@ public class ThresholdingVisitorIT {
         eventMgr.setSynchronous(true);
         EventIpcManager eventdIpcMgr = (EventIpcManager)eventMgr;
         EventIpcManagerFactory.setIpcManager(eventdIpcMgr);
+
+        EffectiveConfigurationDao mockEffectiveConfigurationDao = EasyMock.createMock(EffectiveConfigurationDao.class);
+        EasyMock.expect(mockEffectiveConfigurationDao.save(EasyMock.anyObject())).andReturn(1).anyTimes();
+        EasyMock.replay(mockEffectiveConfigurationDao);
+
+        System.setProperty("opennms.home", "src/test/resources");
+
+        m_threshdConfig = new ThreshdConfigFactory();
+        m_threshdConfig.setEffectiveConfigurationDao(mockEffectiveConfigurationDao);
+        m_threshdConfig.init();
+
+        m_thresholdsConfig = new ThresholdsConfigFactory();
+        m_thresholdsConfig.setEffectiveConfigurationDao(mockEffectiveConfigurationDao);
+        m_thresholdsConfig.init();
         
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
         final StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
@@ -260,15 +281,9 @@ public class ThresholdingVisitorIT {
         writer.close();
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
-        initFactories("/threshd-configuration.xml","/test-thresholds.xml");
+        initFactories("threshd-configuration.xml", "test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<>();
     };
-    
-    private void initFactories(String threshd, String thresholds) throws Exception {
-        LOG.info("Initialize Threshold Factories");
-        ThresholdsConfigFactory.setInstance(new ThresholdsConfigFactory(getClass().getResourceAsStream(thresholds)));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
-    }
 
     @After
     public void checkWarnings() throws Throwable {
@@ -994,8 +1009,7 @@ public class ThresholdingVisitorIT {
         initFactories("/threshd-configuration-bug3390.xml","/test-thresholds-bug3390.xml");
         
         // Validating threshd-configuration.xml
-        ThreshdConfigFactory configFactory = ThreshdConfigFactory.getInstance();
-        final List<Package> packages = configFactory.getConfiguration().getPackages();
+        final List<Package> packages = m_threshdConfig.getConfiguration().getPackages();
         assertEquals(1, packages.size());
         org.opennms.netmgt.config.threshd.Package pkg = packages.get(0);
         final List<Service> services = pkg.getServices();
@@ -1075,7 +1089,7 @@ public class ThresholdingVisitorIT {
         
         // Validate FavoriteFilterDao Calls
         HashSet<String> filters = new HashSet<>();
-        for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+        for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdConfig.getConfiguration().getPackages()) {
             filters.add(pkg.getFilter().getContent().orElse(null));
         }
 
@@ -1231,7 +1245,7 @@ public class ThresholdingVisitorIT {
      */
     @Test
     public void testBug3428_noMatch() throws Exception {
-        initFactories("/threshd-configuration.xml","/test-thresholds-bug3428.xml");
+        initFactories("threshd-configuration.xml", "test-thresholds-bug3428.xml");
         Integer ifIndex = 1;
         Long ifSpeed = 10000000l; // 10Mbps - Bad Speed
         String ifName = "wlan0";
@@ -1659,10 +1673,21 @@ public class ThresholdingVisitorIT {
     private ThresholdingVisitor createVisitor(int node, String location, String serviceName, ServiceParameters svcParams) throws ThresholdInitializationException {
         ThresholdingEventProxyImpl eventProxy = new ThresholdingEventProxyImpl();
         eventProxy.setEventMgr(eventMgr);
-        ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(), svcParams, m_resourceStorageDao, eventProxy);
+        ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(), svcParams, m_resourceStorageDao, eventProxy, m_threshdConfig,
+                                                                      m_thresholdsConfig);
         ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, m_resourceStorageDao, eventProxy);
         assertNotNull(visitor);
         return visitor;
+    }
+
+    private void initFactories(String threshd, String thresholds) throws Exception {
+        LOG.info("Initialize Threshold Factories");
+        Path thresholdsPath = Paths.get("src", "test", "resources", thresholds);
+        m_thresholdsConfig.setConfigFile(thresholdsPath.toFile());
+        m_thresholdsConfig.reload();
+        Path threshdPath = Paths.get("src", "test", "resources", threshd);
+        m_threshdConfig.setConfigFile(threshdPath.toFile());
+        m_threshdConfig.reload();
     }
 
     private void runGaugeDataTest(ThresholdingVisitor visitor, long value) {

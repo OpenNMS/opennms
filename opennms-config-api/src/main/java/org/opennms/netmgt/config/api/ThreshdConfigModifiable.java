@@ -47,4 +47,13 @@ public interface ThreshdConfigModifiable extends ThreshdConfig {
      */
     void rebuildPackageIpListMap();
 
+    /**
+     * A method to facilitate unit tests.
+     * Set the configuration to a new File resource.
+     * Call reload() afterwards.
+     */
+    void setConfigFile(File file);
+
+    void reload();
+
 }

@@ -44,6 +44,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -51,6 +53,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.ThresholdsConfigModifiable;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Group;
+import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
@@ -79,135 +82,69 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable {
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdsConfigFactory.class);
 
-    /**
-     * The singleton instance of this factory
-     */
-    private static ThresholdsConfigFactory m_singleton = null;
+    private ThresholdingConfig config;
 
-    /**
-     * The config class loaded from the config file
-     */
-    private ThresholdingConfig m_config;
+    private Map<String, Group> groupByName;
 
-    /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
-
-    /**
-     * Map of org.opennms.netmgt.config.threshd.Group objects indexed by group
-     * name.
-     */
-    private Map<String, Group> m_groupMap;
+    private File configFile;
 
     @Autowired
-    private EffectiveConfigurationDao m_configDao;
+    private EffectiveConfigurationDao configDao;
 
-    /**
-     * <p>Constructor for ThresholdingConfigFactory.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws IOException 
-     */
-    public ThresholdsConfigFactory(InputStream stream) throws IOException {
-        parseXML(stream);
+    // @PostConstruct
+    public void init() throws IOException {
+        configFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
+        loadConfigFile(configFile);
     }
 
     private void parseXML(InputStream stream) throws IOException {
         try (Reader reader = new InputStreamReader(stream)) {
-            m_config = JaxbUtils.unmarshal(ThresholdingConfig.class, reader);
+            config = JaxbUtils.unmarshal(ThresholdingConfig.class, reader);
         }
         initGroupMap();
     }
 
-    /**
-     * Build map of org.opennms.netmgt.config.threshd.Group objects
-     * indexed by group name.
-     *
-     * This is parsed and built at initialization for
-     * faster processing at run-timne.
-     */ 
     private void initGroupMap() {
-        Map<String, Group> groupMap = new HashMap<String, Group>();
-
-        for (Group g : m_config.getGroups()) {
-            groupMap.put(g.getName(), g);
-        }
-        
-        m_groupMap = groupMap;
-    }
-
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void init() throws IOException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
-
-        loadConfigFile(cfgFile);
+        groupByName = config.getGroups().stream().collect(Collectors.toMap(Group::getName, Function.identity()));
     }
 
 
     @Override
     public void reload() {
-        m_singleton = null;
-        m_loaded = false;
         try {
-            init();
+            loadConfigFile(configFile);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    @Deprecated // use @loadThresholds()
-    public static synchronized void setInstance(ThresholdsConfigFactory instance) {
-        m_loaded = true;
-        m_singleton = instance;
-    }
-
-    private static void loadConfigFile(File cfgFile) throws IOException {
+    private void loadConfigFile(File cfgFile) throws IOException {
         LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         try (InputStream stream = new FileInputStream(cfgFile.getPath());) {
 
-            ThresholdsConfigFactory tcf = new ThresholdsConfigFactory(stream);
+            parseXML(stream);
 
-            for (String groupName : tcf.getGroupNames()) {
-                Group g = tcf.getGroup(groupName);
-                for (org.opennms.netmgt.config.threshd.Threshold threshold : g.getThresholds()) {
+            for (Group group : config.getGroups()) {
+                for (org.opennms.netmgt.config.threshd.Threshold threshold : group.getThresholds()) {
                     if (threshold.getDsName().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
-                        throw new IllegalStateException(String.format("ds-name '%s' in group '%s' is greater than %d characters", threshold.getDsName(), groupName,
+                        throw new IllegalStateException(String.format("ds-name '%s' in group '%s' is greater than %d characters", threshold.getDsName(), group.getName(),
                                                                       ConfigFileConstants.RRD_DS_MAX_SIZE));
                     }
                 }
             }
-
-            m_singleton = tcf;
-            m_loaded = true;
         }
+        saveEffective();
     }
 
     public synchronized void loadThresholds(File thresholdsFile) throws IOException {
-        m_loaded = true;
-        m_singleton = null;
         loadConfigFile(thresholdsFile);
     }
 
     // injection of EffectiveConfigurationDao
     public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
-        m_configDao = effectiveConfigurationDao;
-        saveEffective();
+        configDao = effectiveConfigurationDao;
     }
 
     /**
@@ -217,7 +154,7 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
      * @return a {@link org.opennms.netmgt.config.threshd.Group} object.
      */
     public Group getGroup(String groupName) {
-        Group group = m_groupMap.get(groupName);
+        Group group = groupByName.get(groupName);
         if (group == null) {
             throw new IllegalArgumentException("Thresholding group " + groupName + " does not exist.");
         }
@@ -230,7 +167,7 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
      * @return a {@link java.util.Collection} object.
      */
     public Collection<String> getGroupNames() {
-        return Collections.unmodifiableCollection(m_groupMap.keySet());
+        return Collections.unmodifiableCollection(groupByName.keySet());
     }
     
     /**
@@ -241,7 +178,7 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
     public synchronized void saveCurrent() throws IOException {
         // Marshal to a string first, then write the string to the file. This
         // way the original config isn't lost if the XML from the marshal is hosed.
-        final String xmlString = JaxbUtils.marshal(m_config);
+        final String xmlString = JaxbUtils.marshal(config);
         if (xmlString != null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
@@ -260,27 +197,23 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
         EffectiveConfiguration effective = new EffectiveConfiguration();
         effective.setKey(ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
         effective.setConfiguration(getJsonConfig());
-        effective.setHashCode(m_config.hashCode());
+        effective.setHashCode(config.hashCode());
         effective.setLastUpdated(new Date());
-        m_configDao.save(effective);
+        configDao.save(effective);
     }
 
     private String getJsonConfig() {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(objectMapper.getTypeFactory()));
-            return objectMapper.writeValueAsString(m_config);
+            return objectMapper.writeValueAsString(config);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             return "";
         }
     }
-    /**
-     * <p>update</p>
-     *
-     * @throws java.io.IOException if any.
-     */
+
     private void update() throws IOException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
@@ -297,7 +230,7 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
 
     @Override
     public ThresholdingConfig getConfig() {
-        return m_config;
+        return config;
     }
 
     @Override
@@ -312,5 +245,10 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
         result.addAll(group.getThresholds());
         result.addAll(group.getExpressions());
         return result;
+    }
+
+    @Override
+    public void setConfigFile(File file) {
+        configFile = file;
     }
 }

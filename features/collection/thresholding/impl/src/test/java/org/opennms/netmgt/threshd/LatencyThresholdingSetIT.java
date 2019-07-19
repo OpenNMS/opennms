@@ -69,8 +69,8 @@ import org.opennms.netmgt.collection.api.LatencyCollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdsConfigFactory;
+import org.opennms.netmgt.config.api.ThreshdConfigModifiable;
+import org.opennms.netmgt.config.api.ThresholdsConfigModifiable;
 import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -144,7 +144,10 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     private Map<String, String> mockIfInfo;
 
     @Autowired
-    private ThresholdsConfigFactory m_thresholdsConfigFactory;
+    private ThresholdsConfigModifiable m_thresholdsConfig;
+
+    @Autowired
+    private ThreshdConfigModifiable m_threshdConfig;
 
     @Autowired
     private ThresholdingService m_thresholdingService;
@@ -154,7 +157,6 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     private String m_ipAddress = "127.0.0.1";
     private ServiceParameters m_serviceParams = new ServiceParameters(Collections.emptyMap());
     private String m_location = null;
-
 
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
@@ -279,12 +281,6 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         initFactories("/threshd-configuration.xml","/test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<>();
     };
-    
-    private void initFactories(String threshd, String thresholds) throws Exception {
-        LOG.info("Initialize Threshold Factories");
-        ThresholdsConfigFactory.setInstance(new ThresholdsConfigFactory(getClass().getResourceAsStream(thresholds)));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
-    }
 
     @After
     public void tearDown() throws Exception {
@@ -555,6 +551,14 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
             if (source.getValue().getContent() == null) source.getValue().setContent("null");
             assertEquals("content must match for parameter " + source.getParmName(), source.getValue().getContent(), found.getValue().getContent());
         }
+    }
+
+    private void initFactories(String threshd, String thresholds) throws Exception {
+        LOG.info("Initialize Threshold Factories");
+        m_thresholdsConfig.setConfigFile(new File(thresholds));
+        m_thresholdsConfig.reload();
+        m_threshdConfig.setConfigFile(new File(threshd));
+        m_threshdConfig.reload();
     }
 
     private void setupSnmpInterfaceDatabase(MockDatabase db, String ipAddress, String ifName) throws Exception {

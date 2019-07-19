@@ -31,6 +31,8 @@ package org.opennms.netmgt.threshd;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.config.api.ThreshdConfig;
+import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -51,12 +53,14 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
     }
 
     @Override
-    public ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException {
+    public ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy, ThreshdConfig threshdConfig, ThresholdsConfig thresholdsConfig)
+            throws ThresholdInitializationException {
         ThresholdingSessionKey key = ((ThresholdingSessionImpl) session).getKey();
         ThresholdingSetImpl tSet = thresholdingSets.get(key);
         if (tSet == null) {
             tSet = new ThresholdingSetImpl(key.getNodeId(), key.getLocation(), key.getServiceName(), ((ThresholdingSessionImpl) session).getRrdRepository(),
-                                           ((ThresholdingSessionImpl) session).getServiceParameters(), ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy);
+                                           ((ThresholdingSessionImpl) session).getServiceParameters(), ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy,
+                                           threshdConfig, thresholdsConfig);
             thresholdingSets.put(key, tSet);
         }
         return tSet;

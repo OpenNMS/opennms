@@ -69,4 +69,7 @@ public interface ThreshdConfig {
      * Instruct the configuration to reload from its datasource.
      */
     void reload();
+
+    void rebuildPackageIpListMap();
+
 }

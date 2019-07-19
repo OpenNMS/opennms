@@ -141,4 +141,14 @@ public class ThreshdConfiguration implements Serializable, ReadOnlyConfig {
         return false;
     }
 
+    public boolean serviceInPackageAndEnabled(String serviceName, Package pkg) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean interfaceInPackage(String hostAddress, Package pkg) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

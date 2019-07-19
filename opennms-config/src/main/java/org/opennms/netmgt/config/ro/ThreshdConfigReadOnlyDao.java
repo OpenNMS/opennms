@@ -62,4 +62,10 @@ public class ThreshdConfigReadOnlyDao extends AbstractReadOnlyConfigDao<ThreshdC
         return false;
     }
 
+    @Override
+    public void rebuildPackageIpListMap() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

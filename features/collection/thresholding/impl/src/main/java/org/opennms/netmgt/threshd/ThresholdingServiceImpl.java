@@ -34,8 +34,6 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.config.api.ThreshdConfig;
 import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
@@ -125,14 +123,14 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     public void nodeGainedService(Event event) {
         LOG.debug(event.toString());
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        threshdConfig.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);
     }
 
     public void handleNodeCategoryChanged(Event event) {
         LOG.debug(event.toString());
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        threshdConfig.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);
     }
 
@@ -150,7 +148,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     }
 
     public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session) throws ThresholdInitializationException {
-        ThresholdingSetImpl thresholdingSet = (ThresholdingSetImpl) thresholdingSetPersister.getThresholdingSet(session, eventProxy);
+        ThresholdingSetImpl thresholdingSet = (ThresholdingSetImpl) thresholdingSetPersister.getThresholdingSet(session, eventProxy, threshdConfig, thresholdsConfig);
         return new ThresholdingVisitorImpl(thresholdingSet, ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy);
     }
 

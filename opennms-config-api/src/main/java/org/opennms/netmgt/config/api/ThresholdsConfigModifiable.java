@@ -28,6 +28,17 @@
 
 package org.opennms.netmgt.config.api;
 
+import java.io.File;
+
 public interface ThresholdsConfigModifiable extends ThresholdsConfig {
+
+    /**
+     * A method to facilitate unit tests.
+     * Set the configuration to a new File resource.
+     * Call reload() afterwards.
+     */
+    void setConfigFile(File file);
+
+    void reload();
 
 }
