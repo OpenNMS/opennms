@@ -65,7 +65,7 @@ public class ThresholdingSetTest {
     public void testBadThresholdingConfigInitialize() throws Exception {
         System.setProperty("opennms.home", getClass().getResource("testBadThresholdingConfig").getFile());
         PollOutagesConfigFactory.init();
-        new ThresholdingSetImpl(1, "127.0.0.1", "SNMP", new RrdRepository(), null, null, null);
+        new ThresholdingSetImpl(1, "127.0.0.1", "SNMP", new RrdRepository(), null, null, null, MockSession.getSession());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class ThresholdingSetTest {
 
         System.setProperty("opennms.home", opennmsHome);
         PollOutagesConfigFactory.init();
-        final ThresholdingSetImpl set = new ThresholdingSetImpl(1, "127.0.0.1", "SNMP", new RrdRepository(), null, null, null);
+        final ThresholdingSetImpl set = new ThresholdingSetImpl(1, "127.0.0.1", "SNMP", new RrdRepository(), null, null, null, MockSession.getSession());
 
         LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
         assertEquals("There should be no warnings or higher after initializing with a good config.", 0, events.length);

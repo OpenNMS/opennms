@@ -33,6 +33,7 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -78,6 +80,9 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     @Autowired
     private EventIpcManager eventIpcManager;
+    
+    @Autowired
+    private KeyValueStore kvStore;
 
     @PostConstruct
     private void init() {
@@ -139,8 +144,8 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         if (repository.getRrdBaseDir() != null && repository.getRrdBaseDir().getPath() != null) {
             resource = repository.getRrdBaseDir().getPath();
         }
-        ThresholdingSessionKey sessionKey = new ThresholdingSessionKey(nodeId, hostAddress, serviceName, resource);
-        return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams);
+        ThresholdingSessionKey sessionKey = new ThresholdingSessionKeyImpl(nodeId, hostAddress, serviceName, resource);
+        return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams, kvStore);
     }
 
     public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session) throws ThresholdInitializationException {
@@ -200,4 +205,11 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         thresholdingSetPersister.reinitializeThresholdingSets();
     }
 
+    public KeyValueStore getKvStore() {
+        return kvStore;
+    }
+
+    public void setKvStore(KeyValueStore kvStore) {
+        this.kvStore = kvStore;
+    }
 }

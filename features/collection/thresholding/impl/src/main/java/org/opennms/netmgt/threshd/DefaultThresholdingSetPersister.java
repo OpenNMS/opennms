@@ -34,6 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 import org.opennms.netmgt.threshd.api.ThresholdingSet;
 import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 
@@ -43,20 +44,20 @@ import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
 {
 
-    private Map<ThresholdingSessionKey, ThresholdingSetImpl> thresholdingSets = new HashMap<>();
+    private Map<ThresholdingSessionKey, ThresholdingSet> thresholdingSets = new HashMap<>();
 
     @Override
     public void persistSet(ThresholdingSession session, ThresholdingSet set) {
-        thresholdingSets.put(((ThresholdingSessionImpl) session).getKey(), (ThresholdingSetImpl) set);
+        thresholdingSets.put(session.getKey(), set);
     }
 
     @Override
     public ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException {
-        ThresholdingSessionKey key = ((ThresholdingSessionImpl) session).getKey();
-        ThresholdingSetImpl tSet = thresholdingSets.get(key);
+        ThresholdingSessionKey key = session.getKey();
+        ThresholdingSet tSet = thresholdingSets.get(key);
         if (tSet == null) {
             tSet = new ThresholdingSetImpl(key.getNodeId(), key.getLocation(), key.getServiceName(), ((ThresholdingSessionImpl) session).getRrdRepository(),
-                                           ((ThresholdingSessionImpl) session).getServiceParameters(), ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy);
+                                           ((ThresholdingSessionImpl) session).getServiceParameters(), ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy, session);
             thresholdingSets.put(key, tSet);
         }
         return tSet;
@@ -69,7 +70,7 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
 
     @Override
     public void clear(ThresholdingSession session) {
-        ThresholdingSessionKey key = ((ThresholdingSessionImpl) session).getKey();
+        ThresholdingSessionKey key = session.getKey();
         thresholdingSets.remove(key);
     }
 

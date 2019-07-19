@@ -20,10 +20,13 @@
 		<property name="eventMgr" ref="eventProxy"/>
     </bean>
 
+    <onmsgi:reference interface="org.opennms.features.distributed.kvstore.api.KeyValueStore" id="kvStore"/>
+
     <bean id="thresholdingService" class="org.opennms.netmgt.threshd.ThresholdingServiceImpl">
 		<property name="eventProxy" ref="thresholdingEventProxy"/>
 		<property name="eventIpcManager" ref="eventIpcManager"/>
 		<property name="thresholdingSetPersister" ref="thresholdingSetPersister"/>
+        <property name="kvStore" ref="kvStore"/>
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.threshd.api.ThresholdingService" ref="thresholdingService" />
 

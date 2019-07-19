@@ -30,15 +30,34 @@ package org.opennms.netmgt.threshd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
+import org.joda.time.Duration;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.distributed.kvstore.api.SerializingKeyValueStore;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
  * <p>Abstract AbstractThresholdEvaluatorState class.</p>
@@ -46,11 +65,133 @@ import org.opennms.netmgt.xml.event.Event;
  * @author ranger
  * @version $Id: $
  */
-public abstract class AbstractThresholdEvaluatorState implements ThresholdEvaluatorState {
-    
+public abstract class AbstractThresholdEvaluatorState<T extends Serializable> implements ThresholdEvaluatorState {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractThresholdEvaluatorState.class);
+    private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.standardSeconds(30))
+            .build();
+
     private static final String UNKNOWN = "Unknown";
 
     public static final String FORMATED_NAN = "NaN (the threshold definition has been changed)";
+
+    private boolean isStateDirty;
+
+    private final String key;
+
+    private final SerializingKeyValueStore<Serializable> kvStore;
+
+    protected T state;
+    
+    protected final ThresholdingSession thresholdingSession;
+    
+    private static final String THRESHOLDING_KV_CONTEXT = "thresholding";
+    private final int stateTTL;
+
+    /**
+     * A last updated cache to track when the last time we know we persisted a given key was. This is for performance
+     * reasons so that on fetch we can see if we already were the last ones to update and avoid a full fetch if so.
+     */
+    private final Map<String, Long> lastUpdatedCache = CacheBuilder.newBuilder()
+            .maximumSize(10000)
+            .build(new CacheLoader<String, Long>() {
+                @Override
+                public Long load(String key) {
+                    // We don't actually want to load anything if the key isn't in the cache
+                    return null;
+                }
+            })
+            .asMap();
+
+    public AbstractThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold,
+                                           ThresholdingSession thresholdingSession) {
+        Objects.requireNonNull(threshold);
+        Objects.requireNonNull(thresholdingSession);
+        Objects.requireNonNull(thresholdingSession.getKVStore());
+
+        this.thresholdingSession = thresholdingSession;
+        kvStore = new SerializingKeyValueStore<>(thresholdingSession.getKVStore(),
+                AbstractThresholdEvaluatorState::serialize,
+                AbstractThresholdEvaluatorState::deserialize);
+        key = String.format("%d-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
+                thresholdingSession.getKey().getLocation(), thresholdingSession.getKey().getResource(),
+                threshold.getDatasourceExpression(), threshold.getDsType(), threshold.getType());
+
+        String ttlProp = System.getProperty("org.opennms.netmgt.threshd.state_ttl");
+        stateTTL = ttlProp != null ? Integer.parseInt(ttlProp) : (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS);
+        initializeState();
+    }
+
+    protected abstract void initializeState();
+
+    private boolean shouldPersist() {
+        return isStateDirty;
+    }
+
+    private void persistStateIfNeeded() {
+        if (shouldPersist()) {
+            try {
+                long newTimestamp = kvStore.put(key, state, THRESHOLDING_KV_CONTEXT, stateTTL);
+                lastUpdatedCache.put(key, newTimestamp);
+
+                // If we successfully stored the state we will mark that the persisted state is up to date and no longer
+                // dirty
+                isStateDirty = false;
+            } catch (RuntimeException e) {
+                RATE_LIMITED_LOGGER.warn("Failed to store state for threshold {}", key, e);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void fetchState() {
+        try {
+            Long lastKnownUpdate = lastUpdatedCache.get(key);
+
+            // If we don't have a record of when this was last updated locally, get it from the store
+            if (lastKnownUpdate == null) {
+                kvStore.get(key, THRESHOLDING_KV_CONTEXT).ifPresent(v -> state = (T) v);
+            } else {
+                // Otherwise get it from the store only if our record is stale
+                kvStore.getIfStale(key, THRESHOLDING_KV_CONTEXT, lastKnownUpdate)
+                        .ifPresent(o -> o.ifPresent(v -> state = (T) v));
+            }
+        } catch (RuntimeException e) {
+            RATE_LIMITED_LOGGER.warn("Failed to retrieve state for threshold {}", key, e);
+        }
+    }
+
+    /**
+     * Marks the state for this evaluator as dirty. When a state is dirty it will be persisted the next time
+     * {@link #persistStateIfNeeded()} is called.
+     * <p>
+     * Any operation that alters the state enough that it would affect threshold evaluation should call this method to
+     * mark the state dirty.
+     */
+    protected void markDirty() {
+        isStateDirty = true;
+    }
+
+    @Override
+    public Status evaluate(double dsValue) {
+        // Always fetch the state to make sure we have the latest
+        fetchState();
+        Status status = evaluateAfterFetch(dsValue);
+        // Persist the state if it has changed and is now dirty
+        persistStateIfNeeded();
+        return status;
+    }
+
+    @Override
+    public void clearState() {
+        clearStateBeforePersist();
+        persistStateIfNeeded();
+    }
+
+    protected abstract void clearStateBeforePersist();
+
+    protected abstract Status evaluateAfterFetch(double dsValue);
 
     /**
      * <p>createBasicEvent</p>
@@ -151,5 +292,36 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         return valueFormatter.format(value);
     }
 
+    @Override
+    public ThresholdingSession getThresholdingSession() {
+        return thresholdingSession;
+    }
 
+    private static byte[] serialize(Serializable value) {
+        byte[] serializedValue;
+
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            ObjectOutput out = new ObjectOutputStream(bos);
+            out.writeObject(value);
+            out.flush();
+            serializedValue = bos.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return serializedValue;
+    }
+
+    private static Serializable deserialize(byte[] value) {
+        Serializable deserialized;
+
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(value)) {
+            ObjectInput in = new ObjectInputStream(bis);
+            deserialized = (Serializable) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return deserialized;
+    }
 }
