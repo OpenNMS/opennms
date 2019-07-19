@@ -40,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.features.distributed.cassandra.api.CassandraSchemaManagerFactory;
 import org.opennms.features.distributed.cassandra.api.CassandraSession;
 import org.opennms.features.distributed.cassandra.api.CassandraSessionFactory;
-import org.opennms.features.distributed.kvstore.api.AbstractSerializedKeyValueStore;
+import org.opennms.features.distributed.kvstore.api.AbstractKeyValueStore;
 import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 
 import com.datastax.driver.core.PreparedStatement;
@@ -61,14 +61,12 @@ import com.google.common.util.concurrent.MoreExecutors;
  * This implementation does not initiate its own {@link com.datastax.driver.core.Session Cassandra session} and must be
  * provided with one via a {@link CassandraSessionFactory session factory}.
  */
-public class CassandraKVStore extends AbstractSerializedKeyValueStore<ByteBuffer, Serializable> {
+public class CassandraKVStore extends AbstractKeyValueStore {
     private static final String KEY_COLUMN = "key";
     private static final String CONTEXT_COLUMN = "context";
     private static final String VALUE_COLUMN = "value";
     private static final String TIMESTAMP_COLUMN = "lastUpdated";
     private static final String TABLE_NAME = "kvstore";
-    
-    private static final long ASYNC_TIMEOUT_SECONDS = 10;
 
     private final CassandraSession session;
     private final PreparedStatement insertStmt;
@@ -78,7 +76,6 @@ public class CassandraKVStore extends AbstractSerializedKeyValueStore<ByteBuffer
 
     public CassandraKVStore(CassandraSessionFactory sessionFactory,
                             CassandraSchemaManagerFactory cassandraSchemaManagerFactory) throws IOException {
-        super(CassandraJavaSerializationStrategy.INSTANCE, System::currentTimeMillis);
         Objects.requireNonNull(sessionFactory);
         Objects.requireNonNull(cassandraSchemaManagerFactory);
 
@@ -96,16 +93,17 @@ public class CassandraKVStore extends AbstractSerializedKeyValueStore<ByteBuffer
     }
 
     @Override
-    protected void putSerializedValueWithTimestamp(String key, ByteBuffer serializedValue, long timestamp,
-                                                   String context, Integer ttlInSeconds) {
-        Statement statement = getStatementForInsert(key, context, serializedValue, timestamp, ttlInSeconds);
+    public long put(String key, byte[] value, String context, Integer ttlInSeconds) {
+        long timestamp = System.currentTimeMillis();
+        Statement statement = getStatementForInsert(key, context, ByteBuffer.wrap(value), timestamp, ttlInSeconds);
         // Cassandra will throw a runtime exception here if the execution fails
         session.execute(statement);
+        return timestamp;
     }
 
     @Override
-    protected Optional<ByteBuffer> getSerializedValue(String key, String context) {
-        ByteBuffer serializedValue;
+    public Optional<byte[]> get(String key, String context) {
+        byte[] serializedValue;
 
         // Cassandra will throw a runtime exception here if the execution fails
         ResultSet resultSet = session.execute(selectStmt.bind(key, context));
@@ -116,9 +114,63 @@ public class CassandraKVStore extends AbstractSerializedKeyValueStore<ByteBuffer
             return Optional.empty();
         }
 
-        serializedValue = ByteBuffer.wrap(row.getBytes(VALUE_COLUMN).array());
+        serializedValue = row.getBytes(VALUE_COLUMN).array();
 
         return Optional.of(serializedValue);
+    }
+
+    @Override
+    public CompletableFuture<Long> putAsync(String key, byte[] value, String context, Integer ttlInSeconds) {
+        CompletableFuture<Long> putFuture = new CompletableFuture<>();
+        long timestamp = System.currentTimeMillis();
+
+        try {
+            Statement statement = getStatementForInsert(key, context, ByteBuffer.wrap(value), timestamp, ttlInSeconds);
+            // Cassandra will throw a runtime exception here if the execution fails
+            session.executeAsync(statement)
+                    .addListener(() -> putFuture.complete(timestamp), MoreExecutors.directExecutor());
+        } catch (Exception e) {
+            putFuture.completeExceptionally(e);
+        }
+
+        return putFuture;
+    }
+
+    @Override
+    public CompletableFuture<Optional<byte[]>> getAsync(String key, String context) {
+        CompletableFuture<Optional<byte[]>> getFuture = new CompletableFuture<>();
+
+        try {
+            // Cassandra will throw a runtime exception here if the execution fails
+            ResultSetFuture resultSetFuture = session.executeAsync(selectStmt.bind(key, context));
+            resultSetFuture.addListener(() -> processGetFutureResult(getFuture, resultSetFuture.getUninterruptibly()),
+                    MoreExecutors.directExecutor());
+        } catch (Exception e) {
+            getFuture.completeExceptionally(e);
+        }
+
+        return getFuture;
+    }
+
+    @Override
+    public Optional<Optional<byte[]>> getIfStale(String key, String context, long timestamp) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
+        OptionalLong lastUpdated = getLastUpdated(key, context);
+
+        // key was not found
+        if (!lastUpdated.isPresent()) {
+            return Optional.empty();
+        }
+
+        // key was found but not stale
+        if (timestamp >= lastUpdated.getAsLong()) {
+            return Optional.of(Optional.empty());
+        }
+
+        // key was found and stale
+        return Optional.of(get(key, context));
     }
 
     @Override
@@ -141,54 +193,38 @@ public class CassandraKVStore extends AbstractSerializedKeyValueStore<ByteBuffer
     }
 
     @Override
-    protected CompletableFuture<Void> putSerializedValueWithTimestampAsync(String key, ByteBuffer serializedValue,
-                                                                           long timestamp, String context,
-                                                                           Integer ttlInSeconds) {
-        CompletableFuture<Void> putFuture = new CompletableFuture<>();
+    public CompletableFuture<Optional<Optional<byte[]>>> getIfStaleAsync(String key, String context, long timestamp) {
+        CompletableFuture<Optional<Optional<byte[]>>> getIfStaleFuture = new CompletableFuture<>();
 
-        try {
-            Statement statement = getStatementForInsert(key, context, serializedValue, timestamp, ttlInSeconds);
-            // Cassandra will throw a runtime exception here if the execution fails
-            session.executeAsync(statement)
-                    .addListener(() -> putFuture.complete(null), MoreExecutors.directExecutor());
-        } catch (Exception e) {
-            putFuture.completeExceptionally(e);
-        }
-
-        return putFuture;
-    }
-
-    private Statement getStatementForInsert(String key, String context, ByteBuffer serializedValue, long timestamp,
-                                            Integer ttlInSeconds) {
-        Statement statement;
-
-        if (ttlInSeconds != null) {
-            if (ttlInSeconds <= 0) {
-                throw new IllegalArgumentException("TTL must be positive and greater than 0");
+        getLastUpdatedAsync(key, context).whenComplete((lastUpdated, t) -> {
+            if (t != null) {
+                getIfStaleFuture.completeExceptionally(t);
+                return;
             }
 
-            statement = insertWithTtlStmt.bind(key, context, serializedValue, new Date(timestamp), ttlInSeconds);
-        } else {
-            statement = insertStmt.bind(key, context, serializedValue, new Date(timestamp));
-        }
+            if (!lastUpdated.isPresent()) {
+                getIfStaleFuture.complete(Optional.empty());
+                return;
+            }
 
-        return statement;
-    }
+            // key was found but not stale
+            if (timestamp >= lastUpdated.getAsLong()) {
+                getIfStaleFuture.complete(Optional.of(Optional.empty()));
+                return;
+            }
 
-    @Override
-    protected CompletableFuture<Optional<ByteBuffer>> getSerializedValueAsync(String key, String context) {
-        CompletableFuture<Optional<ByteBuffer>> getFuture = new CompletableFuture<>();
+            // key was found and stale
+            getAsync(key, context).whenComplete((val, th) -> {
+                if (th != null) {
+                    getIfStaleFuture.completeExceptionally(th);
+                    return;
+                }
 
-        try {
-            // Cassandra will throw a runtime exception here if the execution fails
-            ResultSetFuture resultSetFuture = session.executeAsync(selectStmt.bind(key, context));
-            resultSetFuture.addListener(() -> processGetFutureResult(getFuture, resultSetFuture.getUninterruptibly()),
-                    MoreExecutors.directExecutor());
-        } catch (Exception e) {
-            getFuture.completeExceptionally(e);
-        }
+                getIfStaleFuture.complete(Optional.of(val));
+            });
+        });
 
-        return getFuture;
+        return getIfStaleFuture;
     }
 
     @Override
@@ -211,8 +247,25 @@ public class CassandraKVStore extends AbstractSerializedKeyValueStore<ByteBuffer
         return tsFuture;
     }
 
-    private void processGetFutureResult(CompletableFuture<Optional<ByteBuffer>> future,
-                                        ResultSet resultSet) {
+    private Statement getStatementForInsert(String key, String context, ByteBuffer serializedValue, long timestamp,
+                                            Integer ttlInSeconds) {
+        Statement statement;
+
+        if (ttlInSeconds != null) {
+            if (ttlInSeconds <= 0) {
+                throw new IllegalArgumentException("TTL must be positive and greater than 0");
+            }
+
+            statement = insertWithTtlStmt.bind(key, context, serializedValue, new Date(timestamp), ttlInSeconds);
+        } else {
+            statement = insertStmt.bind(key, context, serializedValue, new Date(timestamp));
+        }
+
+        return statement;
+    }
+
+    private static void processGetFutureResult(CompletableFuture<Optional<byte[]>> future,
+                                               ResultSet resultSet) {
         Row row = resultSet.one();
 
         // Could not find the key
@@ -221,10 +274,10 @@ public class CassandraKVStore extends AbstractSerializedKeyValueStore<ByteBuffer
             return;
         }
 
-        future.complete(Optional.of(ByteBuffer.wrap(row.getBytes(VALUE_COLUMN).array())));
+        future.complete(Optional.of(row.getBytes(VALUE_COLUMN).array()));
     }
 
-    private void processLastUpdatedFutureResult(CompletableFuture<OptionalLong> future, ResultSet resultSet) {
+    private static void processLastUpdatedFutureResult(CompletableFuture<OptionalLong> future, ResultSet resultSet) {
         Row row = resultSet.one();
 
         // Could not find the key

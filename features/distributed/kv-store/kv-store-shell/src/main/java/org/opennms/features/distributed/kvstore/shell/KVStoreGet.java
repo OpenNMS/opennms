@@ -55,10 +55,10 @@ public class KVStoreGet implements Action {
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
 
-        Optional value = kvStore.get(key, context);
+        Optional<byte[]> value = kvStore.get(key, context);
 
         if (value.isPresent()) {
-            System.out.println(value.get());
+            System.out.println(new String(value.get()));
         } else {
             System.out.println(String.format("Value for key '%s' could not be found", key));
         }

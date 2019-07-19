@@ -26,16 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.kvstore.api;
+package org.opennms.features.distributed.kvstore.inmemory;
 
-/**
- * A strategy for serializing/deserializing objects of a given type.
- *
- * @param <T> the serialized type
- * @param <S> the type before serialization
- */
-public interface SerializationStrategy<T, S> {
-    T serialize(S rawValue);
-
-    S deserialize(T serializedValue);
+@FunctionalInterface
+public interface TimestampGenerator {
+    long now();
 }

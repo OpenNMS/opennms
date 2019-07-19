@@ -43,7 +43,7 @@ import java.util.concurrent.Executors;
  * <p>
  * A separate thread will be used by this implementation by each blocked async call while waiting for the response.
  */
-public abstract class AbstractAsyncKeyValueStore<T> extends AbstractKeyValueStore<T> {
+public abstract class AbstractAsyncKeyValueStore extends AbstractKeyValueStore {
     private final Executor executor;
 
     protected AbstractAsyncKeyValueStore(Executor executor) {
@@ -56,17 +56,36 @@ public abstract class AbstractAsyncKeyValueStore<T> extends AbstractKeyValueStor
     }
 
     @Override
-    public final CompletableFuture<Long> putAsync(String key, T value, String context, Integer ttlInSeconds) {
+    public final CompletableFuture<Long> putAsync(String key, byte[] value, String context, Integer ttlInSeconds) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+        Objects.requireNonNull(context);
+
         return CompletableFuture.supplyAsync(() -> put(key, value, context, ttlInSeconds), executor);
     }
 
     @Override
-    public final CompletableFuture<Optional<T>> getAsync(String key, String context) {
+    public final CompletableFuture<Optional<byte[]>> getAsync(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
         return CompletableFuture.supplyAsync(() -> get(key, context), executor);
     }
 
     @Override
+    public final CompletableFuture<Optional<Optional<byte[]>>> getIfStaleAsync(String key, String context,
+                                                                               long timestamp) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
+        return CompletableFuture.supplyAsync(() -> getIfStale(key, context, timestamp));
+    }
+
+    @Override
     public final CompletableFuture<OptionalLong> getLastUpdatedAsync(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
         return CompletableFuture.supplyAsync(() -> getLastUpdated(key, context), executor);
     }
 }

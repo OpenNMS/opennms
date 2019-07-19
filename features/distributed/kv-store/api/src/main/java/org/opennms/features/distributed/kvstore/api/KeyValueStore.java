@@ -40,28 +40,35 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * Asynchronous calls to this API that fail exceptionally will return their future completed exceptionally with the
  * original exception.
- *
- * @param <T> the type that will be persisted by this store
  */
-public interface KeyValueStore<T> {
+public interface KeyValueStore {
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
      * @return the timestamp the value was persisted with
      */
-    long put(String key, T value, String context);
+    long put(String key, byte[] value, String context);
 
     /**
      * @param context      a context used to differentiate between keys with the same name (forms a compound key)
      * @param ttlInSeconds the time to live in seconds for this key or no ttl if null
      * @return the timestamp the value was persisted with
      */
-    long put(String key, T value, String context, Integer ttlInSeconds);
+    long put(String key, byte[] value, String context, Integer ttlInSeconds);
 
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
      * @return an optional containing the value if present or empty if the key did not exist
      */
-    Optional<T> get(String key, String context);
+    Optional<byte[]> get(String key, String context);
+
+    /**
+     * @param context   a context used to differentiate between keys with the same name (forms a compound key)
+     * @param timestamp the timestamp of the last known state such that if an record with a more recent timestamp is
+     *                  found the provided timestamp will be considered stale and the new record will be returned
+     * @return an optional that will be empty if the key was not found or will contain another optional that will be
+     * empty if not stale or contain the value if stale
+     */
+    Optional<Optional<byte[]>> getIfStale(String key, String context, long timestamp);
 
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
@@ -74,20 +81,29 @@ public interface KeyValueStore<T> {
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
      * @return a future containing the timestamp the value was persisted with
      */
-    CompletableFuture<Long> putAsync(String key, T value, String context);
+    CompletableFuture<Long> putAsync(String key, byte[] value, String context);
 
     /**
      * @param context      a context used to differentiate between keys with the same name (forms a compound key)
      * @param ttlInSeconds the time to live in seconds for this key or no ttl if null
      * @return a future containing the timestamp the value was persisted with
      */
-    CompletableFuture<Long> putAsync(String key, T value, String context, Integer ttlInSeconds);
+    CompletableFuture<Long> putAsync(String key, byte[] value, String context, Integer ttlInSeconds);
 
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
      * @return a future containing an optional of the value if present or empty if the key did not exist
      */
-    CompletableFuture<Optional<T>> getAsync(String key, String context);
+    CompletableFuture<Optional<byte[]>> getAsync(String key, String context);
+
+    /**
+     * @param context   a context used to differentiate between keys with the same name (forms a compound key)
+     * @param timestamp the timestamp of the last known state such that if an record with a more recent timestamp is
+     *                  found the provided timestamp will be considered stale and the new record will be returned
+     * @return a future containing an optional that will be empty if the key was not found or will contain another
+     * optional that will be empty if not stale or contain the value if stale
+     */
+    CompletableFuture<Optional<Optional<byte[]>>> getIfStaleAsync(String key, String context, long timestamp);
 
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)

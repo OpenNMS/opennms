@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 
 public class InMemoryMapKeyValueStoreTest {
-    private final KeyValueStore<String> kvStore = new ExceptionThrowingKVStore();
+    private final KeyValueStore kvStore = new ExceptionThrowingKVStore();
 
     @Test(expected = NullPointerException.class)
     public void shouldNPEWithInvalidParamsPut() {
@@ -50,7 +50,7 @@ public class InMemoryMapKeyValueStoreTest {
     public void shouldCompleteExceptionallyWhenError() {
         AtomicBoolean caughtException = new AtomicBoolean(false);
 
-        kvStore.putAsync("test", "test", "test").exceptionally(t -> {
+        kvStore.putAsync("test", new byte[0], "test").exceptionally(t -> {
             if (t.getCause() instanceof TestException) {
                 caughtException.set(true);
             }
@@ -80,18 +80,18 @@ public class InMemoryMapKeyValueStoreTest {
         await().atMost(1, TimeUnit.SECONDS).until(caughtException::get);
     }
 
-    private class ExceptionThrowingKVStore extends InMemoryMapKeyValueStore<String> {
+    private class ExceptionThrowingKVStore extends InMemoryMapKeyValueStore {
         public ExceptionThrowingKVStore() {
             super(System::currentTimeMillis);
         }
 
         @Override
-        public long put(String key, String value, String context, Integer ttlInSeconds) {
+        public long put(String key, byte[] value, String context, Integer ttlInSeconds) {
             throw new TestException();
         }
 
         @Override
-        public Optional<String> get(String key, String context) {
+        public Optional<byte[]> get(String key, String context) {
             throw new TestException();
         }
 

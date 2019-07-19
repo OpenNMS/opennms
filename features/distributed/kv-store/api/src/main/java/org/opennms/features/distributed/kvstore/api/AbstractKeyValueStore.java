@@ -29,18 +29,14 @@
 package org.opennms.features.distributed.kvstore.api;
 
 import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * Skeleton implementation of {@link KeyValueStore} that defaults calls without ttl specified.
- *
- * @param <T> the type that will be persisted by this store
  */
-public abstract class AbstractKeyValueStore<T> implements KeyValueStore<T> {
+public abstract class AbstractKeyValueStore implements KeyValueStore {
     @Override
-    public final long put(String key, T value, String context) {
+    public final long put(String key, byte[] value, String context) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         Objects.requireNonNull(context);
@@ -49,29 +45,11 @@ public abstract class AbstractKeyValueStore<T> implements KeyValueStore<T> {
     }
 
     @Override
-    public abstract long put(String key, T value, String context, Integer ttlInSeconds);
-
-    @Override
-    public abstract Optional<T> get(String key, String context);
-
-    @Override
-    public abstract OptionalLong getLastUpdated(String key, String context);
-
-    @Override
-    public final CompletableFuture<Long> putAsync(String key, T value, String context) {
+    public final CompletableFuture<Long> putAsync(String key, byte[] value, String context) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         Objects.requireNonNull(context);
 
         return putAsync(key, value, context, null);
     }
-
-    @Override
-    public abstract CompletableFuture<Long> putAsync(String key, T value, String context, Integer ttlInSeconds);
-
-    @Override
-    public abstract CompletableFuture<Optional<T>> getAsync(String key, String context);
-
-    @Override
-    public abstract CompletableFuture<OptionalLong> getLastUpdatedAsync(String key, String context);
 }

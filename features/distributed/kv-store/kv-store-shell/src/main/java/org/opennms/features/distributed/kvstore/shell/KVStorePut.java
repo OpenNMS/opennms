@@ -58,8 +58,7 @@ public class KVStorePut implements Action {
         Objects.requireNonNull(context);
         Objects.requireNonNull(value);
 
-        // Note: This will fail if the key value store referenced is not capable of storing strings
-        kvStore.put(key, value, context);
+        kvStore.put(key, value.getBytes(), context);
 
         return null;
     }

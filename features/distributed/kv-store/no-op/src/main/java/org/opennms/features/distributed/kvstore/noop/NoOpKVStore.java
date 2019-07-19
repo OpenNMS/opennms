@@ -28,7 +28,6 @@
 
 package org.opennms.features.distributed.kvstore.noop;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.OptionalLong;
 
@@ -40,20 +39,25 @@ import org.opennms.features.distributed.kvstore.api.KeyValueStore;
  * will always return an empty {@link Optional optional}. This implies any clients using this will also be holding onto
  * their own local copies of the key-values since persisting to this won't store them.
  */
-public class NoOpKVStore extends AbstractAsyncKeyValueStore<Serializable> {
+public class NoOpKVStore extends AbstractAsyncKeyValueStore {
     private static final NoOpKVStore INSTANCE = new NoOpKVStore();
 
-    public static KeyValueStore<Serializable> getInstance() {
+    public static KeyValueStore getInstance() {
         return INSTANCE;
     }
 
     @Override
-    public long put(String key, Serializable value, String context, Integer ttlInSeconds) {
+    public long put(String key, byte[] value, String context, Integer ttlInSeconds) {
         return 0;
     }
 
     @Override
-    public Optional<Serializable> get(String key, String context) {
+    public Optional<byte[]> get(String key, String context) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Optional<byte[]>> getIfStale(String key, String context, long timestamp) {
         return Optional.empty();
     }
 

@@ -37,13 +37,12 @@ import java.util.OptionalLong;
 
 import org.opennms.features.distributed.kvstore.api.AbstractAsyncKeyValueStore;
 import org.opennms.features.distributed.kvstore.api.KeyValueStore;
-import org.opennms.features.distributed.kvstore.api.TimestampGenerator;
 
 /**
  * This is a test implementation of {@link KeyValueStore} that stores values directly in memory via a map.
  */
-public class InMemoryMapKeyValueStore<T> extends AbstractAsyncKeyValueStore<T> {
-    private final Map<Map.Entry<String, String>, Map.Entry<T, Long>> inMemoryStore = new HashMap<>();
+public class InMemoryMapKeyValueStore extends AbstractAsyncKeyValueStore {
+    private final Map<Map.Entry<String, String>, Map.Entry<byte[], Long>> inMemoryStore = new HashMap<>();
     private final TimestampGenerator timestampGenerator;
 
     public InMemoryMapKeyValueStore(TimestampGenerator timestampGenerator) {
@@ -51,7 +50,7 @@ public class InMemoryMapKeyValueStore<T> extends AbstractAsyncKeyValueStore<T> {
     }
 
     @Override
-    public long put(String key, T value, String context, Integer ttlInSeconds) {
+    public long put(String key, byte[] value, String context, Integer ttlInSeconds) {
         long timestamp = timestampGenerator.now();
 
         inMemoryStore.put(new AbstractMap.SimpleImmutableEntry<>(key, context),
@@ -61,8 +60,8 @@ public class InMemoryMapKeyValueStore<T> extends AbstractAsyncKeyValueStore<T> {
     }
 
     @Override
-    public Optional<T> get(String key, String context) {
-        Map.Entry<T, Long> valueEntry = inMemoryStore.get(new AbstractMap.SimpleImmutableEntry<>(key, context));
+    public Optional<byte[]> get(String key, String context) {
+        Map.Entry<byte[], Long> valueEntry = inMemoryStore.get(new AbstractMap.SimpleImmutableEntry<>(key, context));
 
         if (valueEntry == null) {
             return Optional.empty();
@@ -72,8 +71,23 @@ public class InMemoryMapKeyValueStore<T> extends AbstractAsyncKeyValueStore<T> {
     }
 
     @Override
+    public Optional<Optional<byte[]>> getIfStale(String key, String context, long timestamp) {
+        OptionalLong lastUpdated = getLastUpdated(key, context);
+
+        if (!lastUpdated.isPresent()) {
+            return Optional.empty();
+        }
+
+        if (timestamp >= lastUpdated.getAsLong()) {
+            return Optional.of(Optional.empty());
+        }
+
+        return Optional.of(get(key, context));
+    }
+
+    @Override
     public OptionalLong getLastUpdated(String key, String context) {
-        Map.Entry<T, Long> valueEntry = inMemoryStore.get(new AbstractMap.SimpleImmutableEntry<>(key, context));
+        Map.Entry<byte[], Long> valueEntry = inMemoryStore.get(new AbstractMap.SimpleImmutableEntry<>(key, context));
 
         if (valueEntry == null) {
             return OptionalLong.empty();

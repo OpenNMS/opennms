@@ -31,7 +31,6 @@ package org.opennms.features.distributed.kvstore.noop;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -40,10 +39,10 @@ import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 public class NoOpKVStoreTest {
     @Test
     public void doesNotPersist() {
-        KeyValueStore<Serializable> kvStore = NoOpKVStore.getInstance();
+        KeyValueStore kvStore = NoOpKVStore.getInstance();
         String keyContext = "test";
-        kvStore.put(keyContext, new Serializable() {}, keyContext);
-        Optional<Serializable> result = kvStore.get(keyContext, keyContext);
+        kvStore.put(keyContext, new byte[0], keyContext);
+        Optional<byte[]> result = kvStore.get(keyContext, keyContext);
         
         assertThat(result.isPresent(), is(false));
     }
