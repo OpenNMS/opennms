@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -52,10 +53,13 @@ import org.opennms.netmgt.endpoints.grafana.api.Panel;
 
 import com.google.gson.Gson;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class GrafanaClientImpl implements GrafanaClient {
     private final GrafanaServerConfiguration config;
@@ -117,17 +121,19 @@ public class GrafanaClientImpl implements GrafanaClient {
             }
             final String json = response.body().string();
             final DashboardWithMeta dashboardWithMeta = gson.fromJson(json, DashboardWithMeta.class);
+            // Copy the meta-data over to the dashboard for ease of use
+            dashboardWithMeta.getDashboard().setMeta(dashboardWithMeta.getMeta());
             return dashboardWithMeta.getDashboard();
         }
     }
 
     @Override
-    public byte[] renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, Map<String, String> variables) throws IOException {
+    public CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, Map<String, String> variables) {
         final HttpUrl.Builder builder = baseUrl.newBuilder()
                 .addPathSegment("render")
                 .addPathSegment("d-solo")
                 .addPathSegment(dashboard.getUid())
-                .addPathSegments("flow"); //FIXME: What should this be?
+                .addPathSegments(dashboard.getMeta().getSlug());
 
         // Query parameters
         builder.addQueryParameter("panelId", Integer.toString(panel.getId()))
@@ -143,12 +149,29 @@ public class GrafanaClientImpl implements GrafanaClient {
                 .addHeader("Authorization", "Bearer " + config.getApiKey())
                 .build();
 
-        //System.out.println("MOO: " + request);
-        try (Response response = client.newCall(request).execute()) {
-            try (InputStream is = response.body().byteStream()) {
-                return inputStreamToByteArray(is);
+        final CompletableFuture<byte[]> future = new CompletableFuture<>();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                future.completeExceptionally(e);
             }
-        }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful()) {
+                        future.completeExceptionally(new IOException("Request failed: " + response));
+                    }
+
+                    try (InputStream is = responseBody.byteStream()) {
+                        future.complete(inputStreamToByteArray(is));
+                    } catch (IOException e) {
+                        future.completeExceptionally(e);
+                    }
+                }
+            }
+        });
+        return future;
     }
 
     private static byte[] inputStreamToByteArray(InputStream is) throws IOException {

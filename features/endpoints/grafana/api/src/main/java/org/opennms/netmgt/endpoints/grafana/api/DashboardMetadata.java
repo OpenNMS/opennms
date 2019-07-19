@@ -28,16 +28,44 @@
 
 package org.opennms.netmgt.endpoints.grafana.api;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import com.google.common.base.MoreObjects;
 
-public interface GrafanaClient {
+public class DashboardMetadata {
 
-    List<Dashboard> getDashboards() throws IOException;
+    private Boolean isStarred;
+    private String slug;
+    private Integer version;
 
-    Dashboard getDashboardByUid(String uid) throws IOException;
+    public Boolean isStarred() {
+        return isStarred;
+    }
 
-    CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, Map<String, String> variables);
+    public void setStarred(Boolean starred) {
+        isStarred = starred;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("isStarred", isStarred)
+                .add("slug", slug)
+                .add("version", version)
+                .toString();
+    }
 }

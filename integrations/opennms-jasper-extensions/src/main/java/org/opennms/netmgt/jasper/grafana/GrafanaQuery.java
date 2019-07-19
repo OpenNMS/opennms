@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.jasper.grafana;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,8 +64,12 @@ public class GrafanaQuery {
         theme = render.getAsJsonPrimitive("theme").getAsString();
 
         JsonObject vars = jo.getAsJsonObject("variables");
-        variables = vars.entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey(), e -> vars.getAsJsonPrimitive(e.getKey()).getAsString()));
+        if (vars != null) {
+            variables = vars.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> vars.getAsJsonPrimitive(e.getKey()).getAsString()));
+        } else {
+            variables = Collections.emptyMap();
+        }
     }
 
     public int getWidth() {

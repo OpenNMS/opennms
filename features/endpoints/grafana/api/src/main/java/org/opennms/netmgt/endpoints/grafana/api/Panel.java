@@ -30,6 +30,9 @@ package org.opennms.netmgt.endpoints.grafana.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
 
 public class Panel implements PanelContainer {
 
@@ -90,15 +93,33 @@ public class Panel implements PanelContainer {
     }
 
     @Override
-    public String toString() {
-        return "Panel{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", type='" + type + '\'' +
-                ", datasource='" + datasource + '\'' +
-                ", description='" + description + '\'' +
-                ", panels=" + panels +
-                '}';
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Panel)) return false;
+        if (!super.equals(object)) return false;
+        Panel panel = (Panel) object;
+        return Objects.equals(id, panel.id) &&
+                Objects.equals(title, panel.title) &&
+                Objects.equals(type, panel.type) &&
+                Objects.equals(datasource, panel.datasource) &&
+                Objects.equals(description, panel.description) &&
+                Objects.equals(panels, panel.panels);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, type, datasource, description, panels);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("title", title)
+                .add("type", type)
+                .add("datasource", datasource)
+                .add("description", description)
+                .add("panels", panels)
+                .toString();
+    }
 }
