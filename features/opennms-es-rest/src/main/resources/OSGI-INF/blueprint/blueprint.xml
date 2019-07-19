@@ -138,6 +138,7 @@
     <argument value="/eventsIndexTemplate" />
     <argument value="eventsindextemplate" />
     <argument ref="indexSettings" />
+    <property name="eventIndexName" value="${eventIndexName}" />
   </bean>
 
   <bean id="onmsHistoryEventstoEs" class="org.opennms.plugins.elasticsearch.rest.archive.OnmsHistoricEventsToEs">

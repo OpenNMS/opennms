@@ -85,6 +85,7 @@
 		<argument ref="blueprintBundleContext" />
 		<argument ref="jestClient" />
 		<argument ref="indexSettings" />
+		<property name="indexPrefix" value="${indexPrefix}" /> 
 	</bean>
 	
     <bean id="elasticFeedbackRepository" class="org.opennms.features.situationfeedback.elastic.ElasticFeedbackRepository">

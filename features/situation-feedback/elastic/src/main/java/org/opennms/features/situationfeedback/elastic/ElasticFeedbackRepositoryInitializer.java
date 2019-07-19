@@ -40,17 +40,22 @@ public class ElasticFeedbackRepositoryInitializer extends DefaultTemplateInitial
     public static final String TEMPLATE_RESOURCE = "/feedback-template";
 
     private static final String FEEDBACK_TEMPLATE_NAME = "feedback";
+    
+    private static String indexPrefix = "";
 
     public ElasticFeedbackRepositoryInitializer(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
         super(bundleContext, client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, indexSettings);
-    }
+        super.setEventIndexName(indexPrefix);
+    }  
 
     protected ElasticFeedbackRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
         super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings));
-    }
+        super.setEventIndexName(indexPrefix);
+    }  
 
     protected ElasticFeedbackRepositoryInitializer(JestClient client) {
         super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new DefaultTemplateLoader());
+        super.setEventIndexName(indexPrefix);
     }
 
 }

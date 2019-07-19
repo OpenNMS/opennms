@@ -152,6 +152,7 @@
         <argument ref="elasticFlowRepository" />
         <argument ref="jestClient" />
         <argument ref="indexSettings" />
+        <property name="indexPrefix" value="${indexPrefix}" />
     </bean>
     <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository" />
 

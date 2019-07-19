@@ -41,16 +41,21 @@ public class ElasticFlowRepositoryInitializer extends DefaultTemplateInitializer
     public static final String TEMPLATE_RESOURCE = "/netflow-template";
 
     private static final String FLOW_TEMPLATE_NAME = "netflow";
+    
+    private static String indexPrefix = "";
 
     public ElasticFlowRepositoryInitializer(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
         super(bundleContext, client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, indexSettings);
+        super.setEventIndexName(indexPrefix);
     }
 
     protected ElasticFlowRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings));
+        super.setEventIndexName(indexPrefix);
     }
 
     protected ElasticFlowRepositoryInitializer(JestClient client) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader());
+        super.setEventIndexName(indexPrefix);
     }
 }

@@ -56,7 +56,7 @@ public class DefaultTemplateLoader implements TemplateLoader {
             final String resourceWithSuffix = String.format("%s%s.json", resource, versionSuffix);
             LOG.debug("Attempting to find template with resource name: {} (requested: {})",
                       resourceWithSuffix, resource);
-            final String template = getTemplate(resourceWithSuffix);
+            final String template = getResource(resourceWithSuffix);
             if (template != null) {
                 LOG.info("Using template with resource name: {} (requested: {})", resourceWithSuffix, resource);
                 return template;
@@ -67,14 +67,6 @@ public class DefaultTemplateLoader implements TemplateLoader {
                 serverVersion, resource));
     }
     
-    protected String getTemplate(String resource) throws IOException {
-        Optional<Path> configPath = ConfigFileConstants.getConfigFilePathByName(resource);
-        if (configPath.isPresent()) {
-            return new String(Files.readAllBytes(configPath.get()));
-        }
-        return getResource(resource);
-    }
-
 	protected String getResource(String resource) throws IOException {
 		try (InputStream inputStream = getResourceAsStream(resource)) {
 			if (inputStream == null) {

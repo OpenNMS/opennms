@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +59,8 @@ public class DefaultTemplateInitializer implements TemplateInitializer {
     private final String templateName;
 
     private boolean initialized;
+    
+    private static String eventIndexName = "";
 
     public DefaultTemplateInitializer(final BundleContext bundleContext, final JestClient client, final String templateLocation, final String templateName) {
         this(client, templateLocation, templateName, new CachingTemplateLoader(new OsgiTemplateLoader(bundleContext)));
@@ -71,6 +76,11 @@ public class DefaultTemplateInitializer implements TemplateInitializer {
         this.templateLocation = templateLocation;
         this.templateName = Objects.requireNonNull(templateName);
         this.templateLoader = Objects.requireNonNull(templateLoader);
+    }
+    
+    public void setEventIndexName(String eventIndexName) {
+        Objects.requireNonNull(eventIndexName);
+        this.eventIndexName = eventIndexName;
     }
 
     @Override
@@ -104,15 +114,16 @@ public class DefaultTemplateInitializer implements TemplateInitializer {
             LOG.warn("Sleep was interrupted", e);
         }
     }
-
-    private void doInitialize() throws IOException {
+   
+    private void doInitialize() throws IOException, ParseException {
         // Retrieve the server version
         final Version version = getServerVersion();
         // Load the appropriate template
         final String template = templateLoader.load(version, templateLocation);
 
         // Post it to elastic
-        final PutTemplate putTemplate = new PutTemplate.Builder(templateName, template).build();
+        final PutTemplate putTemplate = new PutTemplate.Builder(templateName,
+                                                                updateTemplate(template)).build();
         final JestResult result = client.execute(putTemplate);
         if (!result.isSucceeded()) {
             // In case the template could not be created, we bail
@@ -138,6 +149,23 @@ public class DefaultTemplateInitializer implements TemplateInitializer {
         }
         final String versionNumber = versionEl.getAsString();
         return Version.fromVersionString(versionNumber);
+    }
+    
+    public String updateTemplate(String template) {
+        JSONParser parser = new JSONParser();
+        try {
+            if (!eventIndexName.isEmpty()) {
+                JSONObject jsonObject = (JSONObject) parser.parse(template);
+                jsonObject.put("template",
+                               String.format("%s-%s", eventIndexName, "*"));
+                return jsonObject.toJSONString();
+            }
+        } catch (org.json.simple.parser.ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return template.toString();
+
     }
 
 }
