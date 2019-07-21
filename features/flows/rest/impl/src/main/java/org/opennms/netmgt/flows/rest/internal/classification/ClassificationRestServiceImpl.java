@@ -133,7 +133,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response saveRule(RuleDTO ruleDTO) {
         final Rule rule = convert(ruleDTO);
         rule.setId(null);
-
+        rule.setPosition(0); // new rules get the lowest position (lowest priority)
         final int ruleId = classificationService.saveRule(rule);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
         final URI uri = builder.path(ClassificationRestService.class, "getRule").build(ruleId);
@@ -181,6 +181,18 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         // Persist
         classificationService.updateRule(rule);
         return Response.ok(convert(rule)).build();
+    }
+
+    @Override
+    public Response patchPositionOfRule(int id, RuleDTO patch) {
+        final Rule rule = classificationService.getRule(id);
+        if(patch.getPosition() == null || patch.getPosition() == rule.getPosition()) {
+            // nothing to do => return
+            return Response.noContent().build();
+        }
+        rule.setPosition(patch.getPosition());
+        classificationService.updateRule(rule);
+        return Response.noContent().build();
     }
 
     @Override
@@ -257,7 +269,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response updateGroup(int id, GroupDTO newValue) {
         final Group group = classificationService.getGroup(id);
 
-        // At the moment only togging the enabled state is supported
+        // At the moment only toggling the enabled state is supported
         group.setEnabled(newValue.isEnabled());
 
         classificationService.updateGroup(group);
