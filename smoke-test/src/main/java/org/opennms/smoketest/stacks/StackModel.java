@@ -192,7 +192,7 @@ public class StackModel {
          * @return this builder
          */
         public Builder withKeyValueStoreStrategy(KeyValueStoreStrategy keyValueStoreStrategy) {
-            keyValueStoreStrategy = keyValueStoreStrategy;
+            this.keyValueStoreStrategy = keyValueStoreStrategy;
             return this;
         }
 

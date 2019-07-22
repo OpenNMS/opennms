@@ -50,7 +50,6 @@ public class CassandraKVStoreIT {
     public void canPersistAndRetrieveKeys() {
         String value = "tubessssssssss";
         KarafShell ks = new KarafShell(stack.sentinel().getSshAddress());
-        ks.runCommand("feature:install sentinel-kvstore-cassandra");
         ks.runCommand("kvstore:put \"key\" \"context\" \"" + value + "\"");
         ks.runCommand("kvstore:get \"key\" \"context\"", s -> s.contains(value));
     }

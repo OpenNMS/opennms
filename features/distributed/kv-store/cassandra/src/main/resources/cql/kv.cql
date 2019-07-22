@@ -7,5 +7,5 @@ CREATE TABLE $KEYSPACE$.kvstore (
   context varchar,
   value blob,
   lastUpdated timestamp,
-  PRIMARY KEY (context, key)
+  PRIMARY KEY ((context, key))
 );
