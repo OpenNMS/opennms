@@ -177,22 +177,11 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setName(newRule.getName());
         rule.setOmnidirectional(newRule.isOmnidirectional());
         rule.setExporterFilter(newValue.getExporterFilter());
+        rule.setPosition(newValue.getPosition());
 
         // Persist
         classificationService.updateRule(rule);
         return Response.ok(convert(rule)).build();
-    }
-
-    @Override
-    public Response patchPositionOfRule(int id, RuleDTO patch) {
-        final Rule rule = classificationService.getRule(id);
-        if(patch.getPosition() == null || patch.getPosition() == rule.getPosition()) {
-            // nothing to do => return
-            return Response.noContent().build();
-        }
-        rule.setPosition(patch.getPosition());
-        classificationService.updateRule(rule);
-        return Response.noContent().build();
     }
 
     @Override

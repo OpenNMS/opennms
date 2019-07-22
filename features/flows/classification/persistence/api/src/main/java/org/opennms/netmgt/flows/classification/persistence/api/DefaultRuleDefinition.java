@@ -40,6 +40,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
     private String protocol;
     private String exporterFilter;
     private int groupPriority;
+    private int position;
 
     @Override
     public String getName() {
@@ -81,6 +82,11 @@ public class DefaultRuleDefinition implements RuleDefinition {
         return groupPriority;
     }
 
+    @Override
+    public int getPosition() {
+        return position;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -113,6 +119,10 @@ public class DefaultRuleDefinition implements RuleDefinition {
         this.groupPriority = groupPriority;
     }
 
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -125,12 +135,13 @@ public class DefaultRuleDefinition implements RuleDefinition {
                 && Objects.equals(srcPort, that.srcPort)
                 && Objects.equals(srcAddress, that.srcAddress)
                 && Objects.equals(protocol, that.protocol)
-                && Objects.equals(exporterFilter, that.exporterFilter);
+                && Objects.equals(exporterFilter, that.exporterFilter)
+                && Objects.equals(position, that.position);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, dstAddress, dstPort, srcPort, srcAddress, protocol, exporterFilter, groupPriority);
+        return Objects.hash(name, dstAddress, dstPort, srcPort, srcAddress, protocol, exporterFilter, groupPriority, position);
     }
 
 }

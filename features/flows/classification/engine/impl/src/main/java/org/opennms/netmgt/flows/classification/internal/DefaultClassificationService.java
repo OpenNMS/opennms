@@ -52,7 +52,6 @@ import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRul
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
@@ -115,7 +114,7 @@ public class DefaultClassificationService implements ClassificationService {
             // persist
             group.addRule(rule);
             final Integer ruleId = classificationRuleDao.save(rule);
-            updateRulePositionsAndReloadEngine(RulePrioritizationUtil.sortRulePositions(group));
+            updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(group.getRules()));
 
             return ruleId;
         });
@@ -157,7 +156,7 @@ public class DefaultClassificationService implements ClassificationService {
             }
 
             // Reload engine
-            updateRulePositionsAndReloadEngine(RulePrioritizationUtil.sortRulePositions(group));
+            updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(group.getRules()));
             classificationGroupDao.saveOrUpdate(group);
             return null;
         });
@@ -193,7 +192,7 @@ public class DefaultClassificationService implements ClassificationService {
                 final Group group = rule.getGroup();
                 group.removeRule(rule);
                 classificationRuleDao.delete(rule);
-                updateRulePositionsAndReloadEngine(RulePrioritizationUtil.sortRulePositions(group));
+                updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(group.getRules()));
                 return null;
             });
         });
@@ -208,7 +207,7 @@ public class DefaultClassificationService implements ClassificationService {
             ruleValidator.validate(rule);
             groupValidator.validate(rule.getGroup(), rule);
             classificationRuleDao.saveOrUpdate(rule);
-            updateRulePositionsAndReloadEngine(RulePrioritizationUtil.sortRulePositions(rule));
+            updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(rule));
             return null;
         });
     }
@@ -253,7 +252,7 @@ public class DefaultClassificationService implements ClassificationService {
 
         runInTransaction(status -> {
             classificationGroupDao.saveOrUpdate(group);
-            updateRulePositionsAndReloadEngine(RulePrioritizationUtil.sortRulePositions(group));
+            updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(group.getRules()));
             return null;
         });
     }

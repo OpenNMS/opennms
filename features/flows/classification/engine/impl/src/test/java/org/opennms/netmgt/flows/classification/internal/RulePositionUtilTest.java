@@ -37,8 +37,9 @@ import java.util.List;
 import org.junit.Test;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
-public class RulePrioritizationUtilTest {
+public class RulePositionUtilTest {
 
     private List<Rule> rules = new ArrayList<>();
     private Group group = new Group();
@@ -52,13 +53,14 @@ public class RulePrioritizationUtilTest {
         Rule rule4 = createAndAddRule("rule4", 4);
         Rule ourRule = createAndAddRule("ourRule", 3); // should be moved to position 3
         group.setRules(rules);
-        assertEquals(Arrays.asList(rule1, rule2, rule3, ourRule, rule4), RulePrioritizationUtil.sortRulePositions(ourRule));
+        assertEquals(Arrays.asList(rule1, rule2, ourRule, rule3, rule4), RulePositionUtil.sortRulePositions(ourRule));
     }
 
     private Rule createAndAddRule(String name, int position) {
-        Rule rule = new Rule();
-        rule.setName(name);
-        rule.setPosition(position);
+        Rule rule = new RuleBuilder()
+                .withName(name)
+                .withPosition(position)
+                .build();
         rule.setId(idCounter++);
         rules.add(rule);
         group.addRule(rule);

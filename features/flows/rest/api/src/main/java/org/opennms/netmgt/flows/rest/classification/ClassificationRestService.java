@@ -73,10 +73,6 @@ public interface ClassificationRestService {
     @Path("{id}")
     Response updateRule(@PathParam("id") int id, RuleDTO newValue);
 
-    @PATCH
-    @Path("{id}")
-    Response patchPositionOfRule(int id, RuleDTO patch);
-
     @POST
     @Path("classify")
     Response classify(ClassificationRequestDTO classificationRequestDTO);
