@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.plugins.elasticsearch.rest.template;
+package org.opennms.plugins.elasticsearch.rest;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -34,6 +34,8 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
+import org.opennms.plugins.elasticsearch.rest.template.Version;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
