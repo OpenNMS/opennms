@@ -30,13 +30,6 @@ package org.opennms.netmgt.threshd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -45,6 +38,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.joda.time.Duration;
+import org.nustaq.serialization.FSTConfiguration;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.distributed.kvstore.api.SerializingKeyValueStore;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -76,11 +71,13 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
 
     public static final String FORMATED_NAN = "NaN (the threshold definition has been changed)";
 
+    private static FSTConfiguration fst = FSTConfiguration.createDefaultConfiguration();
+
     private boolean isStateDirty;
 
     private final String key;
 
-    private final SerializingKeyValueStore<Serializable> kvStore;
+    private final SerializingKeyValueStore<T> kvStore;
 
     protected T state;
     
@@ -104,6 +101,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
             })
             .asMap();
 
+    @SuppressWarnings("unchecked")
     public AbstractThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold,
                                            ThresholdingSession thresholdingSession) {
         Objects.requireNonNull(threshold);
@@ -112,14 +110,14 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
 
         this.thresholdingSession = thresholdingSession;
         kvStore = new SerializingKeyValueStore<>(thresholdingSession.getKVStore(),
-                AbstractThresholdEvaluatorState::serialize,
-                AbstractThresholdEvaluatorState::deserialize);
+                fst::asByteArray,
+                bytes -> (T) fst.asObject(bytes));
         key = String.format("%d-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
                 thresholdingSession.getKey().getLocation(), thresholdingSession.getKey().getResource(),
                 threshold.getDatasourceExpression(), threshold.getDsType(), threshold.getType());
 
-        String ttlProp = System.getProperty("org.opennms.netmgt.threshd.state_ttl");
-        stateTTL = ttlProp != null ? Integer.parseInt(ttlProp) : (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS);
+        stateTTL = SystemProperties.getInteger("org.opennms.netmgt.threshd.state_ttl",
+                (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS));
         initializeState();
     }
 
@@ -295,33 +293,5 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
     @Override
     public ThresholdingSession getThresholdingSession() {
         return thresholdingSession;
-    }
-
-    private static byte[] serialize(Serializable value) {
-        byte[] serializedValue;
-
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            ObjectOutput out = new ObjectOutputStream(bos);
-            out.writeObject(value);
-            out.flush();
-            serializedValue = bos.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return serializedValue;
-    }
-
-    private static Serializable deserialize(byte[] value) {
-        Serializable deserialized;
-
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(value)) {
-            ObjectInput in = new ObjectInputStream(bis);
-            deserialized = (Serializable) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        return deserialized;
     }
 }

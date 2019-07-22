@@ -85,6 +85,11 @@
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
+    <dependency>
+      <groupId>de.ruedigermoeller</groupId>
+      <artifactId>fst</artifactId>
+      <version>2.47</version>
+    </dependency>
     
     <dependency>
       <groupId>junit</groupId>
