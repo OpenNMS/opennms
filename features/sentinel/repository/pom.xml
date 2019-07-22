@@ -74,6 +74,7 @@
                                 <feature>sentinel-blobstore-noop</feature>
                                 <feature>sentinel-blobstore-cassandra</feature>
                                 <feature>sentinel-jsonstore-postgres</feature>
+                                <feature>sentinel-thresholding-service</feature>
 
 
                                 <!-- Other features -->
@@ -489,6 +490,11 @@
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.kv-store.json.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.collection</groupId>
+            <artifactId>org.opennms.features.collection.thresholding.impl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

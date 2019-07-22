@@ -64,6 +64,7 @@ import org.opennms.core.test.LoggingEvent;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.GenericIndexResource;
@@ -98,6 +99,7 @@ import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
@@ -139,9 +141,13 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
-        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
 })
 @JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class ThresholdingVisitorIT {
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitorIT.class);
 
@@ -163,6 +169,9 @@ public class ThresholdingVisitorIT {
 
     @Autowired
     private OverrideablePollOutagesDao m_pollOutagesDao;
+    
+    @Autowired
+    private IfLabel m_ifLabelDao;
 
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
@@ -1675,11 +1684,10 @@ public class ThresholdingVisitorIT {
     }
 
     private ThresholdingVisitor createVisitor(int node, String location, String serviceName, ServiceParameters svcParams) throws ThresholdInitializationException {
-        ThresholdingEventProxyImpl eventProxy = new ThresholdingEventProxyImpl();
-        eventProxy.setEventMgr(eventMgr);
+        ThresholdingEventProxyImpl eventProxy = new ThresholdingEventProxyImpl(eventMgr);
         ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(),
                 svcParams, m_resourceStorageDao, eventProxy, MockSession.getSession(), m_threshdDao, m_thresholdingDao,
-                m_pollOutagesDao);
+                m_pollOutagesDao, m_ifLabelDao);
         ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, m_resourceStorageDao, eventProxy);
         assertNotNull(visitor);
         return visitor;
