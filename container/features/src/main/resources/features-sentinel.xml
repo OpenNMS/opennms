@@ -213,7 +213,7 @@
     </feature>
     
     <feature name="sentinel-newts-cassandra"
-             description="OpenNMS :: Features :: Distributed :: Newts Cassandra" version="${project.version}">
+             description="OpenNMS :: Features :: Distributed :: Cassandra :: Newts Impl." version="${project.version}">
         <feature>cassandra-driver</feature>
         <feature>sentinel-newts</feature>
         <feature>sentinel-distributed-cassandra-api</feature>
