@@ -49,17 +49,15 @@ import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
  * Besides that what was shown to the user (e.g. label and description) when building the menu was not part of the Model,
  * but enriched later on with OSGi service properties.
  *
- * When working on this Graph POC multiple graphs were also considered and the {@link GraphContainer} was born.
- * Its purpose is similar to the GraphML definition. A {@link GraphContainer} can hold multiple {@link Graph}s.
- * It can also just return a {@link Graph} for a given namespace.
+ * When working on this Graph POC multiple graphs were also considered and the {@link ImmutableGraphContainer} was born.
+ * Its purpose is similar to the GraphML definition. A {@link ImmutableGraphContainer} can hold multiple {@link ImmutableGraph}s.
+ * It can also just return a {@link ImmutableGraph} for a given namespace.
  *
  * Be aware, that a GraphContainer should always be fully populated (not enriched) when loaded by a provider.
  */
 // TODO MVR rework the javadoc
-public interface GraphContainer<V extends Vertex, E extends Edge, G extends Graph<V, E>> extends GraphContainerInfo {
+public interface ImmutableGraphContainer<G extends ImmutableGraph<? extends Vertex, ? extends Edge>> extends GraphContainerInfo {
     List<G> getGraphs();
     G getGraph(String namespace);
-    void addGraph(G graph);
-    void removeGraph(String namespace);
     GenericGraphContainer asGenericGraphContainer();
 }

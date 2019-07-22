@@ -225,6 +225,7 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
+                - jira/NMS-11985
       - smoke-test-minimal:
           requires:
             - package-build-horizon

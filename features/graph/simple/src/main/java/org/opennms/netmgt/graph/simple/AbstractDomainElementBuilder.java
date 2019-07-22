@@ -26,14 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.updates.listener;
+package org.opennms.netmgt.graph.simple;
 
-import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.Vertex;
-import org.opennms.netmgt.graph.updates.change.ChangeSet;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface GraphChangeSetListener<G extends ImmutableGraph<V, E>, V extends Vertex, E extends Edge> {
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 
-    void graphChanged(ChangeSet<G, V, E> changeSet);
+public abstract class AbstractDomainElementBuilder<T extends AbstractDomainElementBuilder> {
+        protected final Map<String, Object> properties = new HashMap<>();
+        
+        protected AbstractDomainElementBuilder() {}
+        
+        public T id(String id) {
+            properties.put(GenericProperties.ID, id);
+            return (T) this;
+        }
+        
+        public T label(String label){
+            properties.put(GenericProperties.LABEL, label);
+            return (T) this;
+        }
+        
+        public T namespace(String namespace){
+            properties.put(GenericProperties.NAMESPACE, namespace);
+            return (T) this;
+        }
+        
+        public T property(String name, String value){
+            properties.put(name, value);
+            return (T) this;
+        }
 }

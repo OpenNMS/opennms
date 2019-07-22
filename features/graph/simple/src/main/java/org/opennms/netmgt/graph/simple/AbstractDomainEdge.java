@@ -26,23 +26,55 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-// TODO MVR fix package name opennsm vs opennms
 package org.opennms.netmgt.graph.simple;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.graph.api.Edge;
+import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 
 /**
- * Acts as a domain specific view on a GenericEdge.
- * This is the most basic concrete subclass of {@link AbstractDomainEdge} and can be used as a reference for your own
- * domain edge. It is a final class. If you need more functionality please extend AbstractDomainGraph.
- * Since it's delegate is immutable and this class holds no data of it's own it is immutable as well.
- */
-public final class SimpleEdge extends AbstractDomainEdge {
+* Acts as a domain specific view on a GenericEdge.
+* Can be extended by a domain specific edge class.
+* It contains no data of it's own but operates on the data of it's wrapped GenericEdge.
+**/
+public abstract class AbstractDomainEdge implements Edge {
 
-    public SimpleEdge(GenericEdge genericEdge) {
-        super(genericEdge);
+    protected final GenericEdge delegate;
+
+    public AbstractDomainEdge(GenericEdge genericEdge) {
+        this.delegate = genericEdge;
+    }
+    
+    @Override
+    public String getNamespace() {
+        return delegate.getNamespace();
+    }
+
+    @Override
+    public String getId() {
+        return delegate.getId();
+    }
+
+    @Override
+    public VertexRef getSource() {
+        return delegate.getSource();
+    }
+
+    @Override
+    public VertexRef getTarget() {
+        return delegate.getTarget();
+    }
+
+    @Override
+    public GenericEdge asGenericEdge() {
+        return delegate;
+    }
+
+    public String getLabel(){
+        return delegate.getLabel();
     }
 
     @Override
@@ -58,20 +90,26 @@ public final class SimpleEdge extends AbstractDomainEdge {
         return Objects.hash(delegate);
     }
     
-    public static SimpleEdgeBuilder builder() {
-        return new SimpleEdgeBuilder();
-    }
-    
-    public static SimpleEdge from(GenericEdge genericEdge) {
-        return new SimpleEdge(genericEdge);
-    }
-    
-    public final static class SimpleEdgeBuilder extends AbstractDomainEdgeBuilder<SimpleEdgeBuilder> {
-               
-        private SimpleEdgeBuilder() {}
+    public static class AbstractDomainEdgeBuilder<T extends AbstractDomainElementBuilder<?>> extends AbstractDomainElementBuilder<T> {
         
-        public SimpleEdge build() {
-            return new SimpleEdge(GenericEdge.builder().properties(properties).source(source).target(target).build());
+        protected VertexRef source;
+        protected VertexRef target;
+        
+        protected AbstractDomainEdgeBuilder() {}
+        
+        public T source(VertexRef source) {
+            this.source = source;
+            return (T)this;
+        }
+        
+        public T target(VertexRef target) {
+            this.target = target;
+            return (T)this;
+        }
+        
+        public T id(String id) {
+            this.properties.put(GenericProperties.ID, id);
+            return (T)this;
         }
     }
 }

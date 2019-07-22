@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -37,53 +36,23 @@ import org.opennms.netmgt.graph.api.VertexRef;
 
 import com.google.common.base.MoreObjects;
 
-public class GenericEdge extends GenericElement implements Edge {
+public final class GenericEdge extends GenericElement implements Edge {
 
     private final VertexRef source;
     private final VertexRef target;
 
-    public GenericEdge(String namespace, VertexRef source, VertexRef target) {
-        this(source, target, new MapBuilder<String, Object>()
-                .withProperty(GenericProperties.NAMESPACE, namespace)
-                .build());
-    }
-
-    public GenericEdge(String namespace, VertexRef source, VertexRef target, Map<String, Object> properties) {
-        this(source, target, new MapBuilder<String, Object>()
-                .withProperties(properties)
-                .withProperty(GenericProperties.NAMESPACE, namespace)
-                .build());
-    }
-
     private GenericEdge(VertexRef source, VertexRef target, Map<String, Object> properties) {
-        super(properties);
+        super(new MapBuilder<String, Object>()
+                .withProperties(properties)
+                .withProperty(GenericProperties.ID, source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId())
+                .build());
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
-        if(!source.getNamespace().equals(getNamespace()) && !target.getNamespace().equals(getNamespace())) {
-            throw new IllegalArgumentException(
+        if (!source.getNamespace().equals(getNamespace()) && !target.getNamespace().equals(getNamespace())) {
+            throw new IllegalArgumentException (
                     String.format("Neither the namespace of the source VertexRef(namespace=%s) nor the target VertexRef(%s) matches our namespace=%s",
                             source.getNamespace(), target.getNamespace(), getNamespace()));
         }
-        this.setId(source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId());
-    }
-
-    /** Copy constructor with same namespace */
-    public GenericEdge(GenericEdge copyMe) {
-        this(copyMe, copyMe.getNamespace());
-    }
-
-    /** Copy constructor with new namespace */
-    public GenericEdge(GenericEdge copyMe, String newNamespace) {
-        this(new VertexRef(newNamespace, copyMe.source.getId()),
-                new VertexRef(newNamespace, copyMe.target.getId()),
-                new MapBuilder<String, Object>()
-                .withProperties(copyMe.getProperties())
-                .withProperty(GenericProperties.NAMESPACE, newNamespace)
-                .build());
-    }
-
-    public Map<String, Object> getProperties() {
-        return new HashMap<>(properties);
     }
 
     @Override
@@ -124,5 +93,31 @@ public class GenericEdge extends GenericElement implements Edge {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), source, target);
+    }
+    
+    public static GenericEdgeBuilder builder() {
+        return new GenericEdgeBuilder();
+    }
+    
+    public final static class GenericEdgeBuilder extends GenericElementBuilder<GenericEdgeBuilder> {
+        
+        private VertexRef source;
+        private VertexRef target;
+        
+        private GenericEdgeBuilder() {}
+        
+        public GenericEdgeBuilder source(VertexRef source) {
+            this.source = source;
+            return this;
+        }
+        
+        public GenericEdgeBuilder target(VertexRef target) {
+            this.target = target;
+            return this;
+        }
+        
+        public GenericEdge build() {
+            return new GenericEdge(source, target, properties);
+        }
     }
 }

@@ -28,28 +28,29 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableMap;
 
 public abstract class GenericElement {
+
+    private final static Logger LOG = LoggerFactory.getLogger(GenericElement.class);
+
     protected final Map<String, Object> properties;
 
-    public GenericElement(String namespace, String id) {
-        this(new MapBuilder<String, Object>()
-                .withProperty(GenericProperties.NAMESPACE, namespace)
-                .withProperty(GenericProperties.ID, id).build());
-    }
-
+   /**
+    * All values of properties need to be immutable.
+    */
     protected GenericElement (Map<String, Object> properties) {
-        // assumption is that this constructor is only called by children who cloned already the Map
-        this.properties = Objects.requireNonNull(properties);
+        Objects.requireNonNull(properties);
+        this.properties = ImmutableMap.copyOf(properties);
         Objects.requireNonNull(getNamespace(), "namespace cannot be null");
-    }
-
-    public void setProperty(String key, Object value) {
-        properties.put(key, value);
     }
 
     public <T> T getProperty(String key) {
@@ -68,20 +69,12 @@ public abstract class GenericElement {
         return getProperty(GenericProperties.NAMESPACE);
     }
 
-    public void setLabel(String label){
-        setProperty(GenericProperties.LABEL, label);
-    }
-
     public String getLabel(){
         return getProperty(GenericProperties.LABEL);
     }
 
     public String getId() {
         return getProperty(GenericProperties.ID);
-    }
-
-    public void setId(String id) {
-        setProperty(GenericProperties.ID, id);
     }
 
     @Override
@@ -103,5 +96,44 @@ public abstract class GenericElement {
                 .omitNullValues()
                 .add("properties", properties)
                 .toString();
+    }
+    
+    public static abstract class GenericElementBuilder<T extends GenericElementBuilder> {
+    	protected final Map<String, Object> properties = new HashMap<>();
+    	
+        protected GenericElementBuilder() {}
+    	
+        public T id(String id) {
+            property(GenericProperties.ID, id);
+        	return (T) this;
+        }
+        
+        public T label(String label){
+            property(GenericProperties.LABEL, label);
+        	return (T) this;
+        }
+        
+        public T namespace(String namespace){
+            Objects.requireNonNull(namespace, "namespace cannot be null.");
+            property(GenericProperties.NAMESPACE, namespace);
+        	return (T) this;
+        }
+        
+        public T property(String name, Object value){
+            if(name == null || value == null) {
+                LOG.debug("Property name ({}) or value ({}) is null => ignoring it.", name, value);
+                return (T) this;
+            }
+            properties.put(name, value);
+            return (T) this;
+        }
+        
+        public T properties(Map<String, Object> properties){
+            Objects.requireNonNull(properties, "properties cannot be null");
+            for (Map.Entry<String, Object> entry : properties.entrySet()) {
+                property(entry.getKey(), entry.getValue());
+            }
+            return (T) this;
+        }
     }
 }

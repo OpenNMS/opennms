@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -78,7 +78,7 @@ public class DefaultGraphService implements GraphService {
 
     @Override
     public GenericGraph getGraph(String containerId, String graphNamespace) {
-        final GraphContainer graphContainer = getGraphContainer(containerId);
+        final ImmutableGraphContainer graphContainer = getGraphContainer(containerId);
         if (graphContainer != null) {
             return graphContainer.getGraph(graphNamespace).asGenericGraph();
         }

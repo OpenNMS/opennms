@@ -48,18 +48,20 @@ public class SimpleGraphTest {
     public void simpleGraphShouldBeAbleToBeConvertedIntoAGenericGraphAndBack() {
 
         // set up:
-        SimpleGraph originalGraph = new SimpleGraph(TestObjectCreator.NAMESPACE);
-        originalGraph.setLabel("labelGraph");
         SimpleVertex vertex1 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
         SimpleVertex vertex2 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
         SimpleVertex vertex3 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
         SimpleEdge edge1 = createEdge(vertex1, vertex2);
         SimpleEdge edge2 = createEdge(vertex1, vertex3);
-        originalGraph.addVertex(vertex1);
-        originalGraph.addVertex(vertex2);
-        originalGraph.addVertex(vertex3);
-        originalGraph.addEdge(edge1);
-        originalGraph.addEdge(edge2);
+        
+        SimpleGraph originalGraph = SimpleGraph.builder()
+            .namespace(TestObjectCreator.NAMESPACE)
+            .label("labelGraph")
+            .addVertex(vertex1)
+            .addVertex(vertex2)
+            .addVertex(vertex3)
+            .addEdge(edge1)
+            .addEdge(edge2).build();
 
         // convert:
         GenericGraph genericGraph = originalGraph.asGenericGraph();
@@ -87,7 +89,7 @@ public class SimpleGraphTest {
         DefaultGraphInfo info = new DefaultGraphInfo(TestObjectCreator.NAMESPACE, SimpleVertex.class);
         info.setDescription("description");
         info.setLabel("label");
-        SimpleGraph graph = SimpleGraph.fromGraphInfo(info);
+        SimpleGraph graph = SimpleGraph.builder().graphInfo(info).build();
         assertEquals(info.getNamespace(), graph.getNamespace());
         assertEquals(info.getLabel(), graph.getLabel());
         assertEquals(info.getDescription(), graph.getDescription());

@@ -28,41 +28,21 @@
 
 package org.opennms.netmgt.graph.simple;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 /**
- * Acts as a domain specific view on a Graph.
+ * Acts as a domain specific view on a GenericGraph.
  * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own
- * domain graph. It is a final class since it exposes class information about it's associated vertex and edge types.
- * If you need more functionality please extend AbstractDomainGraph.
+ * domain graph. It is a final class. If you need more functionality please extend AbstractDomainGraph.
  */
 public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
 
-
-    public SimpleGraph(String namespace) {
-        super(namespace);
-    }
-
-    public static SimpleGraph fromGraphInfo(GraphInfo graphInfo) {
-        // we can't have a constructor SimpleGraph(GraphInfo graphInfo) since it conflicts with SimpleGraph(GenericGraph graph)
-        // that's why we have a factory method instead
-        GenericGraph graph = new GenericGraph(graphInfo.getNamespace());
-        graph.setLabel(graphInfo.getLabel());
-        graph.setDescription(graphInfo.getDescription());
-        return new SimpleGraph(graph);
-    }
-
     public SimpleGraph(GenericGraph graph) {
         super(graph);
-    }
-
-    /** copy constructor */
-    public SimpleGraph(SimpleGraph graph) {
-        this(new GenericGraph(graph.asGenericGraph()));
     }
 
     @Override
@@ -76,12 +56,29 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
     }
 
     @Override
-    protected Graph<SimpleVertex, SimpleEdge> convert(GenericGraph graph) {
+    protected ImmutableGraph<SimpleVertex, SimpleEdge> convert(GenericGraph graph) {
         return new SimpleGraph(graph);
     }
 
     @Override
     public Class getVertexType() {
         return SimpleVertex.class;
+    }
+    
+    public static SimpleGraphBuilder builder() {
+        return new SimpleGraphBuilder();
+    }
+    
+    public static SimpleGraph from(GenericGraph genericGraph) {
+        return new SimpleGraph(genericGraph);
+    }
+    
+    public final static class SimpleGraphBuilder extends AbstractDomainGraphBuilder<SimpleGraphBuilder, SimpleVertex, SimpleEdge> {
+        
+        private SimpleGraphBuilder() {}
+        
+        public SimpleGraph build() {
+            return new SimpleGraph(delegate.build());
+        }
     }
 }

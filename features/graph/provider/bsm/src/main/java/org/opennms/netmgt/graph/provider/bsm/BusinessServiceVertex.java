@@ -29,35 +29,65 @@
 package org.opennms.netmgt.graph.provider.bsm;
 
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.Objects;
+
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 
-public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
+public final class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
     private final static String PROPERTY_SERVICE_ID = "serviceId";
-
-    public BusinessServiceVertex(BusinessService businessService, int level) {
-        this(businessService.getId(), businessService.getName(), level);
-    }
-
-    public BusinessServiceVertex(GraphVertex graphVertex) {
-        this(graphVertex.getBusinessService(), graphVertex.getLevel());
-    }
-
-    public BusinessServiceVertex(Long serviceId, String name, int level) {
-        super(Type.BusinessService + ":" + serviceId, name, level, Type.BusinessService, false, Sets.newHashSet());
-        setServiceId(serviceId);
-        setLabel(name);
+    
+    public BusinessServiceVertex(GenericVertex genericVertex) {
+        super(genericVertex);
+        Objects.requireNonNull(getServiceId(), String.format("%s cannot be null", PROPERTY_SERVICE_ID));
+        checkArgument(Type.BusinessService == genericVertex.getProperty(PROPERTY_TYPE), "%s must be %s for %s", PROPERTY_TYPE, Type.BusinessService, getClass());
     }
 
     public Long getServiceId() {
         return delegate.getProperty(PROPERTY_SERVICE_ID);
     }
 
-    public void setServiceId(Long serviceId) {
-        delegate.setProperty(PROPERTY_SERVICE_ID, serviceId);
+    public static BusinessServiceVertexBuilder builder() {
+        return new BusinessServiceVertexBuilder();
     }
-
+    
+    public final static class BusinessServiceVertexBuilder extends AbstractBusinessServiceVertexBuilder<BusinessServiceVertexBuilder, BusinessServiceVertex> {
+        
+        private BusinessServiceVertexBuilder() {}
+        
+        public BusinessServiceVertexBuilder serviceId(Long serviceId) {
+            properties.put(PROPERTY_SERVICE_ID, serviceId);
+            id(Type.BusinessService + ":" + serviceId);
+            return this;
+        }
+        
+        public BusinessServiceVertexBuilder graphVertex(GraphVertex graphVertex) {
+            businessService(graphVertex.getBusinessService());
+            level(graphVertex.getLevel());
+            return this;
+        }
+        
+        public BusinessServiceVertexBuilder businessService(BusinessService businessService) {
+            serviceId(businessService.getId());
+            label(businessService.getName()); 
+            type(Type.BusinessService);
+            isLeaf(false);
+            reductionKeys(ImmutableSet.of());           
+            return this;
+        }
+        
+        public BusinessServiceVertex build() {
+            this.type(Type.BusinessService);
+            return new BusinessServiceVertex(GenericVertex.builder()
+                    .namespace(BusinessServiceGraphProvider.NAMESPACE)
+                    .properties(properties).build());
+        }
+    }
+    
 }

@@ -28,46 +28,62 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import org.junit.Test;
+import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 
 public class GenericGraphTest {
 
     @Test
-    public void shouldCloneCorrectly() {
-        GenericGraph original = TestObjectCreator.createGraph();
-        GenericGraph clone = new GenericGraph(original);
-        assertEquals(original, clone);
-        assertNotSame(original, clone);
-    }
-
-    @Test
     public void shouldRejectEdgesWithWrongNamespace(){
-        GenericGraph graph = TestObjectCreator.createGraph();
+        GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
         GenericVertex vertex = TestObjectCreator.createVertex();
-        graph.addVertex(vertex);
+        graphBuilder.addVertex(vertex);
         GenericVertex vertexWithOtherNamespace = TestObjectCreator.createVertex("unknownNamespace", "v1");
 
         final GenericEdge validEdge = TestObjectCreator.createEdge(vertex, vertexWithOtherNamespace);
-        graph.addEdge(validEdge); // should throw no exception
+        graphBuilder.addEdge(validEdge); // should throw no exception
 
         final GenericEdge invalidEdge = TestObjectCreator.createEdge("unknownNamespace", vertex, vertexWithOtherNamespace);
-        assertThrowsException(IllegalArgumentException.class, () -> graph.addEdge(invalidEdge));
+        assertThrowsException(IllegalArgumentException.class, () -> graphBuilder.addEdge(invalidEdge));
     }
 
     @Test
     public void shouldRejectEdgesWithUnknownVertices(){
-        GenericGraph graph = TestObjectCreator.createGraph();
+        GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
         GenericVertex vertex = TestObjectCreator.createVertex();
         final GenericEdge edge = TestObjectCreator.createEdge(vertex, vertex);
 
         // add an edge with unknown vertex => throws exception
-        assertThrowsException(IllegalArgumentException.class, () -> graph.addEdge(edge));
+        assertThrowsException(IllegalArgumentException.class, () -> graphBuilder.addEdge(edge));
 
         // now add the vertex and the exception should be avoided:
-        graph.addVertex(vertex);
-        graph.addEdge(edge); // should throw no exception
+        graphBuilder.addVertex(vertex);
+        graphBuilder.addEdge(edge); // should throw no exception
+    }
+    
+    @Test
+    public void shouldNotAllowNamespaceChangeAfterAddingElements(){
+        GenericGraphBuilder graphBuilder =  GenericGraph.builder();
+        
+        // 1.) set namespace on "empty graph" => shouldn't be a problem
+        graphBuilder.namespace("some namespace");
+        graphBuilder.namespace(TestObjectCreator.NAMESPACE); // should be ok as long as we haven't added an edge
+        
+        // 2.) set same namespace on a filled graph => should be possible
+        GenericVertex vertex = TestObjectCreator.createVertex();
+        graphBuilder.addVertex(vertex);
+        graphBuilder.addEdge(TestObjectCreator.createEdge(vertex, vertex));
+        graphBuilder.namespace(TestObjectCreator.NAMESPACE);
+        
+        // 2.) set other namespace on a filled graph => should not be possible anymore
+        String otherNamespace = graphBuilder.getNamespace()+"v2";   
+
+        assertThrowsException(IllegalStateException.class, () -> graphBuilder.namespace(otherNamespace));
+        assertThrowsException(IllegalStateException.class, () -> graphBuilder.property(GenericProperties.NAMESPACE, otherNamespace));
+        assertThrowsException(IllegalStateException.class, () -> graphBuilder.properties(new MapBuilder<String, Object>()
+                .withProperty(GenericProperties.NAMESPACE, otherNamespace).build()));
     }
 }

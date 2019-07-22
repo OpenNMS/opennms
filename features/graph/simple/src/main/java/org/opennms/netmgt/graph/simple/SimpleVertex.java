@@ -30,77 +30,18 @@ package org.opennms.netmgt.graph.simple;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.Vertex;
-import org.opennms.netmgt.graph.api.VertexRef;
-import org.opennms.netmgt.graph.api.aware.LocationAware;
-import org.opennms.netmgt.graph.api.aware.NodeAware;
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.info.NodeInfo;
 
 /**
- * Acts as a domain specific view on a Vertex.
- * Can be extended by domain specific Vertex classes.
- * It contains no data of it's own but operates on the data of it's wrapped GenericVertex.
+ * Acts as a domain specific view on a GenericVertex.
+ * This is the most basic concrete subclass of {@link AbstractDomainVertex} and can be used as a reference for your own
+ * domain vertex. It is a final class. If you need more functionality please extend AbstractDomainVertex.
+ * Since it's delegate is immutable and this class holds no data of it's own it is immutable as well.
  */
-public class SimpleVertex implements Vertex, NodeAware, LocationAware {
-
-    protected final GenericVertex delegate;
+public final class SimpleVertex extends AbstractDomainVertex {
 
     public SimpleVertex(GenericVertex genericVertex) {
-        this.delegate = genericVertex;
-    }
-
-    public SimpleVertex(String namespace, String id) {
-        this.delegate = new GenericVertex(namespace, id);
-    }
-
-    public SimpleVertex(SimpleVertex copyMe) {
-        // copy the delegate to have a clone down to the properties maps
-        this(new GenericVertex(copyMe.asGenericVertex()));
-    }
-
-    @Override
-    public String getNamespace() {
-        return delegate.getNamespace();
-    }
-
-    @Override
-    public String getId() {
-        return delegate.getId();
-    }
-
-    public VertexRef getVertexRef(){
-        return delegate.getVertexRef();
-    }
-
-    public String getLabel() {
-        return delegate.getProperty(GenericProperties.LABEL);
-    }
-
-    public void setLabel(String label) {
-        this.delegate.setProperty(GenericProperties.LABEL, label);
-    }
-
-    @Override
-    public final GenericVertex asGenericVertex() {
-        return delegate;
-    }
-
-    public NodeInfo getNodeInfo() {
-        return delegate.getNodeInfo();
-    }
-
-    public void setNodeInfo(NodeInfo nodeInfo) {
-        this.delegate.setProperty(GenericProperties.NODE_INFO, nodeInfo);
-    }
-
-    public String getNodeRefString() {
-        return delegate.getProperty(GenericProperties.NODE_REF);
-    }
-
-    public void setNodeRefString(String nodeRefString) {
-        delegate.setProperty(GenericProperties.NODE_REF, nodeRefString);
+        super(genericVertex);
     }
 
     @Override
@@ -127,5 +68,22 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
     @Override
     public int hashCode() {
         return Objects.hash(delegate);
+    }
+    
+    public static SimpleVertexBuilder builder() {
+        return new SimpleVertexBuilder();
+    }
+    
+    public static SimpleVertex from(GenericVertex genericVertex) {
+        return new SimpleVertex(genericVertex);
+    }
+    
+    public final static class SimpleVertexBuilder extends AbstractDomainVertexBuilder<SimpleVertexBuilder> {
+                
+        private SimpleVertexBuilder() {}
+        
+        public SimpleVertex build() {
+            return new SimpleVertex(GenericVertex.builder().properties(properties).build());
+        }
     }
 }

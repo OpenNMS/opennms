@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.graph.rest.impl.renderer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -65,7 +66,7 @@ public class JsonGraphRenderer implements GraphRenderer {
     }
 
     @Override
-    public String render(GraphContainer<?, ?, ?> graphContainer) {
+    public String render(ImmutableGraphContainer<?> graphContainer) {
         final JSONObject jsonContainer = new JSONObject();
         final JSONArray jsonGraphArray = new JSONArray();
         jsonContainer.put("graphs", jsonGraphArray);
@@ -83,7 +84,7 @@ public class JsonGraphRenderer implements GraphRenderer {
                     graph.asGenericGraph().getProperties().forEach((key, value) -> jsonGraph.put(key, value));
                     graph.getEdges().stream().forEach(edge -> {
                         final GenericEdge genericEdge = edge.asGenericEdge();
-                        final Map<String, Object> edgeProperties = genericEdge.getProperties();
+                        final Map<String, Object> edgeProperties = new HashMap<>(genericEdge.getProperties());
                         edgeProperties.put("source", genericEdge.getSource().getId());
                         edgeProperties.put("target", genericEdge.getTarget().getId());
                         final JSONObject jsonEdge = new JSONObject(edgeProperties);
@@ -91,7 +92,7 @@ public class JsonGraphRenderer implements GraphRenderer {
                     });
 
                     // TODO MVR enrich me
-//                    enrichmentService.enrich(graph.getVertices());
+                    // enrichmentService.enrich(graph.getVertices());
                     graph.getVertices().stream().forEach(vertex -> {
                         final JSONObject jsonVertex = new JSONObject(vertex.asGenericVertex().getProperties());
                         jsonVerticesArray.put(jsonVertex);

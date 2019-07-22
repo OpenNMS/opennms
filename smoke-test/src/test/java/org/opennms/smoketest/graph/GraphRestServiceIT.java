@@ -100,10 +100,10 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("[1].id", Matchers.is(CONTAINER_ID))
                     .content("[1].label", Matchers.is(GraphMLTopologyIT.LABEL))
                     .content("[1].graphs.size()", Matchers.is(2))
-                    .content("[1].graphs[0].namespace", Matchers.is("acme:regions"))
-                    .content("[1].graphs[1].namespace", Matchers.is("acme:markets"))
-                    .content("[1].graphs[1].label", Matchers.is("Markets"))
-                    .content("[1].graphs[1].description", Matchers.is("The Markets Layer"));
+                    .content("[1].graphs[0].namespace", Matchers.is("acme:markets"))
+                    .content("[1].graphs[0].label", Matchers.is("Markets"))
+                    .content("[1].graphs[0].description", Matchers.is("The Markets Layer"))
+                    .content("[1].graphs[1].namespace", Matchers.is("acme:regions"));
         });
     }
 
@@ -114,15 +114,17 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
             given().get(CONTAINER_ID).then()
                     .contentType(ContentType.JSON)
                     .content("graphs", Matchers.hasSize(2))
-                    .content("graphs[0].id", Matchers.is("regions"))
-                    .content("graphs[0].namespace", Matchers.is("acme:regions"))
-                    .content("graphs[0].vertices", Matchers.hasSize(4))
-                    .content("graphs[0].edges", Matchers.hasSize(16))
+                    .content("graphs[0].id", Matchers.is("markets"))
+                    .content("graphs[0].namespace", Matchers.is("acme:markets"))
+                    .content("graphs[0].vertices", Matchers.hasSize(16))
+                    .content("graphs[0].edges", Matchers.hasSize(0))
 
-                    .content("graphs[1].id", Matchers.is("markets"))
-                    .content("graphs[1].namespace", Matchers.is("acme:markets"))
-                    .content("graphs[1].vertices", Matchers.hasSize(16))
-                    .content("graphs[1].edges", Matchers.hasSize(0));
+                    .content("graphs[1].id", Matchers.is("regions"))
+                    .content("graphs[1].namespace", Matchers.is("acme:regions"))
+                    .content("graphs[1].vertices", Matchers.hasSize(4))
+                    .content("graphs[1].edges", Matchers.hasSize(16));
+
+
         });
     }
 

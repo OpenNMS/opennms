@@ -28,20 +28,17 @@
 
 package org.opennms.netmgt.graph.provider.application;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.simple.AbstractDomainGraph;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 
-public class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, SimpleEdge> {
+public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, SimpleEdge> {
 
     public static final String TOPOLOGY_NAMESPACE = "application";
-
-    public ApplicationGraph() {
-        super(ApplicationGraph.TOPOLOGY_NAMESPACE);
-    }
 
     public ApplicationGraph(GenericGraph graph) {
         super(graph);
@@ -55,12 +52,37 @@ public class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, Sim
         return new SimpleEdge(edge);
     }
 
-    protected Graph<ApplicationVertex, SimpleEdge> convert(GenericGraph graph){
+    protected ImmutableGraph<ApplicationVertex, SimpleEdge> convert(GenericGraph graph){
         return new ApplicationGraph(graph);
     }
 
     @Override
-    public Class getVertexType() {
+    public Class<ApplicationVertex> getVertexType() {
         return ApplicationVertex.class;
+    }
+    
+    public static ApplicationGraphBuilder builder() {
+        return new ApplicationGraphBuilder();
+    }
+    
+    public static ApplicationGraph from(GenericGraph genericGraph) {
+        return new ApplicationGraph(genericGraph);
+    }
+    
+    public final static class ApplicationGraphBuilder extends AbstractDomainGraphBuilder<ApplicationGraphBuilder, ApplicationVertex, SimpleEdge> {
+               
+        private ApplicationGraphBuilder() {
+            namespace(TOPOLOGY_NAMESPACE);
+        }
+        
+        public ApplicationGraphBuilder description(String description) {
+            delegate.property(GenericProperties.DESCRIPTION, description);
+            return this;
+        }
+        
+        public ApplicationGraph build() {
+            namespace(TOPOLOGY_NAMESPACE); // namespace is fixed, cannot be changed.
+            return new ApplicationGraph(delegate.build());
+        }
     }
 }

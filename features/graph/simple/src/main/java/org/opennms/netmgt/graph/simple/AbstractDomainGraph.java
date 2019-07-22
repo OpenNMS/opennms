@@ -34,30 +34,28 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
+import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
 import com.google.common.base.MoreObjects;
 
 /**
- * Acts as a domain specific view on a graph.
- * Can be extended by a domain specific graph class.
- * It contains no data of it's own but operates on the data of it's wrapped Graph.
- */
+* Acts as a domain specific view on a GenericGraph.
+* Can be extended by a domain specific graph class.
+* It contains no data of it's own but operates on the data of it's wrapped GenericGraph.
+**/
 // TODO MVR implement duplication detection (e.g. adding same vertex twice
 // and as well as adding different edges with different source/target vertices, should add each vertex only once,
 // maybe not here, but at some point that check should be implemented)
-public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends SimpleEdge> implements Graph<V, E> {
+public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E extends AbstractDomainEdge> implements ImmutableGraph<V, E> {
 
     private final GenericGraph delegate;
-
-    public AbstractDomainGraph(String namespace) {
-        this.delegate = new GenericGraph(namespace);
-    }
 
     public AbstractDomainGraph(GenericGraph genericGraph) {
         this.delegate = genericGraph;
@@ -73,21 +71,9 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
         return this.delegate.getEdges().stream().map(this::convert).collect(Collectors.toList());
     }
 
-    protected abstract Graph<V, E> convert(GenericGraph graph);
+    protected abstract ImmutableGraph<V, E> convert(GenericGraph graph);
     protected abstract V convert(GenericVertex vertex);
     protected abstract E convert(GenericEdge edge);
-
-    @Override
-    public void addEdges(Collection<E> edges) {
-        Objects.requireNonNull(edges);
-        edges.forEach(this::addEdge);
-    }
-
-    @Override
-    public void addVertices(Collection<V> vertices) {
-        Objects.requireNonNull(vertices);
-        vertices.forEach(this::addVertex);
-    }
 
     @Override
     public V getVertex(String id) {
@@ -102,30 +88,6 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     }
 
     @Override
-    public void addVertex(V vertex) {
-        Objects.requireNonNull(vertex);
-        this.delegate.addVertex(vertex.asGenericVertex());
-    }
-
-    @Override
-    public void addEdge(E edge) {
-        Objects.requireNonNull(edge);
-        this.delegate.addEdge(edge.asGenericEdge());
-    }
-
-    @Override
-    public void removeEdge(E edge) {
-        Objects.requireNonNull(edge);
-        this.delegate.removeEdge(edge.asGenericEdge());
-    }
-
-    @Override
-    public void removeVertex(V vertex) {
-        Objects.requireNonNull(vertex);
-        this.delegate.removeVertex(vertex.asGenericVertex());
-    }
-
-    @Override
     public List<String> getVertexIds() {
         return this.delegate.getVertexIds();
     }
@@ -136,10 +98,10 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     }
 
     @Override
-    public Graph<V, E> getSnapshot(Collection<V> verticesInFocus, int szl) {
+    public ImmutableGraph<V, E> getSnapshot(Collection<V> verticesInFocus, int szl) {
         Objects.requireNonNull(verticesInFocus);
         Collection<GenericVertex> genericVerticesInFocus = verticesInFocus.stream()
-                .map(SimpleVertex::asGenericVertex).collect(Collectors.toList());
+                .map(AbstractDomainVertex::asGenericVertex).collect(Collectors.toList());
         GenericGraph genericGraph = this.delegate.getSnapshot(genericVerticesInFocus, szl).asGenericGraph();
         return convert(genericGraph);
     }
@@ -192,10 +154,6 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
         return delegate.getNamespace();
     }
 
-    public void setDescription(String description) {
-        delegate.setDescription(description);
-    }
-
     @Override
     public String getDescription() {
         return delegate.getDescription();
@@ -204,10 +162,6 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     @Override
     public String getLabel() {
         return delegate.getLabel();
-    }
-
-    public void setLabel(String label){
-        delegate.setLabel(label);
     }
 
     @Override
@@ -232,5 +186,85 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
         return MoreObjects.toStringHelper(this)
                 .add("delegate", delegate)
                 .toString();
+    }
+    
+    public static class AbstractDomainGraphBuilder<
+        T extends AbstractDomainGraphBuilder,
+        V extends AbstractDomainVertex,
+        E extends AbstractDomainEdge> {
+       
+        protected GenericGraphBuilder delegate = GenericGraph.builder();
+        
+        protected AbstractDomainGraphBuilder() {}
+        
+        public T id(String id) {
+            delegate.id(id);
+            return (T) this;
+        }
+        
+        public T label(String label){
+            delegate.label(label);
+            return (T) this;
+        }
+        
+        public T namespace(String namespace){
+            delegate.namespace(namespace);
+            return (T) this;
+        }
+        
+        public T property(String name, String value){
+            delegate.property(name, value);
+            return (T) this;
+        }
+        
+        
+        public T  description(String description) {
+            delegate.description(description);
+            return (T) this;
+        }
+        
+        public T addEdges(Collection<E> edges) {
+            Objects.requireNonNull(edges);
+            edges.forEach(this::addEdge);
+            return (T) this;
+        }
+
+        public T addVertices(Collection<V> vertices) {
+            Objects.requireNonNull(vertices);
+            vertices.forEach(this::addVertex);
+            return (T) this;
+        }
+        
+        public T addVertex(V vertex) {
+            Objects.requireNonNull(vertex);
+            this.delegate.addVertex(vertex.asGenericVertex());
+            return (T) this;
+        }
+
+        public T addEdge(E edge) {
+            Objects.requireNonNull(edge);
+            this.delegate.addEdge(edge.asGenericEdge());
+            return (T) this;
+        }
+
+        public T removeEdge(E edge) {
+            Objects.requireNonNull(edge);
+            this.delegate.removeEdge(edge.asGenericEdge());
+            return (T) this;
+        }
+
+        public T removeVertex(V vertex) {
+            Objects.requireNonNull(vertex);
+            this.delegate.removeVertex(vertex.asGenericVertex());
+            return (T) this;
+        }
+        
+        public T graphInfo(GraphInfo graphInfo) {
+            delegate.namespace(graphInfo.getNamespace())
+                .label(graphInfo.getLabel())
+                .description(graphInfo.getDescription())
+                .build();
+            return (T) this;
+        }
     }
 }

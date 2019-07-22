@@ -39,12 +39,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -94,7 +96,7 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 //    }
 
     @Override
-    public GraphContainer loadGraphContainer() {
+    public ImmutableGraphContainer loadGraphContainer() {
         if (graphContainer == null) {
             vertexIdToGraphMapping = new HashMap<>();
             // Index vertex id to graph mapping
@@ -109,17 +111,17 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 
             // Convert graph
             final String graphContainerId = determineGraphContainerId(graphML);
-            final GenericGraphContainer graphContainer = new GenericGraphContainer();
-            graphContainer.setId(graphContainerId);
-            graphContainer.setLabel(graphML.getProperty(GenericProperties.LABEL));
-            graphContainer.setDescription(graphML.getProperty(GenericProperties.DESCRIPTION));
+            final GenericGraphContainerBuilder graphContainerBuilder = GenericGraphContainer.builder()
+                .id(graphContainerId)
+                .label(graphML.getProperty(GenericProperties.LABEL))
+                .description(graphML.getProperty(GenericProperties.DESCRIPTION));
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
                 final GenericGraph convertedGraph = convert(eachGraph);
                 final Focus focus = getFocusStrategy(eachGraph);
 //                convertedGraph.setDefaultFocus(focus);
-                graphContainer.addGraph(convertedGraph);
+                graphContainerBuilder.addGraph(convertedGraph);
             }
-            this.graphContainer = graphContainer;
+            this.graphContainer = graphContainerBuilder.build();
         }
         return this.graphContainer;
     }
@@ -133,30 +135,35 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     }
 
     private final GenericGraph convert(GraphMLGraph graphMLGraph) {
-        final GenericGraph graph = new GenericGraph(graphMLGraph.getProperties());
+        final GenericGraphBuilder graphBuilder = GenericGraph.builder().properties(graphMLGraph.getProperties());
         final List<GenericVertex> vertices = graphMLGraph.getNodes()
                 .stream().map(n -> {
                     // In case of GraphML each vertex does not have a namespace, but it is inherited from the graph
                     // Therefore here we have to manually set it
-                    final GenericVertex v = new GenericVertex(graph.getNamespace(), n.getId(), n.getProperties());
-                    return v;
+                    return GenericVertex.builder()
+                            .namespace(graphBuilder.getNamespace())
+                            .id(n.getId())
+                            .properties(n.getProperties()).build();
                 })
                 .collect(Collectors.toList());
-        graph.addVertices(vertices);
+        graphBuilder.addVertices(vertices);
 
         final List<GenericEdge> edges = graphMLGraph.getEdges().stream().map(e -> {
             final String sourceNamespace = vertexIdToGraphMapping.get(e.getSource().getId()).getProperty(GenericProperties.NAMESPACE);
             final String targetNamespace = vertexIdToGraphMapping.get(e.getTarget().getId()).getProperty(GenericProperties.NAMESPACE);
-            final GenericVertex source = new GenericVertex(sourceNamespace, e.getSource().getId());
-            final GenericVertex target = new GenericVertex(targetNamespace, e.getTarget().getId());
+            final GenericVertex source = GenericVertex.builder().namespace(sourceNamespace).id(e.getSource().getId()).build();
+            final GenericVertex target = GenericVertex.builder().namespace(targetNamespace).id(e.getTarget().getId()).build();
             // In case of GraphML each edge does not have a namespace, but it is inherited from the graph
             // Therefore here we have to manually set it
-            final GenericEdge edge = new GenericEdge(graph.getNamespace(), source.getVertexRef(), target.getVertexRef(),
-                    e.getProperties());
+            final GenericEdge edge = GenericEdge.builder()
+                    .namespace(graphBuilder.getNamespace())
+                    .source(source.getVertexRef())
+                    .target(target.getVertexRef())
+                    .properties(e.getProperties()).build();
             return edge;
         }).collect(Collectors.toList());
-        graph.addEdges(edges);
-        return graph;
+        graphBuilder.addEdges(edges);
+        return graphBuilder.build();
     }
 
     // TODO MVR FocusStrategy or Focus concept is not fully implemented yet

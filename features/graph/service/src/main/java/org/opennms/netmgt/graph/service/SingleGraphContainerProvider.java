@@ -30,13 +30,14 @@ package org.opennms.netmgt.graph.service;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.Graph;
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
-import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
 
 public class SingleGraphContainerProvider implements GraphContainerProvider {
 
@@ -49,13 +50,13 @@ public class SingleGraphContainerProvider implements GraphContainerProvider {
     }
 
     @Override
-    public GraphContainer loadGraphContainer() {
-        final SimpleGraphContainer container = new SimpleGraphContainer(getContainerInfo());
-        final Graph<?, ?> graph = graphProvider.loadGraph();
+    public ImmutableGraphContainer loadGraphContainer() {
+        final GenericGraphContainerBuilder containerBuilder = GenericGraphContainer.builder().applyContainerInfo(getContainerInfo());
+        final GenericGraph graph = graphProvider.loadGraph().asGenericGraph();
         if (graph != null) {
-            container.addGraph(graph);
+            containerBuilder.addGraph(graph);
         }
-        return container;
+        return containerBuilder.build();
     }
 
     @Override

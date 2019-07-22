@@ -32,10 +32,11 @@ import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
+import org.opennms.netmgt.graph.provider.application.ApplicationGraph.ApplicationGraphBuilder;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -68,31 +69,32 @@ public class ApplicationGraphProvider implements GraphProvider {
     }
 
     @Override
-    public Graph<ApplicationVertex, SimpleEdge> loadGraph() {
+    public ImmutableGraph<ApplicationVertex, SimpleEdge> loadGraph() {
         return sessionUtils.withReadOnlyTransaction(() -> {
-            final ApplicationGraph graph = new ApplicationGraph();
-            graph.setLabel(GRAPH_LABEL);
-            graph.setDescription(GRAPH_DESCRIPTION);
+            final ApplicationGraphBuilder graphBuilder = ApplicationGraph.builder()
+                    .label(GRAPH_LABEL)
+                    .description(GRAPH_DESCRIPTION);
 
             for (OnmsApplication application : applicationDao.findAll()) {
-                final ApplicationVertex applicationVertex = new ApplicationVertex(application);
-                applicationVertex.setName(application.getName());
-                graph.addVertex(applicationVertex);
+                final ApplicationVertex applicationVertex = ApplicationVertex.builder()
+                        .application(application)
+                        .build();
+                graphBuilder.addVertex(applicationVertex);
 
                 for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
-                    final ApplicationVertex serviceVertex = new ApplicationVertex(eachMonitoredService);
-                    serviceVertex.setIpAddress(eachMonitoredService.getIpAddress().toString());
-                    serviceVertex.setName(eachMonitoredService.getServiceName());
-                    serviceVertex.setServiceTypeId(eachMonitoredService.getServiceType().getId());
-                    serviceVertex.setNodeRefString(Integer.toString(eachMonitoredService.getNodeId()));
-                    graph.addVertex(serviceVertex);
+                    final ApplicationVertex serviceVertex = ApplicationVertex.builder().service(eachMonitoredService).build();
+                    graphBuilder.addVertex(serviceVertex);
 
                     // connect with application
-                    final SimpleEdge edge = new SimpleEdge(ApplicationGraph.TOPOLOGY_NAMESPACE, applicationVertex, serviceVertex);
-                    graph.addEdge(edge);
+                    final SimpleEdge edge = SimpleEdge.builder()
+                            .namespace(ApplicationGraph.TOPOLOGY_NAMESPACE)
+                            .source(applicationVertex.getVertexRef())
+                            .target(serviceVertex.getVertexRef())
+                            .build();
+                    graphBuilder.addEdge(edge);
                 }
             }
-            return graph;
+            return graphBuilder.build();
         });
     }
 }

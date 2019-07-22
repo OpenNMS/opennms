@@ -46,9 +46,9 @@ public class GenericEdgeTest {
         VertexRef refWithOurNamespace2 = new VertexRef(NAMESPACE, "v2");
         VertexRef refWithForeignNamespace1 = new VertexRef("I don't know you, namespace", "v3");
         VertexRef refWithForeignNamespace2 = new VertexRef("I don't know you either, namespace", "v4");
-        new GenericEdge(NAMESPACE, refWithOurNamespace1, refWithOurNamespace2); // should throw no Exception
-        new GenericEdge(NAMESPACE, refWithOurNamespace1, refWithForeignNamespace1); // should throw no Exception
-        new GenericEdge(NAMESPACE, refWithForeignNamespace1, refWithOurNamespace1); // should throw no Exception
-        assertThrowsException(IllegalArgumentException.class, () -> new GenericEdge(NAMESPACE, refWithForeignNamespace1, refWithForeignNamespace2));
+        GenericEdge.builder().namespace(NAMESPACE).source(refWithOurNamespace1).target(refWithOurNamespace2).build(); // should throw no Exception
+        GenericEdge.builder().namespace(NAMESPACE).source(refWithOurNamespace1).target(refWithForeignNamespace1); // should throw no Exception
+        GenericEdge.builder().namespace(NAMESPACE).source(refWithForeignNamespace1).target(refWithOurNamespace1); // should throw no Exception
+        assertThrowsException(IllegalArgumentException.class, () -> GenericEdge.builder().namespace(NAMESPACE).source(refWithForeignNamespace1).target(refWithForeignNamespace2).build());
     }
 }

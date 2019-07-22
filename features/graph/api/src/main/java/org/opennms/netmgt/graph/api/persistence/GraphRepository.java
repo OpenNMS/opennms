@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.api.persistence;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 
@@ -36,7 +36,7 @@ import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 // To access all graphs (GraphProviders), use the GraphService
 public interface GraphRepository {
 
-    void save(GraphContainer graphContainer);
+    void save(ImmutableGraphContainer graphContainer);
 
     void save(GraphContainerInfo containerInfo);
 

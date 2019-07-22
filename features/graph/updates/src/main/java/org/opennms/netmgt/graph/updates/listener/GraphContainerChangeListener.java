@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.graph.updates.listener;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.updates.change.ChangeSet;
 
 public interface GraphContainerChangeListener {
-    void handleGraphAdded(Graph addedGraph);
-    void handleGraphRemoved(Graph removedGraph);
+    void handleGraphAdded(ImmutableGraph addedGraph);
+    void handleGraphRemoved(ImmutableGraph removedGraph);
     void handleGraphUpdated(ChangeSet changeSet);
 }

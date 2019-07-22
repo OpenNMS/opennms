@@ -29,22 +29,22 @@
 package org.opennms.netmgt.graph.provider.bsm;
 
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
+import org.opennms.netmgt.graph.provider.bsm.AbstractBusinessServiceVertex.AbstractBusinessServiceVertexBuilder;
 
 public class GraphVertexToTopologyVertexConverter {
 
-    // TODO MVR this is duplicated code from features.topology.plugins.bsm
-    public static AbstractBusinessServiceVertex createTopologyVertex(GraphVertex graphVertex) {
+    public static AbstractBusinessServiceVertexBuilder<?, ? extends AbstractBusinessServiceVertex> createTopologyVertexBuilder(GraphVertex graphVertex) {
         if (graphVertex.getBusinessService() != null) {
-            return new BusinessServiceVertex(graphVertex);
+            return BusinessServiceVertex.builder().graphVertex(graphVertex);
         }
         if (graphVertex.getIpService() != null) {
-            return new IpServiceVertex(graphVertex);
+            return IpServiceVertex.builder().graphVertex(graphVertex);
         }
         if (graphVertex.getReductionKey() != null) {
-            return new ReductionKeyVertex(graphVertex);
+            return ReductionKeyVertex.builder().graphVertex(graphVertex);
         }
         if (graphVertex.getApplication() != null) {
-            return new ApplicationVertex(graphVertex);
+            return ApplicationVertex.builder().graphVertex(graphVertex);
         }
         throw new IllegalArgumentException("Cannot convert GraphVertex to BusinessServiceVertex: " + graphVertex);
     }

@@ -36,10 +36,10 @@ public class GenericVertexTest {
 
     @Test
     public void genericVertexMustHaveANamespaceAndId() {
-        new GenericVertex("not null", "not null"); // should throw no exception
-        assertThrowsException(NullPointerException.class, ()-> new GenericVertex((String)null, (String)null));
-        assertThrowsException(NullPointerException.class, ()-> new GenericVertex("not null", null));
-        assertThrowsException(NullPointerException.class, ()-> new GenericVertex((String)null, "not null"));
+        GenericVertex.builder().namespace("not null").id("not null"); // should throw no exception
+        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace(null).id(null).build());
+        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace("not null").id(null).build());
+        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace(null).id("not null").build());
     }
 
 }

@@ -38,73 +38,42 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.context.DefaultGraphContext;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
-// TODO MVR enforce namespace
-public class GenericGraph extends GenericElement implements Graph<GenericVertex, GenericEdge> {
+import static com.google.common.base.Preconditions.checkArgument;
 
-    private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph = new DirectedSparseGraph<>();
-    private final Map<String, GenericVertex> vertexToIdMap = new HashMap<>();
-    private final Map<String, GenericEdge> edgeToIdMap = new HashMap<>();
+/**
+ * The graph itself is not immutable (Vertices and Edges can be added and removed) but it's properties are. 
+ */
+public final class GenericGraph extends GenericElement implements ImmutableGraph<GenericVertex, GenericEdge> {
+
+    private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph;
+    private final Map<String, GenericVertex> vertexToIdMap;
+    private final Map<String, GenericEdge> edgeToIdMap;
 //    private final Map<NodeRef, V> nodeRefToVertexMap = new HashMap<>();
 
     // A calculation of the focus
-    private Focus focusStrategy;
-    protected GraphInfo<GenericVertex> graphInfo;
+    private final Focus focusStrategy;
+    private final GraphInfo<GenericVertex> graphInfo;
 
-    public GenericGraph(String namespace) {
-        this(new MapBuilder<String, Object>()
-                .withProperty(GenericProperties.NAMESPACE, namespace)
-                .build());
-    }
-
-    /** Copy constructor. */
-    public GenericGraph(GenericGraph copyMe) {
-        this(copyMe, copyMe.getNamespace());
-    }
-
-    /** Copy constructor with new namespace. */
-    public GenericGraph(GenericGraph copyMe, String newNamespace) {
-        super(new MapBuilder<String, Object>()
-                .withProperties(copyMe.properties)
-                .withProperty(GenericProperties.NAMESPACE, newNamespace)
-                .build());
-        this.setFocusStrategy(copyMe.focusStrategy);
-        for(GenericVertex originalVertex : copyMe.vertexToIdMap.values()){
-            this.addVertex(new GenericVertex(originalVertex, newNamespace));
-        }
-        for(GenericEdge originalEdge : copyMe.edgeToIdMap.values()){
-            this.addEdge(new GenericEdge(originalEdge, newNamespace));
-        }
-    }
-
-    public GenericGraph(Map<String, Object> properties) {
-        super(properties);
+    private GenericGraph(GenericGraphBuilder builder) {
+        super(builder.properties);
+        this.jungGraph = builder.jungGraph;
+        this.vertexToIdMap = builder.vertexToIdMap;
+        this.edgeToIdMap = builder.edgeToIdMap;
+        this.focusStrategy = builder.focusStrategy;
         this.graphInfo = new GenericGraphInfo();
     }
-
-    public static GenericGraph fromGraphInfo(GraphInfo graphInfo) {
-        // we can't have a constructor GenericGraph(GraphInfo graphInfo) since it conflicts with GenericGraph(GenericGraph graph)
-        // that's why we have a factory method instead
-        GenericGraph graph = new GenericGraph(graphInfo.getNamespace());
-        graph.setDescription(graphInfo.getDescription());
-        graph.setLabel(graphInfo.getLabel());
-        return graph;
-    }
-
-    //    @Override
-//    public Vertex getVertex(NodeRef nodeRef) {
-//        return nodeRefMap.get(nodeRef);
-//    }
 
     @Override
     public GenericGraph asGenericGraph() {
@@ -123,10 +92,6 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         // TODO MVR use junggraph.getEdges instead. However addEdge is adding the edges if not in same namespace
         // We have to figure out a workaround for that somehow
         return new ArrayList<>(edgeToIdMap.values());
-    }
-
-    public void setDescription(String description) {
-        setProperty(GenericProperties.DESCRIPTION, description);
     }
 
     public GraphInfo getGraphInfo(){
@@ -161,75 +126,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
 //        return nodeRefToVertexMap.get(nodeRef);
 //    }
 
-    public void setFocusStrategy(Focus focusStrategy) {
-        this.focusStrategy = focusStrategy; // TODO MVR verify persistence of this
-    }
 
-    @Override
-    public void addEdges(Collection<GenericEdge> edges) {
-        for (GenericEdge eachEdge : edges) {
-            addEdge(eachEdge);
-        }
-    }
-
-    @Override
-    public void addVertices(Collection<GenericVertex> vertices) {
-        for (GenericVertex eachVertex : vertices) {
-            addVertex(eachVertex);
-        }
-    }
-
-    @Override
-    public void addVertex(GenericVertex vertex) {
-        Objects.requireNonNull(vertex);
-        Objects.requireNonNull(vertex.getId());
-        if (jungGraph.containsVertex(vertex.getVertexRef())) return; // already added
-        jungGraph.addVertex(vertex.getVertexRef());
-        vertexToIdMap.put(vertex.getId(), vertex);
-
-//        if (vertex.getNodeRef() != null) {
-//            // TODO MVR implement me
-////            nodeRefToVertexMap.put(vertex.getNodeRef(), vertex);
-//        }
-    }
-
-    @Override
-    public void addEdge(GenericEdge edge) {
-        Objects.requireNonNull(edge);
-        Objects.requireNonNull(edge.getId());
-        if (jungGraph.containsEdge(edge)) return; // already added
-        if(!this.getNamespace().equals(edge.getNamespace())){
-            throw new IllegalArgumentException(
-                    String.format("The namespace of the edge (%s) doesn't match the namespace of this graph (%s). Edge: %s ",
-                    edge.getNamespace(), this.getNamespace(), edge.toString()));
-        }
-        assertVertexFromSameNamespaceIsKnown(edge.getSource());
-        assertVertexFromSameNamespaceIsKnown(edge.getTarget());
-        jungGraph.addEdge(edge, edge.getSource(), edge.getTarget());
-        edgeToIdMap.put(edge.getId(), edge);
-    }
-
-    private void assertVertexFromSameNamespaceIsKnown(VertexRef vertex){
-        if (vertex.getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(vertex.getId()) == null) {
-            throw new IllegalArgumentException(
-                    String.format("Adding an VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
-                            vertex.getId(), this.getNamespace()));
-        }
-    }
-
-    @Override
-    public void removeEdge(GenericEdge edge) {
-        Objects.requireNonNull(edge);
-        jungGraph.removeEdge(edge);
-        edgeToIdMap.remove(edge.getId());
-    }
-
-    @Override
-    public void removeVertex(GenericVertex vertex) {
-        Objects.requireNonNull(vertex);
-        jungGraph.removeVertex(vertex.getVertexRef());
-        vertexToIdMap.remove(vertex.getId());
-    }
 
     @Override
     public GenericVertex getVertex(String id) {
@@ -299,7 +196,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     }
 
     @Override
-    public Graph<GenericVertex, GenericEdge> getSnapshot(Collection<GenericVertex> verticesInFocus, int szl) {
+    public ImmutableGraph<GenericVertex, GenericEdge> getSnapshot(Collection<GenericVertex> verticesInFocus, int szl) {
         // TODO MVR implement me
 //        return new SemanticZoomLevelTransformer(verticesInFocus, szl).transform(this, () -> {
 //            final SimpleGraph<SimpleVertex, SimpleEdge<SimpleVertex>> snapshotGraph = new SimpleGraph<>(getNamespace());
@@ -325,7 +222,154 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         return Objects.hash(super.hashCode(),
                 vertexToIdMap, edgeToIdMap, focusStrategy);
     }
+    
+    public static GenericGraphBuilder builder() {
+        return new GenericGraphBuilder();
+    }
+    
+    public final static class GenericGraphBuilder extends GenericElementBuilder<GenericGraphBuilder> {
+         
+        private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph = new DirectedSparseGraph<>();
+        private final Map<String, GenericVertex> vertexToIdMap = new HashMap<>();
+        private final Map<String, GenericEdge> edgeToIdMap = new HashMap<>();
+//        private final Map<NodeRef, V> nodeRefToVertexMap = new HashMap<>();
 
+        // A calculation of the focus
+        private Focus focusStrategy;
+        
+        // TODO: Patrick make sure we don't change the namespace after adding edges -> they have been validated against the namespace
+        private GenericGraphBuilder() {}
+     
+        public GenericGraphBuilder graph(GenericGraph graph) {
+            this.properties.putAll(graph.getProperties());
+            this.addVertices(graph.getVertices());
+            this.addEdges(graph.getEdges());
+            this.focusStrategy = graph.focusStrategy; // assuming focus strategy is immutable => not so relevant since the implementation will change anyway with next pull request
+            return this;
+        }
+        
+        public GenericGraphBuilder description(String description) {
+            property(GenericProperties.DESCRIPTION, description);
+            return this;
+        }
+        
+        public GenericGraphBuilder graphInfo(GraphInfo graphInfo) {
+            namespace(graphInfo.getNamespace());
+            description(graphInfo.getDescription());
+            label(graphInfo.getLabel());
+            return this;
+        }
+        
+        public GenericGraphBuilder setFocusStrategy(Focus focusStrategy) {
+            this.focusStrategy = focusStrategy; // TODO MVR verify persistence of this
+            return this;
+        }
+
+        public GenericGraphBuilder addEdges(Collection<GenericEdge> edges) {
+            for (GenericEdge eachEdge : edges) {
+                addEdge(eachEdge);
+            }
+            return this;
+        }
+
+        public GenericGraphBuilder addVertices(Collection<GenericVertex> vertices) {
+            for (GenericVertex eachVertex : vertices) {
+                addVertex(eachVertex);
+            }
+            return this;
+        }
+
+        public GenericGraphBuilder addVertex(GenericVertex vertex) {
+            Objects.requireNonNull(vertex, "Vertex can not be null");
+            checkArgument(!Strings.isNullOrEmpty(vertex.getId()) , "GenericVertex.getId() can not be empty or null. Vertex= %s", vertex);
+            Objects.requireNonNull(vertex.getId(), "Vertex id can not be null");
+            if (jungGraph.containsVertex(vertex.getVertexRef())) return this; // already added
+            jungGraph.addVertex(vertex.getVertexRef());
+            vertexToIdMap.put(vertex.getId(), vertex);
+
+//            if (vertex.getNodeRef() != null) {
+//                // TODO MVR implement me
+////                nodeRefToVertexMap.put(vertex.getNodeRef(), vertex);
+//            }
+            return this; 
+        }
+
+        public GenericGraphBuilder addEdge(GenericEdge edge) {
+            Objects.requireNonNull(getNamespace(), "Please set a namespace before adding elements to this graph.");
+            Objects.requireNonNull(edge, "GenericEdge cannot be null");
+            checkArgument(!Strings.isNullOrEmpty(edge.getId()) , "GenericEdge.getId() can not be empty or null. Vertex= %s", edge);
+            Objects.requireNonNull(edge.getId());
+            if (jungGraph.containsEdge(edge)) return this; // already added
+            if(!this.getNamespace().equals(edge.getNamespace())){
+                throw new IllegalArgumentException(
+                        String.format("The namespace of the edge (%s) doesn't match the namespace of this graph (%s). Edge: %s ",
+                        edge.getNamespace(), this.getNamespace(), edge.toString()));
+            }
+            assertVertexFromSameNamespaceIsKnown(edge.getSource());
+            assertVertexFromSameNamespaceIsKnown(edge.getTarget());
+            jungGraph.addEdge(edge, edge.getSource(), edge.getTarget());
+            edgeToIdMap.put(edge.getId(), edge);
+            return this;
+        }
+
+        private void assertVertexFromSameNamespaceIsKnown(VertexRef vertex){
+            if (vertex.getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(vertex.getId()) == null) {
+                throw new IllegalArgumentException(
+                        String.format("Adding a VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
+                                vertex.getId(), this.getNamespace()));
+            }
+        }
+        
+        public void removeEdge(GenericEdge edge) {
+            Objects.requireNonNull(edge);
+            jungGraph.removeEdge(edge);
+            edgeToIdMap.remove(edge.getId());
+        }
+        
+        public void removeVertex(GenericVertex vertex) {
+            Objects.requireNonNull(vertex);
+            jungGraph.removeVertex(vertex.getVertexRef());
+            vertexToIdMap.remove(vertex.getId());
+        }
+        
+        public String getNamespace() {
+            return Objects.requireNonNull((String)this.properties.get(GenericProperties.NAMESPACE), "Namespace is not set yet. Please call namespace(...) first.");
+        }
+        
+        public GenericVertex getVertex(String id) {
+            return vertexToIdMap.get(id);
+        }
+        
+        public GenericGraphBuilder namespace(String namespace) {
+            checkIfNamespaceChangeIsAllowed(namespace);
+            return super.namespace(namespace);
+        }
+    
+        public GenericGraphBuilder property(String name, Object value) {
+            if(GenericProperties.NAMESPACE.equals(name)) {
+                checkIfNamespaceChangeIsAllowed((String)value);
+            }
+            return super.property(name, value);
+        }
+        
+        public GenericGraphBuilder properties(Map<String, Object> properties) {
+            if(properties != null && properties.containsKey(GenericProperties.NAMESPACE)) {
+                checkIfNamespaceChangeIsAllowed((String)properties.get(GenericProperties.NAMESPACE));
+            }
+            return super.properties(properties);
+        }
+        
+        private void checkIfNamespaceChangeIsAllowed(String newNamespace) {
+            if(!this.edgeToIdMap.isEmpty() && !Objects.equals(getNamespace(), newNamespace)) {
+                throw new IllegalStateException("Cannot change namespace after adding Elements to Graph.");
+            }
+        }
+        
+        public GenericGraph build() {
+            return new GenericGraph(this);
+        }
+    }
+    
     private class GenericGraphInfo implements GraphInfo<GenericVertex> {
 
         @Override
@@ -347,7 +391,6 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         public Class<GenericVertex> getVertexType() {
             return GenericVertex.class;
         }
-
 
     }
 }

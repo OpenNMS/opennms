@@ -44,7 +44,6 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
@@ -118,7 +117,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
                 .withPreferredLayout("Hierarchy Layout")
                 .withCriteria(() -> {
                     // Only show the first application by default
-                    Graph genericGraph = graphService.getGraph(ApplicationGraph.TOPOLOGY_NAMESPACE);
+                	GenericGraph genericGraph = graphService.getGraph(ApplicationGraph.TOPOLOGY_NAMESPACE);
                     ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph.asGenericGraph());
                     Optional<ApplicationVertex> firstVertex = applicationGraph.getVertices().stream()
                             .filter( v -> v.getVertexType() == ApplicationVertexType.Application)

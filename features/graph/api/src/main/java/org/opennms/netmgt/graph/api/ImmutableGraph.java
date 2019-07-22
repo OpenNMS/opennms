@@ -34,34 +34,22 @@ import java.util.List;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
-public interface Graph<V extends Vertex, E extends Edge> extends GraphInfo {
+public interface ImmutableGraph<V extends Vertex, E extends Edge> extends GraphInfo {
 
     List<V> getVertices();
 
     List<E> getEdges();
 
-    void addEdges(Collection<E> edges);
-
-    void addVertices(Collection<V> vertices);
-
     V getVertex(String id);
 
     E getEdge(String id);
-
-    void addVertex(V vertex);
-
-    void addEdge(E edge);
-
-    void removeEdge(E edge);
-
-    void removeVertex(V vertex);
 
     List<String> getVertexIds();
 
     List<String> getEdgeIds();
 
-    // TODO MVR also provide List<String> vertexIds, int szl method
-    Graph<V, E> getSnapshot(Collection<V> verticesInFocus, int szl);
+    // TODO MVR also provide List<String> vertexIds, int szl method.
+    ImmutableGraph<V, E> getSnapshot(Collection<V> verticesInFocus, int szl);
 
     List<V> resolveVertices(Collection<String> vertexIds);
 

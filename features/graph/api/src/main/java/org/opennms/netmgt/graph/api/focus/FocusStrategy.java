@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.Vertex;
 
 import com.google.common.collect.Lists;
@@ -46,7 +46,7 @@ public class FocusStrategy {
     public static final Focus EMPTY = graphContext -> Lists.newArrayList();
 
     public static final Focus FIRST = graphContext -> {
-        final Graph<Vertex, Edge> g = graphContext.getGraph();
+        final ImmutableGraph<Vertex, Edge> g = graphContext.getGraph();
         if (g.getVertexIds().isEmpty()) {
             return new ArrayList<>();
         }

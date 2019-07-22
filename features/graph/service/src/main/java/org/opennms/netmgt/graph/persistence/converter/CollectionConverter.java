@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.graph.persistence.converter;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +39,8 @@ import org.opennms.netmgt.graph.persistence.converter.collection.SerializedColle
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -85,13 +86,12 @@ public class CollectionConverter implements Converter<Collection<?>> {
     @Override
     public Collection<?> toValue(Class<Collection<?>> type, String string) {
         final SerializedCollection serializedCollection = gson.fromJson(string, SerializedCollection.class);
-        final Collection resurrectedCollection = recreateCollection(serializedCollection.getType());
-
+        final ArrayList values = new ArrayList<>();
         serializedCollection.getEntries()
                 .stream()
                 .map(entry -> converterService.toValue(entry.getType(), entry.getValue()))
-                .forEach(resurrectedCollection::add);
-
+                .forEach(values::add);
+        final Collection resurrectedCollection = recreateCollection(serializedCollection.getType(), values);
         return resurrectedCollection;
     }
 
@@ -100,12 +100,17 @@ public class CollectionConverter implements Converter<Collection<?>> {
         return Collection.class.isAssignableFrom(type);
     }
 
-    private Collection<?> recreateCollection(Class<Collection<?>> type) {
-        try {
-            return type.getConstructor().newInstance();
-        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            LOG.warn("Cannot recreate {}, will use ArrayList instead. Problem: {}", type, e.getMessage());
-            return new ArrayList();
+    private Collection<?> recreateCollection(Class<Collection<?>> type, List values) {
+
+        // the list of possible collections should be synchronized with: AllowedValuesInPropertiesMap
+        // TODO: Patrick: find a way to keep the 2 classes consistent
+        if (ImmutableList.class.isAssignableFrom(type)) {
+            return ImmutableList.copyOf(values);
+        } else if (ImmutableSet.class.isAssignableFrom(type)) {
+            return ImmutableSet.copyOf(values);
+        } else {
+            LOG.warn("Cannot recreate {}, will use ImmutableList instead.");
+            return ImmutableList.copyOf(values);
         }
     }
 

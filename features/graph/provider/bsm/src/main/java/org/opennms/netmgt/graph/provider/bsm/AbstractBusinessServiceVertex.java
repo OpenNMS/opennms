@@ -28,14 +28,17 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraphProvider.NAMESPACE;
-
+import java.util.Objects;
 import java.util.Set;
 
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
+import org.opennms.netmgt.graph.api.info.NodeInfo;
+import org.opennms.netmgt.graph.simple.AbstractDomainVertex;
 
-public abstract class AbstractBusinessServiceVertex extends SimpleVertex {
+import com.google.common.collect.ImmutableSet;
+
+public abstract class AbstractBusinessServiceVertex extends AbstractDomainVertex {
 
     enum Type {
         BusinessService,
@@ -45,56 +48,84 @@ public abstract class AbstractBusinessServiceVertex extends SimpleVertex {
     }
 
     private final static String PROPERTY_LEVEL = "level";
-    private final static String PROPERTY_TYPE = "type";
+    protected final static String PROPERTY_TYPE = "type";
     private final static String PROPERTY_REDUCTION_KEYS = "reductionKeys";
     private final static String PROPERTY_IS_LEAF = "isLeaf";
-
-    /**
-     * Creates a new {@link AbstractBusinessServiceVertex}.
-     *  @param id the unique id of this vertex. Must be unique overall the namespace.
-     * @param label a human readable label
-     * @param level the level of the vertex in the Business Service Hierarchy. The root element is level 0.
-     */
-    protected AbstractBusinessServiceVertex(String id, String label, int level, Type type, boolean isLeaf,
-                                            Set<String> reductionKeys) {
-        super(NAMESPACE, id);
-        setLabel(label);
-        setLevel(level);
-        setType(type);
-        setIsLeaf(isLeaf);
-        setReductionKeys(reductionKeys);
+    
+    public AbstractBusinessServiceVertex(GenericVertex genericVertex) {
+        super(genericVertex);
+        // specific checks for this class:
+        Objects.requireNonNull(getLevel(), "getLevel() cannot be null.");
+        Objects.requireNonNull(isLeaf(), "isLeaf() cannot be null.");
+        Objects.requireNonNull(getType(), "getType() cannot be null.");
+        Objects.requireNonNull(getReductionKeys(), "getReductionKeys() cannot be null.");
     }
 
     public int getLevel() {
         return this.delegate.getProperty(PROPERTY_LEVEL);
     }
 
-    public void setLevel(int level){
-        this.delegate.setProperty(PROPERTY_LEVEL, level);
-    }
-
     public boolean isLeaf(){
         return this.delegate.getProperty(PROPERTY_IS_LEAF);
-    }
-
-    public void setIsLeaf(boolean isLeaf){
-        this.delegate.setProperty(PROPERTY_IS_LEAF, isLeaf);
     }
 
     public Type getType() {
         return this.delegate.getProperty(PROPERTY_TYPE);
     }
 
-    public void setType(Type type) {
-        this.delegate.setProperty(PROPERTY_TYPE, type);
-    }
-
     public Set<String> getReductionKeys() {
         return this.delegate.getProperty(PROPERTY_REDUCTION_KEYS);
     }
 
-    public void setReductionKeys(Set<String> reductionKeys) {
-        this.delegate.setProperty(PROPERTY_REDUCTION_KEYS, reductionKeys);// TODO MVR collections cannot be persisted
+    public final static AbstractBusinessServiceVertex from(GenericVertex genericVertex) {
+        // TODO: Patrick. I don't really like this piece of code: the super class knows about its children but I haven't found a better
+        // solution yet
+        Type type = genericVertex.getProperty(PROPERTY_TYPE);
+        if (Type.Application == type) {
+            return new ApplicationVertex(genericVertex);
+        } else if (Type.BusinessService == type) {
+            return new BusinessServiceVertex(genericVertex);
+        } else if (Type.IpService == type) {
+            return new IpServiceVertex(genericVertex);
+        } else if (Type.ReductionKey == type) {
+            return new ReductionKeyVertex(genericVertex);
+        } else {
+            throw new IllegalArgumentException("Unknown type of AbstractBusinessServiceVertex: "  + type);
+        }
     }
 
+
+    public abstract static class AbstractBusinessServiceVertexBuilder<T extends AbstractDomainVertexBuilder<?>, V extends AbstractBusinessServiceVertex>
+        extends AbstractDomainVertexBuilder<T> { 
+        
+        protected AbstractBusinessServiceVertexBuilder() {}
+        
+        public T nodeInfo(NodeInfo nodeInfo) {
+            this.properties.put(GenericProperties.NODE_INFO, nodeInfo);
+            return (T)this;
+        }
+        
+        public T reductionKeys(Set<String> reductionKeys) {
+            this.properties.put(PROPERTY_REDUCTION_KEYS, ImmutableSet.copyOf(reductionKeys));
+            return (T)this;
+        }
+        
+        public T type(Type type) {
+            this.properties.put(PROPERTY_TYPE, type);
+            return (T)this;
+        }
+        
+        public T isLeaf(boolean isLeaf){
+            this.properties.put(PROPERTY_IS_LEAF, isLeaf);
+            return (T)this;
+        }
+        
+        /** level the level of the vertex in the Business Service Hierarchy. The root element is level 0. */
+        public T level(int level){
+            this.properties.put(PROPERTY_LEVEL, level);
+            return (T)this;
+        }
+        
+        public abstract V build();
+    }
 }

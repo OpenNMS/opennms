@@ -30,10 +30,14 @@ package org.opennms.netmgt.graph.persistence.mapper;
 
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericEdge.GenericEdgeBuilder;
+import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.generic.GenericVertex.GenericVertexBuilder;
 import org.opennms.netmgt.graph.persistence.converter.ConverterService;
 import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
@@ -44,48 +48,50 @@ public class EntityToGenericMapper {
     private ConverterService converterService = new ConverterService();
 
     public GenericGraphContainer fromEntity(GraphContainerEntity entity) {
-        final GenericGraphContainer genericGraphContainer = new GenericGraphContainer();
+        final GenericGraphContainerBuilder genericGraphContainerBuilder = GenericGraphContainer.builder();
         entity.getProperties().forEach(property -> { // will set id and namespace
             final Object value = convert(property);
-            genericGraphContainer.setProperty(property.getName(), value);
+            genericGraphContainerBuilder.property(property.getName(), value);
         });
         entity.getGraphs().forEach(graphEntity -> {
             GenericGraph genericGraph = fromEntity(graphEntity);
-            genericGraphContainer.addGraph(genericGraph);
+            genericGraphContainerBuilder.addGraph(genericGraph);
         });
-        return genericGraphContainer;
+        return genericGraphContainerBuilder.build();
     }
 
     public GenericGraph fromEntity(final GraphEntity graphEntity) {
-        final GenericGraph genericGraph = new GenericGraph(graphEntity.getNamespace());
+        final GenericGraphBuilder genericGraphBuilder = GenericGraph.builder().namespace(graphEntity.getNamespace());
         graphEntity.getProperties().forEach(property -> { // will set id and namespace
             final Object value = convert(property);
-            genericGraph.setProperty(property.getName(), value);
+            genericGraphBuilder.property(property.getName(), value);
         });
-
+        
         graphEntity.getVertices().stream().forEach(vertexEntity -> {
-            final GenericVertex genericVertex = new GenericVertex(graphEntity.getNamespace(), vertexEntity.getProperty(GenericProperties.ID).getValue());
+            final GenericVertexBuilder genericVertex = GenericVertex.builder()
+            		.namespace(graphEntity.getNamespace())
+                    .id(vertexEntity.getProperty(GenericProperties.ID).getValue());
             vertexEntity.getProperties().forEach(property -> {  // will set id and namespace
                 final Object value = convert(property);
-                genericVertex.setProperty(property.getName(), value);
+                genericVertex.property(property.getName(), value);
             });
-            genericGraph.addVertex(genericVertex);
+            genericGraphBuilder.addVertex(genericVertex.build());
         });
 
         graphEntity.getEdges().stream().forEach(edgeEntity -> {
-            final GenericEdge genericEdge = new GenericEdge(
-                    edgeEntity.getNamespace(),
-                    new VertexRef(edgeEntity.getSource().getNamespace(), edgeEntity.getSource().getId()),
-                    new VertexRef(edgeEntity.getTarget().getNamespace(), edgeEntity.getTarget().getId()));
+            final GenericEdgeBuilder genericEdge = GenericEdge.builder()
+                    .namespace(edgeEntity.getNamespace())
+                    .source(new VertexRef(edgeEntity.getSource().getNamespace(), edgeEntity.getSource().getId()))
+                    .target(new VertexRef(edgeEntity.getTarget().getNamespace(), edgeEntity.getTarget().getId()));
             edgeEntity.getProperties().stream()
                     .forEach(property -> {
                 final Object value = convert(property);
-                genericEdge.setProperty(property.getName(), value);
+                genericEdge.property(property.getName(), value);
             });
-            genericGraph.addEdge(genericEdge);
+            genericGraphBuilder.addEdge(genericEdge.build());
         });
 
-        return genericGraph;
+        return genericGraphBuilder.build();
     }
 
     private Object convert(final PropertyEntity propertyEntity) {

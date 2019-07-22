@@ -26,35 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.api.generic;
 
-import static org.opennms.netmgt.graph.simple.TestObjectCreator.createVertex;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Assert;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
-public class SimpleTest {
-
-    @Test
-    public void verifyVertexCopyConstructor() {
-        final SimpleVertex original = createVertex("dummy", "1");
-        final SimpleVertex copy = new SimpleVertex(original);
-        Assert.assertEquals(original.getId(), copy.getId());
-        Assert.assertEquals(original.getLabel(), copy.getLabel());
-        Assert.assertEquals(original.getNamespace(), copy.getNamespace());
-        Assert.assertEquals(original, copy);
+public class GenericElementTest {
+	
+	@Test
+    public void ensureImmutabilty() {
+    	Map<String, Object> properties = new HashMap<>();
+    	properties.put(GenericProperties.NAMESPACE, "namespace");
+    	GenericElement element = new GenericElement(properties) {};
+    	properties.put("newKey", "newValue");
+    	
+    	// make sure we can't sneak a new element into the properties (size would be 2):
+    	assertEquals(1, element.getProperties().size());
     }
-
-    @Test
-    public void verifyEdgeCopyConstructor() {
-        final SimpleEdge original = new SimpleEdge("dummy", createVertex("dummy", "1"), createVertex("dummy", "2"));
-        original.setLabel("label");
-        final SimpleEdge copy = new SimpleEdge(original);
-        Assert.assertEquals(original.getId(), copy.getId());
-        Assert.assertEquals(original.getLabel(), copy.getLabel());
-        Assert.assertEquals(original.getSource(), copy.getSource());
-        Assert.assertEquals(original.getTarget(), copy.getTarget());
-        Assert.assertEquals(original, copy);
-    }
-
 }
