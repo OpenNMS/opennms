@@ -34,6 +34,8 @@ import java.util.List;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Completion;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -46,23 +48,34 @@ import com.google.common.base.Strings;
 @Service
 public class ImportRequisition implements Action {
 
-    private static final String EVENT_SOURCE = "karaf-shell";
+    public static final String EVENT_SOURCE = "karaf-shell";
 
     @Reference
     private EventForwarder eventForwarder;
 
-    @Argument(index = 0, name = "url", description = "Provide requisition url", required = true)
-    private String url;
-
-    @Argument(index = 1, name = "rescanExisting", description = "Specify rescanExisting value, valid values : 'yes', 'no', 'dbonly'")
+    @Option(name = "-r", aliases = "--rescan", description = "Specify rescanExisting value, valid values : 'yes', 'no', 'dbonly'")
     private String rescanExisting;
+
+    @Argument(index = 0, name = "type", description = "Type", required = true, multiValued = false)
+    @Completion(ProviderTypeNameCompleter.class)
+    private String type;
+
+    @Argument(index = 1, name = "parameters", description = "Provide parameters in key=value form", multiValued = true)
+    private List<String> parameters;
+
+
 
     @Override
     public Object execute() throws Exception {
 
+        return sendImportRequisitionEvent(eventForwarder, type, parameters, rescanExisting);
+    }
+
+    public static Object sendImportRequisitionEvent(EventForwarder eventForwarder, String type, List<String> parameters, String rescanExisting) {
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, EVENT_SOURCE);
 
-        if (!Strings.isNullOrEmpty(url)) {
+        if((!Strings.isNullOrEmpty(type)) && !parameters.isEmpty()) {
+            String url = String.format("requisition://%s?%s", type, String.join("&", parameters));
             eventBuilder.addParam(EventConstants.PARM_URL, url);
             if (!Strings.isNullOrEmpty(rescanExisting)) {
                 List<String> validValues = Arrays.asList("yes", "dbonly", "no");
@@ -74,9 +87,9 @@ public class ImportRequisition implements Action {
                 }
             }
             eventForwarder.sendNow(eventBuilder.getEvent());
-            System.out.printf("\"Requisition import triggered asynchronously for URL : %s\n", url);
+            System.out.printf("Requisition import triggered asynchronously for URL : %s\n", url);
         } else {
-            System.out.printf("No valid requisition url specified\n");
+            System.out.printf("No valid requisition parameters specified\n");
         }
         return null;
     }
