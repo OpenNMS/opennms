@@ -74,8 +74,8 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     private SinkModule<S,T> sinkModule;
     private DispatcherState<W,S,T> state;
     private boolean useOffHeap = false;
-    
-    final RateLimitedLog rateLimittedLogger = RateLimitedLog
+
+    private static final RateLimitedLog rateLimittedLogger = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.standardSeconds(30))
             .build();
@@ -98,7 +98,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
                 LOG.info("Offheap storage enabled for sink module, {}", sinkModule.getId());
             }
         }
-        
+
         final RejectedExecutionHandler rejectedExecutionHandler;
         if (asyncPolicy.isBlockWhenFull()) {
             // This queue ensures that calling thread is blocked when the queue is full
@@ -157,7 +157,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
      *
      * If the implementation is changed, make sure that that executor is built accordingly.
      */
-    
+
     private static class OfferBlockingQueue<E> extends LinkedBlockingQueue<E> {
         private static final long serialVersionUID = 1L;
 
@@ -179,20 +179,12 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
 
     @Override
     public CompletableFuture<S> send(S message) {
-         
-        // Check if OffHeap is enabled and if local queue is full or if OffHeap not Empty then write message to OffHeap.
-        if (useOffHeap && (asyncPolicy.getQueueSize() == getQueueSize() ||
-                ((offHeapAdapter != null) && !offHeapAdapter.isOffHeapEmpty()))) {
-            // Start drain thread before the first write to OffHeapQueue.
-            if (offHeapAdapter == null) {
-                this.offHeapAdapter = new OffHeapAdapter();
-                offHeapAdapterExecutor.execute(offHeapAdapter);
-                LOG.info("started drain thread for {}", sinkModule.getId());
-            }
-            try {
-                return offHeapAdapter.writeMessage(message);
-            } catch (WriteFailedException e) {
-                rateLimittedLogger.error("OffHeap write failed ", e);
+
+        if (useOffHeap && checkIfMessageShouldBeWrittenToOffHeap()) {
+
+            CompletableFuture<S> future = writeToOffHeap(message);
+            if (future != null) {
+                return future;
             }
         }
         try {
@@ -206,7 +198,38 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
             return future;
         }
     }
-    
+
+    private boolean checkIfMessageShouldBeWrittenToOffHeap() {
+        // If either queue is full or offheap queue is
+        if(getQueueSize() == asyncPolicy.getQueueSize() ||
+                ((offHeapAdapter != null) && !offHeapAdapter.isOffHeapEmpty())) {
+            rateLimittedLogger.trace("local queue {} is full, falling back to Offheap memory", getQueueSize());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * If local queue is full then write message to OffHeap.
+     * Also write to OffHeap if we still have messages in Offheap ( drain didn't complete yet)
+     * @param message
+     * @return CompletableFuture<S> return future if it is written to offheap else return null
+     */
+    private CompletableFuture<S> writeToOffHeap(S message) {
+        // Start drain thread before the first write to OffHeapQueue.
+        if (offHeapAdapter == null || offHeapAdapter.closed.get()) {
+            this.offHeapAdapter = new OffHeapAdapter();
+            offHeapAdapterExecutor.execute(offHeapAdapter);
+            LOG.info("started drain thread for {}", sinkModule.getId());
+        }
+        try {
+            return offHeapAdapter.writeMessage(message);
+        } catch (WriteFailedException e) {
+            rateLimittedLogger.error("OffHeap write failed ", e);
+        }
+        return null;
+    }
+
     @Override
     public int getQueueSize() {
         return queue.size();
@@ -225,7 +248,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     /** This adapter encapsulates write/read sink messages to OffHeapQueue. **/
     private class OffHeapAdapter implements Runnable {
 
-        private Map<String, CompletableFuture<S>> offHeapFutureMap = new ConcurrentHashMap<>();
+        private Map<Long, CompletableFuture<S>> offHeapFutureMap = new ConcurrentHashMap<>();
         private final CountDownLatch firstWrite = new CountDownLatch(1);
         private final AtomicBoolean closed = new AtomicBoolean(false);
 
@@ -243,45 +266,52 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         @Override
         public void run() {
             while (!closed.get()) {
-               
+
                 try {
                     // Wait till atleast one write call to OffHeapQueue.
                     firstWrite.await();
                     //retrieve key,value entry from top of queue.
-                    AbstractMap.SimpleImmutableEntry<String, byte[]> keyValue = offHeapQueue
+                    AbstractMap.SimpleImmutableEntry<Long, byte[]> keyValue = offHeapQueue
                             .readNextMessage(sinkModule.getId());
                     if (keyValue != null) {
                         queue.put(() -> {
-                            S message = sinkModule.unmarshalSingleMessage(keyValue.getValue());
-                            syncDispatcher.send(message);
                             CompletableFuture<S> future = offHeapFutureMap.get(keyValue.getKey());
-                            future.complete(message);
-                            offHeapFutureMap.remove(keyValue.getKey());
+                            if(future != null) {
+                                S message = sinkModule.unmarshalSingleMessage(keyValue.getValue());
+                                syncDispatcher.send(message);
+                                future.complete(message);
+                                offHeapFutureMap.remove(keyValue.getKey());
+                            }
                         });
 
+                    } else if(offHeapAdapter.isOffHeapEmpty()) {
+                        closed.set(true);
+                        break;
                     }
                 } catch (InterruptedException e) {
                    LOG.warn("Interrupted while retrieving OffHeap Message for {} ", sinkModule.getId(), e);
                 }
             }
+            LOG.info("Closed drain thread for module {}", state.getModule().getId());
+            state.getMetrics().remove(MetricRegistry.name(state.getModule().getId(), "offheap-messages"));
         }
-        
+
         /** writeMessage will marshal sink message and write to OffHeapQueue and return a future that is cached in map. **/
         public CompletableFuture<S> writeMessage(S message) throws WriteFailedException {
             final CompletableFuture<S> future = new CompletableFuture<>();
             byte[] bytes = sinkModule.marshalSingleMessage(message);
             String uuid = UUID.randomUUID().toString();
-            offHeapFutureMap.put(uuid, future);
-            offHeapQueue.writeMessage(bytes, sinkModule.getId(), uuid);
+            Long key =  offHeapQueue.writeMessage(sinkModule.getId(), bytes);
+            offHeapFutureMap.put(key, future);
             firstWrite.countDown();
             return future;
-            
+
         }
-        
+
         public boolean isOffHeapEmpty() {
             return offHeapFutureMap.isEmpty();
         }
-        
+
         public void shutdown() {
             firstWrite.countDown();
             closed.set(true);

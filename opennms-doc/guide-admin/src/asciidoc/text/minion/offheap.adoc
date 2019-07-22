@@ -9,8 +9,6 @@ Once the queue is full, additional messages will be dropped.
 
 The off-heap storage feature allows us to extend the storage capacity by queuing messages outside of the JVM heap.
 
-NOTE: The current implementation of the off-heap storage supports storing messages in the system memory outside of the heap.
-      No file-system based storage is currently support.
 
 ==== Configuring Off-heap Storage
 
@@ -27,6 +25,13 @@ Configure storage limits and enable the feature with:
 ----
 echo 'offHeapSize=1.2GB
 enableOffHeap=true' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.offheap.cfg"
+----
+
+Also configure path where Offheap messages can be stored.
+
+[source, sh]
+----
+echo 'offHeapPath=/tmp/rocksdb' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.offheap.cfg"
 ----
 
 Specify offHeapSize in KB, MB or GB. For ex: 1.2GB, 2.5MB, 845KB.

@@ -35,12 +35,10 @@ public interface OffHeapQueue {
 
     /**
      * Write Message for a Sink Module and a key that is unique to message.
-     *
-     * @param message sink message in byte array.
      * @param moduleName Sink Module Name.
-     * @param key  unique id for the sink message.
+     * @param message sink message in byte array.
      */
-    boolean writeMessage(byte[] message, String moduleName, String key) throws WriteFailedException;
+    Long writeMessage(String moduleName, byte[] message) throws WriteFailedException;
 
     /**
      *
@@ -50,7 +48,7 @@ public interface OffHeapQueue {
      * @return key, value pair where key is the uuid and value is sink message.
      * @throws InterruptedException if interrupted while waiting
      */
-    AbstractMap.SimpleImmutableEntry<String, byte[]> readNextMessage(String moduleName) throws InterruptedException;
+    AbstractMap.SimpleImmutableEntry<Long, byte[]> readNextMessage(String moduleName) throws InterruptedException;
 
     /**
      *

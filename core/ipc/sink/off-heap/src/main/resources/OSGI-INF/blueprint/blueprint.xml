@@ -12,10 +12,10 @@
 ">
 
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
-    
-    <bean id="offHeapQueue" class="org.opennms.core.ipc.sink.offheap.H2OffHeapStore" 
-      init-method="init" destroy-method="destroy">
-          <argument ref="configAdmin"/>
+
+    <bean id="offHeapQueue" class="org.opennms.core.ipc.sink.offheap.rocksdb.RocksdbStore"
+          init-method="init" destroy-method="destroy">
+      <argument ref="configAdmin"/>
     </bean>
 
     <service ref="offHeapQueue" interface="org.opennms.core.ipc.sink.api.OffHeapQueue" />

@@ -32,6 +32,11 @@
       <artifactId>org.opennms.core.ipc.sink.api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.rocksdb</groupId>
+      <artifactId>rocksdbjni</artifactId>
+      <version>${rocksdbjniVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -48,11 +53,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>${h2databaseVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>

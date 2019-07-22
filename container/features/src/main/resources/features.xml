@@ -235,6 +235,7 @@
     </feature>
     <feature name="rate-limited-logger" version="${rateLimitedLoggerVersion}" description="Rate Limited Logger">
         <feature>joda-time</feature>
+        <bundle dependency="true">mvn:com.google.guava/guava/19.0</bundle>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
     </feature>
     <feature name="spring-security32" version="${springSecurityVersion}" description="Spring :: Security">
@@ -470,7 +471,7 @@
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>dropwizard-metrics</feature>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.offheap/${project.version}</bundle>
-        <bundle>mvn:com.h2database/h2/${h2databaseVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/${rocksdbjniVersion}</bundle>
     </feature>
     <feature name="opennms-core-ipc-sink-camel-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: Camel :: Common">
         <feature>opennms-core-ipc-sink-api</feature>
