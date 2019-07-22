@@ -28,6 +28,7 @@
 
 package org.opennms.features.collection.dto;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -58,10 +59,14 @@ public class CollectionAgentDTOTest extends XmlTestNoCastor<CollectionAgentDTO> 
         collectionAgentDTO.setStorageResourcePath(ResourcePath.get("tmp", "foo"));
         collectionAgentDTO.setSavedSysUpTime(149);
 
+        String tempFoo = "tmp" + File.separator + "foo";
         return Arrays.asList(new Object[][] {
             {
                 collectionAgentDTO,
-                "<agent address=\"192.168.1.1\" store-by-fs=\"true\" node-id=\"99\" node-label=\"switch\" foreign-source=\"fs\" foreign-id=\"fid\" location=\"HQ\" storage-resource-path=\"tmp/foo\" sys-up-time=\"149\">\n" +
+                "<agent address=\"192.168.1.1\" store-by-fs=\"true\" node-id=\"99\" node-label=\"switch\"" +
+                " foreign-source=\"fs\" foreign-id=\"fid\" location=\"HQ\" storage-resource-path=\"" +
+                tempFoo  +
+                "\" sys-up-time=\"149\">\n" +
                 "   <attribute key=\"k1\"><![CDATA[v1]]></attribute>\n" +
                 "</agent>"
             }

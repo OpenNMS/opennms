@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -53,7 +52,6 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.ThresholdsConfigModifiable;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Group;
-import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
@@ -114,7 +112,7 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
         try {
             loadConfigFile(configFile);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            // TODO Log WARN but continue with current config.
             e.printStackTrace();
         }
     }

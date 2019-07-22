@@ -86,7 +86,6 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
     protected ResourceStorageDao m_resourceStorageDao;
 
-    private boolean m_initialized = false;
     private boolean m_hasThresholds = false;
     private boolean m_counterReset = false;
     private ServiceParameters m_svcParams;
@@ -110,11 +109,8 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         m_eventProxy = eventProxy;
         m_threshdConfig = threshdConfig;
         m_thresholdsConfig = thresholdsConfig;
-        initThresholdsDao(); // FIXME - remove
+        m_thresholdsDao = new DefaultThresholdsDao(m_thresholdsConfig, m_eventProxy);
         initialize();
-        if (!m_initialized) {
-            throw new ThresholdInitializationException("Failed to initialize thresholding set.");
-        }
     }
 
     protected void initialize() throws ThresholdInitializationException {
@@ -147,8 +143,6 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
     @VisibleForTesting
     void reinitialize(final boolean reloadThresholdConfig) {
-        m_initialized = false;
-
         final boolean hasThresholds = m_hasThresholds;
         final List<ThresholdGroup> thresholdGroups = new ArrayList<>(m_thresholdGroups);
         final List<String> scheduledOutages = new ArrayList<>(m_scheduledOutages);
@@ -156,7 +150,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             if (reloadThresholdConfig) {
                 m_thresholdsConfig.reload();
             }
-            initThresholdsDao();
+            m_thresholdsDao = new DefaultThresholdsDao(m_thresholdsConfig, m_eventProxy);
             mergeThresholdGroups(m_nodeId, m_hostAddress, m_serviceName);
             updateScheduledOutages();
         } catch (final Exception e) {
@@ -171,7 +165,6 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                 m_scheduledOutages.clear();
                 m_scheduledOutages.addAll(scheduledOutages);
             }
-            m_initialized = true;
         }
     }
 
@@ -387,14 +380,6 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             return true;
         }
         return false;
-    }
-
-    protected final void initThresholdsDao() throws ThresholdInitializationException {
-        if (!m_initialized) {
-            LOG.debug("initThresholdsDao: Initializing Threshold DAO");
-            m_thresholdsDao = new DefaultThresholdsDao(m_thresholdsConfig, m_eventProxy);
-            m_initialized = true;
-        }
     }
 
     /*

@@ -138,6 +138,12 @@ public class ThresholdingIT {
     @Autowired
     private RrdStrategy rrdStrategy;
 
+    @Autowired
+    private ThresholdsConfigFactory m_thresholdsConfig;
+
+    @Autowired
+    private ThreshdConfigFactory m_threshdConfig;
+
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -164,6 +170,7 @@ public class ThresholdingIT {
 
         // Resync after adding nodes/interfaces
         interfaceToNodeCache.dataSourceSync();
+
     }
 
     @Test
@@ -178,8 +185,8 @@ public class ThresholdingIT {
         long ifOutOctets = 194503622;
 
         // Load custom threshd configuration
-        initThreshdFactories("/threshd-configuration.xml", "/thresholds.xml");
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        initFactories("/threshd-configuration.xml", "/thresholds.xml");
+        m_threshdConfig.rebuildPackageIpListMap();
         mockEventIpcManager.addEventListener((EventListener) thresholdingService, ThresholdingServiceImpl.UEI_LIST);
 
         // Compute the path to the RRD file
@@ -353,9 +360,11 @@ public class ThresholdingIT {
         return telemetrydConfig;
     }
 
-    private void initThreshdFactories(String threshd, String thresholds) throws Exception {
-        ThresholdsConfigFactory.setInstance(new ThresholdsConfigFactory(getClass().getResourceAsStream(thresholds)));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
+    private void initFactories(String threshd, String thresholds) throws Exception {
+        File thresholdsXml = Paths.get("src", "test", "resources", thresholds).toFile();
+        m_thresholdsConfig.setConfigFile(thresholdsXml);
+        File threshdXml = Paths.get("src", "test", "resources", threshd).toFile();
+        m_threshdConfig.setConfigFile(threshdXml);
     }
 
 }
