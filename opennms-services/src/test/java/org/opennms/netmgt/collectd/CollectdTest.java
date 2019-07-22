@@ -37,6 +37,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +49,6 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -59,13 +59,13 @@ import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
@@ -101,6 +101,8 @@ public class CollectdTest {
     private MockScheduler m_scheduler;
     private CollectdConfiguration m_collectdConfig;
     private CollectdConfigFactory m_collectdConfigFactory;
+
+    private PollOutagesConfigFactory m_outageConfig;
 
     @Before
     public void setUp() throws Exception {
@@ -142,12 +144,17 @@ public class CollectdTest {
         EasyMock.replay(m_filterDao);
         FilterDaoFactory.setInstance(m_filterDao);
 
+        EffectiveConfigurationDao mockEffectiveConfigurationDao = EasyMock.createMock(EffectiveConfigurationDao.class);
+        EasyMock.expect(mockEffectiveConfigurationDao.save(EasyMock.anyObject())).andReturn(1).anyTimes();
+        EasyMock.replay(mockEffectiveConfigurationDao);
+
         // This call will also ensure that the poll-outages.xml file can parse IPv4
         // and IPv6 addresses.
-        Resource resource = new ClassPathResource("etc/poll-outages.xml");
-        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(resource);
-        factory.afterPropertiesSet();
-        PollOutagesConfigFactory.setInstance(factory);
+        m_outageConfig = new PollOutagesConfigFactory();
+        m_outageConfig.setEffectiveConfigurationDao(mockEffectiveConfigurationDao);
+        File outagesXml = Paths.get("src", "test", "resources", "etc", "poll-outages.xml").toFile();
+        // FIXME factory.afterPropertiesSet();
+        m_outageConfig.setConfigFile(outagesXml);
 
         final MockTransactionTemplate transTemplate = new MockTransactionTemplate();
         transTemplate.afterPropertiesSet();
@@ -301,6 +308,7 @@ public class CollectdTest {
         // Mock Thresholding
         ThresholdingService mockThresholdingService = m_easyMockUtils.createMock(ThresholdingService.class);
         ThresholdingSession mockThresholdingSession = m_easyMockUtils.createMock(ThresholdingSession.class);
+        EasyMock.expect(mockThresholdingService.getOutagesConfig()).andReturn(m_outageConfig);
         EasyMock.expect(mockThresholdingService.createSession(EasyMock.anyInt(), EasyMock.anyString(), 
                                                               EasyMock.anyString(), EasyMock.anyObject(), EasyMock.anyObject())).andReturn(mockThresholdingSession);
 

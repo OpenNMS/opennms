@@ -151,6 +151,8 @@ public class ThresholdingVisitorIT {
 
     private ThresholdsConfigFactory m_thresholdsConfig;
 
+    private PollOutagesConfigFactory m_pollOutagesConfig;
+
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
         public int compare(Parm o1, Parm o2) {
@@ -262,6 +264,10 @@ public class ThresholdingVisitorIT {
         m_thresholdsConfig = new ThresholdsConfigFactory();
         m_thresholdsConfig.setEffectiveConfigurationDao(mockEffectiveConfigurationDao);
         m_thresholdsConfig.init();
+
+        m_pollOutagesConfig = new PollOutagesConfigFactory();
+        m_pollOutagesConfig.setEffectiveConfigurationDao(mockEffectiveConfigurationDao);
+        m_pollOutagesConfig.init();
         
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
         final StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
@@ -279,8 +285,8 @@ public class ThresholdingVisitorIT {
         FileWriter writer = new FileWriter(file);
         writer.write(sb.toString());
         writer.close();
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
-        PollOutagesConfigFactory.getInstance().afterPropertiesSet();
+        m_pollOutagesConfig.setConfigFile(file);
+        // FIXME PollOutagesConfigFactory.getInstance().afterPropertiesSet();
         initFactories("threshd-configuration.xml", "test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<>();
     };
@@ -1673,7 +1679,10 @@ public class ThresholdingVisitorIT {
     private ThresholdingVisitor createVisitor(int node, String location, String serviceName, ServiceParameters svcParams) throws ThresholdInitializationException {
         ThresholdingEventProxyImpl eventProxy = new ThresholdingEventProxyImpl();
         eventProxy.setEventMgr(eventMgr);
-        ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(), svcParams, m_resourceStorageDao, eventProxy, m_threshdConfig,
+        ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(),
+                                                                      svcParams, m_resourceStorageDao, eventProxy,
+                                                                      m_pollOutagesConfig,
+                                                                      m_threshdConfig,
                                                                       m_thresholdsConfig);
         ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, m_resourceStorageDao, eventProxy);
         assertNotNull(visitor);
@@ -1684,10 +1693,8 @@ public class ThresholdingVisitorIT {
         LOG.info("Initialize Threshold Factories");
         Path thresholdsPath = Paths.get("src", "test", "resources", thresholds);
         m_thresholdsConfig.setConfigFile(thresholdsPath.toFile());
-        m_thresholdsConfig.reload();
         Path threshdPath = Paths.get("src", "test", "resources", threshd);
         m_threshdConfig.setConfigFile(threshdPath.toFile());
-        m_threshdConfig.reload();
     }
 
     private void runGaugeDataTest(ThresholdingVisitor visitor, long value) {

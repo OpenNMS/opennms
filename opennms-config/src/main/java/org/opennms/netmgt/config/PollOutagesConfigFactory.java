@@ -28,11 +28,17 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Date;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.PollOutagesConfigModifiable;
+import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.model.EffectiveConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,101 +49,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /**
- * This is the singleton class used to load the configuration for the poller
- * outages from the poll-outages xml file. <strong>Note: </strong>Users of
- * this class should make sure the <em>init()</em> is called before calling
- * any other method to ensure the config is loaded before accessing other
- * convenience methods.
- * 
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * This is the singleton class used to load the configuration for the poller outages from the poll-outages xml file.
  */
 public final class PollOutagesConfigFactory extends PollOutagesConfigManager implements PollOutagesConfigModifiable {
-    /**
-     * The singleton instance of this factory
-     */
-    private static PollOutagesConfigFactory m_singleton = null;
 
-    /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
+    private File configFile;
 
     @Autowired
     private EffectiveConfigurationDao effectiveConfigurationDao;
 
-    /**
-     * Private constructor
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     */
-    PollOutagesConfigFactory(final String configFile) {
+    public synchronized void init() throws IOException {
+        configFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
+        loadConfigFile(configFile);
+
+        afterPropertiesSet(); // FIXME approximate this.
+    }
+
+    private void loadConfigFile(File configFile) throws IOException {
         setConfigResource(new FileSystemResource(configFile));
-    }
-
-    /**
-     * Create a PollOutagesConfigFactory using the specified Spring resource.
-     */
-    public PollOutagesConfigFactory(final Resource resource) {
-        setConfigResource(resource);
-    }
-
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException
-     *             if any.
-     */
-    public static synchronized void init() throws IOException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-
-        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME)));
-        factory.afterPropertiesSet();
-        setInstance(factory);
+        afterPropertiesSet();
+        saveEffective();
     }
 
     @Override
-    public void reload() throws IOException {
-        m_loaded = false;
-        init();
-        getInstance().update();
-    }
-
-    /**
-     * Return the singleton instance of this factory.
-     * 
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static PollOutagesConfigFactory getInstance() {
-        if (!m_loaded) {
-            throw new IllegalStateException("The factory has not been initialized");
+    public void reload() {
+        try {
+            loadConfigFile(configFile);
+        } catch (IOException e) {
+            // TODO Log WARN but continue with current config.
+            e.printStackTrace();
         }
-
-        return m_singleton;
-    }
-
-    /**
-     * <p>
-     * setInstance
-     * </p>
-     * 
-     * @param instance
-     *            a {@link org.opennms.netmgt.config.PollOutagesConfigFactory}
-     *            object.
-     */
-    public static void setInstance(final PollOutagesConfigFactory instance) {
-        m_loaded = true;
-        m_singleton = instance;
     }
 
     @Override
@@ -148,7 +89,6 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager imp
 
     public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
         this.effectiveConfigurationDao = effectiveConfigurationDao;
-        saveEffective();
     }
 
     private void saveEffective() {
@@ -170,5 +110,11 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager imp
             e.printStackTrace();
             return "";
         }
+    }
+
+    @Override
+    public void setConfigFile(File file) {
+        configFile = file;
+        reload();
     }
 }

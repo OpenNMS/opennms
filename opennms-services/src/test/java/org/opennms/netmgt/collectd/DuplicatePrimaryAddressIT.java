@@ -33,11 +33,10 @@ import static org.easymock.EasyMock.eq;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,6 +50,7 @@ import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.api.PollOutagesConfigModifiable;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
@@ -76,8 +76,6 @@ import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.test.mock.EasyMockUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 /**
  * Test class for <a href="http://issues.opennms.org/browse/NMS-6226">NMS-6226</a>
@@ -183,14 +181,14 @@ public class DuplicatePrimaryAddressIT {
         EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(m_addrs).anyTimes();
         FilterDaoFactory.setInstance(m_filterDao);
 
-        Resource resource = new ClassPathResource("etc/poll-outages.xml");
-        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(resource);
-        factory.afterPropertiesSet();
-        PollOutagesConfigFactory.setInstance(factory);
-
+        PollOutagesConfigModifiable m_pollOutageConfig = new PollOutagesConfigFactory();
+        File outagesXml = Paths.get("src", "test", "resources", "etc", "poll-outages.xml").toFile();
+        // FIXME factory.afterPropertiesSet();
+        m_pollOutageConfig.setConfigFile(outagesXml);
+        /*
         File homeDir = resource.getFile().getParentFile().getParentFile();
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
-
+        */
         Collector collector = new Collector();
         collector.setService("SNMP");
         collector.setClassName(MockServiceCollector.class.getName());

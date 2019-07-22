@@ -52,7 +52,6 @@ abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfi
         super(Outages.class, "poll outage configuration");
     }
 
-    /** {@inheritDoc} */
     @Override
     public void afterPropertiesSet() throws DataAccessException {
         /**

@@ -36,7 +36,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.InetAddress;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -70,7 +69,7 @@ import org.opennms.netmgt.collection.api.LatencyCollectionAttributeType;
 import org.opennms.netmgt.collection.api.LatencyCollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.api.PollOutagesConfigModifiable;
 import org.opennms.netmgt.config.api.ThreshdConfigModifiable;
 import org.opennms.netmgt.config.api.ThresholdsConfigModifiable;
 import org.opennms.netmgt.dao.api.IfLabel;
@@ -95,7 +94,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -146,6 +144,9 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     private Map<String, String> mockIfInfo;
 
     @Autowired
+    private PollOutagesConfigModifiable m_pollOutagesConfig;
+
+    @Autowired
     private ThresholdsConfigModifiable m_thresholdsConfig;
 
     @Autowired
@@ -154,11 +155,13 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     @Autowired
     private ThresholdingService m_thresholdingService;
 
+
     private int m_nodeId = 1;
     private String m_svcName = "HTTP";
     private String m_ipAddress = "127.0.0.1";
     private ServiceParameters m_serviceParams = new ServiceParameters(Collections.emptyMap());
     private String m_location = null;
+
 
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
@@ -278,8 +281,8 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         FileWriter writer = new FileWriter(file);
         writer.write(sb.toString());
         writer.close();
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
-        PollOutagesConfigFactory.getInstance().afterPropertiesSet();
+        m_pollOutagesConfig.setConfigFile(file);
+        // FIXME m_pollOutagesConfig.afterPropertiesSet();
         initFactories("threshd-configuration.xml", "test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<>();
     };

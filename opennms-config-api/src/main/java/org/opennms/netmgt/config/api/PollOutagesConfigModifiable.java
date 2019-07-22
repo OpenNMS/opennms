@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config.api;
 
+import java.io.File;
 import java.io.IOException;
 
 public interface PollOutagesConfigModifiable extends PollOutagesConfig {
@@ -39,5 +40,12 @@ public interface PollOutagesConfigModifiable extends PollOutagesConfig {
      *                Thrown if the specified config file cannot be read/loaded
      */
     void reload() throws IOException;
+
+    /**
+     * A method to facilitate unit tests.
+     * Set the configuration to a new File resource.
+     * Automatically envokes reload() afterwards.
+     */
+    void setConfigFile(File file);
 
 }

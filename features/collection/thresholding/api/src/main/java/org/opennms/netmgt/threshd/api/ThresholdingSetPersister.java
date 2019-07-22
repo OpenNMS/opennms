@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd.api;
 
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.api.ThreshdConfig;
 import org.opennms.netmgt.config.api.ThresholdsConfig;
 
@@ -35,8 +36,8 @@ public interface ThresholdingSetPersister {
 
     void persistSet(ThresholdingSession session, ThresholdingSet set);
 
-    ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy, ThreshdConfig threshdConfig, ThresholdsConfig thresholdsConfig)
-            throws ThresholdInitializationException;
+    ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy, PollOutagesConfig pollOutagesConfig, ThreshdConfig threshdConfig,
+            ThresholdsConfig thresholdsConfig) throws ThresholdInitializationException;
 
     void reinitializeThresholdingSets();
 

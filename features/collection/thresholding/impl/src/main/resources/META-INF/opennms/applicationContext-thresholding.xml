@@ -24,6 +24,7 @@
 		<property name="eventProxy" ref="thresholdingEventProxy"/>
 		<property name="eventIpcManager" ref="eventIpcManager"/>
 		<property name="thresholdingSetPersister" ref="thresholdingSetPersister"/>
+		<property name="outagesConfig" ref="outagesConfigModifiable"/>
 		<property name="threshdConfig" ref="threshdConfigModifiable"/>
 		<property name="thresholdsConfig" ref="thresholdsConfigModifiable"/>
     </bean>

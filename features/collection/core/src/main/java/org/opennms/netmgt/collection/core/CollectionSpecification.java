@@ -51,6 +51,8 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.PollOutagesConfigManager;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
@@ -326,11 +328,8 @@ public class CollectionSpecification {
      * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @return a boolean.
      */
-    public boolean scheduledOutage(CollectionAgent agent) {
+    public boolean scheduledOutage(CollectionAgent agent, PollOutagesConfig pollOutagesConfig) {
         boolean outageFound = false;
-
-        PollOutagesConfigFactory outageFactory = PollOutagesConfigFactory.getInstance();
-
         /*
          * Iterate over the outage names defined in the interface's package.
          * For each outage...if the outage contains a calendar entry which
@@ -340,10 +339,9 @@ public class CollectionSpecification {
          */ 
         for (String outageName : m_package.getOutageCalendars()) {
             // Does the outage apply to the current time?
-            if (outageFactory.isCurTimeInOutage(outageName)) {
+            if (pollOutagesConfig.isCurTimeInOutage(outageName)) {
                 // Does the outage apply to this interface?
-                if ((outageFactory.isNodeIdInOutage(agent.getNodeId(), outageName)) ||
-                        (outageFactory.isInterfaceInOutage(agent.getHostAddress(), outageName)))
+                if ((pollOutagesConfig.isNodeIdInOutage(agent.getNodeId(), outageName)) || (pollOutagesConfig.isInterfaceInOutage(agent.getHostAddress(), outageName)))
                 {
                     LOG.debug("scheduledOutage: configured outage '{}' applies, interface {} will not be collected for {}", outageName, agent.getHostAddress(), this);
                     outageFound = true;

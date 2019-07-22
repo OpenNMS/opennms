@@ -59,6 +59,7 @@ import org.opennms.netmgt.collection.support.CollectionSetVisitorWrapper;
 import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -137,6 +138,8 @@ class CollectableService implements ReadyRunnable {
 
     private final PersisterFactory m_persisterFactory;
 
+    private PollOutagesConfig m_pollOutageConfig;
+
     private ThresholdingSession m_thresholdingSession;
 
     /**
@@ -174,6 +177,7 @@ class CollectableService implements ReadyRunnable {
         m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
+        m_pollOutageConfig = thresholdingService.getOutagesConfig();
         try {
             m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params);
         } catch (ThresholdInitializationException e) {
@@ -350,7 +354,7 @@ class CollectableService implements ReadyRunnable {
          * Check scheduled outages to see if any apply indicating
          * that the collection should be skipped.
          */
-        if (!m_spec.scheduledOutage(m_agent)) {
+        if (!m_spec.scheduledOutage(m_agent, m_pollOutageConfig)) {
             try {
                 doCollection();
                 updateStatus(CollectionStatus.SUCCEEDED, null);

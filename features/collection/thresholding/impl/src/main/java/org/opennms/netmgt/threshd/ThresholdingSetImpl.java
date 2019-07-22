@@ -49,7 +49,7 @@ import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.api.ThreshdConfig;
 import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.config.poller.outages.Outage;
@@ -97,8 +97,12 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
     private ThreshdConfig m_threshdConfig;
 
-    public ThresholdingSetImpl(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao,
-            ThresholdingEventProxy eventProxy, ThreshdConfig threshdConfig, ThresholdsConfig thresholdsConfig)
+    private PollOutagesConfig m_pollOutagesConfig;
+
+    public ThresholdingSetImpl(int nodeId, String hostAddress, String serviceName, RrdRepository repository, 
+            ServiceParameters svcParams, ResourceStorageDao resourceStorageDao,
+            ThresholdingEventProxy eventProxy, PollOutagesConfig pollOutagesConfig,
+            ThreshdConfig threshdConfig, ThresholdsConfig thresholdsConfig)
             throws ThresholdInitializationException {
         m_nodeId = nodeId;
         m_hostAddress = (hostAddress == null ? null : hostAddress.intern());
@@ -107,6 +111,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         m_svcParams = svcParams;
         m_resourceStorageDao = resourceStorageDao;
         m_eventProxy = eventProxy;
+        m_pollOutagesConfig = pollOutagesConfig;
         m_threshdConfig = threshdConfig;
         m_thresholdsConfig = thresholdsConfig;
         m_thresholdsDao = new DefaultThresholdsDao(m_thresholdsConfig, m_eventProxy);
@@ -254,13 +259,12 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     }
 
     public final boolean isNodeInOutage() {
-        PollOutagesConfigFactory outageFactory = PollOutagesConfigFactory.getInstance();
         boolean outageFound = false;
         synchronized(m_scheduledOutages) {
             for (String outageName : m_scheduledOutages) {
-                if (outageFactory.isCurTimeInOutage(outageName)) {
+                if (m_pollOutagesConfig.isCurTimeInOutage(outageName)) {
                     LOG.debug("isNodeInOutage[node={}]: current time is on outage using '{}'; checking the node with IP {}", m_nodeId, outageName, m_hostAddress);
-                    if (outageFactory.isNodeIdInOutage(m_nodeId, outageName) || outageFactory.isInterfaceInOutage(m_hostAddress, outageName)) {
+                    if (m_pollOutagesConfig.isNodeIdInOutage(m_nodeId, outageName) || m_pollOutagesConfig.isInterfaceInOutage(m_hostAddress, outageName)) {
                         LOG.debug("isNodeInOutage[node={}]: configured outage '{}' applies, interface {} will be ignored for threshold processing", m_nodeId, outageName, m_hostAddress);
                         outageFound = true;
                         break;
@@ -432,7 +436,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                 for (String outageCal : pkg.getOutageCalendars()) {
                     LOG.info("updateScheduledOutages[node={}]: checking scheduled outage '{}'", m_nodeId, outageCal);
                     try {
-                        Outage outage = PollOutagesConfigFactory.getInstance().getOutage(outageCal);
+                        Outage outage = m_pollOutagesConfig.getOutage(outageCal);
                         if (outage == null) {
                             LOG.info("updateScheduledOutages[node={}]: scheduled outage '{}' is not defined.", m_nodeId, outageCal);
                         } else {

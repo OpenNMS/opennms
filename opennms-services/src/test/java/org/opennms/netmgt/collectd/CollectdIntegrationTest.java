@@ -37,6 +37,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.dao.api.EffectiveConfigurationDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -79,8 +81,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.test.mock.EasyMockUtils;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 /**
  * CollectdIntegrationTest
@@ -121,15 +121,20 @@ public class CollectdIntegrationTest {
         m_filterDao = m_mockUtils.createMock(FilterDao.class);
         FilterDaoFactory.setInstance(m_filterDao);
         
+        EffectiveConfigurationDao mockEffectiveConfigurationDao = m_mockUtils.createMock(EffectiveConfigurationDao.class);
+        EasyMock.expect(mockEffectiveConfigurationDao.save(EasyMock.anyObject())).andReturn(1).anyTimes();
+        EasyMock.replay(mockEffectiveConfigurationDao);
 
         // This call will also ensure that the poll-outages.xml file can parse IPv4
         // and IPv6 addresses.
-        Resource resource = new ClassPathResource("etc/poll-outages.xml");
-        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(resource);
-        factory.afterPropertiesSet();
-        PollOutagesConfigFactory.setInstance(factory);
+        PollOutagesConfigFactory m_pollOutageConfig = new PollOutagesConfigFactory();
+        m_pollOutageConfig.setEffectiveConfigurationDao(mockEffectiveConfigurationDao);
+        File outagesXml = Paths.get("src", "test", "resources", "etc", "poll-outages.xml").toFile();
+        m_pollOutageConfig.setConfigFile(outagesXml);
 
-        File homeDir = resource.getFile().getParentFile().getParentFile();
+        EasyMock.reset(mockEffectiveConfigurationDao);
+
+        File homeDir = outagesXml.getParentFile().getParentFile();
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
 
         // set up test using a string key
@@ -209,7 +214,7 @@ public class CollectdIntegrationTest {
 
         // Inits the class
         m_collectd.afterPropertiesSet();
-        //assertNotNull(m_serviceCollector);
+        assertNotNull(m_serviceCollector);
     }
     
     public static void setServiceCollectorInTest(String testKey, MockServiceCollector collector) {

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.mock;
 
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.api.ThreshdConfig;
 import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -51,6 +52,11 @@ public class MockThresholdingService implements ThresholdingService {
 
     @Override
     public ThresholdsConfig getThresholdsConfig() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public PollOutagesConfig getOutagesConfig() {
         throw new UnsupportedOperationException("Not implemented");
     }
 

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.config.api;
 
+import org.opennms.netmgt.config.poller.outages.Outage;
+
 public interface PollOutagesConfig {
     
     /**
@@ -78,5 +80,10 @@ public interface PollOutagesConfig {
      * @throws java.lang.Exception if any.
      */
     public abstract void update() throws Exception;
+
+    /**
+     * Return the specified outage. Null if there is no outage with the given name.
+     */
+    Outage getOutage(String outageCalendar);
     
 }

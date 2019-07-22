@@ -111,12 +111,11 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
     @Autowired
     private ThresholdingService m_thresholdingService;
 
+    private PollOutagesConfigModifiable m_pollOutageConfig;
+
     private ThresholdsConfigModifiable m_thresholdsConfig;
 
     private ThreshdConfigModifiable m_threshdConfig;
-
-    @Autowired
-    private PollOutagesConfigModifiable m_pollOutageConfig;
 
     @Override
     public void setTemporaryDatabase(MockDatabase database) {
@@ -158,6 +157,10 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         m_threshdConfig = (ThreshdConfigModifiable) m_thresholdingService.getThreshdConfig();
         File threshdXml = Paths.get("src", "test", "resources", "etc", "threshd-configuration.xml").toFile();
         m_threshdConfig.setConfigFile(threshdXml);
+
+        m_pollOutageConfig = (PollOutagesConfigModifiable) m_thresholdingService.getOutagesConfig();
+        File outagesXml = Paths.get("src", "test", "resources", "etc", "poll-outages.xml").toFile();
+        m_pollOutageConfig.setConfigFile(outagesXml);
 
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
@@ -215,15 +218,12 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         writer.write(sb.toString());
         writer.close();
 
-        PollOutagesConfigFactory oldFactory = PollOutagesConfigFactory.getInstance();
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
-        PollOutagesConfigFactory.getInstance().afterPropertiesSet();
+        m_pollOutageConfig.setConfigFile(file);
+        // FIXME PollOutagesConfigFactory.getInstance().afterPropertiesSet();
 
         executeThresholdTest(new Double[] { 100.0 });
         m_eventIpcManager.getEventAnticipator().verifyAnticipated();
 
-        // Reset the state of the PollOutagesConfigFactory for any subsequent tests
-        PollOutagesConfigFactory.setInstance(oldFactory);
         file.delete();
     }
 

@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.ro;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.api.PollOutagesConfig;
+import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Outages;
 
 public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages> implements PollOutagesConfig {
@@ -72,6 +73,12 @@ public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages>
     public void update() throws Exception {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public Outage getOutage(String name) {
+        Outages outages = getConfig();
+        return outages == null ? null : outages.getOutage(name);
     }
 
 }

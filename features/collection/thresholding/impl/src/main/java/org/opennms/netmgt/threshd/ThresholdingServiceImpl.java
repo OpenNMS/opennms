@@ -36,6 +36,7 @@ import javax.annotation.PostConstruct;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdsConfigFactory;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.api.ThreshdConfig;
 import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
@@ -81,9 +82,11 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     @Autowired
     private EventIpcManager eventIpcManager;
 
-    private ThresholdsConfig thresholdsConfig;
+    private PollOutagesConfig outagesConfig;
 
     private ThreshdConfig threshdConfig;
+
+    private ThresholdsConfig thresholdsConfig;
 
     @PostConstruct
     private void init() {
@@ -134,6 +137,11 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     }
 
     @Override
+    public PollOutagesConfig getOutagesConfig() {
+        return outagesConfig;
+    }
+
+    @Override
     public ThreshdConfig getThreshdConfig() {
         return threshdConfig;
     }
@@ -144,7 +152,8 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     }
 
     public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session) throws ThresholdInitializationException {
-        ThresholdingSetImpl thresholdingSet = (ThresholdingSetImpl) thresholdingSetPersister.getThresholdingSet(session, eventProxy, threshdConfig, thresholdsConfig);
+        ThresholdingSetImpl thresholdingSet = (ThresholdingSetImpl) thresholdingSetPersister.getThresholdingSet(session, eventProxy, outagesConfig, threshdConfig,
+                                                                                                                thresholdsConfig);
         return new ThresholdingVisitorImpl(thresholdingSet, ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy);
     }
 
@@ -174,6 +183,10 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     public void close(ThresholdingSessionImpl session) {
         thresholdingSetPersister.clear(session);
+    }
+
+    public void setOutagesConfig(PollOutagesConfig outagesConfig) {
+        this.outagesConfig = outagesConfig;
     }
 
     public void setThresholdsConfig(ThresholdsConfig thresholdsConfig) {
@@ -222,5 +235,6 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     private void reinitializeThresholdingSets(Event e) {
         thresholdingSetPersister.reinitializeThresholdingSets();
     }
+
 
 }

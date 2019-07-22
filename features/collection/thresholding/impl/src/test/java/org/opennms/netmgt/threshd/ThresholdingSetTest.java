@@ -51,6 +51,8 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 
 public class ThresholdingSetTest {
+    private PollOutagesConfigFactory m_pollOutagesConfigFactory;
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -64,8 +66,8 @@ public class ThresholdingSetTest {
     @Test(expected=ThresholdInitializationException.class)
     public void testBadThresholdingConfigInitialize() throws Exception {
         System.setProperty("opennms.home", getClass().getResource("testBadThresholdingConfig").getFile());
-        PollOutagesConfigFactory.init();
-        new ThresholdingSetImpl(1, "127.0.0.1", "SNMP", new RrdRepository(), null, null, null, null, null);
+        // FIXME m_pollOutagesConfigFactory.init();
+        new ThresholdingSetImpl(1, "127.0.0.1", "SNMP", new RrdRepository(), null, null, null, null, null, null);
     }
 
     @Test
@@ -82,8 +84,7 @@ public class ThresholdingSetTest {
         Files.copy(goodXml, targetXml);
 
         System.setProperty("opennms.home", opennmsHome);
-        PollOutagesConfigFactory.init();
-        final ThresholdingSetImpl set = new ThresholdingSetImpl(1, "127.0.0.1", "SNMP", new RrdRepository(), null, null, null, null, null);
+        final ThresholdingSetImpl set = new ThresholdingSetImpl(1, "127.0.0.1", "SNMP", new RrdRepository(), null, null, null, null, null, null);
 
         LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
         assertEquals("There should be no warnings or higher after initializing with a good config.", 0, events.length);
