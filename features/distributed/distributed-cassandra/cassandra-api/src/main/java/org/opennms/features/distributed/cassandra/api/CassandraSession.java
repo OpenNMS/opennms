@@ -38,6 +38,13 @@ import com.datastax.driver.core.Statement;
 
 /**
  * A thin facade on top of Cassandra's {@link com.datastax.driver.core.Session session}.
+ * 
+ * The purpose of using this interface rather than Cassandra's {@link com.datastax.driver.core.Session} directly is
+ * because Newts wraps the session in a similar interface and does not expose the session directly. So rather than
+ * depending on the newts version of the interface in OpenNMS we have this one and proxy between them in
+ * NewtsCassandraSessionFactory. The implication being that any future implementations that may expose a
+ * {@link com.datastax.driver.core.Session} directly will have to wrap it with this interface, but that should be
+ * trivial.
  */
 public interface CassandraSession {
     PreparedStatement prepare(String statement);
