@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.collection;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -65,6 +67,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -163,6 +168,24 @@ public abstract class AbstractPersistingAdapter implements Adapter {
             });
 
     /**
+     * Time taken to handle a log
+     */
+    private final Timer logParsingTimer;
+
+    /**
+     * Number of message per log
+     */
+    private final Histogram packetsPerLogHistogram;
+
+    public AbstractPersistingAdapter(String name, MetricRegistry metricRegistry) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(metricRegistry);
+
+        logParsingTimer = metricRegistry.timer(name("adapters", name, "logParsing"));
+        packetsPerLogHistogram = metricRegistry.histogram(name("adapters", name, "packetsPerLog"));
+    }
+
+    /**
      * Build a collection set from the given message.
      *
      * The message log is also provided in case the log contains additional
@@ -183,38 +206,41 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     @Override
     public void handleMessageLog(TelemetryMessageLog messageLog) {
-        for (TelemetryMessageLogEntry message : messageLog.getMessageList()) {
-            handleMessage(message, messageLog).forEach(result -> {
-                // Locate the matching package definition
-                final PackageDefinition pkg = getPackageFor(adapterConfig, result.getAgent());
-                if (pkg == null) {
-                    LOG.warn("No matching package found for message: {}. Dropping.", message);
-                    return;
-                }
-
-                // Build the repository from the package definition
-                final RrdRepository repository = new RrdRepository();
-                repository.setStep(pkg.getRrd().getStep());
-                repository.setHeartBeat(repository.getStep() * 2);
-                repository.setRraList(pkg.getRrd().getRras());
-                repository.setRrdBaseDir(new File(pkg.getRrd().getBaseDir()));
-
-                // Persist!
-                final CollectionSet collectionSet = result.getCollectionSet();
-                LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
-                final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
-                collectionSet.visit(persister);
-
-                // Thresholding
-                try {
-                    if (isThresholdingEnabled.get()) {
-                        ThresholdingSession session = getSessionForAgent(result.getAgent(), repository);
-                        session.accept(collectionSet);
+        try (Timer.Context ctx = logParsingTimer.time()) {
+            for (TelemetryMessageLogEntry message : messageLog.getMessageList()) {
+                handleMessage(message, messageLog).forEach(result -> {
+                    // Locate the matching package definition
+                    final PackageDefinition pkg = getPackageFor(adapterConfig, result.getAgent());
+                    if (pkg == null) {
+                        LOG.warn("No matching package found for message: {}. Dropping.", message);
+                        return;
                     }
-                } catch (ThresholdInitializationException e) {
-                    LOG.warn("Failed Thresholding of CollectionSet : {} for agent: {}", e.getMessage(), result.getAgent());
-                }
-            });
+
+                    // Build the repository from the package definition
+                    final RrdRepository repository = new RrdRepository();
+                    repository.setStep(pkg.getRrd().getStep());
+                    repository.setHeartBeat(repository.getStep() * 2);
+                    repository.setRraList(pkg.getRrd().getRras());
+                    repository.setRrdBaseDir(new File(pkg.getRrd().getBaseDir()));
+
+                    // Persist!
+                    final CollectionSet collectionSet = result.getCollectionSet();
+                    LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
+                    final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
+                    collectionSet.visit(persister);
+
+                    // Thresholding
+                    try {
+                        if (isThresholdingEnabled.get()) {
+                            ThresholdingSession session = getSessionForAgent(result.getAgent(), repository);
+                            session.accept(collectionSet);
+                        }
+                    } catch (ThresholdInitializationException e) {
+                        LOG.warn("Failed Thresholding of CollectionSet : {} for agent: {}", e.getMessage(), result.getAgent());
+                    }
+                });
+            }
+            packetsPerLogHistogram.update(messageLog.getMessageList().size());
         }
     }
 

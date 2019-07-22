@@ -38,9 +38,10 @@ import com.codahale.metrics.MetricRegistry;
 
 public class Netflow9Adapter extends AbstractFlowAdapter<BsonDocument> {
 
-    public Netflow9Adapter(final MetricRegistry metricRegistry,
+    public Netflow9Adapter(final String name,
+                           final MetricRegistry metricRegistry,
                            final FlowRepository flowRepository) {
-        super(metricRegistry, flowRepository, new Netflow9Converter());
+        super(name, metricRegistry, flowRepository, new Netflow9Converter());
     }
 
     @Override

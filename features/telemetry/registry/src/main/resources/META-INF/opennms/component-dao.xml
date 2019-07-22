@@ -25,6 +25,28 @@
 		<onmsgi:listener ref="parserRegistry" bind-method="onBind" unbind-method="onUnbind" />
 	</onmsgi:list>
 
+	<bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry">
+		<qualifier value="telemetryMetricRegistry" />
+	</bean>
+	<onmsgi:service interface="com.codahale.metrics.MetricSet" ref="metricRegistry">
+		<onmsgi:service-properties>
+			<entry key="registration.export" value="true" />
+			<entry key="name" value="Telemetryd" />
+			<entry key="description" value="Telemetryd related metrics" />
+		</onmsgi:service-properties>
+	</onmsgi:service>
+	<bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+		<constructor-arg ref="metricRegistry"/>
+	</bean>
+	<bean id="metricRegistryDomainedJmxReporterBuilder" factory-bean="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+		<constructor-arg value="org.opennms.netmgt.telemetry"/>
+	</bean>
+	<bean id="metricRegistryJmxReporter"
+		  factory-bean="metricRegistryDomainedJmxReporterBuilder"
+		  factory-method="build"
+		  init-method="start"
+		  destroy-method="stop" />
+
 	<bean id="telemetryRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryRegistryImpl" />
 	<onmsgi:service interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" ref="telemetryRegistry" />
 

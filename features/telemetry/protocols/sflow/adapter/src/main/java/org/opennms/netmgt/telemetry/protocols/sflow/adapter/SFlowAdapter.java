@@ -38,9 +38,10 @@ import com.codahale.metrics.MetricRegistry;
 
 public class SFlowAdapter extends AbstractFlowAdapter<BsonDocument> {
 
-    public SFlowAdapter(final MetricRegistry metricRegistry,
+    public SFlowAdapter(final String name,
+                        final MetricRegistry metricRegistry,
                         final FlowRepository flowRepository) {
-        super(metricRegistry, flowRepository, new SFlowConverter());
+        super(name, metricRegistry, flowRepository, new SFlowConverter());
     }
 
     @Override
