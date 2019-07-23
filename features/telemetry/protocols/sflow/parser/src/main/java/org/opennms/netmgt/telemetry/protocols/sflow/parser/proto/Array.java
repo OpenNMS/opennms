@@ -62,6 +62,11 @@ public class Array<T> implements Iterable<T> {
         this.values = Collections.unmodifiableList(values);
     }
 
+    public Array(final int size, final List<T> values) {
+        this.size = size;
+        this.values = values;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

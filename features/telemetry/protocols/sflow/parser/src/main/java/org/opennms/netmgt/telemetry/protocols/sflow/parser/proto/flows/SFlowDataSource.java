@@ -45,6 +45,10 @@ public class SFlowDataSource {
         this.sflow_data_source = BufferUtils.uint32(buffer);
     }
 
+    public SFlowDataSource(final long sflow_data_source) {
+        this.sflow_data_source = sflow_data_source;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

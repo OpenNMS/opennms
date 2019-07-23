@@ -38,9 +38,9 @@ import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils;
 
-class SFlow implements Flow {
+public class SFlow implements Flow {
 
-    static class Header {
+    public static class Header {
         private final BsonDocument document;
 
         public Header(final BsonDocument document) {
@@ -194,8 +194,8 @@ class SFlow implements Flow {
 
     @Override
     public String getNextHop() {
-        return first(get(document, "flows", "0:1002", "netxhop", "ipv6"),
-                get(document, "flows", "0:1002", "netxhop", "ipv4"))
+        return first(get(document, "flows", "0:1002", "nexthop", "ipv6"),
+                get(document, "flows", "0:1002", "nexthop", "ipv4"))
                 .map(v -> v.asString().getValue())
                 .orElse(null);
     }

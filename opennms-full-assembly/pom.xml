@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>24.1.1-SNAPSHOT</version>
+    <version>24.1.3-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -300,8 +300,6 @@
 
                 <!-- Karaf framework features -->
                 <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
-                <!-- Karaf enterprise features -->
-                <descriptor>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</descriptor>
                 <!-- Karaf standard and Spring features, replaced by our modified versions -->
                 <!-- <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor> -->
                 <!-- <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor> -->

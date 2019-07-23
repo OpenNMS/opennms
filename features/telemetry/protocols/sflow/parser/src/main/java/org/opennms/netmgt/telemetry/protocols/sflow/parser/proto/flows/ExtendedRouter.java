@@ -55,6 +55,12 @@ public class ExtendedRouter implements FlowData {
         this.dst_mask_len = BufferUtils.uint32(buffer);
     }
 
+    public ExtendedRouter(final NextHop nexthop, final long src_mask_len, final long dst_mask_len) {
+        this.nexthop = nexthop;
+        this.src_mask_len = src_mask_len;
+        this.dst_mask_len = dst_mask_len;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
