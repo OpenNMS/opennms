@@ -43,8 +43,9 @@
         java.net.*,
         java.sql.SQLException,
         org.opennms.core.soa.ServiceRegistry,
+        org.opennms.core.spring.BeanUtils,
         org.opennms.core.utils.InetAddressUtils,
-        org.opennms.netmgt.config.PollOutagesConfigFactory,
+        org.opennms.netmgt.config.api.PollOutagesConfigModifiable,
         org.opennms.netmgt.config.poller.outages.Outage,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.dao.api.PathOutageManager,
@@ -227,13 +228,13 @@
 	pageContext.setAttribute("navEntries", renderedLinks);
 
     final List<String> schedOutages = new ArrayList<>();
-    PollOutagesConfigFactory f = PollOutagesConfigFactory.getInstance();
-    for (final Outage outage : f.getOutages()) {
-        if (f.isCurTimeInOutage(outage)) {
-            boolean inOutage = f.isNodeIdInOutage(nodeId, outage);
+    PollOutagesConfigModifiable outagesConfig = BeanUtils.getBean("commonContext", "outagesConfigModifiable", PollOutagesConfigModifiable.class);
+    for (final Outage outage : outagesConfig.getOutages()) {
+        if (outagesConfig.isCurTimeInOutage(outage)) {
+            boolean inOutage = outagesConfig.isNodeIdInOutage(nodeId, outage);
             if (!inOutage) {
                 for (final Interface i : intfs) {
-                    if (f.isInterfaceInOutage(i.getIpAddress(), outage)) {
+                    if (outagesConfig.isInterfaceInOutage(i.getIpAddress(), outage)) {
                         inOutage = true;
                         break;
                     }

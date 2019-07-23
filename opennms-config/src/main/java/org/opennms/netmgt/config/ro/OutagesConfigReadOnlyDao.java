@@ -28,11 +28,17 @@
 
 package org.opennms.netmgt.config.ro;
 
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.api.PollOutagesConfig;
+import org.opennms.netmgt.config.poller.outages.Interface;
+import org.opennms.netmgt.config.poller.outages.Node;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Outages;
+import org.opennms.netmgt.config.poller.outages.Time;
 
 public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages> implements PollOutagesConfig {
 
@@ -70,15 +76,69 @@ public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages>
     }
 
     @Override
-    public void update() throws Exception {
+    public Outage getOutage(String name) {
+        Outages outages = getConfig();
+        return outages == null ? null : outages.getOutage(name);
+    }
+
+    @Override
+    public String getOutageType(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Outage> getOutages() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Lock getReadLock() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Node> getNodeIds(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Interface> getInterfaces(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Time> getOutageTimes(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void update() {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public Outage getOutage(String name) {
-        Outages outages = getConfig();
-        return outages == null ? null : outages.getOutage(name);
+    public boolean isCurTimeInOutage(Outage out) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isNodeIdInOutage(long lnodeid, Outage out) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isInterfaceInOutage(String linterface, Outage out) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

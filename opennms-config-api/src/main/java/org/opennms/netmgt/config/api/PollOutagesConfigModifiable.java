@@ -30,6 +30,10 @@ package org.opennms.netmgt.config.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+
+import org.opennms.netmgt.config.poller.outages.Outage;
 
 public interface PollOutagesConfigModifiable extends PollOutagesConfig {
 
@@ -48,4 +52,13 @@ public interface PollOutagesConfigModifiable extends PollOutagesConfig {
      */
     void setConfigFile(File file);
 
+    public Lock getWriteLock();
+
+    public void addOutage(final Outage newOutage);
+
+    public void replaceOutage(final Outage oldOutage, final Outage newOutage);
+
+    public void removeOutage(final String outageName);
+
+    public void saveCurrent() throws IOException;
 }

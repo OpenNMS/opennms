@@ -29,15 +29,19 @@
 
 --%>
 
+<%@page import="org.opennms.netmgt.config.api.PollOutagesConfigModifiable"%>
 <%@page language="java"
         contentType="text/html"
         session="true"
         import="java.util.*,
+        org.opennms.netmgt.config.api.PollOutagesConfigModifiable,
+        org.opennms.netmgt.config.api.ThreshdConfigModifiable,
         org.opennms.netmgt.config.*,
         org.opennms.netmgt.config.collectd.Package,
         org.opennms.netmgt.config.poller.*,
         org.opennms.netmgt.config.poller.outages.*,
         org.opennms.core.db.DataSourceFactory,
+        org.opennms.core.spring.BeanUtils,
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
@@ -202,8 +206,7 @@
 	final int month = today.get(Calendar.MONTH) + 1;
 	final int year = today.get(Calendar.YEAR);
 
-	PollOutagesConfigFactory.init(); //Only init - do *not* reload
-	PollOutagesConfigFactory pollFactory = PollOutagesConfigFactory.getInstance();
+	PollOutagesConfigModifiable outagesConfig = BeanUtils.getBean("commonContext", "outagesConfigModifiable", PollOutagesConfigModifiable.class);
 	Outage theOutage;
 
 	if ("Cancel".equals(request.getParameter("cancelButton"))) {
@@ -215,7 +218,7 @@
 	if (nameParam != null) {
 		//first time in - name is passed as a param.  Find the outage, copy it, and shove it in the session
 		//Also keep a copy of the name, for later saving (replacing the original with the edited copy)
-		Outage tempOutage = pollFactory.getOutage(nameParam);
+		Outage tempOutage = outagesConfig.getOutage(nameParam);
 		CharArrayWriter writer = new CharArrayWriter();
 		tempOutage.marshal(writer);
 		theOutage = (Outage) Outage.unmarshal(new CharArrayReader(writer.toCharArray()));
@@ -223,7 +226,7 @@
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
 		nameParam = request.getParameter("newName");
-		Outage tempOutage = pollFactory.getOutage(nameParam);
+		Outage tempOutage = outagesConfig.getOutage(nameParam);
 		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
 			CharArrayWriter writer = new CharArrayWriter();
 			tempOutage.marshal(writer);
@@ -285,9 +288,9 @@ Could not find an outage to edit because no outage name parameter was specified 
 	}
 
 	// ******* Threshd outages config *********
-	ThreshdConfigFactory.init();
+	ThreshdConfigModifiable threshdConfig = BeanUtils.getBean("commonContext", "threshdConfigModifiable", ThreshdConfigModifiable.class);
 	Map<org.opennms.netmgt.config.threshd.Package, List<String>> thresholdOutages = new HashMap<org.opennms.netmgt.config.threshd.Package, List<String>>();
-	for (org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+	for (org.opennms.netmgt.config.threshd.Package thisPackage : threshdConfig.getConfiguration().getPackages()) {
 		thresholdOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("threshold-" + thisPackage.getName());
@@ -326,7 +329,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	String isFormSubmission = request.getParameter("formSubmission");
 	if ("true".equals(isFormSubmission)) {
 
-		pollFactory.getWriteLock().lock();
+		outagesConfig.getWriteLock().lock();
 		
 		try {
 
@@ -383,10 +386,10 @@ Could not find an outage to edit because no outage name parameter was specified 
 				String origname = (String) request.getSession().getAttribute("opennms.editoutage.origname");
 				if (origname == null) {
 					//A new outage - just plonk it in place
-					pollFactory.addOutage(theOutage);
+					outagesConfig.addOutage(theOutage);
 				} else {
 					//An edited outage - replace the old one
-					pollFactory.replaceOutage(pollFactory.getOutage(origname), theOutage);
+					outagesConfig.replaceOutage(outagesConfig.getOutage(origname), theOutage);
 				}
 				//Push the enabledOutages into the actual configuration of the various packages
 				//Don't do until after we've successfully put the outage into the polloutages configuration (for coherency)
@@ -443,9 +446,9 @@ Could not find an outage to edit because no outage name parameter was specified 
 				}
 	
 				//Save to disk	
-				pollFactory.saveCurrent();
+				outagesConfig.saveCurrent();
 				NotifdConfigFactory.getInstance().saveCurrent();
-				ThreshdConfigFactory.getInstance().saveCurrent();
+				threshdConfig.saveCurrent();
 				collectdConfig.saveCurrent();
 				PollerConfigFactory.getInstance().save();
 				sendOutagesChangedEvent();
@@ -593,7 +596,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 			}
 
 		} finally {
-			pollFactory.getWriteLock().unlock();
+			outagesConfig.getWriteLock().unlock();
 		}
 
 	} //end if form submission

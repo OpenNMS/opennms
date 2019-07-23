@@ -28,7 +28,13 @@
 
 package org.opennms.netmgt.config.api;
 
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+
+import org.opennms.netmgt.config.poller.outages.Interface;
+import org.opennms.netmgt.config.poller.outages.Node;
 import org.opennms.netmgt.config.poller.outages.Outage;
+import org.opennms.netmgt.config.poller.outages.Time;
 
 public interface PollOutagesConfig {
     
@@ -75,15 +81,28 @@ public interface PollOutagesConfig {
     boolean isTimeInOutage(long time, String outName);
 
     /**
-     * <p>update</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    public abstract void update() throws Exception;
-
-    /**
      * Return the specified outage. Null if there is no outage with the given name.
      */
     Outage getOutage(String outageCalendar);
     
+    public String getOutageType(final String name);
+
+    public List<Outage> getOutages();
+
+    public Lock getReadLock();
+
+    public List<Node> getNodeIds(final String name);
+
+    public List<Interface> getInterfaces(final String name);
+
+    public List<Time> getOutageTimes(final String name);
+
+    public boolean isCurTimeInOutage(final Outage out);
+
+    public boolean isNodeIdInOutage(final long lnodeid, final Outage out);
+
+    public boolean isInterfaceInOutage(final String linterface, final Outage out);
+
+    public void update();
+
 }
