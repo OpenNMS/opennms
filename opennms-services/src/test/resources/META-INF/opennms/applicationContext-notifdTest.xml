@@ -56,12 +56,6 @@
 
     <bean id="notificationCommandFactory" class="org.opennms.netmgt.config.NotificationCommandFactory" depends-on="notificationCommandFactory-init" factory-method="getInstance"/>
 
-    <bean id="pollOutagesConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
-    </bean>
-
-    <bean id="pollOutagesConfigFactory" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="pollOutagesConfigFactory-init" factory-method="getInstance"/>
-    
     <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
 
     <bean id="eventConfResourceLocation" class="java.lang.String">

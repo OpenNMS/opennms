@@ -64,7 +64,7 @@
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
         <entry key="opennms.properties" value="unknown"/>
         <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
-        <entry key="poll-outages.xml" value="pollOutagesConfigFactory"/>
+        <entry key="poll-outages.xml" value="outagesConfigModifiable"/>
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
         <entry key="provisiond-configuration.xml" value="provisiondConfigurationDao"/>
         <!-- <entry key="rancid-configuration.xml" value="rancidAdapterConfigFactory"/> --><!-- Not part of standard build -->
@@ -313,11 +313,10 @@
     <property name="targetMethod"><value>getEndpoint</value></property>
   </bean>
 
-  <bean id="pollOutagesConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
+  <bean id="outagesConfigModifiable" class="org.opennms.netmgt.config.PollOutagesConfigFactory">
+    <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
   </bean>
 
-  <bean id="pollOutagesConfigFactory" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="pollOutagesConfigFactory-init" factory-method="getInstance"/>
 
   <!-- 
   <bean id="pollerConfigFactory" class="org.opennms.netmgt.config.PollerConfigFactory">
