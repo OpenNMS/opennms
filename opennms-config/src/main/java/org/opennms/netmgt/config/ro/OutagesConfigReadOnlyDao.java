@@ -173,4 +173,16 @@ public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages>
         return BasicScheduleUtils.isTimeInSchedule(calendar, BasicScheduleUtils.getBasicOutageSchedule(outage));
     }
 
+    @Override
+    public Calendar getEndOfOutage(String scheduledOutageName) {
+        final Outage outage = getOutage(scheduledOutageName);
+        if (outage == null)
+            return null;
+        return getEndOfOutage(outage);
+    }
+
+    private Calendar getEndOfOutage(final Outage outage) {
+        return BasicScheduleUtils.getEndOfSchedule(BasicScheduleUtils.getBasicOutageSchedule(outage));
+    }
+
 }

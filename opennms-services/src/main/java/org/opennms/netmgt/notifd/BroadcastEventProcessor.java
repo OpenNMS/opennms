@@ -41,10 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +56,7 @@ import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
@@ -97,7 +95,8 @@ public final class BroadcastEventProcessor implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
 
     private volatile Map<String, NoticeQueue> m_noticeQueues;
-    private volatile PollOutagesConfigManager m_pollOutagesConfigManager;
+
+    private volatile PollOutagesConfig m_pollOutagesConfig;
     private volatile NotificationManager m_notificationManager;
     private volatile NotifdConfigManager m_notifdConfigManager;
     private volatile DestinationPathManager m_destinationPathManager;
@@ -164,7 +163,7 @@ public final class BroadcastEventProcessor implements EventListener {
         if (m_eventManager == null) {
             throw new IllegalStateException("property eventManager not set");
         }
-        if (m_pollOutagesConfigManager == null) {
+        if (m_pollOutagesConfig == null) {
             throw new IllegalStateException("property pollOutagesConfigManager not set");
         }
         if (m_notificationManager == null) {
@@ -629,7 +628,7 @@ public final class BroadcastEventProcessor implements EventListener {
                                 // if the auto ack catches the other event
                                 // before then,
                                 // then the page will not be sent
-                                Calendar endOfOutage = getPollOutagesConfigManager().getEndOfOutage(scheduledOutageName);
+                                Calendar endOfOutage = getPollOutagesConfig().getEndOfOutage(scheduledOutageName);
                                 startTime = endOfOutage.getTime().getTime();
                             } else {
                                 // No auto-ack exists - there's no point
@@ -1049,7 +1048,7 @@ public final class BroadcastEventProcessor implements EventListener {
     public String scheduledOutage(long nodeId, String theInterface) {
         try {
 
-            PollOutagesConfigManager outageFactory = getPollOutagesConfigManager();
+            PollOutagesConfigManager outageFactory = getPollOutagesConfig();
 
             // Iterate over the outage names
             // For each outage...if the outage contains a calendar entry which
@@ -1211,23 +1210,12 @@ public final class BroadcastEventProcessor implements EventListener {
         m_notificationManager = notificationManager;
     }
 
-    /**
-     * <p>getPollOutagesConfigManager</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.PollOutagesConfigManager} object.
-     */
-    public PollOutagesConfigManager getPollOutagesConfigManager() {
-        return m_pollOutagesConfigManager;
+    public PollOutagesConfig getPollOutagesConfig() {
+        return m_pollOutagesConfig;
     }
 
-    /**
-     * <p>setPollOutagesConfigManager</p>
-     *
-     * @param pollOutagesConfigManager a {@link org.opennms.netmgt.config.PollOutagesConfigManager} object.
-     */
-    public void setPollOutagesConfigManager(
-            PollOutagesConfigManager pollOutagesConfigManager) {
-        m_pollOutagesConfigManager = pollOutagesConfigManager;
+    public void setPollOutagesConfig(PollOutagesConfig pollOutagesConfig) {
+        m_pollOutagesConfig = pollOutagesConfig;
     }
 
     /**

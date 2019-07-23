@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config.api;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 
@@ -104,5 +105,7 @@ public interface PollOutagesConfig {
     public boolean isInterfaceInOutage(final String linterface, final Outage out);
 
     public void update();
+
+    Calendar getEndOfOutage(String scheduledOutageName);
 
 }

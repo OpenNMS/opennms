@@ -47,8 +47,7 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
 
     private Map<String, Group> groupMap;
 
-    @Autowired
-    private EffectiveConfigurationDao dao;
+    private EffectiveConfigurationDao effectiveConfigurationDao;
 
     // A cached view of the Configuration
     private T cached;
@@ -67,7 +66,7 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
         if (cacheIsValid(cacheLengthInMillis)) {
             return cached;
         }
-        EffectiveConfiguration config = dao.getByKey(key);
+        EffectiveConfiguration config = effectiveConfigurationDao.getByKey(key);
         if (config == null) {
             return null;
         }
@@ -85,11 +84,11 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
 
     @Override
     public Date getLastUpdated(String key) {
-        return dao.getLastUpdated(key);
+        return effectiveConfigurationDao.getLastUpdated(key);
     }
 
-    public void setDao(EffectiveConfigurationDao dao) {
-        this.dao = dao;
+    public void setEffectiveConfigurationDao(EffectiveConfigurationDao effectiveConfigurationDao) {
+        this.effectiveConfigurationDao = effectiveConfigurationDao;
     }
 
     private boolean cacheIsValid(long cacheLengthInMillis) {

@@ -123,18 +123,6 @@
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" ref="dataCollectionConfigDao" />
   
-  <bean id="readOnlyOutagesConfig" class="org.opennms.netmgt.config.ro.OutagesConfigReadOnlyDao">
-    <property name="dao" ref="effectiveConfigurationDao" />
-  </bean>
-
-  <bean id="readOnlyThreshdConfig" class="org.opennms.netmgt.config.ro.ThreshdConfigReadOnlyDao">
-    <property name="dao" ref="effectiveConfigurationDao" />
-  </bean>
-
-  <bean id="readOnlyThresholdsConfig" class="org.opennms.netmgt.config.ro.ThresholdsConfigReadOnlyDao">
-    <property name="dao" ref="effectiveConfigurationDao" />
-  </bean>
-
   <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
   </bean>
@@ -154,22 +142,6 @@
   <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
     <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
   </bean>
-
-  <bean id="outagesConfigModifiable" class="org.opennms.netmgt.config.PollOutagesConfigFactory">
-      <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
-      <property name="configResource" value="file:${opennms.home}/etc/poll-outages.xml" />
-  </bean>
-  <onmsgi:service interface="org.opennms.netmgt.config.api.PollOutagesConfigModifiable" ref="outagesConfigModifiable" />
-
-  <bean id="threshdConfigModifiable" class="org.opennms.netmgt.config.ThreshdConfigFactory">
-      <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
-  </bean>
-  <onmsgi:service interface="org.opennms.netmgt.config.api.ThreshdConfigModifiable" ref="threshdConfigModifiable" />
-
-  <bean id="thresholdsConfigModifiable" class="org.opennms.netmgt.config.ThresholdsConfigFactory">
-      <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
-  </bean>
-  <onmsgi:service interface="org.opennms.netmgt.config.api.ThresholdsConfigModifiable" ref="thresholdsConfigModifiable" />
 
   <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
   
