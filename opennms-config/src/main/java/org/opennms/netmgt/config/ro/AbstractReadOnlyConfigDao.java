@@ -54,7 +54,7 @@ public abstract class AbstractReadOnlyConfigDao<T extends ReadOnlyConfig> implem
     private T cached;
 
     // Time in millis when Configuration was last read from DB and Cached
-    private long cachedAt;
+    protected long cachedAt;
 
     // Time the config was last written to the DB.
     private long configWriteTime;

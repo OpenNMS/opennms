@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.config.ro;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.poller.outages.Interface;
 import org.opennms.netmgt.config.poller.outages.Node;
@@ -52,27 +55,15 @@ public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages>
     }
 
     @Override
-    public boolean isNodeIdInOutage(long lnodeid, String outName) {
-        // TODO Auto-generated method stub
-        return false;
+    public List<Interface> getInterfaces(String name) {
+        final Outage outage = getOutage(name);
+        return outage == null ? null : outage.getInterfaces();
     }
 
     @Override
-    public boolean isInterfaceInOutage(String linterface, String outName) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean isCurTimeInOutage(String outName) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean isTimeInOutage(long time, String outName) {
-        // TODO Auto-generated method stub
-        return false;
+    public List<Node> getNodeIds(String name) {
+        final Outage outage = getOutage(name);
+        return outage == null ? null : outage.getNodes();
     }
 
     @Override
@@ -82,63 +73,104 @@ public class OutagesConfigReadOnlyDao extends AbstractReadOnlyConfigDao<Outages>
     }
 
     @Override
-    public String getOutageType(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public List<Outage> getOutages() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Lock getReadLock() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<Node> getNodeIds(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<Interface> getInterfaces(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        Outages outages = getConfig();
+        return outages == null ? null : outages.getOutages();
     }
 
     @Override
     public List<Time> getOutageTimes(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        final Outage outage = getOutage(name);
+        return outage == null ? null : outage.getTimes();
+    }
+
+    @Override
+    public String getOutageType(String name) {
+        final Outage outage = getOutage(name);
+        return outage == null ? null : outage.getType();
+    }
+
+    // - FIXME move to modifiable interface only
+    @Override
+    public Lock getReadLock() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public boolean isCurTimeInOutage(Outage outage) {
+        return isTimeInOutage(new GregorianCalendar(), outage);
+    }
+
+    @Override
+    public boolean isCurTimeInOutage(String outageName) {
+        return isTimeInOutage(new GregorianCalendar(), outageName);
+    }
+
+    @Override
+    public boolean isInterfaceInOutage(String linterface, Outage outage) {
+        if (outage == null) {
+            return false;
+        }
+        for (final Interface ointerface : outage.getInterfaces()) {
+            if (ointerface.getAddress().equals("match-any") || ointerface.getAddress().equals(linterface)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isInterfaceInOutage(String linterface, String outageName) {
+        return isInterfaceInOutage(linterface, getOutage(outageName));
+    }
+
+    @Override
+    public boolean isNodeIdInOutage(long lnodeid, Outage outage) {
+        if (outage == null) {
+            return false;
+        }
+        for (final Node onode : outage.getNodes()) {
+            if (onode.getId() == lnodeid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isNodeIdInOutage(long lnodeid, String outageName) {
+        return isNodeIdInOutage(lnodeid, getOutageType(outageName));
+    }
+
+    @Override
+    public boolean isTimeInOutage(long time, String outageName) {
+        final Outage outage = getOutage(outageName);
+        if (outage == null)
+            return false;
+
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        return isTimeInOutage(calendar, outage);
     }
 
     @Override
     public void update() {
-        // TODO Auto-generated method stub
-
+        // force expiry of the cache and reload
+        cachedAt = 0;
+        getConfig();
     }
 
-    @Override
-    public boolean isCurTimeInOutage(Outage out) {
-        // TODO Auto-generated method stub
-        return false;
+    private boolean isTimeInOutage(GregorianCalendar gregorianCalendar, String outageName) {
+        final Outage outage = getOutage(outageName);
+        return outage == null ? false : isTimeInOutage(gregorianCalendar, outage);
     }
 
-    @Override
-    public boolean isNodeIdInOutage(long lnodeid, Outage out) {
-        // TODO Auto-generated method stub
-        return false;
+    private boolean isTimeInOutage(GregorianCalendar gregorianCalendar, Outage outage) {
+        return BasicScheduleUtils.isTimeInSchedule(gregorianCalendar, BasicScheduleUtils.getBasicOutageSchedule(outage));
     }
 
-    @Override
-    public boolean isInterfaceInOutage(String linterface, Outage out) {
-        // TODO Auto-generated method stub
-        return false;
+    private boolean isTimeInOutage(Calendar calendar, Outage outage) {
+        return BasicScheduleUtils.isTimeInSchedule(calendar, BasicScheduleUtils.getBasicOutageSchedule(outage));
     }
 
 }
