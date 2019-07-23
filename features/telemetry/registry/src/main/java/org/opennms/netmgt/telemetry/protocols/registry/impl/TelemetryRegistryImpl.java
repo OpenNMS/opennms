@@ -61,8 +61,6 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     @Qualifier("parserRegistry")
     private TelemetryServiceRegistry<ParserDefinition, Parser> parserRegistryDelegate;
 
-    @Autowired
-    @Qualifier("telemetryMetricRegistry")
     private MetricRegistry metricRegistry;
 
     private final Map<String, AsyncDispatcher<TelemetryMessage>> dispatchers = new HashMap<>();

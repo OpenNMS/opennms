@@ -25,9 +25,7 @@
 		<onmsgi:listener ref="parserRegistry" bind-method="onBind" unbind-method="onUnbind" />
 	</onmsgi:list>
 
-	<bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry">
-		<qualifier value="telemetryMetricRegistry" />
-	</bean>
+	<bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" autowire-candidate="false" />
 	<onmsgi:service interface="com.codahale.metrics.MetricSet" ref="metricRegistry">
 		<onmsgi:service-properties>
 			<entry key="registration.export" value="true" />
@@ -47,7 +45,9 @@
 		  init-method="start"
 		  destroy-method="stop" />
 
-	<bean id="telemetryRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryRegistryImpl" />
+	<bean id="telemetryRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryRegistryImpl">
+		<property name="metricRegistry" ref="metricRegistry"/>
+	</bean>
 	<onmsgi:service interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" ref="telemetryRegistry" />
 
 </beans>
