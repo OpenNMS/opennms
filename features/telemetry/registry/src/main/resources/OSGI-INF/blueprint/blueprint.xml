@@ -34,7 +34,7 @@
         </service-properties>
     </service>
     <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-        <argument ref="telemetryMetricRegistry"/>
+        <argument ref="metricRegistry"/>
     </bean>
     <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
         <argument value="org.opennms.netmgt.telemetry"/>
