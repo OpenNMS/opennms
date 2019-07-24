@@ -30,10 +30,16 @@ package org.opennms.netmgt.threshd;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
 
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.lookup.ServiceRegistryLookup;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.features.distributed.kvstore.api.KeyValueStore;
+import org.opennms.features.distributed.kvstore.noop.NoOpKVStore;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -81,8 +87,11 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     @Autowired
     private EventIpcManager eventIpcManager;
     
-    @Autowired
-    private KeyValueStore kvStore;
+    private final AtomicReference<KeyValueStore> kvStore = new AtomicReference<>();
+
+    private static final ServiceLookup<Class<?>, String> SERVICE_LOOKUP = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
+            .blocking()
+            .build();
 
     @PostConstruct
     private void init() {
@@ -140,12 +149,19 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
             throws ThresholdInitializationException {
         Objects.requireNonNull(repository, "RrdRepository must not be null");
         Objects.requireNonNull(serviceParams, "ServiceParameters must not be null");
+
+        synchronized (kvStore) {
+            if (kvStore.get() == null) {
+                waitForKvStore();
+            }
+        }
+        
         String resource = "";
         if (repository.getRrdBaseDir() != null && repository.getRrdBaseDir().getPath() != null) {
             resource = repository.getRrdBaseDir().getPath();
         }
         ThresholdingSessionKey sessionKey = new ThresholdingSessionKeyImpl(nodeId, hostAddress, serviceName, resource);
-        return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams, kvStore);
+        return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams, kvStore.get());
     }
 
     public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session) throws ThresholdInitializationException {
@@ -205,11 +221,14 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         thresholdingSetPersister.reinitializeThresholdingSets();
     }
 
-    public KeyValueStore getKvStore() {
-        return kvStore;
-    }
+    private void waitForKvStore() {
+        KeyValueStore osgiKvStore = SERVICE_LOOKUP.lookup(KeyValueStore.class, null);
 
-    public void setKvStore(KeyValueStore kvStore) {
-        this.kvStore = kvStore;
+        if (osgiKvStore == null) {
+            LOG.warn("Timed out waiting for a key value store, defaulting to NO-OP impl");
+            kvStore.set(new NoOpKVStore());
+        } else {
+            kvStore.set(osgiKvStore);
+        }
     }
 }
