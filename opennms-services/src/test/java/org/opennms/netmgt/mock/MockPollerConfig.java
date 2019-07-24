@@ -574,4 +574,9 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return m_serviceMonitorRegistry;
     }
 
+    @Override
+    public void reload() throws IOException {
+        // pass
+    }
+
 }

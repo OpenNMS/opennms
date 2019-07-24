@@ -34,8 +34,6 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.api.ThreshdConfig;
 import org.opennms.netmgt.config.api.ThresholdsConfig;
@@ -210,7 +208,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
             try {
                 threshdConfig.reload();
                 thresholdsConfig.reload();
-                // TODO add pollOutagesConfig
+                outagesConfig.reload();
                 thresholdingSetPersister.reinitializeThresholdingSets();
             } catch (final Exception e) {
                 throw new RuntimeException("Unable to reload thresholding.", e);
@@ -235,6 +233,5 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     private void reinitializeThresholdingSets(Event e) {
         thresholdingSetPersister.reinitializeThresholdingSets();
     }
-
 
 }

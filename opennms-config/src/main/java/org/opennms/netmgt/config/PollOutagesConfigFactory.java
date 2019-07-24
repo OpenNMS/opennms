@@ -54,9 +54,10 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager imp
 
     public synchronized void init() throws IOException {
         configFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
+        setConfigResource(new FileSystemResource(configFile));
         loadConfigFile(configFile);
 
-        afterPropertiesSet(); // FIXME approximate this.
+        afterPropertiesSet();
     }
 
     private void loadConfigFile(File configFile) throws IOException {

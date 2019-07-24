@@ -30,20 +30,11 @@ package org.opennms.netmgt.config.api;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.locks.Lock;
 
 import org.opennms.netmgt.config.poller.outages.Outage;
 
 public interface PollOutagesConfigModifiable extends PollOutagesConfig {
-
-    /**
-     * Reload the config from the default config file
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read/loaded
-     */
-    void reload() throws IOException;
 
     /**
      * A method to facilitate unit tests.

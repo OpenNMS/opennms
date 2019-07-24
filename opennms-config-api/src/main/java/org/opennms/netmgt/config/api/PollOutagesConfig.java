@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config.api;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -107,5 +108,13 @@ public interface PollOutagesConfig {
     public void update();
 
     Calendar getEndOfOutage(String scheduledOutageName);
+
+    /**
+     * Reload the config from the default config file
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read/loaded
+     */
+    void reload() throws IOException;
 
 }

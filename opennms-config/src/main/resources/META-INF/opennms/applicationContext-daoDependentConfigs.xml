@@ -30,18 +30,18 @@
     <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
   </bean>
 
-  <bean id="outagesConfigModifiable" class="org.opennms.netmgt.config.PollOutagesConfigFactory">
+  <bean id="outagesConfigModifiable" class="org.opennms.netmgt.config.PollOutagesConfigFactory" init-method="init">
       <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
       <property name="configResource" value="file:${opennms.home}/etc/poll-outages.xml" />
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.config.api.PollOutagesConfigModifiable" ref="outagesConfigModifiable" />
 
-  <bean id="threshdConfigModifiable" class="org.opennms.netmgt.config.ThreshdConfigFactory">
+  <bean id="threshdConfigModifiable" class="org.opennms.netmgt.config.ThreshdConfigFactory" init-method="init">
       <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.config.api.ThreshdConfigModifiable" ref="threshdConfigModifiable" />
 
-  <bean id="thresholdsConfigModifiable" class="org.opennms.netmgt.config.ThresholdsConfigFactory">
+  <bean id="thresholdsConfigModifiable" class="org.opennms.netmgt.config.ThresholdsConfigFactory" init-method="init">
       <property name="effectiveConfigurationDao" ref="effectiveConfigurationDao" />
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.config.api.ThresholdsConfigModifiable" ref="thresholdsConfigModifiable" />

@@ -89,7 +89,6 @@ public final class ThresholdsConfigFactory implements ThresholdsConfigModifiable
     @Autowired
     private EffectiveConfigurationDao configDao;
 
-    // @PostConstruct
     public void init() throws IOException {
         configFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
         loadConfigFile(configFile);

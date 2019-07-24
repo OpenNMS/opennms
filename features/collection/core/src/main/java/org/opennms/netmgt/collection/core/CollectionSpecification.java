@@ -50,8 +50,6 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
