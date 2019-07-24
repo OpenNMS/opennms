@@ -361,7 +361,7 @@ public class BsonDocumentTest {
     public void testExtendedGateway() {
         final BsonDocument bsonDocument = createExtendedGateway();
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
-        Assert.assertEquals(new Integer(SRC_AS), sFlow.getSrcAs());
+        Assert.assertEquals(new Long(SRC_AS), sFlow.getSrcAs());
     }
 
     @Test

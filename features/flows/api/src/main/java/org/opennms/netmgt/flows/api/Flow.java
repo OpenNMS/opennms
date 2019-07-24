@@ -85,7 +85,7 @@ public interface Flow {
     /**
      * Destination autonomous system (AS).
      */
-    Integer getDstAs();
+    Long getDstAs();
 
     /**
      * The number of contiguous bits in the source address subnet mask.
@@ -187,7 +187,7 @@ public interface Flow {
     /**
      * Source autonomous system (AS).
      */
-    Integer getSrcAs();
+    Long getSrcAs();
 
     /**
      * The number of contiguous bits in the destination address subnet mask.
