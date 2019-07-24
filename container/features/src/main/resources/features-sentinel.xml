@@ -58,7 +58,7 @@
         <!-- Used for the REST client in core-impl -->
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
+        <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
 
         <!-- CORE Distributed -->
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
@@ -204,5 +204,27 @@
 
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-distributed-cassandra-api"
+             description="OpenNMS :: Features :: Distributed :: Cassandra :: API"
+             version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.api/${project.version}</bundle>
+    </feature>
+    
+    <feature name="sentinel-newts-cassandra"
+             description="OpenNMS :: Features :: Distributed :: Cassandra :: Newts Impl." version="${project.version}">
+        <feature>cassandra-driver</feature>
+        <feature>sentinel-newts</feature>
+        <feature>sentinel-distributed-cassandra-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.newts-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-kvstore-cassandra"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Cassandra"
+             version="${project.version}">
+        <feature>sentinel-newts-cassandra</feature>
+        <feature>opennms-kvstore-api</feature>        
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.cassandra/${project.version}</bundle>
     </feature>
 </features>

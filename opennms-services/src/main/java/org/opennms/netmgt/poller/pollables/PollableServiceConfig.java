@@ -28,14 +28,19 @@
 
 package org.opennms.netmgt.poller.pollables;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
+import org.opennms.core.utils.RegexUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -54,6 +59,9 @@ import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
 /**
  * Represents a PollableServiceConfig
  *
@@ -70,10 +78,13 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private Package m_pkg;
     private Timer m_timer;
     private Service m_configService;
+    private ServiceMonitor m_serviceMonitor;
+
+    private Map<String, String> m_patternVariables = Collections.emptyMap();
+
     private final LocationAwarePollerClient m_locationAwarePollerClient;
     private final LatencyStoringServiceMonitorAdaptor m_latencyStoringServiceMonitorAdaptor;
     private final InvertedStatusServiceMonitorAdaptor m_invertedStatusServiceMonitorAdaptor = new InvertedStatusServiceMonitorAdaptor();
-    private final ServiceMonitor m_serviceMonitor;
 
     /**
      * <p>Constructor for PollableServiceConfig.</p>
@@ -85,31 +96,26 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */
     public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
-            ThresholdingService thresholdingService, ResourceStorageDao resourceStorageDao, LocationAwarePollerClient locationAwarePollerClient) {
+            ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
         m_pollOutagesConfig = pollOutagesConfig;
         m_pkg = pkg;
         m_timer = timer;
-        m_configService = findService(pkg);
         m_locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
         m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, thresholdingService);
-        m_serviceMonitor = pollerConfig.getServiceMonitor(svc.getSvcName());
+
+        this.findService();
     }
 
-    /**
-     * @param pkg
-     * @return
-     */
-    private synchronized Service findService(Package pkg) {
-        for (Service s : m_pkg.getServices()) {
-            if (s.getName().equalsIgnoreCase(m_service.getSvcName())) {
-                return s;
-            }
-        }
+    private synchronized void findService() {
+        final Package.ServiceMatch service = m_pkg.findService(m_service.getSvcName())
+                .orElseThrow(() -> new RuntimeException("Service name not part of package!"));
 
-        throw new RuntimeException("Service name not part of package!");
+        m_configService = service.service;
+        m_patternVariables = service.patternVariables;
 
+        m_serviceMonitor = m_pollerConfig.getServiceMonitor(m_configService.getName());
     }
 
     /**
@@ -133,6 +139,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .withAttributes(getParameters())
                 .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
                 .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
+                .withPatternVariables(m_patternVariables)
                 .execute();
 
             PollerResponse response = future.get();
@@ -182,7 +189,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             LOG.warn("Package named {} no longer exists.", m_pkg.getName());
         }
         m_pkg = newPkg;
-        m_configService = findService(m_pkg);
+
+        this.findService();
     }
 
     private synchronized Map<String,Object> getParameters() {

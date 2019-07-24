@@ -51,6 +51,7 @@ public class StackModel {
     private final boolean telemetryProcessingEnabled;
     private final IpcStrategy ipcStrategy;
     private final TimeSeriesStrategy timeSeriesStrategy;
+    private final KeyValueStoreStrategy keyValueStoreStrategy;
 
     private StackModel(Builder builder) {
         // Profiles
@@ -65,6 +66,7 @@ public class StackModel {
         // Enums
         ipcStrategy = builder.ipcStrategy;
         timeSeriesStrategy = builder.timeSeriesStrategy;
+        keyValueStoreStrategy = builder.keyValueStoreStrategy;
     }
 
     public static Builder newBuilder() {
@@ -80,6 +82,8 @@ public class StackModel {
 
         private IpcStrategy ipcStrategy = IpcStrategy.JMS;
         private TimeSeriesStrategy timeSeriesStrategy = TimeSeriesStrategy.RRD;
+        
+        private KeyValueStoreStrategy keyValueStoreStrategy = KeyValueStoreStrategy.NOOP;
 
         /**
          * Profile for the OpenNMS container.
@@ -183,6 +187,16 @@ public class StackModel {
         }
 
         /**
+         * Choose the key value store to use.
+         *
+         * @return this builder
+         */
+        public Builder withKeyValueStoreStrategy(KeyValueStoreStrategy keyValueStoreStrategy) {
+            this.keyValueStoreStrategy = keyValueStoreStrategy;
+            return this;
+        }
+
+        /**
          * Build the stack model
          *
          * @return an immutable stack model
@@ -229,4 +243,7 @@ public class StackModel {
         return timeSeriesStrategy;
     }
 
+    public KeyValueStoreStrategy getKeyValueStoreStrategy() {
+        return keyValueStoreStrategy;
+    }
 }

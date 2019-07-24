@@ -20,7 +20,9 @@ $(document).ready(function() {
   for (let i=0; i < spans.length; i++) {
     const span = $(spans[i]);
     const w = getSize(span);
-    const htmlsrc = span.data('src') + w;
-    span.load(htmlsrc);
+    if (span.data('src')) {
+      const htmlsrc = span.data('src') + w;
+      span.load(String(htmlsrc));
+    }
   }
 });

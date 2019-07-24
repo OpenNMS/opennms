@@ -114,7 +114,7 @@ public class FlowDocument {
      * Destination autonomous system (AS).
      */
     @SerializedName("netflow.dst_as")
-    private Integer dstAs;
+    private Long dstAs;
 
     /**
      * Locality of the destination address (i.e. private vs public address)
@@ -250,7 +250,7 @@ public class FlowDocument {
      * Source autonomous system (AS).
      */
     @SerializedName("netflow.src_as")
-    private Integer srcAs;
+    private Long srcAs;
 
     /**
      * Locality of the source address (i.e. private vs public address)
@@ -406,11 +406,11 @@ public class FlowDocument {
         this.dstAddrHostname = dstAddrHostname;
     }
 
-    public Integer getDstAs() {
+    public Long getDstAs() {
         return dstAs;
     }
 
-    public void setDstAs(Integer dstAs) {
+    public void setDstAs(Long dstAs) {
         this.dstAs = dstAs;
     }
 
@@ -583,11 +583,11 @@ public class FlowDocument {
         this.srcAddrHostname = srcAddrHostname;
     }
 
-    public Integer getSrcAs() {
+    public Long getSrcAs() {
         return srcAs;
     }
 
-    public void setSrcAs(Integer srcAs) {
+    public void setSrcAs(Long srcAs) {
         this.srcAs = srcAs;
     }
 
