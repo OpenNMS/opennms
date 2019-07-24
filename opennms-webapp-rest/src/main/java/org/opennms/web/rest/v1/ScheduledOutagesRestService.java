@@ -45,8 +45,8 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.api.PollOutagesConfigModifiable;
 import org.opennms.netmgt.config.api.ThreshdConfigModifiable;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.poller.outages.Outage;
@@ -98,7 +98,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     private enum ConfigAction { ADD, REMOVE, REMOVE_FROM_ALL };
     
     @Autowired
-    protected PollOutagesConfigFactory m_pollOutagesConfigFactory;
+    protected PollOutagesConfigModifiable m_pollOutagesConfig;
 
     @Autowired
     protected CollectdConfigFactory m_collectdConfigFactory;
@@ -114,7 +114,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outages getOutages() {
         Outages outages = new Outages();
-        outages.setOutages(m_pollOutagesConfigFactory.getOutages());
+        outages.setOutages(m_pollOutagesConfig.getOutages());
         return outages;
     }
 
@@ -122,7 +122,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Path("{outageName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outage getOutage(@PathParam("outageName") String outageName) throws IllegalArgumentException {
-        Outage outage = m_pollOutagesConfigFactory.getOutage(outageName);
+        Outage outage = m_pollOutagesConfig.getOutage(outageName);
         if (outage == null) throw getException(Status.NOT_FOUND, "Scheduled outage {} was not found.", outageName);
         return outage;
     }
@@ -133,16 +133,16 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         writeLock();
         try {
             if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
-            Outage oldOutage = m_pollOutagesConfigFactory.getOutage(newOutage.getName());
+            Outage oldOutage = m_pollOutagesConfig.getOutage(newOutage.getName());
             if (oldOutage == null) {
                 LOG.debug("saveOrUpdateOutage: adding outage {}", newOutage.getName());
-                m_pollOutagesConfigFactory.addOutage(newOutage);
+                m_pollOutagesConfig.addOutage(newOutage);
             } else {
                 LOG.debug("saveOrUpdateOutage: updating outage {}", newOutage.getName());
-                m_pollOutagesConfigFactory.replaceOutage(oldOutage, newOutage);
+                m_pollOutagesConfig.replaceOutage(oldOutage, newOutage);
             }
             try {
-                m_pollOutagesConfigFactory.saveCurrent();
+                m_pollOutagesConfig.saveCurrent();
             } catch (Exception e) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save or update the scheduled outage {} because, {}", newOutage.getName(), e.getMessage());
             }
@@ -164,8 +164,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updateThreshd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateNotifd(ConfigAction.REMOVE, outageName);
             try {
-                m_pollOutagesConfigFactory.removeOutage(outageName);
-                m_pollOutagesConfigFactory.saveCurrent();
+                m_pollOutagesConfig.removeOutage(outageName);
+                m_pollOutagesConfig.saveCurrent();
             } catch (Exception e) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, "Can't delete the scheduled outage {} because, {}", outageName, e.getMessage());
             }
@@ -287,7 +287,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("outageName") String outageName, @PathParam("nodeId") Integer nodeId) {
         Outage outage = getOutage(outageName);
-        Boolean inOutage = m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
+        Boolean inOutage = m_pollOutagesConfig.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfig.isCurTimeInOutage(outage);
         return inOutage.toString();
     }
 
@@ -295,8 +295,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Path("nodeInOutage/{nodeId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("nodeId") int nodeId) {
-        for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
-            if (m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
+        for (Outage outage : m_pollOutagesConfig.getOutages()) {
+            if (m_pollOutagesConfig.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfig.isCurTimeInOutage(outage)) {
                 return Boolean.TRUE.toString();
             }
         }
@@ -309,7 +309,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     public String isInterfaceInOutage(@PathParam("outageName") String outageName, @PathParam("ipAddr") String ipAddr) {
         validateAddress(ipAddr);
         Outage outage = getOutage(outageName);
-        Boolean inOutage = m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
+        Boolean inOutage = m_pollOutagesConfig.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfig.isCurTimeInOutage(outage);
         return inOutage.toString();
     }
 
@@ -317,8 +317,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Path("interfaceInOutage/{ipAddr}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isInterfaceInOutage(@PathParam("ipAddr") String ipAddr) {
-        for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
-            if (m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
+        for (Outage outage : m_pollOutagesConfig.getOutages()) {
+            if (m_pollOutagesConfig.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfig.isCurTimeInOutage(outage)) {
                 return Boolean.TRUE.toString();
             }
         }
