@@ -53,7 +53,6 @@ import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
-import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.api.PollOutagesConfig;
@@ -1048,8 +1047,6 @@ public final class BroadcastEventProcessor implements EventListener {
     public String scheduledOutage(long nodeId, String theInterface) {
         try {
 
-            PollOutagesConfigManager outageFactory = getPollOutagesConfig();
-
             // Iterate over the outage names
             // For each outage...if the outage contains a calendar entry which
             // applies to the current time and the outage applies to this
@@ -1060,10 +1057,11 @@ public final class BroadcastEventProcessor implements EventListener {
             for (String outageName : outageCalendarNames) {
 
                 // Does the outage apply to the current time?
-                if (outageFactory.isCurTimeInOutage(outageName)) {
+                if (m_pollOutagesConfig.isCurTimeInOutage(outageName)) {
                     // Does the outage apply to this interface or node?
 
-                    if ((outageFactory.isNodeIdInOutage(nodeId, outageName)) || (outageFactory.isInterfaceInOutage(theInterface, outageName)) || (outageFactory.isInterfaceInOutage("match-any", outageName))) {
+                    if ((m_pollOutagesConfig.isNodeIdInOutage(nodeId, outageName)) || (m_pollOutagesConfig.isInterfaceInOutage(theInterface, outageName))
+                            || (m_pollOutagesConfig.isInterfaceInOutage("match-any", outageName))) {
                         LOG.debug("scheduledOutage: configured outage '{}' applies, notification for interface {} on node {} will not be sent", outageName, theInterface, nodeId);
                         return outageName;
                     }

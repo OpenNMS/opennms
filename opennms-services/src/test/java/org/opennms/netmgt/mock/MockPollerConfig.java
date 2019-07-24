@@ -46,6 +46,7 @@ import java.util.Vector;
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.api.PollOutagesConfig;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -66,7 +67,7 @@ import org.springframework.core.io.ByteArrayResource;
 
 import com.google.common.collect.Maps;
 
-public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
+public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig, PollOutagesConfig {
 
     private final ServiceMonitorRegistry m_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
 
