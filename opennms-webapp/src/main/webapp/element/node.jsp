@@ -243,7 +243,7 @@
 	pageContext.setAttribute("navEntries", renderedLinks);
 
     final List<String> schedOutages = new ArrayList<>();
-    PollOutagesConfigModifiable outagesConfig = BeanUtils.getBean("commonContext", "outagesConfigModifiable", PollOutagesConfigModifiable.class);
+    PollOutagesConfigModifiable outagesConfig = BeanUtils.getBean("daoContext", "outagesConfigModifiable", PollOutagesConfigModifiable.class);
     for (final Outage outage : outagesConfig.getOutages()) {
         if (outagesConfig.isCurTimeInOutage(outage)) {
             boolean inOutage = outagesConfig.isNodeIdInOutage(nodeId, outage);

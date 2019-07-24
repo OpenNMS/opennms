@@ -59,6 +59,7 @@ public class CollectionAgentDTOTest extends XmlTestNoCastor<CollectionAgentDTO> 
         collectionAgentDTO.setStorageResourcePath(ResourcePath.get("tmp", "foo"));
         collectionAgentDTO.setSavedSysUpTime(149);
 
+        // Provide a platform specific value for 'tempFoo' - either 'tmp/foo' or 'tmp\foo' 
         String tempFoo = "tmp" + File.separator + "foo";
         return Arrays.asList(new Object[][] {
             {

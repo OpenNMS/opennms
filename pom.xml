@@ -136,6 +136,7 @@
     <module>opennms-config-jaxb</module>
     <module>opennms-config</module>
     <module>opennms-config-model</module>
+    <module>opennms-config-integration-tests</module>
     <module>opennms-provision</module>
     <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
@@ -2410,6 +2411,12 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-config-tester</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-integration-tests</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>

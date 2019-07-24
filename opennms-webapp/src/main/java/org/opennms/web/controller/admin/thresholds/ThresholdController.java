@@ -41,8 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.ThresholdsConfigFactory;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.config.api.ThresholdsConfigModifiable;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.FilterOperator;
@@ -96,7 +96,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
     private boolean eventConfChanged = false;
 
-    private ThresholdsConfigFactory m_configFactory;
+    private ThresholdsConfigModifiable m_thresholdsConfig;
 
     /**
      * {@inheritDoc}
@@ -159,7 +159,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
     private ModelAndView gotoGroupEdit(String groupName) {
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", m_configFactory.getGroup(groupName));
+        modelAndView.addObject("group", m_thresholdsConfig.getGroup(groupName));
         return modelAndView;
     }
 
@@ -224,7 +224,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewThreshold(String groupName) {
-        final Group group = m_configFactory.getGroup(groupName);
+        final Group group = m_thresholdsConfig.getGroup(groupName);
         final List<Threshold> thresholds = group.getThresholds();
 
         //We're assuming that adding a threshold puts it at the end of the current list (i.e. that the Group implementation
@@ -277,7 +277,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewExpression(String groupName) {
-        final Group group = m_configFactory.getGroup(groupName);
+        final Group group = m_thresholdsConfig.getGroup(groupName);
         final List<Expression> expressions = group.getExpressions();
 
         //We're assuming that adding a expression puts it at the end of the current list (i.e. that the Group implementation
@@ -336,7 +336,7 @@ public class ThresholdController extends AbstractController implements Initializ
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
 
-        Threshold threshold = m_configFactory.getGroup(groupName).getThresholds().get(thresholdIndex);
+        Threshold threshold = m_thresholdsConfig.getGroup(groupName).getThresholds().get(thresholdIndex);
         modelAndView = new ModelAndView("admin/thresholds/editThreshold");
 
         modelAndView.addObject("threshold", threshold);
@@ -467,7 +467,7 @@ public class ThresholdController extends AbstractController implements Initializ
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
 
-        Expression expression = m_configFactory.getGroup(groupName).getExpressions().get(expressionIndex);
+        Expression expression = m_thresholdsConfig.getGroup(groupName).getExpressions().get(expressionIndex);
         modelAndView = new ModelAndView("admin/thresholds/editExpression");
 
         modelAndView.addObject("expression", expression);
@@ -496,7 +496,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
     private void saveChanges() throws ServletException {
         try {
-            m_configFactory.saveCurrent();
+            m_thresholdsConfig.saveCurrent();
             EventBuilder ebldr = createEventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
             ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, "thresholds.xml");
@@ -523,11 +523,11 @@ public class ThresholdController extends AbstractController implements Initializ
             throw new ServletException("thresholdIndex parameter required to delete a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
-        Group group = m_configFactory.getGroup(groupName);
+        Group group = m_thresholdsConfig.getGroup(groupName);
         group.removeThreshold(group.getThresholds().get(thresholdIndex));
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", m_configFactory.getGroup(groupName));
+        modelAndView.addObject("group", m_thresholdsConfig.getGroup(groupName));
         saveChanges();
         return modelAndView;
     }
@@ -550,13 +550,13 @@ public class ThresholdController extends AbstractController implements Initializ
             throw new ServletException("expressionIndex parameter required to delete a threshold expression");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
-        Group group = m_configFactory.getGroup(groupName);
+        Group group = m_thresholdsConfig.getGroup(groupName);
         group.removeExpression(group.getExpressions().get(expressionIndex));
         saveChanges();
 
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", m_configFactory.getGroup(groupName));
+        modelAndView.addObject("group", m_thresholdsConfig.getGroup(groupName));
         return modelAndView;
     }
 
@@ -695,7 +695,7 @@ public class ThresholdController extends AbstractController implements Initializ
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = m_configFactory.getGroup(groupName);
+        Group group = m_thresholdsConfig.getGroup(groupName);
         String thresholdIndexString = request.getParameter("thresholdIndex");
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to modify or delete a threshold");
@@ -743,7 +743,7 @@ public class ThresholdController extends AbstractController implements Initializ
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = m_configFactory.getGroup(groupName);
+        Group group = m_thresholdsConfig.getGroup(groupName);
         String expressionIndexString = request.getParameter("expressionIndex");
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to modify or delete a threshold expression");
@@ -784,7 +784,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
         //and got back to the editGroup page
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", m_configFactory.getGroup(groupName));
+        modelAndView.addObject("group", m_thresholdsConfig.getGroup(groupName));
         return modelAndView;
     }
 
@@ -792,15 +792,15 @@ public class ThresholdController extends AbstractController implements Initializ
         //Always reload to get a consistent view of the thresholds before we start editing.  
         //Otherwise we'll be dealing with questions on the mailing lists for the rest of our lives
         try {
-            m_configFactory.reload();
+            m_thresholdsConfig.reload();
         } catch (Throwable e) {
-            throw new ServletException("Could not reload ThresholdingConfigFactory because " + e.getMessage(), e);
+            throw new ServletException("Could not reload ThresholdingConfig because " + e.getMessage(), e);
         }
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/list");
 
         Map<String, Group> groupMap = new TreeMap<String, Group>();
-        for (String aName : m_configFactory.getGroupNames()) {
-            groupMap.put(aName, m_configFactory.getGroup(aName));
+        for (String aName : m_thresholdsConfig.getGroupNames()) {
+            groupMap.put(aName, m_thresholdsConfig.getGroup(aName));
         }
 
         modelAndView.addObject("groupMap", groupMap);
@@ -840,8 +840,8 @@ public class ThresholdController extends AbstractController implements Initializ
         m_eventConfDao = eventConfDao;
     }
 
-    public void setConfigFactory(ThresholdsConfigFactory configFactory) {
-        m_configFactory = configFactory;
+    public void setThresholdsConfig(ThresholdsConfigModifiable config) {
+        m_thresholdsConfig = config;
     }
 
 }

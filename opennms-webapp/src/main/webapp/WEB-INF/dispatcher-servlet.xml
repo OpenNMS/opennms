@@ -323,6 +323,7 @@
     <bean name="/admin/thresholds/index.htm" class="org.opennms.web.controller.admin.thresholds.ThresholdController">
         <property name="resourceDao" ref="resourceDao"/>
         <property name="eventConfDao" ref="eventConfDao"/>
+        <property name="thresholdsConfig" ref="thresholdsConfigModifiable"/>
     </bean>
 
     <bean name="mapMenuEntries" class="org.opennms.web.navigate.MenuDropdownNavBarEntry">

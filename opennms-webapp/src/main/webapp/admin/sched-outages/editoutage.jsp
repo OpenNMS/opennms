@@ -206,7 +206,7 @@
 	final int month = today.get(Calendar.MONTH) + 1;
 	final int year = today.get(Calendar.YEAR);
 
-	PollOutagesConfigModifiable outagesConfig = BeanUtils.getBean("commonContext", "outagesConfigModifiable", PollOutagesConfigModifiable.class);
+	PollOutagesConfigModifiable outagesConfig = BeanUtils.getBean("daoContext", "outagesConfigModifiable", PollOutagesConfigModifiable.class);
 	Outage theOutage;
 
 	if ("Cancel".equals(request.getParameter("cancelButton"))) {
@@ -288,7 +288,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	}
 
 	// ******* Threshd outages config *********
-	ThreshdConfigModifiable threshdConfig = BeanUtils.getBean("commonContext", "threshdConfigModifiable", ThreshdConfigModifiable.class);
+	ThreshdConfigModifiable threshdConfig = BeanUtils.getBean("daoContext", "threshdConfigModifiable", ThreshdConfigModifiable.class);
 	Map<org.opennms.netmgt.config.threshd.Package, List<String>> thresholdOutages = new HashMap<org.opennms.netmgt.config.threshd.Package, List<String>>();
 	for (org.opennms.netmgt.config.threshd.Package thisPackage : threshdConfig.getConfiguration().getPackages()) {
 		thresholdOutages.put(thisPackage, thisPackage.getOutageCalendars());

@@ -32,7 +32,6 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.api.PollOutagesConfig;
-import org.opennms.netmgt.config.api.PollOutagesConfigModifiable;
 import org.opennms.netmgt.config.api.ThreshdConfig;
 import org.opennms.netmgt.config.api.ThresholdsConfig;
 import org.opennms.netmgt.rrd.RrdRepository;

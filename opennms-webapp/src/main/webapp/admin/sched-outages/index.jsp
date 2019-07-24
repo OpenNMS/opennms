@@ -66,8 +66,8 @@
 	}%>
 <%
 	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
-	PollOutagesConfigModifiable outagesConfig = BeanUtils.getBean("commonContext", "outagesConfigModifiable", PollOutagesConfigModifiable.class);
-	ThreshdConfigModifiable threshdConfig = BeanUtils.getBean("commonContext", "threshdConfigModifiable", ThreshdConfigModifiable.class);
+	PollOutagesConfigModifiable outagesConfig = BeanUtils.getBean("daoContext", "outagesConfigModifiable", PollOutagesConfigModifiable.class);
+	ThreshdConfigModifiable threshdConfig = BeanUtils.getBean("daoContext", "threshdConfigModifiable", ThreshdConfigModifiable.class);
 	String deleteName = request.getParameter("deleteOutage");
 	if (deleteName != null) {
 		outagesConfig.getWriteLock().lock();

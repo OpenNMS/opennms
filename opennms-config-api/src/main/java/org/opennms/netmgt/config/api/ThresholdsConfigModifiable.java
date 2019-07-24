@@ -29,6 +29,8 @@
 package org.opennms.netmgt.config.api;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 
 public interface ThresholdsConfigModifiable extends ThresholdsConfig {
 
@@ -40,5 +42,9 @@ public interface ThresholdsConfigModifiable extends ThresholdsConfig {
     void setConfigFile(File file);
 
     void reload();
+
+    void saveCurrent() throws IOException;
+
+    Collection<String> getGroupNames();
 
 }
