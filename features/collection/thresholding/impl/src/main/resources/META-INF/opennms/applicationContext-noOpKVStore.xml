@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
-    <bean name="kvStore" class="org.opennms.features.distributed.kvstore.noop.NoOpKVStore"/>
+    <bean name="kvStore" class="org.opennms.features.distributed.kvstore.noop.NoOpKVStore" factory-method="getInstance"/>
     <onmsgi:service interface="org.opennms.features.distributed.kvstore.api.KeyValueStore" ref="kvStore"/>
 
 </beans>

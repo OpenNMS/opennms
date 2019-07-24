@@ -103,7 +103,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
-        "classpath:/META-INF/opennms/applicationContext-kvstore.xml",
+        "classpath:/META-INF/opennms/applicationContext-noOpKVStore.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-server.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
