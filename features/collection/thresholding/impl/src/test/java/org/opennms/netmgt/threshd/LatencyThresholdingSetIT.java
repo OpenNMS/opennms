@@ -282,7 +282,6 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         writer.write(sb.toString());
         writer.close();
         m_pollOutagesConfig.setConfigFile(file);
-        // FIXME m_pollOutagesConfig.afterPropertiesSet();
         initFactories("threshd-configuration.xml", "test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<>();
     };

@@ -53,11 +53,9 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager imp
     private EffectiveConfigurationDao effectiveConfigurationDao;
 
     public synchronized void init() throws IOException {
-        configFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
+        configFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
         setConfigResource(new FileSystemResource(configFile));
         loadConfigFile(configFile);
-
-        afterPropertiesSet();
     }
 
     private void loadConfigFile(File configFile) throws IOException {
