@@ -39,7 +39,6 @@ import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.features.distributed.kvstore.api.KeyValueStore;
-import org.opennms.features.distributed.kvstore.noop.NoOpKVStore;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -225,8 +224,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         KeyValueStore osgiKvStore = SERVICE_LOOKUP.lookup(KeyValueStore.class, null);
 
         if (osgiKvStore == null) {
-            LOG.warn("Timed out waiting for a key value store, defaulting to NO-OP impl");
-            kvStore.set(new NoOpKVStore());
+            throw new RuntimeException("Timed out waiting for a key value store");
         } else {
             kvStore.set(osgiKvStore);
         }
