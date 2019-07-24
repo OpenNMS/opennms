@@ -74,6 +74,23 @@
         <argument value="[[password]]" />
         <argument value="[[ssl]]" />
     </bean>
+    <service ref="cassandraSession" interface="org.opennms.newts.cassandra.CassandraSession"/>
+
+    <!-- Instantiate and advertise a copy of the Schema Manager from newts so it can be reused with the same
+    settings -->
+    <bean id="schemaManager" class="org.opennms.newts.cassandra.SchemaManager">
+        <argument value="[[keyspace]]" />
+        <argument value="[[hostname]]" />
+        <argument value="[[port]]" />
+        <argument value="[[username]]" />
+        <argument value="[[password]]" />
+        <argument value="[[ssl]]" />
+    </bean>
+    <bean id="schemaManagerProxy" class="org.opennms.netmgt.newts.proxy.SchemaManagerProxyImpl">
+        <argument ref="schemaManager"/>
+    </bean>
+    <service ref="schemaManagerProxy" interface="org.opennms.netmgt.newts.proxy.SchemaManagerProxy"/>
+    
     <bean id="cassandraSearcher" class="org.opennms.newts.cassandra.search.CassandraSearcher" >
         <argument ref="cassandraSession" />
         <argument ref="metricRegistry" />
