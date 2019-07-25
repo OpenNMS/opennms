@@ -183,7 +183,10 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             $scope.options = {
                 deliverReport: !$scope.report.online,
                 scheduleReport: false,
-                scheduleOptions: {cronExpresison: '0 */5 * * * ?'}, // TODO MVR default value for this should be what ???
+                scheduleOptions: {
+                    cronExpression: '0 0/10 * * * ?', // TODO MVR default value for this should be what ???
+                    showGeneratedCronExpression: true, // TODO MVR enable debugging for now, disable later
+                },
 
                 isExecuteReport: function() {
                     return !this.deliverReport && !this.scheduleReport;
@@ -443,7 +446,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                         parameters: $scope.parameters,
                         format: $scope.report.format,
                         deliveryOptions: $scope.deliveryOptions,
-                        cronExpression: $scope.options.cronExpression,
+                        cronExpression: $scope.options.scheduleOptions.getCronExpression(),
                     }
                 }).then(function(response) {
                     $scope.showSuccessModal($scope);

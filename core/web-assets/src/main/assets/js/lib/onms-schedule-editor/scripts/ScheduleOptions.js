@@ -1,15 +1,17 @@
 import ClockMode from './ClockMode';
-import WeekDays from './WeekDays';
+import WeekDays from './WeekDays'; // TODO MVR should be Weekdays
 import Types from './Types';
 import Time from './Time';
 import CronDefinition from './CronDefintion';
-import WeekdayOptions from './WeekdayOptions';
+import WeekdayOptions from './WeekdayOptions'; // TODO MVR should be DayOfWeekOptions
 import CustomParser from './parsers/CustomParser';
 import DailyParser from './parsers/DailyParser';
 import DayOfMonthParser from './parsers/DayOfMonthParser';
 import ContextError from './ContextError';
 
 export default class ScheduleOptions {
+
+    /* eslint-disable complexity */
     constructor(input) {
         const options = typeof input === 'undefined' ? {} : input;
 
@@ -36,7 +38,10 @@ export default class ScheduleOptions {
         this.dayOfMonthToggle = options.dayOfMonthToggle || 'dayOfMonth';
 
         // Custom
-        this.cronExpression = options.cronExpression || '0 0/5 * * * ?';
+        this.cronExpression = options.cronExpression || '0 0/5 * * * ?'; // TODO MVR rename this to customExpression
+
+        // Enable debugging?
+        this.showGeneratedCronExpression = options.showGeneratedCronExpression || false;
 
         // Ensure each time is actually a Time object
         if (!(this.at instanceof Time)) {
@@ -65,6 +70,7 @@ export default class ScheduleOptions {
         this.interval = String(this.interval);
     }
 
+    // TODO MVR maybe do a get selectedWeekdays() instead
     getSelectedWeekdays() {
         const selectedWeekDays = Object.keys(this.daysOfWeek)
             .filter(function(key) {
@@ -76,6 +82,7 @@ export default class ScheduleOptions {
         return selectedWeekDays;
     }
 
+    // TODO MVR maybe use get cronExpression() instead.
     getCronExpression() {
 
         // Validate before actually returning the expression
@@ -86,7 +93,7 @@ export default class ScheduleOptions {
             return this.cronExpression;
         }
 
-        // Otherwise, re Populate a cron defintion
+        // Otherwise, re Populate a cron definition
         const cron = new CronDefinition({seconds: 0, minutes: 0, hours: 0, dayOfMonth: '*', month: '*', dayOfWeek: '?'});
 
         // Daily Calculation
@@ -172,7 +179,7 @@ export default class ScheduleOptions {
             }
         }
         // This is technically unreachable code
-        // but to make jslint happy, we have to put this in
+        // but to make eslint happy, we have to put this in
         return new CustomParser().parse(input);
     }
 }

@@ -30,17 +30,18 @@
 
     <!-- Days per Week -->
     <div class="" ng-if="options.type === 'daysPerWeek'">
-        <div class="form-check" ng-repeat="weekday in weekdays">
+        <label>Weekdays</label>
+        <div class="form-check ml-1" ng-repeat="weekday in weekdays">
             <input class="form-check-input" ng-class="{'is-invalid': errors.dayOfWeek}" type="checkbox" name="{{id}}{{weekday.id}}" id="{{id}}{{weekday.id}}" ng-model="options.daysOfWeek[weekday.label]" value="custom">
             <label class="form-check-label" for="{{id}}{{weekday.id}}">
                 {{weekday.label}}
             </label>
         </div>
-        <p class="text-danger small" ng-if="errors.dayOfWeek">{{errors.dayOfWeek}}</p>
+        <p class="text-danger small mb-0" ng-if="errors.dayOfWeek">{{errors.dayOfWeek}}</p>
     </div>
 
     <!-- Daily Options -->
-    <div class="" ng-if="options.type === 'daily' || options.type === 'daysPerWeek'">
+    <div class="mt-2" ng-if="options.type === 'daily' || options.type === 'daysPerWeek'">
         <div class="form-group">
             <label>Interval</label>
             <onms-schedule-interval ng-model="options.interval"></onms-schedule-interval>
@@ -151,13 +152,16 @@
     <div class="" ng-if="options.type === 'custom'">
         <div class="form-inline">
             <input type="text" class="form-control" ng-class="{'is-invalid': errors.cronExpression}" ng-model="options.cronExpression "/>
-            <button class="btn btn-link"><i class="fa fa-question-circle"></i></button>
+            <a href="http://www.quartz-scheduler.org/documentation/quartz-2.2.2/tutorials/crontrigger.html" class="ml-2" target="_blank" title="Help me">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </a>
             <p class="invalid-feedback" ng-if="errors.cronExpression">{{errors.cronExpression}}</p>
         </div>
     </div>
 
-    <div class="text-muted">
-        <label>Generated Cron Expression (for Debug purposes only)</label>
-        <pre class="bg-light px-2 py-2">{{options.calculatedCronExpression}}</pre>
+    <div class="text-muted mt-2" ng-if="options.showGeneratedCronExpression">
+        <hr />
+        <label>Generated Cron Expression</label>
+        <pre class="bg-light px-2 py-2 text-muted">{{options.getCronExpression()}}</pre>
     </div>
 </form>

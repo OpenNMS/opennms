@@ -26,11 +26,10 @@ angular.module(MODULE_NAME, [])
                 scope.weekdays = WeekDays.all;
 
                 // Updates the cron expression on each option change
-                scope.updateCalculatedCronExpression = function() {
+                scope.verifyInput = function() {
                     try {
                         scope.errors = undefined;
                         scope.options.to.error = undefined;
-                        scope.options.calculatedCronExpression = scope.options.getCronExpression();
                     } catch (e) {
                         if (e.context === 'to') {
                             scope.options.to.error = e.message;
@@ -52,11 +51,11 @@ angular.module(MODULE_NAME, [])
                     'options.weekOfMonth',
                     'options.dayOfMonthToggle',
                     'options.cronExpression'
-                ], scope.updateCalculatedCronExpression);
-                scope.$watchCollection('options.at', scope.updateCalculatedCronExpression);
-                scope.$watchCollection('options.from', scope.updateCalculatedCronExpression);
-                scope.$watchCollection('options.to', scope.updateCalculatedCronExpression);
-                scope.$watchCollection('options.daysOfWeek', scope.updateCalculatedCronExpression);
+                ], scope.verifyInput);
+                scope.$watchCollection('options.at', scope.verifyInput);
+                scope.$watchCollection('options.from', scope.verifyInput);
+                scope.$watchCollection('options.to', scope.verifyInput);
+                scope.$watchCollection('options.daysOfWeek', scope.verifyInput);
 
                 // Change the dayOfMonthToggle if any value was changed from the other "toggle"
                 scope.$watch('options.dayOfMonth', function(newValue, oldValue) {
