@@ -1,7 +1,9 @@
 import Types from '../Types';
 import ScheduleOptions from '../ScheduleOptions';
 
-// If all fails, the custom parser will take it
+/**
+ * If all fails, the custom parser will handle any cron expression as a Custom ScheduleOptions.
+ */
 export default class CustomParser {
     canParse(input) {
         return true;

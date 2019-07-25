@@ -38,7 +38,7 @@ export default class Time {
             }
         }
         if (this.minutes < 0 || this.minutes > 59) {
-            throw new Error('Minutes bust be between [0-59] but was ' + this.minutes);
+            throw new Error('Minutes must be between [0-59] but was ' + this.minutes);
         }
     }
 

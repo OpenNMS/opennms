@@ -119,6 +119,10 @@ export default class ScheduleOptions {
                     cron.hours = from.hours;
                     cron.minutes = 0;
                 } else {
+                    // In case we defined an hours range, we decrease the end range by 1
+                    // This is necessary, because the cron expression "0 0/30 1-2 * * ?"
+                    // would fire at 1:00, 1:30, 2:00 and 2:30 every day.
+                    // By decreasing the hour by 1, it will fire at 1:00 and 1:30 instead.
                     cron.hours = from.hours + '-' + (to.hours - 1);
                     cron.minutes = '0/' + interval;
                 }

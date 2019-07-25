@@ -90,8 +90,8 @@ angular.module(MODULE_NAME, [])
             templateUrl: timeInputTemplate,
             scope: {
                 // The model which is used for rendering.
-                // Must have hours, minutes and mode property.
-                // If mode is not set, 24 hours format is assumed
+                // Must have hours, minutes and suffix property.
+                // If suffix is not set, 24 hours format is assumed
                 model: '=ngModel',
 
                 // Defines if the time uses 24 hours format, or am/pm
@@ -100,6 +100,7 @@ angular.module(MODULE_NAME, [])
                 // in case you don't want to show all minutes,
                 // you can define the step size e.g. 5
                 // to only show 0, 5, 10, etc.
+                // Default is 5
                 minutesStep: '=?minutesStep',
 
                 // If you want to disable minute input
