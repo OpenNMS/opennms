@@ -9,7 +9,7 @@ describe('Verify construction', () => {
     test('Verify defaults', () => {
         const options = new ScheduleOptions();
         expect(options.type).toBe(Types.DAILY);
-        expect(options.interval).toBe(0);
+        expect(options.interval).toBe('0');
         expect(options.at).toEqual(new Time({hours: 0, minutes: 0}));
         expect(options.from).toEqual(new Time({hours: 1, minutes: 0, options: {disableMinutes: true}}));
         expect(options.to).toEqual(new Time({hours: 1, minutes: 0, options: {disableMinutes: true}}));
@@ -305,7 +305,7 @@ describe('Verify day per month cron generation', () => {
         });
 
         test('Verify defaults', () => {
-            expect(options.getCronExpression()).toBe('0 35 15 * * 1#1'); // -> first Sunday
+            expect(new ScheduleOptions({type: Types.DAYS_PER_MONTH}).getCronExpression()).toBe('0 0 0 1 * ?'); // 1st of every month
         });
 
         test('Verify last friday', () => {

@@ -30,6 +30,7 @@ angular.module(MODULE_NAME, [])
                     try {
                         scope.errors = undefined;
                         scope.options.to.error = undefined;
+                        scope.options.getCronExpression();
                     } catch (e) {
                         if (e.context === 'to') {
                             scope.options.to.error = e.message;
@@ -57,14 +58,15 @@ angular.module(MODULE_NAME, [])
                 scope.$watchCollection('options.to', scope.verifyInput);
                 scope.$watchCollection('options.daysOfWeek', scope.verifyInput);
 
-                // Change the dayOfMonthToggle if any value was changed from the other "toggle"
+                // Change the dayOfMonthToggle if any value was changed from the other "group"
                 scope.$watch('options.dayOfMonth', function(newValue, oldValue) {
-                    if (scope.options.dayOfMonthToggle !== 'dayOfMonth') {
+                    if (newValue !== oldValue && scope.options.dayOfMonthToggle !== 'dayOfMonth') {
                         scope.options.dayOfMonthToggle = 'dayOfMonth';
                     }
                 });
-                scope.$watchGroup(['options.dayOfWeek', 'options.weekOfMonth'], function() {
-                    if (scope.options.dayOfMonthToggle !== 'dayOfWeek') {
+                scope.$watchGroup(['options.dayOfWeek', 'options.weekOfMonth'], function(newValue, oldValue) {
+                    if ((newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1])
+                            && scope.options.dayOfMonthToggle !== 'dayOfWeek') {
                         scope.options.dayOfMonthToggle = 'dayOfWeek';
                     }
                 });

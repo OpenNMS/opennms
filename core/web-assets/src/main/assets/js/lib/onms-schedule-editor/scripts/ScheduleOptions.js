@@ -34,7 +34,7 @@ export default class ScheduleOptions {
         // Days per Month
         this.dayOfMonth = options.dayOfMonth || '1'; // 1st day
         this.weekOfMonth = options.dayOfMonth || '1';
-        this.dayOfWeek = options.dayOfWeek || WeekDays.Sunday.id;
+        this.dayOfWeek = options.dayOfWeek || String(WeekDays.Sunday.id);
         this.dayOfMonthToggle = options.dayOfMonthToggle || 'dayOfMonth';
 
         // Custom
