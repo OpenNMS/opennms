@@ -842,6 +842,8 @@
     </feature>
     <feature name="opennms-provisioning-shell" version="${project.version}" description="OpenNMS :: Provisioning :: Shell">
         <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
     </feature>
     <feature name="opennms-vmware" version="${project.version}" description="OpenNMS :: Integrations :: VMware Integration">
         <feature>commons-cli</feature>
