@@ -41,7 +41,7 @@ export default class ScheduleOptions {
         this.cronExpression = options.cronExpression || '0 0/5 * * * ?'; // TODO MVR rename this to customExpression
 
         // Enable debugging?
-        this.showGeneratedCronExpression = options.showGeneratedCronExpression || false;
+        this.showDebugOptions = options.showDebugOptions || false;
 
         // Ensure each time is actually a Time object
         if (!(this.at instanceof Time)) {

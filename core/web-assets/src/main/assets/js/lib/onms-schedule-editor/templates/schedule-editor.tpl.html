@@ -159,9 +159,11 @@
         </div>
     </div>
 
-    <div class="text-muted mt-2" ng-if="options.showGeneratedCronExpression">
+    <div class="text-muted mt-2" ng-if="options.showDebugOptions">
         <hr />
         <label>Generated Cron Expression</label>
         <pre class="bg-light px-2 py-2 text-muted">{{options.getCronExpression()}}</pre>
+        <label>Schedule Options</label>
+        <pre class="bg-light px-2 py-2 text-muted">{{options | json}}</pre>
     </div>
 </form>
