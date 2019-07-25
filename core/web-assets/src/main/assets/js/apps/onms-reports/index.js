@@ -1,6 +1,7 @@
 const angular = require('vendor/angular-js');
 require('../../lib/onms-http');
 require('../../lib/onms-datetimepicker');
+require('../../lib/onms-schedule-editor');
 require('angular-ui-router');
 require('angular-bootstrap-confirm');
 
@@ -25,7 +26,8 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             'ui.router',
             'mwl.confirm',
             'onms.http',
-            'onms.datetimepicker'
+            'onms.datetimepicker',
+            'onms.schedule.editor'
         ])
         .config( ['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
@@ -181,7 +183,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             $scope.options = {
                 deliverReport: !$scope.report.online,
                 scheduleReport: false,
-                cronExpression:  "0 */5 * * * ?", // TODO MVR default value for this should be what ???
+                scheduleOptions: {cronExpresison: '0 */5 * * * ?'}, // TODO MVR default value for this should be what ???
 
                 isExecuteReport: function() {
                     return !this.deliverReport && !this.scheduleReport;

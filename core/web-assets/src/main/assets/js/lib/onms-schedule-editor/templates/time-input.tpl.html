@@ -1,0 +1,19 @@
+<div class="form-inline">
+    <select class="form-control custom-select mx-1"
+            ng-class="{'is-invalid': model.error}"
+            ng-options="i for i in hours"
+            ng-model="model.hours">
+    </select>
+    <span>:</span>
+    <select class="form-control custom-select mx-1"
+            ng-class="{'is-invalid': model.error && !options.disableMinutes}"
+            ng-model="model.minutes"
+            ng-options="('00' + i).slice(-2) for i in minutes"
+            ng-disabled="options.disableMinutes">
+    </select>
+    <select class="form-control custom-select" ng-if="model.mode === 'AM_PM'" ng-model="model.suffix">
+        <option value="am">am</option>
+        <option value="pm">pm</option>
+    </select>
+    <p class="invalid-feedback ml-1" ng-if="model.error">{{model.error}}</p>
+</div>
