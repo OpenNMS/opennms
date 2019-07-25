@@ -224,7 +224,7 @@
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: Cassandra"
              version="${project.version}">
         <feature>sentinel-newts-cassandra</feature>
-        <feature>opennms-kvstore-api</feature>        
+        <feature>opennms-kvstore-shell</feature>        
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.cassandra/${project.version}</bundle>
     </feature>
 </features>
