@@ -73,7 +73,7 @@
       <property name="userManager" ref="userFactory" />
       <property name="destinationPathManager" ref="destinationPathFactory" />
       <property name="notificationCommandManager" ref="notificationCommandFactory" />
-      <property name="pollOutagesConfigManager" ref="pollOutagesConfigFactory" />
+      <property name="pollOutagesConfig" ref="outagesConfigModifiable" />
       <property name="eventConfDao" ref="eventConfDao" />
     </bean>
 
