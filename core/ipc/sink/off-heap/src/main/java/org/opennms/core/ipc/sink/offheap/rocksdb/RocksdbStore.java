@@ -67,7 +67,7 @@ public class RocksdbStore implements OffHeapQueue {
     private static final Logger LOG = LoggerFactory.getLogger(RocksdbStore.class);
     // Configuration Options for Offheap.
     public static final String OFFHEAP_CONFIG = "org.opennms.core.ipc.sink.offheap";
-    private static final String DEFAULT_OFFHEAP_SIZE = "10MB";
+    private static final String DEFAULT_OFFHEAP_SIZE = "1GB";
     public static final String OFFHEAP_SIZE = "offHeapSize";
     public static final String OFFHEAP_PATH = "offHeapPath";
     private static final int INVALID_SIZE = -1;
@@ -186,7 +186,7 @@ public class RocksdbStore implements OffHeapQueue {
             if (!rocksIterator.isValid()) {
                 //1sec delay will prevent iterator to seek multiple times in search of new data.
                 Thread.sleep(1000);
-                LOG.warn("Re-creating iterator for {}", moduleName);
+                LOG.debug("Re-creating iterator for {}", moduleName);
                 rocksIterator = getRocksIterator(rocksIterator, moduleName);
             }
             if (rocksIterator.isValid()) {

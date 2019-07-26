@@ -200,10 +200,9 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     }
 
     private boolean checkIfMessageShouldBeWrittenToOffHeap() {
-        // If either queue is full or offheap queue is
+        // If either local queue is full and Offheap queue is still draining.
         if(getQueueSize() == asyncPolicy.getQueueSize() ||
                 ((offHeapAdapter != null) && !offHeapAdapter.isOffHeapEmpty())) {
-            rateLimittedLogger.trace("local queue {} is full, falling back to Offheap memory", getQueueSize());
             return true;
         }
         return false;
