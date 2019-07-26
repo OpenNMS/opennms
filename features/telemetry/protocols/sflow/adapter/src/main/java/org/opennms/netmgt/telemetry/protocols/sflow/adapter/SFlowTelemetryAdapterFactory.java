@@ -53,7 +53,7 @@ public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final SFlowTelemetryAdapter adapter = new SFlowTelemetryAdapter();
+        final SFlowTelemetryAdapter adapter = new SFlowTelemetryAdapter(adapterConfig.getName(), getTelemetryRegistry().getMetricRegistry());
         adapter.setConfig(adapterConfig);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setPersisterFactory(getPersisterFactory());

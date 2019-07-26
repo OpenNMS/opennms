@@ -28,10 +28,13 @@
 
 package org.opennms.smoketest;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+
 import java.io.StringReader;
-import java.util.Date;
+import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,11 +42,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.smoketest.selenium.ResponseData;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -153,7 +157,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
             
             getDriver().get(getBaseUrlInternal()+"opennms/element/node.jsp?node=test:nodeWith10Interfaces");
 
-            setImplicitWait(1, TimeUnit.SECONDS);
+            setImplicitWait(1, SECONDS);
 
             Assert.assertEquals(1, driver.findElements(By.id("availability-box")).size());
             Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.1")).size());
@@ -185,6 +189,47 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
         } finally {
             sendDelete("rest/nodes/test:nodeWith10Interfaces", 202);
             sendDelete("rest/nodes/test:nodeWith11Interfaces", 202);
+        }
+    }
+
+    @Test
+    public void verifyTimeline() throws Exception {
+        try {
+            final String node = "<node type=\"A\" label=\"myNode\" foreignSource=\"smoketests\" foreignId=\"nodeForeignId\">" +
+                    "<labelSource>H</labelSource><sysContact>Ulf</sysContact><sysDescription>Test System</sysDescription><sysLocation>Fulda</sysLocation>" +
+                    "<sysName>myNode</sysName><sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId><createTime>2019-03-11T07:12:46.421-04:00</createTime>" +
+                    "<lastCapsdPoll>2019-03-11T07:12:46.421-04:00</lastCapsdPoll></node>";
+
+            sendPost("rest/nodes", node, 201);
+
+            final String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\"><ipAddress>192.168.10.254</ipAddress><hostName>myNode.local</hostName></ipInterface>";
+
+            sendPost("rest/nodes/smoketests:nodeForeignId/ipinterfaces", ipInterface, 201);
+
+            final String service = "<service status=\"A\"><applications/><serviceType id=\"1\"><name>ICMP</name></serviceType></service>";
+
+            sendPost("rest/nodes/smoketests:nodeForeignId/ipinterfaces/192.168.10.254/services", service, 201);
+
+            driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=smoketests:nodeForeignId");
+
+            await().atMost(5, SECONDS)
+                    .pollInterval(1, SECONDS)
+                    .until(() -> {
+                        final List<WebElement> timelineImages = getDriver().findElements(By.tagName("img")).stream().filter(i -> i.getAttribute("src").contains("timeline")).collect(Collectors.toList());
+                        if (timelineImages.size() >= 2) {
+                            for (final WebElement timelineImage : timelineImages) {
+                                final Object result = ((JavascriptExecutor) driver).executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0", timelineImage);
+                                if (!(result instanceof Boolean) || !((Boolean) result).booleanValue()) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+        } finally {
+            sendDelete("rest/nodes/smoketests:nodeForeignId", 202);
         }
     }
 

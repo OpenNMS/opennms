@@ -1251,6 +1251,9 @@
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <camelVersion>2.19.1</camelVersion>
+    <cassandraUnitVersion>3.11.2.0</cassandraUnitVersion>
+    <!-- Match Newts version -->
+    <cassandraVersion>3.5.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
@@ -3658,6 +3661,11 @@
         <groupId>jdom</groupId>
         <artifactId>jdom</artifactId>
         <version>99.99.99-exclude-and-use-org.apache.servicemix.bundles.jdom-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>${dropwizardMetricsVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>

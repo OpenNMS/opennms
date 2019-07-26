@@ -11,6 +11,7 @@
 
 	<bean id="jtiFactory" class="org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiAdapterFactory">
 		<argument ref="blueprintBundleContext" />
+		<property name="telemetryRegistry" ref="telemetryRegistry" />
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
 		<property name="nodeDao" ref="nodeDao" />
@@ -25,6 +26,7 @@
 		</service-properties>
 	</service>
 
+	<reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" />
 	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
 	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />

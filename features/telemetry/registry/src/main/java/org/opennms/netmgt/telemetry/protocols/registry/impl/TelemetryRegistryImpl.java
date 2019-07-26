@@ -45,6 +45,8 @@ import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.codahale.metrics.MetricRegistry;
+
 public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     @Autowired
@@ -58,6 +60,8 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     @Autowired
     @Qualifier("parserRegistry")
     private TelemetryServiceRegistry<ParserDefinition, Parser> parserRegistryDelegate;
+
+    private MetricRegistry metricRegistry;
 
     private final Map<String, AsyncDispatcher<TelemetryMessage>> dispatchers = new HashMap<>();
 
@@ -114,5 +118,14 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     public void setParserRegistryDelegate(TelemetryServiceRegistry<ParserDefinition, Parser> parserRegistryDelegate) {
         this.parserRegistryDelegate = parserRegistryDelegate;
+    }
+
+    @Override
+    public MetricRegistry getMetricRegistry() {
+        return metricRegistry;
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
     }
 }

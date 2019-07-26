@@ -29,7 +29,9 @@
 package org.opennms.netmgt.poller;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
 
 public interface PollerRequestBuilder {
 
@@ -49,6 +51,7 @@ public interface PollerRequestBuilder {
 
     PollerRequestBuilder withAdaptor(ServiceMonitorAdaptor adaptor);
 
-    CompletableFuture<PollerResponse> execute();
+    PollerRequestBuilder withPatternVariables(Map<String, String> patterns);
 
+    CompletableFuture<PollerResponse> execute();
 }

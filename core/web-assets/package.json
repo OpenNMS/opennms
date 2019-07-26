@@ -163,7 +163,7 @@
         "release": "yarn run lint && yarn run build-release",
         "watch": "webpack --colors --display-error-details --watch --env=development",
         "watch-release": "webpack --colors --display-error-details --watch --env=production",
-        "lint": "eslint 'src/**/*.[jt]s'",
+        "lint": "eslint \"src/**/*.[jt]s\"",
         "maven-test": "jest --all --verbose --useStderr=false --color=false",
         "test": "jest"
     }

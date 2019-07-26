@@ -367,24 +367,29 @@
             <attrib name="OneMinuteRate" alias="FlowLogPerst1m" type="gauge"/>
             <attrib name="FiveMinuteRate" alias="FlowLogPerst5m" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.telemetry.protocols.packetsPerLog" resource-type="netflow" objectname="org.opennms.netmgt.telemetry.protocols.*:name=packetsPerLog">
-            <attrib name="50thPercentile" alias="FlowPktsPerLog50" type="gauge"/>
-            <attrib name="75thPercentile" alias="FlowPktsPerLog75" type="gauge"/>
-            <attrib name="95thPercentile" alias="FlowPktsPerLog95" type="gauge"/>
-            <attrib name="98thPercentile" alias="FlowPktsPerLog98" type="gauge"/>
-            <attrib name="99thPercentile" alias="FlowPktsPerLog99" type="gauge"/>
-            <attrib name="999thPercentile" alias="FlowPktsPerLog999" type="gauge"/>
-            <attrib name="Count" alias="FlowPktsPerLogCnt" type="counter"/>
+         <mbean name="org.opennms.netmgt.telemetry.adapters.packetsPerLog" resource-type="telemetryAdapters" objectname="org.opennms.netmgt.telemetry:name=adapters.*packetsPerLog">
+            <attrib name="50thPercentile" alias="TlmPktsPerLog50" type="gauge"/>
+            <attrib name="75thPercentile" alias="TlmPktsPerLog75" type="gauge"/>
+            <attrib name="95thPercentile" alias="TlmPktsPerLog95" type="gauge"/>
+            <attrib name="98thPercentile" alias="TlmPktsPerLog98" type="gauge"/>
+            <attrib name="99thPercentile" alias="TlmPktsPerLog99" type="gauge"/>
+            <attrib name="999thPercentile" alias="TlmPktsPerLog999" type="gauge"/>
+            <attrib name="Count" alias="TlmPktsPerLogCnt" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.telemetry.protocols.logParsing" resource-type="netflow" objectname="org.opennms.netmgt.telemetry.protocols.*:name=logParsing">
-            <attrib name="50thPercentile" alias="FlowLogParse50" type="gauge"/>
-            <attrib name="75thPercentile" alias="FlowLogParse75" type="gauge"/>
-            <attrib name="95thPercentile" alias="FlowLogParse95" type="gauge"/>
-            <attrib name="98thPercentile" alias="FlowLogParse98" type="gauge"/>
-            <attrib name="99thPercentile" alias="FlowLogParse99" type="gauge"/>
-            <attrib name="999thPercentile" alias="FlowLogParse999" type="gauge"/>
-            <attrib name="OneMinuteRate" alias="FlowLogParse1m" type="gauge"/>
-            <attrib name="FiveMinuteRate" alias="FlowLogParse5m" type="gauge"/>
+         <mbean name="org.opennms.netmgt.telemetry.adapters.logParsing" resource-type="telemetryAdapters" objectname="org.opennms.netmgt.telemetry:name=adapters.*logParsing">
+            <attrib name="50thPercentile" alias="TlmLogParse50" type="gauge"/>
+            <attrib name="75thPercentile" alias="TlmLogParse75" type="gauge"/>
+            <attrib name="95thPercentile" alias="TlmLogParse95" type="gauge"/>
+            <attrib name="98thPercentile" alias="TlmLogParse98" type="gauge"/>
+            <attrib name="99thPercentile" alias="TlmLogParse99" type="gauge"/>
+            <attrib name="999thPercentile" alias="TlmLogParse999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="TlmLogParse1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="TlmLogParse5m" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.netmgt.telemetry.listeners.packetsReceived" resource-type="telemetryListeners" objectname="org.opennms.netmgt.telemetry:name=listeners.*packetsReceived">
+            <attrib name="Count" alias="TlmPacketsRcvd" type="counter"/>
+            <attrib name="OneMinuteRate" alias="TlmPacketsRcvd1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="TlmPacketsRcvd5m" type="gauge"/>
          </mbean>
 
          <!-- Sink Producer Metrics -->

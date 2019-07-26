@@ -130,6 +130,7 @@
     <feature name="minion-telemetryd-receivers" description="Minion :: Telemetry :: Receivers" version="${project.version}">
       <!-- Not fully needed, but a convenient way to install netty4 -->
       <feature>camel-netty4</feature>
+      <feature>dropwizard-metrics</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
       <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
