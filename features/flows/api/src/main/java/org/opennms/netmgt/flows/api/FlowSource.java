@@ -33,10 +33,14 @@ import java.util.Objects;
 public class FlowSource {
     private final String location;
     private final String sourceAddress;
+    private final int sourcePort;
 
-    public FlowSource(String location, String sourceAddress) {
+    public FlowSource(final String location,
+                      final String sourceAddress,
+                      final int sourcePort) {
         this.location = Objects.requireNonNull(location);
         this.sourceAddress = Objects.requireNonNull(sourceAddress);
+        this.sourcePort = sourcePort;
     }
 
     public String getLocation() {
@@ -45,5 +49,9 @@ public class FlowSource {
 
     public String getSourceAddress() {
         return sourceAddress;
+    }
+
+    public int getSourcePort() {
+        return this.sourcePort;
     }
 }

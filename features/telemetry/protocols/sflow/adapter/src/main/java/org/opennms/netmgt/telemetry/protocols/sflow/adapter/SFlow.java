@@ -90,6 +90,16 @@ public class SFlow implements Flow {
     }
 
     @Override
+    public Long getBytesDelta() {
+        return this.getBytes();
+    }
+
+    @Override
+    public Long getPacketsDelta() {
+        return this.getPackets();
+    }
+
+    @Override
     public Direction getDirection() {
         return Direction.INGRESS;
     }
@@ -304,6 +314,11 @@ public class SFlow implements Flow {
                 get(document, "flows", "0:1", "ipv6", "tos"))
                 .map(v -> v.asInt32().getValue())
                 .orElse(null);
+    }
+
+    @Override
+    public Long getUpdateSwitched() {
+        return this.getFirstSwitched();
     }
 
     @Override

@@ -30,15 +30,23 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.SlopeAvoidanceThing;
 
 public class IpfixConverter implements Converter<BsonDocument> {
 
+    private final SlopeAvoidanceThing.Session session;
+
+    public IpfixConverter(final SlopeAvoidanceThing.Session session) {
+        this.session = Objects.requireNonNull(session);
+    }
+
     @Override
     public List<Flow> convert(final BsonDocument packet) {
-        return Collections.singletonList(new IpfixFlow(packet));
+        return Collections.singletonList(new IpfixFlow(packet, this.session));
     }
 }

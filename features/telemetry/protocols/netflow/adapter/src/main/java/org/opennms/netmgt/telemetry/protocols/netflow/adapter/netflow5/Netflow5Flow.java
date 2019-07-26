@@ -57,6 +57,16 @@ class Netflow5Flow implements Flow {
     }
 
     @Override
+    public Long getBytesDelta() {
+        return this.getBytes();
+    }
+
+    @Override
+    public Long getPacketsDelta() {
+        return this.getPackets();
+    }
+
+    @Override
     public Direction getDirection() {
         return getBool(this.document, "egress").get()
                 ? Direction.EGRESS
@@ -244,6 +254,11 @@ class Netflow5Flow implements Flow {
         return getInt64(this.document, "tos")
                 .map(Long::intValue)
                 .get();
+    }
+
+    @Override
+    public Long getUpdateSwitched() {
+        return this.getFirstSwitched();
     }
 
     @Override

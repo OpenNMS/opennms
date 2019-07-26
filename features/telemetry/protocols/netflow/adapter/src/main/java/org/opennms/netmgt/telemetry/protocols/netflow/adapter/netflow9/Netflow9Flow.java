@@ -37,12 +37,13 @@ import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.SlopeAvoidanceThing;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.UpdatingFlow;
 
-class Netflow9Flow implements Flow {
-    private final BsonDocument document;
-
-    public Netflow9Flow(final BsonDocument document) {
-        this.document = Objects.requireNonNull(document);
+class Netflow9Flow extends UpdatingFlow implements Flow {
+    public Netflow9Flow(final BsonDocument document,
+                        final SlopeAvoidanceThing.Session sat) {
+        super(document, sat);
     }
 
     @Override
@@ -264,6 +265,8 @@ class Netflow9Flow implements Flow {
                 .orElse(null);
     }
 
+
+
     @Override
     public NetflowVersion getNetflowVersion() {
         return NetflowVersion.V9;
@@ -283,5 +286,24 @@ class Netflow9Flow implements Flow {
 
     private long getBootTime() {
         return this.getTimestamp() - this.getSysUpTime();
+    }
+
+    @Override
+    public Optional<Timeout> getTimeout() {
+        // TODO fooker: Make this pretty
+        final Optional<Long> active = getInt64(this.document, "FLOW_ACTIVE_TIMEOUT");
+        final Optional<Long> inactive = getInt64(this.document, "FLOW_INACTIVE_TIMEOUT");
+
+        if (active.isPresent() && inactive.isPresent()) {
+            return Optional.of(new Timeout(active.get(), inactive.get()));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public long getObservationDomainId() {
+        return getInt64(this.document, "@sourceId")
+                .orElse(0L);
     }
 }

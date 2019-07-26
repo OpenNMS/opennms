@@ -30,15 +30,23 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.SlopeAvoidanceThing;
 
 public class Netflow9Converter implements Converter<BsonDocument> {
 
+    private final SlopeAvoidanceThing.Session session;
+
+    public Netflow9Converter(final SlopeAvoidanceThing.Session session) {
+        this.session = Objects.requireNonNull(session);
+    }
+
     @Override
     public List<Flow> convert(final BsonDocument packet) {
-        return Collections.singletonList(new Netflow9Flow(packet));
+        return Collections.singletonList(new Netflow9Flow(packet, this.session));
     }
 }

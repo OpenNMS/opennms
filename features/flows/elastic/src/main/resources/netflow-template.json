@@ -770,6 +770,9 @@
                         "bytes": {
                             "type": "long"
                         },
+                        "bytes_delta": {
+                            "type": "long"
+                        },
                         "convo_key": {
                             "type": "keyword",
                             "norms": false
@@ -815,6 +818,9 @@
                         "packets": {
                             "type": "long"
                         },
+                        "packets_delta": {
+                            "type": "long"
+                        },
                         "protocol": {
                             "type": "keyword",
                             "norms": false
@@ -845,6 +851,9 @@
                         "tos": {
                             "type": "keyword",
                             "norms": false
+                        },
+                        "update_switched": {
+                            "type": "date"
                         },
                         "version": {
                             "type": "keyword",

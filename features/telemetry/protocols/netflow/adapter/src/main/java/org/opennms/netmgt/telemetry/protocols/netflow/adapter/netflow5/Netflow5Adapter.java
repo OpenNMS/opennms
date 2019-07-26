@@ -42,7 +42,7 @@ public class Netflow5Adapter extends AbstractFlowAdapter<BsonDocument> {
 
     public Netflow5Adapter(final MetricRegistry metricRegistry,
                            final FlowRepository flowRepository) {
-        super(metricRegistry, flowRepository, new Netflow5Converter());
+        super(metricRegistry, flowRepository, flowSource -> new Netflow5Converter());
     }
 
     @Override

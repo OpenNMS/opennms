@@ -73,7 +73,7 @@ public class DocumentEnricherTest {
         final List<FlowDocument> documents = Lists.newArrayList();
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.2"));
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.3"));
-        enricher.enrich(documents, new FlowSource("Default", "127.0.0.1"));
+        enricher.enrich(documents, new FlowSource("Default", "127.0.0.1", 12345, "system1"));
 
         // get is also called for each save, so we account for those as well
         assertEquals(6, nodeDaoGetCounter.get());

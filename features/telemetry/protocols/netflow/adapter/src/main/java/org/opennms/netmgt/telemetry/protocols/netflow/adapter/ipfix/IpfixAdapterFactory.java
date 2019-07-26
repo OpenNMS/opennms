@@ -34,12 +34,14 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.AdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.SlopeAvoidanceThing;
 
 import com.codahale.metrics.MetricRegistry;
 
 public class IpfixAdapterFactory implements AdapterFactory {
     private MetricRegistry metricRegistry;
     private FlowRepository flowRepository;
+    private SlopeAvoidanceThing sat;
 
     @Override
     public Class<? extends Adapter> getBeanClass() {
@@ -50,8 +52,9 @@ public class IpfixAdapterFactory implements AdapterFactory {
     public Adapter createBean(final AdapterDefinition adapterConfig) {
         Objects.requireNonNull(metricRegistry);
         Objects.requireNonNull(flowRepository);
+        Objects.requireNonNull(sat);
 
-        return new IpfixAdapter(metricRegistry, flowRepository);
+        return new IpfixAdapter(metricRegistry, flowRepository, sat);
     }
 
     public void setMetricRegistry(MetricRegistry metricRegistry) {
@@ -60,5 +63,9 @@ public class IpfixAdapterFactory implements AdapterFactory {
 
     public void setFlowRepository(FlowRepository flowRepository) {
         this.flowRepository = flowRepository;
+    }
+
+    public void setSat(SlopeAvoidanceThing sat) {
+        this.sat = sat;
     }
 }

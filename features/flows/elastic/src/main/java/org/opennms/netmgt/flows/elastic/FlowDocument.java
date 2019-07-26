@@ -87,6 +87,12 @@ public class FlowDocument {
     private Long bytes;
 
     /**
+     * Number of bytes transferred since the last update.
+     */
+    @SerializedName("netflow.bytes_delta")
+    private Long bytesDelta;
+
+    /**
      * Key used to group and identify conversations
      */
     @SerializedName("netflow.convo_key")
@@ -217,6 +223,12 @@ public class FlowDocument {
     private Long packets;
 
     /**
+     * Number of packets transferred since the last update.
+     */
+    @SerializedName("netflow.packets_delta")
+    private Long packetsDelta;
+
+    /**
      * IP protocol number i.e 6 for TCP, 17 for UDP
      */
     @SerializedName("netflow.protocol")
@@ -281,6 +293,13 @@ public class FlowDocument {
      */
     @SerializedName("netflow.tos")
     private Integer tos;
+
+    /**
+     * Unix timestamp in ms at which the updated packet
+     * associated with this flow was switched.
+     */
+    @SerializedName("netflow.update_switched")
+    private Long updateSwitched;
 
     /**
      * Netfow version
@@ -371,6 +390,14 @@ public class FlowDocument {
 
     public void setBytes(Long bytes) {
         this.bytes = bytes;
+    }
+
+    public Long getBytesDelta() {
+        return bytesDelta;
+    }
+
+    public void setBytesDelta(Long bytesDelta) {
+        this.bytesDelta = bytesDelta;
     }
 
     public String getConvoKey() {
@@ -542,6 +569,14 @@ public class FlowDocument {
         this.packets = packets;
     }
 
+    public Long getPacketsDelta() {
+        return packetsDelta;
+    }
+
+    public void setPacketsDelta(Long packetsDelta) {
+        this.packetsDelta = packetsDelta;
+    }
+
     public Integer getProtocol() {
         return protocol;
     }
@@ -631,6 +666,14 @@ public class FlowDocument {
         this.tos = tos;
     }
 
+    public Long getUpdateSwitched() {
+        return updateSwitched;
+    }
+
+    public void setUpdateSwitched(Long updateSwitched) {
+        this.updateSwitched = updateSwitched;
+    }
+
     public NetflowVersion getNetflowVersion() {
         return netflowVersion;
     }
@@ -675,6 +718,8 @@ public class FlowDocument {
         final FlowDocument doc = new FlowDocument();
         doc.setTimestamp(flow.getTimestamp());
         doc.setBytes(flow.getBytes());
+        doc.setBytesDelta(flow.getBytesDelta());
+        doc.setPacketsDelta(flow.getPacketsDelta());
         doc.setDirection(Direction.from(flow.getDirection()));
         doc.setDstAddr(flow.getDstAddr());
         flow.getDstAddrHostname().ifPresent(doc::setDstAddrHostname);
@@ -703,6 +748,7 @@ public class FlowDocument {
         doc.setSrcPort(flow.getSrcPort());
         doc.setTcpFlags(flow.getTcpFlags());
         doc.setTos(flow.getTos());
+        doc.setUpdateSwitched(flow.getUpdateSwitched());
         doc.setNetflowVersion(NetflowVersion.from(flow.getNetflowVersion()));
         doc.setVlan(flow.getVlan() != null ? Integer.toUnsignedString(flow.getVlan()) : null);
 

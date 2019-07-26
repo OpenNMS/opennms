@@ -670,7 +670,7 @@ public class FlowQueryIT {
                 .withDirection(Direction.EGRESS)
                 .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
                 .build();
-        flowRepository.enrichAndPersistFlows(flows, new FlowSource("test", "127.0.0.1"));
+        flowRepository.enrichAndPersistFlows(flows, new FlowSource("test", "127.0.0.1", 12345, "system1"));
 
         // Retrieve all the flows we just persisted
         await().atMost(30, TimeUnit.SECONDS).until(() -> flowRepository.getFlowCount(Collections.singletonList(

@@ -68,6 +68,11 @@ public interface Flow {
     Long getBytes();
 
     /**
+     * Number of bytes transferred since last update.
+     */
+    Long getBytesDelta();
+
+    /**
      * Direction of the flow (egress vs ingress)
      */
     Direction getDirection();
@@ -160,6 +165,11 @@ public interface Flow {
     Long getPackets();
 
     /**
+     * Number of packets since last update.
+     */
+    Long getPacketsDelta();
+
+    /**
      * IP protocol number i.e 6 for TCP, 17 for UDP
      */
     Integer getProtocol();
@@ -208,6 +218,11 @@ public interface Flow {
      * TOS.
      */
     Integer getTos();
+
+    /**
+     * Unix timestamp in ms at which the packet associated with this flow was updated last.
+     */
+    Long getUpdateSwitched();
 
     /**
      * Netfow version

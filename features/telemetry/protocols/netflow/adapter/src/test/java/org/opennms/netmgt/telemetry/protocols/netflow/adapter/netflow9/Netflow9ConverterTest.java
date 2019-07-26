@@ -49,6 +49,7 @@ import org.bson.BsonDocument;
 import org.bson.RawBsonDocument;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.SlopeAvoidanceThing;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
@@ -59,7 +60,9 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 
 public class Netflow9ConverterTest {
 
-    private Netflow9Converter nf9Converter = new Netflow9Converter();
+    private final SlopeAvoidanceThing sat = new SlopeAvoidanceThing();
+
+    private Netflow9Converter nf9Converter = new Netflow9Converter(sat.session(""));
 
     @Test
     public void canParseNetflow9Flows() {

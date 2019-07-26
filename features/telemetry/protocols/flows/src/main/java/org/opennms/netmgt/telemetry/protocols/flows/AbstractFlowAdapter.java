@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.flows;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
@@ -54,7 +55,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     private final FlowRepository flowRepository;
 
-    private final Converter<P> converter;
+    private final Function<FlowSource, Converter<P>> converter;
 
     /**
      * Time taken to parse a log
@@ -68,7 +69,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     public AbstractFlowAdapter(final MetricRegistry metricRegistry,
                            final FlowRepository flowRepository,
-                           final Converter<P> converter) {
+                           final Function<FlowSource, Converter<P>> converter) {
         this.flowRepository = Objects.requireNonNull(flowRepository);
         this.converter = Objects.requireNonNull(converter);
 
@@ -84,6 +85,14 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
     @Override
     public void handleMessageLog(TelemetryMessageLog messageLog) {
         LOG.debug("Received {} telemetry messages", messageLog.getMessageList().size());
+
+        final FlowSource source = new FlowSource(
+                messageLog.getLocation(),
+                messageLog.getSourceAddress(),
+                messageLog.getSourcePort()
+        );
+
+        final Converter<P> converter = this.converter.apply(source);
 
         final List<P> flowPackets = new LinkedList<>();
         final List<Flow> flows = new LinkedList<>();
@@ -101,7 +110,6 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
         try {
             LOG.debug("Persisting {} packets, {} flows.", flowPackets.size(), flows.size());
-            final FlowSource source = new FlowSource(messageLog.getLocation(), messageLog.getSourceAddress());
             flowRepository.persist(flows, source);
         } catch (FlowException ex) {
             LOG.error("Failed to persist one or more packets: {}", ex.getMessage());

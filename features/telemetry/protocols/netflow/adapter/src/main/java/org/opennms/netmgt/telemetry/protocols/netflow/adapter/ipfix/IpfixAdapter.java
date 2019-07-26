@@ -31,20 +31,29 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix;
 import org.bson.BsonDocument;
 import org.bson.RawBsonDocument;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.SlopeAvoidanceThing;
 
 import com.codahale.metrics.MetricRegistry;
 
 public class IpfixAdapter extends AbstractFlowAdapter<BsonDocument> {
 
     public IpfixAdapter(final MetricRegistry metricRegistry,
-                        final FlowRepository flowRepository) {
-        super(metricRegistry, flowRepository, new IpfixConverter());
+                        final FlowRepository flowRepository,
+                        final SlopeAvoidanceThing sat) {
+        super(metricRegistry, flowRepository, flowSource -> new IpfixConverter(sat.session(sessionKey(flowSource))));
     }
 
     @Override
     protected BsonDocument parse(TelemetryMessageLogEntry message) {
         return new RawBsonDocument(message.getByteArray());
+    }
+
+    private static String sessionKey(final FlowSource flowSource) {
+        return flowSource.getLocation() + ':' +
+                flowSource.getSourceAddress() + ':' +
+                flowSource.getSourcePort();
     }
 }

@@ -10,6 +10,9 @@
 ">
 	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
 
+	<bean id="sat" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.SlopeAvoidanceThing">
+	</bean>
+
 	<!-- Netflow5 Factory and Adapter -->
 	<bean id="netflow5Factory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5AdapterFactory">
 		<property name="metricRegistry" ref="netflow5MetricRegistry"/>
@@ -25,6 +28,7 @@
 	<bean id="netflow9Factory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9AdapterFactory">
 		<property name="metricRegistry" ref="netflow9MetricRegistry"/>
 		<property name="flowRepository" ref="flowRepository" />
+		<property name="sat" ref="sat" />
 	</bean>
 	<service ref="netflow9Factory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
@@ -36,6 +40,7 @@
 	<bean id="ipfixFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapterFactory">
 		<property name="metricRegistry" ref="ipfixMetricRegistry"/>
 		<property name="flowRepository" ref="flowRepository" />
+		<property name="sat" ref="sat" />
 	</bean>
 	<service ref="ipfixFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>

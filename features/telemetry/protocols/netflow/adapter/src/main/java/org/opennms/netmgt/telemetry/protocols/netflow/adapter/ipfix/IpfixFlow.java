@@ -40,18 +40,19 @@ import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.SlopeAvoidanceThing;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.UpdatingFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.UnsignedLong;
 
-class IpfixFlow implements Flow {
+class IpfixFlow extends UpdatingFlow implements Flow {
     private static final Logger LOG = LoggerFactory.getLogger(IpfixFlow.class);
 
-    private final BsonDocument document;
-
-    public IpfixFlow(final BsonDocument document) {
-        this.document = Objects.requireNonNull(document);
+    public IpfixFlow(final BsonDocument document,
+                     final SlopeAvoidanceThing.Session sat) {
+        super(document, sat);
     }
 
     @Override
@@ -421,5 +422,24 @@ class IpfixFlow implements Flow {
                 getInt64(this.document, "postDot1qCustomerVlanId"))
                 .map(Long::intValue)
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<Timeout> getTimeout() {
+        // TODO fooker: Make this pretty
+        final Optional<Long> active = getInt64(this.document, "flowActiveTimeout");
+        final Optional<Long> inactive = getInt64(this.document, "flowActiveTimeout");
+
+        if (active.isPresent() && inactive.isPresent()) {
+            return Optional.of(new Timeout(active.get(), inactive.get()));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public long getObservationDomainId() {
+        return getInt64(this.document, "@observationDomainId")
+                .orElse(0L);
     }
 }

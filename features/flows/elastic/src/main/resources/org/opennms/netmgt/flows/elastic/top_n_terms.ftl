@@ -20,7 +20,7 @@
       "aggs": {
         "total_bytes": {
           "sum": {
-            "field": "netflow.bytes"
+            "field": "netflow.bytes_delta"
           }
         }
       }

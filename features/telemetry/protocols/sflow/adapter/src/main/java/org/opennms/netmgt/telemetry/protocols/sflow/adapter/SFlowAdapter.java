@@ -40,7 +40,7 @@ public class SFlowAdapter extends AbstractFlowAdapter<BsonDocument> {
 
     public SFlowAdapter(final MetricRegistry metricRegistry,
                         final FlowRepository flowRepository) {
-        super(metricRegistry, flowRepository, new SFlowConverter());
+        super(metricRegistry, flowRepository, flowSource -> new SFlowConverter());
     }
 
     @Override
