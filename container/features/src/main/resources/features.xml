@@ -945,6 +945,7 @@
     <feature name="opennms-telemetry-collection" version="${project.version}" description="OpenNMS :: Telemetry :: Collection">
         <feature>guava</feature>
         <feature>camel-netty4</feature>
+        <feature>dropwizard-metrics</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-thresholding-api</feature>
         <feature>opennms-osgi-jsr223</feature>
@@ -959,6 +960,7 @@
     <feature name="opennms-telemetry-daemon" version="${project.version}" description="OpenNMS :: Telemetry :: Daemon">
         <feature>camel-netty4</feature>
         <feature>camel-spring</feature>
+        <feature>dropwizard-metrics</feature>
         <feature>opennms-core-daemon</feature>
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-dao-api</feature>
@@ -1406,7 +1408,7 @@
     <feature name="opennms-es-rest" version="${project.version}" description="OpenNMS :: Features :: ElasticSearch Rest">
         <details>OpenNMS :: Features :: ElasticSearch Rest</details>
         <feature>opennms-jest</feature>
-        <bundle>mvn:io.dropwizard.metrics/metrics-core/3.1.2</bundle>
+        <feature>dropwizard-metrics</feature>
         <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>

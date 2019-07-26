@@ -53,6 +53,8 @@ import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBu
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.MetricRegistry;
+
 public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SFlowTelemetryAdapter.class);
@@ -61,7 +63,8 @@ public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
 
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    public SFlowTelemetryAdapter() {
+    public SFlowTelemetryAdapter(String name, MetricRegistry metricRegistry) {
+        super(name, metricRegistry);
     }
 
     @Override

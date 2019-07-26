@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.flows;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -66,14 +68,17 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
      */
     private final Histogram packetsPerLogHistogram;
 
-    public AbstractFlowAdapter(final MetricRegistry metricRegistry,
-                           final FlowRepository flowRepository,
-                           final Converter<P> converter) {
+    public AbstractFlowAdapter(final String name,
+                               final MetricRegistry metricRegistry,
+                               final FlowRepository flowRepository,
+                               final Converter<P> converter) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(metricRegistry);
         this.flowRepository = Objects.requireNonNull(flowRepository);
         this.converter = Objects.requireNonNull(converter);
 
-        logParsingTimer = metricRegistry.timer("logParsing");
-        packetsPerLogHistogram = metricRegistry.histogram("packetsPerLog");
+        logParsingTimer = metricRegistry.timer(name("adapters", name, "logParsing"));
+        packetsPerLogHistogram = metricRegistry.histogram(name("adapters", name, "packetsPerLog"));
     }
 
     @Override
