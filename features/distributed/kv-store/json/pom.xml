@@ -13,5 +13,6 @@
     <modules>
         <module>postgres</module>
         <module>json-shell</module>
+        <module>noop</module>
     </modules>
 </project>

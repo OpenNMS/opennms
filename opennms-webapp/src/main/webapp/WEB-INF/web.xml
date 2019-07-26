@@ -54,7 +54,7 @@
 
   <context-param>
     <param-name>parentContextKey</param-name>
-    <param-value>daoContext</param-value>
+    <param-value>restContext</param-value>
   </context-param>
 
   <!-- WARMERGE: insert context-param -->

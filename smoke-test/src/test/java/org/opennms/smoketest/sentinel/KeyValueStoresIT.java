@@ -32,7 +32,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.BlobStoreStrategy;
-import org.opennms.smoketest.stacks.JSONStoreStrategy;
+import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.KarafShell;
@@ -43,7 +43,7 @@ public class KeyValueStoresIT {
             .withSentinel()
             .withTelemetryProcessing()
             .withBlobStoreStrategy(BlobStoreStrategy.NEWTS_CASSANDRA)
-            .withJSONStoreStrategy(JSONStoreStrategy.POSTGRES)
+            .withJsonStoreStrategy(JsonStoreStrategy.POSTGRES)
             .withIpcStrategy(IpcStrategy.JMS)
             .build());
 

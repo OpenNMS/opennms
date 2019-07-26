@@ -1484,6 +1484,7 @@
         <bundle>mvn:io.github.resilience4j/resilience4j-core/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-circuitbreaker/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-bulkhead/${resilience4jVersion}</bundle>
+        <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>        
     </feature>
 
     <feature name="netty4" version="${netty4Version}" description="Netty">

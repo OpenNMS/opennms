@@ -31,12 +31,16 @@ package org.opennms.netmgt.threshd;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
+import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 import org.opennms.netmgt.threshd.api.ThresholdingSet;
 import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * HashMap implementation of a {@link ThresholdingSetPersister}.
@@ -45,6 +49,15 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
 {
 
     private Map<ThresholdingSessionKey, ThresholdingSet> thresholdingSets = new HashMap<>();
+    
+    @Autowired
+    private ReadableThreshdDao threshdDao;
+    
+    @Autowired
+    private ReadableThresholdingDao thresholdingDao;
+    
+    @Autowired
+    private ReadablePollOutagesDao pollOutagesDao;
 
     @Override
     public void persistSet(ThresholdingSession session, ThresholdingSet set) {
@@ -56,8 +69,11 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
         ThresholdingSessionKey key = session.getKey();
         ThresholdingSet tSet = thresholdingSets.get(key);
         if (tSet == null) {
-            tSet = new ThresholdingSetImpl(key.getNodeId(), key.getLocation(), key.getServiceName(), ((ThresholdingSessionImpl) session).getRrdRepository(),
-                                           ((ThresholdingSessionImpl) session).getServiceParameters(), ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy, session);
+            tSet = new ThresholdingSetImpl(key.getNodeId(), key.getLocation(), key.getServiceName(),
+                    ((ThresholdingSessionImpl) session).getRrdRepository(),
+                    ((ThresholdingSessionImpl) session).getServiceParameters(),
+                    ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy, session, threshdDao,
+                    thresholdingDao, pollOutagesDao);
             thresholdingSets.put(key, tSet);
         }
         return tSet;
