@@ -31,7 +31,7 @@
 		<constructor-arg ref="collectdConfigStream"/>
 	</bean>
 
-	<bean id="daemon" class="org.opennms.netmgt.collectd.Collectd" depends-on="init-pollOutagesConfig-factory">
+	<bean id="daemon" class="org.opennms.netmgt.collectd.Collectd">
 		<!-- Override Eventd with the mock version -->
 		<property name="eventIpcManager" ref="mockEventIpcManager"/>
 	</bean>

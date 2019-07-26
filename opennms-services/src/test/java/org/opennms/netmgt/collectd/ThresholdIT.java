@@ -96,6 +96,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daoDependentConfigs.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
