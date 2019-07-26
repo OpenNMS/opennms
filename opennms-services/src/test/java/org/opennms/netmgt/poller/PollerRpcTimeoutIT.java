@@ -60,6 +60,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.api.PollOutagesConfig;
+import org.opennms.netmgt.config.api.PollOutagesConfigModifiable;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -85,6 +86,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daoDependentConfigs.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -117,7 +119,7 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
     private MockDatabase m_db;
 
     @Autowired
-    private PollOutagesConfig m_pollOutagesConfig;
+    private PollOutagesConfigModifiable m_pollOutagesConfig;
 
     @Autowired
     private MockEventIpcManager m_eventMgr;

@@ -30,7 +30,7 @@
 
     </createTable>
 
-    <createIndex tableName="effective_config" indexName="effective_config_key_idx" unique="true">
+    <createIndex tableName="effective_configuration" indexName="effective_config_key_idx" unique="true">
         <column name="key" />
     </createIndex>
 

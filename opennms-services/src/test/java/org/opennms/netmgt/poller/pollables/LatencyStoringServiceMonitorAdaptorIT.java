@@ -84,6 +84,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daoDependentConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml"
@@ -109,10 +110,13 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
     @Autowired
     private ThresholdingService m_thresholdingService;
 
+    @Autowired
     private PollOutagesConfigModifiable m_pollOutageConfig;
 
+    @Autowired
     private ThresholdsConfigModifiable m_thresholdsConfig;
 
+    @Autowired
     private ThreshdConfigModifiable m_threshdConfig;
 
     @Override
