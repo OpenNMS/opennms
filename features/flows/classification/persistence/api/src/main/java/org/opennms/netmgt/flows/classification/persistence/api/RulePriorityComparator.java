@@ -43,7 +43,7 @@ public class RulePriorityComparator implements Comparator<RuleDefinition> {
         // Sort by group priority (highest priority first)
         int groupPriority1 = r1.getGroupPriority();
         int groupPriority2 = r2.getGroupPriority();
-        int result = Integer.compare(groupPriority1, groupPriority2);
+        int result = -1 * Integer.compare(groupPriority1, groupPriority2);
 
         // If group priority is identical, sort by rule position (lowest position first)
         if (result == 0) {

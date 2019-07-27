@@ -52,7 +52,7 @@ public class RulePriorityComparatorTest {
         final Rule rule2_2 = createAndAddRule(group2, 2);
         final Rule rule2_3 = createAndAddRule(group2, 3);
 
-        final List<Rule> expectedList = Lists.newArrayList(rule1_1, rule1_2, rule1_3, rule2_1, rule2_2, rule2_3);
+        final List<Rule> expectedList = Lists.newArrayList(rule2_1, rule2_2, rule2_3, rule1_1, rule1_2, rule1_3);
         final List<Rule> actualRules = Lists.newArrayList(rule2_2, rule1_3, rule2_1, rule2_3, rule1_2, rule1_1);
         actualRules.sort(new RulePriorityComparator());
 

@@ -384,11 +384,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
                     .withDstPort("8980")
                     .withProtocol("udp,tcp")
                     .withExporterFilter("categoryName == 'Routers'")
+                    .withPosition(0)
                     .build());
             groupTab.addNewRule(new RuleDTOBuilder()
                     .withName("OpenNMS")
                     .withDstPort("8980")
                     .withProtocol("udp,tcp")
+                    .withPosition(1)
                     .build());
 
             final ClassificationRequestDTO classificationRequest = new ClassificationRequestDTO();

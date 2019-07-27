@@ -133,7 +133,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response saveRule(RuleDTO ruleDTO) {
         final Rule rule = convert(ruleDTO);
         rule.setId(null);
-        rule.setPosition(0); // new rules get the lowest position (lowest priority)
+        rule.setPosition(Integer.MAX_VALUE); // new rules get the highest position (lowest priority)
         final int ruleId = classificationService.saveRule(rule);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
         final URI uri = builder.path(ClassificationRestService.class, "getRule").build(ruleId);
