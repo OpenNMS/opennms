@@ -32,6 +32,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
@@ -166,6 +167,11 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
                 return true;
             }
         };
+    }
+
+    @Override
+    public Optional<String> getRoutingKey(final TelemetryProtos.TelemetryMessageLog message) {
+        return Optional.of(String.format("%s@%s:%d", message.getLocation(), message.getSourceAddress(), message.getSourcePort()));
     }
 
     public DistPollerDao getDistPollerDao() {

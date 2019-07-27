@@ -28,7 +28,18 @@
 
 package org.opennms.smoketest.minion;
 
-import com.google.common.collect.ImmutableMap;
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.hasSize;
+
+import java.io.PrintStream;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -38,17 +49,7 @@ import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.PrintStream;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.Matchers.hasSize;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Verifies the list of available detectors by parsing the output
@@ -112,7 +113,7 @@ public class DetectorsCommandIT {
             .put("WEB", "org.opennms.netmgt.provision.detector.web.WebDetector")
             .put("WMI", "org.opennms.netmgt.provision.detector.wmi.WmiDetector")
             .put("WS-Man", "org.opennms.netmgt.provision.detector.wsman.WsManDetector")
-            .put("WsManWQLService", "org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector")
+            .put("WSManWQL", "org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector")
             .put("Win32Service", "org.opennms.netmgt.provision.detector.snmp.Win32ServiceDetector").build();
 
     @Test

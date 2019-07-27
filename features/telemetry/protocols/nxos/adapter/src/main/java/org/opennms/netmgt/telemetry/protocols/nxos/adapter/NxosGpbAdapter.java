@@ -57,6 +57,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Iterables;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -82,6 +83,10 @@ public class NxosGpbAdapter extends AbstractPersistingAdapter {
 
     @Autowired
     private TransactionOperations transactionTemplate;
+
+    public NxosGpbAdapter(String name, MetricRegistry metricRegistry) {
+        super(name, metricRegistry);
+    }
 
     @Override
     public Stream<CollectionSetWithAgent> handleMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog) {

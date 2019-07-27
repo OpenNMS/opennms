@@ -42,6 +42,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -139,6 +140,40 @@ public class KafkaLargeBufferSinkIT {
         }
 
 
+    }
+
+    @Test
+    public void testLargeBufferSinkMessageWithGroupId() throws Exception {
+        EventsMockModule module = EventsMockModule.INSTANCE;
+        List<Event> outputEvents = new ArrayList<Event>();
+        Event event = buildEventWithRandomStrings();
+        MessageConsumer<Event, Event> eventLogMessageConsumer = new MessageConsumer<Event, Event>() {
+            @Override
+            public SinkModule<Event, Event> getModule() {
+                return module;
+            }
+
+            @Override
+            public void handleMessage(Event event) {
+                outputEvents.add(event);
+            }
+        };
+        try {
+            consumerManager.registerConsumer(eventLogMessageConsumer);
+            final SyncDispatcher<Event> dispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(new EventsMockModule() {
+                @Override
+                public Optional<String> getRoutingKey(final Event message) {
+                    return Optional.of("test");
+                }
+            });
+            dispatcher.send(event);
+            await().atMost(1, MINUTES).until(() -> outputEvents.size(), equalTo(1));
+            Event outputEvent = outputEvents.get(0);
+            assertThat(outputEvent.getUei(), is(TEST_UEI));
+            assertThat(outputEvent.getNodeid(), is(NODE_ID));
+        } finally {
+            consumerManager.unregisterConsumer(eventLogMessageConsumer);
+        }
     }
 
     private Event buildEventWithRandomStrings() throws UnknownHostException {

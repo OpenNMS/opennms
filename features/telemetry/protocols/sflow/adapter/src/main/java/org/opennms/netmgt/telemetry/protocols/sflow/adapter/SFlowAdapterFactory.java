@@ -33,12 +33,13 @@ import java.util.Objects;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.AdapterFactory;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 
 import com.codahale.metrics.MetricRegistry;
 
 public class SFlowAdapterFactory implements AdapterFactory {
-    private MetricRegistry metricRegistry;
+    private TelemetryRegistry telemetryRegistry;
     private FlowRepository flowRepository;
 
     @Override
@@ -48,14 +49,14 @@ public class SFlowAdapterFactory implements AdapterFactory {
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        Objects.requireNonNull(metricRegistry);
+        Objects.requireNonNull(telemetryRegistry);
         Objects.requireNonNull(flowRepository);
 
-        return new SFlowAdapter(metricRegistry, flowRepository);
+        return new SFlowAdapter(adapterConfig.getName(), telemetryRegistry.getMetricRegistry(), flowRepository);
     }
 
-    public void setMetricRegistry(MetricRegistry metricRegistry) {
-        this.metricRegistry = metricRegistry;
+    public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
+        this.telemetryRegistry = telemetryRegistry;
     }
 
     public void setFlowRepository(FlowRepository flowRepository) {
