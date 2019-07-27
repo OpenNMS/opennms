@@ -48,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.HeaderUtil;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.MapViewManager;
@@ -114,7 +115,6 @@ import com.google.common.collect.Lists;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.v7.data.Property;
 import com.vaadin.event.UIEvents;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
@@ -129,16 +129,17 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
-import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -329,6 +330,14 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             }
             return false;
         }
+    }
+
+    @Override
+    protected void refresh(VaadinRequest request) {
+        super.refresh(request);
+        // The topology UI uses @PreserveOnRefresh, so on reload the components will not be detached/attached.
+        // Since the attach listener will not work on page reload we have to check for header visibility manually.
+        HeaderUtil.checkHeaderVisibility();
     }
 
     /**
@@ -722,6 +731,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                 final CustomLayout headerLayout = new CustomLayout(is);
                 headerLayout.setWidth("100%");
                 headerLayout.addStyleName("onmsheader");
+
+                // check for header visibility when component is attached
+                headerLayout.addAttachListener(HeaderUtil.getAttachListener());
+
                 m_rootLayout.addComponent(headerLayout);
             } catch (final IOException e) {
                 try {

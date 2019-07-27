@@ -31,26 +31,21 @@ package org.opennms.smoketest.opsboard;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.smoketest.AbstractPage;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
@@ -68,6 +63,58 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
     public void tearDown() {
         this.adminPage.open(); // reload page to reset any invalid state
         this.adminPage.removeAll();
+    }
+
+    // See NMS-12166
+    @Test
+    public void testHeaderHiddenForTopologyUI() {
+        final OpsBoardAdminEditorPage testBoard = adminPage.createNew("testBoard");
+        testBoard.addDashlet(new DashletBuilder()
+                .withDashlet("Topology")
+                .withTitle("Test Dashlet")
+                .withDuration(300).build());
+
+        // Hit preview button
+        testBoard.preview();
+
+        try {
+            setImplicitWait(1, TimeUnit.SECONDS);
+            new WebDriverWait(m_driver, 5).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(m_driver, 5).until(pageContainsText("Topology"));
+
+            final WebElement header = m_driver.switchTo().parentFrame()
+                    .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-topology-iframe']//iframe")).findElement(By.id("header"));
+
+            Assert.assertEquals(false, header.isDisplayed());
+        } finally {
+            setImplicitWait();
+        }
+    }
+
+    // See NMS-12166
+    @Test
+    public void testHeaderHiddenForNodeMap() {
+        final OpsBoardAdminEditorPage testBoard = adminPage.createNew("testBoard");
+        testBoard.addDashlet(new DashletBuilder()
+                .withDashlet("Map")
+                .withTitle("Test Dashlet")
+                .withDuration(300).build());
+
+        // Hit preview button
+        testBoard.preview();
+
+        try {
+            setImplicitWait(1, TimeUnit.SECONDS);
+            new WebDriverWait(m_driver, 5).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(m_driver, 5).until(pageContainsText("Map"));
+
+            final WebElement header = m_driver.switchTo().parentFrame()
+                    .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-map-iframe']//iframe")).findElement(By.id("header"));
+
+            Assert.assertEquals(false, header.isDisplayed());
+        } finally {
+            setImplicitWait();
+        }
     }
 
     // See NMS-9678

@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.HeaderUtil;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
 import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
@@ -62,13 +63,13 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
-import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The Class Node Maps Application.
@@ -325,6 +326,10 @@ public class NodeMapsApplication extends UI {
                 final CustomLayout headerLayout = new CustomLayout(is);
                 headerLayout.setWidth("100%");
                 headerLayout.addStyleName("onmsheader");
+
+                // check for header visibility when component is attached
+                headerLayout.addAttachListener(HeaderUtil.getAttachListener());
+
                 m_rootLayout.addComponent(headerLayout);
             } catch (final IOException e) {
                 closeQuietly(is);
