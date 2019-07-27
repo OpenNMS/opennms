@@ -2,7 +2,7 @@
 
 remove_paths()
 {
-    while read data; do
+    while read -r data; do
         echo "$data" |\
         sed '/^opennms-tools[/,].*/d' |\
         sed '/^smoke-test-v2[/,].*/d' |\
@@ -23,32 +23,33 @@ find_tests()
         remove_paths > projects_with_path
 
     # Generate surefire test list
-    circleci tests glob **/src/test/java/**/*Test*.java |\
+    circleci tests glob ./**/src/test/java/**/*Test*.java |\
         remove_paths |\
         sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > surefire_classnames
-    circleci tests glob **/src/test/java/**/*Test*.java |\
+    circleci tests glob ./**/src/test/java/**/*Test*.java |\
         remove_paths |\
         sed -e 's#^\(.*\)\/src/test/java/\(.*\)\.java#\1,\2#' |\
         sed -e ':a' -e 's_^\([^,]*\)/_\1\\_;t a' |\
         sed 's#/#.#g;s#\\#/#g' > surefire_classnames_with_path
 
     # Generate failsafe test list
-    circleci tests glob **/src/test/java/**/*IT*.java |\
+    circleci tests glob ./**/src/test/java/**/*IT*.java |\
         remove_paths |\
         sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > failsafe_classnames
-    circleci tests glob **/src/test/java/**/*IT*.java |\
+    circleci tests glob ./**/src/test/java/**/*IT*.java |\
         remove_paths |\
         sed -e 's#^\(.*\)\/src/test/java/\(.*\)\.java#\1,\2#' |\
         sed -e ':a' -e 's_^\([^,]*\)/_\1\\_;t a' |\
         sed 's#/#.#g;s#\\#/#g' > failsafe_classnames_with_path
 
     # Generate tests for this container
-    cat surefire_classnames | circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
-    cat failsafe_classnames | circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_it_tests
+    < surefire_classnames circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
+    < failsafe_classnames circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_it_tests
 
     # Match project name with test classname
-    for classname in $(cat /tmp/this_node*); do
-        grep -h $classname *_classnames_with_path |\
+    cat /tmp/this_node* | while IFS= read -r classname
+    do
+        grep -h "$classname" ./*_classnames_with_path |\
             cut -d',' -f1
     done | sort | uniq | xargs -I {} grep -h {} projects_with_path |\
         cut -d',' -f2 | sort | uniq > /tmp/this_node_projects
@@ -74,11 +75,11 @@ mvn verify -P'!checkstyle' \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
            -DskipITs=false \
-           -Dcircleci.instance=$CIRCLE_NODE_INDEX \
-           -Dcircleci.rerunFailingTestsCount=${CCI_RERUN_FAILTEST:-0} \
-           -Dcode.coverage=${CCI_CODE_COVERAGE:-false} \
+           -Dcircleci.instance="$CIRCLE_NODE_INDEX" \
+           -Dcircleci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
+           -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
            -B \
-           -fae \
-           -Dtest=$(cat /tmp/this_node_tests | paste -s -d, -) \
-           -Dit.test=$(cat /tmp/this_node_it_tests | paste -s -d, -) \
-           -pl $(cat /tmp/this_node_projects | paste -s -d, -)
+           "${CCI_FAILURE_OPTION:--fae}" \
+           -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
+           -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
+           -pl "$(< /tmp/this_node_projects paste -s -d, -)"

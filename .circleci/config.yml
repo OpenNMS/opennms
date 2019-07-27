@@ -172,14 +172,17 @@ commands:
           paths:
             - project
             - .m2
-  run-integration-tests:
+  run-integration-tests-with-coverage:
     parameters:
       run-code-coverage:
-        default: false
+        default: true
         type: boolean
       rerun-failtest-count:
         default: 0
         type: integer
+      failure-option:
+        default: -fn
+        type: string
     steps:
       - attach_workspace:
           at: ~/
@@ -189,6 +192,7 @@ commands:
           command: |
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
+            export CCI_FAILURE_OPTION=<< parameters.failure-option >>
             .circleci/scripts/itest.sh
       - run:
           name: Gather test results
@@ -225,8 +229,72 @@ commands:
           when: always
           path: ~/generated-tests
           destination: generated-tests
+  run-integration-tests:
+    parameters:
+      run-code-coverage:
+        default: false
+        type: boolean
+      rerun-failtest-count:
+        default: 0
+        type: integer
+      failure-option:
+        default: -fae
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Integration Tests
+          no_output_timeout: 1.0h
+          command: |
+            export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
+            export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
+            export CCI_FAILURE_OPTION=<< parameters.failure-option >>
+            .circleci/scripts/itest.sh
+      - run:
+          name: Gather test results
+          when: always
+          command: |
+            mkdir -p ~/test-results/junit
+            find . -type f -regex ".*/target/surefire-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/failsafe-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+      - run:
+          name: Gather tests
+          when: always
+          command: |
+            mkdir -p ~/generated-tests
+            cp ./surefire_classname* ~/generated-tests/
+            cp ./failsafe_classname* ~/generated-tests/
+            cp ./projects_with_path ~/generated-tests/
+            cp /tmp/this_node* ~/generated-tests/
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results
+          destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/generated-tests
+          destination: generated-tests
 
 workflows:
+  nightly-coverage:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - develop
+    jobs:
+      - build
+      - integration-test-with-coverage:
+          requires:
+            - build
+      - code-coverage:
+          requires:
+            - integration-test-with-coverage
   build-deploy:
     jobs:
       - build
@@ -242,9 +310,6 @@ workflows:
       - integration-test:
           requires:
             - build
-      - code-coverage:
-          requires:
-            - integration-test
       - smoke-test-full:
           requires:
             - package-build-horizon
@@ -450,8 +515,12 @@ jobs:
     executor: integration-test-executor
     parallelism: 12
     steps:
-      - run-integration-tests:
-          run-code-coverage: true
+      - run-integration-tests
+  integration-test-with-coverage:
+    executor: integration-test-executor
+    parallelism: 12
+    steps:
+      - run-integration-tests-with-coverage
   code-coverage:
     executor: build-executor
     resource_class: medium
