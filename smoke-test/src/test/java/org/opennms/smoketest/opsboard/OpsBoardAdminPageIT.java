@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
@@ -58,6 +59,58 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
     public void tearDown() {
         this.adminPage.open(); // reload page to reset any invalid state
         this.adminPage.removeAll();
+    }
+
+    // See NMS-12166
+    @Test
+    public void testHeaderHiddenForTopologyUI() {
+        final OpsBoardAdminEditorPage testBoard = adminPage.createNew("testBoard");
+        testBoard.addDashlet(new DashletBuilder()
+                .withDashlet("Topology")
+                .withTitle("Test Dashlet")
+                .withDuration(300).build());
+
+        // Hit preview button
+        testBoard.preview();
+
+        try {
+            setImplicitWait(1, TimeUnit.SECONDS);
+            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(driver, 5).until(pageContainsText("Topology"));
+
+            final WebElement header = driver.switchTo().parentFrame()
+                    .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-topology-iframe']//iframe")).findElement(By.id("header"));
+
+            Assert.assertEquals(false, header.isDisplayed());
+        } finally {
+            setImplicitWait();
+        }
+    }
+
+    // See NMS-12166
+    @Test
+    public void testHeaderHiddenForNodeMap() {
+        final OpsBoardAdminEditorPage testBoard = adminPage.createNew("testBoard");
+        testBoard.addDashlet(new DashletBuilder()
+                .withDashlet("Map")
+                .withTitle("Test Dashlet")
+                .withDuration(300).build());
+
+        // Hit preview button
+        testBoard.preview();
+
+        try {
+            setImplicitWait(1, TimeUnit.SECONDS);
+            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(driver, 5).until(pageContainsText("Map"));
+
+            final WebElement header = driver.switchTo().parentFrame()
+                    .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-map-iframe']//iframe")).findElement(By.id("header"));
+
+            Assert.assertEquals(false, header.isDisplayed());
+        } finally {
+            setImplicitWait();
+        }
     }
 
     // See NMS-9678

@@ -82,6 +82,7 @@ public class MapDashlet extends AbstractDashlet {
 
                     BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/node-maps#search/" + searchString));
                     browserFrame.setSizeFull();
+                    browserFrame.setId("opsboard-map-iframe");
                     m_verticalLayout.addComponent(browserFrame);
                 }
 
