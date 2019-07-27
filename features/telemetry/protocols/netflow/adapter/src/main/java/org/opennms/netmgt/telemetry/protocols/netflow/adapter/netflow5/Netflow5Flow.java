@@ -238,6 +238,11 @@ class Netflow5Flow implements Flow {
     }
 
     @Override
+    public Long getTimeoutSwitched() {
+        return this.getFirstSwitched();
+    }
+
+    @Override
     public Integer getTos() {
         return getInt64(this.document, "tos")
                 .map(Long::intValue)
