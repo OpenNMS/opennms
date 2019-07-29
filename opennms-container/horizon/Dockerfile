@@ -52,13 +52,19 @@ SHELL ["/bin/bash", "-c"]
 RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
         mkdir -p /opt/opennms && tar xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
         cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
-        elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
+    elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
         yum -y localinstall /tmp/rpms/*.rpm; \
-        else yum install -y ${ONMS_PACKAGES}; fi && \
+    else \
+        yum install -y ${ONMS_PACKAGES}; \
+    fi && \
     if [[ -n ${ADD_YUM_PACKAGES} ]]; then yum -y install ${ADD_YUM_PACKAGES}; fi && \
     rm -rf /tmp/rpms /tmp/tarball && \
     yum clean all && \
     rm -rf /var/cache/yum && \
+    rm -rf /opt/opennms/logs \
+           /opt/opennms/share && \
+    mv /var/opennms /opt/opennms/share && \
+    mv /var/log/opennms /opt/opennms/logs && \
     rm -rf /opt/opennms/share/rrd \
            /opt/opennms/share/reports \
            /opt/opennms/share/mibs && \
