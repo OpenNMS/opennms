@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,56 +26,45 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest;
+package org.opennms.smoketest.ui.framework;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import org.junit.After;
-import org.junit.Before;
+import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class UiPageTest extends OpenNMSSeleniumIT {
+public abstract class UiElement {
+    protected final WebDriver driver;
+    protected final String elementId;
 
-    @Before
-    public void before() {
-        setImplicitWait(5, TimeUnit.SECONDS);
+    private final int implicitWait;
+    private final TimeUnit implicitWaitUnit;
+
+    public UiElement(final WebDriver driver, final String elementId, int implicitWait, TimeUnit implictWaitUnit) {
+        this.elementId = Objects.requireNonNull(elementId);
+        this.driver = driver;
+        this.implicitWait = implicitWait;
+        this.implicitWaitUnit = Objects.requireNonNull(implictWaitUnit);
     }
 
-    @After
-    public void after() {
-        setImplicitWait();
+    public UiElement(final WebDriver driver, final String elementId) {
+        this(driver, elementId, 2, TimeUnit.SECONDS);
     }
 
     protected <X> X execute(Supplier<X> supplier) {
-        return execute(supplier, 1);
-    }
-
-    protected <X> X execute(Supplier<X> supplier, int implicitWaitInSeconds) {
         try {
-            this.setImplicitWait(implicitWaitInSeconds, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(implicitWait, implicitWaitUnit.SECONDS);
             return supplier.get();
         } finally {
-            this.setImplicitWait();
+            driver.manage().timeouts().implicitlyWait(AbstractOpenNMSSeleniumHelper.LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
     }
 
-    protected void verifyElementNotPresent(final By by) {
-        new WebDriverWait(driver, 7 /* seconds */).until(
-                ExpectedConditions.not((ExpectedCondition<Boolean>) input -> execute(() -> {
-                    try {
-                        WebElement elementFound = input.findElement(by);
-                        return elementFound != null;
-                    } catch (NoSuchElementException ex) {
-                        return false;
-                    }
-                }, 5 /* seconds */))
-        );
+    protected WebElement getElement() {
+        return execute(() -> driver.findElement(By.id(elementId)));
     }
-
 }
