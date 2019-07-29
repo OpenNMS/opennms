@@ -1,7 +1,7 @@
 import ScheduleOptions from '../../../main/assets/js/lib/onms-schedule-editor/scripts/ScheduleOptions';
 import Types from '../../../main/assets/js/lib/onms-schedule-editor/scripts/Types';
 import Time from '../../../main/assets/js/lib/onms-schedule-editor/scripts/Time';
-import WeekDays from '../../../main/assets/js/lib/onms-schedule-editor/scripts/WeekDays';
+import Weekdays from '../../../main/assets/js/lib/onms-schedule-editor/scripts/Weekdays';
 import WeekdayOptions from '../../../main/assets/js/lib/onms-schedule-editor/scripts/WeekdayOptions';
 import ClockMode from '../../../main/assets/js/lib/onms-schedule-editor/scripts/ClockMode';
 
@@ -28,14 +28,14 @@ describe('Verify construction', () => {
     });
 
     test('Verify daysOfWeek fully populated even if set', () => {
-        const expectedWeekDaysOptions = new WeekdayOptions([ WeekDays.Monday, WeekDays.Friday ]);
+        const expectedWeekdaysOptions = new WeekdayOptions([ Weekdays.Monday, Weekdays.Friday ]);
         const options = new ScheduleOptions({
             daysOfWeek: {
                 Monday: true,
                 Friday: true
             }
         });
-        expect(options.daysOfWeek).toEqual(expectedWeekDaysOptions);
+        expect(options.daysOfWeek).toEqual(expectedWeekdaysOptions);
     });
 });
 
@@ -222,7 +222,7 @@ describe('Verify days per week cron generation', () => {
         });
 
         test('Verify all weekdays selected', () => {
-            options.daysOfWeek = new WeekdayOptions(WeekDays.all);
+            options.daysOfWeek = new WeekdayOptions(Weekdays.all);
             expect(options.getCronExpression()).toBe('0 0 0 * * SUN,MON,TUE,WED,THU,FRI,SAT');
         });
 
@@ -243,7 +243,7 @@ describe('Verify days per week cron generation', () => {
         });
 
         test('Verify all weekdays selected', () => {
-            options.daysOfWeek = new WeekdayOptions(WeekDays.all);
+            options.daysOfWeek = new WeekdayOptions(Weekdays.all);
             options.to = new Time({hours: 2, minutes: 0});
             expect(options.getCronExpression()).toBe('0 0 1-2/2 * * SUN,MON,TUE,WED,THU,FRI,SAT');
         });
@@ -266,7 +266,7 @@ describe('Verify days per week cron generation', () => {
         });
 
         test('Verify all weekdays selected', () => {
-            options.daysOfWeek = new WeekdayOptions(WeekDays.all);
+            options.daysOfWeek = new WeekdayOptions(Weekdays.all);
             options.to = new Time({hours: 2, minutes: 0});
             expect(options.getCronExpression()).toBe('0 0/15 1-1 * * SUN,MON,TUE,WED,THU,FRI,SAT');
         });
@@ -310,13 +310,13 @@ describe('Verify day per month cron generation', () => {
 
         test('Verify last friday', () => {
             options.weekOfMonth = 'L';
-            options.dayOfWeek = WeekDays.Friday.id;
+            options.dayOfWeek = Weekdays.Friday.id;
             expect(options.getCronExpression()).toBe('0 35 15 * * 6L');
         });
 
         test('Verify third friday', () => {
             options.weekOfMonth = 3;
-            options.dayOfWeek = WeekDays.Friday.id;
+            options.dayOfWeek = Weekdays.Friday.id;
             expect(options.getCronExpression()).toBe('0 35 15 * * 6#3');
         });
 
@@ -324,9 +324,9 @@ describe('Verify day per month cron generation', () => {
             const weekIndicators = [1, 2, 3, 'L'];
 
             for (let i = 0; i < weekIndicators.length; i++) {
-                for (let a = 0; a < WeekDays.all.length; a++) {
+                for (let a = 0; a < Weekdays.all.length; a++) {
                     options.weekOfMonth = weekIndicators[i];
-                    options.dayOfWeek = WeekDays.all[a];
+                    options.dayOfWeek = Weekdays.all[a];
 
                     var expectedDayOfWeek = options.dayOfWeek + (options.weekOfMonth !== 'L' ? '#' : '') + options.weekOfMonth;
                     expect(options.getCronExpression()).toBe('0 35 15 * * ' + expectedDayOfWeek);
@@ -543,9 +543,9 @@ describe('Verify parsing cron expression', () => {
             const weekIndicators = [1, 2, 3, 'L'];
 
             for (let i = 0; i < weekIndicators.length; i++) {
-                for (let a = 0; a < WeekDays.all; a++) {
+                for (let a = 0; a < Weekdays.all; a++) {
                     const weekOfMonth = weekIndicators[i];
-                    const dayOfWeek = WeekDays.all[a];
+                    const dayOfWeek = Weekdays.all[a];
                     const dayOfWeekField = dayOfWeek + (weekOfMonth !== 'L' ? '#' : '') + weekOfMonth;
                     const cron = '0 15 10 * * ' + dayOfWeekField;
                     const options = ScheduleOptions.createFrom(cron);

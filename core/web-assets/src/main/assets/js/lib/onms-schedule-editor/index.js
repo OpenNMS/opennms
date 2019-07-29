@@ -2,7 +2,7 @@ import ClockMode from './scripts/ClockMode';
 import Time from './scripts/Time';
 import ScheduleOptions from './scripts/ScheduleOptions';
 import Types from './scripts/Types';
-import WeekDays from './scripts/WeekDays.js';
+import Weekdays from './scripts/Weekdays.js';
 
 const scheduleEditorTemplate = require('./templates/schedule-editor.tpl.html');
 const intervalInputTemplate = require('./templates/interval-input.tpl.html');
@@ -23,7 +23,7 @@ angular.module(MODULE_NAME, [])
                 scope.id = scope.id || 'schedule'; // TODO MVR auto detect if multiple on the page
                 scope.options.type = scope.options.type || Types.DAILY;
                 scope.options = new ScheduleOptions(scope.options);
-                scope.weekdays = WeekDays.all;
+                scope.weekdays = Weekdays.all;
 
                 // Updates the cron expression on each option change
                 scope.verifyInput = function() {

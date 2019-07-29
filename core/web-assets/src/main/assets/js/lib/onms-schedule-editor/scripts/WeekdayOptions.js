@@ -1,4 +1,4 @@
-import WeekDays from './WeekDays';
+import Weekdays from './Weekdays';
 
 export default class WeekdayOptions {
     constructor(input) {
@@ -8,7 +8,7 @@ export default class WeekdayOptions {
         if (Array.isArray(input)) {
             let newOptions = {};
             input.forEach((item) => {
-                if (item instanceof WeekDays.WeekDay) {
+                if (item instanceof Weekdays.Weekdays) {
                     newOptions[item.label] = true;
                 } else {
                     newOptions[item] = true;
@@ -20,7 +20,7 @@ export default class WeekdayOptions {
         }
 
         // Initialize
-        Object.values(WeekDays.all).forEach((weekday) => {
+        Object.values(Weekdays.all).forEach((weekday) => {
             if (options.hasOwnProperty(weekday.label) === false) {
                 this[weekday.label] = false;
             } else {
@@ -31,7 +31,7 @@ export default class WeekdayOptions {
 
     getSelectedWeekdays() {
         const selectedWeekdays = [];
-        Object.values(WeekDays.all).forEach((weekday) => {
+        Object.values(Weekdays.all).forEach((weekday) => {
             if (this[weekday.label] === true) {
                 selectedWeekdays.push(weekday);
             }
@@ -41,7 +41,7 @@ export default class WeekdayOptions {
 
     static createFrom(daysOfWeekExpression) {
         const days = daysOfWeekExpression.split(',');
-        const weekdays = Object.values(WeekDays.all);
+        const weekdays = Object.values(Weekdays.all);
         const selectedWeekdays = [];
         days.forEach((eachDay) => {
             for (let i = 0; i < weekdays.length; i++) {

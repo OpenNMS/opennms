@@ -1,4 +1,4 @@
-class WeekDay {
+class Weekdays {
     constructor(id, label) {
         this.id = id;
         this.label = label;
@@ -9,13 +9,13 @@ class WeekDay {
     }
 }
 
-const Sunday = new WeekDay(1, 'Sunday');
-const Monday = new WeekDay(2, 'Monday');
-const Tuesday = new WeekDay(3, 'Tuesday');
-const Wednesday = new WeekDay(4, 'Wednesday');
-const Thursday = new WeekDay(5, 'Thursday');
-const Friday = new WeekDay(6, 'Friday');
-const Saturday = new WeekDay(7, 'Saturday');
+const Sunday = new Weekdays(1, 'Sunday');
+const Monday = new Weekdays(2, 'Monday');
+const Tuesday = new Weekdays(3, 'Tuesday');
+const Wednesday = new Weekdays(4, 'Wednesday');
+const Thursday = new Weekdays(5, 'Thursday');
+const Friday = new Weekdays(6, 'Friday');
+const Saturday = new Weekdays(7, 'Saturday');
 
 const all = [
     Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
@@ -23,7 +23,7 @@ const all = [
 
 export default {
     all,
-    WeekDay,
+    Weekdays,
     Sunday,
     Monday,
     Tuesday,

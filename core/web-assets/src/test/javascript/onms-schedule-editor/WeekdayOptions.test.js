@@ -1,5 +1,5 @@
 import WeekdayOptions from '../../../main/assets/js/lib/onms-schedule-editor/scripts/WeekdayOptions';
-import WeekDays from '../../../main/assets/js/lib/onms-schedule-editor/scripts/WeekDays';
+import Weekdays from '../../../main/assets/js/lib/onms-schedule-editor/scripts/Weekdays';
 
 test('Verify construct empty', () => {
     const options = new WeekdayOptions();
@@ -16,7 +16,7 @@ test('Verify construct empty', () => {
 });
 
 test('Verify creating from array', () => {
-    let options = new WeekdayOptions([ WeekDays.Tuesday, WeekDays.Friday ]);
+    let options = new WeekdayOptions([ Weekdays.Tuesday, Weekdays.Friday ]);
     const expected = {
         Sunday: false,
         Monday: false,
@@ -28,7 +28,7 @@ test('Verify creating from array', () => {
     };
     expect(options).toEqual(expected);
 
-    const options2 = new WeekdayOptions([WeekDays.Tuesday.label, WeekDays.Friday.label ]);
+    const options2 = new WeekdayOptions([Weekdays.Tuesday.label, Weekdays.Friday.label ]);
     expect(options2).toEqual(expected);
 });
 
@@ -83,6 +83,6 @@ test('Verify createFrom(String) with supported expression', () => {
 
 test('Verify getSelectedWeekdays', () => {
     expect(new WeekdayOptions().getSelectedWeekdays()).toEqual([]);
-    expect(new WeekdayOptions([WeekDays.Monday, WeekDays.Sunday]).getSelectedWeekdays()).toEqual([ WeekDays.Sunday, WeekDays.Monday ]);
-    expect(new WeekdayOptions([WeekDays.Monday.label, WeekDays.Sunday.label]).getSelectedWeekdays()).toEqual([ WeekDays.Sunday, WeekDays.Monday ]);
+    expect(new WeekdayOptions([Weekdays.Monday, Weekdays.Sunday]).getSelectedWeekdays()).toEqual([ Weekdays.Sunday, Weekdays.Monday ]);
+    expect(new WeekdayOptions([Weekdays.Monday.label, Weekdays.Sunday.label]).getSelectedWeekdays()).toEqual([ Weekdays.Sunday, Weekdays.Monday ]);
 });

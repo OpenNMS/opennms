@@ -1,5 +1,5 @@
 import ClockMode from './ClockMode';
-import WeekDays from './WeekDays'; // TODO MVR should be Weekdays
+import Weekdays from './Weekdays';
 import Types from './Types';
 import Time from './Time';
 import CronDefinition from './CronDefintion';
@@ -34,7 +34,7 @@ export default class ScheduleOptions {
         // Days per Month
         this.dayOfMonth = options.dayOfMonth || '1'; // 1st day
         this.weekOfMonth = options.dayOfMonth || '1';
-        this.dayOfWeek = options.dayOfWeek || String(WeekDays.Sunday.id);
+        this.dayOfWeek = options.dayOfWeek || String(Weekdays.Sunday.id);
         this.dayOfMonthToggle = options.dayOfMonthToggle || 'dayOfMonth';
 
         // Custom
@@ -72,14 +72,14 @@ export default class ScheduleOptions {
 
     // TODO MVR maybe do a get selectedWeekdays() instead
     getSelectedWeekdays() {
-        const selectedWeekDays = Object.keys(this.daysOfWeek)
+        const selectedWeekdays = Object.keys(this.daysOfWeek)
             .filter(function(key) {
                 return this.daysOfWeek[key] === true;
             }, this)
             .map(function(key) {
                 return key.substr(0, 3).toUpperCase();
             });
-        return selectedWeekDays;
+        return selectedWeekdays;
     }
 
     // TODO MVR maybe use get cronExpression() instead.
