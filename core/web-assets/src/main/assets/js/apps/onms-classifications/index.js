@@ -319,7 +319,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
 
                 start: function(e, ui) {
                     // remember old index before moving
-                    $(ui.item).data('oldIndex', ui.item.index());
+                    angular.element(ui.item).data('oldIndex', ui.item.index());
                 },
                 stop: function(e, ui) {
 
@@ -338,7 +338,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                     }
 
                     // Check Precondition: item was actually moved
-                    var oldIndex =  $(ui.item).data().oldIndex;
+                    var oldIndex =  angular.element(ui.item).data().oldIndex;
                     var newIndex =  ui.item.index();
                     if(oldIndex === newIndex) {
                         ui.item.parent().sortable('cancel');
