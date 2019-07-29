@@ -65,7 +65,7 @@ public class RandomIterator<T> implements Iterable<T> {
 
             @Override
             public void remove() {
-                throw new IllegalArgumentException("Cannot remove from " + RandomIterator.class);
+                throw new UnsupportedOperationException("Cannot remove from " + RandomIterator.class);
             }
         };
     }

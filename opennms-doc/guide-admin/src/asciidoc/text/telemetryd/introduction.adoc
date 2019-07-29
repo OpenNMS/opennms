@@ -59,7 +59,7 @@ Some _Parsers_ support reverse hostname resolution to annotate IP addresses with
 The reverse name lookup will be performed by the _Minion_ while parsing the protocol data.
 The resolved hostname, if found, is attached to the address information and both will be sent to the _Adapter_ for further processing.
 
-In order to customize the DNS servers that a queried, the following command can be used:
+In order to customize the DNS servers that are queried, the following commands can be used:
 [source]
 ----
 $ ssh -p 8201 admin@localhost

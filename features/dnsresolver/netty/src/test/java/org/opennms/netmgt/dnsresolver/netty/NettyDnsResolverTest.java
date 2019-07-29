@@ -31,12 +31,14 @@ package org.opennms.netmgt.dnsresolver.netty;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -164,6 +166,16 @@ public class NettyDnsResolverTest {
         } catch (ExecutionException e) {
             assertThat(e.getCause(), is(instanceOf(CallNotPermittedException.class)));
         }
+    }
+
+    @Test
+    public void canParseNameserversFromString() {
+        assertThat(NettyDnsResolver.toSocketAddresses("8.8.8.8 "),
+                contains(new InetSocketAddress("8.8.8.8", 53)));
+        assertThat(NettyDnsResolver.toSocketAddresses("8.8.8.8:53 ,1.1.1.1, 1.1.2.2:1153 "),
+                contains(new InetSocketAddress("8.8.8.8", 53),
+                        new InetSocketAddress("1.1.1.1", 53),
+                        new InetSocketAddress("1.1.2.2", 1153)));
     }
 
     @Test

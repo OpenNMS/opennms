@@ -39,6 +39,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -122,7 +123,7 @@ public class NettyDnsResolver implements DnsResolver {
         final DefaultDnsCache cacheWithDefaults = new DefaultDnsCache();
         cache = new DefaultDnsCache(minTtlSeconds < 0 ? cacheWithDefaults.minTtl() : minTtlSeconds,
                 maxTtlSeconds < 0 ? cacheWithDefaults.maxTtl() : maxTtlSeconds,
-                negativeTtlSeconds < 0 ? cacheWithDefaults.negativeTtl(), negativeTtlSeconds);
+                negativeTtlSeconds < 0 ? cacheWithDefaults.negativeTtl() : negativeTtlSeconds);
         for (int i = 0; i < numContexts; i++) {
             // Share the same cache across all of the contexts
             NettyResolverContext context = new NettyResolverContext(this, cache, i);
@@ -252,16 +253,20 @@ public class NettyDnsResolver implements DnsResolver {
             // Use the platform default
             return DnsServerAddressStreamProviders.platformDefault();
         }
-        final String servers[] = nameservers.split(",");
-        return new SequentialDnsServerAddressStreamProvider(Arrays.stream(servers)
+        return new SequentialDnsServerAddressStreamProvider(toSocketAddresses(nameservers).toArray(new InetSocketAddress[]{}));
+    }
+
+    public static List<InetSocketAddress> toSocketAddresses(String commaSeparatedAddressesWithPorts) {
+        final String servers[] = commaSeparatedAddressesWithPorts.split(",");
+        return Arrays.stream(servers)
                 .map(s -> {
                     String parts[] = s.split(":");
                     if (parts.length > 1) {
-                        return SocketUtils.socketAddress(parts[0], Integer.parseInt(parts[1]));
+                        return SocketUtils.socketAddress(parts[0].trim(), Integer.parseInt(parts[1].trim()));
                     } else {
-                        return SocketUtils.socketAddress(parts[0],53);
+                        return SocketUtils.socketAddress(parts[0].trim(),53);
                     }
                 })
-                .toArray(InetSocketAddress[]::new));
+                .collect(Collectors.toList());
     }
 }
