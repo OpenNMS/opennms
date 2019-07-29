@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
@@ -104,6 +103,8 @@ public class NettyDnsResolver implements DnsResolver {
         lookupsSuccessful = metrics.meter("lookupsSuccessful");
         lookupsFailed = metrics.meter("lookupsFailed");
         lookupsRejectedByCircuitBreaker = metrics.meter("lookupsRejectedByCircuitBreaker");
+        // It would be nice to expose cache statistics too, but Netty's cache doesn't currently
+        // make any statistics available - see https://github.com/netty/netty/issues/9412
     }
 
     public void init() {
