@@ -20,8 +20,22 @@ export default class DailyParser {
             && (cron.dayOfMonth === '*')
             && (cron.month === '*')
             && (cron.dayOfWeek === '?' || WeekdayOptions.createFrom(cron.dayOfWeek).getSelectedWeekdays().length > 0);
-        // TODO MVR ensure the interval is actually supported (0, 5, 10, 15, 30, 60, 120, 180)
-        // TODO MVR verify if "10-4" is a valid hours range
+        if (canParse) {
+            if (cron.isMinutesInterval()) {
+                // TODO MVR This should probably be some kind of constant
+                const minuteIntervals = ['30', '15', '10', '5'];
+                return minuteIntervals.indexOf(cron.interval) >= 0;
+            }
+            if (cron.isHoursInterval()) {
+                // TODO MVR This should probably be some kind of constant
+                const hourIntervals = ['60', '120', '180'];
+                return hourIntervals.indexOf(cron.interval) >= 0;
+            }
+            // TODO MVR verify if "10-4" is a valid hours range
+            return true;
+        }
+
+        return false;
         return canParse;
     }
 
