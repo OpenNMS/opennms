@@ -323,21 +323,21 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                 },
                 stop: function(e, ui) {
 
-                    // 1.) Check Precondition: not read only group
+                    // Check Precondition: not read only group
                     if($scope.group.readOnly) {
                         ui.item.parent().sortable('cancel');
                         $window.alert('this group cannot be sorted, it is read only');
                         return;
                     }
 
-                    // 2.) Check Precondition: must be sorted by position
+                    // Check Precondition: must be sorted by position
                     if(!($scope.query.orderBy === 'position' && $scope.query.order === 'asc')) {
                         ui.item.parent().sortable('cancel');
                         $window.alert('You can only reorder the position if sorted by position');
                         return;
                     }
 
-                    // 3.) Check Precondition: item was actually moved
+                    // Check Precondition: item was actually moved
                     var oldIndex =  $(ui.item).data().oldIndex;
                     var newIndex =  ui.item.index();
                     if(oldIndex === newIndex) {
@@ -345,13 +345,13 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                         return; // nothing to do
                     }
 
-                    // 4.) calculate and set new position (index + offset)
+                    // Calculate and set new position (index + offset)
                     var parameters = $scope.query || {};
                     var offset =  (parameters.page -1) * parameters.limit || 0;
                     var rule = $scope.rules[newIndex];
                     rule.position = newIndex + offset;
 
-                    // 5.) update backend
+                    // Update backend
                     var refreshCallback = function() {
                         $scope.refreshAll();
                     };
