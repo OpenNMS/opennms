@@ -322,7 +322,7 @@ describe('Verify day per month cron generation', () => {
         });
 
         test('Verify all iterations', () => {
-            const weekIndicators = [1, 2, 3, 'L'];
+            const weekIndicators = [1, 2, 3, 4, 'L'];
 
             for (let i = 0; i < weekIndicators.length; i++) {
                 for (let a = 0; a < Weekdays.all.length; a++) {
@@ -541,7 +541,7 @@ describe('Verify parsing cron expression', () => {
         });
 
         test('Verify all iterations of month', () => {
-            const weekIndicators = [1, 2, 3, 'L'];
+            const weekIndicators = [1, 2, 3, 4, 'L'];
 
             for (let i = 0; i < weekIndicators.length; i++) {
                 for (let a = 0; a < Weekdays.all; a++) {
