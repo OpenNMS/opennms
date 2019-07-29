@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
 import com.jayway.awaitility.Awaitility;
@@ -84,7 +85,7 @@ public class ElasticAlarmHistoryRepositoryIT {
     public void setUp() throws IOException {
         RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT);
         jestClient = restClientFactory.createClient();
-        repo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY);
+        repo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY, new IndexSettings());
 
         TemplateInitializerForAlarms templateInitializer = new TemplateInitializerForAlarms(jestClient);
         MetricRegistry metrics = new MetricRegistry();

@@ -43,6 +43,7 @@ import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -83,7 +84,7 @@ public class ElasticFlowRepositoryIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
-                    new MockIdentity(), new MockTracerRegistry(),
+                    new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),
                     3, 12000);
 
             // It does not matter what we persist here, as the response is fixed.

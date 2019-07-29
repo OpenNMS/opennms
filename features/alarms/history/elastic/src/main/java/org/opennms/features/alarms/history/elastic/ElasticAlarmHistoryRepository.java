@@ -42,6 +42,7 @@ import org.opennms.features.alarms.history.api.AlarmState;
 import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
 import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +68,10 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     private long lookbackPeriodMs = DEFAULT_LOOKBACK_PERIOD_MS;
 
-    public ElasticAlarmHistoryRepository(JestClient client, IndexStrategy indexStrategy) {
+    public ElasticAlarmHistoryRepository(JestClient client, IndexStrategy indexStrategy, IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(client);
         Objects.requireNonNull(indexStrategy);
-        this.indexSelector = new IndexSelector(ElasticAlarmIndexer.INDEX_PREFIX, indexStrategy, 0);
+        this.indexSelector = new IndexSelector(indexSettings, ElasticAlarmIndexer.INDEX_PREFIX, indexStrategy, 0);
     }
 
     @Override
