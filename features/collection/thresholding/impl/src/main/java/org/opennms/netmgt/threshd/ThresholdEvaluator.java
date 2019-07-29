@@ -29,6 +29,7 @@
 package org.opennms.netmgt.threshd;
 
 import org.opennms.netmgt.config.threshd.ThresholdType;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 
 /**
  * Class used to provide information to ThresholdEntity about the
@@ -54,6 +55,6 @@ public interface ThresholdEvaluator {
      * @param threshold a {@link org.opennms.netmgt.threshd.BaseThresholdDefConfigWrapper} object.
      * @return a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState} object.
      */
-    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold);
+    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession);
 
 }
