@@ -1274,7 +1274,7 @@
     <cxfVersion>3.2.8</cxfVersion>
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
-    <dnsjavaVersion>2.1.3</dnsjavaVersion>
+    <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
@@ -1328,7 +1328,7 @@
     <mapstructVersion>1.3.0.Final</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
     <mockitoVersion>1.10.19</mockitoVersion>
-    <netty4Version>4.1.9.Final</netty4Version>
+    <netty4Version>4.1.37.Final</netty4Version>
     <newtsVersion>1.5.1</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
@@ -1350,6 +1350,7 @@
     <quartzVersion>2.2.3</quartzVersion>
     <rancidApiVersion>1.0.4</rancidApiVersion>
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
+    <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>5.15.10</rocksdbjniVersion>
     <scalaLibraryVersion>2.12.8</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.0</scalaLoggingVersion>

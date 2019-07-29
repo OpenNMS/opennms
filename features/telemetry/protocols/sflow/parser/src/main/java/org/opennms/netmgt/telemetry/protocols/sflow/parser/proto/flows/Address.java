@@ -31,7 +31,9 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
 
@@ -80,22 +82,36 @@ public class Address {
                 .toString();
     }
 
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
 
         switch (this.type) {
             case IP_V4:
                 bsonWriter.writeName("ipv4");
-                this.ipV4.writeBson(bsonWriter);
+                this.ipV4.writeBson(bsonWriter, enr);
                 break;
             case IP_V6:
                 bsonWriter.writeName("ipv6");
-                this.ipV6.writeBson(bsonWriter);
+                this.ipV6.writeBson(bsonWriter, enr);
                 break;
             default:
                 throw new IllegalStateException();
         }
 
         bsonWriter.writeEndDocument();
+    }
+
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
+        switch (this.type) {
+            case IP_V4:
+                ipV4.visit(visitor);
+                break;
+            case IP_V6:
+                ipV6.visit(visitor);
+                break;
+            default:
+                throw new IllegalStateException();
+        }
     }
 }

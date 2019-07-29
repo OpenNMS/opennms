@@ -32,7 +32,9 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 
 import com.google.common.base.MoreObjects;
@@ -88,14 +90,14 @@ public class Extended80211Rx implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeString("ssid", this.ssid.value);
 
         bsonWriter.writeName("bssid");
-        this.bssid.writeBson(bsonWriter);
+        this.bssid.writeBson(bsonWriter, enr);
         bsonWriter.writeName("version");
-        this.version.writeBson(bsonWriter);
+        this.version.writeBson(bsonWriter, enr);
 
         bsonWriter.writeInt64("channel", this.channel);
         bsonWriter.writeInt64("speed", this.speed.longValue());
@@ -103,7 +105,12 @@ public class Extended80211Rx implements FlowData {
         bsonWriter.writeInt64("rcpi", this.rcpi);
 
         bsonWriter.writeName("packet_duration");
-        this.packet_duration.writeBson(bsonWriter);
+        this.packet_duration.writeBson(bsonWriter, enr);
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

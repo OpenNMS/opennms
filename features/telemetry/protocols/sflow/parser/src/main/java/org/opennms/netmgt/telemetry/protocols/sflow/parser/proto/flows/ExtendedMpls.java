@@ -31,7 +31,9 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
 
@@ -62,14 +64,20 @@ public class ExtendedMpls implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("nexthop");
-        this.nexthop.writeBson(bsonWriter);
+        this.nexthop.writeBson(bsonWriter, enr);
         bsonWriter.writeName("in_stack");
-        this.in_stack.writeBson(bsonWriter);
+        this.in_stack.writeBson(bsonWriter, enr);
         bsonWriter.writeName("out_stack");
-        this.out_stack.writeBson(bsonWriter);
+        this.out_stack.writeBson(bsonWriter, enr);
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(final SampleDatagramVisitor visitor) {
+        visitor.accept(this);
+        nexthop.visit(visitor);
     }
 }

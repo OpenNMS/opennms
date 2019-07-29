@@ -29,7 +29,10 @@
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 public interface FlowData {
-    void writeBson(final BsonWriter bsonWriter);
+    void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr);
+    void visit(final SampleDatagramVisitor visitor);
 }
