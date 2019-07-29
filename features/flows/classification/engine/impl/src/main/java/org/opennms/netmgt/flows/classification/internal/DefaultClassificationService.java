@@ -114,7 +114,7 @@ public class DefaultClassificationService implements ClassificationService {
             // persist
             group.addRule(rule);
             final Integer ruleId = classificationRuleDao.save(rule);
-            updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(group.getRules()));
+            updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(rule));
 
             return ruleId;
         });

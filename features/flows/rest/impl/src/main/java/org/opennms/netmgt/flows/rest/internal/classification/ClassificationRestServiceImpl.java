@@ -133,7 +133,6 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response saveRule(RuleDTO ruleDTO) {
         final Rule rule = convert(ruleDTO);
         rule.setId(null);
-        rule.setPosition(Integer.MAX_VALUE); // new rules get the highest position (lowest priority)
         final int ruleId = classificationService.saveRule(rule);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
         final URI uri = builder.path(ClassificationRestService.class, "getRule").build(ruleId);
@@ -296,6 +295,8 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         if (!Strings.isNullOrEmpty(ruleDTO.getExporterFilter())) {
             rule.setExporterFilter(ruleDTO.getExporterFilter());
         }
+        // if no position is set for the new rule we put it at the end of the list:
+        rule.setPosition(ruleDTO.getPosition() == null ? Integer.MAX_VALUE : ruleDTO.getPosition());
         rule.setOmnidirectional(ruleDTO.isOmnidirectional());
         rule.setProtocol(ruleDTO.getProtocols().stream().collect(Collectors.joining(",")));
         return rule;
