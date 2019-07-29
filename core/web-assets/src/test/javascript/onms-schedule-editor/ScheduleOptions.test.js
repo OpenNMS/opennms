@@ -327,7 +327,7 @@ describe('Verify day per month cron generation', () => {
             for (let i = 0; i < weekIndicators.length; i++) {
                 for (let a = 0; a < Weekdays.all.length; a++) {
                     options.weekOfMonth = weekIndicators[i];
-                    options.dayOfWeek = Weekdays.all[a];
+                    options.dayOfWeek = Weekdays.all[a].id;
 
                     var expectedDayOfWeek = options.dayOfWeek + (options.weekOfMonth !== 'L' ? '#' : '') + options.weekOfMonth;
                     expect(options.getCronExpression()).toBe('0 35 15 * * ' + expectedDayOfWeek);
@@ -546,7 +546,7 @@ describe('Verify parsing cron expression', () => {
             for (let i = 0; i < weekIndicators.length; i++) {
                 for (let a = 0; a < Weekdays.all; a++) {
                     const weekOfMonth = weekIndicators[i];
-                    const dayOfWeek = Weekdays.all[a];
+                    const dayOfWeek = Weekdays.all[a].id;
                     const dayOfWeekField = dayOfWeek + (weekOfMonth !== 'L' ? '#' : '') + weekOfMonth;
                     const cron = '0 15 10 * * ' + dayOfWeekField;
                     const options = ScheduleOptions.createFrom(cron);
