@@ -30,12 +30,9 @@ export default class DailyParser {
                 const hourIntervals = Intervals.Hours;
                 return hourIntervals.indexOf(cron.interval) >= 0;
             }
-            // TODO MVR verify if "10-4" is a valid hours range
             return true;
         }
-
         return false;
-        return canParse;
     }
 
     parse(input) {

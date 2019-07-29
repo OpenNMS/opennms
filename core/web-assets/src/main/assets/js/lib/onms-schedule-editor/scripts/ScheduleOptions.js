@@ -3,7 +3,7 @@ import Weekdays from './Weekdays';
 import Types from './Types';
 import Time from './Time';
 import CronDefinition from './CronDefintion';
-import WeekdayOptions from './WeekdayOptions'; // TODO MVR should be DayOfWeekOptions
+import WeekdayOptions from './WeekdayOptions';
 import CustomParser from './parsers/CustomParser';
 import DailyParser from './parsers/DailyParser';
 import DayOfMonthParser from './parsers/DayOfMonthParser';
@@ -39,7 +39,7 @@ export default class ScheduleOptions {
         this.dayOfMonthToggle = options.dayOfMonthToggle || 'dayOfMonth';
 
         // Custom
-        this.cronExpression = options.cronExpression || '0 0/5 * * * ?'; // TODO MVR rename this to customExpression
+        this.cronExpression = options.cronExpression || '0 0/5 * * * ?';
 
         // Enable debugging?
         this.showDebugOptions = options.showDebugOptions || false;
@@ -71,7 +71,6 @@ export default class ScheduleOptions {
         this.interval = String(this.interval);
     }
 
-    // TODO MVR maybe do a get selectedWeekdays() instead
     getSelectedWeekdays() {
         const selectedWeekdays = Object.keys(this.daysOfWeek)
             .filter(function(key) {
@@ -83,7 +82,6 @@ export default class ScheduleOptions {
         return selectedWeekdays;
     }
 
-    // TODO MVR maybe use get cronExpression() instead.
     getCronExpression() {
 
         // Validate before actually returning the expression

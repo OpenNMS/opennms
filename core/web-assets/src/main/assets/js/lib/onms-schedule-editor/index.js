@@ -20,7 +20,7 @@ angular.module(MODULE_NAME, [])
                 options: '=ngModel'
             },
             link: function(scope, element, attrs) {
-                scope.id = scope.id || 'schedule'; // TODO MVR auto detect if multiple on the page
+                scope.id = scope.id || 'schedule';
                 scope.options.type = scope.options.type || Types.DAILY;
                 scope.options = new ScheduleOptions(scope.options);
                 scope.weekdays = Weekdays.all;
