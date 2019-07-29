@@ -1,0 +1,7 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference id="datasource" interface="javax.sql.DataSource" />
+    <bean id="connectionFactory" class="org.opennms.features.distributed.postgres.sentinel.SentinelPostgresConnectionFactory">
+        <argument ref="datasource"/>
+    </bean>
+    <service ref="connectionFactory" interface="org.opennms.features.distributed.postgres.api.PostgresConnectionFactory"/>
+</blueprint>

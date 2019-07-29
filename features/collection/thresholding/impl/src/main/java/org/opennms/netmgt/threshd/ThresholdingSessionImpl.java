@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
-import org.opennms.features.distributed.kvstore.api.KeyValueStore;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
@@ -53,16 +53,16 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
 
     private ServiceParameters serviceParameters;
     
-    private final KeyValueStore kvStore;
+    private final BlobStore blobStore;
 
     public ThresholdingSessionImpl(ThresholdingServiceImpl service, ThresholdingSessionKey sessionKey, ResourceStorageDao resourceStorageDao, RrdRepository rrdRepository,
-            ServiceParameters serviceParams, KeyValueStore kvStore) {
+                                   ServiceParameters serviceParams, BlobStore blobStore) {
         this.service = service;
         this.sessionKey = sessionKey;
         this.resourceStorageDao = resourceStorageDao;
         this.rrdRepository = rrdRepository;
         this.serviceParameters = serviceParams;
-        this.kvStore = kvStore;
+        this.blobStore = blobStore;
     }
 
     @Override
@@ -81,8 +81,8 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     }
 
     @Override
-    public KeyValueStore getKVStore() {
-        return kvStore;
+    public BlobStore getBlobStore() {
+        return blobStore;
     }
 
     public ResourceStorageDao getResourceDao() {

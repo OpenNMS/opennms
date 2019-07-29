@@ -31,7 +31,7 @@ package org.opennms.netmgt.threshd;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.opennms.features.distributed.kvstore.noop.NoOpKVStore;
+import org.opennms.features.distributed.kvstore.blob.noop.NoOpBlobStore;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 
@@ -50,7 +50,7 @@ public class MockSession {
 
             when(mockSession.getKey()).thenReturn(mockKey);
 
-            when(mockSession.getKVStore()).thenReturn(NoOpKVStore.getInstance());
+            when(mockSession.getBlobStore()).thenReturn(NoOpBlobStore.getInstance());
 
         }
 

@@ -1035,6 +1035,17 @@
       <artifactId>org.opennms.container.bridge.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- JSON KV Store using Postgres -->
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.postgres.opennms-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

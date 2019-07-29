@@ -43,7 +43,7 @@ import java.util.concurrent.Executors;
  * <p>
  * A separate thread will be used by this implementation by each blocked async call while waiting for the response.
  */
-public abstract class AbstractAsyncKeyValueStore extends AbstractKeyValueStore {
+public abstract class AbstractAsyncKeyValueStore<T> extends AbstractKeyValueStore<T> {
     private final Executor executor;
 
     protected AbstractAsyncKeyValueStore(Executor executor) {
@@ -56,7 +56,7 @@ public abstract class AbstractAsyncKeyValueStore extends AbstractKeyValueStore {
     }
 
     @Override
-    public final CompletableFuture<Long> putAsync(String key, byte[] value, String context, Integer ttlInSeconds) {
+    public final CompletableFuture<Long> putAsync(String key, T value, String context, Integer ttlInSeconds) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         Objects.requireNonNull(context);
@@ -65,7 +65,7 @@ public abstract class AbstractAsyncKeyValueStore extends AbstractKeyValueStore {
     }
 
     @Override
-    public final CompletableFuture<Optional<byte[]>> getAsync(String key, String context) {
+    public final CompletableFuture<Optional<T>> getAsync(String key, String context) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
 
@@ -73,7 +73,7 @@ public abstract class AbstractAsyncKeyValueStore extends AbstractKeyValueStore {
     }
 
     @Override
-    public final CompletableFuture<Optional<Optional<byte[]>>> getIfStaleAsync(String key, String context,
+    public final CompletableFuture<Optional<Optional<T>>> getIfStaleAsync(String key, String context,
                                                                                long timestamp) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);

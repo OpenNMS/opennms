@@ -214,11 +214,11 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-kvstore-noop"
-             description="OpenNMS :: Features :: Distributed :: Key Value Store :: No-Op" version="${project.version}">
-        <feature>opennms-kvstore-shell</feature>
+    <feature name="sentinel-blobstore-noop"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: No-Op" version="${project.version}">
+        <feature>opennms-blobstore-shell</feature>
         <feature>sentinel-kvstore-api</feature>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.no-op/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.no-op/${project.version}</bundle>
     </feature>
     
     <feature name="sentinel-distributed-cassandra-api"
@@ -235,12 +235,42 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.newts-impl/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-kvstore-cassandra"
-             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Cassandra"
+    <feature name="sentinel-blobstore-cassandra"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Cassandra"
              version="${project.version}">
         <feature>sentinel-newts-cassandra</feature>
-        <feature>opennms-kvstore-shell</feature>
+        <feature>opennms-blobstore-shell</feature>
         <feature>sentinel-kvstore-api</feature>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.cassandra/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.cassandra/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-distributed-postgres-api"
+             description="OpenNMS :: Features :: Distributed :: Postgres :: API"
+             version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.postgres.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-distributed-postgres-impl"
+             description="OpenNMS :: Features :: Distributed :: Postgres :: Impl"
+             version="${project.version}">
+        <feature>sentinel-persistence</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.postgres.sentinel-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-kvstore-postgres-shared"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Postgres :: Shared"
+             version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.postgres-shared/${project.version}</bundle>
+    </feature>
+    
+    <feature name="sentinel-jsonstore-postgres"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: JSON :: Postgres"
+             version="${project.version}">
+        <feature>sentinel-distributed-postgres-api</feature>
+        <feature>sentinel-distributed-postgres-impl</feature>
+        <feature>opennms-jsonstore-shell</feature>
+        <feature>sentinel-kvstore-api</feature>
+        <feature>sentinel-kvstore-postgres-shared</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.postgres/${project.version}</bundle>
     </feature>
 </features>
