@@ -177,7 +177,12 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setName(newRule.getName());
         rule.setOmnidirectional(newRule.isOmnidirectional());
         rule.setExporterFilter(newValue.getExporterFilter());
-        rule.setPosition(newValue.getPosition());
+
+        // adjust position
+        int oldPosition = rule.getPosition();
+        int newPosition = newValue.getPosition();
+        int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
+        rule.setPosition(newComputedPosition);
 
         // Persist
         classificationService.updateRule(rule);

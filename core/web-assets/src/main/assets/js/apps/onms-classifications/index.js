@@ -6,6 +6,7 @@ require('angular-bootstrap-confirm');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css');
 require('angular-ui-router');
+require('angular-ui-sortable');
 
 const indexTemplate  = require('./views/index.html');
 const configTemplate = require('./views/config.html');
@@ -29,6 +30,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             'ui.bootstrap',
             'ui.checkbox',
             'ui.toggle',
+            'ui.sortable',
             'onms.http',
             'onms.elementList',
             'mwl.confirm',
@@ -310,6 +312,59 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                 modalInstance.closed.then(function () {
                     $scope.refreshAll();
                 });
+            };
+
+            // for drag and drop of rules (redefining position)
+            $scope.sortableRules = {
+
+                start: function(e, ui) {
+                    // remember old index before moving
+                    $(ui.item).data('oldIndex', ui.item.index());
+                },
+                stop: function(e, ui) {
+
+                    // 1.) Check Precondition: not read only group
+                    if($scope.group.readOnly) {
+                        ui.item.parent().sortable('cancel');
+                        $window.alert('this group cannot be sorted, it is read only');
+                        return;
+                    }
+
+                    // 2.) Check Precondition: must be sorted by position
+                    if(!($scope.query.orderBy === 'position' && $scope.query.order === 'asc')) {
+                        ui.item.parent().sortable('cancel');
+                        $window.alert('You can only reorder the position if sorted by position');
+                        return;
+                    }
+
+                    // 3.) Check Precondition: item was actually moved
+                    var oldIndex =  $(ui.item).data().oldIndex;
+                    var newIndex =  ui.item.index();
+                    if(oldIndex === newIndex) {
+                        ui.item.parent().sortable('cancel');
+                        return; // nothing to do
+                    }
+
+                    // 4.) calculate and set new position (index + offset)
+                    var parameters = $scope.query || {};
+                    var offset =  (parameters.page -1) * parameters.limit || 0;
+                    var rule = $scope.rules[newIndex];
+                    rule.position = newIndex + offset;
+
+                    // 5.) update backend
+                    var refreshCallback = function() {
+                        $scope.refreshAll();
+                    };
+
+                    var handleErrorResponse = function(response) {
+                        if (response && response.data) {
+                            var error = response.data;
+                            $scope.error = {};
+                            $scope.error[error.context] = error.message;
+                        }
+                    };
+                    ClassificationRuleService.update(rule, refreshCallback, handleErrorResponse);
+                }
             };
 
             $scope.importRules = function() {
