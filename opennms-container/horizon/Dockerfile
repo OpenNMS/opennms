@@ -49,22 +49,30 @@ SHELL ["/bin/bash", "-c"]
 # 1. Try to install from tarball
 # 2. Try to install from local RPMS
 # 3. Try to install from public yum repository
+#
+# To avoid different behavior, between a RPM or tarball installation,
+# the directory structure is unified, the links for /opt/opennms/share
+# and /opt/opennms/logs introduced by RPM installs are removed.
 RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
         mkdir -p /opt/opennms && tar xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
         cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
     elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
-        yum -y localinstall /tmp/rpms/*.rpm; \
+        yum -y localinstall /tmp/rpms/*.rpm && \
+        rm -rf /opt/opennms/logs \
+               /opt/opennms/share && \
+        mv /var/opennms /opt/opennms/share && \
+        mv /var/log/opennms /opt/opennms/logs; \
     else \
-        yum install -y ${ONMS_PACKAGES}; \
+        yum install -y ${ONMS_PACKAGES} && \
+        rm -rf /opt/opennms/logs \
+               /opt/opennms/share && \
+        mv /var/opennms /opt/opennms/share && \
+        mv /var/log/opennms /opt/opennms/logs; \
     fi && \
     if [[ -n ${ADD_YUM_PACKAGES} ]]; then yum -y install ${ADD_YUM_PACKAGES}; fi && \
     rm -rf /tmp/rpms /tmp/tarball && \
     yum clean all && \
     rm -rf /var/cache/yum && \
-    rm -rf /opt/opennms/logs \
-           /opt/opennms/share && \
-    mv /var/opennms /opt/opennms/share && \
-    mv /var/log/opennms /opt/opennms/logs && \
     rm -rf /opt/opennms/share/rrd \
            /opt/opennms/share/reports \
            /opt/opennms/share/mibs && \
