@@ -577,6 +577,7 @@
                 <feature>opennms-send-event-command</feature>
                 <feature>opennms-dnsresolver-shell</feature>
                 <feature>opennms-dnsresolver-netty</feature>
+                <feature>opennms-kvstore-noop</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>

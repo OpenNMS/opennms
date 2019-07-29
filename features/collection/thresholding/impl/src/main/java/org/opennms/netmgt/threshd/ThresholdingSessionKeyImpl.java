@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.threshd;
 
-public class ThresholdingSessionKey {
+import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
+
+public class ThresholdingSessionKeyImpl implements ThresholdingSessionKey {
 
     private final int nodeId;
 
@@ -38,7 +40,7 @@ public class ThresholdingSessionKey {
 
     private final String resource;
 
-    public ThresholdingSessionKey(int nodeId, String ipAddress, String serviceName, String resource) {
+    public ThresholdingSessionKeyImpl(int nodeId, String ipAddress, String serviceName, String resource) {
         this.nodeId = nodeId;
         this.ipAddress = ipAddress;
         this.serviceName = serviceName;
@@ -80,7 +82,7 @@ public class ThresholdingSessionKey {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ThresholdingSessionKey other = (ThresholdingSessionKey) obj;
+        ThresholdingSessionKeyImpl other = (ThresholdingSessionKeyImpl) obj;
         if (nodeId != other.nodeId)
             return false;
         if (ipAddress == null) {

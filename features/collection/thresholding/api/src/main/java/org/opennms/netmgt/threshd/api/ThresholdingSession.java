@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd.api;
 
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -43,4 +44,7 @@ public interface ThresholdingSession extends AutoCloseable {
      */
     void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
 
+    ThresholdingSessionKey getKey();
+    
+    KeyValueStore getKVStore();
 }
