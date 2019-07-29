@@ -238,6 +238,28 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
     },
 
+    PRIMARY_INTERFACE {
+
+        @Override
+        public boolean matches(final String parm) {
+            return AbstractEventUtil.TAG_PRIMARY_INTERFACE_ADDRESS.equals(parm);
+        }
+
+        @Override
+        public String getValue(final String parm, final String parsedParm, final Event event, final EventUtil eventUtil) {
+            if (event.getNodeid() != null) {
+                try {
+                    return eventUtil.getPrimaryInterface(event.getNodeid());
+                } catch (SQLException ex) {
+                    // do nothing
+                    LoggerFactory.getLogger(getClass()).info("primary interface ipaddr unavailable for node with id:", event.getNodeid(), ex);
+                }
+            }
+
+            return null;
+        }
+    },
+
     SNMP_HOST {
 
         @Override
