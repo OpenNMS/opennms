@@ -227,6 +227,10 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
 
             $scope.refresh = function() {
                 var parameters = $scope.query || {};
+                var editPositionOfRuleEnabled = !($scope.group.readOnly) && ($scope.query.orderBy === 'position' && $scope.query.order === 'asc');
+                $scope.sortableRules = {
+                    disabled: !editPositionOfRuleEnabled
+                };
                 return ClassificationRuleService.query( {
                     limit: parameters.limit || 20,
                     offset: (parameters.page -1) * parameters.limit || 0,
@@ -322,20 +326,6 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                     angular.element(ui.item).data('oldIndex', ui.item.index());
                 },
                 stop: function(e, ui) {
-
-                    // Check Precondition: not read only group
-                    if($scope.group.readOnly) {
-                        ui.item.parent().sortable('cancel');
-                        $window.alert('this group cannot be sorted, it is read only');
-                        return;
-                    }
-
-                    // Check Precondition: must be sorted by position
-                    if(!($scope.query.orderBy === 'position' && $scope.query.order === 'asc')) {
-                        ui.item.parent().sortable('cancel');
-                        $window.alert('You can only reorder the position if sorted by position');
-                        return;
-                    }
 
                     // Check Precondition: item was actually moved
                     var oldIndex =  angular.element(ui.item).data().oldIndex;
