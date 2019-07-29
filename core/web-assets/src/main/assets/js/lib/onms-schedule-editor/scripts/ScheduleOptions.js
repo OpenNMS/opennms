@@ -8,6 +8,7 @@ import CustomParser from './parsers/CustomParser';
 import DailyParser from './parsers/DailyParser';
 import DayOfMonthParser from './parsers/DayOfMonthParser';
 import ContextError from './ContextError';
+import Intervals from './Intervals';
 
 export default class ScheduleOptions {
 
@@ -98,15 +99,15 @@ export default class ScheduleOptions {
 
         // Daily Calculation
         if (this.type === Types.DAILY || this.type === Types.DAYS_PER_WEEK) {
-            const interval = parseInt(this.interval, 10);
+            const interval = this.interval;
             const at = new Time(this.at, ClockMode.FULL_CLOCK_SYSTEM);
             const from = new Time(this.from, ClockMode.FULL_CLOCK_SYSTEM);
             const to = new Time(this.to, ClockMode.FULL_CLOCK_SYSTEM);
 
-            if (interval === 0) { // Only once per day
+            if (interval === '0') { // Only once per day
                 cron.hours = at.hours;
                 cron.minutes = at.minutes;
-            } else if (interval === 60) { // Every hours
+            } else if (interval === Intervals.EVERY_HOUR) { // Every hours
                 const hours = from.hours === to.hours ? from.hours : (from.hours + '-' + to.hours);
                 cron.hours = hours;
                 cron.minutes = 0;

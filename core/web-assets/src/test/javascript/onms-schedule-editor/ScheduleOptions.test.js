@@ -4,6 +4,7 @@ import Time from '../../../main/assets/js/lib/onms-schedule-editor/scripts/Time'
 import Weekdays from '../../../main/assets/js/lib/onms-schedule-editor/scripts/Weekdays';
 import WeekdayOptions from '../../../main/assets/js/lib/onms-schedule-editor/scripts/WeekdayOptions';
 import ClockMode from '../../../main/assets/js/lib/onms-schedule-editor/scripts/ClockMode';
+import Intervals from '../../../main/assets/js/lib/onms-schedule-editor/scripts/Intervals';
 
 describe('Verify construction', () => {
     test('Verify defaults', () => {
@@ -393,7 +394,7 @@ describe('Verify parsing cron expression', () => {
         test('Verify every 3 hours with from = to', () => {
             const parsedOptions = ScheduleOptions.createFrom('0 0 1-1/3 * * ?');
             expect(parsedOptions.type).toBe(Types.DAILY);
-            expect(parsedOptions.interval).toBe('180');
+            expect(parsedOptions.interval).toBe(Intervals.EVERY_3_HOURS);
             expect(parsedOptions.from).toEqual(new Time({hours: 1, minutes: 0}));
             expect(parsedOptions.to).toEqual(new Time({hours: 1, minutes: 0}));
         });
@@ -401,7 +402,7 @@ describe('Verify parsing cron expression', () => {
         test('Verify every 3 hours with from < to', () => {
             const parsedOptions = ScheduleOptions.createFrom('0 0 15-20/3 * * ?');
             expect(parsedOptions.type).toBe(Types.DAILY);
-            expect(parsedOptions.interval).toBe('180');
+            expect(parsedOptions.interval).toBe(Intervals.EVERY_3_HOURS);
             expect(parsedOptions.from).toEqual(new Time({hours: 15, minutes: 0}));
             expect(parsedOptions.to).toEqual(new Time({hours: 20, minutes: 0}));
         });
@@ -409,7 +410,7 @@ describe('Verify parsing cron expression', () => {
         test('Verify every 2 hours with from = to', () => {
             const parsedOptions = ScheduleOptions.createFrom('0 0 10-10/2 * * ?');
             expect(parsedOptions.type).toBe(Types.DAILY);
-            expect(parsedOptions.interval).toBe('120');
+            expect(parsedOptions.interval).toBe(Intervals.EVERY_2_HOURS);
             expect(parsedOptions.from).toEqual(new Time({hours: 10, minutes: 0}));
             expect(parsedOptions.to).toEqual(new Time({hours: 10, minutes: 0}));
         });
@@ -417,7 +418,7 @@ describe('Verify parsing cron expression', () => {
         test('Verify every 2 hours with from < to', () => {
             const parsedOptions = ScheduleOptions.createFrom('0 0 17-21/2 * * ?');
             expect(parsedOptions.type).toBe(Types.DAILY);
-            expect(parsedOptions.interval).toBe('120');
+            expect(parsedOptions.interval).toBe(Intervals.EVERY_2_HOURS);
             expect(parsedOptions.from).toEqual(new Time({hours: 17, minutes: 0}));
             expect(parsedOptions.to).toEqual(new Time({hours: 21, minutes: 0}));
         });
@@ -433,7 +434,7 @@ describe('Verify parsing cron expression', () => {
         test('Verify every hour with from < to', () => {
             const parsedOptions = ScheduleOptions.createFrom('0 0 3-23 * * ?');
             expect(parsedOptions.type).toBe(Types.DAILY);
-            expect(parsedOptions.interval).toBe('60');
+            expect(parsedOptions.interval).toBe(Intervals.EVERY_HOUR);
             expect(parsedOptions.from).toEqual(new Time({hours: 3, minutes: 0}));
             expect(parsedOptions.to).toEqual(new Time({hours: 23, minutes: 0}));
         });
@@ -441,7 +442,7 @@ describe('Verify parsing cron expression', () => {
         test('Verify every 30 minutes with from < to', () => {
             const parsedOptions = ScheduleOptions.createFrom('0 0/30 4-21 * * ?');
             expect(parsedOptions.type).toBe(Types.DAILY);
-            expect(parsedOptions.interval).toBe('30');
+            expect(parsedOptions.interval).toBe(Intervals.EVERY_30_MINUTES);
             expect(parsedOptions.from).toEqual(new Time({hours: 4, minutes: 0}));
             expect(parsedOptions.to).toEqual(new Time({hours: 22, minutes: 0}));
         });
@@ -449,7 +450,7 @@ describe('Verify parsing cron expression', () => {
         test('Verify every 15 minutes with from < to', () => {
             const parsedOptions = ScheduleOptions.createFrom('0 0/15 4-4 * * ?');
             expect(parsedOptions.type).toBe(Types.DAILY);
-            expect(parsedOptions.interval).toBe('15');
+            expect(parsedOptions.interval).toBe(Intervals.EVERY_15_MINUTES);
             expect(parsedOptions.from).toEqual(new Time({hours: 4, minutes: 0}));
             expect(parsedOptions.to).toEqual(new Time({hours: 5, minutes: 0}));
         });
@@ -457,7 +458,7 @@ describe('Verify parsing cron expression', () => {
         test('Verify every 10 minutes with from < to', () => {
             const parsedOptions = ScheduleOptions.createFrom('0 0/10 4-4 * * ?');
             expect(parsedOptions.type).toBe(Types.DAILY);
-            expect(parsedOptions.interval).toBe('10');
+            expect(parsedOptions.interval).toBe(Intervals.EVERY_10_MINUTES);
             expect(parsedOptions.from).toEqual(new Time({hours: 4, minutes: 0}));
             expect(parsedOptions.to).toEqual(new Time({hours: 5, minutes: 0}));
         });
@@ -465,7 +466,7 @@ describe('Verify parsing cron expression', () => {
         test('Verify every 5 minutes with from < to', () => {
             const parsedOptions = ScheduleOptions.createFrom('0 0/5 4-4 * * ?');
             expect(parsedOptions.type).toBe(Types.DAILY);
-            expect(parsedOptions.interval).toBe('5');
+            expect(parsedOptions.interval).toBe(Intervals.EVERY_5_MINUTES);
             expect(parsedOptions.from).toEqual(new Time({hours: 4, minutes: 0}));
             expect(parsedOptions.to).toEqual(new Time({hours: 5, minutes: 0}));
         });
@@ -485,7 +486,7 @@ describe('Verify parsing cron expression', () => {
                 Saturday: true
             };
             expect(options.type).toBe(Types.DAYS_PER_WEEK);
-            expect(options.interval).toBe('15');
+            expect(options.interval).toBe(Intervals.EVERY_15_MINUTES);
             expect(options.from).toEqual(new Time({hours: 4, minutes: 0}));
             expect(options.to).toEqual(new Time({hours: 5, minutes: 0}));
             expect(options.daysOfWeek).toEqual(expectedDaysOfWeek);
@@ -503,7 +504,7 @@ describe('Verify parsing cron expression', () => {
                 Saturday: true
             };
             expect(options.type).toBe(Types.DAYS_PER_WEEK);
-            expect(options.interval).toBe('120');
+            expect(options.interval).toBe(Intervals.EVERY_2_HOURS);
             expect(options.from).toEqual(new Time({hours: 4, minutes: 0}));
             expect(options.to).toEqual(new Time({hours: 8, minutes: 0}));
             expect(options.daysOfWeek).toEqual(expectedDaysOfWeek);

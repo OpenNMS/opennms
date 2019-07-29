@@ -4,6 +4,7 @@ import Range from '../Range';
 import CronDefinition from '../CronDefintion';
 import WeekdayOptions from '../WeekdayOptions';
 import ScheduleOptions from '../ScheduleOptions';
+import Intervals from '../Intervals';
 
 /**
  * The daily parser will parse any cron expression,
@@ -22,13 +23,11 @@ export default class DailyParser {
             && (cron.dayOfWeek === '?' || WeekdayOptions.createFrom(cron.dayOfWeek).getSelectedWeekdays().length > 0);
         if (canParse) {
             if (cron.isMinutesInterval()) {
-                // TODO MVR This should probably be some kind of constant
-                const minuteIntervals = ['30', '15', '10', '5'];
+                const minuteIntervals = Intervals.Minutes;
                 return minuteIntervals.indexOf(cron.interval) >= 0;
             }
             if (cron.isHoursInterval()) {
-                // TODO MVR This should probably be some kind of constant
-                const hourIntervals = ['60', '120', '180'];
+                const hourIntervals = Intervals.Hours;
                 return hourIntervals.indexOf(cron.interval) >= 0;
             }
             // TODO MVR verify if "10-4" is a valid hours range
