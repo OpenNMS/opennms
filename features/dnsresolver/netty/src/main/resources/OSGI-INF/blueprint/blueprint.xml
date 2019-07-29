@@ -14,6 +14,10 @@
             <cm:property name="num-contexts" value="0" />
             <cm:property name="nameservers" value="" />
             <cm:property name="query-timeout-millis" value="5000" />
+            <!-- TTL settings - use Netty default when value is < 0 -->
+            <cm:property name="min-ttl-seconds" value="60" />
+            <cm:property name="max-ttl-seconds" value="-1" />
+            <cm:property name="negative-ttl-seconds" value="300" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -44,6 +48,10 @@
         <property name="numContexts" value="${num-contexts}"/>
         <property name="nameservers" value="${nameservers}"/>
         <property name="queryTimeoutMillis" value="${query-timeout-millis}"/>
+        <property name="minTtlSeconds" value="${min-ttl-seconds}"/>
+        <property name="maxTtlSeconds" value="${min-ttl-seconds}"/>
+        <property name="negativeTtlSeconds" value="${negative-ttl-seconds}"/>
+
     </bean>
 
     <service ref="dnsResolver" interface="org.opennms.netmgt.dnsresolver.api.DnsResolver">

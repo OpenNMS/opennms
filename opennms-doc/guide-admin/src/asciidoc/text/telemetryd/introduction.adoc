@@ -54,26 +54,25 @@ If a _Listener_ its _Parsers_ is running on _Minion_, the received messages will
 image::telemetryd/telemetryd-minion.png[]
 
 [[telemetryd-reverse-hostname-resolution]]
-=== Enabling reverse hostname resolution
+=== Reverse hostname resolution
 Some _Parsers_ support reverse hostname resolution to annotate IP addresses with the actual hostname.
-If enabled, the reverse name lookup will be done on the _Minion_ while parsing the protocol data.
+The reverse name lookup will be performed by the _Minion_ while parsing the protocol data.
 The resolved hostname, if found, is attached to the address information and both will be sent to the _Adapter_ for further processing.
 
-To enable reverse hostname resolution, the following command can be used:
+In order to customize the DNS servers that a queried, the following command can be used:
 [source]
 ----
 $ ssh -p 8201 admin@localhost
 ...
-admin@minion()> system:property -p org.opennms.features.telemetry.dns.enable true
-admin@minion()> system:property -p org.opennms.features.telemetry.dns.primaryServer your.primary.dns.server
-admin@minion()> system:property -p org.opennms.features.telemetry.dns.secondaryServer your.secondary.dns.server
+admin@minion()> config:edit org.opennms.features.dnsresolver.netty
+admin@minion()> property-set nameservers 8.8.8.8,4.2.2.2:53
+admin@minion()> property-set query-timeout-millis 5000
+admin@minion()> config:update
 ----
 
-If the primary and secondary servers are not set (or set to an empty string), the servers configured by the system running the JVM will be used.
+If no nameservers are set (or set to an empty string), the servers configured by the system running the JVM will be used.
 
 The resolved host names are cached for their TTL as specified in the returned DNS records.
-The property `org.opennms.features.telemetry.dns.cache.maxttl` can be used to limit the TTL to a shorter time.
-The cache has also a maximal number of entries it will contain.
-To change the entry count, the property `org.opennms.features.telemetry.dns.cache.count` can be set (the default is 50000 entries).
+TTL handling can be customized by setting the `min-ttl-seconds`, `max-ttl-seconds` and `negative-ttl-seconds` properties in the configuration above.
 
-The following _Parsers_ support reverse hostname resolution right now: Netflow v5, Netflow v9, IPFIX and SFlow.
+The following _Parsers_ currently support reverse hostname resolution: Netflow v5, Netflow v9, IPFIX and SFlow.

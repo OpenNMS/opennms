@@ -88,6 +88,9 @@ public class NettyDnsResolver implements DnsResolver {
     private int numContexts = 0;
     private String nameservers = null;
     private long queryTimeoutMillis = TimeUnit.SECONDS.toMillis(5);
+    private int minTtlSeconds = -1;
+    private int maxTtlSeconds = -1;
+    private int negativeTtlSeconds = -1;
 
     private List<NettyResolverContext> contexts;
     private Iterator<NettyResolverContext> iterator;
@@ -110,9 +113,17 @@ public class NettyDnsResolver implements DnsResolver {
         }
         LOG.debug("Initializing Netty resolver with {} contexts and resolvers: {}", numContexts);
 
+
         contexts = new ArrayList<>(numContexts);
-        cache = new DefaultDnsCache();
+
+        // Initialize the cache with the given TTL settings - use Netty's default if the configured values
+        // are less than 0
+        final DefaultDnsCache cacheWithDefaults = new DefaultDnsCache();
+        cache = new DefaultDnsCache(minTtlSeconds < 0 ? cacheWithDefaults.minTtl() : minTtlSeconds,
+                maxTtlSeconds < 0 ? cacheWithDefaults.maxTtl() : maxTtlSeconds,
+                negativeTtlSeconds < 0 ? cacheWithDefaults.negativeTtl(), negativeTtlSeconds);
         for (int i = 0; i < numContexts; i++) {
+            // Share the same cache across all of the contexts
             NettyResolverContext context = new NettyResolverContext(this, cache, i);
             context.init();
             contexts.add(context);
@@ -205,6 +216,30 @@ public class NettyDnsResolver implements DnsResolver {
 
     public void setQueryTimeoutMillis(long queryTimeoutMillis) {
         this.queryTimeoutMillis = queryTimeoutMillis;
+    }
+
+    public int getMinTtlSeconds() {
+        return minTtlSeconds;
+    }
+
+    public void setMinTtlSeconds(int minTtlSeconds) {
+        this.minTtlSeconds = minTtlSeconds;
+    }
+
+    public int getMaxTtlSeconds() {
+        return maxTtlSeconds;
+    }
+
+    public void setMaxTtlSeconds(int maxTtlSeconds) {
+        this.maxTtlSeconds = maxTtlSeconds;
+    }
+
+    public int getNegativeTtlSeconds() {
+        return negativeTtlSeconds;
+    }
+
+    public void setNegativeTtlSeconds(int negativeTtlSeconds) {
+        this.negativeTtlSeconds = negativeTtlSeconds;
     }
 
     public CircuitBreaker getCircuitBreaker() {
