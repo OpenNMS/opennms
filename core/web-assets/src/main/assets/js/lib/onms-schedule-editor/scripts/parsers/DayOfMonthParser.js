@@ -19,11 +19,14 @@ export default class DayOfMonthParser {
             && cron.isConcreteMinutes()
             && cron.isConcreteHours()
             && cron.month === '*'
-            && (cron.dayOfMonth === '*' || cron.dayOfMonth === 'L' || parseInt(cron.dayOfMonth, 10) >= 1)
             && cron.dayOfMonth.indexOf(',') === -1
             && cron.dayOfMonth.indexOf('-') === -1
             && cron.dayOfMonth.indexOf('/') === -1
-            && (cron.dayOfWeek == '?' || this.regExp.test(cron.dayOfWeek));
+            // If dayOfMonth is set, dayOfWeek must be ?
+            // Or dayOfMonth is ?, then dayOfWeek must be set, only then it is parsable
+            && (((parseInt(cron.dayOfMonth, 10) >= 1  && parseInt(cron.dayOfMonth, 10) <= 31)
+                    || cron.dayOfMonth === 'L' && cron.dayOfWeek === '?')
+                || (cron.dayOfMonth === '?' && this.regExp.test(cron.dayOfWeek)));
         return canParse;
     }
 
@@ -35,7 +38,7 @@ export default class DayOfMonthParser {
         });
 
         // Determine the toggle
-        if (cron.dayOfMonth === '*') {
+        if (cron.dayOfMonth === '?') {
             options.dayOfMonthToggle = 'dayOfWeek';
         } else {
             options.dayOfMonthToggle = 'dayOfMonth';

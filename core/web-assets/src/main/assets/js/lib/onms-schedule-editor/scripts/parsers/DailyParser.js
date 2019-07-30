@@ -14,13 +14,14 @@ export default class DailyParser {
 
     canParse(input) {
         const cron = CronDefinition.createFrom(input);
+        const weekdayOptions = WeekdayOptions.createFrom(cron.dayOfWeek);
         const canParse = cron.year === undefined
             && cron.seconds === '0'
             && (cron.isConcreteMinutes() || (cron.isMinutesInterval() && cron.minutes.indexOf('0') === 0))
             && (cron.isConcreteHours() || cron.isHoursInterval() || cron.isHoursRange())
-            && (cron.dayOfMonth === '*')
             && (cron.month === '*')
-            && (cron.dayOfWeek === '?' || WeekdayOptions.createFrom(cron.dayOfWeek).getSelectedWeekdays().length > 0);
+            && ((cron.dayOfMonth === '*' && cron.dayOfWeek === '?')
+                    || (cron.dayOfMonth === '?' && weekdayOptions.getSelectedWeekdays().length > 0));
         if (canParse) {
             if (cron.isMinutesInterval()) {
                 const minuteIntervals = Intervals.Minutes;

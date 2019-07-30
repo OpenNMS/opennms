@@ -224,13 +224,13 @@ describe('Verify days per week cron generation', () => {
 
         test('Verify all weekdays selected', () => {
             options.daysOfWeek = new WeekdayOptions(Weekdays.all);
-            expect(options.getCronExpression()).toBe('0 0 0 * * SUN,MON,TUE,WED,THU,FRI,SAT');
+            expect(options.getCronExpression()).toBe('0 0 0 ? * SUN,MON,TUE,WED,THU,FRI,SAT');
         });
 
         test('Verify specific weekdays selected', () => {
             options.daysOfWeek = { Tuesday: true, Thursday: true };
             options.at = new Time({hours: 10, minutes: 15});
-            expect(options.getCronExpression()).toBe('0 15 10 * * TUE,THU');
+            expect(options.getCronExpression()).toBe('0 15 10 ? * TUE,THU');
         });
     });
 
@@ -246,14 +246,14 @@ describe('Verify days per week cron generation', () => {
         test('Verify all weekdays selected', () => {
             options.daysOfWeek = new WeekdayOptions(Weekdays.all);
             options.to = new Time({hours: 2, minutes: 0});
-            expect(options.getCronExpression()).toBe('0 0 1-2/2 * * SUN,MON,TUE,WED,THU,FRI,SAT');
+            expect(options.getCronExpression()).toBe('0 0 1-2/2 ? * SUN,MON,TUE,WED,THU,FRI,SAT');
         });
 
         test('Verify specific weekdays selected', () => {
             options.daysOfWeek = {Tuesday: true, Thursday: true};
             options.to = new Time({hours: 15, minutes: 0});
             options.from = new Time({hours: 13, minutes: 0});
-            expect(options.getCronExpression()).toBe('0 0 13-15/2 * * TUE,THU');
+            expect(options.getCronExpression()).toBe('0 0 13-15/2 ? * TUE,THU');
         });
     });
 
@@ -269,14 +269,14 @@ describe('Verify days per week cron generation', () => {
         test('Verify all weekdays selected', () => {
             options.daysOfWeek = new WeekdayOptions(Weekdays.all);
             options.to = new Time({hours: 2, minutes: 0});
-            expect(options.getCronExpression()).toBe('0 0/15 1-1 * * SUN,MON,TUE,WED,THU,FRI,SAT');
+            expect(options.getCronExpression()).toBe('0 0/15 1-1 ? * SUN,MON,TUE,WED,THU,FRI,SAT');
         });
 
         test('Verify specific weekdays selected', () => {
             options.daysOfWeek = {Tuesday: true, Thursday: true};
             options.to = new Time({hours: 15, minutes: 0});
             options.from = new Time({hours: 13, minutes: 0});
-            expect(options.getCronExpression()).toBe('0 0/15 13-14 * * TUE,THU');
+            expect(options.getCronExpression()).toBe('0 0/15 13-14 ? * TUE,THU');
         });
     });
 });
@@ -312,13 +312,13 @@ describe('Verify day per month cron generation', () => {
         test('Verify last friday', () => {
             options.weekOfMonth = 'L';
             options.dayOfWeek = Weekdays.Friday.id;
-            expect(options.getCronExpression()).toBe('0 35 15 * * 6L');
+            expect(options.getCronExpression()).toBe('0 35 15 ? * 6L');
         });
 
         test('Verify third friday', () => {
             options.weekOfMonth = 3;
             options.dayOfWeek = Weekdays.Friday.id;
-            expect(options.getCronExpression()).toBe('0 35 15 * * 6#3');
+            expect(options.getCronExpression()).toBe('0 35 15 ? * 6#3');
         });
 
         test('Verify all iterations', () => {
@@ -330,7 +330,7 @@ describe('Verify day per month cron generation', () => {
                     options.dayOfWeek = Weekdays.all[a].id;
 
                     var expectedDayOfWeek = options.dayOfWeek + (options.weekOfMonth !== 'L' ? '#' : '') + options.weekOfMonth;
-                    expect(options.getCronExpression()).toBe('0 35 15 * * ' + expectedDayOfWeek);
+                    expect(options.getCronExpression()).toBe('0 35 15 ? * ' + expectedDayOfWeek);
                 }
             }
         })
@@ -475,7 +475,7 @@ describe('Verify parsing cron expression', () => {
     // Mostly identical to daily, so we focus on parsing the 'Day of week' field
     describe('Verify Days per Week', () => {
         test('Verify parsing all days per week', () => {
-            let options = ScheduleOptions.createFrom('0 0/15 4-4 * * SUN,MON,TUE,WED,THU,FRI,SAT');
+            let options = ScheduleOptions.createFrom('0 0/15 4-4 ? * SUN,MON,TUE,WED,THU,FRI,SAT');
             let expectedDaysOfWeek = {
                 Sunday: true,
                 Monday: true,
@@ -493,7 +493,7 @@ describe('Verify parsing cron expression', () => {
         });
 
         test('Verify parsing some days per week', () => {
-            let options = ScheduleOptions.createFrom('0 0 4-8/2 * * MON,WED,SAT');
+            let options = ScheduleOptions.createFrom('0 0 4-8/2 ? * MON,WED,SAT');
             let expectedDaysOfWeek = {
                 Sunday: false,
                 Monday: true,
@@ -523,7 +523,7 @@ describe('Verify parsing cron expression', () => {
         });
 
         test('Verify first Sunday of month', () => {
-            const options = ScheduleOptions.createFrom('0 17 12 * * 1#1');
+            const options = ScheduleOptions.createFrom('0 17 12 ? * 1#1');
             expect(options.type).toBe(Types.DAYS_PER_MONTH);
             expect(options.at).toEqual(new Time({ hours: 12, minutes: 17 }));
             expect(options.dayOfMonthToggle).toBe('dayOfWeek');
@@ -532,7 +532,7 @@ describe('Verify parsing cron expression', () => {
         });
 
         test('Verify last Friday of month', () => {
-            const options = ScheduleOptions.createFrom('0 17 12 * * 6L');
+            const options = ScheduleOptions.createFrom('0 17 12 ? * 6L');
             expect(options.type).toBe(Types.DAYS_PER_MONTH);
             expect(options.at).toEqual(new Time({ hours: 12, minutes: 17 }));
             expect(options.dayOfMonthToggle).toBe('dayOfWeek');
@@ -548,7 +548,7 @@ describe('Verify parsing cron expression', () => {
                     const weekOfMonth = weekIndicators[i];
                     const dayOfWeek = Weekdays.all[a].id;
                     const dayOfWeekField = dayOfWeek + (weekOfMonth !== 'L' ? '#' : '') + weekOfMonth;
-                    const cron = '0 15 10 * * ' + dayOfWeekField;
+                    const cron = '0 15 10 ? * ' + dayOfWeekField;
                     const options = ScheduleOptions.createFrom(cron);
 
                     expect(options.type).toBe(Types.DAYS_PER_MONTH);
@@ -576,11 +576,11 @@ describe('Verify parsing cron expression', () => {
         expect(ScheduleOptions.createFrom('0 15 10 15 * ?').type).toBe(Types.DAYS_PER_MONTH);
         expect(ScheduleOptions.createFrom('0 15 10 L * ?').type).toBe(Types.DAYS_PER_MONTH);
         expect(ScheduleOptions.createFrom('0 15 10 L-2 * ?').type).toBe(Types.CUSTOM); // We don't allow this
-        expect(ScheduleOptions.createFrom('0 15 10 ? * 6L').type).toBe(Types.CUSTOM); // Month must be *
-        expect(ScheduleOptions.createFrom('0 15 10 * * 6L').type).toBe(Types.DAYS_PER_MONTH);
+        expect(ScheduleOptions.createFrom('0 15 10 ? * 6L').type).toBe(Types.DAYS_PER_MONTH);
+        expect(ScheduleOptions.createFrom('0 15 10 * * 6L').type).toBe(Types.CUSTOM); // Month must be ?
         expect(ScheduleOptions.createFrom('0 15 10 ? * 6L 2002-2005').type).toBe(Types.CUSTOM); // We dont allow years
-        expect(ScheduleOptions.createFrom('0 15 10 ? * 6#3').type).toBe(Types.CUSTOM); // Month must be *
-        expect(ScheduleOptions.createFrom('0 15 10 * * 6#3').type).toBe(Types.DAYS_PER_MONTH);
+        expect(ScheduleOptions.createFrom('0 15 10 ? * 6#3').type).toBe(Types.DAYS_PER_MONTH);
+        expect(ScheduleOptions.createFrom('0 15 10 * * 6#3').type).toBe(Types.CUSTOM); // Month must be ?
         expect(ScheduleOptions.createFrom('0 0 12 1/5 * ?').type).toBe(Types.CUSTOM); // We dont allow every 5 days
         expect(ScheduleOptions.createFrom('0 11 11 11 11 ?').type).toBe(Types.CUSTOM); // We dont allow to set the concrete month
         expect(ScheduleOptions.createFrom('0 11 11 11 * ?').type).toBe(Types.DAYS_PER_MONTH);

@@ -143,6 +143,14 @@ export default class ScheduleOptions {
             }
         }
 
+        // Due to a quartz limitation either cron.dayOfMonth or cron.dayOfWeek must be '?'
+        // Source: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html (Bottom of the page)
+        //
+        // As dayOfWeek is '?' by default if not defined, we set dayOfMonth to ? if dayOfWeek is set
+        if (this.type === Types.DAYS_PER_WEEK || this.type === Types.DAYS_PER_MONTH && cron.dayOfWeek !== '?') {
+            cron.dayOfMonth = '?';
+        }
+
         return cron.asCronExpression();
     }
 
