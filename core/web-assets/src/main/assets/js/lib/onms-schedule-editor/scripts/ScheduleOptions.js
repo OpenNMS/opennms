@@ -26,8 +26,8 @@ export default class ScheduleOptions {
         this.type = options.type || Types.DAILY;
         this.interval = typeof options.interval !== 'undefined' ? options.interval : 0;
         this.at = options.at || new Time({hours: 0, minutes: 0});
-        this.from = options.from || new Time({hours: 1, minutes: 0});
-        this.to = options.to || new Time({hours: 1, minutes: 0});
+        this.from = options.from || new Time({hours: 0, minutes: 0});
+        this.to = options.to || new Time({hours: 23, minutes: 0});
 
         // Days per Week
         this.daysOfWeek = options.daysOfWeek || {};

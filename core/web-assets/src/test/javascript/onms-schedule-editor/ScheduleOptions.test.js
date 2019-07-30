@@ -12,8 +12,8 @@ describe('Verify construction', () => {
         expect(options.type).toBe(Types.DAILY);
         expect(options.interval).toBe('0');
         expect(options.at).toEqual(new Time({hours: 0, minutes: 0}));
-        expect(options.from).toEqual(new Time({hours: 1, minutes: 0, options: {disableMinutes: true}}));
-        expect(options.to).toEqual(new Time({hours: 1, minutes: 0, options: {disableMinutes: true}}));
+        expect(options.from).toEqual(new Time({hours: 0, minutes: 0, options: {disableMinutes: true}}));
+        expect(options.to).toEqual(new Time({hours: 23, minutes: 0, options: {disableMinutes: true}}));
     });
 
     test('Verify converts time to objects', () => {
@@ -55,6 +55,8 @@ describe('Verify daily cron generation', () => {
     describe('Verify every 3 hours', () => {
         test('Verify from = to', () => {
             let options = new ScheduleOptions();
+            options.from = new Time({ hours:1, minutes: 1 });
+            options.to = new Time(options.from);
             options.interval = 180;
             expect(options.getCronExpression()).toBe('0 0 1-1/3 * * ?');
         });
@@ -78,6 +80,8 @@ describe('Verify daily cron generation', () => {
     describe('Verify every 2 hours', () => {
         test('Verify from = to', () => {
             let options = new ScheduleOptions();
+            options.from = new Time({ hours: 1, minutes: 1 });
+            options.to = new Time(options.from);
             options.interval = 120;
             expect(options.getCronExpression()).toBe('0 0 1-1/2 * * ?');
         });
@@ -100,7 +104,9 @@ describe('Verify daily cron generation', () => {
 
     describe('Verify every hour', () => {
         test('Verify from = to', () => {
-            let options = new ScheduleOptions({interval: 60});
+            let options = new ScheduleOptions({ interval: 60 });
+            options.from = new Time({hours:1, minutes: 1});
+            options.to = new Time(options.from);
             expect(options.getCronExpression()).toBe('0 0 1 * * ?');
         });
 
@@ -122,7 +128,7 @@ describe('Verify daily cron generation', () => {
 
     describe('Verify every 30 minutes', () => {
         test('Verify from = to', () => {
-            let options = new ScheduleOptions({interval: 30});
+            let options = new ScheduleOptions({interval: 30, from: new Time({hours: 1}), to: new Time({hours: 1})});
             expect(options.getCronExpression()).toBe('0 0 1 * * ?');
         });
 
@@ -144,7 +150,7 @@ describe('Verify daily cron generation', () => {
 
     describe('Verify every 15 minutes', () => {
         test('Verify from = to', () => {
-            let options = new ScheduleOptions({interval: 15});
+            let options = new ScheduleOptions({interval: 15, from: new Time({hours: 1}), to: new Time({hours: 1})});
             expect(options.getCronExpression()).toBe('0 0 1 * * ?');
         });
 
@@ -166,7 +172,7 @@ describe('Verify daily cron generation', () => {
 
     describe('Verify every 10 minutes', () => {
         test('Verify from = to', () => {
-            let options = new ScheduleOptions({interval: 10});
+            let options = new ScheduleOptions({interval: 10, from: new Time({hours: 1}), to: new Time({hours: 1})});
             expect(options.getCronExpression()).toBe('0 0 1 * * ?');
         });
 
@@ -188,7 +194,7 @@ describe('Verify daily cron generation', () => {
 
     describe('Verify every 5 minutes', () => {
         test('Verify from = to', () => {
-            let options = new ScheduleOptions({interval: 10});
+            let options = new ScheduleOptions({interval: 10, from: new Time({hours: 1}), to: new Time({hours: 1})});
             expect(options.getCronExpression()).toBe('0 0 1 * * ?');
         });
 
@@ -207,8 +213,6 @@ describe('Verify daily cron generation', () => {
             expect(() => options.getCronExpression()).toThrow();
         });
     });
-
-
 });
 
 // Mostly the same as Daily, so we only Verify certain aspects of the day selection
@@ -245,6 +249,7 @@ describe('Verify days per week cron generation', () => {
 
         test('Verify all weekdays selected', () => {
             options.daysOfWeek = new WeekdayOptions(Weekdays.all);
+            options.from = new Time({hours: 1, minutes: 0});
             options.to = new Time({hours: 2, minutes: 0});
             expect(options.getCronExpression()).toBe('0 0 1-2/2 ? * SUN,MON,TUE,WED,THU,FRI,SAT');
         });
@@ -268,6 +273,7 @@ describe('Verify days per week cron generation', () => {
 
         test('Verify all weekdays selected', () => {
             options.daysOfWeek = new WeekdayOptions(Weekdays.all);
+            options.from = new Time({hours: 1, minutes: 0});
             options.to = new Time({hours: 2, minutes: 0});
             expect(options.getCronExpression()).toBe('0 0/15 1-1 ? * SUN,MON,TUE,WED,THU,FRI,SAT');
         });
