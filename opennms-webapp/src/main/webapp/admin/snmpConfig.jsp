@@ -190,7 +190,7 @@
               var selector = locationSelectors[i];
               $.each(locations, function(index, location) {
                   var locationName = location['location-name'];
-                  $(selector).append($("<option/>").val(locationName).text(locationName));
+                  $(selector).append($("<option" + (locationName == 'Default' ? " selected" : "")+"/>").val(locationName).text(locationName));
               });
           }
       };

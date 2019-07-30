@@ -188,11 +188,11 @@ public enum SortStyle {
             break;
     
         case ID:
-            clause = " ORDER BY EVENTID DESC";
+            clause = " ORDER BY EVENTID DESC, EVENTTIME DESC"; // Include the eventtime in the order by clause to help the query planner - see NMS-10506
             break;
     
         case REVERSE_ID:
-            clause = " ORDER BY EVENTID ASC";
+            clause = " ORDER BY EVENTID ASC, EVENTTIME DESC"; // Include the eventtime in the order by clause to help the query planner - see NMS-10506
             break;
 
         case SYSTEMID:

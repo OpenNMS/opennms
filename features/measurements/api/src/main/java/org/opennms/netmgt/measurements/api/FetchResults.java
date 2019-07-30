@@ -96,20 +96,20 @@ public class FetchResults {
         m_columns = Maps.newLinkedHashMap(); // preserve ordering
         m_timestamps = new long[numRows];
 
-        for (int k = 0; k < numRows; k++) {
-            for (String columnName : table.columnKeySet()) {
-                Double value = table.get(Long.valueOf(k), columnName);
-
-                if (Filter.TIMESTAMP_COLUMN_NAME.equals(columnName)) {
+        for (String columnName : table.columnKeySet()) {
+            final Map<Long, Double> columnMap = table.column(columnName);
+            if (Filter.TIMESTAMP_COLUMN_NAME.equals(columnName)) {
+                for (int k = 0; k < numRows; k++) {
+                    Double value = columnMap.get((long)k);
                     Preconditions.checkNotNull(value, "filter timestamps must be contiguous");
                     m_timestamps[k] = value.longValue();
-                } else {
-                    double column[] = m_columns.get(columnName);
-                    if (column == null) {
-                        column = new double[numRows];
-                        m_columns.put(columnName, column);
-                    }
+                }
+            } else {
+                double column[] = new double[numRows];
+                m_columns.put(columnName, column);
 
+                for (int k = 0; k < numRows; k++) {
+                    Double value = columnMap.get((long)k);
                     if (value == null) {
                         column[k] = Double.NaN;
                     } else {

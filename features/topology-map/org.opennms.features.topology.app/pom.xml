@@ -36,6 +36,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <skip>${skipSurefire}</skip>
                     <excludes>
                         <exclude>**/*GwtTest.java</exclude>
                     </excludes>
@@ -125,8 +126,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.test-api</groupId>
-            <artifactId>org.opennms.core.test-api.junit</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -41,9 +41,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.opennms.core.test.junit.FlappingTests;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
@@ -56,11 +55,13 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.Lists;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@Category(FlappingTests.class)
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);

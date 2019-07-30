@@ -8,7 +8,7 @@ Each licence has a licence ID which is the _Karaf_ feature ID of the feature to 
 Many licences can be installed on a system but only one licence string is allowed per feature ID.
 
 Licence Strings are used to validate that a particular feature can be run on a given _Karaf_ instance.
-The _Plugin Manager_ will not allow a feature to run if it's licence cannot be validated using a private key encoded in the feature bundle.
+The _Plugin Manager_ will not allow a feature to run if its licence cannot be validated using a private key encoded in the feature bundle.
 
 Licences are associated with specific Product ID's and specific _Karaf_ instances.
 Several _Karaf_ instances can be listed in a licence allowing a feature to run on more than one system using the same licence.

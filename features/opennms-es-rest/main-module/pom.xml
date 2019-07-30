@@ -93,6 +93,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
 
         <configuration>
+          <skip>${skipSurefire}</skip>
           <excludes>
             <!-- prevent tests running in this package. These are manual one off development tests -->
             <exclude>**/manual/*.java</exclude>
@@ -198,8 +199,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.junit</artifactId>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
 

@@ -10,7 +10,7 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -120,6 +120,7 @@ include::text/service-assurance/monitors/Pop3Monitor.adoc[]
 include::text/service-assurance/monitors/PrTableMonitor.adoc[]
 include::text/service-assurance/monitors/RadiusAuthMonitor.adoc[]
 include::text/service-assurance/monitors/SmbMonitor.adoc[]
+include::text/service-assurance/monitors/SmtpMonitor.adoc[]
 include::text/service-assurance/monitors/SnmpMonitor.adoc[]
 include::text/service-assurance/monitors/SshMonitor.adoc[]
 include::text/service-assurance/monitors/SSLCertMonitor.adoc[]

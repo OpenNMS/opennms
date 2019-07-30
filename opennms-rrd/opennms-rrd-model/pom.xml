@@ -42,9 +42,5 @@
       <artifactId>jrobin-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.junit</artifactId>
-    </dependency>
   </dependencies>
 </project>

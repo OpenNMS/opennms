@@ -70,17 +70,22 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals(new Select(findElementById("lookup_location")).getOptions().size(), locationCount);
             Assert.assertEquals(new Select(findElementById("location")).getOptions().size(), locationCount);
 
-            // create new location
-            sendPost("/api/v2/monitoringLocations", "<location location-name=\"Test\" monitoring-area=\"test\" priority=\"100\"/>", 201);
+            // creating the location "ABC" because "ABC" < "Default" alphabetically, see issue NMS-10514
+            sendPost("/api/v2/monitoringLocations", "<location location-name=\"ABC\" monitoring-area=\"ABC\" priority=\"100\"/>", 201);
             created = true;
 
             // verify
             gotoPage();
             Assert.assertEquals(new Select(findElementById("lookup_location")).getOptions().size(), locationCount + 1);
             Assert.assertEquals(new Select(findElementById("location")).getOptions().size(), locationCount + 1);
+
+            // check that "Default" is still selected even if the location "ABC" is added, see issue NMS-10514
+            Assert.assertEquals(new Select(findElementById("lookup_location")).getFirstSelectedOption().getText(), "Default");
+            Assert.assertEquals(new Select(findElementById("location")).getFirstSelectedOption().getText(), "Default");
+
         } finally {
             if (created) {
-                sendDelete("/api/v2/monitoringLocations/Test", 204);
+                sendDelete("/api/v2/monitoringLocations/ABC", 204);
             }
         }
     }

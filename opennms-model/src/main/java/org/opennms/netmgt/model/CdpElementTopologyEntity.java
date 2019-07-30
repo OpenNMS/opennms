@@ -26,8 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.junit;
+package org.opennms.netmgt.model;
 
-public interface FlappingTests {
+import java.util.Optional;
 
+@ReadOnlyEntity
+public class CdpElementTopologyEntity {
+    private final Integer id;
+    private final String cdpGlobalDeviceId;
+    private final Integer nodeId;
+
+    public CdpElementTopologyEntity(Integer id, String cdpGlobalDeviceId, Integer nodeId){
+        this.id = id;
+        this.cdpGlobalDeviceId = cdpGlobalDeviceId;
+        this.nodeId = nodeId;
+    }
+
+    public static CdpElementTopologyEntity create(CdpElement element){
+        return new CdpElementTopologyEntity(
+                element.getId(),
+                element.getCdpGlobalDeviceId(),
+                Optional.ofNullable(element.getNode()).map(OnmsNode::getId).orElse(null)
+                );
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getCdpGlobalDeviceId() {
+        return cdpGlobalDeviceId;
+    }
+
+    public Integer getNodeId() {
+        return nodeId;
+    }
 }

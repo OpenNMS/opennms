@@ -115,9 +115,8 @@
   </Call>
   -->
 
-  <!-- Note #1 To set X-Frame-Options uncomment here and uncomment #2 below  -->
-  <!-- Settings for X-Frame-Options to avoid clickjacking                    -->
-  <!-- 
+  <!-- Settings for X-Frame-Options to avoid clickjacking -->
+  <!-- Comment out this block and the below reference to RewriteHandler to allow framing -->
   <New id="RewriteHandler" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">
     <Set name="rules">
       <Array type="org.eclipse.jetty.rewrite.handler.Rule">
@@ -131,7 +130,6 @@
       </Array>
     </Set>
   </New>
-  -->
 
   <!-- Enable statistics -->
   <Call name="insertHandler">
@@ -147,12 +145,10 @@
   <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
       <Set name="handlers">
        <Array type="org.eclipse.jetty.server.Handler">
-         <!-- Note #2 Uncomment to set X-Frame-Options with #1 above  -->
-         <!--
+           <!-- Comment out this item to allow framing -->
            <Item>
              <Ref id="RewriteHandler"/>
            </Item>
-         -->
            <Item>
                <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
            </Item>

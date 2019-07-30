@@ -68,7 +68,7 @@ public class Notification implements Serializable {
     private String m_description;
 
     @XmlElement(name = "rule", required = true)
-    private String m_rule;
+    private Rule m_rule;
 
     @XmlElement(name = "notice-queue")
     private String m_noticeQueue;
@@ -136,11 +136,11 @@ public class Notification implements Serializable {
         m_description = ConfigUtils.normalizeString(description);
     }
 
-    public String getRule() {
+    public Rule getRule() {
         return m_rule;
     }
 
-    public void setRule(final String rule) {
+    public void setRule(final Rule rule) {
         m_rule = ConfigUtils.assertNotEmpty(rule, "rule");
     }
 

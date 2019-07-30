@@ -28,12 +28,16 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
-import com.vaadin.server.Page;
-import com.vaadin.ui.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.vaadin.server.Page;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.NativeSelect;
 
 /**
  * This class represents a component for editing a single restriction of a criteria.
@@ -177,7 +181,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
             AbstractField abstractField = criteriaEntry.getComponent(m_criteriaBuilderHelper);
 
             if (arr != null && arr.length > i) {
-                abstractField.setValue(arr[i]);
+                abstractField.setValue(CriteriaBuilderHelper.decode(arr[i]));
             }
 
             m_leftLayout.addComponent(abstractField);
@@ -204,7 +208,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
                 criteria += ",";
             }
 
-            criteria += abstractField.getValue();
+            criteria += CriteriaBuilderHelper.encode(abstractField.getValue().toString());
 
             first = false;
         }

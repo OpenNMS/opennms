@@ -30,6 +30,7 @@ package org.opennms.core.ipc.sink.kafka;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -38,13 +39,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.Hashtable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
@@ -55,7 +56,6 @@ import org.opennms.core.ipc.sink.kafka.HeartbeatSinkPerfIT.HeartbeatGenerator;
 import org.opennms.core.ipc.sink.kafka.heartbeat.Heartbeat;
 import org.opennms.core.ipc.sink.kafka.heartbeat.HeartbeatModule;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.junit.FlappingTests;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -87,6 +87,7 @@ public class HeartbeatSinkIT {
     public void setUp() throws Exception {
         Hashtable<String, Object> kafkaConfig = new Hashtable<String, Object>();
         kafkaConfig.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
+        kafkaConfig.put("max.block.ms", 10000);
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties())
             .thenReturn(kafkaConfig);
@@ -134,7 +135,7 @@ public class HeartbeatSinkIT {
     }
 
     @Test(timeout=60000)
-    @Category(FlappingTests.class)
+    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
     public void canConsumeMessagesInParallel() throws Exception {
         final int NUM_CONSUMER_THREADS = 7;
 
@@ -170,5 +171,45 @@ public class HeartbeatSinkIT {
         } finally {
             consumerManager.unregisterConsumer(consumer);
         }
+    }
+
+    @Test(timeout = 60000)
+    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
+    public void testSinkMessagesBeingNotDropped() throws Exception {
+        kafkaServer.stopKafkaServer();
+        HeartbeatModule module = new HeartbeatModule();
+
+        AtomicInteger heartbeatCount = new AtomicInteger();
+        final MessageConsumer<Heartbeat, Heartbeat> heartbeatConsumer = new MessageConsumer<Heartbeat, Heartbeat>() {
+            @Override
+            public SinkModule<Heartbeat, Heartbeat> getModule() {
+                return module;
+            }
+
+            @Override
+            public void handleMessage(final Heartbeat heartbeat) {
+                heartbeatCount.incrementAndGet();
+            }
+        };
+
+        try {
+            consumerManager.registerConsumer(heartbeatConsumer);
+
+            final SyncDispatcher<Heartbeat> localDispatcher = localMessageDispatcherFactory.createSyncDispatcher(module);
+            localDispatcher.send(new Heartbeat());
+            await().atMost(30, SECONDS).until(() -> heartbeatCount.get(), equalTo(1));
+
+            final SyncDispatcher<Heartbeat> dispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(HeartbeatModule.INSTANCE);
+
+            Executors.newSingleThreadExecutor().execute(() -> dispatcher.send(new Heartbeat()));
+            Executors.newSingleThreadExecutor().execute(() -> dispatcher.send(new Heartbeat()));
+            // This sleep is needed for testing the timeout for kafka producer.send();
+            Thread.sleep(15000);
+            kafkaServer.startKafkaServer();
+            await().atMost(30, SECONDS).until(() -> heartbeatCount.get(), equalTo(3));
+        } finally {
+            consumerManager.unregisterConsumer(heartbeatConsumer);
+        }
+
     }
 }

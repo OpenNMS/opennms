@@ -31,6 +31,7 @@ package org.opennms.netmgt.notifd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.Collections;
@@ -190,5 +191,35 @@ public class BroadcastEventProcessorIT extends NotificationsITCase {
         Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_NUM_MSG));
         Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_TEXT_MSG));
         Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_SUBJECT));
+    }
+
+    @Test
+    public void testEventWithoutValidNodeDetailsWhenRuleIsStrict() throws Exception {
+        int initialSize = m_notificationDao.countAll();
+        EventBuilder builder = new EventBuilder("uei.opennms.org/test/noticeIdExpansion", "test");
+        builder.setTime(new Date());
+        Event event = builder.getEvent();
+        // Don't set node/interface/service for the event.
+        m_eventMgr.sendEventToListeners(event);
+        // Wait for 5 secs so that event is processed by notifd.
+        Thread.sleep(5000);
+        int finalSize = m_notificationDao.countAll();
+        // This Notification shouldn't get saved.
+        assertSame(initialSize, finalSize);
+    }
+    @Test
+    public void testEventWithoutValidNodeDetailsWhenRuleIsNotStrict() throws Exception {
+        int initialSize = m_notificationDao.countAll();
+        EventBuilder builder = new EventBuilder("uei.opennms.org/test/NoticeWithoutNode", "test");
+        builder.setTime(new Date());
+        // Don't set node/interface/service for the event.
+        Event event = builder.getEvent();
+        String antNID = Integer.toString(m_notificationManager.getNoticeId() + 1);
+        Date testDate = new Date();
+        long finishedNotifs = anticipateNotificationsForGroup("notification '" + antNID + "'", "Notification '" + antNID + "'", "InitialGroup", testDate, 0);
+        MockEventUtil.setEventTime(event, testDate);
+        m_eventMgr.sendEventToListeners(event);
+        // When rule is not strict, when there is no node information to evaluate, it is still considered valid notification
+        verifyAnticipated(finishedNotifs, 3000);
     }
 }

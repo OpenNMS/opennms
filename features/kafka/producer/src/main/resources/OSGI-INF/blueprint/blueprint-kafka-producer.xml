@@ -21,6 +21,7 @@
       <cm:property name="eventFilter" value=""/>
       <cm:property name="alarmFilter" value=""/>
       <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
+      <cm:property name="startAlarmSyncWithCleanState" value="false"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -71,6 +72,7 @@
     <argument ref="transactionOperations"/>
     <property name="alarmTopic" value="${alarmTopic}"/>
     <property name="alarmSyncIntervalMs" value="${alarmSyncIntervalMs}"/>
+    <property name="startWithCleanState" value="${startAlarmSyncWithCleanState}"/>
   </bean>
 
 </blueprint>

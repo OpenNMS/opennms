@@ -67,6 +67,7 @@ public class EifTranslatorTest {
         OnmsNode fqhostnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost.localdomain");
         OnmsNode shortnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
         OnmsNode originNode = new OnmsNode(m_locationDao.getDefaultLocation(), "10.0.0.7");
+        OnmsNode localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(),"127.0.0.1");
 
         fqhostnameNode.setForeignSource("eifTestSource");
         fqhostnameNode.setForeignId("eifTestId");
@@ -74,14 +75,17 @@ public class EifTranslatorTest {
         shortnameNode.setForeignId("eifTestId");
         originNode.setForeignSource("eifTestSource");
         originNode.setForeignId("eifTestId");
+        localhostIpNode.setForeignId("eifTestLocalhostIp");
 
         fqhostnameNode.setId(1);
         shortnameNode.setId(2);
         originNode.setId(3);
+        localhostIpNode.setId(4);
 
         m_nodeDao.saveOrUpdate(fqhostnameNode);
         m_nodeDao.saveOrUpdate(shortnameNode);
         m_nodeDao.saveOrUpdate(originNode);
+        m_nodeDao.saveOrUpdate(localhostIpNode);
         m_nodeDao.flush();
     }
 
@@ -133,7 +137,7 @@ public class EifTranslatorTest {
 
     @Test
     public void testCanParseEifEventWithSemicolonInSlot() {
-        String incomingEif = ".<START>>.............................EIF_TEST_EVENT_TYPE_A;cms_hostname='hubtems01';cms_port='3661';"
+        String incomingEif = ".<START>>......................LL.....EIF_TEST_EVENT_TYPE_A;cms_hostname='hubtems01';cms_port='3661';"
                 +"integration_type='U';master_reset_flag='';appl_label='';situation_name='Situation 01';"
                 +"situation_type='S';situation_origin='';situation_time='07/28/2016 12:19:11.000';situation_status='P';"
                 +"situation_thrunode='REMOTE_teps_host';situation_fullname='Situation 01';situation_displayitem='';"
@@ -158,7 +162,7 @@ public class EifTranslatorTest {
                 +"situation_displayitem='';source='EIF';sub_source='managedsystem01:08';hostname='managedsystem01';"
                 +"origin='10.0.0.1';adapter_host='managedsystem01';date='07/22/2016';severity='WARNING';"
                 +"msg='EIF Test Message 1';situation_eventdata='~';END";
-        String incomingEif_2 = ".<START>>.............................EIF_TEST_EVENT_TYPE_B;cms_hostname='hubtems01';"
+        String incomingEif_2 = ".<START>>......................L......EIF_TEST_EVENT_TYPE_B;cms_hostname='hubtems01';"
                 +"cms_port='3661';integration_type='U';master_reset_flag='';appl_label='';"
                 +"situation_name='DummyMonitoringSituation';situation_type='S';situation_origin='managedsystem02:LZ';"
                 +"situation_time='07/22/2016 14:07:52.000';situation_status='Y';situation_thrunode='HUB_hubtems01';"
@@ -166,7 +170,7 @@ public class EifTranslatorTest {
                 +"origin='10.0.0.2';adapter_host='managedsystem02';date='07/22/2016';severity='HARMLESS';"
                 +"msg='EIF_Heartbeat';situation_eventdata='Day_Of_Month=22;Day_Of_Week=06;Hours=15;Minutes=50;"
                 +"Month_Of_Year=07;System_Name=managedsystem02:LZ;Seconds=25;Timestamp=1160722155025000~';END";
-        String incomingEif_3 = ".<START>>.............................EIF_TEST_EVENT_TYPE_A;cms_hostname='hubtems01';"
+        String incomingEif_3 = ".<START>>......................8......EIF_TEST_EVENT_TYPE_A;cms_hostname='hubtems01';"
                 +"cms_port='3661';integration_type='U';master_reset_flag='';appl_label='';"
                 +"situation_name='DummyMonitoringSituation';situation_type='S';situation_origin='managedsystem03:LZ';"
                 +"situation_time='07/22/2016 14:08:07.000';situation_status='Y';situation_thrunode='REMOTE_hubtems02';"
@@ -211,7 +215,9 @@ public class EifTranslatorTest {
                 +"fqhostname='';hostname='localhost';origin='127.0.0.1';adapter_host='dummyHost';"
                 +"date='07/22/2016';severity='WARNING';msg='My Dummy Event Message';situation_eventdata='~';END";
         Event e = translateEifToOpenNMS(m_nodeDao, new StringBuilder(incomingEif)).get(0);
-        assertEquals("NodeId "+e.getNodeid()+" must equal 2","2",e.getNodeid().toString());
+        // nodeId will be 4 if 'localhost' fails to resolve, and we fall back to using the IP address.
+        assertTrue("NodeId " + e.getNodeid() + " must be either 2 or 4",
+                e.getNodeid() == 2 || e.getNodeid() == 4);
     }
 
     @Test

@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.netutils.internal.ping;
 
-import java.net.InetAddress;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +38,7 @@ public class PingRequest {
     private long timeout;
     private int packetSize;
     private int retries;
-    private InetAddress inetAddress;
+    private String ipAddress;
     private int numberRequests;
     private String location;
 
@@ -62,8 +61,8 @@ public class PingRequest {
         return this;
     }
 
-    public PingRequest withInetAddress(InetAddress inetAddress) {
-        this.inetAddress = Objects.requireNonNull(inetAddress);
+    public PingRequest withIpAddress(String ipAddress) {
+        this.ipAddress = Objects.requireNonNull(ipAddress);
         return this;
     }
 
@@ -91,8 +90,8 @@ public class PingRequest {
         return retries;
     }
 
-    public InetAddress getInetAddress() {
-        return inetAddress;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
     public int getNumberRequests() {
@@ -111,8 +110,8 @@ public class PingRequest {
         this.retries = retries;
     }
 
-    public void setInetAddress(InetAddress inetAddress) {
-        this.inetAddress = inetAddress;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     public void setNumberRequests(int numberRequests) {

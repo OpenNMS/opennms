@@ -161,7 +161,7 @@ getTempFile(){
 		__TEMPFILE="$TMPDIR/xmllint.$RANDOM.$RANDOM.$RANDOM.$$"
 	}
 
-	rm "$__TEMPFILE"
+	rm -f "$__TEMPFILE"
 	(umask 077 && touch "$__TEMPFILE")
 	echo "$__TEMPFILE"
 }
@@ -180,7 +180,7 @@ checkXmlFiles(){
 		done >"$TEMPFILE"
 		cat "$TEMPFILE" >&2
 		FAILCOUNT=`cat "$TEMPFILE" | grep -c 'XML validation failed'`
-		rm "$TEMPFILE"
+		rm -f "$TEMPFILE"
 		if [ $FAILCOUNT -gt 0 ]; then
 			echo "Validation failed on $FAILCOUNT XML files.  Exiting." >&2
 			case $COMMAND in
@@ -217,9 +217,11 @@ attributes, and restart.
 END
 		cat "$TEMPFILE"
 		echo ""
+		rm -f "$TEMPFILE"
 
 		return 6 # From LSB: 6 - program is not configured
 	fi
+	rm -f "$TEMPFILE"
 
 	return 0
 }
@@ -629,7 +631,7 @@ if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Dgroovy.use.classvalue=` 
 fi
 
 if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c MaxMetaspaceSize=` -eq 0 ]; then
-	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxMetaspaceSize=256m"
+	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxMetaspaceSize=512m"
 fi
 
 if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Djava.io.tmpdir=` -eq 0 ]; then

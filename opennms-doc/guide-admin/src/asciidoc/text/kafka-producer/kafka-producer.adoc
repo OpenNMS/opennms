@@ -92,6 +92,7 @@ The _Kafka Producer_ exposes the following options to help fine tune its behavio
 | `alarmSyncIntervalMs`   | `300000` (5 minutes) | Number of milliseconds at which the contents of the alarm topic will be synchronized with the local database.
                                                    Decrease this to improve accuracy at the cost of additional database look ups.
                                                    Set this value to 0 to disable alarm synchronization.
+| `startAlarmSyncWithCleanState` | `false`       | Set this to `true` to force the Kafka Streams client to start with a clean state on every boot.
 |===
 
 ==== Configuring Filtering

@@ -68,7 +68,7 @@ public class Migrator {
 	
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
     private static final float POSTGRESQL_MIN_VERSION_INCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.minVersion", "9.1"));
-    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "11.0"));
+    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "12.0"));
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
