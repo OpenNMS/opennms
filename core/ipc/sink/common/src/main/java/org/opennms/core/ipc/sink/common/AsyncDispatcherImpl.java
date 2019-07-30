@@ -204,7 +204,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
             }
         }
         // If either local queue is full and Offheap queue is still draining.
-        return (getQueueSize() == asyncPolicy.getQueueSize() ||
+        return useOffHeap.get() && (getQueueSize() == asyncPolicy.getQueueSize() ||
                 ((offHeapAdapter != null) && !offHeapAdapter.isOffHeapEmpty()));
     }
 
