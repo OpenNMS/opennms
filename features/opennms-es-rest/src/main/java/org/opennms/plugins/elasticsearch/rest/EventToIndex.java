@@ -59,6 +59,7 @@ import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +98,8 @@ public class EventToIndex implements AutoCloseable {
 	private int threads = DEFAULT_NUMBER_OF_THREADS;
 
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
+
+	private IndexSettings indexSettings = new IndexSettings();
 
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 			threads,
@@ -293,7 +296,7 @@ public class EventToIndex implements AutoCloseable {
 			}
 		}
 
-		String completeIndexName = indexStrategy.getIndex(INDEX_PREFIX, cal.toInstant());
+		String completeIndexName = indexStrategy.getIndex(indexSettings, INDEX_PREFIX, cal.toInstant());
 
 		if (LOG.isDebugEnabled()){
 			String str = "populateEventIndexBodyFromEvent - index:"
@@ -380,6 +383,14 @@ public class EventToIndex implements AutoCloseable {
 				nodeCache.refreshEntry(event.getNodeid());
 			}
 		}
+	}
+
+	public IndexSettings getIndexSettings() {
+		return indexSettings;
+	}
+
+	public void setIndexSettings(IndexSettings indexSettings) {
+		this.indexSettings = Objects.requireNonNull(indexSettings);
 	}
 
 	private static final void logEsError(String operation, String index, String type, String result, int responseCode, String errorMessage) {

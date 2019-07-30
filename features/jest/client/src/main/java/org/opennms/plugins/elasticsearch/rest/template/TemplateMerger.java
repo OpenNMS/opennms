@@ -28,10 +28,12 @@
 
 package org.opennms.plugins.elasticsearch.rest.template;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Merges an existing elastic template with provided (optional) settings.
@@ -53,6 +55,16 @@ public class TemplateMerger {
     public JsonObject merge(final JsonObject template, final IndexSettings indexSettings) {
         if (indexSettings != null && !indexSettings.isEmpty()) {
             addMissingProperties(template);
+
+            // Prepend the index prefix to the template pattern
+            if (!Strings.isNullOrEmpty(indexSettings.getIndexPrefix())) {
+                final JsonPrimitive templateName = template.getAsJsonPrimitive("template");
+                if (templateName == null) {
+                    template.addProperty("template", indexSettings.getIndexPrefix());
+                } else {
+                    template.addProperty("template", indexSettings.getIndexPrefix() + templateName.getAsString());
+                }
+            }
 
             final JsonObject indexObject = template.get(SETTINGS_KEY).getAsJsonObject().get(INDEX_KEY).getAsJsonObject();
             if (indexSettings.getNumberOfShards() != null) {

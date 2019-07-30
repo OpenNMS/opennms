@@ -74,6 +74,7 @@ import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
 import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.opennms.plugins.elasticsearch.rest.template.TemplateInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,11 +147,13 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
 
     private final ElasticAlarmMetrics alarmsToESMetrics;
 
+    private final IndexSettings indexSettings;
+
     public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer) {
-        this(metrics, client, templateInitializer, new CacheConfig("nodes-for-alarms-in-es"), DEFAULT_TASK_QUEUE_CAPACITY, IndexStrategy.MONTHLY);
+        this(metrics, client, templateInitializer, new CacheConfig("nodes-for-alarms-in-es"), DEFAULT_TASK_QUEUE_CAPACITY, IndexStrategy.MONTHLY, new IndexSettings());
     }
 
-    public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer, CacheConfig nodeCacheConfig, int taskQueueCapacity, IndexStrategy indexStrategy) {
+    public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer, CacheConfig nodeCacheConfig, int taskQueueCapacity, IndexStrategy indexStrategy, IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(client);
         this.templateInitializer = Objects.requireNonNull(templateInitializer);
         //noinspection unchecked
@@ -168,7 +171,8 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         taskQueue = new LinkedBlockingDeque<>(taskQueueCapacity);
         alarmsToESMetrics = new ElasticAlarmMetrics(metrics, taskQueue);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
-        this.indexSelector = new IndexSelector(INDEX_PREFIX, indexStrategy, 0);
+        this.indexSettings = Objects.requireNonNull(indexSettings);
+        this.indexSelector = new IndexSelector(indexSettings, INDEX_PREFIX, indexStrategy, 0);
     }
 
     public void init() {
@@ -313,7 +317,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         final BulkRequest<AlarmDocumentDTO> bulkRequest = new BulkRequest<>(client, alarmDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (AlarmDocumentDTO alarmDocument : alarmDocuments) {
-                final String index = indexStrategy.getIndex(INDEX_PREFIX, Instant.ofEpochMilli(alarmDocument.getUpdateTime()));
+                final String index = indexStrategy.getIndex(indexSettings, INDEX_PREFIX, Instant.ofEpochMilli(alarmDocument.getUpdateTime()));
                 final Index.Builder indexBuilder = new Index.Builder(alarmDocument)
                         .index(index)
                         .type(AlarmDocumentDTO.TYPE);

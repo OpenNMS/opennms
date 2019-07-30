@@ -59,6 +59,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 import io.searchbox.client.JestClient;
 
@@ -98,7 +99,7 @@ public class ElasticAlarmHistoryBlackboxIT {
 
         RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT);
         jestClient = restClientFactory.createClient();
-        alarmHistoryRepo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY);
+        alarmHistoryRepo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY, new IndexSettings());
 
         // Wait until ES is up and running - initially there should be no documents
         await().atMost(1, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)

@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Test;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 public class IndexSelectorTest {
 
@@ -317,7 +318,7 @@ public class IndexSelectorTest {
             List<String> expectedList = Arrays.asList(expected);
             long expandTimeRangeInMs = 2 * 60 * 1000; // 2 min
             assertEquals(String.format("Test failed for strategy %s from %s to %s", this.strategy.name(), this.from, this.to)
-                         , expectedList, new IndexSelector("prefix", strategy, expandTimeRangeInMs).getIndexNames(start.getTime(), end.getTime()));
+                         , expectedList, new IndexSelector(new IndexSettings(), "prefix", strategy, expandTimeRangeInMs).getIndexNames(start.getTime(), end.getTime()));
         }
     }
 }

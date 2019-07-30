@@ -118,7 +118,7 @@ public class FlowQueryIT {
         mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(),3, 12000);
+                new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),3, 12000);
         final IndexSettings settings = new IndexSettings();
         final ElasticFlowRepositoryInitializer initializer = new ElasticFlowRepositoryInitializer(client, settings);
 
