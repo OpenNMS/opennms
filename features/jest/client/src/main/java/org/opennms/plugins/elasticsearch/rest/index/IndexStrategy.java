@@ -62,12 +62,12 @@ public enum IndexStrategy {
                 .withZone(UTC);
     }
 
-    public String getIndex(IndexSettings indexSettings, String indedName, TemporalAccessor temporal) {
+    public String getIndex(IndexSettings indexSettings, String indexName, TemporalAccessor temporal) {
         final StringBuilder sb = new StringBuilder();
         if (!Strings.isNullOrEmpty(indexSettings.getIndexPrefix())) {
             sb.append(indexSettings.getIndexPrefix());
         }
-        sb.append(indedName);
+        sb.append(indexName);
         sb.append("-");
         sb.append(dateFormat.format(temporal));
         return sb.toString();
