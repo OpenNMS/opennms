@@ -32,7 +32,6 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -123,6 +122,10 @@ public class DatabaseReportPageIT extends UiPageTest {
         assertThat(any.isPresent(), is(true));
     }
 
+    private void closeDialogue() {
+        execute(() -> findElementByXpath("//div[@class='modal-body']//button[text()='Show me']")).click();
+    }
+
     private interface EarlyMorningReport {
         String name = "Early morning report";
         String id = "local_Early-Morning-Report";
@@ -195,9 +198,7 @@ public class DatabaseReportPageIT extends UiPageTest {
             final WebElement executeButton = execute(() -> findElementById("execute"));
             assertThat(executeButton.getText(), Matchers.is("Deliver Report"));
             executeButton.click();
-
-            // Close dialogue
-            execute(() -> findElementByXpath("//div[@class='modal-body']//button[text()='Show me']")).click();
+            closeDialogue();
             return this;
         }
 
@@ -212,9 +213,7 @@ public class DatabaseReportPageIT extends UiPageTest {
             final WebElement executeButton = execute(() -> findElementById("execute"));
             assertThat(executeButton.getText(), Matchers.is("Schedule Report"));
             executeButton.click();
-
-            // Close dialogue
-            execute(() -> findElementByXpath("//div[@class='modal-body']//button[text()='Show me']")).click();
+            closeDialogue();
             return this;
         }
 
@@ -274,7 +273,6 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public List<PersistedReportElement> getPersistedReports() {
-            // TODO MVR make this a Table object
             final List<PersistedReportElement> results = Lists.newArrayList();
             final List<WebElement> rows = execute(() -> driver.findElementsByXPath("//table/tbody/tr"));
             for (WebElement eachRow : rows) {
@@ -313,7 +311,6 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public List<ReportScheduleElement> getScheduledReports() {
-            // TODO MVR make this a Table object
             final List<ReportScheduleElement> results = Lists.newArrayList();
             final List<WebElement> rows = execute(() -> driver.findElementsByXPath("//table/tbody/tr"));
             for (WebElement eachRow : rows) {
