@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest.ui.framework;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class Button extends UiElement {
