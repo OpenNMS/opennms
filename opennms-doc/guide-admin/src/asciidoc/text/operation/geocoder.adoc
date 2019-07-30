@@ -28,5 +28,5 @@ An alternative is to use the NominatimGeocoderService (https://developer.mapques
 | `emailAddress`    | `String`     | _empty string_      |
 | `referer`         | `String`     | _empty string_      |
 | `useSystemProxy`  | `Boolean`    | false               | Should the system wide proxy settings be used? The system proxy settings can
-                                                           be configured in link:#ga-opennms-system-properties[opennms.conf]
+                                                           be configured via link:#ga-opennms-system-properties[system properties]
 |===
