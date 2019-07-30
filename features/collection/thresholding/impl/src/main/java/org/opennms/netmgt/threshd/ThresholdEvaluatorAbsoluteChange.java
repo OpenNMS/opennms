@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +54,8 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
 
     /** {@inheritDoc} */
     @Override
-    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
-        return new ThresholdEvaluatorStateAbsoluteChange(threshold);
+    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
+        return new ThresholdEvaluatorStateAbsoluteChange(threshold, thresholdingSession);
     }
 
     /** {@inheritDoc} */
@@ -62,21 +64,27 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         return TYPE.equals(type);
     }
     
-    public static class ThresholdEvaluatorStateAbsoluteChange extends AbstractThresholdEvaluatorState {
+    public static class ThresholdEvaluatorStateAbsoluteChange extends AbstractThresholdEvaluatorState<ThresholdEvaluatorStateAbsoluteChange.State> {
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
         private double m_change;
 
-        private double m_lastSample = Double.NaN;
-        
-        private double m_previousTriggeringSample;
+        private static class State implements Serializable {
+            private static final long serialVersionUID = 1L;
+            private double m_lastSample = Double.NaN;
+            private double m_previousTriggeringSample;
+        }
 
-        public ThresholdEvaluatorStateAbsoluteChange(BaseThresholdDefConfigWrapper threshold) {
-            Assert.notNull(threshold, "threshold argument cannot be null");
-
+        public ThresholdEvaluatorStateAbsoluteChange(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
+            super(threshold, thresholdingSession);
             setThresholdConfig(threshold);
         }
 
-        public void setThresholdConfig(BaseThresholdDefConfigWrapper thresholdConfig) {
+        @Override
+        protected void initializeState() {
+            state = new State();
+        }
+
+        private void setThresholdConfig(BaseThresholdDefConfigWrapper thresholdConfig) {
             Assert.notNull(thresholdConfig.getType(), "threshold must have a 'type' value set");
             Assert.notNull(thresholdConfig.getDatasourceExpression(), "threshold must have a 'ds-name' value set");
             Assert.notNull(thresholdConfig.getDsType(), "threshold must have a 'ds-type' value set");
@@ -100,7 +108,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         }
 
         @Override
-        public Status evaluate(double dsValue) {
+        public Status evaluateAfterFetch(double dsValue) {
             if(!Double.isNaN(getLastSample())) {
                 double threshold = getLastSample()+getChange();
 
@@ -126,12 +134,15 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             return Status.NO_CHANGE;
         }
 
-        public Double getLastSample() {
-            return m_lastSample;
+        private Double getLastSample() {
+            return state.m_lastSample;
         }
 
-        public void setLastSample(double lastSample) {
-            m_lastSample = lastSample;
+        private void setLastSample(double lastSample) {
+            if (lastSample != state.m_lastSample) {
+                state.m_lastSample = lastSample;
+                markDirty();
+            }
         }
 
         @Override
@@ -152,25 +163,28 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             return createBasicEvent(uei, date, dsValue, resource, params);
         }
 
-        public double getPreviousTriggeringSample() {
-            return m_previousTriggeringSample;
-        }
-        
-        public void setPreviousTriggeringSample(double previousTriggeringSample) {
-            m_previousTriggeringSample = previousTriggeringSample;
+        private double getPreviousTriggeringSample() {
+            return state.m_previousTriggeringSample;
         }
 
-        public double getChange() {
+        private void setPreviousTriggeringSample(double previousTriggeringSample) {
+            if (state.m_previousTriggeringSample != previousTriggeringSample) {
+                state.m_previousTriggeringSample = previousTriggeringSample;
+                markDirty();
+            }
+        }
+
+        private double getChange() {
             return m_change;
         }
 
-        public void setChange(double change) {
+        private void setChange(double change) {
             m_change = change;
         }
 
         @Override
         public ThresholdEvaluatorState getCleanClone() {
-            return new ThresholdEvaluatorStateAbsoluteChange(m_thresholdConfig);
+            return new ThresholdEvaluatorStateAbsoluteChange(m_thresholdConfig, getThresholdingSession());
         }
 
         // FIXME This must be implemented correctly
@@ -181,7 +195,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
 
         // FIXME This must be implemented correctly
         @Override
-        public void clearState() {
+        public void clearStateBeforePersist() {
         }
     }
 

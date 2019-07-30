@@ -56,7 +56,7 @@ import com.google.common.collect.Lists;
 public class WsManWQLDetector extends SyncAbstractDetector {
     public static final Logger LOG = LoggerFactory.getLogger(WsManWQLDetector.class);
 
-    private static String PROTOCOL_NAME = "WsManWQLService";
+    private static String PROTOCOL_NAME = "WSManWQL";
     private String resourceUri = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*";
     private String wql;
 

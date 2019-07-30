@@ -47,6 +47,7 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
@@ -109,7 +110,7 @@ public class ElasticFlowRepositoryRetryIT {
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
                             classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
-                            new MockIdentity(), new MockTracerRegistry(),3, 12000), client);
+                            new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),3, 12000), client);
 
             consumer.accept(elasticFlowRepository);
 

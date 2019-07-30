@@ -60,6 +60,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Iterables;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -93,6 +94,10 @@ public class JtiGpbAdapter extends AbstractPersistingAdapter {
     private NodeDao nodeDao;
 
     private TransactionOperations transactionTemplate;
+
+    public JtiGpbAdapter(String name, MetricRegistry metricRegistry) {
+        super(name, metricRegistry);
+    }
 
     @Override
     public Stream<CollectionSetWithAgent> handleMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog) {

@@ -69,6 +69,8 @@
                                 <feature>sentinel-coordination-zookeeper</feature>
                                 <feature>sentinel-coordination-shell</feature>
                                 <feature>sentinel-newts</feature>
+                                <feature>sentinel-kvstore-noop</feature>
+                                <feature>sentinel-kvstore-cassandra</feature>
 
 
                                 <!-- Other features -->

@@ -79,9 +79,8 @@ class Netflow9Flow implements Flow {
     }
 
     @Override
-    public Integer getDstAs() {
+    public Long getDstAs() {
         return getInt64(this.document, "DST_AS")
-                .map(Long::intValue)
                 .orElse(null);
     }
 
@@ -229,9 +228,8 @@ class Netflow9Flow implements Flow {
     }
 
     @Override
-    public Integer getSrcAs() {
+    public Long getSrcAs() {
         return getInt64(this.document, "SRC_AS")
-                .map(Long::intValue)
                 .orElse(null);
     }
 

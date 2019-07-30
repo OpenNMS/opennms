@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.threshd;
 
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +52,17 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     protected final RrdRepository rrdRepository;
 
     private ServiceParameters serviceParameters;
+    
+    private final KeyValueStore kvStore;
 
     public ThresholdingSessionImpl(ThresholdingServiceImpl service, ThresholdingSessionKey sessionKey, ResourceStorageDao resourceStorageDao, RrdRepository rrdRepository,
-            ServiceParameters serviceParams) {
+            ServiceParameters serviceParams, KeyValueStore kvStore) {
         this.service = service;
         this.sessionKey = sessionKey;
         this.resourceStorageDao = resourceStorageDao;
         this.rrdRepository = rrdRepository;
         this.serviceParameters = serviceParams;
+        this.kvStore = kvStore;
     }
 
     @Override
@@ -70,8 +75,14 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
         service.close(this);
     }
 
+    @Override
     public ThresholdingSessionKey getKey() {
         return sessionKey;
+    }
+
+    @Override
+    public KeyValueStore getKVStore() {
+        return kvStore;
     }
 
     public ResourceStorageDao getResourceDao() {

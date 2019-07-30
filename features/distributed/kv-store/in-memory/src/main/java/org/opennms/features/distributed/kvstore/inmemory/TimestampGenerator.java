@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.template;
+package org.opennms.features.distributed.kvstore.inmemory;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
-
-public class IndexSettingsTest {
-
-    @Test
-    public void verifyStringValues() {
-        IndexSettings indexSettings = new IndexSettings();
-        indexSettings.setRoutingPartitionSize("");
-        indexSettings.setRefreshInterval("");
-        indexSettings.setNumberOfShards("");
-        indexSettings.setNumberOfReplicas("");
-
-        assertThat(indexSettings.isEmpty(), is(true));
-    }
+@FunctionalInterface
+public interface TimestampGenerator {
+    long now();
 }

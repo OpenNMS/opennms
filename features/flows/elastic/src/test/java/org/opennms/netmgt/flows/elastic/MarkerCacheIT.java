@@ -62,6 +62,7 @@ import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -167,7 +168,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     transactionOperations, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(),
+                    new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),
                     3, 12000);
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));

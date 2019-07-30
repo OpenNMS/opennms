@@ -43,7 +43,7 @@
                     "dst_as": {
                         "path_match": "netflow.dst_as",
                         "mapping": {
-                            "type": "integer"
+                            "type": "long"
                         }
                     }
                 },
@@ -587,7 +587,7 @@
                     "src_as": {
                         "path_match": "netflow.src_as",
                         "mapping": {
-                            "type": "integer"
+                            "type": "long"
                         }
                     }
                 },

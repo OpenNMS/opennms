@@ -86,6 +86,7 @@
     <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
         <feature>sentinel-persistence</feature>
 
+        <feature>dropwizard-metrics</feature>
         <feature>camel-netty4</feature>
         <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
         <feature>camel-spring</feature>
@@ -204,5 +205,41 @@
 
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-kvstore-api"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: API"
+             version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-kvstore-noop"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: No-Op" version="${project.version}">
+        <feature>opennms-kvstore-shell</feature>
+        <feature>sentinel-kvstore-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.no-op/${project.version}</bundle>
+    </feature>
+    
+    <feature name="sentinel-distributed-cassandra-api"
+             description="OpenNMS :: Features :: Distributed :: Cassandra :: API"
+             version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.api/${project.version}</bundle>
+    </feature>
+    
+    <feature name="sentinel-newts-cassandra"
+             description="OpenNMS :: Features :: Distributed :: Cassandra :: Newts Impl." version="${project.version}">
+        <feature>cassandra-driver</feature>
+        <feature>sentinel-newts</feature>
+        <feature>sentinel-distributed-cassandra-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.newts-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-kvstore-cassandra"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Cassandra"
+             version="${project.version}">
+        <feature>sentinel-newts-cassandra</feature>
+        <feature>opennms-kvstore-shell</feature>
+        <feature>sentinel-kvstore-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.cassandra/${project.version}</bundle>
     </feature>
 </features>

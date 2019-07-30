@@ -26,19 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.features.distributed.kvstore.shell;
 
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import java.util.Objects;
 
-public class MockThresholdingSession implements ThresholdingSession {
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.features.distributed.kvstore.api.KeyValueStore;
+
+@Command(scope = "kvstore", name = "put", description = "Insert a record into the key value store")
+@Service
+public class KVStorePut implements Action {
+    @Reference
+    private KeyValueStore kvStore;
+
+    @Argument(index = 0, description = "The key")
+    private String key;
+
+    @Argument(index = 1, description = "The key's context")
+    private String context;
+
+    @Argument(index = 2, description = "The value to put")
+    private String value;
 
     @Override
-    public void close() throws Exception {
-    }
+    public Object execute() {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(value);
 
-    @Override
-    public void accept(CollectionSet collectionSet) {
-    }
+        kvStore.put(key, value.getBytes(), context);
 
+        return null;
+    }
 }
