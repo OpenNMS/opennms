@@ -193,25 +193,9 @@
         </label>
     </div>
     <div class="" ng-if="options.scheduleReport">
-        <h3>Cron Expression</h3>
+        <h3>Schedule Editor</h3>
         <div class="">
-            <p>
-                We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial
-                <a href="http://www.quartz-scheduler.org/documentation/quartz-2.2.2/tutorials/crontrigger.html" target="_blank">here</a>.
-            </p>
-            <div class="form-group">
-                <label for="cronExpression" class="form-check-label">
-                    Cron Expression
-                </label>
-                <input id="cronExpression"
-                       name="cronExpression"
-                       type="text"
-                       class="form-control"
-                       ng-class="{ 'is-invalid' : reportForm.cronExpression.$invalid }"
-                       ng-model="options.cronExpression"
-                       required />
-                <div ng-show="reportForm.cronExpression.$invalid" class="invalid-feedback">Please provide a value.</div>
-            </div>
+            <onms-schedule-editor ng-model="options.scheduleOptions" />
         </div>
         <hr />
     </div>
