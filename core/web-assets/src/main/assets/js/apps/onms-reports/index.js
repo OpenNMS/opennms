@@ -185,7 +185,6 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 scheduleReport: false,
                 scheduleOptions: {
                     cronExpression: '0 0/10 * * * ?', // TODO MVR default value for this should be what ???
-                    showDebugOptions: true, // TODO MVR enable debugging for now, disable later
                 },
 
                 isExecuteReport: function() {
