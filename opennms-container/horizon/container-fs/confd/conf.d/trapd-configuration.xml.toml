@@ -1,0 +1,6 @@
+[template]
+src = "timeseries.properties.tpl"
+dest = "/opt/opennms/etc/trapd-configuration.xml"
+keys = [
+    "opennms/trapd/port"
+]

@@ -11,9 +11,15 @@ ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-li
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
 ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm"
 
+ARG VERSION="0.16.0"
+ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${VERSION}/confd-${VERSION}-linux-amd64"
+
 SHELL ["/bin/bash", "-c"]
 
 # Collect generic steps in a layer for caching
+RUN curl -L ${CONFD_URL} -o /usr/bin/confd && \
+    chmod +x /usr/bin/confd
+
 RUN rpm --import "${REPO_KEY_URL}" && \
     yum install -y epel-release && \
     yum -y install "${REPO_RPM}" && \
@@ -102,8 +108,8 @@ RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
                  /opt/opennms-jetty-webinf-overlay
 
 # Add templates replaced at runtime and entrypoint
-COPY --chown=10001:0 ./assets/*.tpl /tmp/
-COPY --chown=10001:0 ./assets/entrypoint.sh /
+COPY --chown=10001:0 ./container-fs/confd /etc/confd
+COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 
 # Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"

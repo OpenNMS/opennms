@@ -1,0 +1,12 @@
+[template]
+src = "opennms-datasources.xml.tpl"
+dest = "/opt/opennms/etc/opennms-datasources.xml"
+keys = [
+    "opennms/dbname",
+    "opennms/dbuser",
+    "opennms/dbpass",
+    "postgres/host",
+    "postgres/port",
+    "postgres/user",
+    "postgres/password"
+]

@@ -13,23 +13,9 @@
 umask 002
 OPENNMS_HOME="/opt/opennms"
 
-OPENNMS_DATASOURCES_TPL="/tmp/opennms-datasources.xml.tpl"
-OPENNMS_DATASOURCES_CFG="${OPENNMS_HOME}/etc/opennms-datasources.xml"
 OPENNMS_OVERLAY="/opt/opennms-overlay"
 OPENNMS_OVERLAY_ETC="/opt/opennms-etc-overlay"
 OPENNMS_OVERLAY_JETTY_WEBINF="/opt/opennms-jetty-webinf-overlay"
-
-OPENNMS_UPGRADE_GUARD="${OPENNMS_HOME}/etc/do-upgrade"
-OPENNMS_CONFIGURED_GUARD="${OPENNMS_HOME}/etc/configured"
-
-OPENNMS_KARAF_TPL="/tmp/org.apache.karaf.shell.cfg.tpl"
-OPENNMS_KARAF_CFG="${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg"
-
-OPENNMS_NEWTS_TPL="/tmp/newts.properties.tpl"
-OPENNMS_NEWTS_PROPERTIES="${OPENNMS_HOME}/etc/opennms.properties.d/newts.properties"
-
-OPENNMS_TRAPD_TPL="/tmp/trapd-configuration.xml.tpl"
-OPENNMS_TRAPD_CFG="${OPENNMS_HOME}/etc/trapd-configuration.xml"
 
 # Error codes
 E_ILLEGAL_ARGS=126
@@ -45,54 +31,53 @@ usage() {
   echo "folder in which needs to be mounted to ${OPENNMS_OVERLAY_ETC}."
   echo "Every file in this folder is overwriting the default configuration file in ${OPENNMS_HOME}/etc."
   echo ""
-  echo "-f: Start OpenNMS in foreground with an existing configuration."
+  echo "-f: Start OpenNMS in foreground with existing data and configuration."
   echo "-h: Show this help."
-  echo "-i: Initialize Java environment, database and pristine OpenNMS configuration files and do *NOT* start OpenNMS."
-  echo "    The database and config file initialization is skipped when a configured file exist."
-  echo "-s: Initialize environment like -i and start OpenNMS in foreground."
-  echo "-n: Initialize newts (cassandra) as well the initialisations steps in -i above."
-  echo "    Initialization is skipped when a configured file exist."
-  echo "-c: Initialize environment like -n and start OpenNMS in foreground using newts (cassandra)."
-  echo "-t:  options: Run the config-tester, default is -h to show usage."
+  echo "-i: Initialize or update database and configuration files and do *NOT* start."
+  echo "-s: Initialize or update database and configuration files and start OpenNMS."
+  echo "-t: Run the config-tester, e.g -t -h to show help and available options."
   echo ""
 }
 
-install() {
-  echo "Run OpenNMS install command to initialize or upgrade the database schema and configurations."
-  ${JAVA_HOME}/bin/java -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -cp "${OPENNMS_HOME}/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "${@}" || exit ${E_INIT_CONFIG}
-}
+initOrUpdate() {
+  if [[ -f "${OPENNMS_HOME}"/etc/configured ]]; then
+    echo "System is already configured. Enforce init or update by delete the ${OPENNMS_HOME}/etc/configured file."
+  else
+    echo "Find and set Java environment for running OpenNMS in ${OPENNMS_HOME}/etc/java.conf."
+    "${OPENNMS_HOME}"/bin/runjava -s
 
-doInitOrUpgrade() {
-  if [ -f ${OPENNMS_UPGRADE_GUARD} ]; then
-    echo "Enforce config and database update."
-    rm -rf ${OPENNMS_CONFIGURED_GUARD}
-    ${OPENNMS_HOME}/bin/runjava -s || exit ${E_INIT_CONFIG}
-    install -dis || exit ${E_INIT_CONFIG}
-    rm -rf ${OPENNMS_UPGRADE_GUARD}
-    rm -rf ${OPENNMS_OVERLAY_ETC}/do-upgrade
-    rm -rf ${OPENNMS_OVERLAY}/etc/do-upgrade
+    echo "Run OpenNMS install command to initialize or upgrade the database schema and configurations."
+    ${JAVA_HOME}/bin/java -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -cp "${OPENNMS_HOME}/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "${@}" || exit ${E_INIT_CONFIG}
+
+    # If Newts is used initialize the keyspace with a given REPLICATION_FACTOR which defaults to 1 if unset
+    if [[ "${OPENNMS_TIMESERIES_STRATEGY}" == "newts" ]]; then
+      ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || exit ${E_INIT_CONFIG}
+    else
+      echo "The time series strategy ${OPENNMS_TIMESERIES_STRATEGY} is selected, skip Newts keyspace initialisation."
+    fi
   fi
 }
 
+configTester() {
+  echo "Run config tester to validate existing configuration files."
+  ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
+}
+
+processConfdTemplates() {
+  echo "Processing confd templates using /etc/confd/confd.toml"
+  confd -onetime
+}
+
 # Initialize database and configure Karaf
-initConfig() {
+initConfigWhenEmpty() {
   if [ ! -d ${OPENNMS_HOME} ]; then
     echo "OpenNMS home directory doesn't exist in ${OPENNMS_HOME}."
     exit ${E_ILLEGAL_ARGS}
   fi
 
-  if [ ! "$(ls --ignore .git --ignore .gitignore --ignore ${OPENNMS_DATASOURCES_CFG} --ignore ${OPENNMS_KARAF_CFG} -A ${OPENNMS_HOME}/etc)"  ]; then
+  if [ ! "$(ls --ignore .git --ignore .gitignore -A ${OPENNMS_HOME}/etc)"  ]; then
     echo "No existing configuration in ${OPENNMS_HOME}/etc found. Initialize from etc-pristine."
     cp -r ${OPENNMS_HOME}/share/etc-pristine/* ${OPENNMS_HOME}/etc/ || exit ${E_INIT_CONFIG}
-  fi
-
-  if [ ! -f ${OPENNMS_CONFIGURED_GUARD} ]; then
-    echo "Initialize database and Karaf configuration and do install or upgrade the database schema."
-    envsubst < ${OPENNMS_DATASOURCES_TPL} > ${OPENNMS_DATASOURCES_CFG}
-    envsubst < ${OPENNMS_KARAF_TPL} > ${OPENNMS_KARAF_CFG}
-    envsubst < ${OPENNMS_TRAPD_TPL} > ${OPENNMS_TRAPD_CFG}
-    ${OPENNMS_HOME}/bin/runjava -s || exit ${E_INIT_CONFIG}
-    install -dis || exit ${E_INIT_CONFIG}
   fi
 
   if [[ ! -d /opennms-data/mibs ]]; then
@@ -115,14 +100,6 @@ initConfig() {
   else
     echo "Use existing RRD data directory."
   fi
-}
-
-# run after initConfig to add cassandra/newts configuration
-initNewtsConfig() {
-  #re-initialising existing tables has no effect in newts so don't worry about guard
-  echo "Initialize newts configuration and install newts keyspace in cassandra if not already initialised."
-  envsubst < ${OPENNMS_NEWTS_TPL} > ${OPENNMS_NEWTS_PROPERTIES}
-  ${OPENNMS_HOME}/bin/newts init || exit ${E_INIT_CONFIG}
 }
 
 applyOverlayConfig() {
@@ -152,17 +129,6 @@ applyOverlayConfig() {
   fi
 }
 
-applyKarafDebugLogging() {
-  if [ -n "${KARAF_DEBUG_LOGGING}" ]; then
-    echo "Updating Karaf debug logging"
-    for log in $(sed "s/,/ /g" <<< "${KARAF_DEBUG_LOGGING}"); do
-      logUnderscored=${log//./_}
-      echo "log4j2.logger.${logUnderscored}.level = DEBUG" >> "${OPENNMS_HOME}"/etc/org.ops4j.pax.logging.cfg
-      echo "log4j2.logger.${logUnderscored}.name = $log" >> "${OPENNMS_HOME}"/etc/org.ops4j.pax.logging.cfg
-    done
-  fi
-}
-
 # Start opennms in foreground
 start() {
   local OPENNMS_JAVA_OPTS="--add-modules=java.base,java.compiler,java.datatransfer,java.desktop,java.instrument,java.logging,java.management,java.management.rmi,java.naming,java.prefs,java.rmi,java.scripting,java.security.jgss,java.security.sasl,java.sql,java.sql.rowset,java.xml,jdk.attach,jdk.httpserver,jdk.jdi,jdk.sctp,jdk.security.auth,jdk.xml.dom \
@@ -179,20 +145,6 @@ start() {
   exec ${JAVA_HOME}/bin/java ${OPENNMS_JAVA_OPTS} ${JAVA_OPTS} -jar /opt/opennms/lib/opennms_bootstrap.jar start
 }
 
-configTester() {
-  echo "Run config tester to validate existing configuration files."
-  ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
-}
-
-testConfig() {
-  shift
-  if [ "${#}" == "0" ]; then
-    configTester -h
-  else
-    configTester "${@}"
-  fi
-}
-
 # Evaluate arguments for build script.
 if [[ "${#}" == 0 ]]; then
   usage
@@ -200,12 +152,12 @@ if [[ "${#}" == 0 ]]; then
 fi
 
 # Evaluate arguments for build script.
-while getopts "fhisnct" flag; do
+while getopts "fhist" flag; do
   case ${flag} in
     f)
+      processConfdTemplates
       applyOverlayConfig
-      applyKarafDebugLogging
-      testConfig -t -a
+      configTester -a
       start
       exit
       ;;
@@ -214,45 +166,24 @@ while getopts "fhisnct" flag; do
       exit
       ;;
     i)
-      initConfig
+      initConfigWhenEmpty
+      processConfdTemplates
       applyOverlayConfig
-      applyKarafDebugLogging
-      testConfig -t -a
-      doInitOrUpgrade
+      configTester -a
+      initOrUpdate -dis
       exit
       ;;
     s)
-      initConfig
+      initConfigWhenEmpty
+      processConfdTemplates
       applyOverlayConfig
-      applyKarafDebugLogging
-      testConfig -t -a
-      doInitOrUpgrade
-      start
-      exit
-      ;;
-    n)
-      echo "configuring opennms to use newts cassandra"
-      initConfig
-      initNewtsConfig
-      applyOverlayConfig
-      applyKarafDebugLogging
-      testConfig -t -a
-      doInitOrUpgrade
-      exit
-      ;;
-    c)
-      echo "starting opennms with newts cassandra"
-      initConfig
-      initNewtsConfig
-      applyOverlayConfig
-      applyKarafDebugLogging
-      testConfig -t -a
-      doInitOrUpgrade
+      configTester -a
+      initOrUpdate -dis
       start
       exit
       ;;
     t)
-      testConfig "${@}"
+      configTester "${@}"
       exit
       ;;
     *)
