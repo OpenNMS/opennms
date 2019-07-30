@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.offheap.rocksdb;
+package org.opennms.core.ipc.sink.offheap;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.ipc.sink.api.OffHeapQueue;
@@ -79,6 +80,8 @@ public class RocksdbStore implements OffHeapQueue {
     private SstFileManager sstfileManager;
     private Long lastTimeStamp = System.nanoTime();
     private Path dbPath;
+    private long maxSizeInBytes;
+    private AtomicBoolean closed = new AtomicBoolean(false);
     private Map<String, ColumnFamilyHandle> columnFamilyHandleMap = new ConcurrentHashMap<>();
     // Map of ModuleName and corresponding RocksIterator
     private Map<String, RocksIterator> rocksIteratorMap = new ConcurrentHashMap<>();
@@ -102,17 +105,18 @@ public class RocksdbStore implements OffHeapQueue {
             }
         }
         String offHeapSize = config.getProperty(OFFHEAP_SIZE);
-        long maxSizeInBytes;
+
         if (!Strings.isNullOrEmpty(offHeapSize)) {
             maxSizeInBytes = convertByteSizes(offHeapSize);
         } else {
             maxSizeInBytes = convertByteSizes(DEFAULT_OFFHEAP_SIZE);
         }
         String offHeapPath = config.getProperty(OFFHEAP_PATH);
-        if (Strings.isNullOrEmpty(offHeapPath)) {
-            throw new IOException("'offHeapPath' needs to be valid path");
+        if (!Strings.isNullOrEmpty(offHeapPath)) {
+            dbPath = Paths.get(offHeapPath);
+        } else {
+            dbPath = Paths.get(System.getProperty("karaf.data"), "offheap");
         }
-        dbPath = Paths.get(offHeapPath);
         // Load library
         RocksDB.loadLibrary();
 
@@ -120,7 +124,7 @@ public class RocksdbStore implements OffHeapQueue {
             sstfileManager = new SstFileManager(Env.getDefault());
             sstfileManager.setMaxAllowedSpaceUsage(maxSizeInBytes);
         } catch (RocksDBException e) {
-            e.printStackTrace();
+            LOG.warn("Failed to set max size on RocksDB store {}", e);
         }
         options = new Options().setCreateIfMissing(true)
                 .setSstFileManager(sstfileManager);
@@ -162,12 +166,14 @@ public class RocksdbStore implements OffHeapQueue {
 
     @Override
     public Long writeMessage(String moduleName, byte[] message) throws WriteFailedException {
-        try {
-            ColumnFamilyHandle columnFamilyHandle = getColumnFamily(moduleName);
-            long currentTime = getCurrentTimeStamp();
-            try (WriteOptions writeOptions = new WriteOptions().setSync(true)) {
-                rocksdbInstance.put(columnFamilyHandle, writeOptions, Longs.toByteArray(currentTime), message);
+
+        try (WriteOptions writeOptions = new WriteOptions().setSync(true)) {
+            ColumnFamilyHandle columnFamily = getColumnFamily(moduleName);
+            if (columnFamily == null) {
+                throw new WriteFailedException("Failed to get valid rocksdb instance");
             }
+            long currentTime = getCurrentTimeStamp();
+            rocksdbInstance.put(columnFamily, writeOptions, Longs.toByteArray(currentTime), message);
             incrementCounter(moduleName);
             LOG.trace("WroteMessage for module {} with key {}", moduleName, currentTime);
             return currentTime;
@@ -183,13 +189,13 @@ public class RocksdbStore implements OffHeapQueue {
         AbstractMap.SimpleImmutableEntry<Long, byte[]> keyValue = null;
         try {
             RocksIterator rocksIterator = getRocksIterator(null, moduleName);
-            if (!rocksIterator.isValid()) {
+            if (rocksIterator != null && !rocksIterator.isValid()) {
                 //1sec delay will prevent iterator to seek multiple times in search of new data.
                 Thread.sleep(1000);
-                LOG.debug("Re-creating iterator for {}", moduleName);
+                LOG.trace("Re-creating iterator for {}", moduleName);
                 rocksIterator = getRocksIterator(rocksIterator, moduleName);
             }
-            if (rocksIterator.isValid()) {
+            if (rocksIterator != null && rocksIterator.isValid()) {
                 // Get the key, value and move iterator.
                 byte[] keyInBytes = rocksIterator.key();
                 byte[] value = rocksIterator.value();
@@ -200,16 +206,20 @@ public class RocksdbStore implements OffHeapQueue {
                 // Update read position with current key, get the previous one to delete.
                 byte[] lastKeyRead = updateLastReadKey(moduleName, keyInBytes);
                 if (lastKeyRead != null) {
-                    rocksdbInstance.delete(getColumnFamily(moduleName), lastKeyRead);
+                    ColumnFamilyHandle columnFamily = getColumnFamily(moduleName);
+                    if (columnFamily != null) {
+                        rocksdbInstance.delete(columnFamily, lastKeyRead);
+                    }
                 }
                 decrementCounter(moduleName);
                 return keyValue;
             }
         } catch (RocksDBException e) {
             LOG.error("Error while reading message : {}", e.getMessage());
-            if (checkForIoError(e.getStatus())) {
-                // IOError puts RocksDB into Read-Only mode.
+            if (checkIfMaxSizeReached(e.getStatus())) {
+                // When DB reaches max size, it puts RocksDB into Read-Only mode.
                 // restart DB to put this back into Read/Write mode.
+                LOG.error("Offheap reached max size {}, current size {}. Restarting DB to allow deletion", maxSizeInBytes, getSize());
                 restart();
                 return keyValue;
             }
@@ -218,17 +228,24 @@ public class RocksdbStore implements OffHeapQueue {
         return null;
     }
 
-    private boolean checkForIoError(Status status) {
-        if (status != null && status.getCode() != null && status.getCode().equals(Status.Code.IOError)) {
-            return true;
-        }
-        return false;
+    private boolean checkIfMaxSizeReached(Status status) {
+        return status != null && status.getCode() != null &&
+                status.getCode().equals(Status.Code.IOError) &&
+                isMaxAllowedSpaceReached();
+    }
+
+    boolean isMaxAllowedSpaceReached() {
+        return sstfileManager != null && sstfileManager.isMaxAllowedSpaceReached();
     }
 
     /**
-     * Restart DB if IOError happens to get DB back into Read/Write Mode.
+     * Restart DB if max size has reached so that we should be able to delete messages.
      */
     private synchronized void restart() {
+        // Prevent restart from multiple modules occuring at same time.
+        if (!sstfileManager.isMaxAllowedSpaceReached()) {
+            return;
+        }
         destroy();
         try {
             init();
@@ -239,7 +256,7 @@ public class RocksdbStore implements OffHeapQueue {
         LOG.info("RocksDB instance restarted at {}", dbPath.toString());
     }
 
-    private synchronized byte[] updateLastReadKey(String moduleName, byte[] keyInBytes) throws RocksDBException {
+    private byte[] updateLastReadKey(String moduleName, byte[] keyInBytes) throws RocksDBException {
         byte[] lastKeyRead = lastReadKeyMap.get(moduleName);
         lastReadKeyMap.put(moduleName, keyInBytes);
         return lastKeyRead;
@@ -252,10 +269,10 @@ public class RocksdbStore implements OffHeapQueue {
      * @param moduleName  module name for which iterator needs to be created.
      * @return RocksIterator for the module.
      */
-    private synchronized RocksIterator getRocksIterator(RocksIterator rocksIterator, String moduleName) throws RocksDBException {
+    private RocksIterator getRocksIterator(RocksIterator rocksIterator, String moduleName) throws RocksDBException {
 
         byte[] keyInBytes = lastReadKeyMap.get(moduleName);
-        if (keyInBytes == null) {
+        if (keyInBytes == null && rocksdbInstance.isOwningHandle()) {
             ColumnFamilyHandle defaultColumnFamily = rocksdbInstance.getDefaultColumnFamily();
             keyInBytes = rocksdbInstance.get(defaultColumnFamily, moduleName.getBytes());
         }
@@ -267,7 +284,9 @@ public class RocksdbStore implements OffHeapQueue {
         } else {
             rocksIterator = createRocksIterator(moduleName, false);
         }
-
+        if(rocksIterator == null || !rocksIterator.isOwningHandle()) {
+            return null;
+        }
         if (keyInBytes == null) {
             rocksIterator.seekToFirst();
         } else {
@@ -281,7 +300,7 @@ public class RocksdbStore implements OffHeapQueue {
     /**
      * This is to serialize RocksDB keys. Use nanoTime to get granularity needed.
      *
-     * @return
+     * @return current time in nanosecs.
      */
     private synchronized Long getCurrentTimeStamp() {
         Long curretTimeStamp = System.nanoTime();
@@ -326,10 +345,12 @@ public class RocksdbStore implements OffHeapQueue {
 
         RocksIterator rocksIterator = rocksIteratorMap.get(moduleName);
         if (rocksIterator == null || newIterator) {
-            ColumnFamilyHandle columnFamilyHandle = getColumnFamily(moduleName);
-            rocksIterator = rocksdbInstance.newIterator(columnFamilyHandle);
-            rocksIteratorMap.put(moduleName, rocksIterator);
-            LOG.info("RocksIterator created for module {} ", moduleName);
+            ColumnFamilyHandle columnFamily = getColumnFamily(moduleName);
+            if(columnFamily != null) {
+                rocksIterator = rocksdbInstance.newIterator(columnFamily);
+                rocksIteratorMap.put(moduleName, rocksIterator);
+            }
+            LOG.debug("RocksIterator created for module {} ", moduleName);
 
         }
         return rocksIterator;
@@ -347,6 +368,9 @@ public class RocksdbStore implements OffHeapQueue {
         if (columnFamilyHandle != null) {
             return columnFamilyHandle;
         }
+        if(!rocksdbInstance.isOwningHandle()) {
+            return null;
+        }
         // Create column family for this module.
         try {
             columnFamilyHandle = rocksdbInstance.createColumnFamily(
@@ -362,9 +386,9 @@ public class RocksdbStore implements OffHeapQueue {
         }
     }
 
-
     public void destroy() {
 
+        closed.set(true);
         // Save last read positions in default column family.
         lastReadKeyMap.forEach((key, value) -> {
 
@@ -374,6 +398,7 @@ public class RocksdbStore implements OffHeapQueue {
                 //Ignore.
             }
         });
+        // Don't clear lastReadKeyMap as this lastReadKeyMap will be used in restart of DB.
 
         // All objects that we opened need to be closed since these are all JNI objects.
         rocksIteratorMap.forEach((module, iterator) -> iterator.close());
@@ -402,10 +427,8 @@ public class RocksdbStore implements OffHeapQueue {
 
     @Override
     public long getSize() {
-        try {
-            return rocksdbInstance.getLongProperty("rocksdb.total-sst-files-size");
-        } catch (RocksDBException e) {
-            e.printStackTrace();
+        if (sstfileManager != null && sstfileManager.isOwningHandle()) {
+            return sstfileManager.getTotalSize();
         }
         return INVALID_SIZE;
     }

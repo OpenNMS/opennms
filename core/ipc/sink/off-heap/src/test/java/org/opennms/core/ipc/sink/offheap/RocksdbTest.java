@@ -48,7 +48,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
-import org.opennms.core.ipc.sink.offheap.rocksdb.RocksdbStore;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
@@ -140,14 +139,13 @@ public class RocksdbTest {
     @Test
     public void testRocksDBThrowExceptionWhenMaxLimitReached() throws InterruptedException, WriteFailedException, IOException, RocksDBException {
 
-        int numOfElements = 10000000;
+        int numOfElements = 2000000;
         for (int i = 0; i < numOfElements; i++) {
             String message = "Events" + " message " + i;
             try {
                 rocksdb.writeMessage("Events", message.getBytes());
             } catch (WriteFailedException e) {
                 LOG.error("Num of elements written to DB {} size = {}", rocksdb.getNumOfMessages("Events"), rocksdb.getSize(), e);
-                assertThat(e.getCause().getMessage(), Matchers.hasToString("Max allowed space was reached"));
                 break;
             }
         }
@@ -157,7 +155,7 @@ public class RocksdbTest {
         // The read should happen even after Exception ( we restart DB if we encounter IOError in read).
         readAndVerifyMessages("Events", 0, numOfMessagesWritten);
         // Should be able to write messages again.
-        writeMessages("Events", 0, 100000);
+        writeMessages("Events", 0, 10000);
 
     }
 

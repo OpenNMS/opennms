@@ -32,6 +32,7 @@ import java.util.Dictionary;
 
 import org.opennms.core.ipc.sink.api.OffHeapQueue;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class OffHeapServiceLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(OffHeapServiceLoader.class);
     private static BundleContext context;
-    private static Boolean offHeapEnabled;
+    private static Boolean offHeapEnabled = false;
     private static OffHeapQueue offHeapQueue;
     public static final String OFFHEAP_CONFIG = "org.opennms.core.ipc.sink.offheap";
     public static final String ENABLE_OFFHEAP = "enableOffHeap";
@@ -54,9 +55,6 @@ public class OffHeapServiceLoader {
     }
     
     public static boolean isOffHeapEnabled() {
-        if(offHeapEnabled != null) {
-            return offHeapEnabled;
-        }
         if (context != null) {
             try {
                 ConfigurationAdmin configAdmin = context
@@ -73,7 +71,7 @@ public class OffHeapServiceLoader {
             }
         }
 
-        return false;
+        return offHeapEnabled;
     }
     
     public static OffHeapQueue getOffHeapQueue() {
@@ -82,8 +80,11 @@ public class OffHeapServiceLoader {
         }
         if (context != null) {
             try {
-                offHeapQueue = context.getService(context.getServiceReference(OffHeapQueue.class));
-                return offHeapQueue;
+                ServiceReference<OffHeapQueue> serviceReference = context.getServiceReference(OffHeapQueue.class);
+                if (serviceReference != null) {
+                    offHeapQueue = context.getService(serviceReference);
+                    return offHeapQueue;
+                }
             } catch (Exception e) {
                 LOG.error("Exception while retrieving OffHeapQueue Service from registry", e);
             }
@@ -91,11 +92,11 @@ public class OffHeapServiceLoader {
         return null;
     }
 
-    protected static void setOffHeapQueue(OffHeapQueue queue) {
+    static void setOffHeapQueue(OffHeapQueue queue) {
         offHeapQueue = queue;
     }
     
-    protected static void setOffHeapEnabled(boolean enabled) {
+    static void setOffHeapEnabled(boolean enabled) {
         offHeapEnabled = enabled;
     }
 

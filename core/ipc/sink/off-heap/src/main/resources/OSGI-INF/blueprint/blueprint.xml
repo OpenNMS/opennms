@@ -13,7 +13,7 @@
 
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 
-    <bean id="offHeapQueue" class="org.opennms.core.ipc.sink.offheap.rocksdb.RocksdbStore"
+    <bean id="offHeapQueue" class="org.opennms.core.ipc.sink.offheap.RocksdbStore"
           init-method="init" destroy-method="destroy">
       <argument ref="configAdmin"/>
     </bean>

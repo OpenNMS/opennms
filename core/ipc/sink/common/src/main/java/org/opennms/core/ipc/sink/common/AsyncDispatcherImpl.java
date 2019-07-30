@@ -31,7 +31,6 @@ package org.opennms.core.ipc.sink.common;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -73,7 +72,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     private OffHeapQueue offHeapQueue;
     private SinkModule<S,T> sinkModule;
     private DispatcherState<W,S,T> state;
-    private boolean useOffHeap = false;
+    private AtomicBoolean useOffHeap = new AtomicBoolean(false);
 
     private static final RateLimitedLog rateLimittedLogger = RateLimitedLog
             .withRateLimit(LOG)
@@ -91,13 +90,6 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         this.asyncPolicy = asyncPolicy;
         this.state = state;
         sinkModule = state.getModule();
-        if (OffHeapServiceLoader.isOffHeapEnabled()) {
-            offHeapQueue = OffHeapServiceLoader.getOffHeapQueue();
-            if (offHeapQueue != null) {
-                useOffHeap = true;
-                LOG.info("Offheap storage enabled for sink module, {}", sinkModule.getId());
-            }
-        }
 
         final RejectedExecutionHandler rejectedExecutionHandler;
         if (asyncPolicy.isBlockWhenFull()) {
@@ -180,7 +172,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     @Override
     public CompletableFuture<S> send(S message) {
 
-        if (useOffHeap && checkIfMessageShouldBeWrittenToOffHeap()) {
+        if (checkIfMessageShouldBeWrittenToOffHeap()) {
 
             CompletableFuture<S> future = writeToOffHeap(message);
             if (future != null) {
@@ -200,12 +192,20 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     }
 
     private boolean checkIfMessageShouldBeWrittenToOffHeap() {
-        // If either local queue is full and Offheap queue is still draining.
-        if(getQueueSize() == asyncPolicy.getQueueSize() ||
-                ((offHeapAdapter != null) && !offHeapAdapter.isOffHeapEmpty())) {
-            return true;
+
+        if (!useOffHeap.get() && OffHeapServiceLoader.isOffHeapEnabled()) {
+            offHeapQueue = OffHeapServiceLoader.getOffHeapQueue();
+            if (offHeapQueue != null) {
+                useOffHeap.set(true);
+                LOG.info("Offheap storage enabled for sink module, {}", sinkModule.getId());
+            } else {
+                useOffHeap.set(false);
+                return false;
+            }
         }
-        return false;
+        // If either local queue is full and Offheap queue is still draining.
+        return (getQueueSize() == asyncPolicy.getQueueSize() ||
+                ((offHeapAdapter != null) && !offHeapAdapter.isOffHeapEmpty()));
     }
 
     /**
@@ -275,9 +275,9 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
                     if (keyValue != null) {
                         queue.put(() -> {
                             CompletableFuture<S> future = offHeapFutureMap.get(keyValue.getKey());
+                            S message = sinkModule.unmarshalSingleMessage(keyValue.getValue());
+                            syncDispatcher.send(message);
                             if(future != null) {
-                                S message = sinkModule.unmarshalSingleMessage(keyValue.getValue());
-                                syncDispatcher.send(message);
                                 future.complete(message);
                                 offHeapFutureMap.remove(keyValue.getKey());
                             }
@@ -299,7 +299,6 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         public CompletableFuture<S> writeMessage(S message) throws WriteFailedException {
             final CompletableFuture<S> future = new CompletableFuture<>();
             byte[] bytes = sinkModule.marshalSingleMessage(message);
-            String uuid = UUID.randomUUID().toString();
             Long key =  offHeapQueue.writeMessage(sinkModule.getId(), bytes);
             offHeapFutureMap.put(key, future);
             firstWrite.countDown();

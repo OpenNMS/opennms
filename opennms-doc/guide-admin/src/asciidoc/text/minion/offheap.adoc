@@ -27,13 +27,6 @@ echo 'offHeapSize=1.2GB
 enableOffHeap=true' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.offheap.cfg"
 ----
 
-Also configure path where Offheap messages can be stored.
-
-[source, sh]
-----
-echo 'offHeapPath=/tmp/rocksdb' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.offheap.cfg"
-----
-
 Specify offHeapSize in KB, MB or GB. For ex: 1.2GB, 2.5MB, 845KB.
 It will be converted to bytes.
 In above example, offHeapSize is configured to 1.2GB.
