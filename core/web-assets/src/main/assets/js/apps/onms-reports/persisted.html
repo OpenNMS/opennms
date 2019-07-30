@@ -1,8 +1,9 @@
 <div class="mx-2 my-2">
     <div class="">
-        <button class="btn btn-secondary" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
+        <button class="btn btn-secondary" id="action.refresh" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
         <button class="btn btn-secondary"
                 ng-if="userInfo.isReportDesigner() || userInfo.isAdmin() && persistedReports.length > 0"
+                id="action.deleteAll"
                 mwl-confirm
                 message="Do you really want to delete all persisted reports?"
                 on-confirm="deleteAll()"

@@ -30,7 +30,6 @@ package org.opennms.smoketest.ui.framework;
 
 import java.util.Objects;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 

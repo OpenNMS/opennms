@@ -46,6 +46,7 @@ import org.junit.Test;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
+import org.opennms.smoketest.ui.framework.DeleteAllButton;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -856,12 +857,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
         public void deleteAll() {
             if (!getRules().isEmpty()) {
-                final WebElement deleteAllButton = execute(() -> findElementById("action.deleteAll"));
-                if (deleteAllButton.isDisplayed() && deleteAllButton.isEnabled()) {
-                    deleteAllButton.click();
-                    execute(() -> findElementByXpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]")).click();
-                    sleep(DEFAULT_WAIT_TIME);
-                }
+                new DeleteAllButton(driver).click();
+                sleep(DEFAULT_WAIT_TIME);
             }
         }
 

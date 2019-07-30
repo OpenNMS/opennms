@@ -42,10 +42,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.logging.log4j.util.Strings;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.smoketest.ui.framework.Button;
 import org.opennms.smoketest.ui.framework.CheckBox;
+import org.opennms.smoketest.ui.framework.DeleteAllButton;
 import org.opennms.smoketest.ui.framework.Select;
 import org.opennms.smoketest.ui.framework.TextInput;
 import org.openqa.selenium.By;
@@ -65,8 +68,8 @@ public class DatabaseReportPageIT extends UiPageTest {
 
     @After
     public void after() {
-        new PersistedReportsTab().open().deleteAll();
         new ScheduledReportsTab().open().deleteAll();
+        new PersistedReportsTab().open().deleteAll();
     }
 
     @Test
@@ -79,7 +82,7 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         // Verify Creation
         final File downloadedFile = new File(getDownloadsFolder(), EarlyMorningReport.filename(Formats.PDF));
-        await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(downloadedFile::exists);
+        await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> downloadedFile.exists());
     }
 
     @Test
@@ -90,12 +93,17 @@ public class DatabaseReportPageIT extends UiPageTest {
                 .deliverReport(DeliveryOptions.DEFAULTS);
 
         // Verify delivery
-        final Optional<PersistedReportElement> any = new PersistedReportsTab()
-                .open()
-                .getPersistedReports().stream()
-                .filter((input) -> input.title.equals(EarlyMorningReport.id + " admin"))
-                .findAny();
-        assertThat(any.isPresent(), is(true));
+        await().atMost(2, MINUTES).pollInterval(5, SECONDS)
+                .until( () -> {
+                        new Button(driver, "action.refresh").click();
+                        final Optional<PersistedReportElement> any = new PersistedReportsTab()
+                            .open()
+                            .getPersistedReports().stream()
+                            .filter((input) -> input.title.equals(EarlyMorningReport.id + " admin"))
+                            .findAny();
+                        return any.isPresent();
+                    }
+                );
     }
 
     @Test
@@ -110,23 +118,9 @@ public class DatabaseReportPageIT extends UiPageTest {
         final Optional<ReportScheduleElement> any = new ScheduledReportsTab()
                 .open()
                 .getScheduledReports().stream()
-                .filter((input) -> input.templateName.equals(EarlyMorningReport.name) && input.cronExpression.equals(cronExpression))
+                .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(cronExpression))
                 .findAny();
         assertThat(any.isPresent(), is(true));
-    }
-
-    @Test
-    public void testDeliver() {
-        findElementByXpath("//td[@class=\"o-report-deliver\"]/a").click();
-        List<WebElement> elements = driver.findElements(By.xpath("//h3[contains(text(), 'Error')]"));
-        assertEquals(0, elements.size());
-    }
-
-    @Test
-    public void testSchedule() {
-        findElementByXpath("//td[@class=\"o-report-schedule\"]/a").click();
-        List<WebElement> elements = driver.findElements(By.xpath("//h3[contains(text(), 'Error')]"));
-        assertEquals(0, elements.size());
     }
 
     private interface EarlyMorningReport {
@@ -134,7 +128,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         String id = "local_Early-Morning-Report";
 
         static String filename(String format) {
-            return id + format.toLowerCase();
+            return id + "." + format.toLowerCase();
         }
     }
 
@@ -160,7 +154,7 @@ public class DatabaseReportPageIT extends UiPageTest {
     private class ReportTemplateTab {
 
         public ReportTemplateTab select(String reportName) {
-            final WebElement element = findElementByLink(reportName);
+            final WebElement element = findElementByXpath(String.format("//a/h5[text() = '%s']", reportName));
             element.click();
             return this;
         }
@@ -172,23 +166,24 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportTemplateTab open() {
-            findElementByXpath("//a[@data-name='report-templates']").click();
-            // TODO MVR verify for is active
+            getElement().click();
+            assertThat(isActive(), Matchers.is(true));
             return this;
         }
 
-        private String getSelectedTemplate() {
-            final List<WebElement> elements = getDriver().findElements(By.xpath("//div[contains(@class, 'list-group')]//a[contains(@class, 'list-group-item') and contains(@class, 'active')]/h5"));
-            if (!elements.isEmpty()) {
-                return elements.get(0).getText();
-            }
-            return null;
+        public WebElement getElement() {
+            return execute(() -> findElementByXpath("//a[@data-name='report-templates']"));
+        }
+
+        public boolean isActive() {
+            return getElement().getAttribute("class").contains("active");
         }
 
         public ReportTemplateTab createReport() {
             ensureReportIsSelected();
-            // TODO MVR verify for text Create Report
-            findElementById("execute").click();
+            final WebElement executeButton = execute(() -> findElementById("execute"));
+            assertThat(executeButton.getText(), Matchers.is("Create Report"));
+            executeButton.click();
             return this;
         }
 
@@ -197,9 +192,12 @@ public class DatabaseReportPageIT extends UiPageTest {
             applyDeliveryOptions(options);
 
             // Finally deliver the report
-            // TODO MVR verify for text Deliver Report
-            findElementById("execute").click();
+            final WebElement executeButton = execute(() -> findElementById("execute"));
+            assertThat(executeButton.getText(), Matchers.is("Deliver Report"));
+            executeButton.click();
 
+            // Close dialogue
+            execute(() -> findElementByXpath("//div[@class='modal-body']//button[text()='Show me']")).click();
             return this;
         }
 
@@ -209,10 +207,14 @@ public class DatabaseReportPageIT extends UiPageTest {
 
             new CheckBox(driver, "createSchedule").setSelected(true);
             new CheckBox(driver, "scheduleTypeCustom").setSelected(true);
-            new TextInput(driver, "TODO MVR").setInput(cronExpression);
+            new TextInput(driver, "customCronExpressionInput").setInput(cronExpression);
 
-            // TODO MVR verify for text Schedule Report
-            findElementById("execute").click();
+            final WebElement executeButton = execute(() -> findElementById("execute"));
+            assertThat(executeButton.getText(), Matchers.is("Schedule Report"));
+            executeButton.click();
+
+            // Close dialogue
+            execute(() -> findElementByXpath("//div[@class='modal-body']//button[text()='Show me']")).click();
             return this;
         }
 
@@ -235,7 +237,7 @@ public class DatabaseReportPageIT extends UiPageTest {
             persistCheckbox.setSelected(options.persistToDisk);
 
             // Send Mail?
-            final CheckBox recipientCheckbox = new CheckBox(getDriver(), "");
+            final CheckBox recipientCheckbox = new CheckBox(getDriver(), "sendMailToggle");
             recipientCheckbox.setSelected(!options.emailRecipients.isEmpty());
             if (!options.emailRecipients.isEmpty()) {
                 final String emailRecipients = Strings.join(options.emailRecipients, ',');
@@ -245,23 +247,39 @@ public class DatabaseReportPageIT extends UiPageTest {
             // Format
             new Select(driver, "format").setValueByText(options.format);
         }
+
+        private String getSelectedTemplate() {
+            final List<WebElement> elements = getDriver().findElements(By.xpath("//div[contains(@class, 'list-group')]//a[contains(@class, 'list-group-item') and contains(@class, 'active')]/h5"));
+            if (!elements.isEmpty()) {
+                return elements.get(0).getText();
+            }
+            return null;
+        }
     }
 
     private class PersistedReportsTab {
 
         public PersistedReportsTab open() {
-            findElementByXpath("//a[@data-name='report-persisted']").click();
-            // TODO MVR verify for is active
+            getElement().click();
+            assertThat(isActive(), Matchers.is(true));
             return this;
         }
 
+        public WebElement getElement() {
+            return execute(() -> findElementByXpath("//a[@data-name='report-persisted']"));
+        }
+
+        public boolean isActive() {
+            return getElement().getAttribute("class").contains("active");
+        }
+
         public List<PersistedReportElement> getPersistedReports() {
+            // TODO MVR make this a Table object
             final List<PersistedReportElement> results = Lists.newArrayList();
-            final List<WebElement> rows = driver.findElementsByXPath("//table/tbody/tr");
+            final List<WebElement> rows = execute(() -> driver.findElementsByXPath("//table/tbody/tr"));
             for (WebElement eachRow : rows) {
                 final List<WebElement> columns = eachRow.findElements(By.xpath("./td"));
                 final PersistedReportElement element = new PersistedReportElement();
-                // element.setLocatorId(); // TODO MVR
                 element.setTitle(columns.get(2).getText());
                 element.setReportId(columns.get(3).getText());
                 element.setRunDate(columns.get(4).getText());
@@ -271,10 +289,8 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public void deleteAll() {
-            final WebElement deleteAllButton = driver.findElementById("action.deleteAll");
-            if (deleteAllButton.isDisplayed() && deleteAllButton.isEnabled()) {
-                deleteAllButton.click();
-                findElementByXpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]").click();
+            if (!getPersistedReports().isEmpty()) {
+                new DeleteAllButton(driver).click();
                 await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> getPersistedReports().isEmpty());
             }
         }
@@ -283,33 +299,38 @@ public class DatabaseReportPageIT extends UiPageTest {
     private class ScheduledReportsTab {
 
         public ScheduledReportsTab open() {
-            findElementByXpath("//a[@data-name='report-schedules']").click();
-            // TODO MVR verify for is active
+            getElement().click();
+            assertThat(isActive(), Matchers.is(true));
             return this;
+        }
+
+        public WebElement getElement() {
+            return execute(() -> findElementByXpath("//a[@data-name='report-schedules']"));
+        }
+
+        public boolean isActive() {
+            return getElement().getAttribute("class").contains("active");
         }
 
         public List<ReportScheduleElement> getScheduledReports() {
             // TODO MVR make this a Table object
             final List<ReportScheduleElement> results = Lists.newArrayList();
-            final List<WebElement> rows = driver.findElementsByXPath("//table/tbody/tr");
+            final List<WebElement> rows = execute(() -> driver.findElementsByXPath("//table/tbody/tr"));
             for (WebElement eachRow : rows) {
                 final List<WebElement> columns = eachRow.findElements(By.xpath("./td"));
                 final ReportScheduleElement element = new ReportScheduleElement();
                 element.setTemplateName(columns.get(1).getText());
                 element.setFormat(columns.get(2).getText());
-                element.setCronExpression(columns.get(4).getText());
-                element.setTriggerName(columns.get(5).getText());
+                element.setCronExpression(columns.get(5).getText());
+                element.setTriggerName(columns.get(6).getText());
                 results.add(element);
             }
             return results;
         }
 
-        // TODO MVR maybe this should be a reusable DeleteAll-Button (-:
         public void deleteAll() {
-            final WebElement deleteAllButton = driver.findElementById("action.deleteAll");
-            if (deleteAllButton.isDisplayed() && deleteAllButton.isEnabled()) {
-                deleteAllButton.click();
-                findElementByXpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]").click();
+            if (!getScheduledReports().isEmpty()) {
+                new DeleteAllButton(driver).click();
                 await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> getScheduledReports().isEmpty());
             }
         }

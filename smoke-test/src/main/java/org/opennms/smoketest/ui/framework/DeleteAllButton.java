@@ -28,15 +28,25 @@
 
 package org.opennms.smoketest.ui.framework;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
-public class Button extends UiElement {
+public class DeleteAllButton extends UiElement {
 
-    public Button(WebDriver driver, String elementId) {
+    public DeleteAllButton(WebDriver driver) {
+        this(driver, "action.deleteAll");
+    }
+
+    public DeleteAllButton(WebDriver driver, String elementId) {
         super(driver, elementId);
     }
 
     public void click() {
-        execute(() -> driver.findElement(By.id(elementId))).click();
+        final WebElement deleteAllButton = getElement();
+        if (deleteAllButton.isDisplayed() && deleteAllButton.isEnabled()) {
+            deleteAllButton.click();
+            execute(() -> driver.findElement(By.xpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]"))).click();
+        }
     }
 }
