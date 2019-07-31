@@ -47,3 +47,45 @@ __onms_read_conf() {
     rm "${__onms_read_conf_tmp_file}"
   fi
 }
+
+__onms_is_absolute() {
+  case "$1" in
+    [/]*)
+      return 0
+      ;;
+    *)
+      ;;
+  esac
+  return 1
+}
+
+__onms_get_absolute_path() {
+  __abspath_dir="$(dirname "$1")"
+  __basename="$(basename "$1")"
+  pushd "$__abspath_dir" >/dev/null 2>&1 || exit 1
+    echo "${PWD}/${__basename}"
+  popd >/dev/null 2>&1 || exit 1
+}
+
+__onms_bin_readlink="$(command -v readlink 2>/dev/null)"
+__onms_bin_realpath="$(command -v realpath 2>/dev/null)"
+
+__onms_get_real_path() {
+  if [ -n "$__onms_bin_realpath" ]; then
+    "$__onms_bin_realpath" "$1"
+    return
+  fi
+
+	file_to_find="$(__onms_get_absolute_path "$1")"
+	if [ -n "$__onms_bin_readlink" ] && [ -L "$file_to_find" ]; then
+    __new_file_name="$("$__onms_bin_readlink" "$file_to_find")"
+    if ! __onms_is_absolute "$__new_file_name"; then
+      # we got a relative file, make it absolute again
+      __prefix="$(dirname "$file_to_find")"
+      __new_file_name="${__prefix}/${__new_file_name}"
+    fi
+		__onms_get_real_path "${__new_file_name}"
+		return
+	fi
+	echo "$file_to_find"
+}
