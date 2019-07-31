@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest.containers;
+package org.opennms.plugins.elasticsearch.rest;
 
-import org.opennms.smoketest.utils.TestContainerUtils;
-import org.testcontainers.containers.Network;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
+import io.searchbox.core.SearchResult;
 
-public class ElasticsearchContainer extends org.testcontainers.elasticsearch.ElasticsearchContainer {
+public class SearchResultUtils {
+    private static final String[] PATH_TO_TOTAL = new String[]{"hits", "total", "value"};
 
-    public ElasticsearchContainer() {
-        super("docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0");
-        withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m")
-                .withNetwork(Network.SHARED)
-                .withNetworkAliases(OpenNMSContainer.ELASTIC_ALIAS)
-                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
+    public static long getTotal(SearchResult result) {
+        Long total = -1L;
+        JsonElement obj = getPath(result.getJsonObject(), PATH_TO_TOTAL);
+        if (obj != null) total = obj.getAsLong();
+        return total;
+    }
+
+    public static JsonElement getPath(JsonObject jo, String[] path) {
+        JsonElement retval = null;
+        if (jo != null) {
+            JsonElement obj = jo;
+            for (String component : path) {
+                if (obj == null) break;
+                obj = ((JsonObject) obj).get(component);
+            }
+            retval = obj;
+        }
+        return retval;
     }
 
 }

@@ -171,7 +171,7 @@
       <scope>test</scope>
     </dependency>
     <!--
-      A parent module defines netty-all with a specific verison, but Elastic requires
+      A parent module defines netty-all with a specific version, but Elastic requires
       a different version. We overwrite it here manually so that the proper dependencies
       are pulled in.
     -->
@@ -226,7 +226,7 @@
     <dependency>
       <groupId>org.opennms.elasticsearch</groupId>
       <artifactId>elasticsearch-drift-plugin</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>7.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
