@@ -69,7 +69,7 @@
                                 <feature>sentinel-coordination-zookeeper</feature>
                                 <feature>sentinel-coordination-shell</feature>
                                 <feature>sentinel-newts</feature>
-                                <feature>opennms-kvstore-noop</feature>
+                                <feature>sentinel-kvstore-noop</feature>
                                 <feature>sentinel-kvstore-cassandra</feature>
 
 
@@ -429,6 +429,11 @@
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.dao-shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

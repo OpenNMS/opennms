@@ -199,13 +199,13 @@ workflows:
   build-deploy:
     jobs:
       - build
-      - package-build-horizon:
+      - horizon-package-build:
           requires:
             - build
-      - package-build-minion:
+      - minion-package-build:
           requires:
             - build
-      - package-build-sentinel:
+      - sentinel-package-build:
           requires:
             - build
       - integration-test:
@@ -213,9 +213,9 @@ workflows:
             - build
       - smoke-test-full:
           requires:
-            - package-build-horizon
-            - package-build-minion
-            - package-build-sentinel
+            - horizon-package-build
+            - minion-package-build
+            - sentinel-package-build
           filters:
             branches:
               only:
@@ -227,9 +227,9 @@ workflows:
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
-            - package-build-horizon
-            - package-build-minion
-            - package-build-sentinel
+            - horizon-package-build
+            - minion-package-build
+            - sentinel-package-build
           filters:
             branches:
               ignore:
@@ -239,25 +239,25 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
-      - publish-horizon-oci:
+      - horizon-publish-oci:
           requires:
-            - package-build-horizon
+            - horizon-package-build
           filters:
             branches:
               only:
                 - master
                 - develop
-      - publish-minion-oci:
+      - minion-publish-oci:
           requires:
-            - package-build-minion
+            - minion-package-build
           filters:
             branches:
               only:
                 - master
                 - develop
-      - publish-sentinel-oci:
+      - sentinel-publish-oci:
           requires:
-            - package-build-sentinel
+            - sentinel-package-build
           filters:
             branches:
               only:
@@ -273,7 +273,7 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
-  package-build-horizon:
+  horizon-package-build:
     executor: build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     resource_class: large
@@ -303,10 +303,10 @@ jobs:
           root: ~/
           paths:
             - project/opennms-container/horizon/images/
-  package-build-minion:
+  minion-package-build:
     executor: build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if package-build-horizon is under 15 min
+    # Will need to increase resource class if horizon-package-build is under 15 min
     resource_class: medium+
     steps:
       - attach_workspace:
@@ -335,10 +335,10 @@ jobs:
           root: ~/
           paths:
             - project/opennms-container/minion/images/
-  package-build-sentinel:
+  sentinel-package-build:
     executor: build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if package-build-horizon is under 19 min
+    # Will need to increase resource class if horizon-package-build is under 19 min
     resource_class: medium+
     steps:
       - attach_workspace:
@@ -367,7 +367,7 @@ jobs:
           root: ~/
           paths:
             - project/opennms-container/sentinel/images/
-  publish-horizon-oci:
+  horizon-publish-oci:
     executor: build-executor
     steps:
       - attach_workspace:
@@ -382,7 +382,7 @@ jobs:
             docker image load -i images/container.oci
             ./tag.sh
             ./publish.sh
-  publish-minion-oci:
+  minion-publish-oci:
     executor: build-executor
     steps:
       - attach_workspace:
@@ -397,7 +397,7 @@ jobs:
             docker image load -i images/container.oci
             ./tag.sh
             ./publish.sh
-  publish-sentinel-oci:
+  sentinel-publish-oci:
     executor: build-executor
     steps:
       - attach_workspace:

@@ -26,24 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.threshd;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.features.distributed.kvstore.noop.NoOpKVStore;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 
-public class MockThresholdingService implements ThresholdingService {
+public class MockSession {
+    private static ThresholdingSession mockSession;
 
-    @Override
-    public ThresholdingSession createSession(int m_nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters) {
-        ThresholdingSession mockSession = mock(ThresholdingSession.class);
-        when(mockSession.getKey()).thenReturn(mock(ThresholdingSessionKey.class));
+    static ThresholdingSession getSession() {
+        if (mockSession == null) {
+            mockSession = mock(ThresholdingSession.class);
+
+            ThresholdingSessionKey mockKey = mock(ThresholdingSessionKey.class);
+            when(mockKey.getNodeId()).thenReturn(1);
+            when(mockKey.getLocation()).thenReturn("1.1.1.1");
+            when(mockKey.getResource()).thenReturn("resource");
+            when(mockKey.getServiceName()).thenReturn("service");
+
+            when(mockSession.getKey()).thenReturn(mockKey);
+
+            when(mockSession.getKVStore()).thenReturn(NoOpKVStore.getInstance());
+
+        }
+
         return mockSession;
     }
-
 }

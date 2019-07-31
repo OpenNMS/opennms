@@ -37,6 +37,11 @@
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.api</artifactId>
-      </dependency>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

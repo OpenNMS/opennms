@@ -10,22 +10,26 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
-OPENNMS_HOME=/opt/opennms
+umask 002
+OPENNMS_HOME="/opt/opennms"
 
-OPENNMS_DATASOURCES_TPL=/root/opennms-datasources.xml.tpl
-OPENNMS_DATASOURCES_CFG=${OPENNMS_HOME}/etc/opennms-datasources.xml
-OPENNMS_OVERLAY=/opt/opennms-overlay
-OPENNMS_OVERLAY_ETC=/opt/opennms-etc-overlay
-OPENNMS_OVERLAY_JETTY_WEBINF=/opt/opennms-jetty-webinf-overlay
+OPENNMS_DATASOURCES_TPL="/tmp/opennms-datasources.xml.tpl"
+OPENNMS_DATASOURCES_CFG="${OPENNMS_HOME}/etc/opennms-datasources.xml"
+OPENNMS_OVERLAY="/opt/opennms-overlay"
+OPENNMS_OVERLAY_ETC="/opt/opennms-etc-overlay"
+OPENNMS_OVERLAY_JETTY_WEBINF="/opt/opennms-jetty-webinf-overlay"
 
-OPENNMS_UPGRADE_GUARD=${OPENNMS_HOME}/etc/do-upgrade
-OPENNMS_CONFIGURED_GUARD=${OPENNMS_HOME}/etc/configured
+OPENNMS_UPGRADE_GUARD="${OPENNMS_HOME}/etc/do-upgrade"
+OPENNMS_CONFIGURED_GUARD="${OPENNMS_HOME}/etc/configured"
 
-OPENNMS_KARAF_TPL=/root/org.apache.karaf.shell.cfg.tpl
-OPENNMS_KARAF_CFG=${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg
+OPENNMS_KARAF_TPL="/tmp/org.apache.karaf.shell.cfg.tpl"
+OPENNMS_KARAF_CFG="${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg"
 
-OPENNMS_NEWTS_TPL=/root/newts.properties.tpl
-OPENNMS_NEWTS_PROPERTIES=${OPENNMS_HOME}/etc/opennms.properties.d/newts.properties
+OPENNMS_NEWTS_TPL="/tmp/newts.properties.tpl"
+OPENNMS_NEWTS_PROPERTIES="${OPENNMS_HOME}/etc/opennms.properties.d/newts.properties"
+
+OPENNMS_TRAPD_TPL="/tmp/trapd-configuration.xml.tpl"
+OPENNMS_TRAPD_CFG="${OPENNMS_HOME}/etc/trapd-configuration.xml"
 
 # Error codes
 E_ILLEGAL_ARGS=126
@@ -53,12 +57,17 @@ usage() {
   echo ""
 }
 
+install() {
+  echo "Run OpenNMS install command to initialize or upgrade the database schema and configurations."
+  ${JAVA_HOME}/bin/java -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -cp "${OPENNMS_HOME}/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "${@}" || exit ${E_INIT_CONFIG}
+}
+
 doInitOrUpgrade() {
   if [ -f ${OPENNMS_UPGRADE_GUARD} ]; then
     echo "Enforce config and database update."
     rm -rf ${OPENNMS_CONFIGURED_GUARD}
-    ${OPENNMS_HOME}/bin/runjava -s
-    ${OPENNMS_HOME}/bin/install -dis
+    ${OPENNMS_HOME}/bin/runjava -s || exit ${E_INIT_CONFIG}
+    install -dis || exit ${E_INIT_CONFIG}
     rm -rf ${OPENNMS_UPGRADE_GUARD}
     rm -rf ${OPENNMS_OVERLAY_ETC}/do-upgrade
     rm -rf ${OPENNMS_OVERLAY}/etc/do-upgrade
@@ -81,8 +90,30 @@ initConfig() {
     echo "Initialize database and Karaf configuration and do install or upgrade the database schema."
     envsubst < ${OPENNMS_DATASOURCES_TPL} > ${OPENNMS_DATASOURCES_CFG}
     envsubst < ${OPENNMS_KARAF_TPL} > ${OPENNMS_KARAF_CFG}
+    envsubst < ${OPENNMS_TRAPD_TPL} > ${OPENNMS_TRAPD_CFG}
     ${OPENNMS_HOME}/bin/runjava -s || exit ${E_INIT_CONFIG}
-    ${OPENNMS_HOME}/bin/install -dis || exit ${E_INIT_CONFIG}
+    install -dis || exit ${E_INIT_CONFIG}
+  fi
+
+  if [[ ! -d /opennms-data/mibs ]]; then
+    echo "Mibs data directory does not exist, create directory in /opennms-data/mibs"
+    mkdir /opennms-data/mibs || exit ${E_INIT_CONFIG}
+  else
+    echo "Use existing Mibs data directory."
+  fi
+
+  if [[ ! -d /opennms-data/reports ]]; then
+    echo "Reports data directory does not exist, create directory in /opennms-data/reports"
+    mkdir /opennms-data/reports || exit ${E_INIT_CONFIG}
+  else
+    echo "Use existing Reports data directory."
+  fi
+
+  if [[ ! -d /opennms-data/rrd ]]; then
+    echo "RRD data directory does not exist, create directory in /opennms-data/rrd"
+    mkdir /opennms-data/rrd || exit ${E_INIT_CONFIG}
+  else
+    echo "Use existing RRD data directory."
   fi
 }
 
@@ -99,7 +130,7 @@ applyOverlayConfig() {
   if [ -d "${OPENNMS_OVERLAY}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY})" ]; then
     echo "Apply custom configuration from ${OPENNMS_OVERLAY}."
     # Use rsync so that we can overlay files into directories that are symlinked
-    rsync -K -a ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/ || exit ${E_INIT_CONFIG}
+    rsync -K -rl ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/ || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY}. Use default configuration."
   fi
@@ -148,12 +179,17 @@ start() {
   exec ${JAVA_HOME}/bin/java ${OPENNMS_JAVA_OPTS} ${JAVA_OPTS} -jar /opt/opennms/lib/opennms_bootstrap.jar start
 }
 
+configTester() {
+  echo "Run config tester to validate existing configuration files."
+  ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
+}
+
 testConfig() {
   shift
   if [ "${#}" == "0" ]; then
-    ${OPENNMS_HOME}/bin/config-tester -h
+    configTester -h
   else
-    ${OPENNMS_HOME}/bin/config-tester "${@}" || exit ${E_INIT_CONFIG}
+    configTester "${@}"
   fi
 }
 

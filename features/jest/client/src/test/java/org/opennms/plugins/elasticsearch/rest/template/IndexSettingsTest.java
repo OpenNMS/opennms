@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.plugins.elasticsearch.rest.template;
 
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
-public class MockThresholdingSession implements ThresholdingSession {
+import org.junit.Test;
 
-    @Override
-    public void close() throws Exception {
+public class IndexSettingsTest {
+
+    @Test
+    public void verifyStringValues() {
+        IndexSettings indexSettings = new IndexSettings();
+        indexSettings.setRoutingPartitionSize("");
+        indexSettings.setRefreshInterval("");
+        indexSettings.setNumberOfShards("");
+        indexSettings.setNumberOfReplicas("");
+
+        assertThat(indexSettings.isEmpty(), is(true));
     }
-
-    @Override
-    public void accept(CollectionSet collectionSet) {
-    }
-
 }

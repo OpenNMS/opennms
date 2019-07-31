@@ -64,11 +64,13 @@ import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
@@ -108,7 +110,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticFlowRepository.class);
 
-    private static final String TYPE = "netflow";
+    private static final String INDEX_NAME = "netflow";
 
     private final JestClient client;
 
@@ -160,8 +162,10 @@ public class ElasticFlowRepository implements FlowRepository {
     private final SnmpInterfaceDao snmpInterfaceDao;
 
     // An OpenNMS or Sentinel Identity.
-    private Identity identity;
-    private TracerRegistry tracerRegistry;
+    private final Identity identity;
+    private final TracerRegistry tracerRegistry;
+
+    private final IndexSettings indexSettings;
 
     /**
      * Cache for marking nodes and interfaces as having flows.
@@ -173,7 +177,7 @@ public class ElasticFlowRepository implements FlowRepository {
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
                                  TransactionOperations transactionOperations, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
-                                 Identity identity, TracerRegistry tracerRegistry,
+                                 Identity identity, TracerRegistry tracerRegistry, IndexSettings indexSettings,
                                  int bulkRetryCount, long maxFlowDurationMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
@@ -183,9 +187,10 @@ public class ElasticFlowRepository implements FlowRepository {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.bulkRetryCount = bulkRetryCount;
-        this.indexSelector = new IndexSelector(TYPE, indexStrategy, maxFlowDurationMs);
+        this.indexSelector = new IndexSelector(indexSettings, INDEX_NAME, indexStrategy, maxFlowDurationMs);
         this.identity = identity;
         this.tracerRegistry = tracerRegistry;
+        this.indexSettings = Objects.requireNonNull(indexSettings);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logConversionTimer = metricRegistry.timer("logConversion");
@@ -242,10 +247,9 @@ public class ElasticFlowRepository implements FlowRepository {
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
-                    final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(flowDocument.getTimestamp()));
+                    final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
                     final Index.Builder indexBuilder = new Index.Builder(flowDocument)
-                            .index(index)
-                            .type(TYPE);
+                            .index(index);
                     bulkBuilder.addAction(indexBuilder.build());
                 }
                 return new BulkWrapper(bulkBuilder);
@@ -310,7 +314,7 @@ public class ElasticFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
         final String query = searchQueryProvider.getFlowCountQuery(filters);
-        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(SearchResult::getTotal);
+        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(SearchResultUtils::getTotal);
     }
 
     @Override
@@ -753,8 +757,7 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     private CompletableFuture<SearchResult> searchAsync(String query, TimeRangeFilter timeRangeFilter) {
-        Search.Builder builder = new Search.Builder(query)
-                .addType(TYPE);
+        Search.Builder builder = new Search.Builder(query);
         if(timeRangeFilter != null) {
             final List<String> indices = indexSelector.getIndexNames(timeRangeFilter.getStart(), timeRangeFilter.getEnd());
             builder.addIndices(indices);
@@ -892,16 +895,8 @@ public class ElasticFlowRepository implements FlowRepository {
         return identity;
     }
 
-    public void setIdentity(Identity identity) {
-        this.identity = identity;
-    }
-
     public TracerRegistry getTracerRegistry() {
         return tracerRegistry;
-    }
-
-    public void setTracerRegistry(TracerRegistry tracerRegistry) {
-        this.tracerRegistry = tracerRegistry;
     }
 
     public void start() {

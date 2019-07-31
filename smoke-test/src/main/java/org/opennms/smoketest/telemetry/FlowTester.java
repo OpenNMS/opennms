@@ -46,6 +46,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
+import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
 import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,8 +163,8 @@ public class FlowTester {
                                     + "}}}}")
                             .addIndex("netflow-*")
                             .build());
-                    LOG.info("Response {} with {} flow documents: {}", response.isSucceeded() ? "successful" : "failed", response.getTotal(), response.getJsonString());
-                    final boolean foundAllFlowsForProtocol = response.isSucceeded() && response.getTotal() >= numFlowsExpected;
+                    LOG.info("Response {} with {} flow documents: {}", response.isSucceeded() ? "successful" : "failed", SearchResultUtils.getTotal(response), response.getJsonString());
+                    final boolean foundAllFlowsForProtocol = response.isSucceeded() && SearchResultUtils.getTotal(response) >= numFlowsExpected;
 
                     if (!foundAllFlowsForProtocol) {
                         // If we haven't found them all yet, try sending all the packets for this protocol again.

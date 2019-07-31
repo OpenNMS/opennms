@@ -26,24 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.threshd.api;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+public interface ThresholdingSessionKey {
+    String getLocation();
 
-import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.threshd.api.ThresholdingService;
-import org.opennms.netmgt.threshd.api.ThresholdingSession;
-import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
+    int getNodeId();
 
-public class MockThresholdingService implements ThresholdingService {
+    String getServiceName();
 
-    @Override
-    public ThresholdingSession createSession(int m_nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters) {
-        ThresholdingSession mockSession = mock(ThresholdingSession.class);
-        when(mockSession.getKey()).thenReturn(mock(ThresholdingSessionKey.class));
-        return mockSession;
-    }
-
+    String getResource();
 }

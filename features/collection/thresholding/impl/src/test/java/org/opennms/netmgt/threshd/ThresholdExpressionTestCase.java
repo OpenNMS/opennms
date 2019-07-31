@@ -209,7 +209,7 @@ public class ThresholdExpressionTestCase extends TestCase {
             assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
         }
 
-        entity.addThreshold(wrapper);
+        entity.addThreshold(wrapper, MockSession.getSession());
         Collection<String> dataSources=entity.getRequiredDatasources();
         final StringBuilder dsStringBuffer = new StringBuilder();
         for (String dataSource : dataSources) {

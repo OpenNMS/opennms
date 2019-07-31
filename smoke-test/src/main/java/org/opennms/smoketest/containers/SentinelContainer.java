@@ -201,7 +201,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         
         switch (model.getKeyValueStoreStrategy()) {
             case NOOP:
-                featuresOnBoot.add("opennms-kvstore-noop");
+                featuresOnBoot.add("sentinel-kvstore-noop");
                 break;
             case NEWTS_CASSANDRA:
                 featuresOnBoot.add("sentinel-kvstore-cassandra");

@@ -41,7 +41,7 @@ import org.opennms.plugins.elasticsearch.rest.template.Version;
 
 public class MergingTemplateLoaderTest {
 
-    private static final Version version = new Version(6,2,3);
+    private static final Version version = new Version(7,2,0);
 
     @Test
     public void verifyMergingEmpty() throws IOException {

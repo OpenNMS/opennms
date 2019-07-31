@@ -31,11 +31,10 @@ package org.opennms.netmgt.flows.elastic;
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
-
 
 import java.util.Optional;
 
@@ -54,7 +53,9 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
+import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,17 +68,9 @@ import io.searchbox.core.SearchResult;
 
 public class DefaultDirectionIT {
     private static Logger LOG = LoggerFactory.getLogger(DefaultDirectionIT.class);
-    private static final String HTTP_PORT = "9205";
-    private static final String HTTP_TRANSPORT_PORT = "9305";
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-            .withDefaults()
-            .withSetting("http.enabled", true)
-            .withSetting("http.port", HTTP_PORT)
-            .withSetting("http.type", "netty4")
-            .withSetting("transport.type", "netty4")
-            .withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
             .withStartDelay(0)
             .withManualStartup()
     );
@@ -100,7 +93,7 @@ public class DefaultDirectionIT {
         // start ES
         elasticSearchRule.startServer();
 
-        final RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT);
+        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
 
         try (final JestClient jestClient = restClientFactory.createClient()) {
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
@@ -112,7 +105,9 @@ public class DefaultDirectionIT {
 
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY, documentEnricher,
-                            classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(), new MockIdentity(), new MockTracerRegistry(),3, 12000), jestClient);
+                            classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
+                            new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),
+                            3, 12000), jestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),
                     FlowDocumentTest.getMockFlowSource());
@@ -120,12 +115,12 @@ public class DefaultDirectionIT {
             // wait for entries to show up
             with().pollInterval(5, SECONDS).await().atMost(1, MINUTES).until(() -> {
                 final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
-                LOG.info("Response: {} {} ", searchResult.isSucceeded() ? "Success" : "Failure", searchResult.getTotal());
-                return searchResult.getTotal() > 0;
+                LOG.info("Response: {} {} ", searchResult.isSucceeded() ? "Success" : "Failure", SearchResultUtils.getTotal(searchResult));
+                return SearchResultUtils.getTotal(searchResult) > 0;
             });
 
             final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
-            assertNotEquals(new Long(0), searchResult.getTotal());
+            assertNotEquals(0L, SearchResultUtils.getTotal(searchResult));
 
             // check whether the default value is applied
             final JSONParser parser = new JSONParser();
