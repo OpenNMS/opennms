@@ -10,6 +10,7 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
+umask 002
 OPENNMS_HOME="/opt/opennms"
 
 OPENNMS_DATASOURCES_TPL="/tmp/opennms-datasources.xml.tpl"
