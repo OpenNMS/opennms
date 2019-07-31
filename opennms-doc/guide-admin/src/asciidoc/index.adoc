@@ -273,6 +273,7 @@ include::text/operation/daemon-config-files/pollerd.adoc[]
 [[ga-opennms-system-properties]]
 == System Properties
 include::text/system-properties/introduction.adoc[]
+include::text/system-properties/system-proxies.adoc[]
 
 [[ga-ticketing]]
 == Ticketing
