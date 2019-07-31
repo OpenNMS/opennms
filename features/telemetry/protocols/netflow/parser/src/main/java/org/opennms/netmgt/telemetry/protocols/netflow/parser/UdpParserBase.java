@@ -86,7 +86,7 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
 
     @Override
     public void start(final ScheduledExecutorService executorService) {
-        super.start();
+        super.start(executorService);
         this.sessionManager = new UdpSessionManager(this.templateTimeout);
         this.housekeepingFuture = executorService.scheduleAtFixedRate(this.sessionManager::doHousekeeping,
                 HOUSEKEEPING_INTERVAL,

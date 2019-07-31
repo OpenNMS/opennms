@@ -84,7 +84,7 @@ public class EthernetHeader {
         this.rawHeader = rawHeader;
     }
 
-    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment svcs) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         if (this.vlan != null) {
             bsonWriter.writeInt64("vlan", this.vlan);

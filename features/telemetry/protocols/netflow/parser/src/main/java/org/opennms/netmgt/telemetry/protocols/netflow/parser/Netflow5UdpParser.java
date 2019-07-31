@@ -33,7 +33,6 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -76,13 +75,4 @@ public class Netflow5UdpParser extends ParserBase implements UdpParser, Dispatch
         return this.transmit(packet, remoteAddress);
     }
 
-    @Override
-    public void start(final ScheduledExecutorService executorService) {
-        super.start();
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-    }
 }

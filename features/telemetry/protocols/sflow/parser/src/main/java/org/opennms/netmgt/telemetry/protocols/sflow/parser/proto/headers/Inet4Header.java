@@ -130,7 +130,7 @@ public class Inet4Header {
         return dstAddress;
     }
 
-    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment svcs) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt32("tos", this.tos);
         bsonWriter.writeInt32("length", this.totalLength);
@@ -138,12 +138,12 @@ public class Inet4Header {
 
         bsonWriter.writeStartDocument("src_ip");
         bsonWriter.writeString("address", this.srcAddress.getHostAddress());
-        svcs.getHostnameFor(this.srcAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
+        enr.getHostnameFor(this.srcAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
         bsonWriter.writeEndDocument();
 
         bsonWriter.writeStartDocument("dst_ip");
         bsonWriter.writeString("address", this.dstAddress.getHostAddress());
-        svcs.getHostnameFor(this.dstAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
+        enr.getHostnameFor(this.dstAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
         bsonWriter.writeEndDocument();
 
         if (this.srcPort != null) {

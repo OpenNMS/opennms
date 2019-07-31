@@ -31,7 +31,6 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -54,16 +53,6 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
         super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
-    }
-
-    @Override
-    public void start(final ScheduledExecutorService executorService) {
-        super.start();
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
     }
 
     @Override

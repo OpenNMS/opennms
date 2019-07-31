@@ -39,6 +39,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -53,6 +54,7 @@ import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -80,7 +82,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class ParserBase {
+public class ParserBase implements Parser {
     private static final Logger LOG = LoggerFactory.getLogger(ParserBase.class);
 
     private static final int DEFAULT_NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
@@ -138,7 +140,8 @@ public class ParserBase {
         setThreads(DEFAULT_NUM_THREADS);
     }
 
-    public void start() {
+    @Override
+    public void start(ScheduledExecutorService executorService) {
         executor = new ThreadPoolExecutor(
                 // corePoolSize must be > 0 since we use the RejectedExecutionHandler to block when the queue is full
                 1, threads,
@@ -159,10 +162,12 @@ public class ParserBase {
                 });
     }
 
+    @Override
     public void stop() {
         executor.shutdown();
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
