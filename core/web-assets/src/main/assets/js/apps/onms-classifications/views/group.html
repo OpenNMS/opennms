@@ -99,7 +99,11 @@
 
             <tbody ng-model="rules" ui-sortable="sortableRules">
             <tr ng-repeat="rule in rules" class="d-flex">
-                <td class="col-md-1 text-nowrap">{{rule['position']}}</td>
+                <td class="col-md-1 text-nowrap">
+                    <i class="fa fa-bars text-muted"
+                       ng-show="!group.readOnly && query.orderBy === 'position' && query.order === 'asc'"
+                       style="padding-right:1em"></i>{{rule['position']}}
+                </td>
                 <td class="col-md-1 text-nowrap">{{rule['name']}}</td>
                 <td class="col-md-1 text-nowrap">
                     <span ng-repeat="protocol in rule.protocols" class="badge badge-secondary mr-2">{{protocol}}</span>
