@@ -2,5 +2,12 @@
 src = "timeseries.properties.tpl"
 dest = "/opt/opennms/etc/trapd-configuration.xml"
 keys = [
-    "opennms/trapd/port"
+    "opennms/trapd/address",
+    "opennms/trapd/port",
+    "opennms/trapd/newsuspectontrap",
+    "opennms/trapd/includerawmessage",
+    "opennms/trapd/threads",
+    "opennms/trapd/queuesize",
+    "opennms/trapd/batchsize",
+    "opennms/trapd/batchinterval"
 ]
