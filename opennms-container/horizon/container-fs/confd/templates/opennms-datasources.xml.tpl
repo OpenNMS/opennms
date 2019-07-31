@@ -19,12 +19,12 @@
       org.opennms.core.db.HikariCPConnectionFactory
         - Uses HikariCP (http://brettwooldridge.github.io/HikariCP/), a lightweight and extremely fast connection pool
    -->
-  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
-    idleTimeout="600"
-    loginTimeout="3"
-    minPool="50"
-    maxPool="50"
-    maxSize="50" />
+  <connection-pool factory="{{getv "opennms/database/connection/poolfactory" "org.opennms.core.db.HikariCPConnectionFactory"}}"
+    idleTimeout="{{getv "opennms/database/connection/idletimeout" "600"}}"
+    loginTimeout="{{getv "opennms/database/connection/logintimeout" "3"}}"
+    minPool="{{getv "opennms/database/connection/minpool" "50"}}"
+    maxPool="{{getv "opennms/database/connection/maxpool" "50"}}"
+    maxSize="{{getv "opennms/database/connection/maxsize" "50"}}" />
 
   <jdbc-data-source name="opennms"
                     database-name="{{getv "/opennms/dbname" "opennms"}}"

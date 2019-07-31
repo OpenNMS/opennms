@@ -1,5 +1,5 @@
 [template]
-src = "timeseries.properties.tpl"
+src = "trapd-configuration.xml.tpl"
 dest = "/opt/opennms/etc/trapd-configuration.xml"
 keys = [
     "opennms/trapd/address",
