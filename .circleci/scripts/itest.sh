@@ -75,8 +75,8 @@ mvn verify -P'!checkstyle' \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
            -DskipITs=false \
-           -Dcircleci.instance="$CIRCLE_NODE_INDEX" \
-           -Dcircleci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
+           -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
+           -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
            -B \
            "${CCI_FAILURE_OPTION:--fae}" \

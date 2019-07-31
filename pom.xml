@@ -881,8 +881,8 @@
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <rerunFailingTestsCount>${circleci.rerunFailingTestsCount}</rerunFailingTestsCount>
-          <reportsDirectory>${project.build.directory}/surefire-reports-${circleci.instance}</reportsDirectory>
+          <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
+          <reportsDirectory>${project.build.directory}/surefire-reports-${ci.instance}</reportsDirectory>
         </configuration>
       </plugin>
       <plugin>
@@ -907,9 +907,9 @@
           -->
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <rerunFailingTestsCount>${circleci.rerunFailingTestsCount}</rerunFailingTestsCount>
+          <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <skipITs>${skipITs}</skipITs>
-          <reportsDirectory>${project.build.directory}/failsafe-reports-${circleci.instance}</reportsDirectory>
+          <reportsDirectory>${project.build.directory}/failsafe-reports-${ci.instance}</reportsDirectory>
         </configuration>
         <executions>
           <execution>
@@ -1335,8 +1335,8 @@
     <yarnVersion>v1.16.0</yarnVersion>
 
     <!-- CircleCI Settings -->
-    <circleci.instance>0</circleci.instance>
-    <circleci.rerunFailingTestsCount>0</circleci.rerunFailingTestsCount>
+    <ci.instance>0</ci.instance>
+    <ci.rerunFailingTestsCount>0</ci.rerunFailingTestsCount>
   </properties>
 
   <profiles>
@@ -1591,7 +1591,7 @@
                 </goals>
                 <configuration>
                   <append>true</append>
-                  <destFile>${project.build.directory}/jacoco-${circleci.instance}.exec</destFile>
+                  <destFile>${project.build.directory}/jacoco-${ci.instance}.exec</destFile>
                 </configuration>
               </execution>
               <execution>
@@ -1601,7 +1601,7 @@
                 </goals>
                 <configuration>
                   <append>true</append>
-                  <destFile>${project.build.directory}/jacoco-it-${circleci.instance}.exec</destFile>
+                  <destFile>${project.build.directory}/jacoco-it-${ci.instance}.exec</destFile>
                 </configuration>
               </execution>
               <execution>
@@ -1611,8 +1611,8 @@
                   <goal>report</goal>
                 </goals>
                 <configuration>
-                  <dataFile>${project.build.directory}/jacoco-${circleci.instance}.exec</dataFile>
-                  <outputDirectory>${project.build.directory}/jacoco-surefire-${circleci.instance}</outputDirectory>
+                  <dataFile>${project.build.directory}/jacoco-${ci.instance}.exec</dataFile>
+                  <outputDirectory>${project.build.directory}/jacoco-surefire-${ci.instance}</outputDirectory>
                 </configuration>
               </execution>
               <execution>
@@ -1622,8 +1622,8 @@
                   <goal>report-integration</goal>
                 </goals>
                 <configuration>
-                  <dataFile>${project.build.directory}/jacoco-it-${circleci.instance}.exec</dataFile>
-                  <outputDirectory>${project.build.directory}/jacoco-failsafe-${circleci.instance}</outputDirectory>
+                  <dataFile>${project.build.directory}/jacoco-it-${ci.instance}.exec</dataFile>
+                  <outputDirectory>${project.build.directory}/jacoco-failsafe-${ci.instance}</outputDirectory>
                 </configuration>
               </execution>
             </executions>
