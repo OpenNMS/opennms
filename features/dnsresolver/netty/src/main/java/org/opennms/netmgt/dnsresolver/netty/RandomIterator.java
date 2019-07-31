@@ -41,12 +41,10 @@ import java.util.Random;
  */
 public class RandomIterator<T> implements Iterable<T> {
     private final List<T> items;
-    private final int numItems;
     private final Random random;
 
     public RandomIterator(final List<T> coll) {
         items = new ArrayList<>(coll);
-        numItems = items.size();
         random = new Random();
     }
 
@@ -60,7 +58,7 @@ public class RandomIterator<T> implements Iterable<T> {
 
             @Override
             public synchronized T next() {
-                return items.get(random.nextInt(numItems));
+                return items.get(random.nextInt(items.size()));
             }
 
             @Override

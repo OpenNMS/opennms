@@ -75,6 +75,9 @@ import io.netty.resolver.dns.DnsNameResolverTimeoutException;
         }),
         @DNSZone(name = "in-addr.arpa.", entries = {
                 @DNSEntry(hostname = "51.186.242.173", type = "PTR", data = "rnd.opennms.ca.")
+        }),
+        @DNSZone(name = "ip6.arpa.", entries = {
+                @DNSEntry(hostname = "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.0.0.0.9.2.c.f.0.0.8.5.0.0.6.2", type = "PTR", data = "secret.opennms.com.")
         })
 })
 public class NettyDnsResolverTest {
@@ -106,11 +109,13 @@ public class NettyDnsResolverTest {
 
     @Test
     public void canDoReverseLookups() throws UnknownHostException, ExecutionException, InterruptedException {
-        // Our DNS server knows about this one
+        // Our DNS server knows about these
         assertThat(dnsResolver.reverseLookup(InetAddress.getByName("173.242.186.51")).get().get(), equalTo("rnd.opennms.ca"));
+        assertThat(dnsResolver.reverseLookup(InetAddress.getByName("2600:5800:fc29:0003:0000:0000:0000:0001")).get().get(), equalTo("secret.opennms.com"));
+
         // But not about these
         assertThat(dnsResolver.reverseLookup(InetAddress.getByName("1.1.1.1")).get(), equalTo(Optional.empty()));
-        assertThat(dnsResolver.reverseLookup(InetAddressUtils.addr("fe80::")).get(), equalTo(Optional.empty()));
+        assertThat(dnsResolver.reverseLookup(InetAddressUtils.addr("2606:4700:4700::1111")).get(), equalTo(Optional.empty()));
     }
 
     @Test
