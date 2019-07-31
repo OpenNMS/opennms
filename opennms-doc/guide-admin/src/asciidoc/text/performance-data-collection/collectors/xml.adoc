@@ -71,11 +71,11 @@ The request element can have the following child elements:
 
 |===
 | Parameter               | Description                                                           | Required | Default value
-| `timeout`               | The connection and socket timeout in milliseconds                    | optional |
+| `timeout`               | The connection and socket timeout in milliseconds                     | optional |
 | `retries`               | How often should the request be repeated in case of an error?         | optional | 0
 | `use-system-proxy`      | Should the system wide proxy settings be used? The system proxy
                             settings can be configured
-                            in link:#ga-opennms-system-properties[opennms.conf]                   | optional | false
+                            via link:#ga-opennms-system-properties[system properties]             | optional | false
 |===
 
 The referenced `opennms-nodes.xml` file contains:
