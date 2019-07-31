@@ -46,11 +46,13 @@ public class ElasticFeedbackRepositoryInitializer extends DefaultTemplateInitial
     }
 
     protected ElasticFeedbackRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
-        super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings));
+        super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
     }
 
     protected ElasticFeedbackRepositoryInitializer(JestClient client) {
-        super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new DefaultTemplateLoader());
+        super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
+
+
 
 }

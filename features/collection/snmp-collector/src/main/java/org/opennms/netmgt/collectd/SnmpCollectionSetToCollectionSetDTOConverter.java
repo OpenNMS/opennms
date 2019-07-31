@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -95,7 +95,7 @@ public class SnmpCollectionSetToCollectionSetDTOConverter {
                 ResourceType resourceType = ((GenericIndexResourceType)genericResource.getResourceType()).getResourceType();
                 builderResource = new GenericTypeResource(new NodeLevelResource(genericResource.getCollectionAgent().getNodeId())
                         ,resourceType
-                        ,genericResource.getInstance());
+                        ,genericResource.getUnmodifiedInstance());
             } else {
                 // We don't do anything for AliasedResource as discussed with jesse - AliasedResource is not used currently
                 LOG.warn("we don't support {}, will ignore it", collectionResource.getClass().getName());

@@ -34,6 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.opennms.core.test.elastic.ElasticSearchServerConfig.ES_HTTP_PORT;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -64,7 +65,6 @@ import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockTransactionManager;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.api.Conversation;
-import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
@@ -87,20 +87,9 @@ import io.searchbox.client.JestClient;
 
 public class FlowQueryIT {
 
-    private static final String HTTP_PORT = "9205";
-    private static final String HTTP_TRANSPORT_PORT = "9305";
-
     @Rule
-    public ElasticSearchRule elasticServerRule = new ElasticSearchRule(
-            new ElasticSearchServerConfig()
-                    .withDefaults()
-                    .withSetting("http.enabled", true)
-                    .withSetting("http.port", HTTP_PORT)
-                    .withSetting("http.type", "netty4")
-                    .withSetting("transport.type", "netty4")
-                    .withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
-                    .withPlugins(DriftPlugin.class)
-    );
+    public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
+                    .withPlugins(DriftPlugin.class));
 
     private ElasticFlowRepository flowRepository;
 
@@ -112,13 +101,13 @@ public class FlowQueryIT {
         final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
 
         final MetricRegistry metricRegistry = new MetricRegistry();
-        final RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT, null, null);
+        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final JestClient client = restClientFactory.createClient();
         final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
         mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(),3, 12000);
+                new MockIdentity(), new MockTracerRegistry(), new IndexSettings(), 3, 12000);
         final IndexSettings settings = new IndexSettings();
         final ElasticFlowRepositoryInitializer initializer = new ElasticFlowRepositoryInitializer(client, settings);
 
@@ -673,7 +662,7 @@ public class FlowQueryIT {
         flowRepository.enrichAndPersistFlows(flows, new FlowSource("test", "127.0.0.1"));
 
         // Retrieve all the flows we just persisted
-        await().atMost(30, TimeUnit.SECONDS).until(() -> flowRepository.getFlowCount(Collections.singletonList(
+        await().atMost(60, TimeUnit.SECONDS).until(() -> flowRepository.getFlowCount(Collections.singletonList(
                 new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(Long.valueOf(flows.size())));
     }
 

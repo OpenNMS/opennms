@@ -47,10 +47,10 @@ public class ElasticFlowRepositoryInitializer extends DefaultTemplateInitializer
     }
 
     protected ElasticFlowRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
-        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings));
+        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
     }
 
     protected ElasticFlowRepositoryInitializer(JestClient client) {
-        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader());
+        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
 }

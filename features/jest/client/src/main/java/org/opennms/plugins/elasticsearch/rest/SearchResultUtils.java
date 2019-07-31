@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.template;
+package org.opennms.plugins.elasticsearch.rest;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import io.searchbox.core.SearchResult;
 
-public class IndexSettingsTest {
+public class SearchResultUtils {
+    private static final String[] PATH_TO_TOTAL = new String[]{"hits", "total", "value"};
 
-    @Test
-    public void verifyStringValues() {
-        IndexSettings indexSettings = new IndexSettings();
-        indexSettings.setRoutingPartitionSize("");
-        indexSettings.setRefreshInterval("");
-        indexSettings.setNumberOfShards("");
-        indexSettings.setNumberOfReplicas("");
-
-        assertThat(indexSettings.isEmpty(), is(true));
+    public static long getTotal(SearchResult result) {
+        Long total = -1L;
+        JsonElement obj = getPath(result.getJsonObject(), PATH_TO_TOTAL);
+        if (obj != null) total = obj.getAsLong();
+        return total;
     }
+
+    public static JsonElement getPath(JsonObject jo, String[] path) {
+        JsonElement retval = null;
+        if (jo != null) {
+            JsonElement obj = jo;
+            for (String component : path) {
+                if (obj == null) break;
+                obj = ((JsonObject) obj).get(component);
+            }
+            retval = obj;
+        }
+        return retval;
+    }
+
 }

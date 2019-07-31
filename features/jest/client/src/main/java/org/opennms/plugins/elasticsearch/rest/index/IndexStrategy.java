@@ -33,6 +33,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.TimeZone;
 
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+
+import com.google.common.base.Strings;
+
 /**
  * Defines a strategy on how to define the index when persisting.
  *
@@ -58,8 +62,15 @@ public enum IndexStrategy {
                 .withZone(UTC);
     }
 
-    public String getIndex(String indexPrefix, TemporalAccessor temporal) {
-        return String.format("%s-%s", indexPrefix, dateFormat.format(temporal));
+    public String getIndex(IndexSettings indexSettings, String indexName, TemporalAccessor temporal) {
+        final StringBuilder sb = new StringBuilder();
+        if (!Strings.isNullOrEmpty(indexSettings.getIndexPrefix())) {
+            sb.append(indexSettings.getIndexPrefix());
+        }
+        sb.append(indexName);
+        sb.append("-");
+        sb.append(dateFormat.format(temporal));
+        return sb.toString();
     }
 
     public String getPattern(){

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.alarms.history.elastic;
+package org.opennms.plugins.elasticsearch.rest.template;
 
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateInitializer;
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
-import org.osgi.framework.BundleContext;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
-import io.searchbox.client.JestClient;
+import org.junit.Test;
 
-public class TemplateInitializerForAlarms extends DefaultTemplateInitializer {
+public class IndexSettingsTest {
 
-    private static final String TEMPLATE_RESOURCE = "/alarm-template";
-    private static final String TEMPLATE_NAME = "alarms";
+    @Test
+    public void verifyStringValues() {
+        IndexSettings indexSettings = new IndexSettings();
+        indexSettings.setRoutingPartitionSize("");
+        indexSettings.setRefreshInterval("");
+        indexSettings.setNumberOfShards("");
+        indexSettings.setNumberOfReplicas("");
 
-    public TemplateInitializerForAlarms(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
-        super(bundleContext, client, TEMPLATE_RESOURCE, TEMPLATE_NAME, indexSettings);
-    }
-
-    public TemplateInitializerForAlarms(JestClient client) {
-        super(client, TEMPLATE_RESOURCE, TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
+        assertThat(indexSettings.isEmpty(), is(true));
     }
 }

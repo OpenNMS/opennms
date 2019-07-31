@@ -40,6 +40,7 @@
             <cm:property name="settings.index.number_of_replicas" value="" />
             <cm:property name="settings.index.refresh_interval" value="" />
             <cm:property name="settings.index.routing_partition_size" value="" />
+            <cm:property name="indexPrefix" value="" />
 
             <!-- Alarm History settings -->
             <cm:property name="indexAllUpdates" value="false" />
@@ -115,6 +116,7 @@
     </bean>
 
     <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
+        <property name="indexPrefix" value="${indexPrefix}"/>
         <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
         <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
         <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
@@ -136,6 +138,7 @@
         <argument ref="nodeCacheConfig" />
         <argument value="${taskQueueCapacity}"/>
         <argument ref="indexStrategy"/>
+        <argument ref="indexSettings"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}" />
         <property name="batchSize" value="${batchIndexSize}" />
         <property name="alarmReindexDurationMs" value="${alarmReindexDurationMs}"/>
@@ -153,6 +156,7 @@
     <bean id="elasticAlarmHistoryRepository" class="org.opennms.features.alarms.history.elastic.ElasticAlarmHistoryRepository">
         <argument ref="jestClient"/>
         <argument ref="indexStrategy"/>
+        <argument ref="indexSettings"/>
         <property name="lookbackPeriodMs" value="${lookbackPeriodMs}"/>
     </bean>
     <service ref="elasticAlarmHistoryRepository" interface="org.opennms.features.alarms.history.api.AlarmHistoryRepository"/>

@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.StackModel;
@@ -152,7 +153,7 @@ public class SyslogKafkaElasticsearchIT {
                                     .build()
                     );
                     LOG.debug("SEARCH RESPONSE: {}", response.toString());
-                    return response.getTotal();
+                    return SearchResultUtils.getTotal(response);
             }, greaterThanOrEqualTo(1000L));
         }
     }
