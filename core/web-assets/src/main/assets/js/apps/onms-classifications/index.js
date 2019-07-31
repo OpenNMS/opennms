@@ -228,9 +228,12 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             $scope.refresh = function() {
                 var parameters = $scope.query || {};
                 var editPositionOfRuleEnabled = !($scope.group.readOnly) && ($scope.query.orderBy === 'position' && $scope.query.order === 'asc');
-                $scope.sortableRules = {
-                    disabled: !editPositionOfRuleEnabled
-                };
+                var sortable =  angular.element( ".ui-sortable" );
+                if(editPositionOfRuleEnabled === true) {
+                    sortable.sortable("enable");
+                } else {
+                    sortable.sortable("disable");
+                }
                 return ClassificationRuleService.query( {
                     limit: parameters.limit || 20,
                     offset: (parameters.page -1) * parameters.limit || 0,

@@ -13,7 +13,7 @@
         <button class="btn btn-link"
                 uib-popover-html="'<div>Rules on low positions will be evaluated first:<br>Position 0 -&gt; Position 1 -&gt; Position 2 -&gt; ...</div>'"
                 popover-trigger="'outsideClick'"><i class="fa fa-question-circle"/></button>
-        <input class="form-control" id="rule.position" name="position" placeholder="9999" type="number" min="0" step="1" ng-model="classification.position"
+        <input class="form-control" id="rule.position" name="position" placeholder="9999" type="number" min="0" step="1" pattern="[0-9]*" ng-model="classification.position"
                ng-class="{ 'is-invalid' : ruleForm.position.$invalid || error.position }" />
         <div ng-show="error.position" class="invalid-feedback">{{error.position}}</div>
       </div>
