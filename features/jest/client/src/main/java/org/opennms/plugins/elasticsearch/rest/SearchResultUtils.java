@@ -34,7 +34,7 @@ import com.google.gson.JsonObject;
 import io.searchbox.core.SearchResult;
 
 public class SearchResultUtils {
-    private static final String[] PATH_TO_TOTAL = "hits/total/value".split("/");
+    private static final String[] PATH_TO_TOTAL = new String[]{"hits", "total", "value"};
 
     public static long getTotal(SearchResult result) {
         Long total = -1L;
