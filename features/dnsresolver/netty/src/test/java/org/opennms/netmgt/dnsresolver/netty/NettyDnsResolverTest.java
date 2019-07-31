@@ -176,6 +176,10 @@ public class NettyDnsResolverTest {
                 contains(new InetSocketAddress("8.8.8.8", 53),
                         new InetSocketAddress("1.1.1.1", 53),
                         new InetSocketAddress("1.1.2.2", 1153)));
+        assertThat(NettyDnsResolver.toSocketAddresses("[::1], [::1]:5353 ,1.1.1.1:54 "),
+                contains(new InetSocketAddress("::1", 53),
+                        new InetSocketAddress("::1", 5353),
+                        new InetSocketAddress("1.1.1.1", 54)));
     }
 
     @Test

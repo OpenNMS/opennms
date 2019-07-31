@@ -65,7 +65,7 @@ In order to customize the DNS servers that are queried, the following commands c
 $ ssh -p 8201 admin@localhost
 ...
 admin@minion()> config:edit org.opennms.features.dnsresolver.netty
-admin@minion()> property-set nameservers 8.8.8.8,4.2.2.2:53
+admin@minion()> property-set nameservers 8.8.8.8,4.2.2.2:53,[::1]:5353
 admin@minion()> property-set query-timeout-millis 5000
 admin@minion()> config:update
 ----
