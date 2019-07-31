@@ -43,8 +43,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint;
 import org.opennms.smoketest.rest.GrafanaEndpointRestIT;
+import org.opennms.smoketest.ui.framework.Button;
+import org.opennms.smoketest.ui.framework.TextInput;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -107,7 +108,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
     public void verifyTestConnection() {
         final GrafanaEndpoint dummyEndpoint = GrafanaEndpointRestIT.createDummyEndpoint();
         final EndpointModal modal = uiPage.newModal().setInput(dummyEndpoint);
-        new Button("verify-endpoint").click();
+        new Button(getDriver(), "verify-endpoint").click();
         execute(() -> {
             pageContainsText("Could not connect");
             return null;
@@ -181,10 +182,10 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
                         final String readTimeout = columns.get(5).getText();
 
                         // Click reveal to get the API KEY and afterwards click again to hide
-                        new Button("action.revealApiKey." + id).click();
+                        new Button(getDriver(), "action.revealApiKey." + id).click();
                         new WebDriverWait(driver, 5).until(webDriver -> !row.findElements(By.xpath("./td")).get(2).getText().contains("****"));
                         final String apiKey = columns.get(2).getText();
-                        new Button("action.revealApiKey." + id).click();
+                        new Button(getDriver(), "action.revealApiKey." + id).click();
 
                         final UIGrafanaEndpoint grafanaEndpoint = new UIGrafanaEndpoint();
                         grafanaEndpoint.setId(Long.parseLong(id));
@@ -251,12 +252,12 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
         public EndpointModal setInput(GrafanaEndpoint endpoint) {
             // Input form
-            new TextInput("endpoint.uid").setInput(endpoint.getUid());
-            new TextInput("endpoint.apiKey").setInput(endpoint.getApiKey());
-            new TextInput("endpoint.description").setInput(endpoint.getDescription());
-            new TextInput("endpoint.url").setInput(endpoint.getUrl());
-            new TextInput("endpoint.readTimeout").setInput(endpoint.getReadTimeout());
-            new TextInput("endpoint.connectTimeout").setInput(endpoint.getConnectTimeout());
+            new TextInput(getDriver(), "endpoint.uid").setInput(endpoint.getUid());
+            new TextInput(getDriver(), "endpoint.apiKey").setInput(endpoint.getApiKey());
+            new TextInput(getDriver(), "endpoint.description").setInput(endpoint.getDescription());
+            new TextInput(getDriver(), "endpoint.url").setInput(endpoint.getUrl());
+            new TextInput(getDriver(), "endpoint.readTimeout").setInput(endpoint.getReadTimeout());
+            new TextInput(getDriver(), "endpoint.connectTimeout").setInput(endpoint.getConnectTimeout());
             return this;
         }
 

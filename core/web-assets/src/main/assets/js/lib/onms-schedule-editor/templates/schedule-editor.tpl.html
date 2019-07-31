@@ -152,7 +152,7 @@
     <!-- Custom Cron Expression -->
     <div class="" ng-if="options.type === 'custom'">
         <div class="form-inline">
-            <input type="text" class="form-control" ng-class="{'is-invalid': errors.cronExpression}" ng-model="options.cronExpression "/>
+            <input id="customCronExpressionInput" type="text" class="form-control" ng-class="{'is-invalid': errors.cronExpression}" ng-model="options.cronExpression "/>
             <a href="http://www.quartz-scheduler.org/documentation/quartz-2.2.2/tutorials/crontrigger.html" class="ml-2" target="_blank" title="Help me">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </a>
