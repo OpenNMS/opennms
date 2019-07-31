@@ -30,6 +30,7 @@ package org.opennms.netmgt.threshd;
 
 import java.util.Date;
 
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -93,4 +94,6 @@ public interface ThresholdEvaluatorState {
      * @return a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState} object.
      */
     public ThresholdEvaluatorState getCleanClone();
+    
+    ThresholdingSession getThresholdingSession();
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,6 +55,7 @@ public class DeferredGenericTypeResource extends AbstractResource {
     private final String m_resourceTypeName;
     private final String m_fallbackResourceTypeName;
     private final String m_instance;
+    private final String m_unmodifiedInstance;
 
     public DeferredGenericTypeResource(NodeLevelResource node, String resourceTypeName, String instance) {
         this(node, resourceTypeName, null, instance);
@@ -64,7 +65,8 @@ public class DeferredGenericTypeResource extends AbstractResource {
         m_node = Objects.requireNonNull(node, "node argument");
         m_resourceTypeName = Objects.requireNonNull(resourceTypeName, "resourceTypeName argument");
         m_fallbackResourceTypeName = fallbackResourceTypeName;
-        m_instance = GenericTypeResource.sanitizeInstance(Objects.requireNonNull(instance, "instance argument"));
+        m_unmodifiedInstance = Objects.requireNonNull(instance, "instance argument");
+        m_instance = GenericTypeResource.sanitizeInstance(m_unmodifiedInstance);
     }
 
     @Override
@@ -87,6 +89,11 @@ public class DeferredGenericTypeResource extends AbstractResource {
     }
 
     @Override
+    public String getUnmodifiedInstance() {
+        return m_unmodifiedInstance;
+    }
+
+    @Override
     public String getLabel(CollectionResource resource) {
         throw new UnsupportedOperationException("DeferredGenericTypeResource must be converted to GenericTypeResources before being used to retrieve the label.");
     }
@@ -102,15 +109,15 @@ public class DeferredGenericTypeResource extends AbstractResource {
         if (resourceType == null) {
             throw new IllegalArgumentException(String.format("No resource type found with name '%s'!", m_resourceTypeName));
         }
-        final GenericTypeResource resource = new GenericTypeResource(m_node, resourceType, m_instance);
+        final GenericTypeResource resource = new GenericTypeResource(m_node, resourceType, m_unmodifiedInstance);
         resource.setTimestamp(getTimestamp());
         return resource;
     }
 
     @Override
     public String toString() {
-        return String.format("DeferredGenericTypeResource[node=%s, instance=%s, resourceTypeName=%s, fallbackResourceTypeName=%s]",
-                m_node, m_instance, m_resourceTypeName, m_fallbackResourceTypeName);
+        return String.format("DeferredGenericTypeResource[node=%s, instance=%s, unmodified-instance=%s, resourceTypeName=%s, fallbackResourceTypeName=%s]",
+                m_node, m_instance, m_unmodifiedInstance, m_resourceTypeName, m_fallbackResourceTypeName);
     }
 
     @Override

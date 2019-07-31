@@ -26,13 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.template;
+package org.opennms.plugins.elasticsearch.rest.template;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
-import org.opennms.plugins.elasticsearch.rest.template.TemplateMerger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -62,11 +60,13 @@ public class TemplateMergerTest {
             "      refresh_interval: 10s," +
             "      routing_partition_size: 20" +
             "    }" +
-            "  }" +
+            "  }," +
+            "  template: prefix" +
             "}";
 
         // Configure settings
         final IndexSettings settings = new IndexSettings();
+        settings.setIndexPrefix("prefix");
         settings.setNumberOfShards(5);
         settings.setNumberOfReplicas(10);
         settings.setRefreshInterval("10s");
@@ -76,5 +76,18 @@ public class TemplateMergerTest {
         final JsonElement expectedJsonObject = new JsonParser().parse(expectedJson);
         assertEquals(new Gson().toJson(expectedJsonObject), new TemplateMerger().merge("{}", settings));
         assertEquals(new JsonParser().parse(expectedJson), new TemplateMerger().merge(new JsonObject(), settings));
+    }
+
+    @Test
+    public void verifyIndexPrefixHandling() {
+        final String expectedJson = "{\"template\":\"prefix-test\",\"settings\":{\"index\":{}}}";
+
+        // Configure settings
+        final IndexSettings settings = new IndexSettings();
+        settings.setIndexPrefix("prefix-");
+
+        // Verify
+        final JsonElement expectedJsonObject = new JsonParser().parse(expectedJson);
+        assertEquals(new Gson().toJson(expectedJsonObject), new TemplateMerger().merge("{\"template\": \"test\"}", settings));
     }
 }

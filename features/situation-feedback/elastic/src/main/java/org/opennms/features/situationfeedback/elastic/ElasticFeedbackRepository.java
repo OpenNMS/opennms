@@ -43,6 +43,7 @@ import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,8 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private final int bulkRetryCount;
 
+    private final IndexSettings indexSettings;
+
     private IndexStrategy indexStrategy;
 
     /**
@@ -83,6 +86,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         this.indexStrategy = indexStrategy;
         this.bulkRetryCount = bulkRetryCount;
         this.initializer = initializer;
+        this.indexSettings = initializer.getIndexSettings();
     }
 
     @Override
@@ -98,7 +102,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (FeedbackDocument document : documents) {
-                final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(document.getTimestamp()));
+                final String index = indexStrategy.getIndex(indexSettings, TYPE, Instant.ofEpochMilli(document.getTimestamp()));
                 final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
                 bulkBuilder.addAction(indexBuilder.build());
             }

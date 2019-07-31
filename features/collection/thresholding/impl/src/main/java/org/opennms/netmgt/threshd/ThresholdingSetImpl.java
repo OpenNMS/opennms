@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingSet;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -94,9 +96,11 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
     protected final List<ThresholdGroup> m_thresholdGroups = new LinkedList<>();
     protected final List<String> m_scheduledOutages = new ArrayList<>();
+    
+    private final ThresholdingSession m_thresholdingSession;
 
     public ThresholdingSetImpl(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao,
-            ThresholdingEventProxy eventProxy)
+            ThresholdingEventProxy eventProxy, ThresholdingSession thresholdingSession)
             throws ThresholdInitializationException {
         m_nodeId = nodeId;
         m_hostAddress = (hostAddress == null ? null : hostAddress.intern());
@@ -105,6 +109,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         m_svcParams = svcParams;
         m_resourceStorageDao = resourceStorageDao;
         m_eventProxy = eventProxy;
+        m_thresholdingSession = Objects.requireNonNull(thresholdingSession);
         initThresholdsDao();
         initialize();
         if (!m_initialized) {
@@ -119,7 +124,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             m_thresholdGroups.clear();
             for (final String groupName : groupNameList) {
                 try {
-                    final ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
+                    final ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName, m_thresholdingSession);
                     if (thresholdGroup == null) {
                         LOG.error("{}: Could not get threshold group with name {}", logHeader, groupName);
                     } else {
@@ -136,6 +141,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         updateScheduledOutages();
     }
 
+    @Override
     public void reinitialize() {
         reinitialize(false);
     }
@@ -203,7 +209,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                 try {
                     if (!foundGroup.isPresent()) {
                         // Add new group
-                        final ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
+                        final ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName, m_thresholdingSession);
                         if (thresholdGroup == null) {
                             LOG.error("{}: Could not get threshold group with name {}", logHeader, groupName);
                         } else {
@@ -212,7 +218,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                         }
                     } else {
                         // Merge existing data with current data
-                        final ThresholdGroup thresholdGroup = m_thresholdsDao.merge(foundGroup.get());
+                        final ThresholdGroup thresholdGroup = m_thresholdsDao.merge(foundGroup.get(), m_thresholdingSession);
                         newThresholdGroupList.add(thresholdGroup);
                         LOG.debug("{}: Merging threshold group: {}", logHeader, thresholdGroup);
                     }
