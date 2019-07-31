@@ -120,6 +120,7 @@ public class DatabaseReportPageIT extends UiPageTest {
                 .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(cronExpression))
                 .findAny();
         assertThat(any.isPresent(), is(true));
+        assertThat(any.get().cronExpression, is(cronExpression));
     }
 
     private void closeDialogue() {

@@ -113,9 +113,10 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 description.setReportId((String)trigger.getJobDataMap().get("reportId"));
                 description.setDeliveryOptions((DeliveryOptions) trigger.getJobDataMap().get("deliveryOptions"));
                 description.setReportParameters(((ReportParameters) trigger.getJobDataMap().get("criteria")).getReportParms());
-                description.setCronExpression((String) trigger.getJobDataMap().get("cronExpression"));
+                if (trigger instanceof CronTriggerImpl) {
+                    description.setCronExpression(((CronTriggerImpl)trigger).getCronExpression());
+                }
                 triggerDescriptions.add(description);
-
             }
         } catch (SchedulerException e) {
             LOG.error("exception lretrieving trigger descriptions", e);
@@ -208,7 +209,6 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 cronTrigger.getJobDataMap().put("reportId", id);
                 cronTrigger.getJobDataMap().put("mode", ReportMode.SCHEDULED);
                 cronTrigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
-                cronTrigger.getJobDataMap().put("cronExpression", cronExpression);
                 try {
                     m_scheduler.scheduleJob(cronTrigger);
                 } catch (SchedulerException e) {
