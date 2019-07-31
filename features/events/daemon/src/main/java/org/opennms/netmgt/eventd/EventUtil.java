@@ -140,6 +140,7 @@ public interface EventUtil {
 	ExpandableParameterResolver getResolver(String token);
 	
 	Date decodeSnmpV2TcDateAndTime(BigInteger octetStringValue);
-	
+
+	String getPrimaryInterface(long nodeId) throws SQLException;
 }
 
