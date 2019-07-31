@@ -50,12 +50,9 @@ get_java_version_string() {
 get_real_path() {
 	file_to_find="$1"
 	readlink="$(command -v readlink 2>/dev/null)"
-	if [ -n "$readlink" ]; then
-		__new_filename="$("$readlink" "$file_to_find" || :)"
-		if [ -n "$__new_filename" ] && [ -e "$__new_filename" ]; then
-			get_real_path "$__new_filename"
-			return
-		fi
+	if [ -n "$readlink" ] && [ -L "$file_to_find" ]; then
+		get_real_path "$("$readlink" "$file_to_find" || :)"
+		return
 	fi
 	echo "$file_to_find"
 }
