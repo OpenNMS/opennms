@@ -515,12 +515,14 @@ jobs:
     executor: integration-test-executor
     parallelism: 12
     steps:
-      - run-integration-tests
+      - run-integration-tests:
+          rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
     parallelism: 12
     steps:
-      - run-integration-tests-with-coverage
+      - run-integration-tests-with-coverage:
+          rerun-failtest-count: 0
   code-coverage:
     executor: build-executor
     resource_class: medium
