@@ -26,27 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest.ui.framework;
-
-import java.util.concurrent.TimeUnit;
+package org.opennms.smoketest.selenium;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public abstract class UiElement extends Element {
-    protected final String elementId;
+public abstract class ExpectedConditions {
 
-    public UiElement(final WebDriver driver, final String elementId, int implicitWait, TimeUnit implictWaitUnit) {
-        super(driver, implicitWait, implictWaitUnit);
-        this.elementId = elementId;
-    }
+    private ExpectedConditions() {}
 
-    public UiElement(final WebDriver driver, final String elementId) {
-        this(driver, elementId, 2, TimeUnit.SECONDS);
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(ExpectedConditions.class);
 
-    protected WebElement getElement() {
-        return execute(() -> driver.findElement(By.id(elementId)));
+    public static ExpectedCondition<Boolean> pageContainsText(String text) {
+        LOG.debug("pageContainsText: {}", text);
+        final String escapedText = text.replace("\'", "\\\'");
+        return driver -> {
+            final String xpathExpression = "//*[contains(., '" + escapedText + "')]";
+            LOG.debug("XPath expression: {}", xpathExpression);
+            try {
+                final WebElement element = driver.findElement(By.xpath(xpathExpression));
+                return element != null;
+            } catch (final NoSuchElementException e) {
+                return false;
+            }
+        };
     }
 }
