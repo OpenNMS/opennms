@@ -80,6 +80,16 @@ public class InMemoryMapBlobStoreTest {
         await().atMost(1, TimeUnit.SECONDS).until(caughtException::get);
     }
 
+    @Test
+    public void asyncDegradesWithoutException() {
+        BlobStore asyncStore = new ModifiedAsyncStore();
+
+        // Overflow the default implementations execution queue to ensure it does not throw a RejectedExecutionException
+        for (int i = 0; i < Runtime.getRuntime().availableProcessors() * 1000; i++) {
+            asyncStore.putAsync("test", new byte[0], "test");
+        }
+    }
+
     private class ExceptionThrowingKVStore extends InMemoryMapBlobStore {
         public ExceptionThrowingKVStore() {
             super(System::currentTimeMillis);
@@ -98,6 +108,39 @@ public class InMemoryMapBlobStoreTest {
         @Override
         public OptionalLong getLastUpdated(String key, String context) {
             throw new TestException();
+        }
+    }
+
+    private class ModifiedAsyncStore extends InMemoryMapBlobStore {
+        public ModifiedAsyncStore() {
+            super(System::currentTimeMillis);
+        }
+
+        @Override
+        public long put(String key, byte[] value, String context, Integer ttlInSeconds) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ignore) {
+            }
+            return super.put(key, value, context, ttlInSeconds);
+        }
+
+        @Override
+        public Optional<byte[]> get(String key, String context) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ignore) {
+            }
+            return super.get(key, context);
+        }
+
+        @Override
+        public OptionalLong getLastUpdated(String key, String context) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ignore) {
+            }
+            return super.getLastUpdated(key, context);
         }
     }
 

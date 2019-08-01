@@ -58,35 +58,10 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
     private static final String LAST_UPDATED_COLUMN = "last_updated";
     private static final String EXPIRES_AT_COLUMN = "expires_at";
 
-    private final PreparedStatement selectStatement;
-    private final PreparedStatement upsertStatement;
-    private final PreparedStatement lastUpdatedStatement;
+    private final DataSource dataSource;
 
     public AbstractPostgresKeyValueStore(DataSource dataSource) {
-        Objects.requireNonNull(dataSource);
-
-        try {
-            Connection connection = dataSource.getConnection();
-
-            // Prepare the statements now that we have the table name
-            selectStatement = connection.prepareStatement(String.format("SELECT %s, %s FROM %s WHERE %s = ? AND %s = ?",
-                    VALUE_COLUMN, EXPIRES_AT_COLUMN, getTableName(), KEY_COLUMN, CONTEXT_COLUMN));
-            upsertStatement = connection.prepareStatement(String.format(
-                    "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, " + getValueStatementPlaceholder() + ") " +
-                            "ON CONFLICT ON CONSTRAINT " +
-                            getPkConstraintName() +
-                            " DO " +
-                            "UPDATE SET %s = ?, %s = ?, %s = " + getValueStatementPlaceholder(),
-                    getTableName(), KEY_COLUMN, CONTEXT_COLUMN, LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, VALUE_COLUMN,
-                    LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, VALUE_COLUMN
-            ));
-            lastUpdatedStatement = connection.prepareStatement(String.format("SELECT %s, %s FROM %s WHERE %s = ? AND " +
-                            "%s =" +
-                            " ?",
-                    LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, getTableName(), KEY_COLUMN, CONTEXT_COLUMN));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        this.dataSource = Objects.requireNonNull(dataSource);
     }
 
     private static boolean expired(ResultSet resultSet) throws SQLException {
@@ -100,6 +75,30 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
         return false;
     }
 
+    private PreparedStatement getSelectStatement(Connection connection) throws SQLException {
+        return connection.prepareStatement(String.format("SELECT %s, %s FROM %s WHERE %s = ? AND %s = ?",
+                VALUE_COLUMN, EXPIRES_AT_COLUMN, getTableName(), KEY_COLUMN, CONTEXT_COLUMN));
+    }
+
+    private PreparedStatement getUpsertStatement(Connection connection) throws SQLException {
+        return connection.prepareStatement(String.format(
+                "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, " + getValueStatementPlaceholder() + ") " +
+                        "ON CONFLICT ON CONSTRAINT " +
+                        getPkConstraintName() +
+                        " DO " +
+                        "UPDATE SET %s = ?, %s = ?, %s = " + getValueStatementPlaceholder(),
+                getTableName(), KEY_COLUMN, CONTEXT_COLUMN, LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, VALUE_COLUMN,
+                LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, VALUE_COLUMN
+        ));
+    }
+
+    private PreparedStatement getLastUpdatedStatement(Connection connection) throws SQLException {
+        return connection.prepareStatement(String.format("SELECT %s, %s FROM %s WHERE %s = ? AND " +
+                        "%s =" +
+                        " ?",
+                LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, getTableName(), KEY_COLUMN, CONTEXT_COLUMN));
+    }
+
     @Override
     public long put(String key, T value, String context, Integer ttlInSeconds) {
         Objects.requireNonNull(key);
@@ -107,25 +106,28 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
 
         long now = System.currentTimeMillis();
 
-        try {
-            // The below sets the prepared values for both the INSERT and UPDATE cases hence some values being repeated
-            upsertStatement.setString(1, key);
-            upsertStatement.setString(2, context);
-            upsertStatement.setTimestamp(3, new java.sql.Timestamp(now));
-            upsertStatement.setTimestamp(6, new java.sql.Timestamp(now));
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement upsertStatement = getUpsertStatement(connection)) {
+                // The below sets the prepared values for both the INSERT and UPDATE cases hence some values being 
+                // repeated
+                upsertStatement.setString(1, key);
+                upsertStatement.setString(2, context);
+                upsertStatement.setTimestamp(3, new java.sql.Timestamp(now));
+                upsertStatement.setTimestamp(6, new java.sql.Timestamp(now));
 
-            if (ttlInSeconds != null) {
-                long expireTime = now + TimeUnit.MILLISECONDS.convert(ttlInSeconds, TimeUnit.SECONDS);
-                upsertStatement.setTimestamp(4, new java.sql.Timestamp(expireTime));
-                upsertStatement.setTimestamp(7, new java.sql.Timestamp(expireTime));
-            } else {
-                upsertStatement.setNull(4, Types.DATE);
-                upsertStatement.setNull(7, Types.DATE);
+                if (ttlInSeconds != null) {
+                    long expireTime = now + TimeUnit.MILLISECONDS.convert(ttlInSeconds, TimeUnit.SECONDS);
+                    upsertStatement.setTimestamp(4, new java.sql.Timestamp(expireTime));
+                    upsertStatement.setTimestamp(7, new java.sql.Timestamp(expireTime));
+                } else {
+                    upsertStatement.setNull(4, Types.DATE);
+                    upsertStatement.setNull(7, Types.DATE);
+                }
+
+                upsertStatement.setObject(5, getSQLTypeFromValueType(value));
+                upsertStatement.setObject(8, getSQLTypeFromValueType(value));
+                upsertStatement.execute();
             }
-
-            upsertStatement.setObject(5, getSQLTypeFromValueType(value));
-            upsertStatement.setObject(8, getSQLTypeFromValueType(value));
-            upsertStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -138,22 +140,24 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
 
-        try {
-            selectStatement.setString(1, key);
-            selectStatement.setString(2, context);
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement selectStatement = getSelectStatement(connection)) {
+                selectStatement.setString(1, key);
+                selectStatement.setString(2, context);
 
-            ResultSet resultSet = selectStatement.executeQuery();
+                try (ResultSet resultSet = selectStatement.executeQuery()) {
+                    if (!resultSet.next()) {
+                        return Optional.empty();
+                    }
 
-            if (!resultSet.next()) {
-                return Optional.empty();
+                    // Return an empty result if we find an expired record
+                    if (expired(resultSet)) {
+                        return Optional.empty();
+                    }
+
+                    return Optional.of(getValueTypeFromSQLType(resultSet, VALUE_COLUMN));
+                }
             }
-
-            // Return an empty result if we find an expired record
-            if (expired(resultSet)) {
-                return Optional.empty();
-            }
-
-            return Optional.of(getValueTypeFromSQLType(resultSet, VALUE_COLUMN));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -195,22 +199,24 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
 
-        try {
-            lastUpdatedStatement.setString(1, key);
-            lastUpdatedStatement.setString(2, context);
-            ResultSet resultSet = lastUpdatedStatement.executeQuery();
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement lastUpdatedStatement = getLastUpdatedStatement(connection)) {
+                lastUpdatedStatement.setString(1, key);
+                lastUpdatedStatement.setString(2, context);
 
-            if (!resultSet.next()) {
-                return OptionalLong.empty();
+                try (ResultSet resultSet = lastUpdatedStatement.executeQuery()) {
+                    if (!resultSet.next()) {
+                        return OptionalLong.empty();
+                    }
+
+                    // Return an empty result if we find an expired record
+                    if (expired(resultSet)) {
+                        return OptionalLong.empty();
+                    }
+
+                    return OptionalLong.of(resultSet.getTimestamp(LAST_UPDATED_COLUMN).getTime());
+                }
             }
-
-            // Return an empty result if we find an expired record
-            if (expired(resultSet)) {
-                return OptionalLong.empty();
-            }
-
-            return OptionalLong.of(resultSet.getTimestamp(LAST_UPDATED_COLUMN).getTime());
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -242,7 +248,7 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
      * @return the name of the table for this store
      */
     protected abstract String getTableName();
-    
+
     /**
      * @return the name of the primary key constraint for the table this store persists to
      */
