@@ -130,7 +130,7 @@
         <bundle>mvn:commons-net/commons-net/3.6</bundle>
     </feature>
     <feature name="dnsjava" version="${dnsjavaVersion}" description="dnsjava">
-        <bundle dependency="true">wrap:mvn:org.dnsjava/dnsjava/${dnsjavaVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dnsjava/${dnsjavaVersion}</bundle>
     </feature>
     <feature name="dropwizard-metrics" version="${dropwizardMetricsVersion}" description="Dropwizard :: Metrics">
         <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
@@ -944,7 +944,7 @@
     </feature>
     <feature name="opennms-telemetry-collection" version="${project.version}" description="OpenNMS :: Telemetry :: Collection">
         <feature>guava</feature>
-        <feature>camel-netty4</feature>
+        <feature version="${netty4Version}">netty4</feature>
         <feature>dropwizard-metrics</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-thresholding-api</feature>
@@ -958,7 +958,7 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.collection/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-daemon" version="${project.version}" description="OpenNMS :: Telemetry :: Daemon">
-        <feature>camel-netty4</feature>
+        <feature version="${netty4Version}">netty4</feature>
         <feature>camel-spring</feature>
         <feature>dropwizard-metrics</feature>
         <feature>opennms-core-daemon</feature>
@@ -1015,11 +1015,12 @@
         <details>Feature definition to start all required bundles related to *flow-support.</details>
         <feature>opennms-health</feature>
         <feature>opennms-jest</feature>
+        <feature version="${netty4Version}">netty4</feature>
         <feature>quartz</feature>
-        <feature>camel-netty4</feature>
         <feature>opennms-core-tracing</feature>
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-telemetry-collection</feature>
+        <feature>opennms-dnsresolver-api</feature>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
@@ -1444,6 +1445,57 @@
         <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-dnsresolver-api" version="${project.version}" description="OpenNMS :: Features :: DNS Resolver :: API">
+        <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-dnsresolver-shell" version="${project.version}" description="OpenNMS :: Features :: DNS Resolver :: Shell">
+        <feature version="${project.version}">opennms-dnsresolver-api</feature>
+        <feature>dropwizard-metrics</feature>
+        <feature>guava</feature>
+        <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-dnsresolver-netty" version="${project.version}" description="OpenNMS :: Features :: DNS Resolver :: Netty">
+        <feature version="${project.version}">opennms-dnsresolver-api</feature>
+        <feature>guava</feature>
+        <feature>dropwizard-metrics</feature>
+        <feature>dnsjava</feature>
+        <feature version="${netty4Version}">netty4</feature>
+        <feature>resilience4j</feature>
+        <feature>opennms-events-api</feature>
+        <feature>opennms-model</feature>
+
+        <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.netty/${project.version}</bundle>
+    </feature>
+
+    <feature name="resilience4j" version="${resilience4jVersion}" description="resilience4j">
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
+        <bundle>mvn:io.vavr/vavr/0.10.0</bundle>
+        <bundle>mvn:io.vavr/vavr-match/0.10.0</bundle>
+        <bundle>mvn:io.github.resilience4j/resilience4j-core/${resilience4jVersion}</bundle>
+        <bundle>mvn:io.github.resilience4j/resilience4j-circuitbreaker/${resilience4jVersion}</bundle>
+    </feature>
+
+    <feature name="netty4" version="${netty4Version}" description="Netty">
+        <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
+        <!--
+        <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
+        -->
+    </feature>
+
+    <feature name="opennms-kvstore-api" description="OpenNMS :: Features :: Distributed :: Key Value Store :: API" version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-kvstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.shell/${project.version}</bundle>
     </feature>
@@ -1453,4 +1505,5 @@
         <feature>opennms-kvstore-shell</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.no-op/${project.version}</bundle>
     </feature>
+
 </features>

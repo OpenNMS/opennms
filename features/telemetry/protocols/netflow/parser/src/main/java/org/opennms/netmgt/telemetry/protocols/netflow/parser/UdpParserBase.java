@@ -38,13 +38,17 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 
-public abstract class UdpParserBase extends ParserBase {
+import com.codahale.metrics.MetricRegistry;
+
+public abstract class UdpParserBase extends ParserBase implements UdpParser {
     public final static long HOUSEKEEPING_INTERVAL = 60000;
 
     private UdpSessionManager sessionManager;
@@ -56,8 +60,10 @@ public abstract class UdpParserBase extends ParserBase {
                          final String name,
                          final AsyncDispatcher<TelemetryMessage> dispatcher,
                          final EventForwarder eventForwarder,
-                         final Identity identity) {
-        super(protocol, name, dispatcher, eventForwarder, identity);
+                         final Identity identity,
+                         final DnsResolver dnsResolver,
+                         final MetricRegistry metricRegistry) {
+        super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
     }
 
     protected abstract RecordProvider parse(final Session session, final ByteBuffer buffer) throws Exception;
@@ -78,7 +84,9 @@ public abstract class UdpParserBase extends ParserBase {
         }
     }
 
+    @Override
     public void start(final ScheduledExecutorService executorService) {
+        super.start(executorService);
         this.sessionManager = new UdpSessionManager(this.templateTimeout);
         this.housekeepingFuture = executorService.scheduleAtFixedRate(this.sessionManager::doHousekeeping,
                 HOUSEKEEPING_INTERVAL,
@@ -86,8 +94,10 @@ public abstract class UdpParserBase extends ParserBase {
                 TimeUnit.MILLISECONDS);
     }
 
+    @Override
     public void stop() {
         this.housekeepingFuture.cancel(false);
+        super.stop();
     }
 
     public Duration getTemplateTimeout() {
