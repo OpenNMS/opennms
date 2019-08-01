@@ -37,6 +37,7 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,6 +53,8 @@ import org.opennms.smoketest.ui.framework.Select;
 import org.opennms.smoketest.ui.framework.TextInput;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testcontainers.shaded.com.google.common.collect.Lists;
 
 public class DatabaseReportPageIT extends UiPageTest {
@@ -123,6 +126,40 @@ public class DatabaseReportPageIT extends UiPageTest {
         assertThat(any.get().cronExpression, is(cronExpression));
     }
 
+    @Test
+    public void verifyEditSchedule() {
+        // Define Schedule
+        final String cronExpression = "0 0 0/5 * * ?";
+        new ReportTemplateTab().open()
+                .select(EarlyMorningReport.name)
+                .scheduleReport(DeliveryOptions.DEFAULTS, cronExpression);
+
+        // Verify Schedule
+        final Optional<ReportScheduleElement> any = new ScheduledReportsTab()
+                .open()
+                .getScheduledReports().stream()
+                .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(cronExpression))
+                .findAny();
+        assertThat(any.isPresent(), is(true));
+
+        // Edit Schedule
+        final String updatedCronExpression = "1 2 0/10 ? * MON,TUE";
+        new ScheduledReportsTab()
+                .open()
+                .updateSchedule(EarlyMorningReport.id + " admin",
+                      DeliveryOptions.DEFAULTS,
+                      updatedCronExpression);
+
+        // Verify it actually was persisted and the UI reloaded
+        final Optional<ReportScheduleElement> findMe = new ScheduledReportsTab()
+                .open()
+                .getScheduledReports().stream()
+                .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(updatedCronExpression))
+                .findAny();
+        assertThat(findMe.isPresent(), is(true));
+    }
+
+
     private void closeDialogue() {
         execute(() -> findElementByXpath("//div[@class='modal-body']//button[text()='Show me']")).click();
     }
@@ -193,7 +230,8 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         public ReportTemplateTab deliverReport(final DeliveryOptions options) {
             ensureReportIsSelected();
-            applyDeliveryOptions(options);
+
+            new ReportDetailsForm().applyDeliveryOptions(options);
 
             // Finally deliver the report
             final WebElement executeButton = execute(() -> findElementById("execute"));
@@ -205,12 +243,9 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         public ReportTemplateTab scheduleReport(DeliveryOptions options, String cronExpression) {
             ensureReportIsSelected();
-            applyDeliveryOptions(options);
-
-            new CheckBox(driver, "createSchedule").setSelected(true);
-            new CheckBox(driver, "scheduleTypeCustom").setSelected(true);
-            new TextInput(driver, "customCronExpressionInput").setInput(cronExpression);
-
+            new ReportDetailsForm()
+                    .applyDeliveryOptions(options)
+                    .applyCronExpression(cronExpression);
             final WebElement executeButton = execute(() -> findElementById("execute"));
             assertThat(executeButton.getText(), Matchers.is("Schedule Report"));
             executeButton.click();
@@ -224,7 +259,18 @@ public class DatabaseReportPageIT extends UiPageTest {
             }
         }
 
-        private void applyDeliveryOptions(DeliveryOptions options) {
+        private String getSelectedTemplate() {
+            final List<WebElement> elements = getDriver().findElements(By.xpath("//div[contains(@class, 'list-group')]//a[contains(@class, 'list-group-item') and contains(@class, 'active')]/h5"));
+            if (!elements.isEmpty()) {
+                return elements.get(0).getText();
+            }
+            return null;
+        }
+    }
+
+    private class ReportDetailsForm {
+
+        public ReportDetailsForm applyDeliveryOptions(DeliveryOptions options) {
             Objects.requireNonNull(options);
 
             // Enable delivery
@@ -246,14 +292,14 @@ public class DatabaseReportPageIT extends UiPageTest {
 
             // Format
             new Select(driver, "format").setValueByText(options.format);
+            return this;
         }
 
-        private String getSelectedTemplate() {
-            final List<WebElement> elements = getDriver().findElements(By.xpath("//div[contains(@class, 'list-group')]//a[contains(@class, 'list-group-item') and contains(@class, 'active')]/h5"));
-            if (!elements.isEmpty()) {
-                return elements.get(0).getText();
-            }
-            return null;
+        public ReportDetailsForm applyCronExpression(String cronExpression) {
+            new CheckBox(driver, "createSchedule").setSelected(true);
+            new CheckBox(driver, "scheduleTypeCustom").setSelected(true);
+            new TextInput(driver, "customCronExpressionInput").setInput(cronExpression);
+            return this;
         }
     }
 
@@ -332,6 +378,17 @@ public class DatabaseReportPageIT extends UiPageTest {
                 await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> getScheduledReports().isEmpty());
             }
         }
+
+        public void updateSchedule(String triggerName, DeliveryOptions deliveryOptions, String cronExpression) {
+            getSchedule(triggerName).edit(deliveryOptions, cronExpression);
+        }
+
+        private ReportScheduleElement getSchedule(String triggerName) {
+            return getScheduledReports().stream()
+                    .filter(e -> e.triggerName.equals(triggerName))
+                    .findAny()
+                    .orElseThrow(NoSuchElementException::new);
+        }
     }
 
     private static class DeliveryOptions {
@@ -380,7 +437,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
     }
 
-    private static class ReportScheduleElement {
+    private class ReportScheduleElement {
 
         private String triggerName;
         private String templateName;
@@ -401,6 +458,17 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         public void setTriggerName(String triggerName) {
             this.triggerName = Objects.requireNonNull(triggerName);
+        }
+
+        public void edit(DeliveryOptions deliveryOptions, String cronExpression) {
+            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 120, 2000);
+            execute(() -> findElementById("action.edit." + triggerName)).click();
+            webDriverWait.until(pageContainsText("Edit Schedule"));
+            new ReportDetailsForm()
+                    .applyDeliveryOptions(deliveryOptions)
+                    .applyCronExpression(cronExpression);
+            execute(() -> findElementById("action.update." + triggerName)).click();
+            webDriverWait.until(ExpectedConditions.not(pageContainsText("Edit Schedule")));
         }
     }
 

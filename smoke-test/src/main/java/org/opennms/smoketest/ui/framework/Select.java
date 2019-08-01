@@ -43,4 +43,9 @@ public class Select extends UiElement {
         new org.openqa.selenium.support.ui.Select(selectElement).selectByVisibleText(text);
         assertEquals(text, new org.openqa.selenium.support.ui.Select(getElement()).getFirstSelectedOption().getText());
     }
+
+    public void setValue(String value) {
+        final WebElement selectElement = getElement();
+        new org.openqa.selenium.support.ui.Select(selectElement);
+    }
 }

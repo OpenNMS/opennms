@@ -36,7 +36,7 @@
             <tr ng-repeat="schedule in scheduledReports">
                 <td>
                     <button class="btn btn-sm btn-danger" title="Delete Schedule" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" ng-click="delete(schedule)"><i class="fa fa-trash"></i></button>
-                    <button class="btn btn-sm btn-primary" ng-click="edit(schedule.triggerName, schedule.reportId)" title="Show Report Parameters"><i class="fa fa-cogs"></i></button>
+                    <button class="btn btn-sm btn-primary" id="action.edit.{{schedule.triggerName}}" ng-click="edit(schedule.triggerName, schedule.reportId)" title="Show Report Parameters"><i class="fa fa-cogs"></i></button>
                 </td>
                 <td>{{schedule.reportId}}</td>
                 <td>
