@@ -121,7 +121,6 @@ public class NodeLocationChangeIT {
 
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
 
-        //((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).setEventForwarder(m_mockEventIpcManager);
         m_provisioner.start();
 
         m_foreignSource = new ForeignSource();

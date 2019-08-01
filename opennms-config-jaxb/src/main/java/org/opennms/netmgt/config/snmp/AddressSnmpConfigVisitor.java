@@ -72,7 +72,9 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private Definition m_matchedDefinitionAtDefaultLocation;
     private Definition m_matchedDefinitionAtGivenLocation;
 
+    private boolean m_isMatchingDefault = true;
     private Definition m_generatedDefinition = null;
+    private SnmpProfile snmpProfile;
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
         this(addr, null);
@@ -194,6 +196,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
         final Configuration sourceConfig;
         if (getBestMatch() != null) {
             sourceConfig = getBestMatch();
+            m_isMatchingDefault = false;
         } else {
             sourceConfig = m_currentConfig;
         }
@@ -380,8 +383,203 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
         m_generatedDefinition = ret;
     }
 
+    private Definition createDefinitionFromConfig(Configuration sourceConfig) {
+        final Definition definition = new Definition();
+        if (sourceConfig.getProxyHost() != null) {
+            definition.setProxyHost(sourceConfig.getProxyHost());
+        } else {
+            definition.setProxyHost(m_currentConfig.getProxyHost());
+        }
+
+        if (sourceConfig.hasMaxVarsPerPdu()) {
+            definition.setMaxVarsPerPdu(sourceConfig.getMaxVarsPerPdu());
+        } else if (m_currentConfig.hasMaxVarsPerPdu()) {
+            definition.setMaxVarsPerPdu(m_currentConfig.getMaxVarsPerPdu());
+        } else {
+            definition.setMaxVarsPerPdu(DEFAULT_MAX_VARS_PER_PDU);
+        }
+
+        if (sourceConfig.hasMaxRepetitions()) {
+            definition.setMaxRepetitions(sourceConfig.getMaxRepetitions());
+        } else if (m_currentConfig.hasMaxRepetitions()) {
+            definition.setMaxRepetitions(m_currentConfig.getMaxRepetitions());
+        } else {
+            definition.setMaxRepetitions(DEFAULT_MAX_REPETITIONS);
+        }
+
+        if (sourceConfig.hasMaxRequestSize()) {
+            definition.setMaxRequestSize(sourceConfig.getMaxRequestSize());
+        } else if (m_currentConfig.hasMaxRequestSize()) {
+            definition.setMaxRequestSize(m_currentConfig.getMaxRequestSize());
+        } else {
+            definition.setMaxRequestSize(DEFAULT_MAX_REQUEST_SIZE);
+        }
+
+        if (sourceConfig.getSecurityName() != null) {
+            definition.setSecurityName(sourceConfig.getSecurityName());
+        } else if (m_currentConfig.getSecurityName() != null) {
+            definition.setSecurityName(m_currentConfig.getSecurityName());
+        } else {
+            definition.setSecurityName(DEFAULT_SECURITY_NAME);
+        }
+
+        if (sourceConfig.getAuthPassphrase() != null) {
+            definition.setAuthPassphrase(sourceConfig.getAuthPassphrase());
+        } else if (m_currentConfig.getAuthPassphrase() != null) {
+            definition.setAuthPassphrase(m_currentConfig.getAuthPassphrase());
+        }
+
+        if (sourceConfig.getAuthProtocol() != null) {
+            definition.setAuthProtocol(sourceConfig.getAuthProtocol());
+        } else if (m_currentConfig.getAuthProtocol() != null) {
+            definition.setAuthProtocol(m_currentConfig.getAuthProtocol());
+        } else {
+            definition.setAuthProtocol(DEFAULT_AUTH_PROTOCOL);
+        }
+
+        if (sourceConfig.getEngineId() != null) {
+            definition.setEngineId(sourceConfig.getEngineId());
+        } else if (m_currentConfig.getEngineId() != null) {
+            definition.setEngineId(m_currentConfig.getEngineId());
+        } else {
+            definition.setEngineId(DEFAULT_ENGINE_ID);
+        }
+
+        if (sourceConfig.getContextEngineId() != null) {
+            definition.setContextEngineId(sourceConfig.getContextEngineId());
+        } else if (m_currentConfig.getContextEngineId() != null) {
+            definition.setContextEngineId(m_currentConfig.getContextEngineId());
+        } else {
+            definition.setContextEngineId(DEFAULT_CONTEXT_ENGINE_ID);
+        }
+
+        if (sourceConfig.getContextName() != null) {
+            definition.setContextName(sourceConfig.getContextName());
+        } else if (m_currentConfig.getContextName() != null) {
+            definition.setContextName(m_currentConfig.getContextName());
+        } else {
+            definition.setContextName(DEFAULT_CONTEXT_NAME);
+        }
+
+        if (sourceConfig.getPrivacyPassphrase() != null) {
+            definition.setPrivacyPassphrase(sourceConfig.getPrivacyPassphrase());
+        } else if (m_currentConfig.getPrivacyPassphrase() != null) {
+            definition.setPrivacyPassphrase(m_currentConfig.getPrivacyPassphrase());
+        }
+
+        if (sourceConfig.getPrivacyProtocol() != null) {
+            definition.setPrivacyProtocol(sourceConfig.getPrivacyProtocol());
+        } else if (m_currentConfig.getPrivacyProtocol() != null) {
+            definition.setPrivacyProtocol(m_currentConfig.getPrivacyProtocol());
+        } else {
+            definition.setPrivacyProtocol(DEFAULT_PRIV_PROTOCOL);
+        }
+
+        if (sourceConfig.getEnterpriseId() != null) {
+            definition.setEnterpriseId(sourceConfig.getEnterpriseId());
+        } else {
+            definition.setEnterpriseId(m_currentConfig.getEnterpriseId());
+        }
+
+        if (sourceConfig.getVersion() != null) {
+            definition.setVersion(sourceConfig.getVersion());
+        } else if (m_currentConfig.getVersion() != null) {
+            definition.setVersion(m_currentConfig.getVersion());
+        } else {
+            definition.setVersion(versionToString(VERSION1));
+        }
+
+        if (sourceConfig.getWriteCommunity() != null) {
+            definition.setWriteCommunity(sourceConfig.getWriteCommunity());
+        } else if (m_currentConfig.getWriteCommunity() != null) {
+            definition.setWriteCommunity(m_currentConfig.getWriteCommunity());
+        } else {
+            definition.setWriteCommunity(DEFAULT_WRITE_COMMUNITY);
+        }
+
+        if (sourceConfig.getReadCommunity() != null) {
+            definition.setReadCommunity(sourceConfig.getReadCommunity());
+        } else if (m_currentConfig.getReadCommunity() != null) {
+            definition.setReadCommunity(m_currentConfig.getReadCommunity());
+        } else {
+            definition.setReadCommunity(DEFAULT_READ_COMMUNITY);
+        }
+
+        if (sourceConfig.hasTimeout()) {
+            definition.setTimeout(sourceConfig.getTimeout());
+        } else if (m_currentConfig.hasTimeout()) {
+            definition.setTimeout(m_currentConfig.getTimeout());
+        } else {
+            definition.setTimeout(DEFAULT_TIMEOUT);
+        }
+
+        if (sourceConfig.hasRetry()) {
+            definition.setRetry(sourceConfig.getRetry());
+        } else if (m_currentConfig.hasRetry()) {
+            definition.setRetry(m_currentConfig.getRetry());
+        } else {
+            definition.setRetry(DEFAULT_RETRIES);
+        }
+
+        if (sourceConfig.hasPort()) {
+            definition.setPort(sourceConfig.getPort());
+        } else if (m_currentConfig.hasPort()) {
+            definition.setPort(m_currentConfig.getPort());
+        } else {
+            definition.setPort(DEFAULT_PORT);
+        }
+
+        if (definition.getAuthPassphrase() == null) {
+            definition.setAuthProtocol(null);
+        }
+        if (definition.getPrivacyPassphrase() == null) {
+            definition.setPrivacyProtocol(null);
+        }
+
+        if (sourceConfig.hasSecurityLevel()) {
+            //LOG.debug("setSecurityLevel: {}", sourceConfig.getSecurityLevel());
+            definition.setSecurityLevel(sourceConfig.getSecurityLevel());
+        } else if (m_currentConfig.hasSecurityLevel()) {
+            //LOG.debug("setSecurityLevel: {}", m_currentConfig.getSecurityLevel());
+            definition.setSecurityLevel(m_currentConfig.getSecurityLevel());
+        } else {
+            int securityLevel = NOAUTH_NOPRIV;
+            if (isBlank(definition.getAuthPassphrase())) {
+                //LOG.debug("authPassphrase is null, NOAUTH_NOPRIV");
+                securityLevel = NOAUTH_NOPRIV;
+            } else if (isBlank(definition.getPrivacyPassphrase())) {
+                //LOG.debug("privacyPassphrase is null, AUTH_NOPRIV");
+                securityLevel = AUTH_NOPRIV;
+            } else {
+                //LOG.debug("auth {} privacy {} AUTH_PRIV", ret.getAuthPassphrase(), ret.getPrivacyPassphrase());
+                securityLevel = AUTH_PRIV;
+            }
+            definition.setSecurityLevel(securityLevel);
+        }
+
+        if(sourceConfig.hasTTL()) {
+            definition.setTTL(sourceConfig.getTTL());
+        } else if (m_currentConfig.hasTTL()) {
+            definition.setTTL(m_currentConfig.getTTL());
+        }
+        return definition;
+    }
+
+    @Override
+    public void visitSnmpProfile(SnmpProfile snmpProfile) {
+        this.snmpProfile = snmpProfile;
+    }
+    @Override
+    public void visitSnmpProfileFinished() {
+        m_generatedDefinition = createDefinitionFromConfig(snmpProfile);
+    }
+
     public Definition getDefinition() {
         return m_generatedDefinition;
+    }
+
+    public boolean isMatchingDefaultConfig() {
+        return m_isMatchingDefault;
     }
 
     private boolean isBlank(final String s) {

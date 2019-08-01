@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.snmp;
+package org.opennms.netmgt.snmp;
 
+import java.net.InetAddress;
 import java.util.List;
 
-public interface SnmpConfigVisitor {
-    void visitSnmpConfig(SnmpConfig config);
-    void visitSnmpConfigFinished();
-    
-    void visitDefinition(Definition definition);
-    void visitDefinitionFinished();
-    
-    void visitSpecifics(List<String> specifics);
-    void visitSpecificsFinished();
-    
-    void visitRanges(List<Range> ranges);
-    void visitRangesFinished();
-    
-    void visitIpMatches(List<String> ipMatches);
-    void visitIpMatchesFinished();
+public interface SnmpProfileMapper {
 
-    void visitSnmpProfile(SnmpProfile snmpProfile);
-    void visitSnmpProfileFinished();
+    List<SnmpAgentConfig> getAgentConfigs(InetAddress inetAddress);
 
+    void updateDefinition(SnmpAgentConfig snmpAgentConfig, String location);
+
+    void deleteFromDefinition(InetAddress inetAddress);
 }

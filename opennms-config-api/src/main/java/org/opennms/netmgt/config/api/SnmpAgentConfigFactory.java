@@ -29,7 +29,10 @@
 package org.opennms.netmgt.config.api;
 
 import java.net.InetAddress;
+import java.util.List;
 
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 public interface SnmpAgentConfigFactory {
@@ -41,4 +44,33 @@ public interface SnmpAgentConfigFactory {
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpAgentConfig getAgentConfig(InetAddress address, String location);
+
+    /**
+     * <p>getAgentConfig for a given Definition </p>
+     *
+     * @param snmpProfile a @{@link Definition} object.
+     * @param address a {@link InetAddress} object.
+     * @return a {@link SnmpAgentConfig} object.
+     */
+    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address);
+
+    /**
+     * Merge this definition into current config.
+     * @param definition Definition that has SNMP parameters associated with a specific IP address or Range.
+     */
+    void saveDefinition(Definition definition);
+
+    /**
+     * Create definition and merge this definition into currentConfig.
+     * @param snmpAgentConfig agentConfig that might have succeeded in snmp walk/get.
+     * @param location
+     */
+    void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location);
+
+    /**
+     * Get all the profiles from snmp config.
+     * @return a List of snmp profiles.
+     */
+    List<SnmpProfile> getProfiles();
+
 }

@@ -55,6 +55,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     private InetAddress m_address;
     private InetAddress m_proxyFor;
+    private boolean isDefault = true;
 
     public SnmpAgentConfig() {
         this(null);
@@ -162,6 +163,14 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     public InetAddress getEffectiveAddress() {
         if (m_proxyFor == null) return m_address;
         return m_proxyFor;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean defaultConfig) {
+        isDefault = defaultConfig;
     }
 
     @Override

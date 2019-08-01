@@ -151,7 +151,14 @@ final class NodeInfoScan implements RunInBatch {
                     .get();
                 systemGroup.updateSnmpDataForNode(getNode());
             } catch (ExecutionException e) {
-                abort("Aborting node scan : Agent failed while scanning the system table: " + e.getMessage());
+                boolean succeeded = false;
+                // TODO: Handle this only when it throws SNMP related exceptions.
+                if (agentConfig.isDefault()) {
+                    succeeded = peformSNMPWalkWithProfiles(primaryAddress);
+                }
+                if(!succeeded) {
+                    abort("Aborting node scan : Agent failed while scanning the system table: " + e.getMessage());
+                }
             }
 
             List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getEffectiveForeignSource());
@@ -188,6 +195,29 @@ final class NodeInfoScan implements RunInBatch {
             Thread.currentThread().interrupt();
         }
     }
+
+    private boolean peformSNMPWalkWithProfiles(InetAddress primaryAddress) throws InterruptedException {
+
+        List<SnmpAgentConfig> agentConfigList = m_provisionService.getSnmpProfileMapper()
+                    .getAgentConfigs(primaryAddress);
+        for (SnmpAgentConfig agentConfig : agentConfigList) {
+            try {
+                SystemGroup systemGroup = new SystemGroup(agentConfig.getAddress());
+                m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, systemGroup)
+                        .withDescription("systemGroup")
+                        .withLocation(getLocationName())
+                        .execute()
+                        .get();
+                systemGroup.updateSnmpDataForNode(getNode());
+                m_provisionService.getSnmpProfileMapper().updateDefinition(agentConfig, getLocationName());
+                return true;
+            } catch (ExecutionException e) {
+                //Ignore
+            }
+        }
+        return false;
+    }
+
 
     private String getEffectiveForeignSource() {
         return getForeignSource()  == null ? "default" : getForeignSource();

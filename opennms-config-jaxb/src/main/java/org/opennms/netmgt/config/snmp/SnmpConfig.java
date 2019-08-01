@@ -57,6 +57,9 @@ public class SnmpConfig extends Configuration implements Serializable {
     @XmlElement(name="definition")
     private List<Definition> m_definitions = new ArrayList<>();
 
+    @XmlElement(name="profiles")
+    private SnmpProfiles m_snmpProfiles;
+
     public SnmpConfig() {
         super();
     }
@@ -107,6 +110,14 @@ public class SnmpConfig extends Configuration implements Serializable {
 
     public boolean removeDefinition(final Definition definitions) {
         return m_definitions.remove(definitions);
+    }
+
+    public SnmpProfiles getSnmpProfiles() {
+        return m_snmpProfiles;
+    }
+
+    public void setSnmpProfiles(SnmpProfiles snmpProfiles) {
+        this.m_snmpProfiles = snmpProfiles;
     }
 
     @Override
