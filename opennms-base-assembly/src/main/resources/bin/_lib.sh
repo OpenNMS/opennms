@@ -59,6 +59,7 @@ __onms_is_absolute() {
 	return 1
 }
 
+# convert any path into an absolute path
 __onms_get_absolute_path() {
 	__abspath_dir="$(dirname "$1")"
 	__basename="$(basename "$1")"
@@ -70,22 +71,41 @@ __onms_get_absolute_path() {
 __onms_bin_readlink="$(command -v readlink 2>/dev/null)"
 __onms_bin_realpath="$(command -v realpath 2>/dev/null)"
 
+# resolve a file name to its real path (following multiple links if necessary)
+# WARNING: assumes the existence of `readlink`, use __onms_get_real_path instead
+__lib_resolve_symbolic_links() {
+	file_to_find="$1"
+
+	if [ -L "$file_to_find" ]; then
+		__new_file_name="$("$__onms_bin_readlink" "$file_to_find")"
+
+		if ! __onms_is_absolute "$__new_file_name"; then
+			# we got a relative file, make it absolute again
+			__prefix="$(dirname "$file_to_find")"
+			__new_file_name="${__prefix}/${__new_file_name}"
+		fi
+
+		__lib_resolve_symbolic_links "${__new_file_name}"
+		return
+	fi
+
+	echo "$file_to_find"
+}
+
+# resolve a file name to its real path (following multiple links if necessary)
 __onms_get_real_path() {
+	file_to_find="$1"
+
 	if [ -n "$__onms_bin_realpath" ]; then
 		"$__onms_bin_realpath" "$1"
 		return
 	fi
 
 	file_to_find="$(__onms_get_absolute_path "$1")"
-	if [ -n "$__onms_bin_readlink" ] && [ -L "$file_to_find" ]; then
-		__new_file_name="$("$__onms_bin_readlink" "$file_to_find")"
-		if ! __onms_is_absolute "$__new_file_name"; then
-			# we got a relative file, make it absolute again
-			__prefix="$(dirname "$file_to_find")"
-			__new_file_name="${__prefix}/${__new_file_name}"
-		fi
-		__onms_get_real_path "${__new_file_name}"
-		return
+	if [ -n "$__onms_bin_readlink" ]; then
+		__lib_resolve_symbolic_links "$file_to_find"
+    return
 	fi
+
 	echo "$file_to_find"
 }
