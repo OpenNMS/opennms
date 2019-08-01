@@ -1,4 +1,4 @@
-<div ng-if="type === 'schedule'">
+<div ng-if="options.deliverReport && options.scheduleReport">
   <div class="modal-header">
     <h3>Report scheduled</h3>
   </div>
@@ -10,7 +10,7 @@
   </div>
 </div>
 
-<div ng-if="type === 'deliver'">
+<div ng-if="options.deliverReport && !options.scheduleReport">
   <div class="modal-header">
     <h3>Report delivered</h3>
   </div>

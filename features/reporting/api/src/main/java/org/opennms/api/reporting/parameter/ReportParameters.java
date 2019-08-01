@@ -29,13 +29,19 @@
 package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
+
+import com.google.common.collect.Lists;
 
 
 /**
@@ -275,7 +281,43 @@ public class ReportParameters implements Serializable {
         return getReportParms(ReportMode.IMMEDIATE);
         
     }
-    
-    
 
+    public void apply(final Map<String, Object> reportParameters) {
+        Objects.requireNonNull(reportParameters);
+        final Map<String, ReportParm> stringReportParmMap = asMap();
+
+        reportParameters.entrySet().forEach(e -> {
+            if (e.getValue() != null) {
+                final String parameterName = e.getKey();
+                final Object parameterValue = e.getValue();
+                final ReportParm reportParm = stringReportParmMap.get(parameterName);
+                if (reportParm != null) {
+                    if (reportParm instanceof ReportStringParm && parameterValue instanceof String) {
+                        ((ReportStringParm) reportParm).setValue((String) parameterValue);
+                    } else if (reportParm instanceof ReportDateParm && parameterValue instanceof Date) {
+                        ((ReportDateParm) reportParm).setDate((Date) parameterValue);
+                    } else if (reportParm instanceof ReportFloatParm && parameterValue instanceof Float) {
+                        ((ReportFloatParm) reportParm).setValue((Float) parameterValue);
+                    } else if (reportParm instanceof ReportIntParm && parameterValue instanceof Integer) {
+                        ((ReportIntParm) reportParm).setValue((Integer) parameterValue);
+                    } else if (reportParm instanceof ReportDoubleParm && parameterValue instanceof Double) {
+                        ((ReportDoubleParm) reportParm).setValue((Double) parameterValue);
+                    } else {
+                        throw new IllegalArgumentException("Cannot apply property of name " + parameterName + " and value of type " + parameterValue.getClass().getName());
+                    }
+                } else {
+                    throw new IllegalArgumentException("Cannot apply property of name " + parameterName);
+                }
+            }
+        });
+    }
+
+    protected <T extends ReportParm> Map<String, T> asMap() {
+        final Map<String, ? extends ReportParm> reportMap = Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms)
+                .stream()
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .collect(Collectors.toMap(p -> p.getName(), Function.identity()));
+        return (Map<String, T>) reportMap;
+    }
 }

@@ -1,0 +1,11 @@
+<div class="modal-header">
+    <h3 class="text-muted">Edit Schedule</h3>
+    <h4>{{triggerName}}</h4>
+</div>
+<div class="modal-body">
+    <onms-report-details ng-model="report" options="options"></onms-report-details>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-danger" ng-click="$close()"><i class="fa fa-times"></i> Cancel</button>
+    <button class="btn btn-primary" ng-click="update()"><i class="fa fa-save"></i> Update</button>
+</div>

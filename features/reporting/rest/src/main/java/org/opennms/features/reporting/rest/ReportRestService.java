@@ -34,6 +34,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -76,13 +77,21 @@ public interface ReportRestService {
     @Path("/scheduled")
     Response listScheduledReports();
 
+    @GET
+    @Path("/scheduled/{triggerName}")
+    Response getSchedule(@PathParam("triggerName") final String triggerName);
+
+    @PUT
+    @Path("/scheduled/{triggerName}")
+    Response updateSchedule(@PathParam("triggerName") final String triggerName, final Map<String, Object> parameters);
+
     @DELETE
     @Path("/scheduled")
     Response deleteScheduledReports();
 
     @POST
     @Path("/scheduled")
-    Response scheduleReport(Map<String, Object> parameters);
+    Response scheduleReport(final Map<String, Object> parameters);
 
     @DELETE
     @Path("/scheduled/{id}")
