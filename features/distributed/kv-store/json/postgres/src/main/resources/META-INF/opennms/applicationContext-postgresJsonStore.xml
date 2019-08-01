@@ -5,9 +5,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
-    <bean name="connectionFactory" class="org.opennms.features.distributed.postgres.opennms.OnmsPostgresConnectionFactory" factory-method="getInstance"/>
+    <bean name="dataSource" class="org.opennms.core.db.DataSourceFactory" factory-method="getInstance"/>
+
     <bean name="jsonStore" class="org.opennms.features.distributed.kvstore.json.postgres.PostgresJSONStore">
-        <constructor-arg ref="connectionFactory"/>
+        <constructor-arg ref="dataSource"/>
     </bean>
     <onmsgi:service interface="org.opennms.features.distributed.kvstore.api.JSONStore" ref="jsonStore"/>
 

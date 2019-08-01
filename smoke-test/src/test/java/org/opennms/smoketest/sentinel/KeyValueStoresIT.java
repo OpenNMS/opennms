@@ -51,23 +51,23 @@ public class KeyValueStoresIT {
     public void canPutAndGetBlobsOnSentinel() {
         String value = "blob tubessssssssss!";
         KarafShell ks = new KarafShell(stack.sentinel().getSshAddress());
-        ks.runCommand("blobstore:put \"key\" \"context\" \"" + value + "\"");
-        ks.runCommand("blobstore:get \"key\" \"context\"", s -> s.contains(value));
+        ks.runCommand("opennms-kv-blob:put \"key\" \"context\" \"" + value + "\"");
+        ks.runCommand("opennms-kv-blob:get \"key\" \"context\"", s -> s.contains(value));
     }
 
     @Test
     public void canPutAndGetJSONOnSentinel() {
         String value = "{\"label\": \"JSON tubessssssssss!\"}";
         KarafShell ks = new KarafShell(stack.sentinel().getSshAddress());
-        ks.runCommand("jsonstore:put \"key\" \"context\" '" + value + "'");
-        ks.runCommand("jsonstore:get \"key\" \"context\"", s -> s.contains(value));
+        ks.runCommand("opennms-kv-json:put \"key\" \"context\" '" + value + "'");
+        ks.runCommand("opennms-kv-json:get \"key\" \"context\"", s -> s.contains(value));
     }
 
     @Test
     public void canPutAndGetJSONOnOpenNMS() {
         String value = "{\"label\": \"JSON tubessssssssss!\"}";
         KarafShell ks = new KarafShell(stack.opennms().getSshAddress());
-        ks.runCommand("jsonstore:put \"key\" \"context\" '" + value + "'");
-        ks.runCommand("jsonstore:get \"key\" \"context\"", s -> s.contains(value));
+        ks.runCommand("opennms-kv-json:put \"key\" \"context\" '" + value + "'");
+        ks.runCommand("opennms-kv-json:get \"key\" \"context\"", s -> s.contains(value));
     }
 }

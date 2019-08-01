@@ -39,8 +39,9 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
 
+import javax.sql.DataSource;
+
 import org.opennms.features.distributed.kvstore.api.AbstractAsyncKeyValueStore;
-import org.opennms.features.distributed.postgres.api.PostgresConnectionFactory;
 
 /**
  * A {@link org.opennms.features.distributed.kvstore.api.KeyValueStore} backed by Postgres.
@@ -61,11 +62,11 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
     private final PreparedStatement upsertStatement;
     private final PreparedStatement lastUpdatedStatement;
 
-    public AbstractPostgresKeyValueStore(PostgresConnectionFactory postgresConnectionFactory) {
-        Objects.requireNonNull(postgresConnectionFactory);
+    public AbstractPostgresKeyValueStore(DataSource dataSource) {
+        Objects.requireNonNull(dataSource);
 
         try {
-            Connection connection = postgresConnectionFactory.getConnection();
+            Connection connection = dataSource.getConnection();
 
             // Prepare the statements now that we have the table name
             selectStatement = connection.prepareStatement(String.format("SELECT %s, %s FROM %s WHERE %s = ? AND %s = ?",
@@ -73,7 +74,7 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
             upsertStatement = connection.prepareStatement(String.format(
                     "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, " + getValueStatementPlaceholder() + ") " +
                             "ON CONFLICT ON CONSTRAINT " +
-                            "pk_kvstore_jsonb" +
+                            getPkConstraintName() +
                             " DO " +
                             "UPDATE SET %s = ?, %s = ?, %s = " + getValueStatementPlaceholder(),
                     getTableName(), KEY_COLUMN, CONTEXT_COLUMN, LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, VALUE_COLUMN,
@@ -241,4 +242,9 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
      * @return the name of the table for this store
      */
     protected abstract String getTableName();
+    
+    /**
+     * @return the name of the primary key constraint for the table this store persists to
+     */
+    protected abstract String getPkConstraintName();
 }

@@ -31,13 +31,14 @@ package org.opennms.features.distributed.kvstore.json.postgres;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
 import org.opennms.features.distributed.kvstore.api.JSONStore;
 import org.opennms.features.distributed.kvstore.pgshared.AbstractPostgresKeyValueStore;
-import org.opennms.features.distributed.postgres.api.PostgresConnectionFactory;
 
 public class PostgresJSONStore extends AbstractPostgresKeyValueStore<String, String> implements JSONStore {
-    public PostgresJSONStore(PostgresConnectionFactory postgresConnectionFactory) {
-        super(postgresConnectionFactory);
+    public PostgresJSONStore(DataSource dataSource) {
+        super(dataSource);
     }
 
     @Override
@@ -53,5 +54,10 @@ public class PostgresJSONStore extends AbstractPostgresKeyValueStore<String, Str
     @Override
     protected String getValueTypeFromSQLType(ResultSet resultSet, String columnName) throws SQLException {
         return resultSet.getString(columnName);
+    }
+
+    @Override
+    protected String getPkConstraintName() {
+        return "pk_kvstore_jsonb";
     }
 }

@@ -26,6 +26,5 @@
     <module>service-registry</module>
     <module>kv-store</module>
     <module>distributed-cassandra</module>
-    <module>distributed-postgres</module>
   </modules>
 </project>
