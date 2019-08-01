@@ -207,6 +207,9 @@ commands:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
+            echo JAVA_HOME=$JAVA_HOME
+            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+            sudo apt -y install openjdk-11-jdk
             .circleci/scripts/smoke.sh << parameters.minimal >>
       - run:
           name: Gather system logs
@@ -260,6 +263,8 @@ commands:
       - run:
           name: Compile OpenNMS
           command: |
+            yum -y install java-11-openjdk-devel
+            export JAVA_HOME=/usr/lib/jvm/java-11
             .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
             << parameters.node-memory >>
@@ -321,10 +326,18 @@ commands:
           name: Integration Tests
           no_output_timeout: 1.0h
           command: |
+            sudo killall -9 apt-get || true && \
+            sudo apt-get update && \
+            sudo apt-get -y install debconf-utils && \
+            echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f openjdk-11-jdk
+            ls -l /usr/lib/jvm
+            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
             export CCI_CHANGES_ONLY=<< parameters.changes-only >>
+            export MAVEN_OPTS="-Xms2560m -Xmx2560m -XX:ReservedCodeCacheSize=512m -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:-UseGCOverheadLimit -XX:+UseParallelGC -XX:+UseParallelOldGC"
             .circleci/scripts/itest.sh
       - run:
           name: Gather test results
@@ -486,6 +499,7 @@ workflows:
             - horizon-rpm-build
             - tarball-assembly
             - sentinel-rpm-build
+            - integration-test
           filters:
             branches:
               only:
@@ -501,6 +515,7 @@ workflows:
             - horizon-rpm-build
             - tarball-assembly
             - sentinel-rpm-build
+            - integration-test
           filters:
             branches:
               ignore:
@@ -676,6 +691,11 @@ jobs:
       - run:
           name: Assemble tarballs and related artifacts
           command: |
+            sudo killall -9 apt-get || true && \
+            sudo apt-get update && \
+            sudo apt-get -y install debconf-utils && \
+            echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f openjdk-11-jdk
             # install fake makensis to satisfy the assemble dependency
             sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
             export MAVEN_OPTS="-Xmx4g -Xms4g"
@@ -797,6 +817,9 @@ jobs:
       - run:
           name: Build RPMs
           command: |
+            echo JAVA_HOME=$JAVA_HOME
+            yum -y install java-11-openjdk-devel
+            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
@@ -840,6 +863,9 @@ jobs:
       - run:
           name: Build RPMs
           command: |
+            echo JAVA_HOME=$JAVA_HOME
+            yum -y install java-11-openjdk-devel
+            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
@@ -871,6 +897,9 @@ jobs:
       - run:
           name: Build RPMs
           command: |
+            echo JAVA_HOME=$JAVA_HOME
+            yum -y install java-11-openjdk-devel
+            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
