@@ -39,8 +39,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
@@ -54,7 +52,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+import com.google.common.net.HostAndPort;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
@@ -79,11 +77,6 @@ import io.netty.util.internal.SocketUtils;
  */
 public class NettyDnsResolver implements DnsResolver {
     private static final Logger LOG = LoggerFactory.getLogger(NettyDnsResolver.class);
-
-    /**
-     * Used for parsing the list of nameservers from the configuration.
-     */
-    private static final Pattern IPV6_ADDR_PATTERN = Pattern.compile("\\s*\\[(.*)](:(\\d+))?\\s*");
 
     public static final String CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI = "uei.opennms.org/circuitBreaker/stateChange";
 
@@ -268,27 +261,10 @@ public class NettyDnsResolver implements DnsResolver {
         final String[] servers = commaSeparatedAddressesWithPorts.split(",");
         return Arrays.stream(servers)
                 .map(s -> {
-                    final String[] parts;
-                    final Matcher matcher = IPV6_ADDR_PATTERN.matcher(s);
-                    if (matcher.matches()) {
-                        // We've got an IPv6 address
-                        final String addrStr = matcher.group(1);
-                        final String portStr = matcher.group(3);
-                        if (portStr != null) {
-                            parts = new String[]{addrStr, portStr};
-                        } else {
-                            parts = new String[]{addrStr};
-                        }
-                    } else {
-                        // We've got an IPv4 address or a hostname
-                        parts = s.split(":");
-                    }
-
-                    if (parts.length > 1) {
-                        return SocketUtils.socketAddress(parts[0].trim(), Integer.parseInt(parts[1].trim()));
-                    } else {
-                        return SocketUtils.socketAddress(parts[0].trim(),53);
-                    }
+                    final HostAndPort hp = HostAndPort.fromString(s.trim())
+                            .withDefaultPort(53)
+                            .requireBracketsForIPv6();
+                    return SocketUtils.socketAddress(hp.getHostText(), hp.getPort());
                 })
                 .collect(Collectors.toList());
     }
