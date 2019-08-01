@@ -104,7 +104,7 @@ __onms_get_real_path() {
 	file_to_find="$(__onms_get_absolute_path "$1")"
 	if [ -n "$__onms_bin_readlink" ]; then
 		__lib_resolve_symbolic_links "$file_to_find"
-    return
+		return
 	fi
 
 	echo "$file_to_find"
