@@ -33,7 +33,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.junit.Test;
 
-public class NodeMapIT extends OpenNMSSeleniumTestCase {
+public class NodeMapIT extends OpenNMSSeleniumIT {
 
     /**
      * Checks whether a node without interfaces will appear on the node map. See NMS-12171 for details.
@@ -60,7 +60,7 @@ public class NodeMapIT extends OpenNMSSeleniumTestCase {
             sendPut("rest/nodes/" + REQUISITION_NAME + ":TestMachine/assetRecord", "latitude=30", 204);
 
             // navigate to the node-map page
-            this.m_driver.get(this.getBaseUrl() + "opennms/node-maps");
+            this.driver.get(this.getBaseUrlInternal() + "opennms/node-maps");
 
             // check whether the node will appear even if it has no associated interface
             with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> (findElementByXpath("//*[contains(@class, 'leaflet-marker-icon')]") != null));
