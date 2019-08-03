@@ -13,12 +13,12 @@ generate_report_names()
 
 generate_jacoco_report_names()
 {
-  echo "$(generate_names 'target/jacoco-surefire-' '/jacoco.xml'),$(generate_names 'target/jacoco-failsafe-' '/jacoco.xml')"
+  echo "$(generate_report_names 'target/jacoco-surefire-' '/jacoco.xml'),$(generate_report_names 'target/jacoco-failsafe-' '/jacoco.xml')"
 }
 
 generate_junit_report_names()
 {
-  echo "$(generate_names 'target/surefire-reports-'),$(generate_names 'target/failsafe-reports-')"
+  echo "$(generate_report_names 'target/surefire-reports-'),$(generate_report_names 'target/failsafe-reports-')"
 }
 
 echo "#### Executing Sonar"
