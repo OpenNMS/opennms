@@ -124,7 +124,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     public static final String USER_NAME          = "SmokeTestUser";
     public static final String GROUP_NAME         = "SmokeTestGroup";
 
-    public static final File DOWNLOADS_FOLDER = new File("target/downloads");
+    public static final File DOWNLOADS_FOLDER = new File(System.getProperty("org.opennms.smoketest.downloads-folder", "target/downloads"));
 
     public WebDriverWait wait = null;
     public WebDriverWait requisitionWait = null;
