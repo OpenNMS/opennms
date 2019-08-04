@@ -55,17 +55,19 @@ import org.slf4j.LoggerFactory;
  * a downloads directory which the test verifies.
  */
 @RunWith(Parameterized.class)
-public class DatabaseReportIT extends OpenNMSSeleniumIT {
+public class DatabaseReportIT extends OpenNMSSeleniumDebugIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseReportIT.class);
+
+    public DatabaseReportIT() {
+        super("http://localhost:32775/wd/hub");
+    }
 
     // Reports to verify
     @Parameterized.Parameters
     public static Object[] data() {
         return new Object[][] {
-                {"local_Grafana-Dashbaord-Report-1ppp", "PDF", "Grafana Dashboard Report (1ppp)"},
-                {"local_Grafana-Dashbaord-Report-2ppp", "PDF", "Grafana Dashboard Report (2ppp)"},
-                {"local_Grafana-Dashbaord-Report-4ppp", "PDF", "Grafana Dashboard Report (4ppp)"},
+                // TODO MVR what about the grafana reports?
                 {"local_Early-Morning-Report", "PDF", "Early morning report"},
                 {"local_Response-Time-Summary-Report", "PDF", "Response Time Summary for node"},
                 {"local_Node-Availability-Report", "PDF", "Availability by node"},
@@ -92,19 +94,19 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
     public String reportName;
 
     /**
-     * Fixed filename that PDF reports will have once downloaded.
+     * Filename that PDF reports will have once downloaded.
      */
-    private final File reportPdfFile = new File(getDownloadsFolder(), "report.pdf");
+    private File reportPdfFile;
 
     @Before
     public void before() {
         cleanDownloadsFolder();
 
-        // we do not want to wait 2 minutes, we only want to wait n seconds
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
         LOG.info("Validating report generation '{}' ({})", reportName, reportFormat);
 
+        reportPdfFile = new File(getDownloadsFolder(), reportId + "." + reportFormat.toLowerCase());
+
+        Assert.assertNotNull(reportPdfFile);
         Assert.assertNotNull(reportId);
         Assert.assertNotNull(reportFormat);
         Assert.assertNotNull(reportName);
@@ -134,6 +136,9 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
     }
 
     private void verify() {
+        // we do not want to wait 2 minutes, we only want to wait n seconds
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+
         // verify current page and look out for errors
         // we do not use findElementByXpath(...) on purpose, we explicitly want to use this
         // otherwise we have to wait 2 minutes each time an error already occurred
@@ -148,9 +153,5 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
         // ensure it really has been downloaded and has a file size > 0
         Assert.assertTrue("No report was generated for report '" + reportName + "'", reportPdfFile.exists());
         Assert.assertTrue("The report is empty", reportPdfFile.length() > 0);
-
-        // rename the report so it remains available as an artifact
-        final File targetFile = new File(getDownloadsFolder(), reportId + ".pdf");
-        reportPdfFile.renameTo(targetFile);
     }
 }
