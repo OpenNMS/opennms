@@ -228,11 +228,11 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             $scope.refresh = function() {
                 var parameters = $scope.query || {};
                 var editPositionOfRuleEnabled = !($scope.group.readOnly) && ($scope.query.orderBy === 'position' && $scope.query.order === 'asc');
-                var sortable =  angular.element( ".ui-sortable" );
+                var sortable =  angular.element( '.ui-sortable' );
                 if(editPositionOfRuleEnabled === true) {
-                    sortable.sortable("enable");
+                    sortable.sortable('enable');
                 } else {
-                    sortable.sortable("disable");
+                    sortable.sortable('disable');
                 }
                 return ClassificationRuleService.query( {
                     limit: parameters.limit || 20,
@@ -290,7 +290,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                 });
             };
 
-            var openModal = function(classification) {
+            var openModal = function(classification, group) {
                 return $uibModal.open({
                     backdrop: false,
                     controller: 'ClassificationModalController',
@@ -299,13 +299,16 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                     resolve: {
                         classification: function() {
                             return classification;
+                        },
+                        group: function() {
+                            return group;
                         }
                     }
                 });
             };
 
             $scope.editRule = function(rule) {
-                var modalInstance = openModal(rule);
+                var modalInstance = openModal(rule, rule.group);
                 modalInstance.closed.then(function () {
                     $scope.refreshAll();
                 }, function() {
@@ -314,8 +317,8 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                 });
             };
 
-            $scope.addRule = function() {
-                var modalInstance = openModal();
+            $scope.addRule = function(group) {
+                var modalInstance = openModal(null, group);
                 modalInstance.closed.then(function () {
                     $scope.refreshAll();
                 });
@@ -342,7 +345,15 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                     var parameters = $scope.query || {};
                     var offset =  (parameters.page -1) * parameters.limit || 0;
                     var rule = $scope.rules[newIndex];
-                    rule.position = newIndex + offset;
+                    var position;
+                    if(newIndex -1 < 0) {
+                        // we are already at the beginning of the visible paged list
+                        position = offset;
+                    } else {
+                        var previousRule = $scope.rules[newIndex -1];
+                        position = previousRule.position +1;
+                    }
+                    rule.position = position;
 
                     // Update backend
                     var refreshCallback = function() {
@@ -474,12 +485,13 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             };
 
         }])
-        .controller('ClassificationModalController', ['$scope', '$uibModalInstance', 'ProtocolService', 'ClassificationRuleService', 'classification', function($scope, $uibModalInstance, ProtocolService, ClassificationRuleService, classification) {
+        .controller('ClassificationModalController', ['$scope', '$uibModalInstance', 'ProtocolService', 'ClassificationRuleService', 'classification', 'group', function($scope, $uibModalInstance, ProtocolService, ClassificationRuleService, classification, group) {
             $scope.classification = classification || {};
             $scope.protocols = [];
             $scope.currentSelection = undefined;
             $scope.selectedProtocols = [];
             $scope.buttonName = $scope.classification.id ? 'Update' : 'Create';
+            $scope.group = group;
 
             var convertStringArrayToProtocolsArray = function(string) {
                 return string.map(function(protocol) {
