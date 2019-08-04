@@ -206,6 +206,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         @Override
         protected void finished(final Description description) {
             cleanUp();
+
+            // Ensure we close the driver, otherwise the browser is still open
+            // which might cause the container to run out of memory when running either
+            // in debug mode or a parameterized test
+            getDriver().quit();
         }
 
         protected void cleanUp() {
