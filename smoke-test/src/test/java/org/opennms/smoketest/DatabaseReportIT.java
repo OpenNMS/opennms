@@ -55,13 +55,9 @@ import org.slf4j.LoggerFactory;
  * a downloads directory which the test verifies.
  */
 @RunWith(Parameterized.class)
-public class DatabaseReportIT extends OpenNMSSeleniumDebugIT {
+public class DatabaseReportIT extends OpenNMSSeleniumIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseReportIT.class);
-
-    public DatabaseReportIT() {
-        super("http://localhost:32775/wd/hub");
-    }
 
     // Reports to verify
     @Parameterized.Parameters
