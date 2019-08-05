@@ -55,6 +55,8 @@ public interface SchedulerService {
     
     Boolean exists(String triggerName);
 
+    String updateCronTrigger(String cronTrigger, ReportParameters criteria, DeliveryOptions deliveryOptions, String cronExpression, SchedulerRequestContext context);
+
     @Transactional(readOnly = false)
     String addCronTrigger(String id,
             ReportParameters criteria, 

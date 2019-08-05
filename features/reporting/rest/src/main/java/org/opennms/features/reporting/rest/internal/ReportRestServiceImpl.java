@@ -287,8 +287,15 @@ public class ReportRestServiceImpl implements ReportRestService {
                 .filter(triggerDescription -> triggerDescription.getTriggerName().equals(triggerName))
                 .findAny();
         if (any.isPresent()) {
-            schedulerService.removeTrigger(triggerName);
-            return scheduleReport(parameters);
+            final ReportParameters reportParameters = parseParameters(parameters);
+            final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
+            final SchedulerRequestContext requestContext = new DummyRequestContext();
+            schedulerService.updateCronTrigger(triggerName, reportParameters, deliveryOptions, (String) parameters.get("cronExpression"), requestContext);
+            final SchedulerMessage errorMessage = extractErrorMessage(requestContext);
+            if (errorMessage != null) {
+                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
+            }
+            return Response.accepted().build();
         }
         return Response.status(Response.Status.NOT_FOUND).build();
     }
