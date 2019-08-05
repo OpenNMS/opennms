@@ -63,7 +63,6 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
     @Parameterized.Parameters
     public static Object[] data() {
         return new Object[][] {
-                // TODO MVR what about the grafana reports?
                 {"local_Early-Morning-Report", "PDF", "Early morning report"},
                 {"local_Response-Time-Summary-Report", "PDF", "Response Time Summary for node"},
                 {"local_Node-Availability-Report", "PDF", "Availability by node"},
