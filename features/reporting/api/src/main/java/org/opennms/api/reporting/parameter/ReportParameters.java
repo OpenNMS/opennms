@@ -54,7 +54,6 @@ public class ReportParameters implements Serializable {
     private static final long serialVersionUID = -3848794546173077375L;
     protected String m_reportId;
     protected ReportFormat m_format;
-    protected String m_displayName;
     protected List <ReportDateParm> m_dateParms;
     protected List <ReportStringParm> m_stringParms;
     protected List <ReportIntParm> m_intParms;
@@ -177,24 +176,6 @@ public class ReportParameters implements Serializable {
     }
 
     /**
-     * <p>setDisplayName</p>
-     *
-     * @param displayName a {@link java.lang.String} object.
-     */
-    public void setDisplayName(String displayName) {
-        m_displayName = displayName;
-    }
-
-    /**
-     * <p>getDisplayName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDisplayName() {
-        return m_displayName;
-    }
-    
-    /**
      * <p>setFormat</p>
      *
      * @param format a {@link org.opennms.api.reporting.ReportFormat} object.
@@ -203,6 +184,7 @@ public class ReportParameters implements Serializable {
         m_format = format;
     }
 
+    // TODO MVR this should live somewhere else
     /**
      * <p>getFormat</p>
      *
