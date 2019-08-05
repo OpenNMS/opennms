@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collection.persistence.tcp;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -47,12 +48,15 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.protobuf.ProtobufDecoder;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -74,6 +78,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.jayway.awaitility.core.ConditionTimeoutException;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -102,7 +107,8 @@ public class TcpOutputStrategyTest {
                         new ProtobufDecoder(PerformanceDataReadings.getDefaultInstance()),
                         new PerfDataServerHandler());
             }
-        });  
+        });
+        bootstrap.setOption("reuseAddress", true);
         Channel channel = bootstrap.bind(new InetSocketAddress(0));
         InetSocketAddress addr = (InetSocketAddress)channel.getLocalAddress();
 
@@ -117,13 +123,13 @@ public class TcpOutputStrategyTest {
 
     public static class PerfDataServerHandler extends SimpleChannelHandler {
         @Override
-        public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws InvalidProtocolBufferException  {
+        public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
             allReadings.add((PerformanceDataReadings) e.getMessage());
         }
     }
 
     @Test
-    public void peristAndReceiveProtobufMessages() {
+    public void persistAndReceiveProtobufMessages() {
         Date start = new Date();
 
         // Build a collection set with both numeric and string attributes
@@ -137,11 +143,14 @@ public class TcpOutputStrategyTest {
         builder.withStringAttribute(eth0, "mib2-interfaces", "ifHighSpeed", "10");
         CollectionSet collectionSet = builder.build();
 
+        // Make sure we start with an empty set of readings
+        allReadings.clear();
+
         // Persist without storeByGroup
         persist(collectionSet, false);
 
         // Wait for the server to receive the readings
-        await().until(() -> allReadings.size() == 1);
+        await().until(() -> allReadings.size(), equalTo(1));
         PerformanceDataReadings readings = allReadings.get(0);
 
         // The reading should contain three messages
@@ -178,7 +187,7 @@ public class TcpOutputStrategyTest {
         persist(collectionSet, true);
 
         // Wait for the server to receive the readings
-        await().until(() -> allReadings.size() == 2);
+        await().until(() -> allReadings.size(), equalTo(2));
         readings = allReadings.get(1);
 
         // The reading should contain 1 message
