@@ -64,7 +64,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
     }
 
     // See NMS-12166
-    @Test
+    @Test(timeout = 300000)
     public void testHeaderHiddenForTopologyUI() {
         final OpsBoardAdminEditorPage testBoard = adminPage.createNew("testBoard");
         testBoard.addDashlet(new DashletBuilder()
@@ -83,7 +83,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
             // Verify that the header is hidden
             // This method can throw StateElementReference exceptions, so we try multiple times
             await().atMost(1, TimeUnit.MINUTES)
-                    .ignoreException(WebDriverException.class)
+                    .ignoreExceptionsInstanceOf(WebDriverException.class)
                     .until(() -> driver.switchTo().parentFrame()
                             .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-topology-iframe']//iframe"))
                             .findElement(By.id("header")).isDisplayed(), equalTo(false));
@@ -93,7 +93,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
     }
 
     // See NMS-12166
-    @Test
+    @Test(timeout = 300000)
     public void testHeaderHiddenForNodeMap() {
         final OpsBoardAdminEditorPage testBoard = adminPage.createNew("testBoard");
         testBoard.addDashlet(new DashletBuilder()
@@ -112,7 +112,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
             // Verify that the header is hidden
             // This method can throw StateElementReference exceptions, so we try multiple times
             await().atMost(1, TimeUnit.MINUTES)
-                    .ignoreException(WebDriverException.class)
+                    .ignoreExceptionsInstanceOf(WebDriverException.class)
                     .until(() -> driver.switchTo().parentFrame()
                             .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-map-iframe']//iframe"))
                             .findElement(By.id("header")).isDisplayed(), equalTo(false));
