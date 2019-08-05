@@ -50,7 +50,7 @@ public abstract class UpdatingFlow implements Flow {
         // The timespan for this flow export depends on the timeout, if present: use the active or inactive timeout,
         // whether the flow was active or not, and subtract it from last switched timestamp. Short living flows are
         // capped to the real first switched timestamp. If there is no timeout information available the first switched
-        // timestamp is used a s an fallback.
+        // timestamp is used as an fallback.
 
         return this.getTimeout()
                 .map(timeout -> (this.getBytes() > 0  || this.getPackets() > 0) ? timeout.active : timeout.inactive)
