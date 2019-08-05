@@ -194,7 +194,7 @@ public final class OpenNMSStack implements TestRule {
 
     @Override
     public Statement apply(Statement base, Description description) {
-        // Delegate to the test rule we built during initalization
+        // Delegate to the test rule we built during initialization
         return delegateTestRule.apply(base, description);
     }
 
