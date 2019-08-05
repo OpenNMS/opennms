@@ -45,7 +45,9 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.Poll;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.springframework.test.context.ContextConfiguration;
@@ -62,7 +64,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class PageSequenceMonitorOpenNMSTest {
 
     AbstractServiceMonitor m_monitor;
-    Map<String, Object> m_params;
+    Map<String, PollerParameter> m_params;
 
 
     @Before
@@ -71,9 +73,9 @@ public class PageSequenceMonitorOpenNMSTest {
 
         m_monitor = new PageSequenceMonitor();
 
-        m_params = new HashMap<String, Object>();
-        m_params.put("timeout", "8000");
-        m_params.put("retries", "1");
+        m_params = new HashMap<>();
+        m_params.put("timeout", PollerParameter.simple("8000"));
+        m_params.put("retries", PollerParameter.simple("1"));
 
     }
 
@@ -105,11 +107,11 @@ public class PageSequenceMonitorOpenNMSTest {
         while ((line = in.readLine()) != null) {
             config.append(line);
         }
-        m_params.put("page-sequence", config.toString());
-        m_params.put("virtualHost", "localhost");
-        m_params.put("port", "8980");
-        m_params.put("adminUsername", "admin");
-        m_params.put("adminPassword", "admin");
+        m_params.put("page-sequence", PollerParameter.simple(config.toString()));
+        m_params.put("virtualHost", PollerParameter.simple("localhost"));
+        m_params.put("port", PollerParameter.simple("8980"));
+        m_params.put("adminUsername", PollerParameter.simple("admin"));
+        m_params.put("adminPassword", PollerParameter.simple("admin"));
 
         try {
             PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);

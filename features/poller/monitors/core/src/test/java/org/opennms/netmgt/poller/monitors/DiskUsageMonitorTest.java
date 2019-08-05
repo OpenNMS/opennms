@@ -49,7 +49,9 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +111,7 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test(expected = RuntimeException.class)
     public void testDiskNull() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
+        Map<String, PollerParameter> parameters = createBasicParams();
         parameters.remove("disk");
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
@@ -117,32 +119,32 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test(expected = RuntimeException.class)
     public void testInvalidMatchTypeParameter() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("match-type", "invalid");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("match-type", PollerParameter.simple("invalid"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
     }
 
     @Test(expected = RuntimeException.class)
     public void testInvalidRequireTypeParameter() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("require-type", "invalid");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("require-type", PollerParameter.simple("invalid"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
     }
 
     @Test
     public void testParameters() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
+        Map<String, PollerParameter> parameters = createBasicParams();
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
     }
 
     @Test
     public void testInvalidDiskRegex() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("disk", "^[A-Z:");
-        parameters.put("match-type", "regex");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("disk", PollerParameter.simple("^[A-Z:"));
+        parameters.put("match-type", PollerParameter.simple("regex"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
         Assert.assertThat(status.getReason(), containsString("Invalid SNMP Criteria: Unclosed character class"));
@@ -150,25 +152,25 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test
     public void testAllDisks() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("match-type", "startswith");
-        parameters.put("require-type", "all");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("match-type", PollerParameter.simple("startswith"));
+        parameters.put("require-type", PollerParameter.simple("all"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
     }
 
     @Test
     public void testDiskCase1() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("free", "25");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("free", PollerParameter.simple("25"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
     }
 
     @Test
     public void testDiskNotFound() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("disk", "/data");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("disk", PollerParameter.simple("/data"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
         Assert.assertThat(status.getReason(), containsString("Could not find /data in hrStorageTable"));
@@ -176,21 +178,23 @@ public class DiskUsageMonitorTest implements InitializingBean {
 
     @Test
     public void testDiskRegex() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("disk", "^/$");
-        parameters.put("match-type", "regex");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("disk", PollerParameter.simple("^/$"));
+        parameters.put("match-type", PollerParameter.simple("regex"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
     }
 
-    private Map<String, Object> createBasicParams() {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("port", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)).getPort());
-        parameters.put("disk", "/");
-        parameters.put("free", 15);
-        parameters.put("match-type", "exact");
-        parameters.put("require-type", "any");
-        parameters.put("agent", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
+    private Map<String, PollerParameter> createBasicParams() {
+        Map<String, PollerParameter> parameters = new HashMap<>();
+        final SnmpAgentConfig agentConfig = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS));
+
+        parameters.put("port", PollerParameter.simple(Integer.toString(agentConfig.getPort())));
+        parameters.put("disk", PollerParameter.simple("/"));
+        parameters.put("free", PollerParameter.simple("15"));
+        parameters.put("match-type", PollerParameter.simple("exact"));
+        parameters.put("require-type", PollerParameter.simple("any"));
+        parameters.put("agent", PollerParameter.marshall(agentConfig));
         return parameters;
     }
 

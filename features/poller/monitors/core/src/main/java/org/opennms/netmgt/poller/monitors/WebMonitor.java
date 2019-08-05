@@ -46,11 +46,12 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,21 +77,21 @@ public class WebMonitor extends AbstractServiceMonitor {
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> map) {
         PollStatus pollStatus = PollStatus.unresponsive();
         HttpClientWrapper clientWrapper = HttpClientWrapper.create();
-        setUseSystemProxyIfDefined(clientWrapper, map);
+        setUseSystemProxyIfDefined(clientWrapper, getKeyedBoolean(map, HttpClientWrapperConfigHelper.USE_SYSTEM_PROXY, false));
 
         try {
             final String hostAddress = InetAddressUtils.str(svc.getAddress());
 
             URIBuilder ub = new URIBuilder();
-            ub.setScheme(ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME));
+            ub.setScheme(getKeyedString(map, "scheme", DEFAULT_SCHEME));
             ub.setHost(hostAddress);
-            ub.setPort(ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT));
-            ub.setPath(ParameterMap.getKeyedString(map, "path", DEFAULT_PATH));
+            ub.setPort(getKeyedInteger(map, "port", DEFAULT_PORT));
+            ub.setPath(getKeyedString(map, "path", DEFAULT_PATH));
 
-            String queryString = ParameterMap.getKeyedString(map,"queryString",null);
+            String queryString = getKeyedString(map,"queryString",null);
             if (queryString != null && !queryString.trim().isEmpty()) {
                 final List<NameValuePair> params = URLEncodedUtils.parse(queryString, StandardCharsets.UTF_8);
                 if (!params.isEmpty()) {
@@ -99,39 +100,39 @@ public class WebMonitor extends AbstractServiceMonitor {
             }
 
             final HttpGet getMethod = new HttpGet(ub.build());
-            clientWrapper.setConnectionTimeout(ParameterMap.getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT))
-                .setSocketTimeout(ParameterMap.getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT));
+            clientWrapper.setConnectionTimeout(getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT))
+                .setSocketTimeout(getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT));
 
-            final String userAgent = ParameterMap.getKeyedString(map,"user-agent",DEFAULT_USER_AGENT);
+            final String userAgent = getKeyedString(map,"user-agent",DEFAULT_USER_AGENT);
             if (userAgent != null && !userAgent.trim().isEmpty()) {
                 clientWrapper.setUserAgent(userAgent);
             }
 
-            final String virtualHost = ParameterMap.getKeyedString(map,"virtual-host", hostAddress);
+            final String virtualHost = getKeyedString(map,"virtual-host", hostAddress);
             if (virtualHost != null && !virtualHost.trim().isEmpty()) {
                 clientWrapper.setVirtualHost(virtualHost);
             }
 
-            if(ParameterMap.getKeyedBoolean(map, "http-1.0", false)) {
+            if(getKeyedBoolean(map, "http-1.0", false)) {
                 clientWrapper.setVersion(HttpVersion.HTTP_1_0);
             }
 
             for(final Object okey : map.keySet()) {
                 final String key = okey.toString();
                 if(key.matches("header_[0-9]+$")){
-                    final String headerName  = ParameterMap.getKeyedString(map,key,null);
-                    final String headerValue = ParameterMap.getKeyedString(map,key + "_value",null);
+                    final String headerName  = getKeyedString(map,key,null);
+                    final String headerValue = getKeyedString(map,key + "_value",null);
                     getMethod.setHeader(headerName, headerValue);
                 }
             }
 
-            if (ParameterMap.getKeyedBoolean(map, "use-ssl-filter", false)) {
-                clientWrapper.trustSelfSigned(ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME));
+            if (getKeyedBoolean(map, "use-ssl-filter", false)) {
+                clientWrapper.trustSelfSigned(getKeyedString(map, "scheme", DEFAULT_SCHEME));
             }
 
-            if(ParameterMap.getKeyedBoolean(map,"auth-enabled",false)) {
-                clientWrapper.addBasicCredentials(ParameterMap.getKeyedString(map, "auth-user", DEFAULT_USER), ParameterMap.getKeyedString(map, "auth-password", DEFAULT_PASSWORD));
-                if (ParameterMap.getKeyedBoolean(map, "auth-preemptive", true)) {
+            if(getKeyedBoolean(map,"auth-enabled",false)) {
+                clientWrapper.addBasicCredentials(getKeyedString(map, "auth-user", DEFAULT_USER), getKeyedString(map, "auth-password", DEFAULT_PASSWORD));
+                if (getKeyedBoolean(map, "auth-preemptive", true)) {
                     clientWrapper.usePreemptiveAuth();
                 }
             }
@@ -140,11 +141,11 @@ public class WebMonitor extends AbstractServiceMonitor {
             CloseableHttpResponse response = clientWrapper.execute(getMethod);
             int statusCode = response.getStatusLine().getStatusCode();
             String statusText = response.getStatusLine().getReasonPhrase();
-            String expectedText = ParameterMap.getKeyedString(map,"response-text",null);
+            String expectedText = getKeyedString(map,"response-text",null);
 
             LOG.debug("returned results are:");
 
-            if(!inRange(ParameterMap.getKeyedString(map, "response-range", DEFAULT_HTTP_STATUS_RANGE),statusCode)){
+            if(!inRange(getKeyedString(map, "response-range", DEFAULT_HTTP_STATUS_RANGE),statusCode)){
                 pollStatus = PollStatus.unavailable(statusText);
             }
             else {

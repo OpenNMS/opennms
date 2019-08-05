@@ -37,6 +37,7 @@ import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.passive.PassiveStatusKeeperIT;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
@@ -55,11 +56,11 @@ public class PassiveServiceMonitorIT extends PassiveStatusKeeperIT {
         ServiceMonitor sm = new PassiveServiceMonitor();
         
         MonitoredService ms = createMonitoredService(1, "localhost", null, "127.0.0.1", "my-passive-service");
-        PollStatus ps = sm.poll(ms, new HashMap<String, Object>());
+        PollStatus ps = sm.poll(ms, new HashMap<>());
         assertEquals(PollStatus.down("fail."), ps);
 
         psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.get(PollStatus.SERVICE_AVAILABLE, "testing failure"));
-        ps = sm.poll(ms, new HashMap<String, Object>());
+        ps = sm.poll(ms, new HashMap<>());
         assertEquals(PollStatus.up(), ps);
     }
 

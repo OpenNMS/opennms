@@ -51,6 +51,7 @@ import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockThresholdingService;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -135,9 +136,9 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", locationName,
                 InetAddress.getByName("192.168.1.5"), "SMTP");
 
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("rrd-repository", getResponseTimeRoot().getAbsolutePath());
-        params.put("rrd-base-name", "smtp-base");
+        Map<String, PollerParameter> params = Maps.newHashMap();
+        params.put("rrd-repository", PollerParameter.simple(getResponseTimeRoot().getAbsolutePath()));
+        params.put("rrd-base-name", PollerParameter.simple("smtp-base"));
 
         EasyMock.expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".jrb").atLeastOnce();
 
@@ -184,7 +185,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         }
 
         @Override
-        public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+        public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
             return m_pollStatus;
         }
     }

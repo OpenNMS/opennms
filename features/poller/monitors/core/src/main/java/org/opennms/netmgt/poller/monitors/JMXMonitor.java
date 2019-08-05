@@ -50,6 +50,7 @@ import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultConnectionManage
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.jmx.wrappers.ObjectNameWrapper;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
@@ -108,27 +109,24 @@ public class JMXMonitor extends AbstractServiceMonitor {
     }
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-        Map<String, String> convert = new HashMap<>();
-        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-            convert.put(entry.getKey(), (String) entry.getValue());
-        }
+    public Map<String, PollerParameter> getRuntimeAttributes(MonitoredService svc, Map<String, PollerParameter> parameters) {
+        Map<String, String> convert = JmxUtils.convertToStringMap(parameters);
         Map<String, String> attributes = JmxUtils.getRuntimeAttributes(jmxConfigDao.get(), InetAddressUtils.str(svc.getAddress()), convert);
-        return new HashMap<>(attributes);
+        return Maps.transformValues(attributes, PollerParameter::simple);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> map) {
         final InetAddress ipv4Addr = svc.getAddress();
 
         PollStatus serviceStatus = PollStatus.unavailable();
         try {
             final Timer timer = new Timer();
             final JmxConnectionManager connectionManager = new DefaultConnectionManager(
-                    ParameterMap.getKeyedInteger(map, "retry", 3));
+                    getKeyedInteger(map, "retry", 3));
             final JmxConnectionManager.RetryCallback retryCallback = new JmxConnectionManager.RetryCallback() {
                 @Override
                 public void onRetry() {
@@ -158,7 +156,7 @@ public class JMXMonitor extends AbstractServiceMonitor {
                     final String variable = key.substring(PARAM_BEAN_PREFIX.length());
 
                     // Get the variable definition
-                    final String definition = ParameterMap.getKeyedString(map, key, null);
+                    final String definition = getKeyedString(map, key, null);
 
                     // Store wrapper for variable definition
                     variables.put(variable,
@@ -177,7 +175,7 @@ public class JMXMonitor extends AbstractServiceMonitor {
                     final String variable = key.substring(PARAM_TEST_PREFIX.length());
 
                     // Get the test definition
-                    final String definition = ParameterMap.getKeyedString(map, key, null);
+                    final String definition = getKeyedString(map, key, null);
 
                     // Build the expression from the definition
                     final Expression expression = JEXL_ENGINE.createExpression(definition);
@@ -189,7 +187,7 @@ public class JMXMonitor extends AbstractServiceMonitor {
                 // Also handle a single test
                 if (map.containsKey(PARAM_TEST)) {
                     // Get the test definition
-                    final String definition = ParameterMap.getKeyedString(map, PARAM_TEST, null);
+                    final String definition = getKeyedString(map, PARAM_TEST, null);
 
                     // Build the expression from the definition
                     final Expression expression = JEXL_ENGINE.createExpression(definition);

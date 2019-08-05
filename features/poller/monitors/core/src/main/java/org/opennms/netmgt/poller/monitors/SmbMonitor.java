@@ -38,6 +38,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,7 @@ final public class SmbMonitor extends AbstractServiceMonitor {
     private static final boolean DO_NODE_STATUS_DEFAULT = true;
     
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // Extract the address
         //
         InetAddress ipAddr = svc.getAddress();
@@ -90,7 +91,7 @@ final public class SmbMonitor extends AbstractServiceMonitor {
          */
         final String hostAddress = InetAddressUtils.str(ipAddr);
 
-        final boolean doNodeStatus = ParameterMap.getKeyedBoolean(parameters, DO_NODE_STATUS, DO_NODE_STATUS_DEFAULT);
+        final boolean doNodeStatus = getKeyedBoolean(parameters, DO_NODE_STATUS, DO_NODE_STATUS_DEFAULT);
 
         try {
             nbtAddr = NbtAddress.getByName(hostAddress);

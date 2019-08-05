@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 
@@ -115,9 +116,9 @@ public class PollerConfigWithPSMIT {
         Assert.assertNotNull(pkg);
         Service svc = PollerConfigFactory.getInstance().getServiceInPackage("MQ_API_DirectRte_v2", pkg);
         Assert.assertNotNull(svc);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, PollerParameter> parameters = new HashMap<>();
         for (Parameter p : svc.getParameters()) {
-            parameters.put(p.getKey(), p.getValue() == null ? p.getAnyObject() : p.getValue());
+            parameters.put(p.getKey(), p.asPollerParameter());
         }
         PollStatus status = monitor.poll(new MockMonitoredService(1, "www.mapquest.com", InetAddress.getByName("www.mapquest.com"), "MQ_API_DirectRte_v2"), parameters);
         Assert.assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());

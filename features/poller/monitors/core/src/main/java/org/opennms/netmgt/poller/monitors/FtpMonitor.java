@@ -41,10 +41,11 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.FtpResponse;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
@@ -95,10 +96,10 @@ public class FtpMonitor extends ParameterSubstitutingMonitor {
      * valid we set the service status to SERVICE_AVAILABLE and return.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // Get the parameters
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+        int port = getKeyedInteger(parameters, "port", DEFAULT_PORT);
         String userid = resolveKeyedString(parameters, "userid", null);
         String password = resolveKeyedString(parameters, "password", null);
 

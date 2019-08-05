@@ -41,6 +41,7 @@ import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
 import org.opennms.netmgt.jmx.connection.JmxConnectionConfigBuilder;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,13 +82,13 @@ public final class JmxUtils {
      * @param map The map to be converted. May be null.
      * @return An unmodifiable map containing only String values from the input map, or null if input map was null.
      */
-    public static Map<String, String> convertToStringMap(final Map<String, Object> map) {
+    public static Map<String, String> convertToStringMap(final Map<String, PollerParameter> map) {
         if (map != null) {
             Map<String, String> convertedProperties = new HashMap<>();
-            for (Map.Entry<String, Object> eachEntry : map.entrySet()) {
-                if (eachEntry.getValue() != null) {
-                    convertedProperties.put(eachEntry.getKey(), eachEntry.getValue().toString());
-                }
+            for (Map.Entry<String, PollerParameter> eachEntry : map.entrySet()) {
+                eachEntry.getValue().asSimple().ifPresent(simple -> {
+                    convertedProperties.put(eachEntry.getKey(), simple.getValue());
+                });
             }
             return convertedProperties;
         }

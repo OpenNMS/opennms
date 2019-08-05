@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -73,17 +74,17 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
     protected boolean hex = false;
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+    public Map<String, PollerParameter> getRuntimeAttributes(MonitoredService svc, Map<String, PollerParameter> parameters) {
         try {
             SnmpPeerFactory.init();
         } catch (IOException e) {
             LOG.error("SnmpPeerFactory initialization failed.", e);
         }
-        return ImmutableMap.of("agent", SnmpPeerFactory.getInstance().getAgentConfig(svc.getAddress(), svc.getNodeLocation()));
+        return ImmutableMap.of("agent", PollerParameter.marshall(SnmpPeerFactory.getInstance().getAgentConfig(svc.getAddress(), svc.getNodeLocation())));
     }
 
-    public SnmpAgentConfig getAgentConfig(MonitoredService svc, Map<String, Object> parameters) {
-        return getKeyedInstance(parameters, "agent", () -> { return new SnmpAgentConfig(svc.getAddress()); });
+    public SnmpAgentConfig getAgentConfig(MonitoredService svc, Map<String, PollerParameter> parameters) {
+        return getKeyedInstance(parameters, "agent", SnmpAgentConfig.class, () -> { return new SnmpAgentConfig(svc.getAddress()); });
     }
 
     public String getStringValue(SnmpValue result) {

@@ -34,6 +34,8 @@ import java.util.Map;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.poller.PollerParameter;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
 /**
  * <p>LoopPlugin class.</p>
@@ -61,7 +63,7 @@ public class LoopPlugin {
         return isProtocolSupported(address, null);
     }
 
-    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, PollerParameter> qualifiers) {
         
         if (qualifiers == null) {
             return false;
@@ -76,12 +78,12 @@ public class LoopPlugin {
         
     }
 
-    private boolean isSupported(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, "is-supported", "false").equalsIgnoreCase("true");
+    private boolean isSupported(Map<String, PollerParameter> parameters) {
+        return AbstractServiceMonitor.getKeyedString(parameters, "is-supported", "false").equalsIgnoreCase("true");
     }
 
-    private String getIpMatch(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, "ip-match", "*.*.*.*");
+    private String getIpMatch(Map<String, PollerParameter> parameters) {
+        return AbstractServiceMonitor.getKeyedString(parameters, "ip-match", "*.*.*.*");
     }
 
 }

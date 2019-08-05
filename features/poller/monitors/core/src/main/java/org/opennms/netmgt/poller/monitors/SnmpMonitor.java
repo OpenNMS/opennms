@@ -36,11 +36,12 @@ import java.util.Properties;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -89,7 +90,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
      *                Thrown for any unrecoverable errors.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = svc.getAddress();
 
@@ -100,22 +101,22 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
 
         // Get configuration parameters
         //
-        String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
-        String operator = ParameterMap.getKeyedString(parameters, "operator", null);
-        String operand = ParameterMap.getKeyedString(parameters, "operand", null);
-        String walkstr = ParameterMap.getKeyedString(parameters, "walk", "false");
-        String matchstr = ParameterMap.getKeyedString(parameters, "match-all", "true");
-        int countMin = ParameterMap.getKeyedInteger(parameters, "minimum", 0);
-        int countMax = ParameterMap.getKeyedInteger(parameters, "maximum", 0);
-        String reasonTemplate = ParameterMap.getKeyedString(parameters, "reason-template", DEFAULT_REASON_TEMPLATE);
-        String hexstr = ParameterMap.getKeyedString(parameters, "hex", "false");
+        String oid = getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
+        String operator = getKeyedString(parameters, "operator", null);
+        String operand = getKeyedString(parameters, "operand", null);
+        String walkstr = getKeyedString(parameters, "walk", "false");
+        String matchstr = getKeyedString(parameters, "match-all", "true");
+        int countMin = getKeyedInteger(parameters, "minimum", 0);
+        int countMax = getKeyedInteger(parameters, "maximum", 0);
+        String reasonTemplate = getKeyedString(parameters, "reason-template", DEFAULT_REASON_TEMPLATE);
+        String hexstr = getKeyedString(parameters, "hex", "false");
 
         hex = "true".equalsIgnoreCase(hexstr);
         // set timeout and retries on SNMP peer object
         //
-        agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
-        agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
-        agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
+        agentConfig.setTimeout(getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
+        agentConfig.setRetries(getKeyedInteger(parameters, "retry", getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
+        agentConfig.setPort(getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
         // Squirrel the configuration parameters away in a Properties for later expansion if service is down
         Properties svcParams = new Properties();

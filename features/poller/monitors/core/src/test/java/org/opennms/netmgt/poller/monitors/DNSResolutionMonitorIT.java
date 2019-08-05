@@ -52,12 +52,17 @@ import org.opennms.core.test.dns.annotations.DNSEntry;
 import org.opennms.core.test.dns.annotations.DNSZone;
 import org.opennms.core.test.dns.annotations.JUnitDNSServer;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RECORD_TYPES;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RECORD_TYPE_CNAME;
+
+import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.Maps;
 
 /**
  * DNSResolutionMonitorIT
@@ -110,18 +115,18 @@ public class DNSResolutionMonitorIT {
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
-        Map<String, Object> v4Parms = new HashMap<>();
-        v4Parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_V4);
-        v4Parms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> v6Parms = new HashMap<>();
-        v6Parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_V6);
-        v6Parms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> bothParms = new HashMap<>();
-        bothParms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_BOTH);
-        bothParms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> eitherParms = new HashMap<>();
-        eitherParms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
-        eitherParms.put(PARM_NAMESERVER, "[::1]:9153");
+        Map<String, PollerParameter> v4Parms = new HashMap<>();
+        v4Parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_V4));
+        v4Parms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> v6Parms = new HashMap<>();
+        v6Parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_V6));
+        v6Parms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> bothParms = new HashMap<>();
+        bothParms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_BOTH));
+        bothParms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> eitherParms = new HashMap<>();
+        eitherParms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_EITHER));
+        eitherParms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
 
         assertEquals(PollStatus.available(), monitor.poll(dual, v4Parms));
         assertEquals(PollStatus.available(), monitor.poll(dual, v6Parms));
@@ -135,18 +140,18 @@ public class DNSResolutionMonitorIT {
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
-        Map<String, Object> v4Parms = new HashMap<>();
-        v4Parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_V4);
-        v4Parms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> v6Parms = new HashMap<>();
-        v6Parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_V6);
-        v6Parms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> bothParms = new HashMap<>();
-        bothParms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_BOTH);
-        bothParms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> eitherParms = new HashMap<>();
-        eitherParms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
-        eitherParms.put(PARM_NAMESERVER, "[::1]:9153");
+        Map<String, PollerParameter> v4Parms = new HashMap<>();
+        v4Parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_V4));
+        v4Parms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> v6Parms = new HashMap<>();
+        v6Parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_V6));
+        v6Parms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> bothParms = new HashMap<>();
+        bothParms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_BOTH));
+        bothParms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> eitherParms = new HashMap<>();
+        eitherParms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_EITHER));
+        eitherParms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
 
         assertEquals(PollStatus.available(), monitor.poll(v4only, v4Parms));
         assertEquals(PollStatus.unavailable(), monitor.poll(v4only, v6Parms));
@@ -160,18 +165,18 @@ public class DNSResolutionMonitorIT {
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
-        Map<String, Object> v4Parms = new HashMap<>();
-        v4Parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_V4);
-        v4Parms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> v6Parms = new HashMap<>();
-        v6Parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_V6);
-        v6Parms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> bothParms = new HashMap<>();
-        bothParms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_BOTH);
-        bothParms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> eitherParms = new HashMap<>();
-        eitherParms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
-        eitherParms.put(PARM_NAMESERVER, "[::1]:9153");
+        Map<String, PollerParameter> v4Parms = new HashMap<>();
+        v4Parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_V4));
+        v4Parms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> v6Parms = new HashMap<>();
+        v6Parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_V6));
+        v6Parms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> bothParms = new HashMap<>();
+        bothParms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_BOTH));
+        bothParms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> eitherParms = new HashMap<>();
+        eitherParms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_EITHER));
+        eitherParms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
 
         assertEquals(PollStatus.unavailable(), monitor.poll(v6only, v4Parms));
         assertEquals(PollStatus.available(), monitor.poll(v6only, v6Parms));
@@ -185,18 +190,18 @@ public class DNSResolutionMonitorIT {
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
-        Map<String, Object> v4Parms = new HashMap<>();
-        v4Parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_V4);
-        v4Parms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> v6Parms = new HashMap<>();
-        v6Parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_V6);
-        v6Parms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> bothParms = new HashMap<>();
-        bothParms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_BOTH);
-        bothParms.put(PARM_NAMESERVER, "[::1]:9153");
-        Map<String, Object> eitherParms = new HashMap<>();
-        eitherParms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
-        eitherParms.put(PARM_NAMESERVER, "[::1]:9153");
+        Map<String, PollerParameter> v4Parms = new HashMap<>();
+        v4Parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_V4));
+        v4Parms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> v6Parms = new HashMap<>();
+        v6Parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_V6));
+        v6Parms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> bothParms = new HashMap<>();
+        bothParms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_BOTH));
+        bothParms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
+        Map<String, PollerParameter> eitherParms = new HashMap<>();
+        eitherParms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_EITHER));
+        eitherParms.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
 
         assertEquals(PollStatus.unavailable(), monitor.poll(neither, v4Parms));
         assertEquals(PollStatus.unavailable(), monitor.poll(neither, v6Parms));
@@ -210,9 +215,9 @@ public class DNSResolutionMonitorIT {
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put(PARM_RECORD_TYPES, PARM_RECORD_TYPE_CNAME);
-        params.put(PARM_NAMESERVER, "[::1]:9153");
+        Map<String, PollerParameter> params = new HashMap<>();
+        params.put(PARM_RECORD_TYPES, PollerParameter.simple(PARM_RECORD_TYPE_CNAME));
+        params.put(PARM_NAMESERVER, PollerParameter.simple("[::1]:9153"));
 
         assertEquals(PollStatus.available(), monitor.poll(cname, params));
     }
@@ -223,9 +228,9 @@ public class DNSResolutionMonitorIT {
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
-        parms.put(PARM_LOOKUP, "wipv6day.opennms.org");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_EITHER));
+        parms.put(PARM_LOOKUP, PollerParameter.simple("wipv6day.opennms.org"));
 
         assertEquals(PollStatus.available(), monitor.poll(lookup, parms));
     }
@@ -236,11 +241,11 @@ public class DNSResolutionMonitorIT {
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
-        parms.put(PARM_LOOKUP, "{nodeLabel}");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put(PARM_RESOLUTION_TYPE, PollerParameter.simple(PARM_RESOLUTION_TYPE_EITHER));
+        parms.put(PARM_LOOKUP, PollerParameter.simple("{nodeLabel}"));
 
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(lookup, parms);
+        Map<String, PollerParameter> subbedParams = monitor.getRuntimeAttributes(lookup, parms);
         // this would normally happen in the poller request builder implementation
         subbedParams.forEach((k, v) -> {
             parms.put(k, v);

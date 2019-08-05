@@ -40,10 +40,11 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,15 +119,15 @@ final public class DnsMonitor extends AbstractServiceMonitor {
      * </P>
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // get the parameters
         //
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+        int port = getKeyedInteger(parameters, "port", DEFAULT_PORT);
 
         // Host to lookup?
         //
-        String lookup = ParameterMap.getKeyedString(parameters, "lookup", null);
+        String lookup = getKeyedString(parameters, "lookup", null);
         if (lookup == null || lookup.length() == 0) {
             // Get hostname of local machine for future DNS lookups
         	lookup = InetAddressUtils.getLocalHostAddressAsString();
@@ -138,13 +139,13 @@ final public class DnsMonitor extends AbstractServiceMonitor {
         // What do we consider fatal?
         //
         final List<Integer> fatalCodes = new ArrayList<>();
-        for (final int code : ParameterMap.getKeyedIntegerArray(parameters, "fatal-response-codes", DEFAULT_FATAL_RESP_CODES)) {
+        for (final int code : getKeyedIntegerArray(parameters, "fatal-response-codes", DEFAULT_FATAL_RESP_CODES)) {
             fatalCodes.add(code);
         }
         
 
-	int minAnswers = ParameterMap.getKeyedInteger(parameters, "min-answers", DEFAULT_MIN_ANSWERS);
-	int maxAnswers = ParameterMap.getKeyedInteger(parameters, "max-answers", DEFAULT_MAX_ANSWERS);
+	int minAnswers = getKeyedInteger(parameters, "min-answers", DEFAULT_MIN_ANSWERS);
+	int maxAnswers = getKeyedInteger(parameters, "max-answers", DEFAULT_MAX_ANSWERS);
 
         // get the address and DNS address request
         //

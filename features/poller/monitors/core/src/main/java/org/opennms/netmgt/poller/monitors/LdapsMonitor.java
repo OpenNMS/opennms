@@ -34,6 +34,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
 import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.PollerParameter;
 
 import com.novell.ldap.LDAPConnection;
 
@@ -51,8 +52,8 @@ import com.novell.ldap.LDAPConnection;
 final public class LdapsMonitor extends LdapMonitor {
 
     @Override
-    protected int determinePort(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_SSL_PORT);
+    protected int determinePort(Map<String, PollerParameter> parameters) {
+        return getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_SSL_PORT);
     }
 
     @Override

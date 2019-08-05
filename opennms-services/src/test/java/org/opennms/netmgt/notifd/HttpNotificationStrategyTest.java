@@ -29,7 +29,6 @@
 package org.opennms.netmgt.notifd;
 
 import static org.junit.Assert.assertEquals;
-import static org.opennms.core.web.HttpClientWrapperConfigHelper.PARAMETER_KEYS.useSystemProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,13 +53,13 @@ public class HttpNotificationStrategyTest {
 
     @Test
     public void shouldExtractUseSystemProperty() {
-        HttpNotificationStrategy strategy = createNotificationStrategyWithSingleArgument(useSystemProxy.name(), "true");
+        HttpNotificationStrategy strategy = createNotificationStrategyWithSingleArgument("useSystemProxy", "true");
         assertEquals(true, strategy.getUseSystemProxy());
     }
 
     @Test
     public void shouldExtractUseSystemPropertyAsPrefix() {
-        HttpNotificationStrategy strategy = createNotificationStrategyWithSingleArgument(useSystemProxy.name()+"WithSuffix", "true");
+        HttpNotificationStrategy strategy = createNotificationStrategyWithSingleArgument("useSystemProxyWithSuffix", "true");
         assertEquals(true, strategy.getUseSystemProxy());
     }
 

@@ -37,6 +37,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
@@ -44,10 +47,12 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.pagesequence.Page;
-import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import com.google.common.base.Strings;
 
 public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration> {
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationTest.class);
@@ -119,10 +124,10 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         assertNotNull(hyperic);
         final Parameter psmParam = hyperic.getParameter("page-sequence");
         assertNotNull(psmParam);
-        final PageSequence ps = (PageSequence) psmParam.getAnyObject();
+        final Element ps = psmParam.getAnyObject();
         assertNotNull(ps);
-        assertNotNull(ps.getPages());
-        assertEquals(3, ps.getPages().size());
+        assertNotNull(ps.getElementsByTagName("page"));
+        assertEquals(3, ps.getElementsByTagName("page").getLength());
 
         final String marshalledPollerConfigXml = JaxbUtils.marshal(pollerConfig);
         LOG.debug("marshalled poller config XML: {}", marshalledPollerConfigXml);
@@ -196,7 +201,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         return config;
     }
 
-    protected static PollerConfiguration get18PollerConfiguration() {
+    protected static PollerConfiguration get18PollerConfiguration() throws Exception {
         final PollerConfiguration config = new PollerConfiguration();
         config.setThreads(30);
         config.setServiceUnresponsiveEnabled("false");
@@ -336,50 +341,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                 );
         final Parameter hypericPageSequence = new Parameter();
         hypericPageSequence.setKey("page-sequence");
-
-        final PageSequence ps = new PageSequence();
-
-        Page page = new Page();
-        page.setMethod("GET");
-        page.setHttpVersion("1.1");
-        page.setScheme("http");
-        page.setHost("${ipaddr}");
-        page.setDisableSslVerification("true");
-        page.setPort(7080);
-        page.setPath("/Login.do");
-        page.setSuccessMatch("(HQ Login)|(Sign in to Hyperic HQ)");
-        page.setResponseRange("100-399");
-        ps.addPage(page);
-
-        page = new Page();
-        page.setMethod("POST");
-        page.setHttpVersion("1.1");
-        page.setScheme("http");
-        page.setHost("${ipaddr}");
-        page.setDisableSslVerification("true");
-        page.setPort(7080);
-        page.setPath("/j_security_check.do");
-        page.setFailureMatch("(?s)(The username or password provided does not match our records)|(You are not signed in)");
-        page.setFailureMessage("HQ Login in Failed");
-        page.setSuccessMatch("HQ Dashboard");
-        page.setResponseRange("100-399");
-        org.opennms.netmgt.config.pagesequence.Parameter parameter = new org.opennms.netmgt.config.pagesequence.Parameter();
-        parameter.setKey("j_username");
-        parameter.setValue("hqadmin");
-        page.addParameter(parameter);
-        parameter = new org.opennms.netmgt.config.pagesequence.Parameter();
-        parameter.setKey("j_password");
-        parameter.setValue("hqadmin");
-        page.addParameter(parameter);
-        ps.addPage(page);
-
-        page = new Page();
-        page.setPath("/Logout.do");
-        page.setPort(7080);
-        page.setSuccessMatch("HQ Login");
-        ps.addPage(page);
-
-        hypericPageSequence.setAnyObject(ps);
+        hypericPageSequence.setAnyObject(createPageSequence());
 
         hyperichq.addParameter(hypericPageSequence);
         example1.addService(hyperichq);
@@ -643,5 +605,71 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.addMonitor("XMP", "org.opennms.protocols.xmp.monitor.XmpMonitor");
 
         return config;
+    }
+
+    private static Element createPageSequence() throws Exception {
+        final DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        final Document document = documentBuilder.newDocument();
+
+        final Element rootElement = document.createElementNS("http://xmlns.opennms.org/xsd/config/poller", "page-sequence");
+        document.appendChild(rootElement);
+
+        final Element page1 = document.createElementNS("http://xmlns.opennms.org/xsd/config/poller", "page");
+        page1.setAttribute("method", "GET");
+        page1.setAttribute("http-version", "1.1");
+        page1.setAttribute("scheme", "http");
+        page1.setAttribute("host", "${ipaddr}");
+        page1.setAttribute("disable-ssl-verification", "true");
+        page1.setAttribute("port", "7080");
+        page1.setAttribute("path", "/Login.do");
+        page1.setAttribute("successMatch", "(HQ Login)|(Sign in to Hyperic HQ)");
+        page1.setAttribute("response-range", "100-399");
+        rootElement.appendChild(page1);
+
+        final Element page2 = document.createElementNS("http://xmlns.opennms.org/xsd/config/poller", "page");
+        page2.setAttribute("method", "POST");
+        page2.setAttribute("http-version", "1.1");
+        page2.setAttribute("scheme", "http");
+        page2.setAttribute("host", "${ipaddr}");
+        page2.setAttribute("disable-ssl-verification", "true");
+        page2.setAttribute("port", "7080");
+        page2.setAttribute("path", "/j_security_check.do");
+        page2.setAttribute("failureMatch", "(?s)(The username or password provided does not match our records)|(You are not signed in)");
+        page2.setAttribute("failureMessage", "HQ Login in Failed");
+        page2.setAttribute("successMatch", "HQ Dashboard");
+        page2.setAttribute("response-range", "100-399");
+        rootElement.appendChild(page2);
+
+        final Element parameter1 = document.createElementNS("http://xmlns.opennms.org/xsd/config/poller", "parameter");
+        parameter1.setAttribute("key", "j_username");
+        parameter1.setAttribute("value", "hqadmin");
+        page2.appendChild(parameter1);
+
+        final Element parameter2 = document.createElementNS("http://xmlns.opennms.org/xsd/config/poller", "parameter");
+        parameter2.setAttribute("key", "j_password");
+        parameter2.setAttribute("value", "hqadmin");
+        page2.appendChild(parameter2);
+
+        // This is a work-around existing because the unmarshalling into DOM Elements of formatted XML includes
+        // whitespaces as the Element is always handled as an mixed element where whitespaces must be preserved. The
+        // whitespaces will be ignored during unmarshalling the DOM Element into the final objects - but as we're
+        // comparing the DOM Elements itself, the spaces must be present as they are in the original XML.
+        page2.appendChild(document.createTextNode("\n" + Strings.repeat("   ", 5)));
+
+        final Element page3 = document.createElementNS("http://xmlns.opennms.org/xsd/config/poller", "page");
+        page3.setAttribute("method", "GET");
+        page3.setAttribute("http-version", "1.1");
+        page3.setAttribute("scheme", "http");
+        page3.setAttribute("host", "${ipaddr}");
+        page3.setAttribute("disable-ssl-verification", "true");
+        page3.setAttribute("port", "7080");
+        page3.setAttribute("path", "/Logout.do");
+        page3.setAttribute("successMatch", "HQ Login");
+        page3.setAttribute("response-range", "100-399");
+        rootElement.appendChild(page3);
+
+        rootElement.appendChild(document.createTextNode("\n" + Strings.repeat("   ", 4)));
+
+        return document.getDocumentElement();
     }
 }

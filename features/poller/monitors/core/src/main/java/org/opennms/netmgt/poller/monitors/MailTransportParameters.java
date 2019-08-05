@@ -37,6 +37,7 @@ import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailHost;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
 import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
 /**
@@ -51,37 +52,18 @@ public class MailTransportParameters {
     public static final String KEY = MailTransportParameters.class.getName();
 	private static final int DEFAULT_RETRY = 1;
 	private static final int DEFAULT_TIMEOUT = 3000;
-    private Map<String,Object> m_parameterMap;
+    private Map<String, PollerParameter> m_parameterMap;
     private MailTransportTest m_transportTest;
 	private String m_testSubjectSuffix;
     private boolean m_end2EndTestInProgress = false;
     private Properties m_javamailProperties = new Properties();
 
-    MailTransportParameters(Map<String,Object> parameterMap) {
+    MailTransportParameters(Map<String, PollerParameter> parameterMap) {
         m_parameterMap = parameterMap;
-        Object mailTransportTest = AbstractServiceMonitor.getKeyedObject(m_parameterMap, "mail-transport-test", null);
-        if (mailTransportTest == null) {
-            throw new IllegalArgumentException("mail-transport-test must be set in monitor parameters");
-        }
-        if (mailTransportTest instanceof MailTransportTest) {
-            m_transportTest = (MailTransportTest) mailTransportTest;
-        } else if (mailTransportTest instanceof String) {
-            m_transportTest = JaxbUtils.unmarshal(MailTransportTest.class, (String)mailTransportTest);
-        } else {
-            throw new IllegalArgumentException("Unsure how to deal with Mail Transport Test of type " + mailTransportTest.getClass());
-        }
+        m_transportTest = AbstractServiceMonitor.getKeyedInstance(m_parameterMap, "mail-transport-test", MailTransportTest.class, () -> null);
     }
     
-    static synchronized MailTransportParameters get(Map<String,Object> parameterMap) {
-        MailTransportParameters parms = (MailTransportParameters)parameterMap.get(KEY);
-        if (parms == null) {
-            parms = new MailTransportParameters(parameterMap);
-            parameterMap.put(KEY, parms);
-        }
-        return parms;
-    }
-            
-    Map<String,Object> getParameterMap() {
+    Map<String, PollerParameter> getParameterMap() {
         return m_parameterMap;
     }
 
@@ -90,7 +72,7 @@ public class MailTransportParameters {
     }
 
     private int getIntParm(String key, int defValue) {
-        return ParameterMap.getKeyedInteger(getParameterMap()  , key, defValue);
+        return AbstractServiceMonitor.getKeyedInteger(getParameterMap(), key, defValue);
     }
 
 	/**

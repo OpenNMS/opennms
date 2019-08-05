@@ -49,6 +49,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
@@ -99,7 +100,7 @@ public class Test implements Action {
             throw new IllegalStateException("Error getting InetAddress object for " + ipAddress);
         }
 
-        final Map<String,Object> parameters = Poll.parse(serviceParameters);
+        final Map<String, PollerParameter> parameters = Poll.parse(serviceParameters);
         final MonitoredService monSvc = transactionTemplate.execute(new TransactionCallback<MonitoredService>() {
             @Override
             public MonitoredService doInTransaction(TransactionStatus status) {
@@ -165,16 +166,10 @@ public class Test implements Action {
         if (pollerConfig.isPolledLocally(ipAddress, serviceName)) {
             for (Parameter p : svc.getParameters()) {
                 if (!parameters.containsKey(p.getKey())) {
-                    String value = p.getValue();
-                    if (value == null) {
-                        try {
-                            value = JaxbUtils.marshal(p.getAnyObject());
-                        } catch (Exception e) {}
-                    }
-                    parameters.put(p.getKey(), value);
+                    parameters.put(p.getKey(), p.asPollerParameter());
                 }
             }
-            for (Entry<String,Object> e : parameters.entrySet()) {
+            for (Entry<String, PollerParameter> e : parameters.entrySet()) {
                 System.out.printf("Parameter %s : %s%n", e.getKey(), e.getValue());
             }
             try {

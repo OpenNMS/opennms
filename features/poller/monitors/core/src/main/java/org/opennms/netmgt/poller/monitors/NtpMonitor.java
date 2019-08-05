@@ -38,10 +38,11 @@ import java.net.NoRouteToHostException;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.NtpMessage;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
@@ -93,12 +94,12 @@ final public class NtpMonitor extends AbstractServiceMonitor {
      * </P>
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // get the parameters
         //
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+        int port = getKeyedInteger(parameters, "port", DEFAULT_PORT);
 
         // get the address and NTP address request
         //

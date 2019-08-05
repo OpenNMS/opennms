@@ -41,8 +41,6 @@ import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.rpc.utils.MetadataConstants;
 import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
-import org.opennms.core.rpc.utils.mate.FallbackScope;
-import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -53,6 +51,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
 import com.google.common.base.Strings;
@@ -69,20 +68,14 @@ public class MinionRpcMonitor extends AbstractServiceMonitor implements RpcExcep
     private final static String MESSAGE_SIZE = "message-size";
 
     @Override
-    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
+    public PollStatus poll(final MonitoredService svc, final Map<String, PollerParameter> parameters) {
 
         // Create the client
         final RpcClient<EchoRequest, EchoResponse> client = rpcClientFactory.get().getClient(EchoRpcModule.INSTANCE);
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(parameters, new FallbackScope(
-                entityScopeProvider.get().getScopeForNode(svc.getNodeId()),
-                entityScopeProvider.get().getScopeForInterface(svc.getNodeId(), svc.getIpAddr()),
-                entityScopeProvider.get().getScopeForService(svc.getNodeId(), svc.getAddress(), svc.getSvcName())
-        ));
+        Long ttlInMs = ParameterMap.getLongValue(MetadataConstants.TTL, parameters.get(MetadataConstants.TTL), null);
 
-        Long ttlInMs = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), null);
-
-        int messageSize = ParameterMap.getIntValue( MESSAGE_SIZE, interpolatedAttributes.get(MESSAGE_SIZE), DEFAULT_MESSAGE_SIZE);
+        int messageSize = ParameterMap.getIntValue( MESSAGE_SIZE, parameters.get(MESSAGE_SIZE), DEFAULT_MESSAGE_SIZE);
         if (messageSize < 0) {
             messageSize = 0;
         }

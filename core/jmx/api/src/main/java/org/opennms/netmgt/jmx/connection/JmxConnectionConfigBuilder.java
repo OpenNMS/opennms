@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
 public class JmxConnectionConfigBuilder {
 
@@ -45,7 +46,7 @@ public class JmxConnectionConfigBuilder {
 
         final JmxConnectionConfigBuilder builder = new JmxConnectionConfigBuilder();
         builder.withIpAddress(ipAddress);
-        builder.withSunCacao(ParameterMap.getKeyedBoolean(properties, "sunCacao", false));
+        builder.withSunCacao(Boolean.parseBoolean(properties.getOrDefault("sunCacao", "false")));
         builder.withUsername(properties.get("username"));
         builder.withPassword(properties.get("password"));
         builder.withFactory(properties.getOrDefault("factory", "STANDARD"));
@@ -67,7 +68,7 @@ public class JmxConnectionConfigBuilder {
         final String protocol = properties.getOrDefault("protocol", "rmi");
         final String urlPath = properties.getOrDefault("urlPath",  "/jmxrmi");
         final String rmiServerPort = properties.getOrDefault("rmiServerport",  "45444");
-        final boolean remote = ParameterMap.getKeyedBoolean(properties, "remoteJMX",  false);
+        final boolean remote = Boolean.parseBoolean(properties.getOrDefault("remoteJMX", "false"));
 
         if(remote) {
             final String url = String.format("service:jmx:%s:%s:%s://jndi/%s://%s:%s%s",

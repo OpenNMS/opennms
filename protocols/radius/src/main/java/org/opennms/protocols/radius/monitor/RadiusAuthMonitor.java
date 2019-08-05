@@ -32,10 +32,11 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.opennms.protocols.radius.utils.RadiusUtils;
 import org.slf4j.Logger;
@@ -169,7 +170,7 @@ public final class RadiusAuthMonitor extends ParameterSubstitutingMonitor {
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
     	// Assume that the service is down
         PollStatus status = PollStatus.unavailable();
 
@@ -179,20 +180,20 @@ public final class RadiusAuthMonitor extends ParameterSubstitutingMonitor {
         
         final TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        int authport = ParameterMap.getKeyedInteger(parameters, "authport", DEFAULT_AUTH_PORT);
-        int acctport = ParameterMap.getKeyedInteger(parameters, "acctport", DEFAULT_ACCT_PORT);
+        int authport = getKeyedInteger(parameters, "authport", DEFAULT_AUTH_PORT);
+        int acctport = getKeyedInteger(parameters, "acctport", DEFAULT_ACCT_PORT);
         String user = resolveKeyedString(parameters, "user", DEFAULT_USER);
         String password = resolveKeyedString(parameters, "password", DEFAULT_PASSWORD);
         String secret = resolveKeyedString(parameters, "secret", DEFAULT_SECRET);
-        String authType = ParameterMap.getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
+        String authType = getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
         String nasid = resolveKeyedString(parameters, "nasid", DEFAULT_NASID);
-        String innerProtocol = ParameterMap.getKeyedString(parameters, "inner-protocol", DEFAULT_TTLS_INNER_AUTH_TYPE);
+        String innerProtocol = getKeyedString(parameters, "inner-protocol", DEFAULT_TTLS_INNER_AUTH_TYPE);
         String innerUser = resolveKeyedString(parameters, "inner-user", DEFAULT_INNER_USER);
-        String certFile = ParameterMap.getKeyedString(parameters, "certificate", null);
+        String certFile = getKeyedString(parameters, "certificate", null);
         InetAddress addr = svc.getAddress();
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
-        int timeout = convertTimeoutToSeconds(ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
+        int timeout = convertTimeoutToSeconds(getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
         try {
             final RadiusClient rc = new RadiusClient(addr, secret, authport, acctport, timeout);
 
@@ -256,7 +257,7 @@ public final class RadiusAuthMonitor extends ParameterSubstitutingMonitor {
                 tracker.startAttempt();
 
                 // The retry should be handled by the RadiusClient because otherwise it will thrown an exception.
-                RadiusPacket reply = rc.authenticate(accessRequest, auth, ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY));
+                RadiusPacket reply = rc.authenticate(accessRequest, auth, getKeyedInteger(parameters, "retry", DEFAULT_RETRY));
                 if (reply instanceof AccessAccept) {
                     double responseTime = tracker.elapsedTimeInMillis();
                     status = PollStatus.available(responseTime);

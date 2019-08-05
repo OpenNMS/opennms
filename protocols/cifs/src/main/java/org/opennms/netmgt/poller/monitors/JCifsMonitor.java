@@ -33,10 +33,10 @@ import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFilenameFilter;
 
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,15 +90,15 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
      * @return the poll status for this system
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
 
         final String domain = resolveKeyedString(parameters, "domain", "");
         final String username = resolveKeyedString(parameters, "username", "");
         final String password = resolveKeyedString(parameters, "password", "");
-        String mode = parameters.containsKey("mode") ? ((String) parameters.get("mode")).toUpperCase() : "PATH_EXIST";
-        String path = parameters.containsKey("path") ? (String) parameters.get("path") : "";
-        String smbHost = parameters.containsKey("smbHost") ? (String) parameters.get("smbHost") : "";
-        final String folderIgnoreFiles = parameters.containsKey("folderIgnoreFiles") ? (String) parameters.get("folderIgnoreFiles") : "";
+        String mode = getKeyedString(parameters, "mode", "PATH_EXIST").toUpperCase();
+        String path = getKeyedString(parameters, "path", "");
+        String smbHost = getKeyedString(parameters, "smbHost", "");
+        final String folderIgnoreFiles = getKeyedString(parameters, "folderIgnoreFiles", "");
 
         // changing to Ip address of MonitoredService if no smbHost is given
         if ("".equals(smbHost)) {

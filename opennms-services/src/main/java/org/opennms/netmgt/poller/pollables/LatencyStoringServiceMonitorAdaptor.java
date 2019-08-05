@@ -49,7 +49,9 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -86,18 +88,18 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
     }
 
     @Override
-    public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
+    public PollStatus handlePollResult(MonitoredService svc, Map<String, PollerParameter> parameters, PollStatus status) {
         if (!status.getProperties().isEmpty()) {
             storeResponseTime(svc, new LinkedHashMap<String, Number>(status.getProperties()), parameters);
         }
         return status;
     }
 
-    private void storeResponseTime(MonitoredService svc, Map<String, Number> entries, Map<String,Object> parameters) {
-        String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", PollStatus.PROPERTY_RESPONSE_TIME);
-        String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
-        String thresholds  = ParameterMap.getKeyedString(parameters, "thresholding-enabled", "false");
+    private void storeResponseTime(MonitoredService svc, Map<String, Number> entries, Map<String, PollerParameter> parameters) {
+        String rrdPath     = AbstractServiceMonitor.getKeyedString(parameters, "rrd-repository", null);
+        String dsName      = AbstractServiceMonitor.getKeyedString(parameters, "ds-name", PollStatus.PROPERTY_RESPONSE_TIME);
+        String rrdBaseName = AbstractServiceMonitor.getKeyedString(parameters, "rrd-base-name", dsName);
+        String thresholds  = AbstractServiceMonitor.getKeyedString(parameters, "thresholding-enabled", "false");
 
         if (!entries.containsKey(dsName) && entries.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
             entries.put(dsName, entries.get(PollStatus.PROPERTY_RESPONSE_TIME));

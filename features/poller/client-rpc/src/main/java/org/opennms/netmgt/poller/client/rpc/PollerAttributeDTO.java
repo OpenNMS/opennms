@@ -35,9 +35,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.netmgt.config.poller.PollerClassObjectAdapter;
+import org.opennms.netmgt.poller.PollerParameter;
+import org.w3c.dom.Element;
 
 @XmlRootElement(name = "attribute")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -49,30 +49,29 @@ public class PollerAttributeDTO {
     @XmlAttribute(name="value")
     private String value;
 
-    @XmlAnyElement(lax=false)
-    @XmlJavaTypeAdapter(PollerClassObjectAdapter.class)
-    private Object contents;
+    @XmlAnyElement()
+    private Element contents;
 
     public PollerAttributeDTO() {
         // no-arg constructor for JAXB
     }
 
-    public PollerAttributeDTO(String key, String value) {
+    public PollerAttributeDTO(final String key, final String value) {
         this.key = key;
         this.value = value;
     }
 
-    public PollerAttributeDTO(String key, Object contents) {
+    public PollerAttributeDTO(final String key, final PollerParameter contents) {
         this.key = key;
-        if (contents != null && contents instanceof String) {
-            this.value = (String)contents;
-        } else {
-            this.contents = contents;
+
+        if (contents != null) {
+            contents.asSimple().ifPresent(simple -> this.value = simple.getValue());
+            contents.asComplex().ifPresent(complex -> this.contents = complex.getElement());
         }
     }
 
     public String getKey() {
-        return key;
+        return this.key;
     }
 
     public void setKey(String key) {
@@ -80,18 +79,28 @@ public class PollerAttributeDTO {
     }
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(String value) {
         this.value = value;
     }
 
-    public Object getContents() {
-        return contents;
+    public Element getContents() {
+        return this.contents;
     }
 
-    public void setContents(Object contents) {
+    public PollerParameter asPollerParameter() {
+        if (this.value != null) {
+            return PollerParameter.simple(this.value);
+        } else if (this.contents != null) {
+            return PollerParameter.complex(this.contents);
+        } else {
+            return null;
+        }
+    }
+
+    public void setContents(Element contents) {
         this.contents = contents;
     }
 
@@ -111,7 +120,7 @@ public class PollerAttributeDTO {
         final PollerAttributeDTO other = (PollerAttributeDTO) obj;
         return Objects.equals(this.key, other.key)
                 && Objects.equals(this.value, other.value)
-                && Objects.equals(this.contents, other.contents);
+                && (this.contents == other.contents || (this.contents != null && other.contents != null && this.contents.isEqualNode(other.contents)));
     }
 
     @Override

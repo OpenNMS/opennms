@@ -34,6 +34,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
 import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.PollerParameter;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -55,8 +56,8 @@ public class HttpsMonitor extends HttpMonitor {
 
     /** {@inheritDoc} */
     @Override
-    protected int[] determinePorts(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
+    protected int[] determinePorts(Map<String, PollerParameter> parameters) {
+        return getKeyedIntegerArray(parameters, PARAMETER_PORT, DEFAULT_PORTS);
     }
 
     /** {@inheritDoc} */

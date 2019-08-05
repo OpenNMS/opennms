@@ -55,6 +55,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -89,14 +90,14 @@ public class FtpMonitorTest {
     @Ignore
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorOnOpennmsOrgFtpSuccess() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("ftp.opennms.org"), "FTP"), new HashMap<String,Object>());
+        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("ftp.opennms.org"), "FTP"), new HashMap<>());
         assertTrue("status should be available (Up), but is: " + status, status.isAvailable());
     }
 
     @Ignore
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorFailureOnRandomFtp() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("1.1.1.1"), "FTP"), new HashMap<String,Object>());
+        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("1.1.1.1"), "FTP"), new HashMap<>());
         assertTrue("status should be unavailable (Down), but is: " + status, status.isUnavailable());
     }
 
@@ -129,16 +130,16 @@ public class FtpMonitorTest {
     @Test
     public void testParamSubstitution() throws Exception {
         FtpMonitor mon = new FtpMonitor();
-        Map<String, Object> m = new HashMap<String, Object>();
-        m.put("port", m_serverSocket.getLocalPort());
-        m.put("retries", 0);
-        m.put("timeout", TIMEOUT);
-        m.put("userid", "{ipAddr}");
-        m.put("password", "{nodeLabel}");
+        Map<String, PollerParameter> m = new HashMap<>();
+        m.put("port", PollerParameter.simple(Integer.toString(m_serverSocket.getLocalPort())));
+        m.put("retries", PollerParameter.simple(Integer.toString(0)));
+        m.put("timeout", PollerParameter.simple(Integer.toString(TIMEOUT)));
+        m.put("userid", PollerParameter.simple("{ipAddr}"));
+        m.put("password", PollerParameter.simple("{nodeLabel}"));
         MockMonitoredService svc = new MockMonitoredService(1, "Node One", InetAddress.getByName("127.0.0.1"), "FTP");
-        Map<String, Object> subbedParams = mon.getRuntimeAttributes(svc, m);
-        assertTrue(subbedParams.get("subbed-userid").equals("127.0.0.1"));
-        assertTrue(subbedParams.get("subbed-password").equals("Node One"));
+        Map<String, PollerParameter> subbedParams = mon.getRuntimeAttributes(svc, m);
+        assertTrue(subbedParams.get("subbed-userid").asSimple().get().getValue().equals("127.0.0.1"));
+        assertTrue(subbedParams.get("subbed-password").asSimple().get().getValue().equals("Node One"));
     }
 
     @Test
@@ -192,10 +193,10 @@ public class FtpMonitorTest {
     }
 
     private PollStatus doPoll() throws UnknownHostException {
-        Map<String, Object> m = new HashMap<String, Object>();
-        m.put("port", m_serverSocket.getLocalPort());
-        m.put("retries", 0);
-        m.put("timeout", TIMEOUT);
+        Map<String, PollerParameter> m = new HashMap<>();
+        m.put("port", PollerParameter.simple(Integer.toString(m_serverSocket.getLocalPort())));
+        m.put("retries", PollerParameter.simple("0"));
+        m.put("timeout", PollerParameter.simple(Integer.toString(TIMEOUT)));
         PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", m_serverSocket.getInetAddress(), "FTP"), m);
         return status;
     }

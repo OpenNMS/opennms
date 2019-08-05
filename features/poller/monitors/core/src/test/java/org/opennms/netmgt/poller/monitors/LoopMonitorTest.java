@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 
@@ -59,10 +60,10 @@ public class LoopMonitorTest extends TestCase {
         
         ServiceMonitor sm = new LoopMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "LOOP");
-        Map<String, Object> parms = new HashMap<String, Object>();
+        Map<String, PollerParameter> parms = new HashMap<>();
 
-        parms.put("ip-match", "127.0.0.1-2");
-        parms.put("is-supported", "true");
+        parms.put("ip-match", PollerParameter.simple("127.0.0.1-2"));
+        parms.put("is-supported", PollerParameter.simple("true"));
         
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUp());
