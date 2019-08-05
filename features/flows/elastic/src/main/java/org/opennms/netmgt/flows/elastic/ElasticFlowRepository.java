@@ -244,6 +244,7 @@ public class ElasticFlowRepository implements FlowRepository {
             // Add location and source address tags to span.
             scope.span().setTag(TracerConstants.TAG_LOCATION, source.getLocation());
             scope.span().setTag(TracerConstants.TAG_SOURCE_ADDRESS, source.getSourceAddress());
+            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
