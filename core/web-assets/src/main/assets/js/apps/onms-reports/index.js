@@ -534,7 +534,12 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                   // TODO MVR user feedback?
                  $scope.$close();
               }, function(response) {
-                  $scope.error = response;
+                    // TODO MVR we should implement proper error handling here, but this requires better errors on backend first
+                    if (response && response.data && response.data.message) {
+                        $scope.error = response.data.message;
+                    } else {
+                        $scope.error = "An unexpected error occurred";
+                    }
               });
             };
 
