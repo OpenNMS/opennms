@@ -29,7 +29,6 @@
 package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -282,36 +281,6 @@ public class ReportParameters implements Serializable {
         
     }
 
-    public void apply(final Map<String, Object> reportParameters) {
-        Objects.requireNonNull(reportParameters);
-        final Map<String, ReportParm> stringReportParmMap = asMap();
-
-        reportParameters.entrySet().forEach(e -> {
-            if (e.getValue() != null) {
-                final String parameterName = e.getKey();
-                final Object parameterValue = e.getValue();
-                final ReportParm reportParm = stringReportParmMap.get(parameterName);
-                if (reportParm != null) {
-                    if (reportParm instanceof ReportStringParm && parameterValue instanceof String) {
-                        ((ReportStringParm) reportParm).setValue((String) parameterValue);
-                    } else if (reportParm instanceof ReportDateParm && parameterValue instanceof Date) {
-                        ((ReportDateParm) reportParm).setDate((Date) parameterValue);
-                    } else if (reportParm instanceof ReportFloatParm && parameterValue instanceof Float) {
-                        ((ReportFloatParm) reportParm).setValue((Float) parameterValue);
-                    } else if (reportParm instanceof ReportIntParm && parameterValue instanceof Integer) {
-                        ((ReportIntParm) reportParm).setValue((Integer) parameterValue);
-                    } else if (reportParm instanceof ReportDoubleParm && parameterValue instanceof Double) {
-                        ((ReportDoubleParm) reportParm).setValue((Double) parameterValue);
-                    } else {
-                        throw new IllegalArgumentException("Cannot apply property of name " + parameterName + " and value of type " + parameterValue.getClass().getName());
-                    }
-                } else {
-                    throw new IllegalArgumentException("Cannot apply property of name " + parameterName);
-                }
-            }
-        });
-    }
-
     protected <T extends ReportParm> Map<String, T> asMap() {
         final Map<String, ? extends ReportParm> reportMap = Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms)
                 .stream()
@@ -319,5 +288,43 @@ public class ReportParameters implements Serializable {
                 .flatMap(List::stream)
                 .collect(Collectors.toMap(p -> p.getName(), Function.identity()));
         return (Map<String, T>) reportMap;
+    }
+
+    public void apply(ReportParameters parameters) {
+        Objects.requireNonNull(parameters);
+        final Map<String, ReportParm> reportParmMap = asMap();
+        final Map<String, ReportParm> othersParmMap = parameters.asMap();
+        othersParmMap.entrySet().forEach(e -> {
+            if (!reportParmMap.containsKey(e.getKey())) {
+                throw new IllegalArgumentException("Cannot apply property of name " + e.getKey());
+            }
+            if (reportParmMap.get(e.getKey()).getClass() != othersParmMap.get(e.getKey()).getClass()) {
+                throw new IllegalArgumentException("Cannot apply property of name " + e.getKey() + " due to type mismatch. " +
+                        "Expected: " + reportParmMap.get(e.getKey()).getClass() +
+                        "Actual: " + othersParmMap.get(e.getKey()).getClass());
+            }
+            final ReportParm thisReportParm = reportParmMap.get(e.getKey());
+            final ReportParm otherReportParm = e.getValue();
+            if (thisReportParm instanceof ReportStringParm) {
+                ((ReportStringParm) thisReportParm).setValue(((ReportStringParm) otherReportParm).getValue());
+            } else if (thisReportParm instanceof ReportDoubleParm) {
+                ((ReportDoubleParm) thisReportParm).setValue(((ReportDoubleParm) otherReportParm).getValue());
+            } else if (thisReportParm instanceof ReportIntParm) {
+                ((ReportIntParm) thisReportParm).setValue(((ReportIntParm) otherReportParm).getValue());
+            } else if (thisReportParm instanceof ReportFloatParm) {
+                ((ReportFloatParm) thisReportParm).setValue(((ReportFloatParm) otherReportParm).getValue());
+            } else if (thisReportParm instanceof ReportDateParm) {
+                final ReportDateParm thisReportDateParm = (ReportDateParm) thisReportParm;
+                final ReportDateParm othersReportDateParm = (ReportDateParm) otherReportParm;
+                thisReportDateParm.setUseAbsoluteDate(othersReportDateParm.getUseAbsoluteDate());
+                thisReportDateParm.setDate(othersReportDateParm.getDate());
+                thisReportDateParm.setHours(othersReportDateParm.getHours());
+                thisReportDateParm.setMinutes(othersReportDateParm.getMinutes());
+                thisReportDateParm.setCount(othersReportDateParm.getCount());
+                thisReportDateParm.setInterval(othersReportDateParm.getInterval());
+            } else {
+                throw new IllegalArgumentException("Unknown parameter type " + otherReportParm.getClass() + " of property with name " + e.getKey());
+            }
+        });
     }
 }

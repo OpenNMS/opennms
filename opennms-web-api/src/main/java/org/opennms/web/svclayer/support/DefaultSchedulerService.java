@@ -112,7 +112,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 description.setTriggerName(triggerKey.getName());
                 description.setReportId((String)trigger.getJobDataMap().get("reportId"));
                 description.setDeliveryOptions((DeliveryOptions) trigger.getJobDataMap().get("deliveryOptions"));
-                description.setReportParameters(((ReportParameters) trigger.getJobDataMap().get("criteria")).getReportParms());
+                description.setReportParameters(((ReportParameters) trigger.getJobDataMap().get("criteria")));
                 if (trigger instanceof CronTriggerImpl) {
                     description.setCronExpression(((CronTriggerImpl)trigger).getCronExpression());
                 }

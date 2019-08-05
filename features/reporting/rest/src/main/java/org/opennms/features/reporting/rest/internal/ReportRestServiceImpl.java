@@ -351,11 +351,11 @@ public class ReportRestServiceImpl implements ReportRestService {
             final TriggerDescription triggerDescription = any.get();
             final String reportId = triggerDescription.getReportId();
             final List<ReportFormat> formats = reportWrapperService.getFormats(reportId);
-            final ReportParameters parameters = reportWrapperService.getParameters(reportId);
             final Collection<Category> categories = categoryConfigDao.findAll();
             final List<OnmsCategory> surveillanceCategories = categoryDao.findAll();
-            final Map<String, Object> reportParameters = triggerDescription.getReportParameters();
-            parameters.apply(reportParameters);
+            final ReportParameters parameters = reportWrapperService.getParameters(reportId);
+            final ReportParameters persistedParameters = triggerDescription.getReportParameters();
+            parameters.apply(persistedParameters);
 
             // Convert formats
             final JSONArray jsonFormats = new JSONArray();

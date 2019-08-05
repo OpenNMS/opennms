@@ -30,6 +30,7 @@ package org.opennms.api.reporting.parameter;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.text.ParseException;
@@ -43,7 +44,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.api.reporting.ReportParameterBuilder;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 public class ReportParametersTest {
@@ -106,12 +106,11 @@ public class ReportParametersTest {
     }
 
     @Test
-    // TODO MVR implement date handling properly
     public void verifyApply() {
         final ReportParameters reportParameters = new ReportParameterBuilder()
                 .withString("string", "wiuwiu")
                 .withDouble("double", Math.PI)
-//                .withDate("date", DATE)
+                .withDate("date", DATE)
                 .withInteger("integer", 10002000)
                 .withFloat("float", 12.13f)
                 .build();
@@ -120,17 +119,57 @@ public class ReportParametersTest {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         final Date today = cal.getTime();
-        final Map<String, Object> inputMap = ImmutableMap.<String, Object>builder()
-                .put("string", "ulf")
-                .put("double", -3.1415)
-//                .put("date", today)
-                .put("integer", -1000)
-                .put("float", 22.23f)
+        final ReportParameters inputParameters = new ReportParameterBuilder()
+                .withString("string", "ulf")
+                .withDouble("double", -3.1415)
+                .withDate("date", today)
+                .withInteger("integer", -1000)
+                .withFloat("float", 22.23f)
                 .build();
-        reportParameters.apply(inputMap);
-        assertThat(reportParameters.asMap().keySet(), is(inputMap.keySet()));
-        assertThat(reportParameters.getReportParms().values(), containsInAnyOrder(inputMap.values().toArray()));
+        reportParameters.apply(inputParameters);
+        assertThat(reportParameters.asMap().keySet(), is(inputParameters.asMap().keySet()));
+        assertThat(reportParameters.getReportParms().values(), containsInAnyOrder(inputParameters.getReportParms().values().toArray()));
+    }
 
+    @Test
+    public void verifyDateParamsAppliedProperly() {
+        final Date date = new Date();
+        final ReportParameters reportParameters = new ReportParameterBuilder()
+                .withDate("date1", date)
+                .withDate("date2", date)
+                .withDate("date3", date)
+                .build();
+        final ReportParameters inputParameters = new ReportParameterBuilder()
+                .withDate("date1", date, 10, 15)
+                .withDate("date2", ReportParameterBuilder.Intervals.Years, 1)
+                .withDate("date3", ReportParameterBuilder.Intervals.Months, 2, 10, 13)
+                .build();
+        reportParameters.apply(inputParameters);
+
+        // Verify date1
+        assertThat(reportParameters.getDateParms().get(0).getName(), is("date1"));
+        assertThat(reportParameters.getDateParms().get(0).getUseAbsoluteDate(), is(true));
+        assertThat(reportParameters.getDateParms().get(0).getDate(), is(date));
+        assertThat(reportParameters.getDateParms().get(0).getHours(), is(10));
+        assertThat(reportParameters.getDateParms().get(0).getMinutes(), is(15));
+
+        // Verify date2
+        assertThat(reportParameters.getDateParms().get(1).getName(), is("date2"));
+        assertThat(reportParameters.getDateParms().get(1).getUseAbsoluteDate(), is(false));
+        assertThat(reportParameters.getDateParms().get(1).getDate(), is(nullValue()));
+        assertThat(reportParameters.getDateParms().get(1).getInterval(), is(ReportParameterBuilder.Intervals.Years));
+        assertThat(reportParameters.getDateParms().get(1).getCount(), is(1));
+        assertThat(reportParameters.getDateParms().get(1).getHours(), is(0));
+        assertThat(reportParameters.getDateParms().get(1).getMinutes(), is(0));
+
+        // Verify date3
+        assertThat(reportParameters.getDateParms().get(2).getName(), is("date3"));
+        assertThat(reportParameters.getDateParms().get(2).getUseAbsoluteDate(), is(false));
+        assertThat(reportParameters.getDateParms().get(2).getDate(), is(nullValue()));
+        assertThat(reportParameters.getDateParms().get(2).getInterval(), is(ReportParameterBuilder.Intervals.Months));
+        assertThat(reportParameters.getDateParms().get(2).getCount(), is(2));
+        assertThat(reportParameters.getDateParms().get(2).getHours(), is(10));
+        assertThat(reportParameters.getDateParms().get(2).getMinutes(), is(13));
     }
 
 }

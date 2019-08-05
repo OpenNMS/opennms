@@ -39,9 +39,16 @@ import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 public class ReportParameterBuilder {
+
+    public interface Intervals {
+        String Years = "year";
+        String Months = "month";
+        String Days = "day";
+    }
 
     private final List<ReportStringParm> stringParams = Lists.newArrayList();
     private final List<ReportIntParm> intParams = Lists.newArrayList();
@@ -97,13 +104,44 @@ public class ReportParameterBuilder {
         return this;
     }
 
+    public ReportParameterBuilder withDate(String name, String interval, int count) {
+        return withDate(name, interval, count, 0, 0);
+    }
+
+    public ReportParameterBuilder withDate(String name, String interval, int count, int hours, int minutes) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(interval);
+        Preconditions.checkArgument(hours >= 0 && hours <= 23, "Hours must be >= 0 and <= 23");
+        Preconditions.checkArgument(minutes >= 0 && minutes <= 59, "Minutes must be >= 0 and <= 59");
+
+        final ReportDateParm parm = new ReportDateParm();
+        parm.setName(name);
+        parm.setInterval(interval);
+        parm.setCount(count);
+        parm.setUseAbsoluteDate(false);
+        parm.setHours(hours);
+        parm.setMinutes(minutes);
+
+        dateParams.add(parm);
+
+        return this;
+    }
+
     public ReportParameterBuilder withDate(String name, Date value) {
+        return withDate(name, value, 0, 0);
+
+    }
+
+    public ReportParameterBuilder withDate(String name, Date value, int hours, int minutes) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(value);
 
         final ReportDateParm parm = new ReportDateParm();
         parm.setName(name);
         parm.setDate(value);
+        parm.setUseAbsoluteDate(true);
+        parm.setHours(hours);
+        parm.setMinutes(minutes);
 
         dateParams.add(parm);
         return this;
