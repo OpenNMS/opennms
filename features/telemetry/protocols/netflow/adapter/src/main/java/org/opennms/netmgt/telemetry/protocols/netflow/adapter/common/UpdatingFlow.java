@@ -41,6 +41,14 @@ public abstract class UpdatingFlow implements Flow {
             this.active = active;
             this.inactive = inactive;
         }
+
+        public long getActive() {
+            return this.active;
+        }
+
+        public long getInactive() {
+            return this.inactive;
+        }
     }
 
     public abstract Optional<Timeout> getTimeout();
