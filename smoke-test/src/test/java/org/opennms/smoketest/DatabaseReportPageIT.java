@@ -66,10 +66,11 @@ public class DatabaseReportPageIT extends UiPageTest {
         driver.manage().timeouts().implicitlyWait(10, SECONDS);
         page = new DatabaseReportPage(getBaseUrlInternal());
         page.open();
+        cleanUp();
     }
 
     @After
-    public void after() {
+    public void cleanUp() {
         new ScheduledReportsTab().open().deleteAll();
         new PersistedReportsTab().open().deleteAll();
     }
@@ -270,12 +271,21 @@ public class DatabaseReportPageIT extends UiPageTest {
 
     private class ReportDetailsForm {
 
+        private boolean editMode;
+
+        public ReportDetailsForm editMode(boolean value) {
+            this.editMode = value;
+            return this;
+        }
+
         public ReportDetailsForm applyDeliveryOptions(DeliveryOptions options) {
             Objects.requireNonNull(options);
 
             // Enable delivery
-            final CheckBox deliverCheckbox = new CheckBox(getDriver(), "deliverReport");
-            deliverCheckbox.setSelected(true);
+            if (!this.editMode) {
+                final CheckBox deliverCheckbox = new CheckBox(getDriver(), "deliverReport");
+                deliverCheckbox.setSelected(true);
+            }
 
             // Fill values
             // Persist to Disk?
@@ -296,7 +306,9 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportDetailsForm applyCronExpression(String cronExpression) {
-            new CheckBox(driver, "createSchedule").setSelected(true);
+            if (!this.editMode) {
+                new CheckBox(driver, "createSchedule").setSelected(true);
+            }
             new CheckBox(driver, "scheduleTypeCustom").setSelected(true);
             new TextInput(driver, "customCronExpressionInput").setInput(cronExpression);
             return this;
@@ -461,14 +473,15 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public void edit(DeliveryOptions deliveryOptions, String cronExpression) {
-            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 120, 2000);
+            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 5, 1000);
             execute(() -> findElementById("action.edit." + triggerName)).click();
             webDriverWait.until(pageContainsText("Edit Schedule"));
             new ReportDetailsForm()
+                    .editMode(true)
                     .applyDeliveryOptions(deliveryOptions)
                     .applyCronExpression(cronExpression);
             execute(() -> findElementById("action.update." + triggerName)).click();
-            webDriverWait.until(ExpectedConditions.not(pageContainsText("Edit Schedule")));
+            execute(() -> webDriverWait.until(ExpectedConditions.not(pageContainsText("Edit Schedule"))));
         }
     }
 
