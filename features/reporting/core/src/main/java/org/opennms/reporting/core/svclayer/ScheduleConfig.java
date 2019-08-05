@@ -26,12 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.reporting.core.svclayer;
 
-// TODO MVR delete me
-public enum SchedulerMessageSeverity {
-    INFO,
-    WARNING,
-    ERROR,
-    FATAL
+import java.util.Objects;
+
+import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.reporting.core.DeliveryOptions;
+
+public class ScheduleConfig extends DeliveryConfig {
+    private final String cronExpression;
+
+    public ScheduleConfig(ReportParameters reportParameters, DeliveryOptions deliveryOptions, String cronExpression) {
+        super(reportParameters, deliveryOptions);
+        this.cronExpression = Objects.requireNonNull(cronExpression);
+    }
+
+    public String getCronExpression() {
+        return cronExpression;
+    }
 }

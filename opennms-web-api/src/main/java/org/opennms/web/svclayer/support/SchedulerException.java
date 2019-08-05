@@ -26,12 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.support;
 
-import java.util.List;
+public class SchedulerException extends RuntimeException {
+    public SchedulerException(String message) {
+        super(message);
+    }
 
-// TODO MVR remove me
-public interface SchedulerRequestContext {
-    void addMessage(SchedulerMessage message);
-    List<SchedulerMessage> getAllMessages();
+    public SchedulerException(Exception e) {
+        super(e);
+    }
+
+    public SchedulerException(String message, Exception cause) {
+        super(message, cause);
+    }
 }

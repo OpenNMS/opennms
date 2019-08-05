@@ -26,26 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.support;
 
-import java.util.Objects;
+import java.text.ParseException;
 
-// TODO MVR delete me
-public class SchedulerMessage {
+public class InvalidCronExpressionException extends SchedulerException {
 
-    private final SchedulerMessageSeverity severity;
-    private final String message;
+    private static final String TEMPLATE = "The provided cron expression '%s' cannot be parsed: %s";
 
-    public SchedulerMessage(SchedulerMessageSeverity severity, String message) {
-        this.severity = Objects.requireNonNull(severity);
-        this.message = message;
-    }
-
-    public SchedulerMessageSeverity getSeverity() {
-        return severity;
-    }
-
-    public String getText() {
-        return message;
+    public InvalidCronExpressionException(ParseException exception, String cronExpression) {
+        super(String.format(TEMPLATE, cronExpression, exception.getMessage()), exception);
     }
 }

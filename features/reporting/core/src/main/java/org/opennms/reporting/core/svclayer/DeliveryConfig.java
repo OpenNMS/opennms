@@ -26,28 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.reporting.rest.internal;
+package org.opennms.reporting.core.svclayer;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 
-import org.opennms.web.svclayer.SchedulerMessage;
-import org.opennms.web.svclayer.SchedulerRequestContext;
+import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.reporting.core.DeliveryOptions;
 
-import com.google.common.collect.Lists;
+public class DeliveryConfig {
 
-// TODO MVR get rid of this ugly beast
-public class DummyRequestContext implements SchedulerRequestContext {
+    private final ReportParameters reportParameters;
+    private final DeliveryOptions deliveryOptions;
 
-    private List<SchedulerMessage> messages = Lists.newArrayList();
-
-    @Override
-    public void addMessage(SchedulerMessage message) {
-        messages.add(message);
+    public DeliveryConfig(ReportParameters reportParameters, DeliveryOptions deliveryOptions) {
+        this.reportParameters = Objects.requireNonNull(reportParameters);
+        this.deliveryOptions = Objects.requireNonNull(deliveryOptions);
+        Objects.requireNonNull(reportParameters.getReportId());
     }
 
-    @Override
-    public List<SchedulerMessage> getAllMessages() {
-        return Collections.unmodifiableList(messages);
+    public ReportParameters getReportParameters() {
+        return reportParameters;
+    }
+
+    public DeliveryOptions getDeliveryOptions() {
+        return deliveryOptions;
+    }
+
+    public String getReportId() {
+        return reportParameters.getReportId();
     }
 }

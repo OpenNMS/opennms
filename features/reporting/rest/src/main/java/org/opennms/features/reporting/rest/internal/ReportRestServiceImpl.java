@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
@@ -64,17 +65,18 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.DeliveryOptions;
+import org.opennms.reporting.core.svclayer.DeliveryConfig;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
+import org.opennms.reporting.core.svclayer.ScheduleConfig;
 import org.opennms.web.svclayer.DatabaseReportListService;
-import org.opennms.web.svclayer.SchedulerMessage;
-import org.opennms.web.svclayer.SchedulerMessageSeverity;
-import org.opennms.web.svclayer.SchedulerRequestContext;
 import org.opennms.web.svclayer.SchedulerService;
 import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.model.DatabaseReportDescription;
 import org.opennms.web.svclayer.model.ReportRepositoryDescription;
 import org.opennms.web.svclayer.model.TriggerDescription;
+import org.opennms.web.svclayer.support.InvalidCronExpressionException;
+import org.opennms.web.svclayer.support.SchedulerException;
 
 import com.google.common.base.Strings;
 
@@ -147,14 +149,14 @@ public class ReportRestServiceImpl implements ReportRestService {
     public Response scheduleReport(final Map<String, Object> parameters) {
         final ReportParameters reportParameters = parseParameters(parameters);
         final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-        final SchedulerRequestContext requestContext = new DummyRequestContext();
-
-        schedulerService.addCronTrigger(reportParameters.getReportId(), reportParameters, deliveryOptions, (String) parameters.get("cronExpression"), requestContext);
-        final SchedulerMessage errorMessage = extractErrorMessage(requestContext);
-        if (errorMessage != null) {
-            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
+        final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
+        try {
+            schedulerService.addCronTrigger(scheduleConfig);
+        } catch (InvalidCronExpressionException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject("cronExpression", ex.getCause().getMessage()));
+        } catch (SchedulerException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
         }
-
         return Response.accepted().build();
     }
 
@@ -162,11 +164,11 @@ public class ReportRestServiceImpl implements ReportRestService {
     public Response deliverReport(final Map<String, Object> parameters) {
         final ReportParameters reportParameters = parseParameters(parameters);
         final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-        final SchedulerRequestContext requestContext = new DummyRequestContext();
-        schedulerService.execute(reportParameters.getReportId(), reportParameters, deliveryOptions, requestContext);
-        final SchedulerMessage errorMessage = extractErrorMessage(requestContext);
-        if (errorMessage != null) {
-            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
+        final DeliveryConfig deliveryConfig = new DeliveryConfig(reportParameters, deliveryOptions);
+        try {
+            schedulerService.execute(deliveryConfig);
+        } catch (SchedulerException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
         }
         return Response.accepted().build();
     }
@@ -194,7 +196,7 @@ public class ReportRestServiceImpl implements ReportRestService {
                     .header("Cache-Control", "must-revalidate")
                     .entity(outputStream.toByteArray()).build();
             }
-            return Response.status(Response.Status.BAD_REQUEST).build(); // TODO MVR unsupported format
+            return Response.status(Status.BAD_REQUEST).build(); // TODO MVR unsupported format
         } catch (ReportException ex) {
             throw new RuntimeException(ex);
         } finally {
@@ -235,7 +237,7 @@ public class ReportRestServiceImpl implements ReportRestService {
             reportStoreService.delete(any.get().getId());
             return Response.accepted().build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     @Override
@@ -278,7 +280,7 @@ public class ReportRestServiceImpl implements ReportRestService {
 
             return Response.ok(reportDetails.toJson().toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     @Override
@@ -289,15 +291,23 @@ public class ReportRestServiceImpl implements ReportRestService {
         if (any.isPresent()) {
             final ReportParameters reportParameters = parseParameters(parameters);
             final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-            final SchedulerRequestContext requestContext = new DummyRequestContext();
-            schedulerService.updateCronTrigger(triggerName, reportParameters, deliveryOptions, (String) parameters.get("cronExpression"), requestContext);
-            final SchedulerMessage errorMessage = extractErrorMessage(requestContext);
-            if (errorMessage != null) {
-                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
+            final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
+            try {
+                schedulerService.updateCronTrigger(triggerName, scheduleConfig);
+            } catch (InvalidCronExpressionException ex) {
+                return createErrorResponse(Status.BAD_REQUEST, createErrorObject("cronExpression", ex.getCause().getMessage()));
+            } catch (SchedulerException ex) {
+                return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
             }
             return Response.accepted().build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Status.NOT_FOUND).build();
+    }
+
+    private static Response createErrorResponse(Status status, JSONObject errorObject) {
+        Objects.requireNonNull(status);
+        Objects.requireNonNull(errorObject);
+        return Response.status(status).type(MediaType.APPLICATION_JSON_TYPE).entity(errorObject.toString()).build();
     }
 
     @Override
@@ -313,19 +323,19 @@ public class ReportRestServiceImpl implements ReportRestService {
             schedulerService.removeTrigger(triggerName);
             return Response.accepted().build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     @Override
     public Response downloadReport(final String format, final String locatorId) {
         if (Strings.isNullOrEmpty(format)) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Status.BAD_REQUEST)
                     .type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(createErrorObject("entity", "Property 'format' is null or empty").toString())
                     .build();
         }
         if (Strings.isNullOrEmpty(locatorId)) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Status.BAD_REQUEST)
                     .type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(createErrorObject("entity", "Property 'locatorId' is null or empty").toString())
                     .build();
@@ -352,7 +362,7 @@ public class ReportRestServiceImpl implements ReportRestService {
             }
             return responseBuilder.build();
         } catch (NumberFormatException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Status.BAD_REQUEST)
                         .type(MediaType.APPLICATION_JSON_TYPE)
                         .entity(createErrorObject(e).toString()).build();
         }
@@ -387,13 +397,6 @@ public class ReportRestServiceImpl implements ReportRestService {
             }
         }
         return parsedParameters;
-    }
-
-    private JSONObject convert(SchedulerMessage message) {
-        final JSONObject errorMessage = new JSONObject();
-        errorMessage.put("severity", message.getSeverity().name());
-        errorMessage.put("message", message.getText());
-        return errorMessage;
     }
 
     private ReportParameters parseParameters(Map<String, Object> inputParameters) {
@@ -481,11 +484,5 @@ public class ReportRestServiceImpl implements ReportRestService {
         options.setPersist(jsonOptions.getBoolean("persist"));
         options.setFormat(ReportFormat.valueOf(jsonOptions.getString("format")));
         return options;
-    }
-
-    private SchedulerMessage extractErrorMessage(SchedulerRequestContext requestContext) {
-        return requestContext.getAllMessages().stream()
-                .filter(message -> message.getSeverity() == SchedulerMessageSeverity.ERROR || message.getSeverity() == SchedulerMessageSeverity.FATAL)
-                .findFirst().orElse(null);
     }
 }
