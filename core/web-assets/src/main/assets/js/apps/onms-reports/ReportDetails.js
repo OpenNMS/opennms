@@ -1,4 +1,4 @@
-import ScheduleOptions from '../../../lib/onms-schedule-editor/scripts/ScheduleOptions';
+import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOptions';
 import moment from 'moment';
 
 export default class ReportDetails {
