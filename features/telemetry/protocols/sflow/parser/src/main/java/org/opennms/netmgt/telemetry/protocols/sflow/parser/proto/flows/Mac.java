@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import org.bson.BsonBinary;
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
@@ -54,7 +55,7 @@ public class Mac {
                 .toString();
     }
 
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeBinaryData(new BsonBinary(this.mac.value));
     }
 }

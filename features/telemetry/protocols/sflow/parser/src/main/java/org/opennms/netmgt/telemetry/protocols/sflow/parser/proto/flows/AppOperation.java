@@ -33,7 +33,9 @@ import java.util.Optional;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
@@ -79,15 +81,15 @@ public class AppOperation implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
 
         bsonWriter.writeName("context");
-        this.context.writeBson(bsonWriter);
+        this.context.writeBson(bsonWriter, enr);
 
         bsonWriter.writeStartArray("status_descr");
         for (final Utf8string utf8string : this.status_descr) {
-            utf8string.writeBson(bsonWriter);
+            utf8string.writeBson(bsonWriter, enr);
         }
         bsonWriter.writeEndArray();
 
@@ -98,8 +100,13 @@ public class AppOperation implements FlowData {
         bsonWriter.writeInt64("uS", this.uS);
 
         bsonWriter.writeName("status");
-        this.status.writeBson(bsonWriter);
+        this.status.writeBson(bsonWriter, enr);
 
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

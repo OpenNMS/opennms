@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadFactory;
 
 import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -92,7 +94,10 @@ public class UdpListener implements Listener {
     }
 
     public void start() throws InterruptedException {
-        this.bossGroup = new NioEventLoopGroup();
+        // Netty defaults to 2 * num cores when the number of threads is set to 0
+        this.bossGroup = new NioEventLoopGroup(0, new ThreadFactoryBuilder()
+                .setNameFormat("telemetryd-nio-" + name + "-%d")
+                .build() );
 
         this.parsers.forEach(parser -> parser.start(this.bossGroup));
 

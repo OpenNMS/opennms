@@ -68,7 +68,7 @@
                     <strict>true</strict>
                     <runTarget>http://localhost:8980/opennms/topology</runTarget>
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
-                    <localWorkers>${vaddinLocalWorkers}</localWorkers>
+                    <localWorkers>${vaadinLocalWorkers}</localWorkers>
                 </configuration>
                 <executions>
                     <execution>
