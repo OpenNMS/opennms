@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,14 +97,14 @@ public final class JDBCQueryMonitor extends JDBCMonitor {
     
     /** {@inheritDoc} */
     @Override
-    public PollStatus checkDatabaseStatus(Connection con, Map<String, Object> parameters) {
+    public PollStatus checkDatabaseStatus(Connection con, Map<String, PollerParameter> parameters) {
         PollStatus ps = PollStatus.unavailable();
         Statement st = null; 
-        String query = ParameterMap.getKeyedString(parameters, "query", null);
-        String action = ParameterMap.getKeyedString(parameters, "action", "row_count");
-        String column = ParameterMap.getKeyedString(parameters, "column", null);
-        String operator = ParameterMap.getKeyedString(parameters, "operator", ">=");
-        String message = ParameterMap.getKeyedString(parameters, "message", null );
+        String query = getKeyedString(parameters, "query", null);
+        String action = getKeyedString(parameters, "action", "row_count");
+        String column = getKeyedString(parameters, "column", null);
+        String operator = getKeyedString(parameters, "operator", ">=");
+        String message = getKeyedString(parameters, "message", null );
         
         LOG.debug("Query: {}", query);
         
@@ -120,14 +121,14 @@ public final class JDBCQueryMonitor extends JDBCMonitor {
                 case QUERY_ACTION_ROW_COUNT:
                     rs.last();
                     int rowCount = rs.getRow();
-                    int expectedRowCount = ParameterMap.getKeyedInteger(parameters,"operand",1);
+                    int expectedRowCount = getKeyedInteger(parameters,"operand",1);
                     if (integerCheck(rowCount,expectedRowCount,operator))
                         ps = PollStatus.available();
                     else 
                         ps = PollStatus.unavailable("Row Count Check Failed: " + rowCount +  " " +  operator + " " + expectedRowCount );
                     break;
                 case QUERY_ACTION_COMPARE_STRING:
-                    String expectedString = ParameterMap.getKeyedString(parameters, "operand", null);
+                    String expectedString = getKeyedString(parameters, "operand", null);
                     String retrivedString = rs.getString(column);
                     if ( expectedString.equals(retrivedString)) 
                         ps = PollStatus.available();
@@ -136,7 +137,7 @@ public final class JDBCQueryMonitor extends JDBCMonitor {
                        
                     break;
                 case QUERY_ACTION_COMPARE_INT:
-                    int expectedInt = ParameterMap.getKeyedInteger(parameters, "operand", 1);
+                    int expectedInt = getKeyedInteger(parameters, "operand", 1);
                     int retrivedInt = rs.getInt(column);
                     if (integerCheck(retrivedInt,expectedInt,operator))
                          ps = PollStatus.available();

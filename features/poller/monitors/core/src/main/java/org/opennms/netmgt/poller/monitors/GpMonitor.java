@@ -35,11 +35,12 @@ import java.util.Map;
 import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +95,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
      * the script or program being called.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         LOG.warn("GpMonitor: This poller monitor is deprecated in favor of SystemExecuteMonitor. GpMonitor will be removed in a future release.");
 
         //
@@ -102,23 +103,23 @@ final public class GpMonitor extends AbstractServiceMonitor {
         //
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        String hoption = ParameterMap.getKeyedString(parameters, "hoption", "--hostname");
-        String toption = ParameterMap.getKeyedString(parameters, "toption", "--timeout");
+        String hoption = getKeyedString(parameters, "hoption", "--hostname");
+        String toption = getKeyedString(parameters, "toption", "--timeout");
         //
         // convert timeout to seconds for ExecRunner
         //
-        String args = ParameterMap.getKeyedString(parameters, "args", null);
+        String args = getKeyedString(parameters, "args", null);
 
         // Script
         //
-        String script = ParameterMap.getKeyedString(parameters, "script", null);
+        String script = getKeyedString(parameters, "script", null);
         if (script == null) {
             throw new RuntimeException("GpMonitor: required parameter 'script' is not present in supplied properties.");
         }
 
         // BannerMatch
         //
-        String strBannerMatch = (String) parameters.get("banner");
+        String strBannerMatch = getKeyedString(parameters, "banner", null);
 
         // Script standard output
         //

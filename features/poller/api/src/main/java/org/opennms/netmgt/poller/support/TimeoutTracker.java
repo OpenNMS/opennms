@@ -26,10 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.netmgt.poller.support;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.poller.PollerParameter;
 
 
 /**
@@ -62,16 +65,16 @@ public class TimeoutTracker {
      * @param defaultRetry a int.
      * @param defaultTimeout a int.
      */
-    public TimeoutTracker(Map<String,?> parameters, int defaultRetry, int defaultTimeout) {
-        m_retry = ParameterMap.getKeyedInteger(parameters, "retry", defaultRetry);
+    public TimeoutTracker(Map<String, PollerParameter> parameters, int defaultRetry, int defaultTimeout) {
+        m_retry = AbstractServiceMonitor.getKeyedInteger(parameters, "retry", defaultRetry);
 
         // make sure the timeout is a least 10 millis
-        m_timeoutInMillis = Math.max(10L, ParameterMap.getKeyedInteger(parameters, "timeout", defaultTimeout));
+        m_timeoutInMillis = Math.max(10L, AbstractServiceMonitor.getKeyedInteger(parameters, "timeout", defaultTimeout));
         m_timeoutInNanos = Math.max(10000000L, TimeUnit.NANOSECONDS.convert(m_timeoutInMillis, TimeUnit.MILLISECONDS));
         m_timeoutInSeconds = Math.max(1L, TimeUnit.SECONDS.convert(m_timeoutInMillis, TimeUnit.MILLISECONDS));
 
 
-        m_strictTimeouts = ParameterMap.getKeyedBoolean(parameters, "strict-timeout", false);
+        m_strictTimeouts = AbstractServiceMonitor.getKeyedBoolean(parameters, "strict-timeout", false);
         
         resetAttemptStartTime();
 

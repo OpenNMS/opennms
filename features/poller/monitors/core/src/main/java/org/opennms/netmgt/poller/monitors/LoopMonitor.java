@@ -34,6 +34,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.LoopPlugin;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
@@ -47,15 +48,15 @@ import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 public class LoopMonitor extends AbstractServiceMonitor {
 
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         final LoopPlugin lp = new LoopPlugin();
         boolean isAvailable = lp.isProtocolSupported(svc.getAddress(), parameters);
         int status = (isAvailable ? PollStatus.SERVICE_AVAILABLE : PollStatus.SERVICE_UNAVAILABLE);
         final StringBuilder sb = new StringBuilder();
         sb.append("LoopMonitor configured with is-supported =  ");
-        sb.append(ParameterMap.getKeyedString(parameters, "is-supported", "false"));
+        sb.append(getKeyedString(parameters, "is-supported", "false"));
         sb.append(" for ip-match: ");
-        sb.append(ParameterMap.getKeyedString(parameters, "ip-match", "*.*.*.*"));
+        sb.append(getKeyedString(parameters, "ip-match", "*.*.*.*"));
 
         return PollStatus.get(status, sb.toString());
     }

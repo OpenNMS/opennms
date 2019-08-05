@@ -52,13 +52,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.SocketUtils;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,23 +132,23 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
      * SERVICE_AVAILABLE and return.
      */
     @Override
-    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
+    public PollStatus poll(final MonitoredService svc, final Map<String, PollerParameter> parameters) {
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
-        int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
+        int port = getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
         if (port == DEFAULT_PORT) {
             throw new RuntimeException("Required parameter 'port' is not present in supplied properties.");
         }
 
         // Remaining days
-        int validityDays = ParameterMap.getKeyedInteger(parameters, PARAMETER_DAYS, DEFAULT_DAYS);
+        int validityDays = getKeyedInteger(parameters, PARAMETER_DAYS, DEFAULT_DAYS);
         if (validityDays <= 0) {
             throw new RuntimeException("Required parameter 'days' must be a positive value.");
         }
 
         // Server name (optional)
-        final String serverName = PropertiesUtils.substitute(ParameterMap.getKeyedString(parameters, PARAMETER_SERVER_NAME, ""),
+        final String serverName = PropertiesUtils.substitute(getKeyedString(parameters, PARAMETER_SERVER_NAME, ""),
                                                              getServiceProperties(svc));
 
         final String stlsInitiate = PropertiesUtils.substitute(resolveKeyedString(parameters, PARAMETER_STLS_INIT, ""),

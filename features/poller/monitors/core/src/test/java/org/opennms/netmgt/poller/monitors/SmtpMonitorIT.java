@@ -48,6 +48,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -121,8 +122,8 @@ public class SmtpMonitorIT {
 
         ServiceMonitor sm = new SmtpMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Node One", InetAddressUtils.addr("127.0.0.1"), "SMTP");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("port", m_serverSocket.getLocalPort());
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("port", PollerParameter.simple(Integer.toString(m_serverSocket.getLocalPort())));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUp());
@@ -167,8 +168,8 @@ public class SmtpMonitorIT {
 
         ServiceMonitor sm = new SmtpMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Node One", InetAddressUtils.addr("127.0.0.1"), "SMTP");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("port", m_serverSocket.getLocalPort());
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("port", PollerParameter.simple(Integer.toString(m_serverSocket.getLocalPort())));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUp());
@@ -211,8 +212,8 @@ public class SmtpMonitorIT {
 
         ServiceMonitor sm = new SmtpMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Node One", InetAddressUtils.addr("127.0.0.1"), "SMTP");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("port", m_serverSocket.getLocalPort());
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("port", PollerParameter.simple(Integer.toString(m_serverSocket.getLocalPort())));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUp());
@@ -255,8 +256,8 @@ public class SmtpMonitorIT {
 
         ServiceMonitor sm = new SmtpMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Node One", InetAddressUtils.addr("127.0.0.1"), "SMTP");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("port", m_serverSocket.getLocalPort());
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("port", PollerParameter.simple(Integer.toString(m_serverSocket.getLocalPort())));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUp());
@@ -293,8 +294,8 @@ public class SmtpMonitorIT {
 
         ServiceMonitor sm = new SmtpMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Node One", InetAddressUtils.addr("127.0.0.1"), "SMTP");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("port", m_serverSocket.getLocalPort());
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("port", PollerParameter.simple(Integer.toString(m_serverSocket.getLocalPort())));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUnavailable());
@@ -338,8 +339,8 @@ public class SmtpMonitorIT {
 
         ServiceMonitor sm = new SmtpMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Node One", InetAddressUtils.addr("127.0.0.1"), "SMTP");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("port", m_serverSocket.getLocalPort());
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("port", PollerParameter.simple(Integer.toString(m_serverSocket.getLocalPort())));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUnavailable());

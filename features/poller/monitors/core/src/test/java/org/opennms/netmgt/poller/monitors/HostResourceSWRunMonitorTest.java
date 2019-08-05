@@ -42,6 +42,8 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.poller.PollerParameter;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,8 +105,8 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testUnknownService() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("service-name", "this service does not exist!");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("service-name", PollerParameter.simple("this service does not exist!"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
         log(status.getReason());
@@ -112,31 +114,31 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testMonitorWithRegex() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
+        Map<String, PollerParameter> parameters = createBasicParams();
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
     }
 
     @Test
     public void testMonitorWithoutRegex() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("service-name", "eclipse");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("service-name", PollerParameter.simple("eclipse"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
     }
 
     @Test
     public void testMinServices() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("min-services", "2");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("min-services", PollerParameter.simple("2"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
     }
 
     @Test
     public void testInvalidMinServices() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("min-services", "5");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("min-services", PollerParameter.simple("5"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
         log(status.getReason());
@@ -144,16 +146,16 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testMaxServices() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("max-services", "5");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("max-services", PollerParameter.simple("5"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
     }
 
     @Test
     public void testInvalidMaxServices() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("max-services", "3");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("max-services", PollerParameter.simple("3"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
         log(status.getReason());
@@ -161,9 +163,9 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testServicesRange() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("min-services", "2");
-        parameters.put("max-services", "5");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("min-services", PollerParameter.simple("2"));
+        parameters.put("max-services", PollerParameter.simple("5"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
     }
@@ -171,9 +173,9 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
     @Test
     public void testInvalidRange() throws Exception {
         m_ignoreWarnings = true; // warning is expected here, skip the assert in tearDown()
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("min-services", "8");
-        parameters.put("max-services", "5");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("min-services", PollerParameter.simple("8"));
+        parameters.put("max-services", PollerParameter.simple("5"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
         log(status.getReason());
@@ -181,30 +183,32 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testServicesRangeWithoutMatchAll() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("min-services", "1");
-        parameters.put("max-services", "3");
-        parameters.put("match-all", "false");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("min-services", PollerParameter.simple("1"));
+        parameters.put("max-services", PollerParameter.simple("3"));
+        parameters.put("match-all", PollerParameter.simple("false"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertTrue(status.isAvailable());
     }
 
     @Test
     public void testInvalidServicesRange() throws Exception {
-        Map<String, Object> parameters = createBasicParams();
-        parameters.put("min-services", "1");
-        parameters.put("max-services", "3");
+        Map<String, PollerParameter> parameters = createBasicParams();
+        parameters.put("min-services", PollerParameter.simple("1"));
+        parameters.put("max-services", PollerParameter.simple("3"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
         log(status.getReason());
     }
 
-    private Map<String, Object> createBasicParams() {
-        Map<String, Object> parameters = new HashMap<String,Object>();
-        parameters.put("port", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)).getPort());
-        parameters.put("service-name", "~^(auto|sh).*");
-        parameters.put("match-all", "true");
-        parameters.put("agent", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
+    private Map<String, PollerParameter> createBasicParams() {
+        Map<String, PollerParameter> parameters = new HashMap<>();
+        final SnmpAgentConfig agentConfig = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS));
+
+        parameters.put("port", PollerParameter.simple(Integer.toString(agentConfig.getPort())));
+        parameters.put("service-name", PollerParameter.simple("~^(auto|sh).*"));
+        parameters.put("match-all", PollerParameter.simple("true"));
+        parameters.put("agent", PollerParameter.marshall(agentConfig));
         return parameters;
     }
 

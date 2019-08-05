@@ -32,8 +32,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.features.jest.client.ConnectionPoolShutdownException;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +59,8 @@ public class LimitedRetriesRequestExecutor implements RequestExecutor {
     public <T extends JestResult> T execute(JestClient client, Action<T> clientRequest) throws IOException {
         // 'strict-timeout' will enforce that the timeout time elapses between subsequent
         // attempts even if the operation returns more quickly than the timeout
-        final Map<String,Object> params = new HashMap<>();
-        params.put("strict-timeout", Boolean.TRUE);
+        final Map<String, PollerParameter> params = new HashMap<>();
+        params.put("strict-timeout", PollerParameter.simple("true"));
 
         final TimeoutTracker timeoutTracker = new TimeoutTracker(params, retryCount, timeout);
         for (timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {

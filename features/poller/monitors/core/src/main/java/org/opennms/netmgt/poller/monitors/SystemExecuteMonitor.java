@@ -34,11 +34,12 @@ import java.util.Map;
 
 import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,11 +77,11 @@ final public class SystemExecuteMonitor extends AbstractServiceMonitor {
      * the script or program being called.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        String script = ParameterMap.getKeyedString(parameters, "script", null);
+        String script = getKeyedString(parameters, "script", null);
 
         String problem = checkScriptFile(script);
         if (problem != null) {
@@ -88,11 +89,11 @@ final public class SystemExecuteMonitor extends AbstractServiceMonitor {
             return PollStatus.unknown(problem);
         }
 
-        String args = ParameterMap.getKeyedString(parameters, "args", "");
+        String args = getKeyedString(parameters, "args", "");
         args = enrichArguments(args, svc, tracker, parameters);
 
 
-        String strBannerMatch = (String) parameters.get("banner");
+        String strBannerMatch = getKeyedString(parameters, "banner", null);
 
         String scriptOutput = "";
 
@@ -175,11 +176,11 @@ final public class SystemExecuteMonitor extends AbstractServiceMonitor {
         return serviceStatus;
     }
 
-    private String enrichArguments(String args, MonitoredService svc, TimeoutTracker tracker, Map <String, Object> parameters) {
+    private String enrichArguments(String args, MonitoredService svc, TimeoutTracker tracker, Map <String, PollerParameter> parameters) {
         String richArgs = args;
         richArgs = richArgs.replace("${timeout}", ((Long)tracker.getTimeoutInMillis()).toString());
         richArgs = richArgs.replace("${timeoutsec}", ((Long)tracker.getTimeoutInSeconds()).toString());
-        richArgs = richArgs.replace("${retry}", ParameterMap.getKeyedString(parameters, "retry", ((Integer)DEFAULT_RETRY).toString()));
+        richArgs = richArgs.replace("${retry}", getKeyedString(parameters, "retry", ((Integer)DEFAULT_RETRY).toString()));
         richArgs = richArgs.replace("${ipaddr}", svc.getIpAddr());
         richArgs = richArgs.replace("${nodeid}", ((Integer) svc.getNodeId()).toString());
         richArgs = richArgs.replace("${nodelabel}", svc.getNodeLabel());

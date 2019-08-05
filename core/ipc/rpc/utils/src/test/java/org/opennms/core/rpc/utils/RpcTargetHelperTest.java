@@ -63,7 +63,7 @@ public class RpcTargetHelperTest {
 
     @Test
     public void overridesGivenLocationAndSystemIdUsingAttributes() {
-        final Map<String, Object> attributes = new HashMap<>();
+        final Map<String, String> attributes = new HashMap<>();
         attributes.put(RpcTargetHelper.LOCATION_KEY, "xx");
         attributes.put(RpcTargetHelper.SYSTEM_ID_KEY, "yy");
 
@@ -78,7 +78,7 @@ public class RpcTargetHelperTest {
 
     @Test
     public void overridesGivenLocationUsingCallback() {
-        final Map<String, Object> attributes = new HashMap<>();
+        final Map<String, String> attributes = new HashMap<>();
         attributes.put(RpcTargetHelper.LOCATION_KEY, "xx");
 
         final RpcTarget target = new RpcTargetHelper().target()
@@ -92,7 +92,7 @@ public class RpcTargetHelperTest {
 
     @Test
     public void canUseForeignIdAsSystemId() {
-        final Map<String, Object> attributes = new HashMap<>();
+        final Map<String, String> attributes = new HashMap<>();
         attributes.put(RpcTargetHelper.SYSTEM_ID_KEY, "yy");
         attributes.put(RpcTargetHelper.USE_FOREIGN_ID_AS_SYSTEM_ID_KEY, Boolean.TRUE.toString());
 

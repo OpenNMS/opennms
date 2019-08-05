@@ -38,6 +38,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -60,7 +61,7 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
     private static final String SVC_GRP_MEMBER_STATE = ".1.3.6.1.4.1.5951.4.1.2.7.1.6";
     private static final Logger LOG = LoggerFactory.getLogger(NetScalerGroupHealthMonitor.class);
 
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         InetAddress ipaddr = svc.getAddress();
 
         final SnmpAgentConfig agentConfig = getAgentConfig(svc, parameters);
@@ -68,8 +69,8 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
 
         PollStatus status = PollStatus.unavailable("NetScalerGroupHealthMonitor: cannot determinate group health, addr=" + hostAddress);
 
-        int groupHealth = ParameterMap.getKeyedInteger(parameters, "group-health", 60);
-        String groupName = ParameterMap.getKeyedString(parameters, "group-name", null);
+        int groupHealth = getKeyedInteger(parameters, "group-health", 60);
+        String groupName = getKeyedString(parameters, "group-name", null);
         if (groupName == null) {
             status.setReason("NetScalerGroupHealthMonitor no group-name defined, addr=" + hostAddress);
             LOG.warn("NetScalerGroupHealthMonitor.poll: No Service Name Defined!");

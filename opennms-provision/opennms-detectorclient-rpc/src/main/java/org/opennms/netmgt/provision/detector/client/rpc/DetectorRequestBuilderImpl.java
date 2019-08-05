@@ -46,6 +46,8 @@ import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Maps;
+
 public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(DetectorRequestBuilderImpl.class);
@@ -134,10 +136,10 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
             throw new IllegalArgumentException("Detector class name is required.");
         }
 
-        final Map<String, String> interpolatedAttributes = Interpolator.interpolateStrings(attributes, new FallbackScope(
+        final FallbackScope scope = new FallbackScope(
                 this.client.getEntityScopeProvider().getScopeForNode(nodeId),
-                this.client.getEntityScopeProvider().getScopeForInterface(nodeId, InetAddressUtils.toIpAddrString(address))
-        ));
+                this.client.getEntityScopeProvider().getScopeForInterface(nodeId, InetAddressUtils.toIpAddrString(address)));
+        final Map<String, String> interpolatedAttributes = Maps.transformValues(attributes, (raw) -> Interpolator.interpolate(raw, scope));
 
         // Retrieve the factory associated with the requested detector
         final ServiceDetectorFactory<?> factory = client.getRegistry().getDetectorFactoryByClassName(className);

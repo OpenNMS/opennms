@@ -30,10 +30,6 @@ package org.opennms.core.web;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.opennms.core.web.HttpClientWrapperConfigHelper.PARAMETER_KEYS.useSystemProxy;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -45,19 +41,12 @@ public class HttpClientWrapperConfigHelperTest {
 
         HttpClientWrapper client = Mockito.mock(HttpClientWrapper.class);
 
-        // Param not set
-        Map<String, Object> params = new HashMap<>();
-        HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined(client, params);
-        verify(client, times(0)).useSystemProxySettings();
-
         // Param false
-        params.put(useSystemProxy.getKey(), Boolean.FALSE);
-        HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined(client, params);
+        HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined(client, false);
         verify(client, times(0)).useSystemProxySettings();
 
         // Param true
-        params.put(useSystemProxy.getKey(), Boolean.TRUE);
-        HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined(client, params);
+        HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined(client, true);
         verify(client, times(1)).useSystemProxySettings();
     }
 

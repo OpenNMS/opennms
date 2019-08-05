@@ -57,8 +57,7 @@ public abstract class ParameterMap {
     	 * @param key a {@link java.lang.String} object.
     	 * @param defValue a long.
     	 */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static long getKeyedLong(final Map map, final String key, final long defValue) {
+    public static long getKeyedLong(final Map<String, Object> map, final String key, final long defValue) {
 	    
 	    if (map == null) return defValue;
 	    
@@ -92,8 +91,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a long.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static long getKeyedDecodedLong(final Map map, final String key, final long defValue) {
+    public static long getKeyedDecodedLong(final Map<String, Object> map, final String key, final long defValue) {
             
             if (map == null) return defValue;
             
@@ -127,7 +125,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a int.
      */
-    public static int getKeyedInteger(@SuppressWarnings("rawtypes") final Map map, final String key, final int defValue) {
+    public static int getKeyedInteger(final Map<String, Object> map, final String key, final int defValue) {
         return new Long(ParameterMap.getKeyedLong(map, key, defValue)).intValue();
     }
 
@@ -142,8 +140,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValues an array of int.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static final int[] getKeyedIntegerArray(final Map map, final String key, final int[] defValues) {
+    public static final int[] getKeyedIntegerArray(final Map<String, Object> map, final String key, final int[] defValues) {
         
         if (map == null) return defValues;
         
@@ -153,27 +150,33 @@ public abstract class ParameterMap {
         if (oValue != null && oValue instanceof int[]) {
             result = (int[]) oValue;
         } else if (oValue != null) {
-            List<Integer> tmpList = new ArrayList<Integer>(5);
-
-            // Split on spaces, commas, colons, or semicolons
-            //
-            StringTokenizer ints = new StringTokenizer(oValue.toString(), " ;:,");
-            while (ints.hasMoreElements()) {
-                String token = ints.nextToken();
-                try {
-                    int x = Integer.parseInt(token);
-                    tmpList.add(Integer.valueOf(x));
-                } catch (NumberFormatException e) {
-                	LOG.warn("getKeyedIntegerArray: failed to convert value {} to int array for key {} due to value {}", oValue, key, token, e);
-                }
-            }
-            result = new int[tmpList.size()];
-
-            for (int x = 0; x < result.length; x++)
-                result[x] = ((Integer) tmpList.get(x)).intValue();
-
+            result = getIntegerArrayValue(key, oValue.toString());
             map.put(key, result);
         }
+        return result;
+    }
+
+    public static int[] getIntegerArrayValue(final String key, final String value) {
+        List<Integer> tmpList = new ArrayList<Integer>(5);
+
+        // Split on spaces, commas, colons, or semicolons
+        //
+        StringTokenizer ints = new StringTokenizer(value.toString(), " ;:,");
+        while (ints.hasMoreElements()) {
+            String token = ints.nextToken();
+            try {
+                int x = Integer.parseInt(token);
+                tmpList.add(Integer.valueOf(x));
+            } catch (NumberFormatException e) {
+                LOG.warn("getKeyedIntegerArray: failed to convert value {} to int array for key {} due to value {}", value, key, token, e);
+            }
+        }
+
+        final int[] result = new int[tmpList.size()];
+
+        for (int x = 0; x < result.length; x++)
+            result[x] = ((Integer) tmpList.get(x)).intValue();
+
         return result;
     }
 
@@ -190,7 +193,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a int.
      */
-    public static int getKeyedDecodedInteger(@SuppressWarnings("rawtypes") final Map map, final String key, final int defValue) {
+    public static int getKeyedDecodedInteger(final Map<String, Object> map, final String key, final int defValue) {
         return new Long(ParameterMap.getKeyedDecodedLong(map, key, defValue)).intValue();
     }
 
@@ -206,8 +209,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a {@link java.lang.String} object.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static String getKeyedString(final Map map, final String key, final String defValue) {
+    public static String getKeyedString(final Map<String, Object> map, final String key, final String defValue) {
         
         if (map == null) return defValue;
 
@@ -236,8 +238,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a boolean.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
+    public static boolean getKeyedBoolean(final Map<String, Object> map, final String key, final boolean defValue) {
         
         if (map == null) return defValue;
         

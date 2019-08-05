@@ -32,6 +32,6 @@ import java.util.Map;
 
 public interface ServiceMonitorAdaptor {
 
-    public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status);
+    public PollStatus handlePollResult(MonitoredService svc, Map<String, PollerParameter> parameters, PollStatus status);
 
 }

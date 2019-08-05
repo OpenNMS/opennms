@@ -40,10 +40,11 @@ import java.util.Properties;
 
 import org.opennms.core.utils.DBTools;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +109,7 @@ public class JDBCMonitor extends ParameterSubstitutingMonitor {
 	 *      codes for JConnect </a>
 	 */
         @Override
-	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+	public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
 		// Assume that the service is down
 		PollStatus status = PollStatus.unavailable();
 		Driver driver = null;
@@ -120,7 +121,7 @@ public class JDBCMonitor extends ParameterSubstitutingMonitor {
 			throw new NullPointerException("parameter cannot be null");
 		}
 
-		String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
+		String driverClass = getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
 		try {
 			driver = (Driver)Class.forName(driverClass).newInstance();
 			LOG.debug("Loaded JDBC driver: {}", driverClass);
@@ -229,7 +230,7 @@ public class JDBCMonitor extends ParameterSubstitutingMonitor {
 	 * @param parameters a {@link java.util.Map} object.
 	 * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
 	 */
-	public PollStatus checkDatabaseStatus( Connection con, Map<String,Object> parameters )
+	public PollStatus checkDatabaseStatus( Connection con, Map<String, PollerParameter> parameters )
 	{
 		PollStatus status = PollStatus.unavailable("Unable to retrieve database catalogs");
 		ResultSet resultset = null;

@@ -54,7 +54,7 @@ public class RpcTargetHelper {
         private String systemId;
         private Integer nodeId;
         private NodeDao nodeDao;
-        private Map<String, Object> serviceAttributes;
+        private Map<String, String> serviceAttributes;
         private Function<String, String> locationOverride;
 
         public RpcTargetBuilder withNodeId(Integer nodeId) {
@@ -77,7 +77,7 @@ public class RpcTargetHelper {
             return this;
         }
 
-        public RpcTargetBuilder withServiceAttributes(Map<String, Object> attributes) {
+        public RpcTargetBuilder withServiceAttributes(Map<String, String> attributes) {
             this.serviceAttributes = attributes;
             return this;
         }
@@ -131,11 +131,7 @@ public class RpcTargetHelper {
             if (serviceAttributes == null) {
                 return null;
             }
-            final Object value = serviceAttributes.get(key);
-            if (value != null && value instanceof String) {
-                return (String)value;
-            }
-            return null;
+            return serviceAttributes.get(key);
         }
     }
 

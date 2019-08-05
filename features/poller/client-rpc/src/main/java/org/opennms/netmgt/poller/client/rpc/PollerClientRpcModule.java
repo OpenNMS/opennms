@@ -29,16 +29,23 @@
 package org.opennms.netmgt.poller.client.rpc;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.poller.ComplexPollerParameter;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.SimplePollerParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.google.common.collect.Maps;
 
 public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO, PollerResponseDTO> {
 
@@ -73,7 +80,7 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
             public PollerResponseDTO get() {
                 PollStatus pollStatus;
                 try {
-                    final Map<String, Object> parameters = request.getMonitorParameters();
+                    final Map<String, PollerParameter> parameters = Maps.newHashMap(request.getMonitorParameters());
                     pollStatus = monitor.poll(request, parameters);
                 } catch (RuntimeException e) {
                     pollStatus = PollStatus.unknown(e.getMessage());

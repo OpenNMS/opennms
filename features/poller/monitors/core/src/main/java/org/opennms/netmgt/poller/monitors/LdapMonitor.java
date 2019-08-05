@@ -28,21 +28,16 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.InterruptedIOException;
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
-import java.net.Socket;
 import java.util.Map;
 
 import org.opennms.core.utils.DefaultSocketWrapper;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutSocketFactory;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
@@ -104,8 +99,8 @@ public class LdapMonitor extends ParameterSubstitutingMonitor {
         return new DefaultSocketWrapper();
     }
 
-    protected int determinePort(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_PORT);
+    protected int determinePort(final Map<String, PollerParameter> parameters) {
+        return getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_PORT);
     }
 
     /**
@@ -119,7 +114,7 @@ public class LdapMonitor extends ParameterSubstitutingMonitor {
      * to SERVICE_AVAILABLE and return.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
         String reason = null;
 
@@ -127,10 +122,10 @@ public class LdapMonitor extends ParameterSubstitutingMonitor {
 
         // get the parameters
         //
-        final int ldapVersion = ParameterMap.getKeyedInteger(parameters, "version", LDAPConnection.LDAP_V3);
+        final int ldapVersion = getKeyedInteger(parameters, "version", LDAPConnection.LDAP_V3);
         final int ldapPort = determinePort(parameters);
-        final String searchBase = ParameterMap.getKeyedString(parameters, "searchbase", DEFAULT_BASE);
-        final String searchFilter = ParameterMap.getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
+        final String searchBase = getKeyedString(parameters, "searchbase", DEFAULT_BASE);
+        final String searchFilter = getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
 
         final String password = resolveKeyedString(parameters, "password", null);
         final String ldapDn = resolveKeyedString(parameters, "dn", null);

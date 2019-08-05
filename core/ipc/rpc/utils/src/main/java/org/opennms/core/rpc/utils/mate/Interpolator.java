@@ -28,12 +28,20 @@
 
 package org.opennms.core.rpc.utils.mate;
 
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Maps;
+import org.opennms.netmgt.poller.ComplexPollerParameter;
+import org.opennms.netmgt.poller.PollerParameter;
+import org.opennms.netmgt.poller.SimplePollerParameter;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class Interpolator {
     private static final String OUTER_REGEXP = "\\$\\{(.+?:.+?)\\}";
@@ -43,24 +51,62 @@ public class Interpolator {
 
     private Interpolator() {}
 
-    public static Map<String, Object> interpolateObjects(final Map<String, Object> attributes, final Scope scope) {
-        return Maps.transformValues(attributes, (raw) -> interpolate(raw, scope));
-    }
-
-    public static Map<String, String> interpolateStrings(final Map<String, String> attributes, final Scope scope) {
-        return Maps.transformValues(attributes, (raw) -> interpolate(raw, scope));
-    }
-
-    public static Object interpolate(final Object value, final Scope scope) {
-        if (value instanceof String) {
-            return interpolate((String) value, scope);
-        } else {
-            return value;
+    public static PollerParameter interpolate(final PollerParameter value, final Scope scope) {
+        if (value == null) {
+            return PollerParameter.empty();
         }
+
+        Objects.requireNonNull(scope);
+
+        final Optional<SimplePollerParameter> simple = value.asSimple();
+        if (simple.isPresent()) {
+            return PollerParameter.simple(interpolate(simple.get().getValue(), scope));
+        }
+
+        final Optional<ComplexPollerParameter> complex = value.asComplex();
+        if (complex.isPresent()) {
+            final Element element = complex.get().getElement();
+
+            final Element interpolated = (Element) element.cloneNode(true);
+
+            // Walk the element and interpolate all attribute and element values
+            final Stack<Element> tail = new Stack<>();
+            tail.push(interpolated);
+
+            while (!tail.empty()) {
+                final Element current = tail.pop();
+
+                final NodeList elements = current.getElementsByTagName("*");
+                for (int i = 0; i < elements.getLength(); i++) {
+                    tail.push((Element) elements.item(i));
+                }
+
+                if (current.getNodeValue() != null) {
+                    current.setNodeValue(interpolate(current.getNodeValue(), scope));
+                }
+
+                final NamedNodeMap attributes = current.getAttributes();
+                for (int i = 0; i < attributes.getLength(); i++) {
+                    final Attr attr = (Attr) attributes.item(i);
+                    attr.setValue(interpolate(attr.getValue(), scope));
+                }
+            }
+
+            return PollerParameter.complex(interpolated);
+        }
+
+        return value;
     }
 
     public static String interpolate(final String raw, final Scope scope) {
+        if (raw == null) {
+            return null;
+        }
+
+        Objects.requireNonNull(scope);
+
         final StringBuffer stringBuffer = new StringBuffer();
+
         final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
         while (outerMatcher.find()) {
             final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));

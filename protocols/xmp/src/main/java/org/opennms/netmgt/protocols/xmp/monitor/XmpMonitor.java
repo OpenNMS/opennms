@@ -47,6 +47,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
@@ -138,7 +139,7 @@ public class XmpMonitor extends AbstractServiceMonitor {
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = svc.getAddress();
 
@@ -164,22 +165,22 @@ public class XmpMonitor extends AbstractServiceMonitor {
         boolean valueCaseSensitive = DEFAULT_VALUE_CASE_SENSITIVE;
 
         if (parameters != null) {
-            retry = ParameterMap.getKeyedInteger(parameters, "retry", protoConfig.hasRetry() ? protoConfig.getRetry() : DEFAULT_RETRY);
-            timeout = ParameterMap.getKeyedInteger(parameters, "timeout", protoConfig.hasTimeout() ? protoConfig.getTimeout() : DEFAULT_TIMEOUT);
-            port = ParameterMap.getKeyedInteger(parameters, "port", protoConfig.hasPort() ? protoConfig.getPort() : DEFAULT_PORT);
-            authenUser = ParameterMap.getKeyedString(parameters, "authenUser", (protoConfig.getAuthenUser() != null) ? protoConfig.getAuthenUser() : DEFAULT_AUTHEN_USER);
-            requestType = ParameterMap.getKeyedString(parameters, "request-type", DEFAULT_REQUEST_TYPE);
-            mib = ParameterMap.getKeyedString(parameters, "mib", DEFAULT_REQUEST_MIB);
-            table = ParameterMap.getKeyedString(parameters, "table", DEFAULT_REQUEST_TABLE);
-            object = ParameterMap.getKeyedString(parameters, "object", DEFAULT_REQUEST_OBJECT);
-            instance = ParameterMap.getKeyedString(parameters, "instance", DEFAULT_REQUEST_INSTANCE);
-            instanceMatch = ParameterMap.getKeyedString(parameters, "instance-match", DEFAULT_INSTANCE_MATCH);
-            valueOperator = ParameterMap.getKeyedString(parameters, "value-operator", "==");
-            valueOperand = ParameterMap.getKeyedString(parameters, "value-match", DEFAULT_VALUE_MATCH);
-            valueCaseSensitive = ParameterMap.getKeyedBoolean(parameters, "value-case-sensitive", DEFAULT_VALUE_CASE_SENSITIVE);
-            minMatches = ParameterMap.getKeyedInteger(parameters, "min-matches", DEFAULT_MIN_MATCHES);
-            maxMatches = ParameterMap.getKeyedInteger(parameters, "max-matches", DEFAULT_MAX_MATCHES);
-            String maxMatchesUnboundedStr = ParameterMap.getKeyedString(parameters, "max-matches", "unbounded");
+            retry = getKeyedInteger(parameters, "retry", protoConfig.hasRetry() ? protoConfig.getRetry() : DEFAULT_RETRY);
+            timeout = getKeyedInteger(parameters, "timeout", protoConfig.hasTimeout() ? protoConfig.getTimeout() : DEFAULT_TIMEOUT);
+            port = getKeyedInteger(parameters, "port", protoConfig.hasPort() ? protoConfig.getPort() : DEFAULT_PORT);
+            authenUser = getKeyedString(parameters, "authenUser", (protoConfig.getAuthenUser() != null) ? protoConfig.getAuthenUser() : DEFAULT_AUTHEN_USER);
+            requestType = getKeyedString(parameters, "request-type", DEFAULT_REQUEST_TYPE);
+            mib = getKeyedString(parameters, "mib", DEFAULT_REQUEST_MIB);
+            table = getKeyedString(parameters, "table", DEFAULT_REQUEST_TABLE);
+            object = getKeyedString(parameters, "object", DEFAULT_REQUEST_OBJECT);
+            instance = getKeyedString(parameters, "instance", DEFAULT_REQUEST_INSTANCE);
+            instanceMatch = getKeyedString(parameters, "instance-match", DEFAULT_INSTANCE_MATCH);
+            valueOperator = getKeyedString(parameters, "value-operator", "==");
+            valueOperand = getKeyedString(parameters, "value-match", DEFAULT_VALUE_MATCH);
+            valueCaseSensitive = getKeyedBoolean(parameters, "value-case-sensitive", DEFAULT_VALUE_CASE_SENSITIVE);
+            minMatches = getKeyedInteger(parameters, "min-matches", DEFAULT_MIN_MATCHES);
+            maxMatches = getKeyedInteger(parameters, "max-matches", DEFAULT_MAX_MATCHES);
+            String maxMatchesUnboundedStr = getKeyedString(parameters, "max-matches", "unbounded");
             maxMatchesUnbounded = (maxMatchesUnboundedStr.equalsIgnoreCase("unbounded"));
         }
 

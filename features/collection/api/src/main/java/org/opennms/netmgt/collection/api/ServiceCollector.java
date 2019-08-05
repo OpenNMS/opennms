@@ -93,7 +93,7 @@ public interface ServiceCollector {
      * @param parameters
      * @throws CollectionInitializationException
      */
-    void validateAgent(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException;
+    void validateAgent(CollectionAgent agent, Map<String, String> parameters) throws CollectionInitializationException;
 
 
     /**

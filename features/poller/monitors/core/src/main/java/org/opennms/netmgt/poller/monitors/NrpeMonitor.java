@@ -39,12 +39,12 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketUtils;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.nrpe.CheckNrpe;
 import org.opennms.netmgt.poller.monitors.nrpe.NrpeException;
 import org.opennms.netmgt.poller.monitors.nrpe.NrpePacket;
@@ -106,14 +106,14 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
      * status to SERVICE_AVAILABLE and return.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
 		String reason = null;
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
-        String command = ParameterMap.getKeyedString(parameters, "command", NrpePacket.HELLO_COMMAND);
-        int port = ParameterMap.getKeyedInteger(parameters, "port", CheckNrpe.DEFAULT_PORT);
-        int padding = ParameterMap.getKeyedInteger(parameters, "padding", NrpePacket.DEFAULT_PADDING);
-        boolean useSsl = ParameterMap.getKeyedBoolean(parameters, "usessl", DEFAULT_USE_SSL);
+        String command = getKeyedString(parameters, "command", NrpePacket.HELLO_COMMAND);
+        int port = getKeyedInteger(parameters, "port", CheckNrpe.DEFAULT_PORT);
+        int padding = getKeyedInteger(parameters, "padding", NrpePacket.DEFAULT_PADDING);
+        boolean useSsl = getKeyedBoolean(parameters, "usessl", DEFAULT_USE_SSL);
 
 		/*
         // Port

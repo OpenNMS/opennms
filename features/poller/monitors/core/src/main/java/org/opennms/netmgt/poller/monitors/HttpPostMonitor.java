@@ -46,12 +46,14 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,12 +122,12 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
      * to Provided that the interface's response is valid we set the service
      * status to SERVICE_AVAILABLE and return.
      */
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // Process parameters
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
-        int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
+        int port = getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
 
         //URI
         String strURI = resolveKeyedString(parameters, PARAMETER_URI, DEFAULT_URI);
@@ -140,19 +142,19 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
         String strBannerMatch = resolveKeyedString(parameters, PARAMETER_BANNER, null);
 
         //Scheme
-        String strScheme = ParameterMap.getKeyedString(parameters, PARAMETER_SCHEME, DEFAULT_SCHEME);
+        String strScheme = getKeyedString(parameters, PARAMETER_SCHEME, DEFAULT_SCHEME);
 
         //Payload
-        String strPayload = ParameterMap.getKeyedString(parameters, PARAMETER_PAYLOAD, null);
+        String strPayload = getKeyedString(parameters, PARAMETER_PAYLOAD, null);
 
         //Mimetype
-        String strMimetype = ParameterMap.getKeyedString(parameters, PARAMETER_MIMETYPE, DEFAULT_MIMETYPE);
+        String strMimetype = getKeyedString(parameters, PARAMETER_MIMETYPE, DEFAULT_MIMETYPE);
 
         //Charset
-        String strCharset = ParameterMap.getKeyedString(parameters, PARAMETER_CHARSET, DEFAULT_CHARSET);
+        String strCharset = getKeyedString(parameters, PARAMETER_CHARSET, DEFAULT_CHARSET);
 
         //SSLFilter
-        boolean boolSSLFilter = ParameterMap.getKeyedBoolean(parameters, PARAMETER_SSLFILTER, DEFAULT_SSLFILTER);
+        boolean boolSSLFilter = getKeyedBoolean(parameters, PARAMETER_SSLFILTER, DEFAULT_SSLFILTER);
 
         // Get the address instance.
         InetAddress ipAddr = svc.getAddress();
@@ -183,7 +185,7 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
                     clientWrapper.addBasicCredentials(strUser, strPasswd);
                 }
 
-                setUseSystemProxyIfDefined(clientWrapper, parameters);
+                setUseSystemProxyIfDefined(clientWrapper, getKeyedBoolean(parameters, HttpClientWrapperConfigHelper.USE_SYSTEM_PROXY, false));
 
                 try {
                     postReq = new StringEntity(strPayload, ContentType.create(strMimetype, strCharset));

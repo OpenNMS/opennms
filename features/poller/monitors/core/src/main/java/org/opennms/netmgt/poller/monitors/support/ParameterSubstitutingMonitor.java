@@ -32,18 +32,17 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
 import org.slf4j.Logger;
@@ -101,17 +100,20 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
      * The new key will be prepended with 'subbed-'.
      */
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+    public Map<String, PollerParameter> getRuntimeAttributes(MonitoredService svc, Map<String, PollerParameter> parameters) {
         return getSubstitutedParameters(svc, parameters);
     }
 
-    public static Map<String, Object> getSubstitutedParameters(final MonitoredService svc, Map<String, Object> parameters) {
-        Map<String, Object> subbedParams = new HashMap<>();
+    public static Map<String, PollerParameter> getSubstitutedParameters(final MonitoredService svc, Map<String, PollerParameter> parameters) {
+        Map<String, PollerParameter> subbedParams = new HashMap<>();
         parameters.forEach((k, v) -> {
-            Matcher m = substitutionPattern.matcher(v.toString());
-            if (m.matches()) {
-                subbedParams.put("subbed-" + k, parseString(v.toString(), m, svc));
-            }
+            v.asSimple().ifPresent(simple -> {
+                final String value = simple.getValue();
+                Matcher m = substitutionPattern.matcher(value);
+                if (m.matches()) {
+                    subbedParams.put("subbed-" + k, PollerParameter.simple(parseString(value, m, svc)));
+                }
+            });
         });
         return subbedParams;
     }
@@ -166,11 +168,11 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
         return formattedString;
     }
 
-    protected static String resolveKeyedString(final Map<String, Object> parameterMap, final String key, final String defaultValue) {
-        String ret = ParameterMap.getKeyedString(parameterMap, key, defaultValue);
+    protected static String resolveKeyedString(final Map<String, PollerParameter> parameterMap, final String key, final String defaultValue) {
+        String ret = AbstractServiceMonitor.getKeyedString(parameterMap, key, defaultValue);
         String subKey = "subbed-" + key;
         if (parameterMap.containsKey(subKey)) {
-            ret = ParameterMap.getKeyedString(parameterMap, subKey, defaultValue);
+            ret = AbstractServiceMonitor.getKeyedString(parameterMap, subKey, defaultValue);
         }
         return ret;
     }

@@ -36,7 +36,8 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.PollerParameter;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.monitors.support.Ssh;
 
 /**
@@ -56,10 +57,10 @@ public class SshIT extends TestCase {
     
     @Override
     public void setUp() throws Exception {
-        Map<String, String> parameters = new HashMap<String,String>();
-        parameters.put("retries", "0");
-        parameters.put("port", "22");
-        parameters.put("timeout", Integer.toString(TIMEOUT));
+        Map<String, PollerParameter> parameters = new HashMap<>();
+        parameters.put("retries", PollerParameter.simple("0"));
+        parameters.put("port", PollerParameter.simple("22"));
+        parameters.put("timeout", PollerParameter.simple(Integer.toString(TIMEOUT)));
         
         tt = new TimeoutTracker(parameters, 0, TIMEOUT);
         ssh = new Ssh();

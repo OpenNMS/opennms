@@ -39,11 +39,12 @@ import org.asteriskjava.manager.TimeoutException;
 import org.asteriskjava.manager.action.SipShowPeerAction;
 import org.asteriskjava.manager.response.ManagerResponse;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.config.AmiPeerFactory;
 import org.opennms.netmgt.config.ami.AmiAgentConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,11 +110,11 @@ public class AsteriskSIPPeerMonitor extends AbstractServiceMonitor {
 	  * Run the service monitor and return the poll status
 	  * </P>
 	  */
-	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters)
+	public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters)
 	{
 
 		//read configuration parameters
-		String sipPeer = ParameterMap.getKeyedString(parameters, "sip-peer", DEFAULT_SIPPEER);
+		String sipPeer = getKeyedString(parameters, "sip-peer", DEFAULT_SIPPEER);
 		if(sipPeer.equals(DEFAULT_SIPPEER))
 		{
 			LOG.error("AsteriskMonitor: No sip-peer parameter in poller configuration");

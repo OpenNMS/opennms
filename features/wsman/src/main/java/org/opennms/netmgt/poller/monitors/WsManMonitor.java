@@ -45,6 +45,7 @@ import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.w3c.dom.Node;
 
@@ -72,7 +73,7 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
     private WSManConfigDao m_wsManConfigDao;
 
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // Fetch the monitor specific parameters
         final String resourceUri = getKeyedString(parameters, RESOURCE_URI_PARAM, null);
         if (resourceUri == null) {
@@ -85,14 +86,12 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
         }
 
         final Map<String, String> selectors = Maps.newHashMap();
-        for (Entry<String, Object> parameter : parameters.entrySet()) {
+        for (Entry<String, PollerParameter> parameter : parameters.entrySet()) {
             if (parameter.getKey().startsWith(SELECTOR_PARAM_PREFIX)) {
                 final String selectorKey = parameter.getKey().substring(SELECTOR_PARAM_PREFIX.length());
-                final Object selectorValue = parameter.getValue();
-                if (selectorValue == null) {
-                    continue;
-                }
-                selectors.put(selectorKey, selectorValue instanceof String ? (String)selectorValue : selectorValue.toString());
+                parameter.getValue().asSimple().ifPresent(simple -> {
+                    selectors.put(selectorKey, simple.getValue());
+                });
             }
         }
 

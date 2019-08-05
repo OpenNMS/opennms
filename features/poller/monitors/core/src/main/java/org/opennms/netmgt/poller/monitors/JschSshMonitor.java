@@ -34,6 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
 /**
@@ -66,13 +67,13 @@ final public class JschSshMonitor extends AbstractServiceMonitor {
     }
     
     /** {@inheritDoc} */
-    public PollStatus poll(InetAddress address, Map<String, Object> parameters) {
+    public PollStatus poll(InetAddress address, Map<String, PollerParameter> parameters) {
         return m_monitor.poll(address, parameters);
     }
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         return m_monitor.poll(svc, parameters);
     }
 

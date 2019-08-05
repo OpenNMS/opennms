@@ -36,6 +36,7 @@ import org.opennms.netmgt.dao.VmwareConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
     private VmwareConfigDao m_vmwareConfigDao = null;
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+    public Map<String, PollerParameter> getRuntimeAttributes(MonitoredService svc, Map<String, PollerParameter> parameters) {
         if (m_nodeDao == null) {
             m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
         }
@@ -96,12 +97,12 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
             }
         }
 
-        return new ImmutableMap.Builder<String, Object>()
-                .put(VMWARE_MANAGEMENT_SERVER_KEY, vmwareManagementServer)
-                .put(VMWARE_MANAGED_ENTITY_TYPE_KEY, vmwareManagedEntityType)
-                .put(VMWARE_MANAGED_OBJECT_ID_KEY, vmwareManagedObjectId)
-                .put(VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, vmwareMangementServerUsername)
-                .put(VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, vmwareMangementServerPassword)
+        return new ImmutableMap.Builder<String, PollerParameter>()
+                .put(VMWARE_MANAGEMENT_SERVER_KEY, PollerParameter.simple(vmwareManagementServer))
+                .put(VMWARE_MANAGED_ENTITY_TYPE_KEY, PollerParameter.simple(vmwareManagedEntityType))
+                .put(VMWARE_MANAGED_OBJECT_ID_KEY, PollerParameter.simple(vmwareManagedObjectId))
+                .put(VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, PollerParameter.simple(vmwareMangementServerUsername))
+                .put(VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, PollerParameter.simple(vmwareMangementServerPassword))
                 .build();
     }
 

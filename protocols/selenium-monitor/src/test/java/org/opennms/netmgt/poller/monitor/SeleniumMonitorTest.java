@@ -46,6 +46,7 @@ import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.monitors.SeleniumMonitor;
 import org.opennms.netmgt.poller.monitors.SeleniumMonitor.BaseUrlUtils;
@@ -68,10 +69,10 @@ public class SeleniumMonitorTest {
 	public void testPollStatusNotNull() throws UnknownHostException{
 	    MonitoredService monSvc = new MockMonitoredService(1, "papajohns", InetAddressUtils.addr("213.187.33.164"), "PapaJohnsSite");
 	    
-	    Map<String, Object> params = new HashMap<String, Object>();
-	    params.put("selenium-test", "SeleniumGroovyTest.groovy");
-	    params.put("base-url", "localhost");
-	    params.put("port", "10342");
+	    Map<String, PollerParameter> params = new HashMap<>();
+	    params.put("selenium-test", PollerParameter.simple("SeleniumGroovyTest.groovy"));
+	    params.put("base-url", PollerParameter.simple("localhost"));
+	    params.put("port", PollerParameter.simple("10342"));
 	    
 		SeleniumMonitor ajaxPSM = new SeleniumMonitor();
 		PollStatus pollStatus = ajaxPSM.poll(monSvc, params);

@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 
 /**
  * This class implements a basic JDBC monitoring framework; The idea is than
@@ -65,7 +66,7 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
 
    /** {@inheritDoc} */
    @Override
-   public PollStatus checkDatabaseStatus(Connection con, Map<String, Object> parameters)
+   public PollStatus checkDatabaseStatus(Connection con, Map<String, PollerParameter> parameters)
    {
 	   
       PollStatus status = PollStatus.unavailable();
@@ -73,11 +74,11 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
       try
       {
          boolean bPass = false;
-         String storedProcedure = ParameterMap.getKeyedString(parameters, "stored-procedure", null);
+         String storedProcedure = getKeyedString(parameters, "stored-procedure", null);
          if ( storedProcedure == null )
             return status;
 
-         String schemaName = ParameterMap.getKeyedString(parameters, "schema", "test");
+         String schemaName = getKeyedString(parameters, "schema", "test");
 
          String procedureCall = "{ ? = call " + schemaName + "." + storedProcedure + "()}";
          cs = con.prepareCall( procedureCall );

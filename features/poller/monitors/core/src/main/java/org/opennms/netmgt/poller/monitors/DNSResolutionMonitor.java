@@ -35,10 +35,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +81,7 @@ public class DNSResolutionMonitor extends ParameterSubstitutingMonitor {
     public static final String PARM_LOOKUP = "lookup";
 
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // Get the name to query for
         final Name name;
         final String lookup = resolveKeyedString(parameters, PARM_LOOKUP, svc.getNodeLabel());
@@ -94,8 +94,8 @@ public class DNSResolutionMonitor extends ParameterSubstitutingMonitor {
 
         Set<Integer> recordTypes = new TreeSet<>();
         // Determine if records for IPv4 and/or IPv6 re required
-        final String resolutionType = ParameterMap.getKeyedString(parameters, PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_DEFAULT);
-        final String recordTypesParam = ParameterMap.getKeyedString(parameters, PARM_RECORD_TYPES, "");
+        final String resolutionType = getKeyedString(parameters, PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_DEFAULT);
+        final String recordTypesParam = getKeyedString(parameters, PARM_RECORD_TYPES, "");
         Boolean matchAll = Boolean.TRUE;
 
         if ("".equals(recordTypesParam)) {

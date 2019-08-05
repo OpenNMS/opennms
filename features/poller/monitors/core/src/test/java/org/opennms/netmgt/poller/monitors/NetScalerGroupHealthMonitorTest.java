@@ -45,6 +45,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -100,16 +101,16 @@ public class NetScalerGroupHealthMonitorTest implements InitializingBean {
 
     @Test
     public void testUnavailable() throws Exception {
-        Map<String, Object> parameters =  createBasicParams();
-        parameters.put("group-health", 70);
+        Map<String, PollerParameter> parameters =  createBasicParams();
+        parameters.put("group-health", PollerParameter.simple("70"));
         PollStatus status = monitor.poll(createMonitor(), parameters);
         Assert.assertFalse(status.isAvailable());
     }
 
-    private Map<String, Object> createBasicParams() {
-        Map<String, Object> parameters = new HashMap<String,Object>();
-        parameters.put("group-name", "p_d_wf-iis_http_s_grp");
-        parameters.put("agent", m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS)));
+    private Map<String, PollerParameter> createBasicParams() {
+        Map<String, PollerParameter> parameters = new HashMap<>();
+        parameters.put("group-name", PollerParameter.simple("p_d_wf-iis_http_s_grp"));
+        parameters.put("agent", PollerParameter.marshall(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress(TEST_IP_ADDRESS))));
         return parameters;
     }
 

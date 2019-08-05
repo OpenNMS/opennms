@@ -46,6 +46,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
@@ -128,8 +129,8 @@ public class Poll implements Action {
         return null;
     }
 
-    protected static Map<String, Object> parse(List<String> attributeList) {
-        final Map<String, Object> properties = new HashMap<>();
+    protected static Map<String, PollerParameter> parse(List<String> attributeList) {
+        final Map<String, PollerParameter> properties = new HashMap<>();
         if (attributeList != null) {
             for (String keyValue : attributeList) {
                 int splitAt = keyValue.indexOf("=");
@@ -138,7 +139,7 @@ public class Poll implements Action {
                 } else {
                     String key = keyValue.substring(0, splitAt);
                     String value = keyValue.substring(splitAt + 1, keyValue.length());
-                    properties.put(key, value);
+                    properties.put(key, PollerParameter.simple(value));
                 }
             }
         }

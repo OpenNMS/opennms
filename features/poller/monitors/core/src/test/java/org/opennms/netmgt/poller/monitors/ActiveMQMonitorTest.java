@@ -41,6 +41,7 @@ import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class ActiveMQMonitorTest {
     @Test
     public void testPoll() {
         MonitoredService svc = new SimpleMonitoredService(InetAddressUtils.addr("127.0.0.1"), "ActiveMQ");
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, PollerParameter> parameters = new HashMap<>();
         ActiveMQMonitor instance = new ActiveMQMonitor();
         PollStatus result = instance.poll(svc, parameters);
         assertEquals(PollStatus.SERVICE_AVAILABLE, result.getStatusCode());
@@ -84,9 +85,9 @@ public class ActiveMQMonitorTest {
     @Test
     public void testPollNodeLabel() {
         MonitoredService svc = new SimpleMonitoredService(InetAddressUtils.addr("127.0.0.1"), 0, "localhost", "ActiveMQ");
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("broker-url", "tcp://169.254.0.0:61616?trace=false&soTimeout=20000");
-        parameters.put("use-nodelabel", Boolean.TRUE);
+        Map<String, PollerParameter> parameters = new HashMap<>();
+        parameters.put("broker-url", PollerParameter.simple("tcp://169.254.0.0:61616?trace=false&soTimeout=20000"));
+        parameters.put("use-nodelabel", PollerParameter.simple("true"));
         ActiveMQMonitor instance = new ActiveMQMonitor();
         PollStatus result = instance.poll(svc, parameters);
         assertEquals(PollStatus.SERVICE_AVAILABLE, result.getStatusCode());
@@ -95,10 +96,10 @@ public class ActiveMQMonitorTest {
     @Test
     public void testPollClientID() {
         MonitoredService svc = new SimpleMonitoredService(InetAddressUtils.addr("127.0.0.1"), 0, "localhost", "ActiveMQ");
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("broker-url", "tcp://169.254.0.0:61616?trace=false&soTimeout=20000");
-        parameters.put("use-nodelabel", Boolean.TRUE);
-        parameters.put("client-id", "clientID-"+System.currentTimeMillis());
+        Map<String, PollerParameter> parameters = new HashMap<>();
+        parameters.put("broker-url", PollerParameter.simple("tcp://169.254.0.0:61616?trace=false&soTimeout=20000"));
+        parameters.put("use-nodelabel", PollerParameter.simple("true"));
+        parameters.put("client-id", PollerParameter.simple("clientID-"+System.currentTimeMillis()));
         ActiveMQMonitor instance = new ActiveMQMonitor();
         PollStatus result = instance.poll(svc, parameters);
         assertEquals(PollStatus.SERVICE_AVAILABLE, result.getStatusCode());
@@ -107,11 +108,11 @@ public class ActiveMQMonitorTest {
     @Test
     public void testPollWithSession() {
         MonitoredService svc = new SimpleMonitoredService(InetAddressUtils.addr("127.0.0.1"), 0, "localhost", "ActiveMQ");
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("broker-url", "tcp://169.254.0.0:61616?trace=false&soTimeout=20000");
-        parameters.put("use-nodelabel", Boolean.TRUE);
-        parameters.put("client-id", "clientID-"+System.currentTimeMillis());
-        parameters.put("create-session", Boolean.TRUE);
+        Map<String, PollerParameter> parameters = new HashMap<>();
+        parameters.put("broker-url", PollerParameter.simple("tcp://169.254.0.0:61616?trace=false&soTimeout=20000"));
+        parameters.put("use-nodelabel", PollerParameter.simple("true"));
+        parameters.put("client-id", PollerParameter.simple("clientID-"+System.currentTimeMillis()));
+        parameters.put("create-session", PollerParameter.simple("true"));
         ActiveMQMonitor instance = new ActiveMQMonitor();
         PollStatus result = instance.poll(svc, parameters);
         assertEquals(PollStatus.SERVICE_AVAILABLE, result.getStatusCode());

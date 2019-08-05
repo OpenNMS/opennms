@@ -52,10 +52,11 @@ import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,14 +124,14 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
      * SERVICE_AVAILABLE and return.
      */
     @Override
-    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
+    public PollStatus poll(final MonitoredService svc, final Map<String, PollerParameter> parameters) {
         final InetAddress addr = svc.getAddress();
         final String nodeLabel = svc.getNodeLabel();
 
         // Cycle through the port list
         //
         int currentPort = -1;
-        final HttpMonitorClient httpClient = new HttpMonitorClient(nodeLabel, addr, new TreeMap<String, Object>(parameters));
+        final HttpMonitorClient httpClient = new HttpMonitorClient(nodeLabel, addr, parameters);
 
         for (int portIndex = 0; portIndex < determinePorts(httpClient.getParameters()).length && httpClient.getPollStatus() != PollStatus.SERVICE_AVAILABLE; portIndex++) {
             currentPort = determinePorts(httpClient.getParameters())[portIndex];
@@ -225,12 +226,12 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
         return new DefaultSocketWrapper();
     }
 
-    private static boolean determineVerbosity(final Map<String, Object> parameters) {
-        final String verbose = ParameterMap.getKeyedString(parameters, PARAMETER_VERBOSE, null);
+    private static boolean determineVerbosity(final Map<String, PollerParameter> parameters) {
+        final String verbose = getKeyedString(parameters, PARAMETER_VERBOSE, null);
         return (verbose != null && verbose.equalsIgnoreCase("true")) ? true : false;
     }
 
-    private static String determineUserAgent(final Map<String, Object> parameters) {
+    private static String determineUserAgent(final Map<String, PollerParameter> parameters) {
         String agent = resolveKeyedString(parameters, PARAMETER_USER_AGENT, null);
         if (isBlank(agent)) {
             return "OpenNMS HttpMonitor";
@@ -238,7 +239,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
         return agent;
     }
 
-    static String determineBasicAuthentication(final Map<String, Object> parameters) {
+    static String determineBasicAuthentication(final Map<String, PollerParameter> parameters) {
         String credentials = resolveKeyedString(parameters, PARAMETER_BASIC_AUTHENTICATION, null);
 
         if (isNotBlank(credentials)) {
@@ -258,19 +259,19 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
         return credentials;
     }
 
-    private static String determineHttpHeader(final Map<String, Object> parameters, String key) {
-        return ParameterMap.getKeyedString(parameters, key, null);
+    private static String determineHttpHeader(final Map<String, PollerParameter> parameters, String key) {
+        return getKeyedString(parameters, key, null);
     }
     
-    private static String determineResponseText(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, PARAMETER_RESPONSE_TEXT, null);
+    private static String determineResponseText(final Map<String, PollerParameter> parameters) {
+        return getKeyedString(parameters, PARAMETER_RESPONSE_TEXT, null);
     }
 
-    private static String determineResponse(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, PARAMETER_RESPONSE, determineDefaultResponseRange(determineUrl(parameters)));
+    private static String determineResponse(final Map<String, PollerParameter> parameters) {
+        return getKeyedString(parameters, PARAMETER_RESPONSE, determineDefaultResponseRange(determineUrl(parameters)));
     }
 
-    private static String determineUrl(final Map<String, Object> parameters) {
+    private static String determineUrl(final Map<String, PollerParameter> parameters) {
         String url = resolveKeyedString(parameters, PARAMETER_URL, DEFAULT_URL);
         return url;
     }
@@ -281,8 +282,8 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
      * @param parameters a {@link java.util.Map} object.
      * @return an array of int.
      */
-    protected int[] determinePorts(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedIntegerArray(parameters, PARAMETER_PORT, DEFAULT_PORTS);
+    protected int[] determinePorts(final Map<String, PollerParameter> parameters) {
+        return getKeyedIntegerArray(parameters, PARAMETER_PORT, DEFAULT_PORTS);
     }
 
     private static String determineDefaultResponseRange(String url) {
@@ -303,7 +304,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
     final class HttpMonitorClient {
         private double m_responseTime;
         final InetAddress m_addr;
-        final Map<String, Object> m_parameters;
+        final Map<String, PollerParameter> m_parameters;
         String m_httpCmd;
         Socket m_httpSocket;
         private BufferedReader m_lineRdr;
@@ -319,7 +320,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
         private final String m_nodeLabel;
         private boolean m_headerFinished = false;
         
-        HttpMonitorClient(final String nodeLabel, final InetAddress addr, final Map<String, Object>parameters) {
+        HttpMonitorClient(final String nodeLabel, final InetAddress addr, final Map<String, PollerParameter>parameters) {
             m_nodeLabel = nodeLabel;
             m_addr = addr;
             m_parameters = parameters;
@@ -341,7 +342,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
             return m_currentPort;
         }
 
-        public Map<String, Object> getParameters() {
+        public Map<String, PollerParameter> getParameters() {
             return m_parameters;
         }
 
@@ -352,10 +353,10 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
             m_responseTextFound  = found;
         }
 
-        private String determineVirtualHost(final InetAddress addr, final Map<String, Object> parameters) {
-            final boolean res = ParameterMap.getKeyedBoolean(parameters, PARAMETER_RESOLVE_IP, false);
-            final boolean useNodeLabel = ParameterMap.getKeyedBoolean(parameters, PARAMETER_NODE_LABEL_HOST_NAME, false);
-            String virtualHost = ParameterMap.getKeyedString(parameters, PARAMETER_HOST_NAME, null);
+        private String determineVirtualHost(final InetAddress addr, final Map<String, PollerParameter> parameters) {
+            final boolean res = getKeyedBoolean(parameters, PARAMETER_RESOLVE_IP, false);
+            final boolean useNodeLabel = getKeyedBoolean(parameters, PARAMETER_NODE_LABEL_HOST_NAME, false);
+            String virtualHost = getKeyedString(parameters, PARAMETER_HOST_NAME, null);
 
             if (isBlank(virtualHost)) {
                 if (res) {
@@ -616,7 +617,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
                 }
         
                 // Add to parameter map
-                getParameters().put("qualifier", testedPorts.toString());
+                getParameters().put("qualifier", PollerParameter.simple(testedPorts.toString()));
                 setReason(getReason() + "/Ports: " + testedPorts.toString());
 
                 if (HttpMonitor.LOG.isDebugEnabled()) {
@@ -625,7 +626,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
                 return PollStatus.unavailable(getReason());
         
             } else if (getPollStatus() == PollStatus.SERVICE_AVAILABLE) {
-                getParameters().put("qualifier", Integer.toString(getCurrentPort()));
+                getParameters().put("qualifier", PollerParameter.simple(Integer.toString(getCurrentPort())));
                 return PollStatus.available(getResponseTime());
             } else {
                 return PollStatus.get(getPollStatus(), getReason());

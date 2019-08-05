@@ -41,10 +41,11 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +98,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
      * status to SERVICE_AVAILABLE and return.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         //
         // Process parameters
         //
@@ -109,14 +110,14 @@ final public class TcpMonitor extends AbstractServiceMonitor {
 
         // Port
         //
-        int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
+        int port = getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
         if (port == DEFAULT_PORT) {
             throw new RuntimeException("TcpMonitor: required parameter 'port' is not present in supplied properties.");
         }
 
         // BannerMatch
         //
-        String strBannerMatch = ParameterMap.getKeyedString(parameters, PARAMETER_BANNER, null);
+        String strBannerMatch = getKeyedString(parameters, PARAMETER_BANNER, null);
 
         // Get the address instance.
         //

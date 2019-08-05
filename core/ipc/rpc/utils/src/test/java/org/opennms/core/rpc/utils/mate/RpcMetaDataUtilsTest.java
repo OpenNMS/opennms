@@ -28,6 +28,7 @@
 
 package org.opennms.core.rpc.utils.mate;
 
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,6 +36,25 @@ import java.util.TreeMap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.config.pagesequence.PageSequence;
+import org.opennms.netmgt.config.pagesequence.Parameter;
+import org.opennms.netmgt.poller.PollerParameter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import javax.xml.bind.JAXB;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 public class RpcMetaDataUtilsTest {
     final Map<ContextKey, String> metaData = new HashMap<>();
@@ -45,11 +65,12 @@ public class RpcMetaDataUtilsTest {
         metaData.put(new ContextKey("ctx1", "key2"), "val2");
         metaData.put(new ContextKey("ctx2", "key3"), "val3");
         metaData.put(new ContextKey("ctx2", "key4"), "val4");
+        metaData.put(new ContextKey("ctx3", "key5"), "12345");
     }
 
     @Test
     public void testMetaDataInterpolation() {
-        final Map<String, Object> attributes = new TreeMap<>();
+        final Map<String, String> attributes = new TreeMap<>();
 
         attributes.put("attribute1", "aaa${ctx1:key1|ctx2:key2|default}bbb");
         attributes.put("attribute2", "aaa${ctx1:key3|ctx2:key3|default}bbb");
@@ -57,12 +78,10 @@ public class RpcMetaDataUtilsTest {
         attributes.put("attribute4", "aaa${ctx1:key4}bbb");
         attributes.put("attribute5", "aaa${ctx1:key4|}bbb");
         attributes.put("attribute6", "aaa${ctx1:key4|default}bbb");
-        attributes.put("attribute7", new Integer(42));
-        attributes.put("attribute8", new Long(42L));
-        attributes.put("attribute9", "aaa${ctx1:key4|${nodeLabel}}bbb");
-        attributes.put("attribute10", "aaa${abc}bbb");
+        attributes.put("attribute7", "aaa${ctx1:key4|${nodeLabel}}bbb");
+        attributes.put("attribute8", "aaa${abc}bbb");
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(this.metaData));
+        final Map<String, String> interpolatedAttributes = Maps.transformValues(attributes, value -> Interpolator.interpolate(value, new MapScope(this.metaData)));
 
         Assert.assertEquals(attributes.size(), interpolatedAttributes.size());
         Assert.assertEquals("aaaval1bbb", interpolatedAttributes.get("attribute1"));
@@ -71,11 +90,53 @@ public class RpcMetaDataUtilsTest {
         Assert.assertEquals("aaabbb", interpolatedAttributes.get("attribute4"));
         Assert.assertEquals("aaabbb", interpolatedAttributes.get("attribute5"));
         Assert.assertEquals("aaadefaultbbb", interpolatedAttributes.get("attribute6"));
-        Assert.assertTrue(interpolatedAttributes.get("attribute7") instanceof Integer);
-        Assert.assertTrue(interpolatedAttributes.get("attribute8") instanceof Long);
-        Assert.assertEquals(42, interpolatedAttributes.get("attribute7"));
-        Assert.assertEquals(42L, interpolatedAttributes.get("attribute8"));
-        Assert.assertEquals("aaa${nodeLabel}bbb", interpolatedAttributes.get("attribute9"));
-        Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute10"));
+        Assert.assertEquals("aaa${nodeLabel}bbb", interpolatedAttributes.get("attribute7"));
+        Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute8"));
+    }
+
+    @Test
+    public void testComplexPollerParameterInterpolation() throws Exception {
+        final PollerParameter interpolated = Interpolator.interpolate(PollerParameter.complex(createPageSequence()), new MapScope(this.metaData));
+        final PageSequence pageSequence = interpolated.asComplex().get().getInstance(PageSequence.class);
+
+        assertThat(pageSequence.getPages(), hasSize(1));
+        assertThat(pageSequence.getPages().get(0).getVirtualHost(), is("chaos.val1.example.com"));
+        assertThat(pageSequence.getPages().get(0).getPort(), is(12345));
+        assertThat(pageSequence.getPages().get(0).getParameters(), hasSize(2));
+        assertThat(pageSequence.getPages().get(0).getParameters().get(0).getKey(), is("interpolated val4"));
+        assertThat(pageSequence.getPages().get(0).getParameters().get(0).getValue(), is("interpolated into val3"));
+        assertThat(pageSequence.getPages().get(0).getParameters().get(1).getKey(), is("with default"));
+        assertThat(pageSequence.getPages().get(0).getParameters().get(1).getValue(), is("default is default"));
+    }
+
+
+    private static Element createPageSequence() throws Exception {
+        final DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        final Document document = documentBuilder.newDocument();
+
+        final Element rootElement = document.createElementNS("http://xmlns.opennms.org/xsd/page-sequence", "page-sequence");
+        document.appendChild(rootElement);
+
+        final Element page1 = document.createElementNS("http://xmlns.opennms.org/xsd/page-sequence", "page");
+        page1.setAttribute("method", "GET");
+        page1.setAttribute("scheme", "http");
+        page1.setAttribute("host", "example.com");
+        page1.setAttribute("virtual-host", "chaos.${ctx1:key1}.example.com");
+        page1.setAttribute("port", "${ctx3:key5}");
+        page1.setAttribute("path", "/");
+        page1.setAttribute("response-range", "100-399");
+        rootElement.appendChild(page1);
+
+        final Element parameter1 = document.createElementNS("http://xmlns.opennms.org/xsd/page-sequence", "parameter");
+        parameter1.setAttribute("key", "interpolated ${ctx2:key4}");
+        parameter1.setAttribute("value", "interpolated into ${ctx2:key3}");
+        page1.appendChild(parameter1);
+
+        final Element parameter2 = document.createElementNS("http://xmlns.opennms.org/xsd/page-sequence", "parameter");
+        parameter2.setAttribute("key", "with default");
+        parameter2.setAttribute("value", "default is ${ctx0:key0|default}");
+        page1.appendChild(parameter2);
+
+        return document.getDocumentElement();
     }
 }

@@ -34,12 +34,13 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
@@ -86,7 +87,7 @@ public class WmiMonitor extends AbstractServiceMonitor {
 	 * SERVICE_AVAILABLE and return.
 	 */
     @Override
-	public PollStatus poll(final MonitoredService svc, final Map<String,Object> parameters) {
+	public PollStatus poll(final MonitoredService svc, final Map<String, PollerParameter> parameters) {
 		// Holds the response reason.
 		String reason = null;
 		// Used to exit the retry loop early, if possible.
@@ -108,40 +109,40 @@ public class WmiMonitor extends AbstractServiceMonitor {
 
         if (parameters != null) {
             if (parameters.get("timeout") != null) {
-            	int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout());
+            	int timeout = getKeyedInteger(parameters, "timeout", agentConfig.getTimeout());
                 agentConfig.setTimeout(timeout);
             }
             
             if (parameters.get("retry") != null) {
-            	int retries = ParameterMap.getKeyedInteger(parameters, "retry", agentConfig.getRetries());
+            	int retries = getKeyedInteger(parameters, "retry", agentConfig.getRetries());
                 agentConfig.setRetries(retries);
             }
 
             if (parameters.get("username") != null) {
-                String user = ParameterMap.getKeyedString(parameters, "username", agentConfig.getUsername());
+                String user = getKeyedString(parameters, "username", agentConfig.getUsername());
                 agentConfig.setUsername(user);
             }
             
             if (parameters.get("password") != null) {
-                String pass = ParameterMap.getKeyedString(parameters, "password", agentConfig.getPassword());
+                String pass = getKeyedString(parameters, "password", agentConfig.getPassword());
                 agentConfig.setUsername(pass);
             }
             
             if (parameters.get("domain") != null) {
-                String domain = ParameterMap.getKeyedString(parameters, "domain", agentConfig.getDomain());
+                String domain = getKeyedString(parameters, "domain", agentConfig.getDomain());
                 agentConfig.setUsername(domain);
             }
             
             if (parameters.get("namespace") != null) {
-                wmiNamespace = ParameterMap.getKeyedString(parameters,  "wmiNamespace", ParameterMap.getKeyedString(parameters, "namespace", DEFAULT_WMI_NAMESPACE));
+                wmiNamespace = getKeyedString(parameters,  "wmiNamespace", getKeyedString(parameters, "namespace", DEFAULT_WMI_NAMESPACE));
             }
             
-            matchType = ParameterMap.getKeyedString(parameters, "matchType", DEFAULT_WMI_MATCH_TYPE);
-			compVal = ParameterMap.getKeyedString(parameters, "compareValue", DEFAULT_WMI_COMP_VAL);
-			compOp = ParameterMap.getKeyedString(parameters, "compareOp", DEFAULT_WMI_COMP_OP);
-            wmiWqlStr = ParameterMap.getKeyedString(parameters, "wql", DEFAULT_WMI_WQL);
-            wmiClass = ParameterMap.getKeyedString(parameters, "wmiClass", DEFAULT_WMI_CLASS);
-			wmiObject = ParameterMap.getKeyedString(parameters, "wmiObject", DEFAULT_WMI_OBJECT);
+            matchType = getKeyedString(parameters, "matchType", DEFAULT_WMI_MATCH_TYPE);
+			compVal = getKeyedString(parameters, "compareValue", DEFAULT_WMI_COMP_VAL);
+			compOp = getKeyedString(parameters, "compareOp", DEFAULT_WMI_COMP_OP);
+            wmiWqlStr = getKeyedString(parameters, "wql", DEFAULT_WMI_WQL);
+            wmiClass = getKeyedString(parameters, "wmiClass", DEFAULT_WMI_CLASS);
+			wmiObject = getKeyedString(parameters, "wmiObject", DEFAULT_WMI_OBJECT);
 		}
 
         final TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());

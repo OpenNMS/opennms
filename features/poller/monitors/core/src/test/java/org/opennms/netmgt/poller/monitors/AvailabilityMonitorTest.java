@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
@@ -51,8 +52,8 @@ public class AvailabilityMonitorTest {
     @Test
     public final void testPoll() {
         ServiceMonitor sm = new AvailabilityMonitor();
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("timeout", "3000");
+        Map<String, PollerParameter> parameters = new HashMap<>();
+        parameters.put("timeout", PollerParameter.simple("3000"));
         MonitoredService svc = new SimpleMonitoredService(InetAddressUtils.addr("127.0.0.1"), "ICMP");
         PollStatus status = sm.poll(svc, parameters);
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());

@@ -36,13 +36,14 @@ import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.features.dhcpd.Dhcpd;
 import org.opennms.features.dhcpd.Transaction;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,21 +66,21 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
     }
 
     @Override
-    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
+    public PollStatus poll(final MonitoredService svc, final Map<String, PollerParameter> parameters) {
         if (dhcpd == null) {
             dhcpd = SERVICE_LOOKUP.lookup(Dhcpd.class, null);
         }
 
         // common parameters
-        final int retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRIES);
-        final int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+        final int retries = getKeyedInteger(parameters, "retry", DEFAULT_RETRIES);
+        final int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
         // DHCP-specific parameters
-        final String macAddress = ParameterMap.getKeyedString(parameters, "macAddress", DEFAULT_MAC_ADDRESS);
-        final boolean relayMode = ParameterMap.getKeyedBoolean(parameters, "relayMode", false);
-        final boolean extendedMode = ParameterMap.getKeyedBoolean(parameters, "extendedMode", false);
-        final String myAddress = ParameterMap.getKeyedString(parameters, "myIpAddress", "127.0.0.1");
-        final String requestIpAddress = ParameterMap.getKeyedString(parameters, "requestIpAddress", "127.0.0.1");
+        final String macAddress = getKeyedString(parameters, "macAddress", DEFAULT_MAC_ADDRESS);
+        final boolean relayMode = getKeyedBoolean(parameters, "relayMode", false);
+        final boolean extendedMode = getKeyedBoolean(parameters, "extendedMode", false);
+        final String myAddress = getKeyedString(parameters, "myIpAddress", "127.0.0.1");
+        final String requestIpAddress = getKeyedString(parameters, "requestIpAddress", "127.0.0.1");
 
         final TimeoutTracker tracker = new TimeoutTracker(parameters, retries, timeout);
 

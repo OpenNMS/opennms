@@ -44,7 +44,7 @@ import javax.mail.search.HeaderTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.netmgt.config.mailtransporttest.JavamailProperty;
@@ -53,6 +53,7 @@ import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,11 +83,11 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         PollStatus status = null;
 
         try {
-            final MailTransportParameters mailParms = MailTransportParameters.get(parameters);
+            final MailTransportParameters mailParms = new MailTransportParameters(parameters);
 
             try {
                 if ("${ipaddr}".equals(mailParms.getReadTestHost())) {

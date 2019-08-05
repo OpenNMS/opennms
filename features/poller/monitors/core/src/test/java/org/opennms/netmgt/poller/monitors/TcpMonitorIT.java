@@ -47,6 +47,7 @@ import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.netmgt.utils.DnsUtils;
@@ -69,7 +70,7 @@ public class TcpMonitorIT {
      */
     @Test
     public void testExternalServerConnection() throws UnknownHostException {
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new TcpMonitor();
@@ -77,15 +78,15 @@ public class TcpMonitorIT {
 
         p.setKey("port");
         p.setValue("3020");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         p.setKey("retry");
         p.setValue("1");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         p.setKey("timeout");
         p.setValue("500");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -97,7 +98,7 @@ public class TcpMonitorIT {
     @Test
     @JUnitHttpServer(port=10342)
     public void testLocalhostConnection() throws UnknownHostException {
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new TcpMonitor();
@@ -105,15 +106,15 @@ public class TcpMonitorIT {
 
         p.setKey("port");
         p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         p.setKey("retry");
         p.setValue("1");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         p.setKey("timeout");
         p.setValue("500");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -126,7 +127,7 @@ public class TcpMonitorIT {
     public void testLocalhostIPv6Connection() throws UnknownHostException {
         assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new TcpMonitor();
@@ -134,15 +135,15 @@ public class TcpMonitorIT {
 
         p.setKey("port");
         p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         p.setKey("retry");
         p.setValue("1");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         p.setKey("timeout");
         p.setValue("500");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());

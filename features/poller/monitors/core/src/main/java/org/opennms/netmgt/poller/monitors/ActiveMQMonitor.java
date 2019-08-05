@@ -36,11 +36,12 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,19 +66,19 @@ public class ActiveMQMonitor extends AbstractServiceMonitor {
     private static final String PARAMETER_CREATE_SESSION = "create-session";
 
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         PollStatus status = PollStatus.unknown("polling never attempted");
 
         if (parameters == null) {
                 throw new NullPointerException("parameter cannot be null");
         }
 
-        String brokerURL = ParameterMap.getKeyedString(parameters, PARAMETER_BROKERURL, DEFAULT_BROKERURL);
-        String userName  = ParameterMap.getKeyedString(parameters, PARAMETER_USER, null);
-        String password  = ParameterMap.getKeyedString(parameters, PARAMETER_PASSWORD, null);
-        Boolean useNodeLabel = ParameterMap.getKeyedBoolean(parameters, PARAMETER_USE_NODELABEL, false);
-        Boolean createSession = ParameterMap.getKeyedBoolean(parameters, PARAMETER_CREATE_SESSION, false);
-        String clientID = ParameterMap.getKeyedString(parameters, PARAMETER_CLIENTID, null);
+        String brokerURL = getKeyedString(parameters, PARAMETER_BROKERURL, DEFAULT_BROKERURL);
+        String userName  = getKeyedString(parameters, PARAMETER_USER, null);
+        String password  = getKeyedString(parameters, PARAMETER_PASSWORD, null);
+        Boolean useNodeLabel = getKeyedBoolean(parameters, PARAMETER_USE_NODELABEL, false);
+        Boolean createSession = getKeyedBoolean(parameters, PARAMETER_CREATE_SESSION, false);
+        String clientID = getKeyedString(parameters, PARAMETER_CLIENTID, null);
         URI uri = null;
         try {
             uri = new URI(brokerURL);
