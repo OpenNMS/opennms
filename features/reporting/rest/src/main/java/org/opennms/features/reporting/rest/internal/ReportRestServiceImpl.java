@@ -125,112 +125,21 @@ public class ReportRestServiceImpl implements ReportRestService {
         final ReportParameters parameters = reportWrapperService.getParameters(reportId);
         final Collection<Category> categories = categoryConfigDao.findAll();
         final List<OnmsCategory> surveillanceCategories = categoryDao.findAll();
-
-        // Convert formats
-        final JSONArray jsonFormats = new JSONArray();
-        for (ReportFormat eachFormat : formats) {
-            final JSONObject jsonFormat = new JSONObject();
-            jsonFormat.put("ordinal", eachFormat.ordinal());
-            jsonFormat.put("name", eachFormat.name());
-            jsonFormats.put(jsonFormat);
-        }
-
-        // Convert parameters
-        final JSONArray jsonParameters = new JSONArray();
-        if (parameters.getDateParms() != null) {
-            for (ReportDateParm dateParm : parameters.getDateParms()) {
-                final JSONObject jsonDateParm = new JSONObject();
-                jsonDateParm.put("type", "date");
-                jsonDateParm.put("name", dateParm.getName());
-                jsonDateParm.put("displayName", dateParm.getDisplayName());
-
-                // This value is mostly false. Only Availability Reports can set this to true.
-                // This also means, that Jasper Reports can never have an absolute date parameter when run scheduled.
-                jsonDateParm.put("useAbsoluteDate", dateParm.getUseAbsoluteDate());
-
-                // Relative date values
-                jsonDateParm.put("count", dateParm.getCount());
-                jsonDateParm.put("interval", dateParm.getInterval());
-                jsonDateParm.put("hours", dateParm.getHours()); // also used for absolute dates
-                jsonDateParm.put("minutes", dateParm.getMinutes()); // also used for absolute dates
-
-                // Absolute date values
-                jsonDateParm.put("date", new SimpleDateFormat("yyyy-MM-dd").format(dateParm.getDate()));
-                jsonParameters.put(jsonDateParm);
-            }
-        }
-        if (parameters.getDoubleParms() != null) {
-            for (ReportDoubleParm doubleParm : parameters.getDoubleParms()) {
-                final JSONObject jsonDoubleParm = new JSONObject();
-                jsonDoubleParm.put("type", "double");
-                jsonDoubleParm.put("name", doubleParm.getName());
-                jsonDoubleParm.put("displayName", doubleParm.getDisplayName());
-                jsonDoubleParm.put("value", doubleParm.getValue());
-                jsonDoubleParm.put("inputType", doubleParm.getInputType());
-                jsonParameters.put(jsonDoubleParm);
-            }
-        }
-        if (parameters.getFloatParms() != null) {
-            for (ReportFloatParm floatParm : parameters.getFloatParms()) {
-                final JSONObject jsonFloatParm = new JSONObject();
-                jsonFloatParm.put("type", "float");
-                jsonFloatParm.put("name", floatParm.getName());
-                jsonFloatParm.put("displayName", floatParm.getDisplayName());
-                jsonFloatParm.put("value", floatParm.getValue());
-                jsonFloatParm.put("inputType", floatParm.getInputType());
-                jsonParameters.put(jsonFloatParm);
-            }
-        }
-        if (parameters.getIntParms() != null) {
-            for (ReportIntParm intParm : parameters.getIntParms()) {
-                final JSONObject jsonIntParm = new JSONObject();
-                jsonIntParm.put("type", "integer");
-                jsonIntParm.put("name", intParm.getName());
-                jsonIntParm.put("displayName", intParm.getDisplayName());
-                jsonIntParm.put("value", intParm.getValue());
-                jsonIntParm.put("inputType", intParm.getInputType());
-                jsonParameters.put(jsonIntParm);
-            }
-        }
-        if (parameters.getStringParms() != null) {
-            for (ReportStringParm stringParm : parameters.getStringParms()) {
-                final JSONObject jsonStringParm = new JSONObject();
-                jsonStringParm.put("type", "string");
-                jsonStringParm.put("name", stringParm.getName());
-                jsonStringParm.put("displayName", stringParm.getDisplayName());
-                jsonStringParm.put("value", stringParm.getValue());
-                jsonStringParm.put("inputType", stringParm.getInputType());
-                jsonParameters.put(jsonStringParm);
-            }
-        }
-
-        // Convert categories
-        final JSONArray jsonCategories = new JSONArray();
-        for (OnmsCategory eachCategory : surveillanceCategories) {
-            jsonCategories.put(eachCategory.getName());
-        }
-
-        // Convert surveillanceCategories
-        final JSONArray jsonSurveillanceCategories = new JSONArray();
-        for (Category eachCategory : categories) {
-            jsonSurveillanceCategories.put(eachCategory.getLabel());
-        }
-
-        // Create return object
-        final JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", reportId);
-        jsonObject.put("name", parameters.getDisplayName());
-        jsonObject.put("parameters", jsonParameters);
-        jsonObject.put("formats", jsonFormats);
-        jsonObject.put("categories", jsonCategories);
-        jsonObject.put("surveillanceCategories", jsonSurveillanceCategories);
+        final ReportDetailsBuilder reportDetailsBuilder = new ReportDetailsBuilder()
+                .withReportId(reportId)
+                .withFormats(formats)
+                .withParameters(parameters)
+                .withCategories(categories)
+                .withSurveillanceCategories(surveillanceCategories);
 
         // Apply delivery Options if user Id is provided
         if (userId != null) {
             final DeliveryOptions deliveryOptions = reportWrapperService.getDeliveryOptions(reportId, userId);
-            jsonObject.put("deliveryOptions", new JSONObject(deliveryOptions));
+            reportDetailsBuilder.withDeliveryOptions(deliveryOptions);
         }
 
+        // Convert to JSON
+        final JSONObject jsonObject = reportDetailsBuilder.build().toJson();
         return Response.ok(jsonObject.toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
@@ -357,109 +266,17 @@ public class ReportRestServiceImpl implements ReportRestService {
             final ReportParameters persistedParameters = triggerDescription.getReportParameters();
             parameters.apply(persistedParameters);
 
-            // Convert formats
-            final JSONArray jsonFormats = new JSONArray();
-            for (ReportFormat eachFormat : formats) {
-                final JSONObject jsonFormat = new JSONObject();
-                jsonFormat.put("ordinal", eachFormat.ordinal());
-                jsonFormat.put("name", eachFormat.name());
-                jsonFormats.put(jsonFormat);
-            }
+            final ReportDetails reportDetails = new ReportDetailsBuilder()
+                    .withReportId(triggerDescription.getReportId())
+                    .withFormats(formats)
+                    .withParameters(parameters)
+                    .withCategories(categories)
+                    .withSurveillanceCategories(surveillanceCategories)
+                    .withDeliveryOptions(triggerDescription.getDeliveryOptions())
+                    .withCronExpression(triggerDescription.getCronExpression())
+                    .build();
 
-            // Convert parameters
-            final JSONArray jsonParameters = new JSONArray();
-            if (parameters.getDateParms() != null) {
-                for (ReportDateParm dateParm : parameters.getDateParms()) {
-                    final JSONObject jsonDateParm = new JSONObject();
-                    jsonDateParm.put("type", "date");
-                    jsonDateParm.put("name", dateParm.getName());
-                    jsonDateParm.put("displayName", dateParm.getDisplayName());
-
-                    // This value is mostly false. Only Availability Reports can set this to true.
-                    // This also means, that Jasper Reports can never have an absolute date parameter when run scheduled.
-                    jsonDateParm.put("useAbsoluteDate", dateParm.getUseAbsoluteDate());
-
-                    // Relative date values
-                    jsonDateParm.put("count", dateParm.getCount());
-                    jsonDateParm.put("interval", dateParm.getInterval());
-                    jsonDateParm.put("hours", dateParm.getHours()); // also used for absolute dates
-                    jsonDateParm.put("minutes", dateParm.getMinutes()); // also used for absolute dates
-
-                    // Absolute date values
-                    jsonDateParm.put("date", new SimpleDateFormat("yyyy-MM-dd").format(dateParm.getDate()));
-                    jsonParameters.put(jsonDateParm);
-                }
-            }
-            if (parameters.getDoubleParms() != null) {
-                for (ReportDoubleParm doubleParm : parameters.getDoubleParms()) {
-                    final JSONObject jsonDoubleParm = new JSONObject();
-                    jsonDoubleParm.put("type", "double");
-                    jsonDoubleParm.put("name", doubleParm.getName());
-                    jsonDoubleParm.put("displayName", doubleParm.getDisplayName());
-                    jsonDoubleParm.put("value", doubleParm.getValue());
-                    jsonDoubleParm.put("inputType", doubleParm.getInputType());
-                    jsonParameters.put(jsonDoubleParm);
-                }
-            }
-            if (parameters.getFloatParms() != null) {
-                for (ReportFloatParm floatParm : parameters.getFloatParms()) {
-                    final JSONObject jsonFloatParm = new JSONObject();
-                    jsonFloatParm.put("type", "float");
-                    jsonFloatParm.put("name", floatParm.getName());
-                    jsonFloatParm.put("displayName", floatParm.getDisplayName());
-                    jsonFloatParm.put("value", floatParm.getValue());
-                    jsonFloatParm.put("inputType", floatParm.getInputType());
-                    jsonParameters.put(jsonFloatParm);
-                }
-            }
-            if (parameters.getIntParms() != null) {
-                for (ReportIntParm intParm : parameters.getIntParms()) {
-                    final JSONObject jsonIntParm = new JSONObject();
-                    jsonIntParm.put("type", "integer");
-                    jsonIntParm.put("name", intParm.getName());
-                    jsonIntParm.put("displayName", intParm.getDisplayName());
-                    jsonIntParm.put("value", intParm.getValue());
-                    jsonIntParm.put("inputType", intParm.getInputType());
-                    jsonParameters.put(jsonIntParm);
-                }
-            }
-            if (parameters.getStringParms() != null) {
-                for (ReportStringParm stringParm : parameters.getStringParms()) {
-                    final JSONObject jsonStringParm = new JSONObject();
-                    jsonStringParm.put("type", "string");
-                    jsonStringParm.put("name", stringParm.getName());
-                    jsonStringParm.put("displayName", stringParm.getDisplayName());
-                    jsonStringParm.put("value", stringParm.getValue());
-                    jsonStringParm.put("inputType", stringParm.getInputType());
-                    jsonParameters.put(jsonStringParm);
-                }
-            }
-
-            // Convert categories
-            final JSONArray jsonCategories = new JSONArray();
-            for (OnmsCategory eachCategory : surveillanceCategories) {
-                jsonCategories.put(eachCategory.getName());
-            }
-
-            // Convert surveillanceCategories
-            final JSONArray jsonSurveillanceCategories = new JSONArray();
-            for (Category eachCategory : categories) {
-                jsonSurveillanceCategories.put(eachCategory.getLabel());
-            }
-
-            // Create return object
-            final JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", reportId);
-            jsonObject.put("name", parameters.getDisplayName());
-            jsonObject.put("parameters", jsonParameters);
-            jsonObject.put("formats", jsonFormats);
-            jsonObject.put("categories", jsonCategories);
-            jsonObject.put("surveillanceCategories", jsonSurveillanceCategories);
-
-            final DeliveryOptions deliveryOptions = triggerDescription.getDeliveryOptions();
-            jsonObject.put("deliveryOptions", new JSONObject(deliveryOptions));
-            jsonObject.put("cronExpression", triggerDescription.getCronExpression());
-            return Response.ok(jsonObject.toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
+            return Response.ok(reportDetails.toJson().toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
         }
         return Response.status(Response.Status.NOT_FOUND).build();
     }
