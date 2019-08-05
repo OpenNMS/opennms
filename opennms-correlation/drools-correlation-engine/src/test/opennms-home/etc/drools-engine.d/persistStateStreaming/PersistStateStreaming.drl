@@ -1,0 +1,24 @@
+package org.opennms.netmgt.correlation.drools;
+
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.drools.core.spi.KnowledgeHelper;
+
+global DroolsCorrelationEngine engine;
+
+declare Thing
+	name: String
+end
+
+rule "test-got-something"
+	salience 300
+when
+	$e : Event(uei matches "uei.opennms.org/nodes/nodeLostService")
+then
+    System.err.println("got one: " + $e);
+    EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/nodes/nodeUp", "Component Correlator");
+    eventBuilder.setNodeid($e.getNodeid());
+    insert(eventBuilder.getEvent());
+    insert(new Thing());
+end
