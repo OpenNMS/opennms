@@ -57,8 +57,7 @@ public class ServicePollerImpl<T extends ServicePoller> implements ServiceMonito
 
     @Override
     public org.opennms.netmgt.poller.PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        Map<String, String> attributes = getAttributes(parameters);
-        PollerRequest monitoredService = new PollerRequestImpl(svc, attributes);
+        PollerRequest monitoredService = PollerRequestImpl.fromObjectParameters(svc, parameters);
         ServicePoller servicePoller = servicePollerFactory.createPoller();
         CompletableFuture<PollerResult> future = servicePoller.poll(monitoredService);
         PollerResult pollStatus;
@@ -81,21 +80,11 @@ public class ServicePollerImpl<T extends ServicePoller> implements ServiceMonito
     }
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-        Map<String, Object> runTimeAttributes = new HashMap<>();
-        Map<String, String> attributes = servicePollerFactory.getRuntimeAttributes(new PollerRequestImpl(svc, getAttributes(parameters)));
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, String> parameters) {
+        Map<String, String> runTimeAttributes = new HashMap<>();
+        Map<String, String> attributes = servicePollerFactory.getRuntimeAttributes(new PollerRequestImpl(svc, parameters));
         attributes.forEach(runTimeAttributes::put);
         return runTimeAttributes;
-    }
-
-    private Map<String, String> getAttributes(Map<String, Object> parameters) {
-        Map<String, String> attributes = new HashMap<>();
-        parameters.forEach((parameter, value) -> {
-            if (value instanceof String) {
-                attributes.put(parameter, (String) value);
-            }
-        });
-        return attributes;
     }
 
     @Override
@@ -103,7 +92,7 @@ public class ServicePollerImpl<T extends ServicePoller> implements ServiceMonito
         return null;
     }
 
-    protected class PollerRequestImpl implements PollerRequest {
+    protected static class PollerRequestImpl implements PollerRequest {
 
         private MonitoredService monitoredService;
 
@@ -132,6 +121,15 @@ public class ServicePollerImpl<T extends ServicePoller> implements ServiceMonito
         @Override
         public Map<String, String> getPollerAttributes() {
             return this.attributes;
+        }
+
+        public static PollerRequest fromObjectParameters(MonitoredService svc, Map<String, Object> parameters) {
+            Map<String, String> attributes = new HashMap<>();
+            parameters.forEach((parameter, value) -> {
+                attributes.put(parameter, value.toString());
+            });
+
+            return new PollerRequestImpl(svc, attributes);
         }
     }
 }

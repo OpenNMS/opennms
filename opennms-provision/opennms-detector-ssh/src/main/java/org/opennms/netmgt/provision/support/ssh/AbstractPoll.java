@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.support.ssh;
 
 import java.util.Collections;
-import java.util.Map;
 
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.PollStatus;
@@ -65,7 +64,7 @@ public abstract class AbstractPoll implements Poll {
     /**
      * <p>poll</p>
      *
-     * @param tracker a {@link org.opennms.core.utils.TimeoutTracker} object.
+     * @param tracker a {@link TimeoutTracker} object.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      * @throws org.opennms.netmgt.provision.support.ssh.InsufficientParametersException if any.
      */
@@ -79,8 +78,7 @@ public abstract class AbstractPoll implements Poll {
      */
     @Override
     public PollStatus poll() throws InsufficientParametersException {
-        Map<String,?> emptyMap = Collections.emptyMap();
-        TimeoutTracker tracker = new TimeoutTracker(emptyMap, 1, getTimeout());
+        TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), 1, getTimeout());
         return poll(tracker);
     }
 

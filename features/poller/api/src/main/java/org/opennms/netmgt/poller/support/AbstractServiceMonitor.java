@@ -32,10 +32,14 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 
@@ -54,7 +58,7 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 public abstract class AbstractServiceMonitor implements ServiceMonitor {
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, String> parameters) {
         return Collections.emptyMap();
     }
 
@@ -63,85 +67,28 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         return location;
     }
 
-    public static Object getKeyedObject(final Map<String, Object> parameterMap, final String key, final Object defaultValue) {
-        if (key == null) return defaultValue;
+    public static <T> Optional<T> getKeyed(final Map<String, Object> parameterMap, final String key, final Class<T> clazz, final Function<String, T> parser) {
+        if (key == null) return Optional.empty();
 
         final Object value = parameterMap.get(key);
-        if (value == null) return defaultValue;
+        if (value == null) return Optional.empty();
 
-        return value;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T getKeyedInstance(final Map<String, Object> parameterMap, final String key, final Supplier<T> defaultValue) {
-        if (key == null) return defaultValue.get();
-
-        final Object value = parameterMap.get(key);
-        if (value == null) return defaultValue.get();
-
-        return (T)value;
-    }
-
-    public static Boolean getKeyedBoolean(final Map<String, Object> parameterMap, final String key, final Boolean defaultValue) {
-        final Object value = getKeyedObject(parameterMap, key, defaultValue);
-        if (value == null) return defaultValue;
-
-        if (value instanceof String) {
-            return "true".equalsIgnoreCase((String)value) ? Boolean.TRUE : Boolean.FALSE;
-        } else if (value instanceof Boolean) {
-            return (Boolean)value;
+        if (clazz.isInstance(value)) {
+            return Optional.of(clazz.cast(value));
         }
 
-        return defaultValue;
-    }
-
-    public static String getKeyedString(final Map<String, Object> parameterMap, final String key, final String defaultValue) {
-        final Object value = getKeyedObject(parameterMap, key, defaultValue);
-        if (value == null) return defaultValue;
-
         if (value instanceof String) {
-            return (String)value;
+            final T parsedValue = parser.apply((String) value);
+            parameterMap.put(key, parsedValue);
+            return Optional.of(parsedValue);
         }
 
-        return value.toString();
+        throw new IllegalStateException("wrong type");
     }
 
-    public static Integer getKeyedInteger(final Map<String, Object> parameterMap, final String key, final Integer defaultValue) {
-        final Object value = getKeyedObject(parameterMap, key, defaultValue);
-        if (value == null) return defaultValue;
-
-        if (value instanceof String) {
-            try {
-                return Integer.valueOf((String)value);
-            } catch (final NumberFormatException e) {
-                return defaultValue;
-            }
-        } else if (value instanceof Integer) {
-            return (Integer)value;
-        } else if (value instanceof Number) {
-            return Integer.valueOf(((Number)value).intValue());
-        }
-
-        return defaultValue;
-    }
-
-    public static Long getKeyedLong(final Map<String, Object> parameterMap, final String key, final Long defaultValue) {
-        final Object value = getKeyedObject(parameterMap, key, defaultValue);
-        if (value == null) return defaultValue;
-
-        if (value instanceof String) {
-            try {
-                return Long.valueOf((String)value);
-            } catch (final NumberFormatException e) {
-                return defaultValue;
-            }
-        } else if (value instanceof Long) {
-            return (Long)value;
-        } else if (value instanceof Number) {
-            return Long.valueOf(((Number)value).longValue());
-        }
-
-        return defaultValue;
+    public static <T> T getKeyedXmlInstance(final Map<String, Object> parameterMap, final String key, final Class<T> clazz, final Supplier<T> defaultValue) {
+        return getKeyed(parameterMap, key, clazz, value -> JaxbUtils.unmarshal(clazz, value))
+                .orElseGet(defaultValue);
     }
 
     public static Properties getServiceProperties(final MonitoredService svc) {

@@ -73,7 +73,7 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
 	private static final int DEFAULT_TIMEOUT = 3000;
 	
 	@Override
-	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) 
+	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters)
 	{
 		PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");
 		TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
@@ -129,25 +129,25 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
     {
         if(parameters.containsKey("base-url")) {
             String baseUrl = (String) parameters.get("base-url");
-            
+
             if(!baseUrl.contains("http")) {
                 baseUrl = "http://" + baseUrl;
             }
-            
+
             if(baseUrl.contains("${ipAddr}")) {
                 baseUrl = BaseUrlUtils.replaceIpAddr(baseUrl, svc.getIpAddr());
             }
-            
+
             if(parameters.containsKey("port")) {
                 String port = (String) parameters.get("port");
                 baseUrl = baseUrl + ":" + port;
             }
-            
+
             return baseUrl;
         }else {
             return null;
         }
-        
+
     }
 
     private String getFailureMessage(Result result, MonitoredService svc)
@@ -169,7 +169,7 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
         return JUnitCore.runClasses(new SeleniumComputer(baseUrl, timeoutInSeconds), clazz);
     }
 
-    private String  getGroovyFilename(Map<String, Object> parameters) 
+    private String  getGroovyFilename(Map<String, Object> parameters)
     {
         if(parameters.containsKey("selenium-test")) {
             return (String) parameters.get("selenium-test");

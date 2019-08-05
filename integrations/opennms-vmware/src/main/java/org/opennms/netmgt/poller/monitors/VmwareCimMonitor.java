@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -112,11 +113,11 @@ public class VmwareCimMonitor extends AbstractVmwareMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        final boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
-        final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
-        final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
-        final String vmwareMangementServerUsername = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
-        final String vmwareMangementServerPassword = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
+        final boolean ignoreStandBy = ParameterMap.getKeyedBoolean(parameters, "ignoreStandBy", false);
+        final String vmwareManagementServer = ParameterMap.getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
+        final String vmwareManagedObjectId = ParameterMap.getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
+        final String vmwareMangementServerUsername = ParameterMap.getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
+        final String vmwareMangementServerPassword = ParameterMap.getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 

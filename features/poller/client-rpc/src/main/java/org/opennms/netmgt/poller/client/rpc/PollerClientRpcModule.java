@@ -40,6 +40,8 @@ import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.google.common.collect.Maps;
+
 public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO, PollerResponseDTO> {
 
     public static final String RPC_MODULE_ID = "Poller";
@@ -73,7 +75,7 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
             public PollerResponseDTO get() {
                 PollStatus pollStatus;
                 try {
-                    final Map<String, Object> parameters = request.getMonitorParameters();
+                    final Map<String, Object> parameters = Maps.newHashMap(request.getMonitorParameters());
                     pollStatus = monitor.poll(request, parameters);
                 } catch (RuntimeException e) {
                     pollStatus = PollStatus.unknown(e.getMessage());

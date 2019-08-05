@@ -101,16 +101,16 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
      * The new key will be prepended with 'subbed-'.
      */
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, String> parameters) {
         return getSubstitutedParameters(svc, parameters);
     }
 
-    public static Map<String, Object> getSubstitutedParameters(final MonitoredService svc, Map<String, Object> parameters) {
-        Map<String, Object> subbedParams = new HashMap<>();
+    public static Map<String, String> getSubstitutedParameters(final MonitoredService svc, Map<String, String> parameters) {
+        Map<String, String> subbedParams = new HashMap<>();
         parameters.forEach((k, v) -> {
-            Matcher m = substitutionPattern.matcher(v.toString());
+            Matcher m = substitutionPattern.matcher(v);
             if (m.matches()) {
-                subbedParams.put("subbed-" + k, parseString(v.toString(), m, svc));
+                subbedParams.put("subbed-" + k, parseString(v, m, svc));
             }
         });
         return subbedParams;

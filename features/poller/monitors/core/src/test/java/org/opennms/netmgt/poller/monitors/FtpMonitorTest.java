@@ -129,14 +129,14 @@ public class FtpMonitorTest {
     @Test
     public void testParamSubstitution() throws Exception {
         FtpMonitor mon = new FtpMonitor();
-        Map<String, Object> m = new HashMap<String, Object>();
-        m.put("port", m_serverSocket.getLocalPort());
-        m.put("retries", 0);
-        m.put("timeout", TIMEOUT);
+        Map<String, String> m = new HashMap<>();
+        m.put("port", Integer.toString(m_serverSocket.getLocalPort()));
+        m.put("retries", Integer.toString(0));
+        m.put("timeout", Integer.toString(TIMEOUT));
         m.put("userid", "{ipAddr}");
         m.put("password", "{nodeLabel}");
         MockMonitoredService svc = new MockMonitoredService(1, "Node One", InetAddress.getByName("127.0.0.1"), "FTP");
-        Map<String, Object> subbedParams = mon.getRuntimeAttributes(svc, m);
+        Map<String, String> subbedParams = mon.getRuntimeAttributes(svc, m);
         assertTrue(subbedParams.get("subbed-userid").equals("127.0.0.1"));
         assertTrue(subbedParams.get("subbed-password").equals("Node One"));
     }

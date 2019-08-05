@@ -108,13 +108,8 @@ public class JMXMonitor extends AbstractServiceMonitor {
     }
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-        Map<String, String> convert = new HashMap<>();
-        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-            convert.put(entry.getKey(), (String) entry.getValue());
-        }
-        Map<String, String> attributes = JmxUtils.getRuntimeAttributes(jmxConfigDao.get(), InetAddressUtils.str(svc.getAddress()), convert);
-        return new HashMap<>(attributes);
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, String> parameters) {
+        return JmxUtils.getRuntimeAttributes(jmxConfigDao.get(), InetAddressUtils.str(svc.getAddress()), parameters);
     }
 
     /**

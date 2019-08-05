@@ -59,6 +59,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.google.common.collect.Maps;
+
 /**
  * DNSResolutionMonitorIT
  *
@@ -236,15 +238,15 @@ public class DNSResolutionMonitorIT {
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
-        Map<String, Object> parms = new HashMap<String, Object>();
+        Map<String, String> parms = new HashMap<>();
         parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
         parms.put(PARM_LOOKUP, "{nodeLabel}");
 
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(lookup, parms);
+        Map<String, String> subbedParams = monitor.getRuntimeAttributes(lookup, parms);
         // this would normally happen in the poller request builder implementation
         subbedParams.forEach((k, v) -> {
             parms.put(k, v);
         });
-        assertEquals(PollStatus.available(), monitor.poll(lookup, parms));
+        assertEquals(PollStatus.available(), monitor.poll(lookup, Maps.newHashMap(parms)));
     }
 }

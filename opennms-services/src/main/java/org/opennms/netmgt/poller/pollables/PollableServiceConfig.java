@@ -32,8 +32,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
@@ -65,7 +65,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
     private PollerConfig m_pollerConfig;
     private PollableService m_service;
-    private Map<String,Object> m_parameters = null;
+    private Map<String, String> m_parameters = null;
     private Package m_pkg;
     private Timer m_timer;
     private Service m_configService;
@@ -189,24 +189,16 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         this.findService();
     }
 
-    private synchronized Map<String,Object> getParameters() {
+    private synchronized Map<String, String> getParameters() {
         if (m_parameters == null) {
             m_parameters = createParameterMap(m_configService);
         }
         return m_parameters;
     }
 
-    private Map<String,Object> createParameterMap(final Service svc) {
-        final Map<String,Object> m = new ConcurrentSkipListMap<String,Object>();
-        for (final Parameter p : svc.getParameters()) {
-            Object val = p.getValue();
-            if (val == null) {
-                val = (p.getAnyObject() == null ? "" : p.getAnyObject());
-            }
-
-            m.put(p.getKey(), val);
-        }
-        return m;
+    private Map<String, String> createParameterMap(final Service svc) {
+        return svc.getParameters().stream()
+                .collect(Collectors.toMap(Parameter::getKey, Parameter::asPollerParameter));
     }
 
     /**

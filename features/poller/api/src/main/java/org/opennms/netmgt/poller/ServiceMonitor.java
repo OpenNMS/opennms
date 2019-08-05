@@ -107,7 +107,7 @@ public interface ServiceMonitor {
      *            returned by {@link #getRuntimeAttributes(MonitoredService, Map)}.
      * @return Additional attributes, which should be added to the parameter map before calling {@link #poll(MonitoredService, Map)}.
      */
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters);
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, String> parameters);
 
     /**
      * Allows the monitor to override the location at which it should be run.

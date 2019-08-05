@@ -71,6 +71,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Maps;
+
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -609,7 +611,7 @@ public class HttpMonitorIT {
     @JUnitHttpServer()
     public void testParameterSubstitution() throws UnknownHostException {
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, String> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
             parameters.put("port", String.valueOf(port));
@@ -624,8 +626,8 @@ public class HttpMonitorIT {
         parameters.put("response-text", "~.*OK.*");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         svc.setNodeLabel("localhost.localdomain");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-user-agent").toString().equals("Hello from 127.0.0.1 127.0.0.1 3 localhost.localdomain"));
+        Map<String, String> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-user-agent").equals("Hello from 127.0.0.1 127.0.0.1 3 localhost.localdomain"));
     }
 
     @Test
@@ -658,7 +660,7 @@ public class HttpMonitorIT {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, String> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
             parameters.put("port", String.valueOf(port));
@@ -672,8 +674,8 @@ public class HttpMonitorIT {
         parameters.put("user-agent", "Hello from {foreignId} {foreignSource} {nodeLabel}");
         parameters.put("response-text", "~.*OK.*");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel", InetAddress.getByName("10.0.1.1"), "HTTP");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-user-agent").toString().equals("Hello from 31337 AlienSource devjam2018nodelabel"));
+        Map<String, String> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-user-agent").equals("Hello from 31337 AlienSource devjam2018nodelabel"));
     }
 
     @Test
@@ -709,7 +711,7 @@ public class HttpMonitorIT {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, String> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
             parameters.put("port", String.valueOf(port));
@@ -724,9 +726,9 @@ public class HttpMonitorIT {
         parameters.put("password", "channel{password}");
         parameters.put("response-text", "~.*OK.*");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel2", InetAddress.getByName("10.0.1.2"), "HTTP");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-user").toString().equals("dudepeterman"));
-        assertTrue(subbedParams.get("subbed-password").toString().equals("channelnine"));
+        Map<String, String> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-user").equals("dudepeterman"));
+        assertTrue(subbedParams.get("subbed-password").equals("channelnine"));
     }
 
     @Test
@@ -761,7 +763,7 @@ public class HttpMonitorIT {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, String> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
             parameters.put("port", String.valueOf(port));
@@ -774,12 +776,12 @@ public class HttpMonitorIT {
         parameters.put("verbose", "true");
         parameters.put("response-text", "~.*OK.*");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel3", InetAddress.getByName("127.0.0.1"), "HTTP");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        Map<String, String> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         // this would normally happen in the poller request builder implementation
         subbedParams.forEach((k, v) -> {
             parameters.put(k, v);
         });
-        PollStatus status = monitor.poll(svc, parameters);
+        PollStatus status = monitor.poll(svc, Maps.newHashMap(parameters));
         assertTrue(status.isAvailable());
     }
 
@@ -816,7 +818,7 @@ public class HttpMonitorIT {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, String> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
             parameters.put("port", String.valueOf(port));
@@ -830,7 +832,7 @@ public class HttpMonitorIT {
         parameters.put("basic-authentication", "{username}:{password}");
         parameters.put("response-text", "~.*OK.*");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel2", InetAddress.getByName("10.0.1.2"), "HTTP");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-basic-authentication").toString().equals("nimda:@dm1n"));
+        Map<String, String> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-basic-authentication").equals("nimda:@dm1n"));
     }
 }

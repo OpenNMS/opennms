@@ -48,6 +48,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -183,7 +184,7 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
                     clientWrapper.addBasicCredentials(strUser, strPasswd);
                 }
 
-                setUseSystemProxyIfDefined(clientWrapper, parameters);
+                setUseSystemProxyIfDefined(clientWrapper, ParameterMap.getKeyedBoolean(parameters, HttpClientWrapperConfigHelper.USE_SYSTEM_PROXY, false));
 
                 try {
                     postReq = new StringEntity(strPayload, ContentType.create(strMimetype, strCharset));

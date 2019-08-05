@@ -68,7 +68,7 @@ public class LoopPluginTest extends TestCase {
      * Test method for 'org.opennms.netmgt.capsd.plugins.LoopPlugin.isProtocolSupported(InetAddress, Map)'
      */
     public void testIsProtocolSupportedInetAddressMap() throws UnknownHostException {
-        Map<String, Object> qualifiers = new HashMap<String, Object>();
+        Map<String, Object> qualifiers = new HashMap<>();
         qualifiers.put("ip-match", "127.*.*.1-2");
         qualifiers.put("is-supported", "true");
         LoopPlugin plugin = new LoopPlugin();

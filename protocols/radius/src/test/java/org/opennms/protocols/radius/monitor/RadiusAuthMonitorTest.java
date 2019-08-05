@@ -62,6 +62,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tinyradius.util.RadiusServer;
 
+import com.google.common.collect.Maps;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
     "classpath:/META-INF/opennms/emptyContext.xml",
@@ -92,7 +94,7 @@ public class RadiusAuthMonitorTest {
     @Test
     public void testResponses() throws Exception {
         mockSrv.start(true,false);
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, Object> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new RadiusAuthMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
@@ -139,7 +141,7 @@ public class RadiusAuthMonitorTest {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         mockSrv.start(true,false);
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, String> m = new ConcurrentSkipListMap<>();
         final ServiceMonitor monitor = new RadiusAuthMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(node.getId(), "devjam2018nodelabel2", InetAddressUtils.addr("127.0.0.1"), "RADIUS");
 
@@ -148,11 +150,11 @@ public class RadiusAuthMonitorTest {
         m.put("retry", "1");
         m.put("secret", "{username}123");
         m.put("authtype", "chap");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, m);
+        Map<String, String> subbedParams = monitor.getRuntimeAttributes(svc, m);
         subbedParams.forEach((k, v) -> {
             m.put(k, v);
         });
-        final PollStatus status = monitor.poll(svc, m);
+        final PollStatus status = monitor.poll(svc, Maps.newHashMap(m));
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
     }
@@ -161,7 +163,7 @@ public class RadiusAuthMonitorTest {
     public void testBadResponses() throws Exception {
         mockSrv.start(true,false);
 
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, Object> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new RadiusAuthMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
@@ -178,8 +180,8 @@ public class RadiusAuthMonitorTest {
     }
     @Test
     public void testTimeOut() throws Exception {
-        // do not start raddius server
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        // do not start radius server
+        final Map<String, Object> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new RadiusAuthMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
@@ -200,7 +202,7 @@ public class RadiusAuthMonitorTest {
     public void testTTLSResponse() throws Exception {
         mockSrv.start(true,false);
 
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, Object> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new RadiusAuthMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");

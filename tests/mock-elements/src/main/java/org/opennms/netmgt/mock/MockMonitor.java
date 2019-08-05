@@ -31,6 +31,7 @@ package org.opennms.netmgt.mock;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -73,8 +74,8 @@ public class MockMonitor extends AbstractServiceMonitor {
     @Override
     public PollStatus poll(MonitoredService monSvc, Map<String, Object> parameters) {
         if (parameters.containsKey("status")) {
-            final int statusCode = getKeyedInteger(parameters, "status", PollStatus.SERVICE_UNKNOWN);
-            final String reason = getKeyedString(parameters, "reason", null);
+            final int statusCode = ParameterMap.getKeyedInteger(parameters, "status", PollStatus.SERVICE_UNKNOWN);
+            final String reason = ParameterMap.getKeyedString(parameters, "reason", null);
             return PollStatus.get(statusCode, reason);
         }
 
@@ -99,8 +100,8 @@ public class MockMonitor extends AbstractServiceMonitor {
     }
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-        final Map<String, Object> attributes = new HashMap<>();
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, String> parameters) {
+        final Map<String, String> attributes = new HashMap<>();
         final PollStatus pollStatus = doPoll(svc.getNodeId(), svc.getIpAddr(), m_svcName);
         attributes.put("status", Integer.toString(pollStatus.getStatusCode()));
         attributes.put("reason", pollStatus.getReason());

@@ -45,7 +45,7 @@ public class TimeoutTrackerTest extends TestCase {
         
         int retries = 2;
         
-        Map<String,?> emptyMap = Collections.emptyMap();
+        Map<String, Object> emptyMap = Collections.emptyMap();
         TimeoutTracker tracker = new TimeoutTracker(emptyMap, retries, 3000);
         
         int count = 0;
@@ -61,7 +61,7 @@ public class TimeoutTrackerTest extends TestCase {
     
     public void testElapsedTimeButNoStartAttempt() {
         
-        Map<String,?> emptyMap = Collections.emptyMap();
+        Map<String, Object> emptyMap = Collections.emptyMap();
         TimeoutTracker tracker = new TimeoutTracker(emptyMap, 0, 3000);
         
         try {
@@ -77,7 +77,7 @@ public class TimeoutTrackerTest extends TestCase {
         
         long sleepTime = 200L;
         
-        Map<String,?> emptyMap = Collections.emptyMap();
+        Map<String, Object> emptyMap = Collections.emptyMap();
         TimeoutTracker tracker = new TimeoutTracker(emptyMap, 0, 3000);
 
         tracker.startAttempt();

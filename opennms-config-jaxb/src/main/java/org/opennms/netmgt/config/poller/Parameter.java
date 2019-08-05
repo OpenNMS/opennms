@@ -29,13 +29,19 @@
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Element;
 
 
 /**
@@ -65,8 +71,7 @@ public class Parameter implements Serializable {
      * Field m_contents.
      */
     @XmlAnyElement(lax=false)
-    @XmlJavaTypeAdapter(PollerClassObjectAdapter.class)
-    private Object m_contents;
+    private Element m_contents;
 
 
     public Parameter() {
@@ -95,12 +100,35 @@ public class Parameter implements Serializable {
         m_value = value;
     }
 
-    public Object getAnyObject() {
+    public Element getAnyObject() {
         return m_contents;
     }
 
-    public void setAnyObject(final Object anyObject) {
+    public void setAnyObject(final Element anyObject) {
         m_contents = anyObject;
+    }
+
+    public String asPollerParameter() {
+        if (this.m_value != null) {
+            return this.m_value;
+
+        } else if (this.m_contents != null) {
+            // Get back the raw XML from the element
+            final StringWriter writer = new StringWriter();
+
+            try {
+                TransformerFactory.newInstance().newTransformer().transform(
+                        new DOMSource(this.m_contents),
+                        new StreamResult(writer));
+            } catch (final TransformerException e) {
+                throw new RuntimeException(e);
+            }
+
+            return writer.getBuffer().toString();
+
+        } else {
+            return "";
+        }
     }
 
     @Override
@@ -129,7 +157,7 @@ public class Parameter implements Serializable {
             if (other.m_contents != null) {
                 return false;
             }
-        } else if (!m_contents.equals(other.m_contents)) {
+        } else if (!m_contents.isEqualNode(other.m_contents)) {
             return false;
         }
         if (m_key == null) {

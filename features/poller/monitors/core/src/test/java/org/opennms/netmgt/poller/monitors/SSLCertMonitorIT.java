@@ -51,6 +51,8 @@ import org.opennms.netmgt.utils.DnsUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.google.common.collect.Maps;
+
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
@@ -223,7 +225,7 @@ public class SSLCertMonitorIT {
     @Ignore // point at an XMPP server that supports STARTTLS to use this test
     public void testXMPPStartTLS() throws UnknownHostException {
         SSLCertMonitor monitor = new SSLCertMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, String> parameters = new ConcurrentSkipListMap<>();
         parameters.put("port", "5222");
         parameters.put("retry", "0");
         parameters.put("timeout", "500");
@@ -236,11 +238,11 @@ public class SSLCertMonitorIT {
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", InetAddress.getByName("127.0.0.1"), "SSLCert");
         // this would normally happen in the poller request builder implementation
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        Map<String, String> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         subbedParams.forEach((k, v) -> {
             parameters.put(k, v);
         });
-        PollStatus status = monitor.poll(svc, parameters);
+        PollStatus status = monitor.poll(svc, Maps.newHashMap(parameters));
         assertTrue(status.isAvailable());
     }
 

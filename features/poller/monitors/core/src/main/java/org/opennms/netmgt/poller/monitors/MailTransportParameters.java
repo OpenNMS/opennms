@@ -59,17 +59,7 @@ public class MailTransportParameters {
 
     MailTransportParameters(Map<String,Object> parameterMap) {
         m_parameterMap = parameterMap;
-        Object mailTransportTest = AbstractServiceMonitor.getKeyedObject(m_parameterMap, "mail-transport-test", null);
-        if (mailTransportTest == null) {
-            throw new IllegalArgumentException("mail-transport-test must be set in monitor parameters");
-        }
-        if (mailTransportTest instanceof MailTransportTest) {
-            m_transportTest = (MailTransportTest) mailTransportTest;
-        } else if (mailTransportTest instanceof String) {
-            m_transportTest = JaxbUtils.unmarshal(MailTransportTest.class, (String)mailTransportTest);
-        } else {
-            throw new IllegalArgumentException("Unsure how to deal with Mail Transport Test of type " + mailTransportTest.getClass());
-        }
+        m_transportTest = ParameterMap.getKeyed(m_parameterMap, "mail-transport-test", MailTransportTest.class, (value) -> JaxbUtils.unmarshal(MailTransportTest.class, value), () -> null);
     }
     
     static synchronized MailTransportParameters get(Map<String,Object> parameterMap) {

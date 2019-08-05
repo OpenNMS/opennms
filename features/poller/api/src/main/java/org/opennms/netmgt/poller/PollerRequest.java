@@ -38,6 +38,6 @@ public interface PollerRequest extends MonitoredService  {
     /**
      * @return a map of configuration parameters for the {@link org.opennms.netmgt.poller.ServiceMonitor}.
      */
-    Map<String, Object> getMonitorParameters();
+    Map<String, String> getMonitorParameters();
 
 }

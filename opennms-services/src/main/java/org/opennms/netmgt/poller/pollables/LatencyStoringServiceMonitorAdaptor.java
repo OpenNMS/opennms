@@ -35,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.CollectionStatus;
@@ -86,18 +85,18 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
     }
 
     @Override
-    public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
+    public PollStatus handlePollResult(MonitoredService svc, Map<String, String> parameters, PollStatus status) {
         if (!status.getProperties().isEmpty()) {
             storeResponseTime(svc, new LinkedHashMap<String, Number>(status.getProperties()), parameters);
         }
         return status;
     }
 
-    private void storeResponseTime(MonitoredService svc, Map<String, Number> entries, Map<String,Object> parameters) {
-        String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", PollStatus.PROPERTY_RESPONSE_TIME);
-        String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
-        String thresholds  = ParameterMap.getKeyedString(parameters, "thresholding-enabled", "false");
+    private void storeResponseTime(MonitoredService svc, Map<String, Number> entries, Map<String, String> parameters) {
+        String rrdPath     = parameters.getOrDefault("rrd-repository", null);
+        String dsName      = parameters.getOrDefault("ds-name", PollStatus.PROPERTY_RESPONSE_TIME);
+        String rrdBaseName = parameters.getOrDefault("rrd-base-name", dsName);
+        String thresholds  = parameters.getOrDefault("thresholding-enabled", "false");
 
         if (!entries.containsKey(dsName) && entries.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
             entries.put(dsName, entries.get(PollStatus.PROPERTY_RESPONSE_TIME));

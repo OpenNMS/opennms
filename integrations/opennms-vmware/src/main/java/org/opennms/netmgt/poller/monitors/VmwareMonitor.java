@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
@@ -97,22 +98,22 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        final boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
+        final boolean ignoreStandBy = ParameterMap.getKeyedBoolean(parameters, "ignoreStandBy", false);
 
         final List<String> severitiesToReport =
                 Splitter.on(",")
                     .trimResults()
                     .omitEmptyStrings()
-                    .splitToList(getKeyedString(parameters, "reportAlarms", ""))
+                    .splitToList(ParameterMap.getKeyedString(parameters, "reportAlarms", ""))
                     .stream()
                     .filter(e -> VALID_VSPHERE_ALARM_STATES.contains(e))
                     .collect(Collectors.toList());
 
-        final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
-        final String vmwareManagedEntityType = getKeyedString(parameters, VMWARE_MANAGED_ENTITY_TYPE_KEY, null);
-        final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
-        final String vmwareMangementServerUsername = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
-        final String vmwareMangementServerPassword = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
+        final String vmwareManagementServer = ParameterMap.getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
+        final String vmwareManagedEntityType = ParameterMap.getKeyedString(parameters, VMWARE_MANAGED_ENTITY_TYPE_KEY, null);
+        final String vmwareManagedObjectId = ParameterMap.getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
+        final String vmwareMangementServerUsername = ParameterMap.getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
+        final String vmwareMangementServerPassword = ParameterMap.getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
 
         final TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 

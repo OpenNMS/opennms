@@ -79,6 +79,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.google.common.collect.Maps;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -227,7 +229,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
 
     private void executeThresholdTest(Double[] rtValues) throws Exception {
 
-        Map<String,Object> parameters = new HashMap<String,Object>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("rrd-repository", "/tmp");
         parameters.put("ds-name", "icmp");
         parameters.put("rrd-base-name", "icmp");
@@ -268,7 +270,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         m_threshdDao.rebuildPackageIpListMap();
 
         for (int i=0; i<rtValues.length; i++) {
-            adaptor.handlePollResult(svc, parameters, service.poll(svc, parameters));
+            adaptor.handlePollResult(svc, parameters, service.poll(svc, Maps.newHashMap(parameters)));
             Thread.sleep(1000 * step); // Emulate the appropriate wait time prior inserting another value into the RRD files.
         }
         System.setProperty("opennms.home", previousOpennmsHome);

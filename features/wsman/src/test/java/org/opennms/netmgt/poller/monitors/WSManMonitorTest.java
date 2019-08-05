@@ -111,7 +111,7 @@ public class WSManMonitorTest {
         monitor.setWSManConfigDao(configDao);
         monitor.setWSManClientFactory(clientFactory);
 
-        Map<String, Object> parameters = Maps.newHashMap();
+        Map<String, String> parameters = Maps.newHashMap();
         parameters.put(WsManMonitor.RESOURCE_URI_PARAM, resourceUri);
         selectors.entrySet().stream().forEach(e -> parameters.put(WsManMonitor.SELECTOR_PARAM_PREFIX + e.getKey(), e.getValue()));
         parameters.put(WsManMonitor.RULE_PARAM, rule);
@@ -127,13 +127,13 @@ public class WSManMonitorTest {
         when(svc.getIpAddr()).thenReturn("127.0.0.1");
         when(svc.getNodeLabel()).thenReturn("C7BBBP1");
 
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        Map<String, String> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         // this would normally happen in the poller request builder implementation
         subbedParams.forEach((k, v) -> {
             parameters.put(k, v);
         });
 
 
-        return monitor.poll(svc, parameters);
+        return monitor.poll(svc, Maps.newHashMap(parameters));
     }
 }

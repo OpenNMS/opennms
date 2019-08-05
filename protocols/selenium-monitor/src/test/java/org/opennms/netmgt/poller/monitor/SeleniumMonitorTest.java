@@ -68,7 +68,7 @@ public class SeleniumMonitorTest {
 	public void testPollStatusNotNull() throws UnknownHostException{
 	    MonitoredService monSvc = new MockMonitoredService(1, "papajohns", InetAddressUtils.addr("213.187.33.164"), "PapaJohnsSite");
 	    
-	    Map<String, Object> params = new HashMap<String, Object>();
+	    Map<String, Object> params = new HashMap<>();
 	    params.put("selenium-test", "SeleniumGroovyTest.groovy");
 	    params.put("base-url", "localhost");
 	    params.put("port", "10342");

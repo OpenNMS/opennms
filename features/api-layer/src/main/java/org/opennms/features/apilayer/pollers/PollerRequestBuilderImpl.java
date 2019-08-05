@@ -29,7 +29,6 @@
 package org.opennms.features.apilayer.pollers;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -106,13 +105,12 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     @Override
     public CompletableFuture<PollerResult> execute() {
-        Map<String, Object> props = Collections.unmodifiableMap(attributes);
         MonitoredService service = new SimpleMonitoredService(address, serviceName);
         CompletableFuture<PollerResponse> future = pollerClient.poll()
                 .withService(service)
                 .withMonitorClassName(className)
                 .withTimeToLive(ttlInMs)
-                .withAttributes(props)
+                .withAttributes(attributes)
                 .execute();
         // convert the response to PollResult.
         CompletableFuture<PollerResult> result = new CompletableFuture<>();

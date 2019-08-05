@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.notifd;
 
-import static org.opennms.core.web.HttpClientWrapperConfigHelper.PARAMETER_KEYS.useSystemProxy;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -238,7 +236,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
     }
 
     boolean getUseSystemProxy(){
-        return Boolean.parseBoolean(extractValue(useSystemProxy.name()));
+        return Boolean.parseBoolean(extractValue("useSystemProxy"));
     }
 
     String getUrl() {

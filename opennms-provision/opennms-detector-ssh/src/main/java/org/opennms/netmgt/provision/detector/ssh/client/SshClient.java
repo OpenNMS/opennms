@@ -31,7 +31,6 @@ package org.opennms.netmgt.provision.detector.ssh.client;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collections;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.TimeoutTracker;
@@ -72,8 +71,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
     /** {@inheritDoc} */
     @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws Exception {
-        Map<String,?> emptyMap = Collections.emptyMap();
-        TimeoutTracker tracker = new TimeoutTracker(emptyMap, SshClient.DEFAULT_RETRY, timeout);
+        TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), SshClient.DEFAULT_RETRY, timeout);
 
         String banner = m_banner;
         String match = m_match;

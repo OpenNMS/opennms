@@ -34,6 +34,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManEndpoint;
@@ -74,7 +75,7 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         // Fetch the monitor specific parameters
-        final String resourceUri = getKeyedString(parameters, RESOURCE_URI_PARAM, null);
+        final String resourceUri = ParameterMap.getKeyedString(parameters, RESOURCE_URI_PARAM, null);
         if (resourceUri == null) {
             throw new IllegalArgumentException("'" + RESOURCE_URI_PARAM + "' parameter is required.");
         }

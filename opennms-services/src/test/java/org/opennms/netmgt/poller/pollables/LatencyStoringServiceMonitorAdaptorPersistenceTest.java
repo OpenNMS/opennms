@@ -135,7 +135,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", locationName,
                 InetAddress.getByName("192.168.1.5"), "SMTP");
 
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, String> params = Maps.newHashMap();
         params.put("rrd-repository", getResponseTimeRoot().getAbsolutePath());
         params.put("rrd-base-name", "smtp-base");
 
@@ -163,7 +163,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         EasyMock.replay(m_rrdStrategy);
 
         // Trigger the poll
-        lssma.handlePollResult(monitoredService, params, serviceMonitor.poll(monitoredService, params));
+        lssma.handlePollResult(monitoredService, params, serviceMonitor.poll(monitoredService, Maps.newHashMap(params)));
 
         // Verify
         EasyMock.verify(m_rrdStrategy);

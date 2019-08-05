@@ -74,15 +74,9 @@ public class MinionRpcMonitor extends AbstractServiceMonitor implements RpcExcep
         // Create the client
         final RpcClient<EchoRequest, EchoResponse> client = rpcClientFactory.get().getClient(EchoRpcModule.INSTANCE);
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(parameters, new FallbackScope(
-                entityScopeProvider.get().getScopeForNode(svc.getNodeId()),
-                entityScopeProvider.get().getScopeForInterface(svc.getNodeId(), svc.getIpAddr()),
-                entityScopeProvider.get().getScopeForService(svc.getNodeId(), svc.getAddress(), svc.getSvcName())
-        ));
+        Long ttlInMs = ParameterMap.getLongValue(MetadataConstants.TTL, parameters.get(MetadataConstants.TTL), null);
 
-        Long ttlInMs = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), null);
-
-        int messageSize = ParameterMap.getIntValue( MESSAGE_SIZE, interpolatedAttributes.get(MESSAGE_SIZE), DEFAULT_MESSAGE_SIZE);
+        int messageSize = ParameterMap.getIntValue( MESSAGE_SIZE, parameters.get(MESSAGE_SIZE), DEFAULT_MESSAGE_SIZE);
         if (messageSize < 0) {
             messageSize = 0;
         }

@@ -48,6 +48,7 @@ import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -76,10 +77,10 @@ public class WebMonitor extends AbstractServiceMonitor {
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
         PollStatus pollStatus = PollStatus.unresponsive();
         HttpClientWrapper clientWrapper = HttpClientWrapper.create();
-        setUseSystemProxyIfDefined(clientWrapper, map);
+        setUseSystemProxyIfDefined(clientWrapper, ParameterMap.getKeyedBoolean(map, HttpClientWrapperConfigHelper.USE_SYSTEM_PROXY, false));
 
         try {
             final String hostAddress = InetAddressUtils.str(svc.getAddress());

@@ -39,7 +39,6 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -55,6 +54,8 @@ import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
+
+import com.google.common.collect.Maps;
 
 /**
  * This class was originally a standalone tool available in $OPENNMS_HOME/bin/poller-test
@@ -99,7 +100,7 @@ public class Test implements Action {
             throw new IllegalStateException("Error getting InetAddress object for " + ipAddress);
         }
 
-        final Map<String,Object> parameters = Poll.parse(serviceParameters);
+        final Map<String, Object> parameters = Maps.newHashMap(Poll.parse(serviceParameters));
         final MonitoredService monSvc = transactionTemplate.execute(new TransactionCallback<MonitoredService>() {
             @Override
             public MonitoredService doInTransaction(TransactionStatus status) {
@@ -165,16 +166,10 @@ public class Test implements Action {
         if (pollerConfig.isPolledLocally(ipAddress, serviceName)) {
             for (Parameter p : svc.getParameters()) {
                 if (!parameters.containsKey(p.getKey())) {
-                    String value = p.getValue();
-                    if (value == null) {
-                        try {
-                            value = JaxbUtils.marshal(p.getAnyObject());
-                        } catch (Exception e) {}
-                    }
-                    parameters.put(p.getKey(), value);
+                    parameters.put(p.getKey(), p.asPollerParameter());
                 }
             }
-            for (Entry<String,Object> e : parameters.entrySet()) {
+            for (Entry<String, Object> e : parameters.entrySet()) {
                 System.out.printf("Parameter %s : %s%n", e.getKey(), e.getValue());
             }
             try {

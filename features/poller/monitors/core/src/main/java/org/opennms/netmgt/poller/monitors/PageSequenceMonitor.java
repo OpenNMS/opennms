@@ -69,12 +69,14 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.http.HttpResponseRange;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
@@ -106,9 +108,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry, int defaultTimeout) {
             final Map<String, Object> parameters = new HashMap<String, Object>();
 
-            parameters.put("retry", getKeyedInteger(parameterMap, "sequence-retry", defaultSequenceRetry));
-            parameters.put("timeout", getKeyedInteger(parameterMap, "timeout", defaultTimeout));
-            parameters.put("strict-timeout", getKeyedBoolean(parameterMap, "strict-timeout", false));
+            parameters.put("retry", ParameterMap.getKeyedInteger(parameterMap, "sequence-retry", defaultSequenceRetry));
+            parameters.put("timeout", ParameterMap.getKeyedInteger(parameterMap, "timeout", defaultTimeout));
+            parameters.put("strict-timeout", ParameterMap.getKeyedBoolean(parameterMap, "strict-timeout", false));
             m_tracker = new TimeoutTracker(parameters, defaultSequenceRetry, defaultTimeout);
         }
         public void reset() {
@@ -595,27 +597,14 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         PageSequenceMonitorParameters(final Map<String, Object> parameterMap) {
             m_parameterMap = parameterMap;
 
-            Object pageSequence = getKeyedObject(parameterMap, "page-sequence", null);
-
-            if (pageSequence == null) {
+            // Perform parameter expansion on the page-sequence string
+            final PageSequence sequence = ParameterMap.getKeyed(parameterMap, "page-sequence", PageSequence.class,
+                    (value) -> parsePageSequence(PropertiesUtils.substitute(value, m_parameterMap)),
+                    () -> null);
+            if (sequence == null) {
                 throw new IllegalArgumentException("page-sequence must be set in monitor parameters");
             }
 
-            /* if we get an actual PageSequence object, we need
-             * to do substitution on it first, so turn it back into
-             * a string temporarily.
-             */
-            if (pageSequence instanceof PageSequence) {
-                pageSequence = JaxbUtils.marshal(pageSequence);
-            } else if (pageSequence instanceof String) {
-                // don't need to do anything
-            } else {
-                throw new IllegalArgumentException("Unsure how to deal with Page Sequence of type " + pageSequence.getClass());
-            }
-
-            // Perform parameter expansion on the page-sequence string
-            pageSequence = PropertiesUtils.substitute((String)pageSequence, m_parameterMap);
-            PageSequence sequence = parsePageSequence((String)pageSequence);
             m_pageSequence = new HttpPageSequence(sequence);
             m_pageSequence.setParameters(m_parameterMap);
         }
@@ -634,11 +623,11 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         public int getRetries() {
-            return getKeyedInteger(m_parameterMap, "retry", DEFAULT_RETRY);
+            return ParameterMap.getKeyedInteger(m_parameterMap, "retry", DEFAULT_RETRY);
         }
 
         public int getTimeout() {
-            return getKeyedInteger(m_parameterMap, "timeout", DEFAULT_TIMEOUT);
+            return ParameterMap.getKeyedInteger(m_parameterMap, "timeout", DEFAULT_TIMEOUT);
         }
 
         HttpClientWrapper createHttpClient() {
@@ -647,7 +636,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     .setSocketTimeout(getTimeout())
                     .setRetries(getRetries())
                     .useBrowserCompatibleCookies();
-            setUseSystemProxyIfDefined(clientWrapper, m_parameterMap);
+            setUseSystemProxyIfDefined(clientWrapper, ParameterMap.getKeyedBoolean(m_parameterMap, HttpClientWrapperConfigHelper.USE_SYSTEM_PROXY, false));
             return clientWrapper;
         }
     }

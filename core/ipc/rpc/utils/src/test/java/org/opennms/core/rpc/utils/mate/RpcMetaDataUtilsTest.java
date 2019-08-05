@@ -35,6 +35,18 @@ import java.util.TreeMap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import com.google.common.collect.Maps;
 
 public class RpcMetaDataUtilsTest {
     final Map<ContextKey, String> metaData = new HashMap<>();
@@ -45,11 +57,12 @@ public class RpcMetaDataUtilsTest {
         metaData.put(new ContextKey("ctx1", "key2"), "val2");
         metaData.put(new ContextKey("ctx2", "key3"), "val3");
         metaData.put(new ContextKey("ctx2", "key4"), "val4");
+        metaData.put(new ContextKey("ctx3", "key5"), "12345");
     }
 
     @Test
     public void testMetaDataInterpolation() {
-        final Map<String, Object> attributes = new TreeMap<>();
+        final Map<String, String> attributes = new TreeMap<>();
 
         attributes.put("attribute1", "aaa${ctx1:key1|ctx2:key2|default}bbb");
         attributes.put("attribute2", "aaa${ctx1:key3|ctx2:key3|default}bbb");
@@ -57,12 +70,10 @@ public class RpcMetaDataUtilsTest {
         attributes.put("attribute4", "aaa${ctx1:key4}bbb");
         attributes.put("attribute5", "aaa${ctx1:key4|}bbb");
         attributes.put("attribute6", "aaa${ctx1:key4|default}bbb");
-        attributes.put("attribute7", new Integer(42));
-        attributes.put("attribute8", new Long(42L));
-        attributes.put("attribute9", "aaa${ctx1:key4|${nodeLabel}}bbb");
-        attributes.put("attribute10", "aaa${abc}bbb");
+        attributes.put("attribute7", "aaa${ctx1:key4|${nodeLabel}}bbb");
+        attributes.put("attribute8", "aaa${abc}bbb");
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(this.metaData));
+        final Map<String, String> interpolatedAttributes = Maps.transformValues(attributes, value -> Interpolator.interpolate(value, new MapScope(this.metaData)));
 
         Assert.assertEquals(attributes.size(), interpolatedAttributes.size());
         Assert.assertEquals("aaaval1bbb", interpolatedAttributes.get("attribute1"));
@@ -71,11 +82,7 @@ public class RpcMetaDataUtilsTest {
         Assert.assertEquals("aaabbb", interpolatedAttributes.get("attribute4"));
         Assert.assertEquals("aaabbb", interpolatedAttributes.get("attribute5"));
         Assert.assertEquals("aaadefaultbbb", interpolatedAttributes.get("attribute6"));
-        Assert.assertTrue(interpolatedAttributes.get("attribute7") instanceof Integer);
-        Assert.assertTrue(interpolatedAttributes.get("attribute8") instanceof Long);
-        Assert.assertEquals(42, interpolatedAttributes.get("attribute7"));
-        Assert.assertEquals(42L, interpolatedAttributes.get("attribute8"));
-        Assert.assertEquals("aaa${nodeLabel}bbb", interpolatedAttributes.get("attribute9"));
-        Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute10"));
+        Assert.assertEquals("aaa${nodeLabel}bbb", interpolatedAttributes.get("attribute7"));
+        Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute8"));
     }
 }

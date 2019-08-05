@@ -72,7 +72,7 @@ public class CollectionSpecification {
     private Package m_package;
     private final String m_svcName;
     private final ServiceCollector m_collector;
-    private Map<String, Object> m_parameters;
+    private Map<String, String> m_parameters;
     private final CollectionInstrumentation m_instrumentation;
     private final LocationAwareCollectorClient m_locationAwareCollectorClient;
     private final ReadablePollOutagesDao m_pollOutagesDao;
@@ -158,7 +158,7 @@ public class CollectionSpecification {
         return m_collector;
     }
 
-    private Map<String, Object> getPropertyMap() {
+    private Map<String, String> getPropertyMap() {
         return m_parameters;
     }
 
@@ -181,7 +181,7 @@ public class CollectionSpecification {
     }
 
     private void initializeParameters() {
-    	final Map<String, Object> m = new TreeMap<String, Object>();
+    	final Map<String, String> m = new TreeMap<>();
         m.put(ParameterName.SERVICE.toString(), m_svcName);
         m.put(ParameterName.SERVICE_INTERVAL.toString(), getService().getInterval().toString());
         StringBuilder sb;

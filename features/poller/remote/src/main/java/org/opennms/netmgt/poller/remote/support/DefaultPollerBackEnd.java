@@ -45,6 +45,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Criteria.LockType;
@@ -53,7 +54,6 @@ import org.opennms.core.criteria.restrictions.LtRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -61,7 +61,6 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
@@ -338,25 +337,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     protected static Map<String, Object> getParameterMap(final Service serviceConfig) {
-        final Map<String, Object> paramMap = new HashMap<String, Object>();
-        for (final Parameter serviceParm : serviceConfig.getParameters()) {
-            String value = serviceParm.getValue();
-            if (value == null) {
-                final Object o = serviceParm.getAnyObject();
-                if (o == null) {
-                    value = "";
-                } else if (o instanceof PageSequence) {
-                    // The PageSequenceMonitor uses PageSequence type parameters in the service definition
-                    // These need to be marshalled to XML before being sent to the PollerFrontEnd
-                    value = JaxbUtils.marshal(o);
-                } else {
-                    value = o.toString();
-                }
-            }
-
-            paramMap.put(serviceParm.getKey(), value);
-        }
-        return paramMap;
+        return serviceConfig.getParameters().stream()
+                .collect(Collectors.toMap(Parameter::getKey, Parameter::asPollerParameter));
     }
 
     /**

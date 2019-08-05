@@ -32,12 +32,9 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.opennms.netmgt.config.poller.PollerClassObjectAdapter;
+import javax.xml.bind.annotation.XmlValue;
 
 @XmlRootElement(name = "attribute")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -46,33 +43,20 @@ public class PollerAttributeDTO {
     @XmlAttribute(name = "key")
     private String key;
 
-    @XmlAttribute(name="value")
+    @XmlValue()
     private String value;
-
-    @XmlAnyElement(lax=false)
-    @XmlJavaTypeAdapter(PollerClassObjectAdapter.class)
-    private Object contents;
 
     public PollerAttributeDTO() {
         // no-arg constructor for JAXB
     }
 
-    public PollerAttributeDTO(String key, String value) {
+    public PollerAttributeDTO(final String key, final String value) {
         this.key = key;
         this.value = value;
     }
 
-    public PollerAttributeDTO(String key, Object contents) {
-        this.key = key;
-        if (contents != null && contents instanceof String) {
-            this.value = (String)contents;
-        } else {
-            this.contents = contents;
-        }
-    }
-
     public String getKey() {
-        return key;
+        return this.key;
     }
 
     public void setKey(String key) {
@@ -80,24 +64,16 @@ public class PollerAttributeDTO {
     }
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(String value) {
         this.value = value;
     }
 
-    public Object getContents() {
-        return contents;
-    }
-
-    public void setContents(Object contents) {
-        this.contents = contents;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(key, value, contents);
+        return Objects.hash(key, value);
     }
 
     @Override
@@ -110,12 +86,11 @@ public class PollerAttributeDTO {
             return false;
         final PollerAttributeDTO other = (PollerAttributeDTO) obj;
         return Objects.equals(this.key, other.key)
-                && Objects.equals(this.value, other.value)
-                && Objects.equals(this.contents, other.contents);
+                && Objects.equals(this.value, other.value);
     }
 
     @Override
     public String toString() {
-        return String.format("PollerAttributeDTO[key='%s', value='%s', contents='%s']", key, value, contents);
+        return String.format("PollerAttributeDTO[key='%s', value='%s']", key, value);
     }
 }

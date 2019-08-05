@@ -35,6 +35,7 @@ import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 public class PollerRequestDTOTest extends XmlTestNoCastor<PollerRequestDTO> {
@@ -50,49 +51,33 @@ public class PollerRequestDTOTest extends XmlTestNoCastor<PollerRequestDTO> {
                 getPollerRequestWithString(),
                 "<?xml version=\"1.0\"?>\n" +
                 "<poller-request location=\"MINION\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\" address=\"127.0.0.1\">\n" +
-                  "<attribute key=\"port\" value=\"18980\"/>\n" +
-                "</poller-request>"
-            },
-            {
-                getPollerRequestWithStringAsObject(),
-                "<?xml version=\"1.0\"?>\n" +
-                "<poller-request location=\"MINION\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\" address=\"127.0.0.1\">\n" +
-                  "<attribute key=\"port\" value=\"18980\"/>\n" +
-                "</poller-request>"
-            },
-            {
-                getPollerRequestWithObject(),
-                "<?xml version=\"1.0\"?>\n" +
-                "<poller-request location=\"MINION\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\" address=\"127.0.0.1\">\n" +
-                  "<attribute key=\"nested\">" +
-                    "<attribute key=\"x\" value=\"y\"/>" +
-                  "</attribute>" +
+                  "<attribute key=\"port\">18980</attribute>\n" +
                 "</poller-request>"
             },
             {
                 getPollerRequestWithAgentConfig(),
                 "<?xml version=\"1.0\"?>\n" +
                 "<poller-request location=\"MINION\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\" address=\"127.0.0.1\">\n" +
-                  "<attribute key=\"agent\">" +
-                    "<snmpAgentConfig>" +
-                        "<authPassPhrase>0p3nNMSv3</authPassPhrase>" +
-                        "<authProtocol>MD5</authProtocol>" +
-                        "<maxRepetitions>2</maxRepetitions>" +
-                        "<maxRequestSize>65535</maxRequestSize>" +
-                        "<maxVarsPerPdu>10</maxVarsPerPdu>" +
-                        "<port>161</port>" +
-                        "<privPassPhrase>0p3nNMSv3</privPassPhrase>" +
-                        "<privProtocol>DES</privProtocol>" +
-                        "<readCommunity>public</readCommunity>" +
-                        "<retries>0</retries>" +
-                        "<securityLevel>1</securityLevel>" +
-                        "<securityName>opennmsUser</securityName>" +
-                        "<timeout>3000</timeout>" +
-                        "<version>1</version>" +
-                        "<versionAsString>v1</versionAsString>" +
-                        "<writeCommunity>private</writeCommunity>" +
+                  "<attribute key=\"agent\"><![CDATA[" +
+                    "<snmpAgentConfig>\n" +
+                    "   <authPassPhrase>0p3nNMSv3</authPassPhrase>\n" +
+                    "   <authProtocol>MD5</authProtocol>\n" +
+                    "   <maxRepetitions>2</maxRepetitions>\n" +
+                    "   <maxRequestSize>65535</maxRequestSize>\n" +
+                    "   <maxVarsPerPdu>10</maxVarsPerPdu>\n" +
+                    "   <port>161</port>\n" +
+                    "   <privPassPhrase>0p3nNMSv3</privPassPhrase>\n" +
+                    "   <privProtocol>DES</privProtocol>\n" +
+                    "   <readCommunity>public</readCommunity>\n" +
+                    "   <retries>0</retries>\n" +
+                    "   <securityLevel>1</securityLevel>\n" +
+                    "   <securityName>opennmsUser</securityName>\n" +
+                    "   <timeout>3000</timeout>\n" +
+                    "   <version>1</version>\n" +
+                    "   <versionAsString>v1</versionAsString>\n" +
+                    "   <writeCommunity>private</writeCommunity>\n" +
                     "</snmpAgentConfig>" +
-                  "</attribute>" +
+                  "]]></attribute>" +
                 "</poller-request>"
             }
         });
@@ -106,31 +91,12 @@ public class PollerRequestDTOTest extends XmlTestNoCastor<PollerRequestDTO> {
         return dto;
     }
 
-    public static PollerRequestDTO getPollerRequestWithStringAsObject() throws UnknownHostException {
-        PollerRequestDTO dto = new PollerRequestDTO();
-        dto.setLocation("MINION");
-        dto.setClassName("org.opennms.netmgt.poller.monitors.IcmpMonitor");
-        dto.setAddress(InetAddress.getByName("127.0.0.1"));
-        // Casting the String to an Object will use a different code path
-        dto.addAttribute("port", (Object)"18980");
-        return dto;
-    }
-
-    public static PollerRequestDTO getPollerRequestWithObject() throws UnknownHostException {
-        PollerRequestDTO dto = new PollerRequestDTO();
-        dto.setLocation("MINION");
-        dto.setClassName("org.opennms.netmgt.poller.monitors.IcmpMonitor");
-        dto.setAddress(InetAddress.getByName("127.0.0.1"));
-        dto.addAttribute("nested", new PollerAttributeDTO("x", "y"));
-        return dto;
-    }
-
     public static PollerRequestDTO getPollerRequestWithAgentConfig() throws UnknownHostException {
         PollerRequestDTO dto = new PollerRequestDTO();
         dto.setLocation("MINION");
         dto.setClassName("org.opennms.netmgt.poller.monitors.IcmpMonitor");
         dto.setAddress(InetAddress.getByName("127.0.0.1"));
-        dto.addAttribute("agent", new SnmpAgentConfig());
+        dto.addAttribute("agent", JaxbUtils.marshal(new SnmpAgentConfig()));
         return dto;
     }
 }

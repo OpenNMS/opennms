@@ -116,7 +116,7 @@ public class JCifsMonitorTest {
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddress.getByName("10.123.123.123"), "JCIFS");
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<>());
 
         replay(mockSmbFolderEmpty, mockSmbFolderNotEmpty, mockSmbFileValidPath, mockSmbFileInvalidPath, SmbFile.class);
 
@@ -289,7 +289,7 @@ public class JCifsMonitorTest {
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddress.getByName("10.123.123.123"), "JCIFS");
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<>());
 
         JCifsMonitor jCifsMonitor = new JCifsMonitor();
 
@@ -299,7 +299,7 @@ public class JCifsMonitorTest {
         m.put("mode", "PATH_EXIST");
         m.put("path", "/validPath");
 
-        Map<String, Object> subbedParams = jCifsMonitor.getRuntimeAttributes(svc, m);
+        Map<String, String> subbedParams = jCifsMonitor.getRuntimeAttributes(svc, m);
         assertTrue(subbedParams.get("subbed-username").equals("10.123.123.123"));
         assertTrue(subbedParams.get("subbed-password").equals("10.123.123.123"));
         assertTrue(subbedParams.get("subbed-domain").equals("99"));

@@ -50,8 +50,8 @@ public class NsclientMonitorTest extends AbstractNsclientTest {
     public void testMonitorSuccess() throws Exception {
         startServer("None&1", "NSClient++ 0.3.8.75 2010-05-27");
         NsclientMonitor monitor = new NsclientMonitor();
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("port", getServer().getLocalPort());
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("port", Integer.toString(getServer().getLocalPort()));
         PollStatus status = monitor.poll(createMonitoredService(), parameters);
         Assert.assertTrue(status.isAvailable());
         stopServer();
@@ -61,8 +61,8 @@ public class NsclientMonitorTest extends AbstractNsclientTest {
     public void testMonitorFail() throws Exception {
         startServer("None&1", "ERROR: I don't know what you mean");
         NsclientMonitor monitor = new NsclientMonitor();
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("port", getServer().getLocalPort());
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("port", Integer.toString(getServer().getLocalPort()));
         PollStatus status = monitor.poll(createMonitoredService(), parameters);
         Assert.assertFalse(status.isAvailable());
         stopServer();

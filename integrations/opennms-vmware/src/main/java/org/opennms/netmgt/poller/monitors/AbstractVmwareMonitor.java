@@ -62,7 +62,7 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
     private VmwareConfigDao m_vmwareConfigDao = null;
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+    public Map<String, String> getRuntimeAttributes(MonitoredService svc, Map<String, String> parameters) {
         if (m_nodeDao == null) {
             m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
         }
@@ -96,7 +96,7 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
             }
         }
 
-        return new ImmutableMap.Builder<String, Object>()
+        return new ImmutableMap.Builder<String, String>()
                 .put(VMWARE_MANAGEMENT_SERVER_KEY, vmwareManagementServer)
                 .put(VMWARE_MANAGED_ENTITY_TYPE_KEY, vmwareManagedEntityType)
                 .put(VMWARE_MANAGED_OBJECT_ID_KEY, vmwareManagedObjectId)

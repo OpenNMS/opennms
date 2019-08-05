@@ -95,10 +95,10 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         final String domain = resolveKeyedString(parameters, "domain", "");
         final String username = resolveKeyedString(parameters, "username", "");
         final String password = resolveKeyedString(parameters, "password", "");
-        String mode = parameters.containsKey("mode") ? ((String) parameters.get("mode")).toUpperCase() : "PATH_EXIST";
-        String path = parameters.containsKey("path") ? (String) parameters.get("path") : "";
-        String smbHost = parameters.containsKey("smbHost") ? (String) parameters.get("smbHost") : "";
-        final String folderIgnoreFiles = parameters.containsKey("folderIgnoreFiles") ? (String) parameters.get("folderIgnoreFiles") : "";
+        String mode = ParameterMap.getKeyedString(parameters, "mode", "PATH_EXIST").toUpperCase();
+        String path = ParameterMap.getKeyedString(parameters, "path", "");
+        String smbHost = ParameterMap.getKeyedString(parameters, "smbHost", "");
+        final String folderIgnoreFiles = ParameterMap.getKeyedString(parameters, "folderIgnoreFiles", "");
 
         // changing to Ip address of MonitoredService if no smbHost is given
         if ("".equals(smbHost)) {

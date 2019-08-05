@@ -86,7 +86,7 @@ public class WmiMonitor extends AbstractServiceMonitor {
 	 * SERVICE_AVAILABLE and return.
 	 */
     @Override
-	public PollStatus poll(final MonitoredService svc, final Map<String,Object> parameters) {
+	public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
 		// Holds the response reason.
 		String reason = null;
 		// Used to exit the retry loop early, if possible.

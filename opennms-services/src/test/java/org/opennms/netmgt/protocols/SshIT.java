@@ -56,7 +56,7 @@ public class SshIT extends TestCase {
     
     @Override
     public void setUp() throws Exception {
-        Map<String, String> parameters = new HashMap<String,String>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("retries", "0");
         parameters.put("port", "22");
         parameters.put("timeout", Integer.toString(TIMEOUT));
