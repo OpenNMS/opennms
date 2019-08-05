@@ -11,8 +11,8 @@ ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-li
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
 ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm"
 
-ARG VERSION="0.16.0"
-ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${VERSION}/confd-${VERSION}-linux-amd64"
+ARG CONFD_VERSION="0.16.0"
+ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64"
 
 SHELL ["/bin/bash", "-c"]
 
