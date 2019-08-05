@@ -722,6 +722,7 @@
         <feature>opennms-config</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-collection-api</feature>
+        <feature>opennms-kvstore-api</feature> 
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-trapd" version="${project.version}" description="OpenNMS :: Trapd">
