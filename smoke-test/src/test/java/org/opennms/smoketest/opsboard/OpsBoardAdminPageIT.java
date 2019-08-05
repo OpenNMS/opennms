@@ -28,19 +28,21 @@
 
 package org.opennms.smoketest.opsboard;
 
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.selenium.AbstractPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -78,10 +80,13 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
             new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
             new WebDriverWait(driver, 5).until(pageContainsText("Topology"));
 
-            final WebElement header = driver.switchTo().parentFrame()
-                    .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-topology-iframe']//iframe")).findElement(By.id("header"));
-
-            Assert.assertEquals(false, header.isDisplayed());
+            // Verify that the header is hidden
+            // This method can throw StateElementReference exceptions, so we try multiple times
+            await().atMost(1, TimeUnit.MINUTES)
+                    .ignoreException(WebDriverException.class)
+                    .until(() -> driver.switchTo().parentFrame()
+                            .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-topology-iframe']//iframe"))
+                            .findElement(By.id("header")).isDisplayed(), equalTo(false));
         } finally {
             setImplicitWait();
         }
@@ -104,10 +109,13 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
             new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
             new WebDriverWait(driver, 5).until(pageContainsText("Map"));
 
-            final WebElement header = driver.switchTo().parentFrame()
-                    .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-map-iframe']//iframe")).findElement(By.id("header"));
-
-            Assert.assertEquals(false, header.isDisplayed());
+            // Verify that the header is hidden
+            // This method can throw StateElementReference exceptions, so we try multiple times
+            await().atMost(1, TimeUnit.MINUTES)
+                    .ignoreException(WebDriverException.class)
+                    .until(() -> driver.switchTo().parentFrame()
+                            .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-map-iframe']//iframe"))
+                            .findElement(By.id("header")).isDisplayed(), equalTo(false));
         } finally {
             setImplicitWait();
         }
