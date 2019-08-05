@@ -33,6 +33,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.xml.JaxbUtils;
+
 import com.google.common.collect.Maps;
 
 public class Interpolator {
@@ -52,10 +54,18 @@ public class Interpolator {
     }
 
     public static Object interpolate(final Object value, final Scope scope) {
-        if (value instanceof String) {
+        if (value == null) {
+            return null;
+        } else if (value instanceof String) {
             return interpolate((String) value, scope);
         } else {
-            return value;
+            // Serialize, interpolate and deserialize the value
+            final Class<?> clazz = value.getClass();
+            final String xml = JaxbUtils.marshal(value);
+            final String interpolatedXml = interpolate(xml, scope);
+            final Object interpolatedValue = JaxbUtils.unmarshal(clazz, interpolatedXml);
+
+            return interpolatedValue;
         }
     }
 

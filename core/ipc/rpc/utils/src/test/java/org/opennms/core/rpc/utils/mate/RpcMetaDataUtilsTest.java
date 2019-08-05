@@ -28,6 +28,7 @@
 
 package org.opennms.core.rpc.utils.mate;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,6 +36,11 @@ import java.util.TreeMap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 public class RpcMetaDataUtilsTest {
     final Map<ContextKey, String> metaData = new HashMap<>();
@@ -77,5 +83,34 @@ public class RpcMetaDataUtilsTest {
         Assert.assertEquals(42L, interpolatedAttributes.get("attribute8"));
         Assert.assertEquals("aaa${nodeLabel}bbb", interpolatedAttributes.get("attribute9"));
         Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute10"));
+    }
+
+    @Test
+    public void testNonStringMetaDataInterpolation() {
+        final TestObject testObject = new TestObject();
+        testObject.setField("chaos.${ctx1:key1}.example.com");
+
+        final Map<String, Object> attributes = Collections.singletonMap("test-object", testObject);
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(this.metaData));
+
+        assertThat(interpolatedAttributes, hasKey("test-object"));
+        assertThat(interpolatedAttributes.get("test-object"), instanceOf(TestObject.class));
+
+        final TestObject result = (TestObject)interpolatedAttributes.get("test-object");
+
+        assertThat(result.getField(), is("chaos.val1.example.com"));
+    }
+
+    @XmlRootElement(name="test-object")
+    public static class TestObject {
+        private String field;
+
+        public String getField() {
+            return this.field;
+        }
+
+        public void setField(final String field) {
+            this.field = field;
+        }
     }
 }
