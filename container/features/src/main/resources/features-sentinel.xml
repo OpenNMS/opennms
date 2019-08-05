@@ -249,7 +249,6 @@
              version="${project.version}">
         <feature>opennms-jsonstore-shell</feature>
         <feature>sentinel-kvstore-api</feature>
-        <feature>sentinel-kvstore-postgres-shared</feature>
         <bundle dependency="true">mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.postgres-shared/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.postgres/${project.version}</bundle>
     </feature>
