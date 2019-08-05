@@ -10,6 +10,7 @@ opennms-syslogd-listener-camel-netty
 opennms-trapd-listener
 opennms-events-sink-dispatcher
 opennms-send-event-command
+opennms-dnsresolver-netty
 minion-shell
 minion-heartbeat-producer
 minion-snmp-proxy

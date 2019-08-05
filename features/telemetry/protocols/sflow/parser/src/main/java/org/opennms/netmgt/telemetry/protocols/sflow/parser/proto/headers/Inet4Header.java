@@ -34,8 +34,9 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
-import org.opennms.netmgt.telemetry.common.utils.DnsUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.Throwables;
 
@@ -121,7 +122,15 @@ public class Inet4Header {
         this.tcpFlags = tcpFlags;
     }
 
-    public void writeBson(final BsonWriter bsonWriter) {
+    public Inet4Address getSrcAddress() {
+        return srcAddress;
+    }
+
+    public Inet4Address getDstAddress() {
+        return dstAddress;
+    }
+
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt32("tos", this.tos);
         bsonWriter.writeInt32("length", this.totalLength);
@@ -129,12 +138,12 @@ public class Inet4Header {
 
         bsonWriter.writeStartDocument("src_ip");
         bsonWriter.writeString("address", this.srcAddress.getHostAddress());
-        DnsUtils.reverseLookup(this.srcAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
+        enr.getHostnameFor(this.srcAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
         bsonWriter.writeEndDocument();
 
         bsonWriter.writeStartDocument("dst_ip");
         bsonWriter.writeString("address", this.dstAddress.getHostAddress());
-        DnsUtils.reverseLookup(this.dstAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
+        enr.getHostnameFor(this.dstAddress).ifPresent((hostname) -> bsonWriter.writeString("hostname", hostname));
         bsonWriter.writeEndDocument();
 
         if (this.srcPort != null) {
@@ -150,5 +159,9 @@ public class Inet4Header {
         }
 
         bsonWriter.writeEndDocument();
+    }
+
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

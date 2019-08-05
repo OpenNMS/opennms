@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -111,7 +112,7 @@ public class HttpCounters implements CounterData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt64("method_option_count", this.method_option_count);
         bsonWriter.writeInt64("method_get_count", this.method_get_count);

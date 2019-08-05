@@ -47,16 +47,6 @@ get_java_version_string() {
 	fi
 }
 
-get_real_path() {
-	file_to_find="$1"
-	readlink="$(command -v readlink 2>/dev/null)"
-	if [ -n "$readlink" ] && [ -n "$file_to_find" ] && [ -e "$file_to_find" ]; then
-		"$readlink" "$file_to_find" || echo "$file_to_find"
-	else
-		echo "$file_to_find"
-	fi
-}
-
 usage() {
 	cat <<END
 usage: $0 [-h] [-v] [minimum_jdk_version] [maximum_jdk_version] [path-to-java]
@@ -160,7 +150,7 @@ main() {
 			[ -n "$DEBUG" ] && (>&2 printf 'Scanning: %s\n' "${dir}")
 			find -L "$dir" -type f -name java 2>/dev/null | grep -E '/bin/java$' | sort -u > /tmp/$$.javabins
 			while read -r javabin; do
-				javabin="$(get_real_path "${javabin}")"
+				javabin="$(__onms_get_real_path "${javabin}")"
 				javahome="$(printf '%s' "${javabin}" | sed -e 's,/bin/java$,,')"
 				version_string="$(get_java_version_string "$javahome")"
 				[ -n "$DEBUG" ] && (>&2 printf '* %s = %s\n' "${javahome}" "${version_string}")

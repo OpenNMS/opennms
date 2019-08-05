@@ -27,32 +27,27 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.jest</groupId>
       <artifactId>org.opennms.features.jest.dependencies</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.searchbox</groupId>
       <artifactId>jest-complete-osgi</artifactId>
       <version>${jestVersion}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>${jestGsonVersion}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
       <version>4.5.3</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.health</groupId>

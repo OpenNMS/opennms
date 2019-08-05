@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 
@@ -82,18 +83,18 @@ public class MemcacheOperation implements CounterData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("protocol");
-        this.protocol.writeBson(bsonWriter);
+        this.protocol.writeBson(bsonWriter, enr);
         bsonWriter.writeName("cmd");
-        this.cmd.writeBson(bsonWriter);
+        this.cmd.writeBson(bsonWriter, enr);
         bsonWriter.writeString("key", this.key.value);
         bsonWriter.writeInt64("nkeys", this.nkeys);
         bsonWriter.writeInt64("value_bytes", this.value_bytes);
         bsonWriter.writeInt64("uS", this.uS);
         bsonWriter.writeName("status");
-        this.status.writeBson(bsonWriter);
+        this.status.writeBson(bsonWriter, enr);
         bsonWriter.writeEndDocument();
     }
 }

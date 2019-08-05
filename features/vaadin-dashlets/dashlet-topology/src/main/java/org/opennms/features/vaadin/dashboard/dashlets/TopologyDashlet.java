@@ -88,6 +88,7 @@ public class TopologyDashlet extends AbstractDashlet {
                     //creating browser frame to display the topology
                     BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource(linkBuilder.getLink()));
                     browserFrame.setSizeFull();
+                    browserFrame.setId("opsboard-topology-iframe");
                     m_verticalLayout.addComponent(browserFrame);
                 }
 

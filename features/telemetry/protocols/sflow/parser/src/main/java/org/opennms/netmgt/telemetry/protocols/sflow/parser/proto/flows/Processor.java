@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -72,14 +73,14 @@ public class Processor implements CounterData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("cpu_5s");
-        this.cpu_5s.writeBson(bsonWriter);
+        this.cpu_5s.writeBson(bsonWriter, enr);
         bsonWriter.writeName("cpu_1m");
-        this.cpu_1m.writeBson(bsonWriter);
+        this.cpu_1m.writeBson(bsonWriter, enr);
         bsonWriter.writeName("cpu_5m");
-        this.cpu_5m.writeBson(bsonWriter);
+        this.cpu_5m.writeBson(bsonWriter, enr);
         bsonWriter.writeInt64("total_memory", this.total_memory.longValue());
         bsonWriter.writeInt64("free_memory", this.free_memory.longValue());
         bsonWriter.writeEndDocument();

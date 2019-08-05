@@ -13,7 +13,6 @@
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.9.8</jackson2Version>
     <jersey.version>2.28</jersey.version>
-    <jestVersion>5.3.3</jestVersion>
     <karafVersion>4.2.6</karafVersion>
     <selenium.version>3.141.59</selenium.version>
     <testcontainers.version>1.11.3</testcontainers.version>
@@ -312,9 +311,9 @@
       <version>25.0-jre</version>
     </dependency>
     <dependency>
-      <groupId>io.searchbox</groupId>
-      <artifactId>jest-complete-osgi</artifactId>
-      <version>${jestVersion}</version>
+      <groupId>org.opennms.features.jest</groupId>
+      <artifactId>org.opennms.features.jest.client</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

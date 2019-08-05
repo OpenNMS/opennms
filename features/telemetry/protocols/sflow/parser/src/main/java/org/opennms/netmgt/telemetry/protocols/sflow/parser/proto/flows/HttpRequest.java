@@ -32,7 +32,9 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 
 import com.google.common.base.MoreObjects;
@@ -107,12 +109,12 @@ public class HttpRequest implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("method");
-        this.method.writeBson(bsonWriter);
+        this.method.writeBson(bsonWriter, enr);
         bsonWriter.writeName("protocol");
-        this.protocol.writeBson(bsonWriter);
+        this.protocol.writeBson(bsonWriter, enr);
         bsonWriter.writeString("uri", this.uri.value);
         bsonWriter.writeString("host", this.host.value);
         bsonWriter.writeString("referer", this.referer.value);
@@ -125,5 +127,10 @@ public class HttpRequest implements FlowData {
         bsonWriter.writeInt64("uS", this.uS);
         bsonWriter.writeInt32("status", this.status);
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(final SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

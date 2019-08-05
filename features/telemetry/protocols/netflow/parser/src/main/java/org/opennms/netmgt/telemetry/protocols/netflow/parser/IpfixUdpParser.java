@@ -37,6 +37,7 @@ import java.nio.ByteBuffer;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
@@ -47,6 +48,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -55,8 +57,10 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     public IpfixUdpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
                           final EventForwarder eventForwarder,
-                          final Identity identity) {
-        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity);
+                          final Identity identity,
+                          final DnsResolver dnsResolver,
+                          final MetricRegistry metricRegistry) {
+        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
     }
 
     @Override

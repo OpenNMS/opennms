@@ -158,7 +158,7 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         sb.append("<p>");
         sb.append("Description: ").append(marker.getDescription()).append("<br/>");
         sb.append("Maint.&nbsp;Contract: ").append(marker.getMaintContract()).append("<br/>");
-        if(marker.getIpAddress() != null || !marker.getIpAddress().equals("null")) {sb.append("IP Address: ").append(marker.getIpAddress()).append("<br/>");}
+        if(marker.getIpAddress() != null && !"null".equals(marker.getIpAddress())) {sb.append("IP Address: ").append(marker.getIpAddress()).append("<br/>");}
         sb.append("Severity: ").append("<a class=\"severity " + marker.getSeverityLabel() + "\" href=\"alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D").append(marker.getNodeId()).append("\" " + TARGET_BLANK + ">").append(marker.getSeverityLabel()).append("</a>");
         final String categoryString = marker.getCategoriesAsString();
         if (categoryString.length() > 0) {

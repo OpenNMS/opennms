@@ -34,6 +34,7 @@ import java.util.Optional;
 import org.bson.BsonBinary;
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
@@ -107,12 +108,12 @@ public class LagPortStats {
                 .toString();
     }
 
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("dot3adAggPortActorSystemID");
-        this.dot3adAggPortActorSystemID.writeBson(bsonWriter);
+        this.dot3adAggPortActorSystemID.writeBson(bsonWriter, enr);
         bsonWriter.writeName("dot3adAggPortPartnerOperSystemID");
-        this.dot3adAggPortPartnerOperSystemID.writeBson(bsonWriter);
+        this.dot3adAggPortPartnerOperSystemID.writeBson(bsonWriter, enr);
         bsonWriter.writeInt64("dot3adAggPortAttachedAggID", this.dot3adAggPortAttachedAggID);
         bsonWriter.writeBinaryData("dot3adAggPortState", new BsonBinary(this.dot3adAggPortState.value));
         bsonWriter.writeInt64("dot3adAggPortStatsLACPDUsRx", this.dot3adAggPortStatsLACPDUsRx);

@@ -106,7 +106,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     private static final Gson gson = new Gson();
 
     public static final int DEFAULT_TASK_QUEUE_CAPACITY = 5000;
-    public static final String INDEX_PREFIX = "opennms-alarms";
+    public static final String INDEX_NAME = "opennms-alarms";
 
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
     private final QueryProvider queryProvider = new QueryProvider();
@@ -172,7 +172,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         alarmsToESMetrics = new ElasticAlarmMetrics(metrics, taskQueue);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.indexSettings = Objects.requireNonNull(indexSettings);
-        this.indexSelector = new IndexSelector(indexSettings, INDEX_PREFIX, indexStrategy, 0);
+        this.indexSelector = new IndexSelector(indexSettings, INDEX_NAME, indexStrategy, 0);
     }
 
     public void init() {
@@ -242,8 +242,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                                 final TimeRange timeRange = new TimeRange(includeUpdatesAfter, time);
                                 final String query = queryProvider.getActiveAlarmIdsAtTimeAndExclude(timeRange, alarmIdsToKeep, afterAlarmWithId);
 
-                                final Search.Builder search = new Search.Builder(query)
-                                        .addType(AlarmDocumentDTO.TYPE);
+                                final Search.Builder search = new Search.Builder(query);
                                 final List<String> indices = indexSelector.getIndexNames(timeRange.getStart(), timeRange.getEnd());
                                 search.addIndices(indices);
                                 search.setParameter("ignore_unavailable", "true"); // ignore unknown index
@@ -317,13 +316,12 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         final BulkRequest<AlarmDocumentDTO> bulkRequest = new BulkRequest<>(client, alarmDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (AlarmDocumentDTO alarmDocument : alarmDocuments) {
-                final String index = indexStrategy.getIndex(indexSettings, INDEX_PREFIX, Instant.ofEpochMilli(alarmDocument.getUpdateTime()));
+                final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(alarmDocument.getUpdateTime()));
                 final Index.Builder indexBuilder = new Index.Builder(alarmDocument)
-                        .index(index)
-                        .type(AlarmDocumentDTO.TYPE);
+                        .index(index);
                 if (LOG.isTraceEnabled()) {
-                    LOG.trace("Adding index action on index: {} with type: {} and payload: {}",
-                            index, AlarmDocumentDTO.TYPE, gson.toJson(alarmDocument));
+                    LOG.trace("Adding index action on index: {} with payload: {}",
+                            index, gson.toJson(alarmDocument));
                 }
                 bulkBuilder.addAction(indexBuilder.build());
             }

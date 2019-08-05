@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -88,12 +89,12 @@ public class HostDiskIo implements CounterData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt64("disk_total", this.disk_total.longValue());
         bsonWriter.writeInt64("disk_free", this.disk_free.longValue());
         bsonWriter.writeName("part_max_used");
-        this.part_max_used.writeBson(bsonWriter);
+        this.part_max_used.writeBson(bsonWriter, enr);
         bsonWriter.writeInt64("reads", this.reads);
         bsonWriter.writeInt64("bytes_read", this.bytes_read.longValue());
         bsonWriter.writeInt64("read_time", this.read_time);
