@@ -40,8 +40,7 @@ import org.opennms.reporting.core.DeliveryOptions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-class ReportDetailsBuilder {
-
+public class ReportDetailsBuilder {
 
     private final ReportDetails reportDetails = new ReportDetails();
 

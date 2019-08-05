@@ -1,5 +1,5 @@
 import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOptions';
-import ReportDetails from './scripts/ReportDetails';
+import ReportDetails from './ReportDetails';
 
 const angular = require('vendor/angular-js');
 require('../../lib/onms-http');

@@ -120,7 +120,6 @@ public class ReportDetails {
         this.cronExpression = Objects.requireNonNull(cronExpression);
     }
 
-
     public JSONObject toJson() {
         // Convert formats
         final JSONArray jsonFormats = new JSONArray();

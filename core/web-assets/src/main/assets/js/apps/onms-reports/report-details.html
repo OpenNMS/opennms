@@ -103,9 +103,6 @@
         <hr class="mb-4"/>
     </div>
 
-    <!--    <div class="form-group ml-4" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">-->
-    <!-- TODO MVR this is shown if the user isReportDesigner() || isAdmin() -->
-    <!-- TODO MVR this is shown when in edit mode, but then the toggle is not untogglable -->
     <div class="form-group ml-4" ng-if="options.showDeliveryOptions && options.showDeliveryOptionsToggle">
         <input type="checkbox" id="deliverReport" ng-model="options.deliverReport" class="form-check-input" ng-change="options.scheduleReport = options.deliverReport && options.scheduleReport" />
         <label class="form-check-label"
@@ -176,7 +173,6 @@
         <hr class="mb-4"/>
     </div>
 
-    <!--    <div class="form-group ml-4" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">-->
     <div class="form-group ml-4" ng-if="options.showScheduleOptions && options.showScheduleOptionsToggle">
         <input type="checkbox" id="createSchedule" ng-model="options.scheduleReport" class="form-check-input" ng-change="options.deliverReport = options.deliverReport || options.scheduleReport" />
         <label class="form-check-label"
