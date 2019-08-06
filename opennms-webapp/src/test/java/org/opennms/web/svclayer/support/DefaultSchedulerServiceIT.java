@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,8 +50,9 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.reporting.core.DeliveryOptions;
+import org.opennms.reporting.core.svclayer.DeliveryConfig;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
-import org.opennms.web.svclayer.SchedulerRequestContext;
+import org.opennms.reporting.core.svclayer.ScheduleConfig;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
@@ -115,8 +115,8 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
         deliveryOptions.setInstanceId("testExecuteSuccessTrigger");
         m_reportWrapperService.run(m_criteria, ReportMode.IMMEDIATE, deliveryOptions, REPORT_ID);
         replay(m_reportWrapperService);
-        SchedulerRequestContext context = EasyMock.createNiceMock(SchedulerRequestContext.class);
-        assertEquals("success",m_schedulerService.execute(REPORT_ID, m_criteria, deliveryOptions, context));
+        m_schedulerService.execute(new DeliveryConfig(m_criteria, deliveryOptions));
+
         //give the trigger a chance to fire
         Thread.sleep(1000);
         verify(m_reportWrapperService);
@@ -126,10 +126,9 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
     public void testExecuteFailure() throws InterruptedException {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(false);
         replay(m_reportWrapperService);
-        SchedulerRequestContext context = EasyMock.createNiceMock(SchedulerRequestContext.class);
         DeliveryOptions deliveryOptions = new DeliveryOptions();
         deliveryOptions.setInstanceId("testExecuteFailureTrigger");
-        assertEquals("error",m_schedulerService.execute(REPORT_ID, m_criteria, deliveryOptions, context));
+        m_schedulerService.execute(new DeliveryConfig(m_criteria, deliveryOptions));
         // give the trigger a chance to fire
         Thread.sleep(1000);
         verify(m_reportWrapperService);
@@ -139,10 +138,9 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
     public void testScheduleBadCronExpression() {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         replay(m_reportWrapperService);
-        SchedulerRequestContext context = EasyMock.createNiceMock(SchedulerRequestContext.class);
         DeliveryOptions deliveryOptions = new DeliveryOptions();
         deliveryOptions.setInstanceId("testScheduleBadCronExpressionTrigger");
-        assertEquals("error", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, "bad expression", context));
+        m_schedulerService.addCronTrigger(new ScheduleConfig(m_criteria, deliveryOptions, "bad expression"));
         verify(m_reportWrapperService);
     }
     
@@ -150,10 +148,9 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
     public void testScheduleAndRemove() throws SchedulerException {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         replay(m_reportWrapperService);
-        SchedulerRequestContext context = EasyMock.createNiceMock(SchedulerRequestContext.class);
         DeliveryOptions deliveryOptions = new DeliveryOptions();
         deliveryOptions.setInstanceId("testScheduleAndRemoveTrigger");
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));
+        m_schedulerService.addCronTrigger(new ScheduleConfig(m_criteria, deliveryOptions, CRON_EXPRESSION));
         verify(m_reportWrapperService);
         Set<TriggerKey> triggers = m_scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(TRIGGER_GROUP));
         assertEquals(1, triggers.size());
@@ -166,15 +163,14 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
     public void testMultipleTriggers() throws SchedulerException {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true).times(2);
         replay(m_reportWrapperService);
-        SchedulerRequestContext context = EasyMock.createNiceMock(SchedulerRequestContext.class);
         // this trigger fires every 10 minutes starting at 0 minutes past the hour
         DeliveryOptions deliveryOptions1 = new DeliveryOptions();
         deliveryOptions1.setInstanceId("trigger1");
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions1, "0 0/10 * * * ?", context));
+        m_schedulerService.addCronTrigger(new ScheduleConfig(m_criteria, deliveryOptions1, "0 0/10 * * * ?"));
         // this trigger fires every 10 minutes starting at 5 minutes past the hour
         DeliveryOptions deliveryOptions2 = new DeliveryOptions();
         deliveryOptions2.setInstanceId("trigger2");
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions2, "0 5/10 * * * ?", context));
+        m_schedulerService.addCronTrigger(new ScheduleConfig(m_criteria, deliveryOptions2, "0 5/10 * * * ?"));
         verify(m_reportWrapperService);
         final List<String> triggers = m_scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(TRIGGER_GROUP)).stream().map(TriggerKey::getName).collect(Collectors.toList());
         assertEquals(2,triggers.size());
@@ -192,8 +188,7 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         m_reportWrapperService.run(m_criteria, ReportMode.SCHEDULED, deliveryOptions, REPORT_ID);
         replay(m_reportWrapperService);
-        SchedulerRequestContext context = EasyMock.createNiceMock(SchedulerRequestContext.class);
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));
+        m_schedulerService.addCronTrigger(new ScheduleConfig(m_criteria, deliveryOptions, CRON_EXPRESSION));
         // give the trigger a chance to fire (one minute)
         Thread.sleep(61000);
         m_schedulerService.removeTrigger("testScheduleAndRunTrigger");
@@ -206,10 +201,9 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
     public void testExists() {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         replay(m_reportWrapperService);
-        SchedulerRequestContext context = EasyMock.createNiceMock(SchedulerRequestContext.class);
         DeliveryOptions deliveryOptions = new DeliveryOptions();
         deliveryOptions.setInstanceId("testExistsTrigger");
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));
+        m_schedulerService.addCronTrigger(new ScheduleConfig(m_criteria, deliveryOptions, CRON_EXPRESSION));
         verify(m_reportWrapperService);
         assertTrue(m_schedulerService.exists("testExistsTrigger"));
         assertFalse(m_schedulerService.exists("bogusTrigger"));
@@ -221,10 +215,9 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
     public void testGetTriggerDescriptions() {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         replay(m_reportWrapperService);
-        SchedulerRequestContext context = EasyMock.createNiceMock(SchedulerRequestContext.class);
         DeliveryOptions deliveryOptions = new DeliveryOptions();
         deliveryOptions.setInstanceId("testGetTriggerDescriptionsTrigger");
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));
+        m_schedulerService.addCronTrigger(new ScheduleConfig(m_criteria, deliveryOptions, CRON_EXPRESSION));
         verify(m_reportWrapperService);
         assertEquals(1,m_schedulerService.getTriggerDescriptions().size());
         assertEquals("testGetTriggerDescriptionsTrigger",m_schedulerService.getTriggerDescriptions().get(0).getTriggerName());
