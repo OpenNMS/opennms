@@ -64,15 +64,15 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
         this.dataSource = Objects.requireNonNull(dataSource);
     }
 
-    private static boolean expired(ResultSet resultSet) throws SQLException {
+    /**
+     * Check the result set to see if it has already expired due to TTL but has not been cleaned up yet. In this case we
+     * will want to treat the record as though it does not exist (it should be automatically cleaned up in the future).
+     */
+    private static boolean isExpired(ResultSet resultSet) throws SQLException {
         long now = System.currentTimeMillis();
         Timestamp expiresAt = resultSet.getTimestamp(EXPIRES_AT_COLUMN);
 
-        if (expiresAt != null && expiresAt.getTime() < now) {
-            return true;
-        }
-
-        return false;
+        return expiresAt != null && expiresAt.getTime() < now;
     }
 
     private PreparedStatement getSelectStatement(Connection connection) throws SQLException {
@@ -82,20 +82,15 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
 
     private PreparedStatement getUpsertStatement(Connection connection) throws SQLException {
         return connection.prepareStatement(String.format(
-                "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, " + getValueStatementPlaceholder() + ") " +
-                        "ON CONFLICT ON CONSTRAINT " +
-                        getPkConstraintName() +
-                        " DO " +
-                        "UPDATE SET %s = ?, %s = ?, %s = " + getValueStatementPlaceholder(),
-                getTableName(), KEY_COLUMN, CONTEXT_COLUMN, LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, VALUE_COLUMN,
-                LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, VALUE_COLUMN
+                "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, " + getValueStatementPlaceholder() + ") ON " +
+                        "CONFLICT ON CONSTRAINT " + getPkConstraintName() + " DO UPDATE SET %s = ?, %s = ?, %s = " +
+                        getValueStatementPlaceholder(), getTableName(), KEY_COLUMN, CONTEXT_COLUMN, LAST_UPDATED_COLUMN,
+                EXPIRES_AT_COLUMN, VALUE_COLUMN, LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, VALUE_COLUMN
         ));
     }
 
     private PreparedStatement getLastUpdatedStatement(Connection connection) throws SQLException {
-        return connection.prepareStatement(String.format("SELECT %s, %s FROM %s WHERE %s = ? AND " +
-                        "%s =" +
-                        " ?",
+        return connection.prepareStatement(String.format("SELECT %s, %s FROM %s WHERE %s = ? AND %s = ?",
                 LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, getTableName(), KEY_COLUMN, CONTEXT_COLUMN));
     }
 
@@ -151,7 +146,7 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
                     }
 
                     // Return an empty result if we find an expired record
-                    if (expired(resultSet)) {
+                    if (isExpired(resultSet)) {
                         return Optional.empty();
                     }
 
@@ -210,7 +205,7 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
                     }
 
                     // Return an empty result if we find an expired record
-                    if (expired(resultSet)) {
+                    if (isExpired(resultSet)) {
                         return OptionalLong.empty();
                     }
 
