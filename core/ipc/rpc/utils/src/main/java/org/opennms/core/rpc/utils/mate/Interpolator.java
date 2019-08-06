@@ -34,10 +34,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.xml.JaxbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
 public class Interpolator {
+    private final static Logger LOG = LoggerFactory.getLogger(Interpolator.class);
+
     private static final String OUTER_REGEXP = "\\$\\{(.+?:.+?)\\}";
     private static final String INNER_REGEXP = "(?:([^\\|]+?:[^\\|]+)|([^\\|]+))";
     private static final Pattern OUTER_PATTERN = Pattern.compile(OUTER_REGEXP);
@@ -60,10 +64,24 @@ public class Interpolator {
             return interpolate((String) value, scope);
         } else {
             // Serialize, interpolate and deserialize the value
-            final Class<?> clazz = value.getClass();
-            final String xml = JaxbUtils.marshal(value);
+
+            final String xml;
+            try {
+                xml = JaxbUtils.marshal(value);
+            } catch (final Throwable ex) {
+                LOG.error("Failed to serialize config", ex);
+                return value;
+            }
+
             final String interpolatedXml = interpolate(xml, scope);
-            final Object interpolatedValue = JaxbUtils.unmarshal(clazz, interpolatedXml);
+
+            final Object interpolatedValue;
+            try {
+                interpolatedValue = JaxbUtils.unmarshal(value.getClass(), interpolatedXml);
+            } catch (final Throwable ex) {
+                LOG.error("Failed to deserialize interpolated config", ex);
+                return value;
+            }
 
             return interpolatedValue;
         }
