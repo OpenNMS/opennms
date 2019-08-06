@@ -117,7 +117,7 @@ public class JasperReportServiceTest implements InitializingBean {
         ReportFloatParm floatParm = reportParameters.getFloatParms().get(0);
         Assert.assertEquals(Float.valueOf("99.99"), floatParm.getValue());
         ReportIntParm intParm = reportParameters.getIntParms().get(0);
-        Assert.assertEquals(100, intParm.getValue());
+        Assert.assertEquals(Integer.valueOf(100), intParm.getValue());
         ReportDoubleParm doubleParm = reportParameters.getDoubleParms().get(0);
         Assert.assertEquals(Double.valueOf("99.99"), doubleParm.getValue());
     }

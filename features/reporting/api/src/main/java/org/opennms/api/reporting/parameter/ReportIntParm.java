@@ -41,7 +41,7 @@ public class ReportIntParm extends ReportParm implements Serializable {
     
     private static final long serialVersionUID = 4587512112540000518L;
     
-    int m_value;
+    Integer m_value;
     String m_type;
     
     /**
@@ -56,7 +56,7 @@ public class ReportIntParm extends ReportParm implements Serializable {
      *
      * @return a int.
      */
-    public int getValue() {
+    public Integer getValue() {
         return m_value;
     }
     
@@ -65,7 +65,7 @@ public class ReportIntParm extends ReportParm implements Serializable {
      *
      * @param value a int.
      */
-    public void setValue(int value) {
+    public void setValue(Integer value) {
         m_value = value;
     }
     

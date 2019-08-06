@@ -376,24 +376,6 @@ public class ReportRestServiceImpl implements ReportRestService {
         return errorObject;
     }
 
-    private static <T> List<T> parseParameters(JSONArray inputParameters, String type, Function<JSONObject, T> converter) {
-        Objects.requireNonNull(inputParameters);
-        Objects.requireNonNull(type);
-        Objects.requireNonNull(converter);
-
-        final List<T> parsedParameters = new ArrayList<>();
-        for (int i=0; i<inputParameters.length(); i++) {
-            final JSONObject eachInput = inputParameters.getJSONObject(i);
-            if (eachInput.getString("type").equalsIgnoreCase(type)) {
-                final T eachConvertedParameter = converter.apply(eachInput);
-                if (eachConvertedParameter != null) {
-                    parsedParameters.add(eachConvertedParameter);
-                }
-            }
-        }
-        return parsedParameters;
-    }
-
     private ReportParameters parseParameters(Map<String, Object> inputParameters) {
         final String reportId = (String) inputParameters.get("id");
         final ReportParameters actualParameters = reportWrapperService.getParameters(reportId);
@@ -453,7 +435,7 @@ public class ReportRestServiceImpl implements ReportRestService {
         final JSONObject jsonOptions = jsonParameters.getJSONObject("deliveryOptions");
         options.setInstanceId(jsonOptions.getString("instanceId"));
         options.setSendMail(jsonOptions.getBoolean("sendMail"));
-        if (options.getSendMail()) {
+        if (options.isSendMail()) {
             options.setMailTo(jsonOptions.getString("mailTo"));
         }
         options.setPersist(jsonOptions.getBoolean("persist"));

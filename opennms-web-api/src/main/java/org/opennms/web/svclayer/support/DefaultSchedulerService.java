@@ -257,13 +257,13 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 throw new SchedulerContextException("instanceId", PROVIDE_A_VALUE_TEXT);
             }
 
-            if (!deliveryOptions.getSendMail() && !deliveryOptions.getPersist()) {
+            if (!deliveryOptions.isSendMail() && !deliveryOptions.isPersist()) {
                 throw new SchedulerContextException("sendMail,persist", "Either sendMail or persist must be set");
             }
             if (deliveryOptions.getFormat() == null) {
                 throw new SchedulerContextException("format", "The provided format is not supported.");
             }
-            if (deliveryOptions.getSendMail() && Strings.isNullOrEmpty(deliveryOptions.getMailTo())) {
+            if (deliveryOptions.isSendMail() && Strings.isNullOrEmpty(deliveryOptions.getMailTo())) {
                 throw new SchedulerContextException("mailTo", PROVIDE_A_VALUE_TEXT);
             }
         } catch (SchedulerException e) {
@@ -305,6 +305,9 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
         @Override
         public void visit(ReportIntParm parm) {
+            if (parm.getValue() == null) {
+                throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
+            }
         }
 
         @Override

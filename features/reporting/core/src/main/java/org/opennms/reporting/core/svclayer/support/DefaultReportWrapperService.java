@@ -157,7 +157,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                 try {
                     out = new ByteArrayOutputStream();
                     bout = new BufferedOutputStream(out);
-                    if (!deliveryOptions.getPersist()) {
+                    if (!deliveryOptions.isPersist()) {
                         try {
                             getReportService(reportId).runAndRender(parameters.getReportParms(mode), reportId, deliveryOptions.getFormat(), bout);
                         } catch (final ReportException reportException) {
@@ -172,7 +172,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                         catalogEntry.setLocation(outputPath);
                         catalogEntry.setDate(new Date());
                         m_reportStoreService.save(catalogEntry);
-                        if (deliveryOptions.getSendMail() && deliveryOptions.getMailTo().length() != 0) {
+                        if (deliveryOptions.isSendMail() && deliveryOptions.getMailTo().length() != 0) {
                             getReportService(reportId).render(reportId, outputPath, deliveryOptions.getFormat(), bout);
                             mailReport(deliveryOptions, out);
                         }
