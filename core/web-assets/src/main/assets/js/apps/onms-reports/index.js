@@ -1,3 +1,6 @@
+import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOptions';
+import ReportDetails from './ReportDetails';
+
 const angular = require('vendor/angular-js');
 require('../../lib/onms-http');
 require('../../lib/onms-datetimepicker');
@@ -12,6 +15,9 @@ const schedulesTemplate  = require('./schedules.html');
 const detailsTemplate  = require('./details.html');
 const successModalTemplate  = require('./modals/success-modal.html');
 const errorModalTemplate  = require('./modals/error-modal.html');
+const editScheduleModalTemplate  = require('./modals/schedule-edit-modal.html');
+
+const reportDetailsTemplate = require('./report-details.html');
 
 const confirmTopoverTemplate = require('../onms-classifications/views/modals/popover.html');
 
@@ -79,12 +85,13 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             );
         })
         .factory('ReportScheduleResource', function($resource) {
-            return $resource('rest/reports/scheduled/:id', {id: '@id'},
+            return $resource('rest/reports/scheduled/:id', {id: '@triggerName'},
                 {
                     'list':             { method: 'GET', isArray: true },
-                    'get':              { method: 'GET' },
-                    'delete':           { method: 'DELETE', params: {id: -1} /* to prevent accidentally deleting all */ },
+                    'get':              { method: 'GET', isArray: false },
+                    'delete':           { method: 'DELETE', params: {triggerName: -1} /* to prevent accidentally deleting all */ },
                     'deleteAll':        { method: 'DELETE'},
+                    'update':           { method: 'PUT'}
                 }
             );
         })
@@ -138,6 +145,77 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 }
             };  
         })
+        .directive('onmsReportDetails', ['GrafanaResource', function (GrafanaResource) {
+            return {
+                restrict: 'E',
+                templateUrl: reportDetailsTemplate,
+                scope: {
+                    report: '=?ngModel',
+                    options: '=?options'
+                },
+                link: function (scope, element, attrs) {
+                    scope.endpoints = [];
+                    scope.dashboards = [];
+                    scope.selected = {
+                        endpoint: undefined,
+                        dashboard: undefined
+                    };
+
+                    scope.endpointChanged = function () {
+                        scope.dashboards = [];
+                        scope.selected.dashboard = undefined;
+                        GrafanaResource.dashboards({uid: scope.selected.endpoint.uid}, function (dashboards) {
+                            scope.dashboards = dashboards;
+                            if (scope.dashboards.length > 0) {
+                                scope.selected.dashboard = scope.dashboards[0];
+                            }
+                        }, function (errorResponse) {
+                            console.log('ERROR', errorResponse); // TODO MVR add global error handling
+                            // scope.handleGlobalError(errorResponse);
+                        });
+                    };
+
+                    scope.loadEndpoints = function () {
+                        GrafanaResource.list(function (endpoints) {
+                            scope.endpoints = endpoints;
+                            scope.endpoints.forEach(function (item) {
+                                item.label = item.uid;
+                                if (item.description) {
+                                    item.label += " - " + item.description;
+                                }
+                            });
+                            if (scope.endpoints.length > 0) {
+                                scope.selected.endpoint = scope.endpoints[0];
+                                scope.endpointChanged();
+                            }
+                        }, function (errorResponse) {
+                            console.log('ERROR', errorResponse); // TODO MVR add global error handling
+                            // scope.handleGlobalError(errorResponse);
+                        });
+                    };
+
+                    scope.isGrafanaReady = function () {
+                        return scope.selected && scope.selected.endpoint && scope.selected.dashboard || false;
+                    };
+
+                    // Ensure the format matches
+                    scope.$watch('report.format', function (newVal) {
+                        if (scope.report.deliveryOptions) {
+                            scope.report.deliveryOptions.format = newVal;
+                        }
+                    });
+
+                    scope.$watchCollection('report.parameters', function(newVal, oldVal) {
+                        if (oldVal.length === 0 && newVal.length !== 0) {
+                            if (scope.report.isGrafanaReport()) {
+                                scope.loadEndpoints();
+                            }
+                        }
+                        scope.report.updateParameters(scope.selected);
+                    });
+                }
+            }
+        }])
         // TODO MVR verify global error handling is the way to go here for all error responses. Maybe we need a little bit more differentiated
         .controller('ReportsController', ['$scope', '$http', 'UserService', function($scope, $http, UserService) {
             $scope.fetchUserInfo = function() {
@@ -174,168 +252,46 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
 
         }])
         .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', '$uibModal', 'ReportTemplateResource', 'GrafanaResource', function($scope, $http, $window, $state, $stateParams, $uibModal, ReportTemplateResource, GrafanaResource) {
-            $scope.report = {
-                id : $stateParams.id,
-                format: 'PDF',
-                online: $stateParams.online === 'true',
+            $scope.meta = {
+                reportId: $stateParams.id,
+                online: $stateParams.online === 'true'
             };
 
-            $scope.options = {
-                deliverReport: !$scope.report.online,
-                scheduleReport: false,
-                scheduleOptions: {
-                    cronExpression: '0 0/10 * * * ?', // TODO MVR default value for this should be what ???
-                },
-
-                isExecuteReport: function() {
-                    return !this.deliverReport && !this.scheduleReport;
-                },
-
-                isDeliverReport: function() {
-                    return this.deliverReport && !this.scheduleReport;
-                },
-
-                isScheduleReport: function() {
-                    return this.deliverReport && this.scheduleReport;
-                },
-
-                getType: function() {
-                    if (this.isScheduleReport()) {
-                        return 'schedule';
-                    }
-                    if (this.isDeliverReport()) {
-                        return 'deliver';
-                    }
-                    return 'online';
-                }
-            };
-            $scope.parametersByName = {};
+            $scope.report = new ReportDetails({id: $scope.meta.reportId});
+            $scope.options = {};
+            $scope.loading = false;
 
             $scope.loadDetails = function() {
                 $scope.loading = true;
-                $scope.surveillanceCategories = [];
-                $scope.categories = [];
-                $scope.formats = [];
-                $scope.report.format = "PDF";
-                $scope.parameters = [];
-                $scope.parametersByName = {};
-                $scope.endpoints = [];
-                $scope.dashboards = [];
-                $scope.deliveryOptions = undefined;
                 $scope.selected = {
                     endpoint: undefined,
                     dashboard: undefined
                 };
 
-                var requestParameters = {
+                $scope.options = {
+                    showReportFormatOptions: $scope.meta.online,
+                    showDeliveryOptions: $scope.userInfo.isReportDesigner() || $scope.userInfo.isAdmin(),
+                    showDeliveryOptionsToggle: true && $scope.meta.online,
+                    showScheduleOptions: $scope.userInfo.isReportDesigner() || $scope.userInfo.isAdmin(),
+                    showScheduleOptionsToggle: true,
+                    deliverReport: !$scope.meta.online,
+                    scheduleReport: false,
+                    canEditTriggerName: true
+                };
+
+                console.log($scope.options);
+
+                const requestParameters = {
                     id: $scope.report.id,
                     userId: $scope.userInfo.id
                 };
 
                 ReportTemplateResource.get(requestParameters, function(response) {
                     $scope.loading = false;
-                    $scope.surveillanceCategories = response.surveillanceCategories;
-                    $scope.categories = response.categories;
-                    $scope.formats = response.formats.map(function(item) {
-                        return item.name
-                    });
-                    $scope.parameters = response.parameters;
-                    $scope.deliveryOptions = response.deliveryOptions || {};
-                    $scope.deliveryOptions.format = $scope.report.format;
-
-                    // In order to have the ui look the same as before, just order the parameters
-                    var order = ['string', 'integer', 'float', 'double', 'date'];
-                    $scope.parameters.sort(function(left, right) {
-                        return order.indexOf(left.type) - order.indexOf(right.type);
-                    });
-
-                    // Pre processing of parameters
-                    $scope.parameters.forEach(function(parameter) {
-                        // Apply default values for categories
-                        if (parameter.inputType === 'reportCategorySelector') {
-                            parameter.value = $scope.surveillanceCategories[0];
-                        }
-                        if (parameter.inputType === 'onmsCategorySelector') {
-                            parameter.value = $scope.categories[0];
-                        }
-
-                        // Hide certain items
-                        parameter.hidden = parameter.name === 'GRAFANA_ENDPOINT_UID' || parameter.name === 'GRAFANA_DASHBOARD_UID';
-
-                        // index parameters
-                        $scope.parametersByName[parameter.name] = parameter;
-                    });
-
-                    $scope.parameters.filter(function(parameter) {
-                        return parameter.type === 'date'
-                    }).forEach(function(parameter) {
-                        parameter.internalFormat = 'YYYY-MM-DD HH:mm'; // TODO MVR use user time zone
-                        parameter.internalLocale = 'en'; // TODO MVR use user locale
-                        parameter.internalValue = moment(parameter.date, parameter.internalFormat).hours(parameter.hours).minutes(parameter.minutes).toDate();
-                    });
-
-                    if ($scope.isGrafanaReport()) {
-                        $scope.loadEndpoints();
-                    }
+                    $scope.report = new ReportDetails(response);
                 }, function(response) {
                     $scope.loading = false;
                     $scope.handleGlobalError(response);
-                });
-            };
-
-            $scope.endpointChanged = function() {
-                $scope.dashboards = [];
-                $scope.selected.dashboard = undefined;
-                GrafanaResource.dashboards({uid: $scope.selected.endpoint.uid}, function(dashboards) {
-                   $scope.dashboards = dashboards;
-                   if ($scope.dashboards.length > 0) {
-                       $scope.selected.dashboard = $scope.dashboards[0];
-                   }
-                }, function(errorResponse) {
-                    $scope.handleGlobalError(errorResponse);
-                });
-            };
-
-            $scope.loadEndpoints = function() {
-                GrafanaResource.list(function(endpoints) {
-                    $scope.endpoints = endpoints;
-                    $scope.endpoints.forEach(function(item) {
-                        item.label = item.uid;
-                        if (item.description) {
-                            item.label += " - " + item.description;
-                        }
-                    });
-                    if ($scope.endpoints.length > 0) {
-                        $scope.selected.endpoint = $scope.endpoints[0];
-                        $scope.endpointChanged();
-                    }
-                }, function(errorResponse) {
-                    $scope.handleGlobalError(errorResponse);
-                });
-            };
-
-            $scope.isGrafanaReport = function() {
-                return $scope.parametersByName['GRAFANA_ENDPOINT_UID'] && $scope.parametersByName['GRAFANA_DASHBOARD_UID'] || false;
-            };
-
-            $scope.isGrafanaReady = function() {
-                return $scope.selected && $scope.selected.endpoint && $scope.selected.dashboard || false;
-            };
-
-            $scope.fillParameters = function() {
-                if ($scope.isGrafanaReport()) {
-                    $scope.parametersByName['GRAFANA_ENDPOINT_UID'].value = $scope.selected.endpoint.uid;
-                    $scope.parametersByName['GRAFANA_DASHBOARD_UID'].value = $scope.selected.dashboard.uid;
-                }
-
-                // Set the date value
-                $scope.parameters.filter(function(parameter) {
-                    return parameter.type === 'date';
-                }).forEach(function(p) {
-                    var momentDate = moment(p.internalValue, p.internalFormat);
-                    p.date = moment(p.internalValue, p.internalFormat).format('YYYY-MM-DD');
-                    p.hours = momentDate.hours();
-                    p.minutes = momentDate.minutes();
                 });
             };
 
@@ -344,7 +300,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 $http({
                     method: 'POST',
                     url: 'rest/reports/' + $stateParams.id,
-                    data:  {id:$scope.report.id, parameters: $scope.parameters, format: $scope.report.format},
+                    data:  { id:$scope.report.id, parameters: $scope.report.parameters, format: $scope.report.format},
                     responseType:  'arraybuffer'
                 }).then(function (response) {
                         console.log("SUCCESS", response);
@@ -376,8 +332,8 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     backdrop: 'static',
                     keyboard: false,
                     size: 'md',
-                    controller: function($scope, type) {
-                        $scope.type = type;
+                    controller: function($scope, options) {
+                        $scope.options = options;
                         $scope.goToSchedules = function() {
                             $scope.$close();
                             $state.go('report.schedules');
@@ -388,8 +344,8 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                         }
                     },
                     resolve: {
-                        type: function() {
-                            return scope.options.getType();
+                        options: function() {
+                            return scope.options;
                         }
                     },
                 });
@@ -401,15 +357,15 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     backdrop: 'static',
                     keyboard: false,
                     size: 'md',
-                    controller: function($scope, errorResponse, type) {
-                        $scope.type = type;
+                    controller: function($scope, errorResponse, options) {
+                        $scope.options = options;
                         if (errorResponse && errorResponse.data && errorResponse.data.message) {
                             $scope.errorMessage = errorResponse.data.message;
                         }
                     },
                     resolve: {
-                        type: function() {
-                            return scope.options.getType();
+                        options: function() {
+                            return scope.options;
                         },
                         errorResponse: function() {
                             return errorResponse;
@@ -425,9 +381,9 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     url: 'rest/reports/persisted',
                     data: {
                         id: $scope.report.id,
-                        parameters: $scope.parameters,
+                        parameters: $scope.report.parameters,
                         format: $scope.report.format,
-                        deliveryOptions: $scope.deliveryOptions
+                        deliveryOptions: $scope.report.deliveryOptions
                     }
                 }).then(function(response) {
                     $scope.showSuccessModal($scope);
@@ -442,10 +398,10 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     url: 'rest/reports/scheduled',
                     data: {
                         id: $scope.report.id,
-                        parameters: $scope.parameters,
+                        parameters: $scope.report.parameters,
                         format: $scope.report.format,
-                        deliveryOptions: $scope.deliveryOptions,
-                        cronExpression: $scope.options.scheduleOptions.getCronExpression(),
+                        deliveryOptions: $scope.report.deliveryOptions,
+                        cronExpression: $scope.report.scheduleOptions.getCronExpression(),
                     }
                 }).then(function(response) {
                     $scope.showSuccessModal($scope);
@@ -455,17 +411,14 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             };
 
             $scope.execute = function() {
-                // Before sending the report we must replace the values of some parameters
-                // e.g. the Endpoint UID or Dashboard UID
-                $scope.fillParameters();
-
-                if ($scope.report.online && $scope.options.isExecuteReport()) {
+                console.log($scope.report);
+                if ($scope.meta.online && !$scope.options.deliverReport && !$scope.options.scheduleReport) {
                     $scope.runReport();
                 }
-                if ($scope.options.isDeliverReport()) {
+                if ($scope.options.deliverReport && !$scope.options.scheduleReport) {
                     $scope.deliverReport();
                 }
-                if ($scope.options.isScheduleReport()) {
+                if ($scope.options.deliverReport && $scope.options.scheduleReport) {
                     $scope.scheduleReport();
                 }
             };
@@ -477,16 +430,8 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     $scope.loadDetails();
                 }
             });
-
-            // Ensure the format matches
-            $scope.$watch('report.format', function(newVal) {
-                console.log(newVal);
-                if ($scope.deliveryOptions) {
-                    $scope.deliveryOptions.format = newVal;
-                }
-            });
         }])
-        .controller('ReportSchedulesController', ['$scope', '$http', '$window', '$stateParams', 'ReportScheduleResource', function($scope, $http, $window, $stateParams, ReportScheduleResource) {
+        .controller('ReportSchedulesController', ['$scope', '$uibModal', 'ReportScheduleResource', function($scope, $uibModal, ReportScheduleResource) {
             $scope.scheduledReports = [];
             $scope.refresh = function() {
                 ReportScheduleResource.list(function(data) {
@@ -512,7 +457,93 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 })
             };
 
+            $scope.edit = function(triggerName, reportId) {
+                const modalInstance = $uibModal.open({
+                    templateUrl: editScheduleModalTemplate,
+                    backdrop: 'static',
+                    keyboard: false,
+                    size: 'lg',
+                    controller: 'ScheduleEditController',
+                    resolve: {
+                        userInfo: function() {
+                            return $scope.userInfo;
+                        },
+                        meta: function() {
+                            return {
+                                reportId: reportId,
+                                online: false,
+                                triggerName: triggerName
+                            }
+                        }
+                    }
+
+                });
+
+                modalInstance.result.then(function() {
+                    $scope.refresh();
+                });
+            };
+
             $scope.refresh();
+        }])
+        .controller('ScheduleEditController', ['$scope', 'userInfo', 'meta', 'ReportScheduleResource', function($scope, userInfo, meta, ReportScheduleResource) {
+            $scope.meta = meta;
+            $scope.userInfo = userInfo;
+            $scope.report = new ReportDetails({id: $scope.meta.reportId});
+            $scope.options = {};
+            $scope.loading = false;
+
+            $scope.loadDetails = function() {
+                $scope.loading = true;
+                $scope.selected = {
+                    endpoint: undefined,
+                    dashboard: undefined
+                };
+
+                $scope.options = {
+                    showReportFormatOptions: false,    // Options are not shown, as we are editing a schedule
+                    showDeliveryOptions: true,         // always show when editing
+                    showDeliveryOptionsToggle: false,  // Toggling is disabled
+                    showScheduleOptions: true,         // always show when editing
+                    showScheduleOptionsToggle: false, // Toggling is disabled
+                    deliverReport: true,        // when editing schedule and delivery is enabled
+                    scheduleReport: true,       // when editing schedule and delivery is enabled
+                    canEditTriggerName: false,  // When in edit mode, the trigger name should be unique
+                };
+
+                console.log($scope.meta);
+                ReportScheduleResource.get({id: $scope.meta.triggerName}, function(response) {
+                    $scope.loading = false;
+                    $scope.report = new ReportDetails(response);
+                }, function(response) {
+                    $scope.loading = false;
+                    $scope.handleGlobalError(response);
+                });
+            };
+
+            $scope.update = function() {
+                const data = {
+                    id: $scope.report.id,
+                    triggerName: $scope.meta.triggerName,
+                    parameters: $scope.report.parameters,
+                    format: $scope.report.format,
+                    deliveryOptions: $scope.report.deliveryOptions,
+                    cronExpression: $scope.report.scheduleOptions.getCronExpression(),
+                };
+                ReportScheduleResource.update(data, function(response) {
+                  // TODO MVR user feedback?
+                 $scope.$close();
+              }, function(response) {
+                    // TODO MVR we should implement proper error handling here, but this requires better errors on backend first
+                    if (response && response.data && response.data.message) {
+                        $scope.error = response.data.message;
+                    } else {
+                        $scope.error = "An unexpected error occurred";
+                    }
+              });
+            };
+
+            $scope.loadDetails();
         }])
         .controller('ReportStorageController', ['$scope', '$http', '$window', '$stateParams', 'ReportStorageResource', function($scope, $http, $window, $stateParams, ReportStorageResource) {
             $scope.persistedReports = [];

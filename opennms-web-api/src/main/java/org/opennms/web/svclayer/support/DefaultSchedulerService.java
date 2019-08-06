@@ -55,6 +55,7 @@ import org.quartz.impl.triggers.SimpleTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>DefaultSchedulerService class.</p>
@@ -112,7 +113,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 description.setTriggerName(triggerKey.getName());
                 description.setReportId((String)trigger.getJobDataMap().get("reportId"));
                 description.setDeliveryOptions((DeliveryOptions) trigger.getJobDataMap().get("deliveryOptions"));
-                description.setReportParameters(((ReportParameters) trigger.getJobDataMap().get("criteria")).getReportParms());
+                description.setReportParameters(((ReportParameters) trigger.getJobDataMap().get("criteria")));
                 if (trigger instanceof CronTriggerImpl) {
                     description.setCronExpression(((CronTriggerImpl)trigger).getCronExpression());
                 }
@@ -173,6 +174,30 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         for (String triggerName : triggerNames) {
             removeTrigger(triggerName);
         }
+    }
+
+    @Override
+    @Transactional
+    public String updateCronTrigger(String cronTrigger, ReportParameters criteria, DeliveryOptions deliveryOptions, String cronExpression, SchedulerRequestContext context) {
+        final TriggerKey triggerKey = new TriggerKey(cronTrigger, m_triggerGroup);
+        try {
+            final Trigger trigger = m_scheduler.getTrigger(triggerKey);
+            trigger.getJobDataMap().put("criteria", criteria);
+            trigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
+            trigger.getJobDataMap().put("cronExpression", cronExpression);
+            ((CronTriggerImpl) trigger).setCronExpression(cronExpression);
+            m_scheduler.rescheduleJob(triggerKey, trigger);
+        } catch(SchedulerException e) {
+            LOG.error(SCHEDULER_ERROR, e);
+            context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, SCHEDULER_ERROR));
+            return ERROR;
+        } catch (ParseException e) {
+            LOG.error(TRIGGER_PARSE_ERROR, e);
+            context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, TRIGGER_PARSE_ERROR));
+            context.addMessage(new SchedulerMessage(SchedulerMessageSeverity.ERROR, e.getMessage()));
+            return ERROR;
+        }
+        return SUCCESS;
     }
 
     /** {@inheritDoc} */
