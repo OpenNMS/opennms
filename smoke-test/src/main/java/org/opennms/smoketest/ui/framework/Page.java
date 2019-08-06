@@ -28,25 +28,17 @@
 
 package org.opennms.smoketest.ui.framework;
 
-import java.util.concurrent.TimeUnit;
-
-import org.openqa.selenium.By;
+import org.opennms.smoketest.selenium.ExpectedConditions;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
-public abstract class UiElement extends Element {
-    protected final String elementId;
-
-    public UiElement(final WebDriver driver, final String elementId, int implicitWait, TimeUnit implictWaitUnit) {
-        super(driver, implicitWait, implictWaitUnit);
-        this.elementId = elementId;
+public class Page extends Element {
+    public Page(WebDriver driver) {
+        super(driver);
     }
 
-    public UiElement(final WebDriver driver, final String elementId) {
-        this(driver, elementId, 2, TimeUnit.SECONDS);
+    public ExpectedCondition<Boolean> pageContainsText(String text) {
+        return ExpectedConditions.pageContainsText(text);
     }
 
-    protected WebElement getElement() {
-        return execute(() -> driver.findElement(By.id(elementId)));
-    }
 }
