@@ -174,5 +174,6 @@
     <module>ifttt</module>
 
     <module>jest</module>
+    <module>dnsresolver</module>
   </modules>
 </project>

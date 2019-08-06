@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.util.Strings;
 import org.hamcrest.Matchers;
@@ -49,9 +50,12 @@ import org.junit.Test;
 import org.opennms.smoketest.ui.framework.Button;
 import org.opennms.smoketest.ui.framework.CheckBox;
 import org.opennms.smoketest.ui.framework.DeleteAllButton;
+import org.opennms.smoketest.ui.framework.Element;
+import org.opennms.smoketest.ui.framework.Page;
 import org.opennms.smoketest.ui.framework.Select;
 import org.opennms.smoketest.ui.framework.TextInput;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -63,22 +67,21 @@ public class DatabaseReportPageIT extends UiPageTest {
 
     @Before
     public void before() {
-        driver.manage().timeouts().implicitlyWait(10, SECONDS);
-        page = new DatabaseReportPage(getBaseUrlInternal());
+        page = new DatabaseReportPage(getDriver(), getBaseUrlInternal());
         page.open();
         cleanUp();
     }
 
     @After
     public void cleanUp() {
-        new ScheduledReportsTab().open().deleteAll();
-        new PersistedReportsTab().open().deleteAll();
+        new ScheduledReportsTab(getDriver()).open().deleteAll();
+        new PersistedReportsTab(getDriver()).open().deleteAll();
     }
 
     @Test
     public void verifyAdhocReport() {
         // Run Report
-        new ReportTemplateTab().open()
+        new ReportTemplateTab(getDriver()).open()
                 .select(EarlyMorningReport.name)
                 .format(Formats.PDF)
                 .createReport();
@@ -91,7 +94,7 @@ public class DatabaseReportPageIT extends UiPageTest {
     @Test
     public void verifyDeliverReport() {
         // Trigger Delivery
-        new ReportTemplateTab().open()
+        new ReportTemplateTab(getDriver()).open()
                 .select(EarlyMorningReport.name)
                 .deliverReport(DeliveryOptions.DEFAULTS);
 
@@ -99,7 +102,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                 .until( () -> {
                         new Button(driver, "action.refresh").click();
-                        final Optional<PersistedReportElement> any = new PersistedReportsTab()
+                        final Optional<PersistedReportElement> any = new PersistedReportsTab(getDriver())
                             .open()
                             .getPersistedReports().stream()
                             .filter((input) -> input.title.equals(EarlyMorningReport.id + " admin"))
@@ -113,12 +116,12 @@ public class DatabaseReportPageIT extends UiPageTest {
     public void verifyScheduleReport() {
         // Define Schedule
         final String cronExpression = "0 0 0/5 * * ?";
-        new ReportTemplateTab().open()
+        new ReportTemplateTab(getDriver()).open()
                 .select(EarlyMorningReport.name)
                 .scheduleReport(DeliveryOptions.DEFAULTS, cronExpression);
 
         // Verify Schedule
-        final Optional<ReportScheduleElement> any = new ScheduledReportsTab()
+        final Optional<ReportScheduleElement> any = new ScheduledReportsTab(getDriver())
                 .open()
                 .getScheduledReports().stream()
                 .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(cronExpression))
@@ -131,12 +134,12 @@ public class DatabaseReportPageIT extends UiPageTest {
     public void verifyEditSchedule() {
         // Define Schedule
         final String cronExpression = "0 0 0/5 * * ?";
-        new ReportTemplateTab().open()
+        new ReportTemplateTab(getDriver()).open()
                 .select(EarlyMorningReport.name)
                 .scheduleReport(DeliveryOptions.DEFAULTS, cronExpression);
 
         // Verify Schedule
-        final Optional<ReportScheduleElement> any = new ScheduledReportsTab()
+        final Optional<ReportScheduleElement> any = new ScheduledReportsTab(getDriver())
                 .open()
                 .getScheduledReports().stream()
                 .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(cronExpression))
@@ -145,14 +148,14 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         // Edit Schedule
         final String updatedCronExpression = "1 2 0/10 ? * MON,TUE";
-        new ScheduledReportsTab()
+        new ScheduledReportsTab(getDriver())
                 .open()
                 .updateSchedule(EarlyMorningReport.id + " admin",
                       DeliveryOptions.DEFAULTS,
                       updatedCronExpression);
 
         // Verify it actually was persisted and the UI reloaded
-        final Optional<ReportScheduleElement> findMe = new ScheduledReportsTab()
+        final Optional<ReportScheduleElement> findMe = new ScheduledReportsTab(getDriver())
                 .open()
                 .getScheduledReports().stream()
                 .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(updatedCronExpression))
@@ -161,11 +164,11 @@ public class DatabaseReportPageIT extends UiPageTest {
     }
 
 
-    private void closeDialogue() {
-        execute(() -> findElementByXpath("//div[@class='modal-body']//button[text()='Show me']")).click();
+    private static void closeDialogue(Element element) {
+        element.findElementByXpath("//div[@class='modal-body']//button[text()='Show me']").click();
     }
 
-    private interface EarlyMorningReport {
+    public interface EarlyMorningReport {
         String name = "Early morning report";
         String id = "local_Early-Morning-Report";
 
@@ -174,15 +177,16 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
     }
 
-    private interface Formats {
+    public interface Formats {
         String PDF = "PDF";
         String CSV = "CSV";
     }
 
-    private class DatabaseReportPage {
+    public static class DatabaseReportPage extends Page {
         private final String url;
 
-        public DatabaseReportPage(String baseUrl) {
+        public DatabaseReportPage(WebDriver driver, String baseUrl) {
+            super(driver);
             this.url = Objects.requireNonNull(baseUrl) + "opennms/report/database/index.jsp";
         }
 
@@ -193,7 +197,11 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
     }
 
-    private class ReportTemplateTab {
+    public static class ReportTemplateTab extends Element {
+
+        public ReportTemplateTab(WebDriver driver) {
+            super(driver);
+        }
 
         public ReportTemplateTab select(String reportName) {
             final WebElement element = findElementByXpath(String.format("//a/h5[text() = '%s']", reportName));
@@ -232,25 +240,25 @@ public class DatabaseReportPageIT extends UiPageTest {
         public ReportTemplateTab deliverReport(final DeliveryOptions options) {
             ensureReportIsSelected();
 
-            new ReportDetailsForm().applyDeliveryOptions(options);
+            new ReportDetailsForm(getDriver()).applyDeliveryOptions(options);
 
             // Finally deliver the report
             final WebElement executeButton = execute(() -> findElementById("execute"));
             assertThat(executeButton.getText(), Matchers.is("Deliver Report"));
             executeButton.click();
-            closeDialogue();
+            closeDialogue(this);
             return this;
         }
 
         public ReportTemplateTab scheduleReport(DeliveryOptions options, String cronExpression) {
             ensureReportIsSelected();
-            new ReportDetailsForm()
+            new ReportDetailsForm(getDriver())
                     .applyDeliveryOptions(options)
                     .applyCronExpression(cronExpression);
             final WebElement executeButton = execute(() -> findElementById("execute"));
             assertThat(executeButton.getText(), Matchers.is("Schedule Report"));
             executeButton.click();
-            closeDialogue();
+            closeDialogue(this);
             return this;
         }
 
@@ -269,9 +277,13 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
     }
 
-    private class ReportDetailsForm {
+    private static class ReportDetailsForm extends Element {
 
         private boolean editMode;
+
+        public ReportDetailsForm(WebDriver driver) {
+            super(driver);
+        }
 
         public ReportDetailsForm editMode(boolean value) {
             this.editMode = value;
@@ -315,7 +327,11 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
     }
 
-    private class PersistedReportsTab {
+    public static class PersistedReportsTab extends Element {
+
+        public PersistedReportsTab(WebDriver driver) {
+            super(driver);
+        }
 
         public PersistedReportsTab open() {
             getElement().click();
@@ -333,7 +349,7 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         public List<PersistedReportElement> getPersistedReports() {
             final List<PersistedReportElement> results = Lists.newArrayList();
-            final List<WebElement> rows = execute(() -> driver.findElementsByXPath("//table/tbody/tr"));
+            final List<WebElement> rows = execute(() -> driver.findElements(By.xpath("//table/tbody/tr")));
             for (WebElement eachRow : rows) {
                 final List<WebElement> columns = eachRow.findElements(By.xpath("./td"));
                 final PersistedReportElement element = new PersistedReportElement();
@@ -353,7 +369,11 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
     }
 
-    private class ScheduledReportsTab {
+    public static class ScheduledReportsTab extends Element {
+
+        public ScheduledReportsTab(WebDriver driver) {
+            super(driver);
+        }
 
         public ScheduledReportsTab open() {
             getElement().click();
@@ -362,7 +382,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public WebElement getElement() {
-            return execute(() -> findElementByXpath("//a[@data-name='report-schedules']"));
+            return execute(() -> driver.findElement(By.xpath("//a[@data-name='report-schedules']")));
         }
 
         public boolean isActive() {
@@ -371,10 +391,10 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         public List<ReportScheduleElement> getScheduledReports() {
             final List<ReportScheduleElement> results = Lists.newArrayList();
-            final List<WebElement> rows = execute(() -> driver.findElementsByXPath("//table/tbody/tr"));
+            final List<WebElement> rows = execute(() -> driver.findElements(By.xpath("//table/tbody/tr")));
             for (WebElement eachRow : rows) {
                 final List<WebElement> columns = eachRow.findElements(By.xpath("./td"));
-                final ReportScheduleElement element = new ReportScheduleElement();
+                final ReportScheduleElement element = new ReportScheduleElement(getDriver());
                 element.setTemplateName(columns.get(1).getText());
                 element.setFormat(columns.get(2).getText());
                 element.setCronExpression(columns.get(5).getText());
@@ -403,7 +423,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
     }
 
-    private static class DeliveryOptions {
+    public static class DeliveryOptions {
 
         private static final DeliveryOptions DEFAULTS = new DeliveryOptions()
                 .format(Formats.PDF)
@@ -430,7 +450,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
     }
 
-    private static class PersistedReportElement {
+    public static class PersistedReportElement {
 
         private String reportId;
         private String title;
@@ -449,12 +469,16 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
     }
 
-    private class ReportScheduleElement {
+    public static class ReportScheduleElement extends Element {
 
         private String triggerName;
         private String templateName;
         private String format;
         private String cronExpression;
+
+        public ReportScheduleElement(WebDriver driver) {
+            super(driver);
+        }
 
         public void setTemplateName(String templateName) {
             this.templateName = Objects.requireNonNull(templateName);
@@ -475,13 +499,13 @@ public class DatabaseReportPageIT extends UiPageTest {
         public void edit(DeliveryOptions deliveryOptions, String cronExpression) {
             final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 5, 1000);
             execute(() -> findElementById("action.edit." + triggerName)).click();
-            webDriverWait.until(pageContainsText("Edit Schedule"));
-            new ReportDetailsForm()
+            webDriverWait.until(org.opennms.smoketest.selenium.ExpectedConditions.pageContainsText("Edit Schedule"));
+            new ReportDetailsForm(getDriver())
                     .editMode(true)
                     .applyDeliveryOptions(deliveryOptions)
                     .applyCronExpression(cronExpression);
             execute(() -> findElementById("action.update." + triggerName)).click();
-            execute(() -> webDriverWait.until(ExpectedConditions.not(pageContainsText("Edit Schedule"))));
+            execute(() -> webDriverWait.until(ExpectedConditions.not(org.opennms.smoketest.selenium.ExpectedConditions.pageContainsText("Edit Schedule"))));
         }
     }
 

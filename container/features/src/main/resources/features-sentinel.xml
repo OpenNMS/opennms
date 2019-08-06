@@ -86,8 +86,8 @@
     <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
         <feature>sentinel-persistence</feature>
 
+        <feature version="${netty4Version}">netty4</feature>
         <feature>dropwizard-metrics</feature>
-        <feature>camel-netty4</feature>
         <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
         <feature>camel-spring</feature>
 
@@ -114,6 +114,7 @@
         <feature>sentinel-telemetry</feature>
         <feature>opennms-jest</feature>
         <feature>opennms-telemetry-collection</feature>
+        <feature>opennms-dnsresolver-netty</feature>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>

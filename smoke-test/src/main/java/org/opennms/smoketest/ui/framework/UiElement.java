@@ -28,40 +28,22 @@
 
 package org.opennms.smoketest.ui.framework;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
-import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public abstract class UiElement {
-    protected final WebDriver driver;
+public abstract class UiElement extends Element {
     protected final String elementId;
 
-    private final int implicitWait;
-    private final TimeUnit implicitWaitUnit;
-
     public UiElement(final WebDriver driver, final String elementId, int implicitWait, TimeUnit implictWaitUnit) {
-        this.elementId = Objects.requireNonNull(elementId);
-        this.driver = driver;
-        this.implicitWait = implicitWait;
-        this.implicitWaitUnit = Objects.requireNonNull(implictWaitUnit);
+        super(driver, implicitWait, implictWaitUnit);
+        this.elementId = elementId;
     }
 
     public UiElement(final WebDriver driver, final String elementId) {
         this(driver, elementId, 2, TimeUnit.SECONDS);
-    }
-
-    protected <X> X execute(Supplier<X> supplier) {
-        try {
-            driver.manage().timeouts().implicitlyWait(implicitWait, implicitWaitUnit.SECONDS);
-            return supplier.get();
-        } finally {
-            driver.manage().timeouts().implicitlyWait(AbstractOpenNMSSeleniumHelper.LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
-        }
     }
 
     protected WebElement getElement() {

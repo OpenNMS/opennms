@@ -33,7 +33,9 @@ import java.util.Optional;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
@@ -93,17 +95,17 @@ public class ExtendedGateway implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("nexthop");
-        this.nexthop.writeBson(bsonWriter);
+        this.nexthop.writeBson(bsonWriter, enr);
         bsonWriter.writeInt64("as", this.as);
         bsonWriter.writeInt64("src_as", this.src_as);
         bsonWriter.writeInt64("src_peer_as", this.src_peer_as);
 
         bsonWriter.writeStartArray("dst_as_path");
         for (final AsPathType asPathType : this.dst_as_path) {
-            asPathType.writeBson(bsonWriter);
+            asPathType.writeBson(bsonWriter, enr);
         }
         bsonWriter.writeEndArray();
 
@@ -115,5 +117,11 @@ public class ExtendedGateway implements FlowData {
 
         bsonWriter.writeInt64("localpref", this.localpref);
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(final SampleDatagramVisitor visitor) {
+        visitor.accept(this);
+        nexthop.visit(visitor);
     }
 }

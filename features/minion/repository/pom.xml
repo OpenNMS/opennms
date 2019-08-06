@@ -61,8 +61,10 @@
                                 <feature>minion-icmp-proxy</feature>
                                 <feature>minion-telemetryd-receivers</feature>
                                 <feature>hawtio-offline</feature>
-				                <feature>cxf-commands/${cxfVersion}</feature>
+                                <feature>cxf-commands/${cxfVersion}</feature>
                                 <feature>opennms-core-tracing-jaeger</feature>
+                                <feature>opennms-dnsresolver-shell</feature>
+                                <feature>opennms-dnsresolver-netty</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -337,6 +339,16 @@
         <dependency>
             <groupId>org.opennms.protocols</groupId>
             <artifactId>org.opennms.protocols.xml</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.dnsresolver</groupId>
+            <artifactId>org.opennms.features.dnsresolver.netty</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.dnsresolver</groupId>
+            <artifactId>org.opennms.features.dnsresolver.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -108,9 +108,9 @@ public class ReportRestServiceImpl implements ReportRestService {
         final JSONArray jsonArray = new JSONArray();
         for (DatabaseReportDescription description : reportDescriptions) {
             final JSONObject json = new JSONObject();
-            json.put("id", description.getId());
-            json.put("name", description.getDisplayName());
-            json.put("description", description.getDescription());
+            json.put("id", description.getId().trim());
+            json.put("name", description.getDisplayName().trim());
+            json.put("description", Strings.isNullOrEmpty(description.getDescription()) ? "" : description.getDescription().trim());
             json.put("allowAccess", description.getAllowAccess());
             json.put("online", description.getIsOnline());
             json.put("repositoryId", description.getRepositoryId());

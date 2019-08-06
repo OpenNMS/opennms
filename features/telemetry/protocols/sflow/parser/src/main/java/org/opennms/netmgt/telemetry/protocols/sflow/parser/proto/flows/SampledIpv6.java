@@ -31,10 +31,10 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
-import org.opennms.netmgt.telemetry.common.utils.DnsUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
 
@@ -98,21 +98,26 @@ public class SampledIpv6 implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt32("length", (int) this.length);
         bsonWriter.writeInt32("protocol", (int) this.protocol);
 
         bsonWriter.writeName("src_ip");
-        this.src_ip.writeBson(bsonWriter);
+        this.src_ip.writeBson(bsonWriter, enr);
 
         bsonWriter.writeName("dst_ip");
-        this.dst_ip.writeBson(bsonWriter);
+        this.dst_ip.writeBson(bsonWriter, enr);
 
         bsonWriter.writeInt32("src_port", (int) this.src_port);
         bsonWriter.writeInt32("dst_port", (int) this.dst_port);
         bsonWriter.writeInt32("tcp_flags", (int) this.tcp_flags);
         bsonWriter.writeInt32("tos", (int) this.tos);
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

@@ -6,15 +6,17 @@ OVERRIDEABLE_ARRAYS=(TEST_FOO TEST_BAR TEST_BAZ TEST_ADDITIONAL_OPTIONS)
 # shellcheck disable=SC1091
 . ../init.sh
 
-# shellcheck disable=SC1090
-. "$PROJECTDIR/src/main/resources/bin/_lib.sh"
-
 TESTDIR="$(get_testdir _lib)"
+
+makeTestPath() {
+  # shellcheck disable=SC2154
+  mkdir -p "$TESTDIR/${_shunit_test_}"
+  echo "$TESTDIR/${_shunit_test_}"
+}
 
 createConfFile() {
   __conf_filename="opennms.conf"
-  # shellcheck disable=SC2154
-  mkdir -p "$TESTDIR/${_shunit_test_}"
+  makeTestPath >/dev/null
   CONFTEMPDIR="$(mktemp -d "$TESTDIR/${_shunit_test_}/conf-XXXX")"
   touch "${CONFTEMPDIR}/${__conf_filename}"
   echo "${CONFTEMPDIR}/${__conf_filename}"
@@ -57,10 +59,14 @@ assertArrayLengthEquals() {
 }
 
 setUp() {
+  # shellcheck disable=SC1090
+  . "$PROJECTDIR/src/main/resources/bin/_lib.sh"
+
   unset TEST_FOO
   unset TEST_BAR
   unset TEST_BAZ
   unset TEST_ADDITIONAL_OPTIONS
+  cd "$TESTDIR" || exit 1
 }
 
 testShellcheck() {
@@ -333,6 +339,121 @@ END
   assertEquals "things" "${TEST_BAR[1]}"
   assertEquals "file2-two things" "${TEST_BAR[2]}"
 }
+
+testGetRealPathOnRelativeRealFile() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  resolved="$(__onms_get_real_path real-file.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnRelativeSimpleLink() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  ln -s -f real-file.txt link.txt
+  resolved="$(__onms_get_real_path link.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnRelativeDoubleLink() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  ln -s -f real-file.txt link.txt
+  ln -s -f link.txt double-redirect.txt
+  resolved="$(__onms_get_real_path double-redirect.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnAbsoluteRealFile() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  resolved="$(__onms_get_real_path "$dir/real-file.txt")"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnAbsoluteSimpleLink() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  ln -s -f "$dir/real-file.txt" link.txt
+  resolved="$(__onms_get_real_path link.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnAbsoluteDoubleLink() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  ln -s -f "$dir/real-file.txt" link.txt
+  ln -s -f link.txt double-redirect.txt
+  resolved="$(__onms_get_real_path double-redirect.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnRelativeRealFileNoRealpathExe() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  unset __onms_bin_realpath
+  resolved="$(__onms_get_real_path real-file.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnRelativeSimpleLinkNoRealpathExe() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  ln -s -f real-file.txt link.txt
+  unset __onms_bin_realpath
+  resolved="$(__onms_get_real_path link.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnRelativeDoubleLinkNoRealpathExe() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  ln -s -f real-file.txt link.txt
+  ln -s -f link.txt double-redirect.txt
+  unset __onms_bin_realpath
+  resolved="$(__onms_get_real_path double-redirect.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnAbsoluteRealFileNoRealpathExe() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  unset __onms_bin_realpath
+  resolved="$(__onms_get_real_path "$dir/real-file.txt")"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnAbsoluteSimpleLinkNoRealpathExe() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  ln -s -f "$dir/real-file.txt" link.txt
+  unset __onms_bin_realpath
+  resolved="$(__onms_get_real_path link.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
+testGetRealPathOnAbsoluteDoubleLinkNoRealpathExe() {
+  dir="$(makeTestPath)"
+  cd "$dir" || exit 1
+  touch real-file.txt
+  ln -s -f "$dir/real-file.txt" link.txt
+  ln -s -f link.txt double-redirect.txt
+  unset __onms_bin_realpath
+  resolved="$(__onms_get_real_path double-redirect.txt)"
+  assertEquals "$dir/real-file.txt" "$resolved"
+}
+
 
 # shellcheck disable=SC1091
 . ../shunit2

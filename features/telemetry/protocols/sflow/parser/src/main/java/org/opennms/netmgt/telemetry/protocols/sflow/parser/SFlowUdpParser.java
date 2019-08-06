@@ -39,9 +39,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.bson.BsonBinaryWriter;
 import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
+import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
-import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.DatagramVersion;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleDatagram;
 import org.slf4j.Logger;
@@ -55,10 +56,14 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
 
+    private final SampleDatagramEnricher enricher;
+
     public SFlowUdpParser(final String name,
-                          final AsyncDispatcher<TelemetryMessage> dispatcher) {
+                          final AsyncDispatcher<TelemetryMessage> dispatcher,
+                          final DnsResolver dnsResolver) {
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
+        enricher = new SampleDatagramEnricher(dnsResolver);
     }
 
     @Override
@@ -74,22 +79,39 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
         LOG.trace("Got packet: {}", packet);
 
-        final BasicOutputBuffer output = new BasicOutputBuffer();
-        try (final BsonBinaryWriter bsonWriter = new BsonBinaryWriter(output)) {
-            bsonWriter.writeStartDocument();
+        final CompletableFuture<TelemetryMessage> future = new CompletableFuture<>();
+        enricher.enrich(packet).whenComplete((enrichment,ex) -> {
+            if (ex != null) {
+                // Enrichment failed
+                future.completeExceptionally(ex);
+                return;
+            }
 
-            bsonWriter.writeName("time");
-            bsonWriter.writeInt64(System.currentTimeMillis());
+            // Serialize
+            final BasicOutputBuffer output = new BasicOutputBuffer();
+            try (final BsonBinaryWriter bsonWriter = new BsonBinaryWriter(output)) {
+                bsonWriter.writeStartDocument();
 
-            bsonWriter.writeName("data");
-            packet.version.datagram.writeBson(bsonWriter);
+                bsonWriter.writeName("time");
+                bsonWriter.writeInt64(System.currentTimeMillis());
 
-            bsonWriter.writeEndDocument();
-        }
+                bsonWriter.writeName("data");
+                packet.version.datagram.writeBson(bsonWriter, enrichment);
 
-        // Build the message to be sent
-        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, output.getByteBuffers().get(0).asNIO());
-        return dispatcher.send(msg);
+                bsonWriter.writeEndDocument();
+            }
+
+            // Build the message to be sent
+            final TelemetryMessage msg = new TelemetryMessage(remoteAddress, output.getByteBuffers().get(0).asNIO());
+            dispatcher.send(msg).whenComplete((any, exx) -> {
+               if (exx != null) {
+                   // Dispatching failed
+                   future.completeExceptionally(exx);
+               }
+               future.complete(any);
+            });
+        });
+        return future;
     }
 
     @Override
@@ -105,4 +127,5 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
     public void stop() {
 
     }
+
 }

@@ -111,6 +111,7 @@ public class NavBarController extends AbstractController implements Initializing
         model.put("baseHref",
                 org.opennms.web.api.Util.calculateUrlBase(request));
         model.put("isProvision", request.isUserInRole(Authentication.ROLE_PROVISION));
+        model.put("isFlow", request.isUserInRole(Authentication.ROLE_FLOW_MANAGER));
         model.put("isAdmin", request.isUserInRole(Authentication.ROLE_ADMIN));
         model.put("formattedTime", this.dateTimeFormat.format(Instant.now(), extractUserTimeZone(request)));
 

@@ -33,7 +33,9 @@ import java.util.Optional;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
@@ -61,11 +63,16 @@ public class ExtendedVlantunnel implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartArray();
         for (final UnsignedInteger unsignedInteger : stack) {
             bsonWriter.writeInt64(unsignedInteger.longValue());
         }
         bsonWriter.writeEndArray();
+    }
+
+    @Override
+    public void visit(final SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }
