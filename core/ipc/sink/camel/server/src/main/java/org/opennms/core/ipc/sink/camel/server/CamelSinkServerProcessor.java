@@ -90,6 +90,7 @@ public class CamelSinkServerProcessor implements Processor {
              Timer.Context context = dispatchTime.time()) {
             // Set tags for this span.
             scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageBytes.length);
+            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             if (exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER) instanceof String) {
                 String topic = exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER, String.class);
                 scope.span().setTag(TracerConstants.TAG_TOPIC, topic);

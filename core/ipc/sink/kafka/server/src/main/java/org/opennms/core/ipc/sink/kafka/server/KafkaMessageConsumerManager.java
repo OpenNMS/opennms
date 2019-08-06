@@ -192,6 +192,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                                 Timer.Context context = dispatchTime.time()) {
                                 scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageInBytes.length);
                                 scope.span().setTag(TracerConstants.TAG_TOPIC, topic);
+                                scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
                                 dispatch(module, module.unmarshal(messageInBytes));
                             }
 

@@ -136,6 +136,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             if (activeSpan != null && (chunk + 1 == totalChunks)) {
                 activeSpan.setTag(TracerConstants.TAG_TOPIC, topic);
                 activeSpan.setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageContent.length);
+                activeSpan.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             }
             // Keep sending record till it delivers successfully.
             int partition = sendMessageChunkToKafka(topic, record);
@@ -197,6 +198,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
             tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, identity.getLocation());
+            tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
                 SinkMessageProtos.TracingInfo tracingInfo = SinkMessageProtos.TracingInfo.newBuilder()
                         .setKey(key).setValue(value).build();

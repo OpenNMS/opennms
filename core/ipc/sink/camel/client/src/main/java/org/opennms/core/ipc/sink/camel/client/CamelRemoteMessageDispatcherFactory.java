@@ -94,6 +94,7 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
             tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, identity.getLocation());
+            tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             if (messageHeaders.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER) instanceof String) {
                 tracer.activeSpan().setTag(TracerConstants.TAG_TOPIC, (String) messageHeaders.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER));
             }

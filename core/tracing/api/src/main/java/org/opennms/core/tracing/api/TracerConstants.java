@@ -38,4 +38,5 @@ public interface TracerConstants {
     public static final String TAG_MESSAGE_SIZE = "messageSize";
     public static final String TAG_SOURCE_ADDRESS = "sourceAddress";
     public static final String TAG_TOPIC = "topic";
+    public static final String TAG_THREAD = "thread";
 }
