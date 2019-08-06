@@ -47,10 +47,10 @@ import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.test.TestingServer;
+import org.apache.kafka.common.utils.SystemTime;
 import org.junit.After;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
-import org.apache.kafka.common.utils.SystemTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
