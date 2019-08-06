@@ -11,6 +11,8 @@ We make an effort to use logical values where possible and provide means to conf
 
 Our modules and services have different rules for determining the TTL.
 
+TIP: To troubleshoot TTLs, consider enabling the link:#opentracing[OpenTracing] integration on both _{opennms-product-name}_ and _Minion_.
+
 ==== TTLs in Pollerd & Collectd
 
 The TTL used when invoking monitors and collectors remotely is:
