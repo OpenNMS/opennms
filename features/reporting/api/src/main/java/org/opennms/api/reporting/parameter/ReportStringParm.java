@@ -29,6 +29,7 @@
 package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <p>ReportStringParm class.</p>
@@ -86,4 +87,8 @@ public class ReportStringParm extends ReportParm implements Serializable {
         m_type = type;
     }
 
+    @Override
+    void accept(ReportParmVisitor visitor) {
+        Objects.requireNonNull(visitor).visit(this);
+    }
 }

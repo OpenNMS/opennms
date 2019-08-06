@@ -47,16 +47,6 @@ import org.opennms.reporting.core.DeliveryOptions;
 public interface ReportWrapperService {
 
     /**
-     * This method validates that the map of report parameters matches the report
-     * parameters accepted by the report. Used by the web interface.
-     *
-     * @param parameters runtime report parameters
-     * @param reportId reportId as defined in database-reports.xml
-     * @return true if the reportParms supplied match those in the report definition.
-     */
-    boolean validate(ReportParameters parameters, String reportId);
-    
-    /**
      * This method runs the report
      *
      * @param parameters runtime report parameters

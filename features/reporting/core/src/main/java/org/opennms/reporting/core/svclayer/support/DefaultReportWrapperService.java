@@ -226,12 +226,6 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean validate(final ReportParameters parameters, final String reportId) {
-        return getReportService(reportId).validate(parameters.getReportParms(), reportId);
-    }
-
     private ReportService getReportService(final String reportId) {
         return m_reportServiceLocator.getReportServiceForId(reportId);
     }

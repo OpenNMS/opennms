@@ -258,27 +258,32 @@ public class ReportParameters implements Serializable {
      *
      * @return a {@link java.util.HashMap} object.
      */
+    // TODO MVR remove me :D
     public Map<String, Object> getReportParms() {
         
         return getReportParms(ReportMode.IMMEDIATE);
         
     }
 
-    protected <T extends ReportParm> Map<String, T> asMap() {
-        final Map<String, ? extends ReportParm> reportMap = Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms)
+    public List<? extends ReportParm> getParameters() {
+        return Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms)
                 .stream()
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
+    protected <T extends ReportParm> Map<String, T> asMap() {
+        final Map<String, ? extends ReportParm> reportMap = getParameters()
+                .stream()
                 .collect(Collectors.toMap(p -> p.getName(), Function.identity()));
         return (Map<String, T>) reportMap;
     }
 
     public <T extends ReportParm> T getParameter(String key) {
         Objects.requireNonNull(key);
-        final Optional<? extends ReportParm> any = Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms)
+        final Optional<? extends ReportParm> any = getParameters()
                 .stream()
-                .filter(Objects::nonNull)
-                .flatMap(List::stream)
                 .filter(param -> key.equals(param.getName()))
                 .findAny();
         if (any.isPresent()) {

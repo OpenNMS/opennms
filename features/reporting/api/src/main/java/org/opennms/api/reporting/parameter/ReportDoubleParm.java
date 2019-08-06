@@ -29,6 +29,7 @@
 package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <p>ReportFloatParm class.</p>
@@ -82,6 +83,11 @@ public class ReportDoubleParm extends ReportParm implements Serializable {
      */
     public void setInputType(String type) {
         m_type = type;
+    }
+
+    @Override
+    void accept(ReportParmVisitor visitor) {
+        Objects.requireNonNull(visitor).visit(this);
     }
 
 }

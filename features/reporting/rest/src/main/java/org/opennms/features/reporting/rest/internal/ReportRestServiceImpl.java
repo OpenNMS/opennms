@@ -31,14 +31,12 @@ package org.opennms.features.reporting.rest.internal;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
@@ -72,7 +70,7 @@ import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.model.DatabaseReportDescription;
 import org.opennms.web.svclayer.model.ReportRepositoryDescription;
 import org.opennms.web.svclayer.model.TriggerDescription;
-import org.opennms.web.svclayer.support.InvalidCronExpressionException;
+import org.opennms.web.svclayer.support.SchedulerContextException;
 import org.opennms.web.svclayer.support.SchedulerException;
 
 import com.google.common.base.Strings;
@@ -149,8 +147,8 @@ public class ReportRestServiceImpl implements ReportRestService {
         final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
         try {
             schedulerService.addCronTrigger(scheduleConfig);
-        } catch (InvalidCronExpressionException ex) {
-            return createErrorResponse(Status.BAD_REQUEST, createErrorObject("cronExpression", ex.getCause().getMessage()));
+        } catch (SchedulerContextException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
         } catch (SchedulerException ex) {
             return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
         }
@@ -164,6 +162,8 @@ public class ReportRestServiceImpl implements ReportRestService {
         final DeliveryConfig deliveryConfig = new DeliveryConfig(reportParameters, deliveryOptions);
         try {
             schedulerService.execute(deliveryConfig);
+        } catch (SchedulerContextException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
         } catch (SchedulerException ex) {
             return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
         }
@@ -291,8 +291,8 @@ public class ReportRestServiceImpl implements ReportRestService {
             final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
             try {
                 schedulerService.updateCronTrigger(triggerName, scheduleConfig);
-            } catch (InvalidCronExpressionException ex) {
-                return createErrorResponse(Status.BAD_REQUEST, createErrorObject("cronExpression", ex.getCause().getMessage()));
+            } catch (SchedulerContextException ex) {
+                return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
             } catch (SchedulerException ex) {
                 return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
             }
@@ -365,13 +365,11 @@ public class ReportRestServiceImpl implements ReportRestService {
         }
     }
 
-    // TODO MVR this is duplicated all over the place
     private JSONObject createErrorObject(Exception exception) {
         return createErrorObject("entity", exception.getMessage());
     }
 
-    // TODO MVR this is duplicated all over the place
-    private JSONObject createErrorObject(String message, String context) {
+    private JSONObject createErrorObject(String context, String message) {
         final JSONObject errorObject = new JSONObject()
                 .put("message", message)
                 .put("context", context);
@@ -399,6 +397,7 @@ public class ReportRestServiceImpl implements ReportRestService {
     private ReportParameters parseParameters(Map<String, Object> inputParameters) {
         final String reportId = (String) inputParameters.get("id");
         final ReportParameters actualParameters = reportWrapperService.getParameters(reportId);
+        actualParameters.setReportId(reportId);
         actualParameters.setFormat(ReportFormat.valueOf((String) inputParameters.get("format")));
 
         // Determine the new values

@@ -28,18 +28,26 @@
 
 package org.opennms.web.svclayer.support;
 
+import static org.opennms.api.reporting.ReportParameterBuilder.Intervals;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.api.reporting.ReportMode;
+import org.opennms.api.reporting.parameter.ReportDateParm;
+import org.opennms.api.reporting.parameter.ReportDoubleParm;
+import org.opennms.api.reporting.parameter.ReportFloatParm;
+import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.api.reporting.parameter.ReportParmVisitor;
+import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.DeliveryConfig;
-import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.reporting.core.svclayer.ScheduleConfig;
 import org.opennms.web.svclayer.SchedulerService;
 import org.opennms.web.svclayer.model.TriggerDescription;
@@ -55,6 +63,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.google.common.base.Strings;
+
 /**
  * <p>DefaultSchedulerService class.</p>
  *
@@ -65,11 +75,12 @@ import org.springframework.beans.factory.InitializingBean;
 public class DefaultSchedulerService implements InitializingBean, SchedulerService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultSchedulerService.class);
+    private static final String PROVIDE_A_VALUE_TEXT = "Please provide a value";
+    private static final String PROVIDED_VALUE_GREATER_ZERO_TEXT = "The provided value must be > 0";
 
     private Scheduler m_scheduler;
     private JobDetail m_jobDetail;
     private String m_triggerGroup;
-    private ReportWrapperService m_reportWrapperService;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -97,7 +108,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             }
         } catch (SchedulerException e) {
             LOG.error("exception retrieving trigger descriptions", e);
-            throw new RuntimeException(e); // TODO MVR
+            throw new org.opennms.web.svclayer.support.SchedulerException("Could not retrieve triggers: " +  e.getMessage(), e);
         }
 
         return triggerDescriptions;
@@ -106,6 +117,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
     @Override
     public Boolean exists(String triggerName) {
+        Objects.requireNonNull(triggerName);
         try {
             final Trigger trigger = m_scheduler.getTrigger(new TriggerKey(triggerName, m_triggerGroup));
             if (trigger != null) {
@@ -113,7 +125,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             }
         } catch (SchedulerException e) {
             LOG.error("exception looking up trigger name: {}", triggerName, e);
-            throw new RuntimeException(e); // TODO MVR
+            throw new org.opennms.web.svclayer.support.SchedulerException("Could not retrieve trigger '" + triggerName + " ': " +  e.getMessage(), e);
         }
         return false;
     }
@@ -124,7 +136,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             m_scheduler.unscheduleJob(new TriggerKey(triggerName, m_triggerGroup));
         } catch (SchedulerException e) {
             LOG.error("exception when attempting to remove trigger {}", triggerName, e);
-            throw new RuntimeException(e); // TODO MVR
+            throw new org.opennms.web.svclayer.support.SchedulerException("Could not remove trigger '" + triggerName + " ': " +  e.getMessage(), e);
         }
 
     }
@@ -154,19 +166,11 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             ((CronTriggerImpl) trigger).setCronExpression(cronExpression);
             m_scheduler.rescheduleJob(triggerKey, trigger);
         } catch(SchedulerException e) {
-            LOG.error("TODO MVR", e);
-            throw new org.opennms.web.svclayer.support.SchedulerException(e);
+            LOG.error("Could not update cron trigger {}:{}", cronTrigger, e.getMessage(), e);
+            throw new org.opennms.web.svclayer.support.SchedulerException("An unexpected error occurred while updating cron trigger " + cronTrigger, e);
         } catch (ParseException e) {
             LOG.error("Provided cron expression '{}' could not be parsed", cronExpression, e);
             throw new org.opennms.web.svclayer.support.InvalidCronExpressionException(e, cronExpression);
-        }
-    }
-
-    private void validate(DeliveryConfig deliveryConfig) {
-        Objects.requireNonNull(deliveryConfig);
-
-        if (!m_reportWrapperService.validate(deliveryConfig.getReportParameters(), deliveryConfig.getReportId())) {
-            throw new org.opennms.web.svclayer.support.SchedulerException("An error occurred when validating the report parameters");
         }
     }
 
@@ -233,7 +237,102 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         m_triggerGroup = triggerGroup;
     }
 
-    public void setReportWrapperService(ReportWrapperService reportWrapperService) {
-        m_reportWrapperService = reportWrapperService;
+    private void validate(DeliveryConfig deliveryConfig) {
+        Objects.requireNonNull(deliveryConfig);
+        validate(deliveryConfig.getReportParameters());
+        validate(deliveryConfig.getDeliveryOptions());
+    }
+
+    private void validate(DeliveryOptions deliveryOptions) {
+        Objects.requireNonNull(deliveryOptions);
+
+        try {
+            final Set<String> intanceIds = m_scheduler.getTriggerKeys(GroupMatcher.groupEquals(m_triggerGroup)).stream()
+                    .map(tk -> tk.getName())
+                    .collect(Collectors.toSet());
+            if (intanceIds.contains(deliveryOptions.getInstanceId())) {
+                throw new SchedulerContextException("instanceId", "The provided value already exists");
+            }
+            if (Strings.isNullOrEmpty(deliveryOptions.getInstanceId())) {
+                throw new SchedulerContextException("instanceId", PROVIDE_A_VALUE_TEXT);
+            }
+
+            if (!deliveryOptions.getSendMail() && !deliveryOptions.getPersist()) {
+                throw new SchedulerContextException("sendMail,persist", "Either sendMail or persist must be set");
+            }
+            if (deliveryOptions.getFormat() == null) {
+                throw new SchedulerContextException("format", "The provided format is not supported.");
+            }
+            if (deliveryOptions.getSendMail() && Strings.isNullOrEmpty(deliveryOptions.getMailTo())) {
+                throw new SchedulerContextException("mailTo", PROVIDE_A_VALUE_TEXT);
+            }
+        } catch (SchedulerException e) {
+            throw new org.opennms.web.svclayer.support.SchedulerException(e);
+        }
+    }
+
+    private void validate(ReportParameters reportParameters) {
+        Objects.requireNonNull(reportParameters);
+        final ReportParmVisitor validator = new ParameterRequiredVisitor();
+        for (ReportStringParm eachParm : reportParameters.getStringParms()) {
+            validator.visit(eachParm);
+        }
+        for (ReportIntParm eachParm : reportParameters.getIntParms()) {
+            validator.visit(eachParm);
+        }
+        for (ReportFloatParm eachParm : reportParameters.getFloatParms()) {
+            validator.visit(eachParm);
+        }
+        for (ReportDoubleParm eachParm : reportParameters.getDoubleParms()) {
+            validator.visit(eachParm);
+        }
+        for (ReportDateParm eachParm : reportParameters.getDateParms()) {
+            validator.visit(eachParm);
+        }
+    }
+
+    /**
+     * This visitor enforces that each value is actually set, as it is required by default.
+     */
+    private static class ParameterRequiredVisitor implements ReportParmVisitor {
+
+        @Override
+        public void visit(ReportStringParm parm) {
+            if (Strings.isNullOrEmpty(parm.getValue())) {
+                throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
+            }
+        }
+
+        @Override
+        public void visit(ReportIntParm parm) {
+        }
+
+        @Override
+        public void visit(ReportFloatParm parm) {
+            if (parm.getValue() == null) {
+                throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
+            }
+        }
+
+        @Override
+        public void visit(ReportDoubleParm parm) {
+            if (parm.getValue() == null) {
+                throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
+            }
+        }
+
+        @Override
+        public void visit(ReportDateParm parm) {
+            if (parm.getUseAbsoluteDate() && parm.getDate() == null) {
+                throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
+            } else {
+                if (parm.getInterval() == null || !Intervals.ALL.contains(parm.getInterval())) {
+                    throw new SchedulerContextException(parm.getName(), "The provided value must be any of the following {0}", Intervals.ALL);
+                }
+                if (parm.getCount() == null) {
+                    throw new SchedulerContextException(parm.getName(), PROVIDED_VALUE_GREATER_ZERO_TEXT);
+                }
+            }
+        }
     }
 }

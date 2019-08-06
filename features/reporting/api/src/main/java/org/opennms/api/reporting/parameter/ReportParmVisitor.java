@@ -26,15 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer.support;
+package org.opennms.api.reporting.parameter;
 
-import java.text.ParseException;
-
-public class InvalidCronExpressionException extends SchedulerContextException {
-
-    private static final String TEMPLATE = "The provided cron expression '%s' cannot be parsed: %s";
-
-    public InvalidCronExpressionException(ParseException exception, String cronExpression) {
-        super("cronExpression", String.format(TEMPLATE, cronExpression, exception.getMessage()), exception);
-    }
+public interface ReportParmVisitor {
+    void visit(ReportStringParm parm);
+    void visit(ReportIntParm parm);
+    void visit(ReportFloatParm parm);
+    void visit(ReportDoubleParm parm);
+    void visit(ReportDateParm parm);
 }

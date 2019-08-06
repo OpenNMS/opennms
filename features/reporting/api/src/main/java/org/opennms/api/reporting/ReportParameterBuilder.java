@@ -48,6 +48,7 @@ public class ReportParameterBuilder {
         String Years = "year";
         String Months = "month";
         String Days = "day";
+        List<String> ALL = Lists.newArrayList(Years, Months, Days);
     }
 
     private final List<ReportStringParm> stringParams = Lists.newArrayList();

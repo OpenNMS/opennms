@@ -36,7 +36,7 @@ import java.io.Serializable;
  * @author ranger
  * @version $Id: $
  */
-public class ReportParm implements Serializable {
+public abstract class ReportParm implements Serializable {
 
     private static final long serialVersionUID = -7987984390575422836L;
     
@@ -79,4 +79,6 @@ public class ReportParm implements Serializable {
         m_displayName = displayName;
     }
 
+
+    abstract void accept(final ReportParmVisitor visitor);
 }

@@ -28,13 +28,37 @@
 
 package org.opennms.web.svclayer.support;
 
-import java.text.ParseException;
+import java.text.MessageFormat;
+import java.util.Objects;
 
-public class InvalidCronExpressionException extends SchedulerContextException {
+public class SchedulerContextException extends SchedulerException {
 
-    private static final String TEMPLATE = "The provided cron expression '%s' cannot be parsed: %s";
+    private final String context;
 
-    public InvalidCronExpressionException(ParseException exception, String cronExpression) {
-        super("cronExpression", String.format(TEMPLATE, cronExpression, exception.getMessage()), exception);
+    public SchedulerContextException(String context, String message) {
+        super(Objects.requireNonNull(message));
+        this.context = Objects.requireNonNull(context);
+    }
+
+    public SchedulerContextException(String context, String message, Exception ex) {
+        super(message, ex);
+        this.context = Objects.requireNonNull(context);
+    }
+
+    public SchedulerContextException(String context, String messageFormat, Object... arguments) {
+        this(context, new MessageFormat(messageFormat).format(arguments));
+    }
+
+    @Override
+    public String getMessage() {
+        return this.context + ":" + super.getMessage();
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public String getRawMessage() {
+        return super.getMessage();
     }
 }

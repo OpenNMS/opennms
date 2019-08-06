@@ -31,6 +31,7 @@ package org.opennms.api.reporting.parameter;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import org.opennms.api.reporting.ReportMode;
 
@@ -195,6 +196,11 @@ public class ReportDateParm extends ReportParm implements Serializable {
      */
     public void setMinutes(Integer minute) {
         m_minutes = minute;
-    } 
+    }
+
+    @Override
+    void accept(ReportParmVisitor visitor) {
+        Objects.requireNonNull(visitor).visit(this);
+    }
 
 }

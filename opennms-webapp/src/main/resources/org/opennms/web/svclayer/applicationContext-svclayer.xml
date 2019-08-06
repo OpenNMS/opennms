@@ -166,7 +166,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="scheduler" ref="schedulerFactory"/>
     <property name="jobDetail" ref="batchReportJobDetail"/>
     <property name="triggerGroup" value="reporting"/>
-    <property name="reportWrapperService" ref="reportWrapperService"/>
   </bean>
   <onmsgi:service interface="org.opennms.web.svclayer.SchedulerService" ref="reportSchedulerService" />
   <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">

@@ -535,15 +535,6 @@ public class JasperReportService implements ReportService {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean validate(final Map<String, Object> reportParms, final String reportId) {
-        // returns true until we can take parameters
-        return true;
-    }
-
     public void setGlobalReportRepository(final GlobalReportRepository globalReportRepository) {
         m_globalReportRepository = globalReportRepository;
     }
