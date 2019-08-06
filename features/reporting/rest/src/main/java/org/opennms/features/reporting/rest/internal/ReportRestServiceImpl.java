@@ -52,12 +52,9 @@ import org.json.JSONObject;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
+import org.opennms.api.reporting.ReportParameterBuilder;
 import org.opennms.api.reporting.parameter.ReportDateParm;
-import org.opennms.api.reporting.parameter.ReportDoubleParm;
-import org.opennms.api.reporting.parameter.ReportFloatParm;
-import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.features.reporting.rest.ReportRestService;
 import org.opennms.netmgt.config.categories.Category;
@@ -400,76 +397,55 @@ public class ReportRestServiceImpl implements ReportRestService {
     }
 
     private ReportParameters parseParameters(Map<String, Object> inputParameters) {
-        final JSONObject jsonParameters = new JSONObject(inputParameters);
-        final ReportParameters parameters = new ReportParameters();
-        parameters.setReportId((String) inputParameters.get("id"));
-        parameters.setFormat(ReportFormat.valueOf(jsonParameters.getString("format")));
-        parameters.setStringParms(parseParameters(jsonParameters.getJSONArray("parameters"), "string", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportStringParm parm = new ReportStringParm();
-            if (jsonObject.has("inputType")) {
-                parm.setInputType(jsonObject.getString("inputType"));
+        final String reportId = (String) inputParameters.get("id");
+        final ReportParameters actualParameters = reportWrapperService.getParameters(reportId);
+        actualParameters.setFormat(ReportFormat.valueOf((String) inputParameters.get("format")));
+
+        // Determine the new values
+        final JSONObject jsonInputParameters = new JSONObject(inputParameters);
+        final ReportParameterBuilder reportParameterBuilder = new ReportParameterBuilder();
+        final JSONArray jsonParameters = jsonInputParameters.getJSONArray("parameters");
+        for (int i=0; i< jsonParameters.length(); i++) {
+            final JSONObject jsonParameter = jsonParameters.getJSONObject(i);
+            final String parameterName = jsonParameter.getString("name");
+            final String parameterType = jsonParameter.getString("type");
+            if (parameterType.equals("string")) {
+                reportParameterBuilder.withString(parameterName, jsonParameter.getString("value"));
             }
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setValue(jsonObject.getString("value"));
-            return parm;
-        }));
-        parameters.setDoubleParms(parseParameters(jsonParameters.getJSONArray("parameters"), "double", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportDoubleParm parm = new ReportDoubleParm();
-            if (jsonObject.has("inputType")) {
-                parm.setInputType(jsonObject.getString("inputType"));
+            if (parameterType.equals("double")) {
+                reportParameterBuilder.withDouble(parameterName, jsonParameter.getDouble("value"));
             }
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setValue(jsonObject.getDouble("value"));
-            return parm;
-        }));
-        parameters.setIntParms(parseParameters(jsonParameters.getJSONArray("parameters"), "integer", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportIntParm parm = new ReportIntParm();
-            if (jsonObject.has("inputType")) {
-                parm.setInputType(jsonObject.getString("inputType"));
+            if (parameterType.equals("integer")) {
+                reportParameterBuilder.withInteger(parameterName, jsonParameter.getInt("value"));
             }
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setValue(jsonObject.getInt("value"));
-            return parm;
-        }));
-        parameters.setFloatParms(parseParameters(jsonParameters.getJSONArray("parameters"), "float", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportFloatParm parm = new ReportFloatParm();
-            if (jsonObject.has("inputType")) {
-                parm.setInputType(jsonObject.getString("inputType"));
+            if (parameterType.equals("float")) {
+                reportParameterBuilder.withFloat(parameterName, jsonParameter.getFloat("value"));
             }
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setValue(jsonObject.getFloat("value"));
-            return parm;
-        }));
-        parameters.setDateParms(parseParameters(jsonParameters.getJSONArray("parameters"), "date", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportDateParm parm = new ReportDateParm();
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setCount(jsonObject.getInt("count"));
-            parm.setInterval(jsonObject.getString("interval"));
-            if (jsonObject.has("date")) {
-                try {
-                    final String dateString = jsonObject.getString("date");
-                    final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-                    parm.setDate(parsedDate);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
+            if (parameterType.equals("date")) {
+                final ReportDateParm actualDateParm = actualParameters.getParameter(parameterName);
+                final int hours = jsonParameter.getInt("hours");
+                final int minutes = jsonParameter.getInt("minutes");
+                if (actualDateParm.getUseAbsoluteDate() && jsonParameter.has("date")) {
+                    try {
+                        final String dateString = jsonParameter.getString("date");
+                        final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+                        reportParameterBuilder.withDate(parameterName, parsedDate, hours, minutes);
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    final String interval = jsonParameter.getString("interval");
+                    final int count = jsonParameter.getInt("count");
+                    reportParameterBuilder.withDate(parameterName, interval, count, hours, minutes);
                 }
             }
-            parm.setHours(jsonObject.getInt("hours"));
-            parm.setMinutes(jsonObject.getInt("minutes"));
-            parm.setUseAbsoluteDate(jsonObject.getBoolean("useAbsoluteDate")); // TODO MVR this is already known and should not be overriden
-            return parm;
-        }));
-        return parameters;
+        }
+
+        // Finally apply the new values
+        final ReportParameters mergeWithParameters = reportParameterBuilder.build();
+        actualParameters.apply(mergeWithParameters);
+
+        return actualParameters;
     }
 
     private DeliveryOptions parseDeliveryOptions(Map<String, Object> parameters) {

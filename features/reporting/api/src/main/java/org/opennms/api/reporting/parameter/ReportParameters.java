@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -270,6 +271,20 @@ public class ReportParameters implements Serializable {
                 .flatMap(List::stream)
                 .collect(Collectors.toMap(p -> p.getName(), Function.identity()));
         return (Map<String, T>) reportMap;
+    }
+
+    public <T extends ReportParm> T getParameter(String key) {
+        Objects.requireNonNull(key);
+        final Optional<? extends ReportParm> any = Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms)
+                .stream()
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .filter(param -> key.equals(param.getName()))
+                .findAny();
+        if (any.isPresent()) {
+            return (T) any.get();
+        }
+        return null;
     }
 
     public void apply(ReportParameters parameters) {
