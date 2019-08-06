@@ -141,11 +141,7 @@ STOPSIGNAL SIGTERM
 CMD [ "-h" ]
 
 ### Runtime information and not relevant at build time
-
-ENV OPENNMS_KARAF_SSH_HOST="0.0.0.0" \
-    OPENNMS_KARAF_SSH_PORT="8101" \
-    JAVA_OPTS="" \
-    OPENNMS_TRAPD_PORT=1162
+ENV JAVA_OPTS="-Xmx1024m -XX:MaxMetaspaceSize=512m"
 
 # Volumes for storing data outside of the container
 VOLUME [ "/opt/opennms/etc", "/opt/opennms-etc-overlay", "/opennms-data" ]

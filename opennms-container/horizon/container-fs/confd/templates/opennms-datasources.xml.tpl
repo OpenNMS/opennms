@@ -29,14 +29,14 @@
   <jdbc-data-source name="opennms"
                     database-name="{{getv "/opennms/dbname" "opennms"}}"
                     class-name="org.postgresql.Driver"
-                    url="jdbc:postgresql://{{getv "/postgres/host" "localhost"}}:{{getv "/postgres/port" "5432"}}/{{getv "/opennms/dbname" "opennms"}}"
+                    url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/{{getv "/opennms/dbname" "opennms"}}"
                     user-name="{{getv "/opennms/dbuser" "opennms"}}"
                     password="{{getv "/opennms/dbpass" "opennms"}}" />
 
   <jdbc-data-source name="opennms-admin"
                     database-name="template1"
                     class-name="org.postgresql.Driver"
-                    url="jdbc:postgresql://{{getv "/postgres/host" "localhost"}}:{{getv "/postgres/port" "5432"}}/template1"
+                    url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/template1"
                     user-name="{{getv "/postgres/user" "postgres"}}"
-                    password="{{getv "/postgres/password" ""}}"/>
+                    password="{{getv "/postgres/password" "postgres"}}"/>
 </datasource-configuration>
