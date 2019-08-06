@@ -274,20 +274,30 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     private void validate(ReportParameters reportParameters) {
         Objects.requireNonNull(reportParameters);
         final ReportParmVisitor validator = new ParameterRequiredVisitor();
-        for (ReportStringParm eachParm : reportParameters.getStringParms()) {
-            validator.visit(eachParm);
+        if (reportParameters.getStringParms() != null) {
+            for (ReportStringParm eachParm : reportParameters.getStringParms()) {
+                validator.visit(eachParm);
+            }
         }
-        for (ReportIntParm eachParm : reportParameters.getIntParms()) {
-            validator.visit(eachParm);
+        if (reportParameters.getIntParms() != null) {
+            for (ReportIntParm eachParm : reportParameters.getIntParms()) {
+                validator.visit(eachParm);
+            }
         }
-        for (ReportFloatParm eachParm : reportParameters.getFloatParms()) {
-            validator.visit(eachParm);
+        if (reportParameters.getFloatParms() != null) {
+            for (ReportFloatParm eachParm : reportParameters.getFloatParms()) {
+                validator.visit(eachParm);
+            }
         }
-        for (ReportDoubleParm eachParm : reportParameters.getDoubleParms()) {
-            validator.visit(eachParm);
+        if (reportParameters.getDoubleParms() != null) {
+            for (ReportDoubleParm eachParm : reportParameters.getDoubleParms()) {
+                validator.visit(eachParm);
+            }
         }
-        for (ReportDateParm eachParm : reportParameters.getDateParms()) {
-            validator.visit(eachParm);
+        if (reportParameters.getDateParms() != null) {
+            for (ReportDateParm eachParm : reportParameters.getDateParms()) {
+                validator.visit(eachParm);
+            }
         }
     }
 
