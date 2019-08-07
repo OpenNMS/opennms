@@ -29,17 +29,20 @@ angular.module(MODULE_NAME, [])
                 scope.verifyInput = function() {
                     try {
                         scope.errors = undefined;
+                        scope.options.errors = scope.errors;
                         scope.options.to.error = undefined;
                         scope.options.getCronExpression();
                     } catch (e) {
                         if (e.context === 'to') {
                             scope.options.to.error = e.message;
+                            scope.errors = { to: e.message };
                         } else if (e.context) {
                             scope.errors = {};
                             scope.errors[e.context] = e.message;
                         } else {
                             console.log('Unexpected error occurred', e);
                         }
+                        scope.options.errors = scope.errors;
                     }
                 };
 

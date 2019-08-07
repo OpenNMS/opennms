@@ -8,13 +8,14 @@
 </div>
 
 <div ng-if="meta.online || userInfo.isAdmin() || userInfo.isReportDesigner()">
-    <onms-report-details ng-model="report" options="options"></onms-report-details>
+    <onms-report-details ng-model="report" options="options" on-invalid-change="onReportFormInvalidStateChange"></onms-report-details>
 
     <div class="form-group mx-4">
         <button class="btn btn-danger" name="cancel" id="cancel" ui-sref="report.templates">
             <i class="fa fa-times"></i> Cancel
         </button>
-        <button class="btn btn-primary" name="run" id="execute" ng-click="execute()" ng-disabled="reportForm.$invalid || (isGrafanaReport() && !isGrafanaReady())">
+
+        <button class="btn btn-primary" name="run" id="execute" ng-click="execute()" ng-disabled="reportForm.$invalid || !report.scheduleOptions.isValid()">
             <span ng-if="meta.online && !options.deliverReport && !options.scheduleReport"><i class="fa fa-play"></i> Create</span>
             <span ng-if="options.deliverReport && !options.scheduleReport"><i class="fa fa-share"></i> Deliver</span>
             <span ng-if="options.deliverReport && options.scheduleReport"><i class="fa fa-clock-o"></i> Schedule</span>

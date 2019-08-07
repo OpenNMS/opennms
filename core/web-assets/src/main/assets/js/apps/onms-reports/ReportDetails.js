@@ -1,4 +1,6 @@
+import Types from '../../lib/onms-schedule-editor/scripts/Types';
 import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOptions';
+import ContextError from "../../lib/onms-http/ContextError";
 import moment from 'moment';
 
 export default class ReportDetails {
@@ -18,6 +20,7 @@ export default class ReportDetails {
         this.scheduleOptions = typeof input.cronExpression === 'string' ? ScheduleOptions.createFrom(input.cronExpression) : new ScheduleOptions();
         this.format = input.deliveryOptions && input.deliveryOptions.format || 'PDF';
         this.id = input.id;
+        this.errors = input.errors || {};
 
         // In order to have the ui look the same as before, just order the parameters
         const order = ['string', 'integer', 'float', 'double', 'date'];
@@ -57,6 +60,43 @@ export default class ReportDetails {
         if (this.supportedFormats.indexOf(this.deliveryOptions.format) === -1) {
             this.deliveryOptions.format = this.format;
         }
+    }
+
+    hasErrors() {
+        const hasErrors = Object.keys(this.errors).length > 0
+            || (this.isGrafanaReport() && !this.isGrafanaEndpointSelected())
+            || !this.scheduleOptions.isValid();
+        return hasErrors;
+    }
+
+    resetErrors() {
+        this.errors = {};
+    }
+
+    setErrors(contextError) {
+        if ((contextError && contextError.context && contextError.message) || (contextError instanceof ContextError)) {
+            if (contextError.context !== 'cronExpression'
+                  || (contextError.context === 'cronExpression' && this.scheduleOptions.type === Types.CUSTOM)
+            ) {
+                this.errors[contextError.context] = contextError.message;
+                return;
+            } else if (contextError.context === 'cronExpression' && this.scheduleOptions.type !== Types.CUSTOM) {
+                throw new Error("Generated cronExpression was not parseable by backend. If this happens contact OpenNMS support");
+            }
+        }
+        throw new Error("Provided contextError must be of type ContextError")
+    }
+
+    isGrafanaEndpointSelected() {
+        if (!this.isGrafanaReport()) {
+            throw new Error("Report is not a Grafana Report");
+        }
+        const endpointUid = this.parametersByName['GRAFANA_ENDPOINT_UID'];
+        const dashboardUid = this.parametersByName['GRAFANA_DASHBOARD_UID'];
+
+        const endpointSelected = endpointUid.value && typeof endpointUid.value === 'string' && endpointUid.value.length > 0
+            && dashboardUid.value && typeof dashboardUid.value && dashboardUid.value.length > 0
+        return endpointSelected;
     }
 
     isGrafanaReport() {

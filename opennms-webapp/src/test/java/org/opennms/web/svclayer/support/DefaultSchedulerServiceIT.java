@@ -145,7 +145,7 @@ public class DefaultSchedulerServiceIT {
             m_schedulerService.execute(new DeliveryConfig(reportParameters, deliveryOptions));
             fail("Expected exception, but wasn't thrown");
         } catch (org.opennms.web.svclayer.support.SchedulerContextException ex) {
-            assertThat(ex.getContext(), is("sendMail,persist"));
+            assertThat(ex.getContext(), is("sendMail_persist"));
         }
     }
 

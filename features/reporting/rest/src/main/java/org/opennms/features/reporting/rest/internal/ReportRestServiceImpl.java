@@ -172,30 +172,31 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response runReport(final String reportId, final Map<String, Object> inputParameters) {
-        final ReportParameters parameters = parseParameters(inputParameters);
-        parameters.setReportId(reportId);
-
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
+            final ReportParameters parameters = parseParameters(inputParameters);
+            parameters.setReportId(reportId);
             reportWrapperService.runAndRender(parameters, ReportMode.IMMEDIATE, outputStream);
-            if ((parameters.getFormat() == ReportFormat.PDF) || (parameters.getFormat() == ReportFormat.SVG) ) {
+            if ((parameters.getFormat() == ReportFormat.PDF) || (parameters.getFormat() == ReportFormat.SVG)) {
                 return Response.ok().type("application/pdf;charset=UTF-8")
-                    .header("Content-disposition", "inline; filename=report.pdf")
-                    .header("Pragma", "public")
-                    .header("Cache-Control", "cache")
-                    .header("Cache-Control", "must-revalidate")
-                    .entity(outputStream.toByteArray()).build();
+                        .header("Content-disposition", "inline; filename=report.pdf")
+                        .header("Pragma", "public")
+                        .header("Cache-Control", "cache")
+                        .header("Cache-Control", "must-revalidate")
+                        .entity(outputStream.toByteArray()).build();
             }
-            if(parameters.getFormat() == ReportFormat.CSV) {
+            if (parameters.getFormat() == ReportFormat.CSV) {
                 return Response.ok().type("text/csv;charset=UTF-8")
-                    .header("Content-disposition", "inline; filename=report.csv")
-                    .header("Cache-Control", "cache")
-                    .header("Cache-Control", "must-revalidate")
-                    .entity(outputStream.toByteArray()).build();
+                        .header("Content-disposition", "inline; filename=report.csv")
+                        .header("Cache-Control", "cache")
+                        .header("Cache-Control", "must-revalidate")
+                        .entity(outputStream.toByteArray()).build();
             }
-            return Response.status(Status.BAD_REQUEST).build(); // TODO MVR unsupported format
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject("format", "Only PDF, SVG or CSV are supported"));
+        } catch (SchedulerContextException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
         } catch (ReportException ex) {
-            throw new RuntimeException(ex);
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
         } finally {
             IOUtils.closeQuietly(outputStream);
         }
@@ -339,8 +340,9 @@ public class ReportRestServiceImpl implements ReportRestService {
         }
         try {
             final Integer reportCatalogEntryId = Integer.valueOf(WebSecurityUtils.safeParseInt(locatorId));
+            final ReportFormat reportFormat = parseReportFormat(format);
             final StreamingOutput streamingOutput = outputStream -> {
-                reportStoreService.render(reportCatalogEntryId, ReportFormat.valueOf(format), outputStream);
+                reportStoreService.render(reportCatalogEntryId, reportFormat, outputStream);
                 outputStream.flush();
             };
             final Response.ResponseBuilder responseBuilder = Response.ok()
@@ -348,12 +350,12 @@ public class ReportRestServiceImpl implements ReportRestService {
                     .header("Cache-Control", "cache")
                     .header("Cache-Control", "must-revalidate")
                     .entity(streamingOutput);
-            if ((ReportFormat.PDF == ReportFormat.valueOf(format)) || (ReportFormat.SVG == ReportFormat.valueOf(format)) ) {
+            if (ReportFormat.PDF == reportFormat || ReportFormat.SVG == reportFormat ) {
                 return responseBuilder.type("application/pdf;charset=UTF-8")
                         .header("Content-disposition", "inline; filename=" + reportCatalogEntryId.toString() + ".pdf")
                         .build();
             }
-            if (ReportFormat.CSV == ReportFormat.valueOf(format)) {
+            if (ReportFormat.CSV == reportFormat) {
                 responseBuilder.type("text/csv;charset=UTF-8")
                 .header("Content-disposition", "inline; filename=" + reportCatalogEntryId.toString() + ".csv");
             }
@@ -362,6 +364,8 @@ public class ReportRestServiceImpl implements ReportRestService {
             return Response.status(Status.BAD_REQUEST)
                         .type(MediaType.APPLICATION_JSON_TYPE)
                         .entity(createErrorObject(e).toString()).build();
+        } catch (SchedulerContextException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
         }
     }
 
@@ -379,8 +383,9 @@ public class ReportRestServiceImpl implements ReportRestService {
     private ReportParameters parseParameters(Map<String, Object> inputParameters) {
         final String reportId = (String) inputParameters.get("id");
         final ReportParameters actualParameters = reportWrapperService.getParameters(reportId);
+        final ReportFormat reportFormat = parseReportFormat((String) inputParameters.get("format"));
         actualParameters.setReportId(reportId);
-        actualParameters.setFormat(ReportFormat.valueOf((String) inputParameters.get("format")));
+        actualParameters.setFormat(reportFormat);
 
         // Determine the new values
         final JSONObject jsonInputParameters = new JSONObject(inputParameters);
@@ -406,7 +411,7 @@ public class ReportRestServiceImpl implements ReportRestService {
                 final ReportDateParm actualDateParm = actualParameters.getParameter(parameterName);
                 final int hours = jsonParameter.getInt("hours");
                 final int minutes = jsonParameter.getInt("minutes");
-                if (actualDateParm.getUseAbsoluteDate() && jsonParameter.has("date")) {
+                if (actualDateParm.getUseAbsoluteDate() || jsonParameter.has("date")) {
                     try {
                         final String dateString = jsonParameter.getString("date");
                         final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
@@ -435,11 +440,23 @@ public class ReportRestServiceImpl implements ReportRestService {
         final JSONObject jsonOptions = jsonParameters.getJSONObject("deliveryOptions");
         options.setInstanceId(jsonOptions.getString("instanceId"));
         options.setSendMail(jsonOptions.getBoolean("sendMail"));
-        if (options.isSendMail()) {
+        if (options.isSendMail() && jsonOptions.has("mailTo")) {
             options.setMailTo(jsonOptions.getString("mailTo"));
         }
         options.setPersist(jsonOptions.getBoolean("persist"));
-        options.setFormat(ReportFormat.valueOf(jsonOptions.getString("format")));
+        options.setFormat(parseReportFormat(jsonOptions.getString("format")));
         return options;
+    }
+
+    private ReportFormat parseReportFormat(String input) {
+        if (Strings.isNullOrEmpty(input)) {
+            throw new SchedulerContextException("format", "Please provide a value");
+        }
+        for (ReportFormat eachFormat : ReportFormat.values()) {
+            if (eachFormat.name().equalsIgnoreCase(input)) {
+                return eachFormat;
+            }
+        }
+        throw new SchedulerContextException("format", "Provided format ''{0}'' is not supported", input);
     }
 }

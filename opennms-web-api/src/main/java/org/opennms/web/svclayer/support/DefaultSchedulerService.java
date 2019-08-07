@@ -152,7 +152,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     public void updateCronTrigger(String cronTrigger, ScheduleConfig scheduleConfig) {
         Objects.requireNonNull(cronTrigger);
         Objects.requireNonNull(scheduleConfig);
-        validate(scheduleConfig);
+        validate(scheduleConfig, true);
 
         final TriggerKey triggerKey = new TriggerKey(cronTrigger, m_triggerGroup);
         final ReportParameters parameters = scheduleConfig.getReportParameters();
@@ -177,7 +177,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     @Override
     public void addCronTrigger(ScheduleConfig scheduleConfig) {
         Objects.requireNonNull(scheduleConfig);
-        validate(scheduleConfig);
+        validate(scheduleConfig, false);
 
         final CronTriggerImpl cronTrigger = new CronTriggerImpl();
         final ReportParameters parameters = scheduleConfig.getReportParameters();
@@ -208,7 +208,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     @Override
     public void execute(DeliveryConfig deliveryConfig) {
         Objects.requireNonNull(deliveryConfig);
-        validate(deliveryConfig);
+        validate(deliveryConfig, false);
 
         final ReportParameters parameters = deliveryConfig.getReportParameters();
         final DeliveryOptions deliveryOptions = deliveryConfig.getDeliveryOptions();
@@ -237,31 +237,33 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         m_triggerGroup = triggerGroup;
     }
 
-    private void validate(DeliveryConfig deliveryConfig) {
+    private void validate(DeliveryConfig deliveryConfig, boolean update) {
         Objects.requireNonNull(deliveryConfig);
         validate(deliveryConfig.getReportParameters());
-        validate(deliveryConfig.getDeliveryOptions());
+        validate(deliveryConfig.getDeliveryOptions(), update);
     }
 
-    private void validate(DeliveryOptions deliveryOptions) {
+    private void validate(DeliveryOptions deliveryOptions, boolean update) {
         Objects.requireNonNull(deliveryOptions);
 
         try {
-            final Set<String> intanceIds = m_scheduler.getTriggerKeys(GroupMatcher.groupEquals(m_triggerGroup)).stream()
-                    .map(tk -> tk.getName())
-                    .collect(Collectors.toSet());
-            if (intanceIds.contains(deliveryOptions.getInstanceId())) {
-                throw new SchedulerContextException("instanceId", "The provided value already exists");
-            }
-            if (Strings.isNullOrEmpty(deliveryOptions.getInstanceId())) {
-                throw new SchedulerContextException("instanceId", PROVIDE_A_VALUE_TEXT);
+            if (!update) { // We skip the instanceId check if we update
+                final Set<String> intanceIds = m_scheduler.getTriggerKeys(GroupMatcher.groupEquals(m_triggerGroup)).stream()
+                        .map(tk -> tk.getName())
+                        .collect(Collectors.toSet());
+                if (intanceIds.contains(deliveryOptions.getInstanceId())) {
+                    throw new SchedulerContextException("instanceId", "The provided value already exists");
+                }
+                if (Strings.isNullOrEmpty(deliveryOptions.getInstanceId())) {
+                    throw new SchedulerContextException("instanceId", PROVIDE_A_VALUE_TEXT);
+                }
             }
 
             if (!deliveryOptions.isSendMail() && !deliveryOptions.isPersist()) {
-                throw new SchedulerContextException("sendMail,persist", "Either sendMail or persist must be set");
+                throw new SchedulerContextException("sendMail_persist", "Either sendMail or persist must be set");
             }
             if (deliveryOptions.getFormat() == null) {
-                throw new SchedulerContextException("format", "The provided format is not supported.");
+                throw new SchedulerContextException("format", PROVIDE_A_VALUE_TEXT);
             }
             if (deliveryOptions.isSendMail() && Strings.isNullOrEmpty(deliveryOptions.getMailTo())) {
                 throw new SchedulerContextException("mailTo", PROVIDE_A_VALUE_TEXT);
@@ -334,14 +336,26 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         @Override
         public void visit(ReportDateParm parm) {
             if (parm.getUseAbsoluteDate() && parm.getDate() == null) {
-                throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
+                throw new SchedulerContextException(parm.getName() + "Date", PROVIDE_A_VALUE_TEXT);
             } else {
                 if (parm.getInterval() == null || !Intervals.ALL.contains(parm.getInterval())) {
-                    throw new SchedulerContextException(parm.getName(), "The provided value must be any of the following {0}", Intervals.ALL);
+                    throw new SchedulerContextException(parm.getName() + "Interval", "The provided value must be any of the following {0}", Intervals.ALL);
                 }
                 if (parm.getCount() == null) {
-                    throw new SchedulerContextException(parm.getName(), PROVIDED_VALUE_GREATER_ZERO_TEXT);
+                    throw new SchedulerContextException(parm.getName() + "Count", PROVIDED_VALUE_GREATER_ZERO_TEXT);
                 }
+            }
+            if (parm.getHours() == null) {
+                throw new SchedulerContextException(parm.getName() + "Hours", PROVIDE_A_VALUE_TEXT);
+            }
+            if (parm.getHours() < 0 || parm.getHours() > 23) {
+                throw new SchedulerContextException(parm.getName() + "Hours", "Please provide a value between 0 and 23");
+            }
+            if (parm.getMinutes() == null) {
+                throw new SchedulerContextException(parm.getName() + "Minutes", PROVIDE_A_VALUE_TEXT);
+            }
+            if (parm.getMinutes() < 0 || parm.getMinutes() > 59) {
+                throw new SchedulerContextException(parm.getName() + "Minutes", "Please provide a value between 0 and 59");
             }
         }
     }

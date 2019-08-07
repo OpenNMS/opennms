@@ -1,5 +1,7 @@
 import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOptions';
 import ReportDetails from './ReportDetails';
+import ErrorResponse from '../../lib/onms-http/ErrorResponse';
+import Types from "../../lib/onms-schedule-editor/scripts/Types";
 
 const angular = require('vendor/angular-js');
 require('../../lib/onms-http');
@@ -18,8 +20,24 @@ const errorModalTemplate  = require('./modals/error-modal.html');
 const editScheduleModalTemplate  = require('./modals/schedule-edit-modal.html');
 
 const reportDetailsTemplate = require('./report-details.html');
-
 const confirmTopoverTemplate = require('../onms-classifications/views/modals/popover.html');
+
+const handleGlobalError = function($scope, errorResponse) {
+    $scope.globalError = 'An unexpected error occurred: ' + errorResponse.statusText;
+    $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
+};
+
+const handleReportError = function(response, report, optionalCallbackIfNoContextError) {
+    if (report && response) {
+        const errorResponse = new ErrorResponse(response);
+        if (errorResponse.isBadRequest()) {
+            const contextError = errorResponse.asContextError();
+            report.setErrors(contextError);
+        } else if (optionalCallbackIfNoContextError) {
+            optionalCallbackIfNoContextError(response);
+        }
+    }
+};
 
 (function() {
     'use strict';
@@ -151,7 +169,8 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 templateUrl: reportDetailsTemplate,
                 scope: {
                     report: '=?ngModel',
-                    options: '=?options'
+                    options: '=?options',
+                    onInvalidChange: '&?onInvalidChange'
                 },
                 link: function (scope, element, attrs) {
                     scope.endpoints = [];
@@ -160,6 +179,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                         endpoint: undefined,
                         dashboard: undefined
                     };
+                    scope.onInvalidChange = scope.onInvalidChange || function() { return function() {} };
 
                     scope.endpointChanged = function () {
                         scope.dashboards = [];
@@ -170,8 +190,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                                 scope.selected.dashboard = scope.dashboards[0];
                             }
                         }, function (errorResponse) {
-                            console.log('ERROR', errorResponse); // TODO MVR add global error handling
-                            // scope.handleGlobalError(errorResponse);
+                            handleGlobalError(scope, errorResponse);
                         });
                     };
 
@@ -189,19 +208,21 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                                 scope.endpointChanged();
                             }
                         }, function (errorResponse) {
-                            console.log('ERROR', errorResponse); // TODO MVR add global error handling
-                            // scope.handleGlobalError(errorResponse);
+                            handleGlobalError(scope, errorResponse);
                         });
-                    };
-
-                    scope.isGrafanaReady = function () {
-                        return scope.selected && scope.selected.endpoint && scope.selected.dashboard || false;
                     };
 
                     // Ensure the format matches
                     scope.$watch('report.format', function (newVal) {
                         if (scope.report.deliveryOptions) {
                             scope.report.deliveryOptions.format = newVal;
+                        }
+                    });
+
+                    scope.$watch('report.scheduleOptions.type', function() {
+                        // Reset cronExpression issue, if we changed the type as the message may be outdated
+                        if (scope.report.scheduleOptions.type !== Types.CUSTOM && scope.report.errors.cronExpression) {
+                            scope.report.errors.cronExpression = undefined;
                         }
                     });
 
@@ -213,25 +234,23 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                         }
                         scope.report.updateParameters(scope.selected);
                     });
+
+                    scope.$watch('reportForm.$invalid', function(newVal, oldVal) {
+                        if (scope.onInvalidChange) {
+                            scope.onInvalidChange()(newVal);
+                        }
+                    });
                 }
             }
         }])
-        // TODO MVR verify global error handling is the way to go here for all error responses. Maybe we need a little bit more differentiated
         .controller('ReportsController', ['$scope', '$http', 'UserService', function($scope, $http, UserService) {
             $scope.fetchUserInfo = function() {
                 UserService.whoami(function(user) {
                     $scope.userInfo = user;
-                }, function(error) {
-                    $scope.handleGlobalError(error);
+                }, function(errorResponse) {
+                    handleGlobalError($scope, errorResponse);
                 });
             };
-
-            $scope.handleGlobalError = function(errorResponse) {
-                console.log("An unexpected error occurred", errorResponse);
-                $scope.globalError = "An unexpected error occurred: " + errorResponse.statusText + "(" + errorResponse.status + ")";
-                $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
-            };
-
             $scope.fetchUserInfo();
         }])
         .controller('ReportTemplatesController', ['$scope', '$http', 'ReportTemplateResource', function($scope, $http, ReportTemplateResource) {
@@ -244,14 +263,14 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                         $scope.reports = response;
                     }
                 }, function(errorResponse) {
-                    $scope.handleGlobalError(errorResponse);
+                    handleGlobalError($scope, errorResponse);
                 })
             };
 
             $scope.refresh();
 
         }])
-        .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', '$uibModal', 'ReportTemplateResource', 'GrafanaResource', function($scope, $http, $window, $state, $stateParams, $uibModal, ReportTemplateResource, GrafanaResource) {
+        .controller('ReportDetailController', ['$scope', '$http', '$window', '$state', '$stateParams', '$uibModal', 'ReportTemplateResource', function($scope, $http, $window, $state, $stateParams, $uibModal, ReportTemplateResource) {
             $scope.meta = {
                 reportId: $stateParams.id,
                 online: $stateParams.online === 'true'
@@ -260,6 +279,10 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             $scope.report = new ReportDetails({id: $scope.meta.reportId});
             $scope.options = {};
             $scope.loading = false;
+            $scope.reportForm = { $invalid: false };
+            $scope.onReportFormInvalidStateChange = function(invalidState) {
+                $scope.reportForm.$invalid = invalidState;
+            };
 
             $scope.loadDetails = function() {
                 $scope.loading = true;
@@ -279,8 +302,6 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     canEditTriggerName: true
                 };
 
-                console.log($scope.options);
-
                 const requestParameters = {
                     id: $scope.report.id,
                     userId: $scope.userInfo.id
@@ -291,19 +312,18 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     $scope.report = new ReportDetails(response);
                 }, function(response) {
                     $scope.loading = false;
-                    $scope.handleGlobalError(response);
+                    handleGlobalError($scope, response);
                 });
             };
 
-            // TODO MVR use ReportTemplateResource for this, but somehow only $http works :-/
             $scope.runReport = function() {
+                $scope.report.resetErrors();
                 $http({
                     method: 'POST',
                     url: 'rest/reports/' + $stateParams.id,
                     data:  { id:$scope.report.id, parameters: $scope.report.parameters, format: $scope.report.format},
                     responseType:  'arraybuffer'
                 }).then(function (response) {
-                        console.log("SUCCESS", response);
                         var data = response.data;
                         var fileBlob = new Blob([data], {type: $scope.report.format === 'PDF' ? 'application/pdf' : 'text/csv'});
                         var fileURL = URL.createObjectURL(fileBlob);
@@ -321,8 +341,16 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                         window.URL.revokeObjectURL(url);
                         document.body.removeChild(a);
                     },
-                    function(error) {
-                        console.log("ERROR", error);
+                    function(response) {
+                        if (response.status === 400) {
+                            // content Type is 'arraybuffer', so first convert to json
+                            const bodyAsString = String.fromCharCode.apply(null, new Uint8Array(response.data));
+                            const bodyAsJson = JSON.parse(bodyAsString);
+                            response.data = bodyAsJson;
+                            handleReportError(response, $scope.report, (response) => handleGlobalError($scope, response));
+                        } else {
+                            handleGlobalError($scope, response);
+                        }
                     });
             };
 
@@ -376,6 +404,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             };
 
             $scope.deliverReport = function() {
+                $scope.report.resetErrors();
                 $http({
                     method: 'POST',
                     url: 'rest/reports/persisted',
@@ -385,14 +414,15 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                         format: $scope.report.format,
                         deliveryOptions: $scope.report.deliveryOptions
                     }
-                }).then(function(response) {
+                }).then(function() {
                     $scope.showSuccessModal($scope);
-                }, function(errorResponse) {
-                    $scope.showErrorModal($scope, errorResponse);
+                }, function(response) {
+                    handleReportError(response, $scope.report, (response) => $scope.showErrorModal($scope, response));
                 })
             };
 
             $scope.scheduleReport = function() {
+                $scope.report.resetErrors();
                 $http({
                     method: 'POST',
                     url: 'rest/reports/scheduled',
@@ -405,13 +435,12 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     }
                 }).then(function(response) {
                     $scope.showSuccessModal($scope);
-                }, function(errorResponse) {
-                    $scope.showErrorModal($scope, errorResponse);
+                }, function(response) {
+                    handleReportError(response, $scope.report, (response) => $scope.showErrorModal($scope, response));
                 })
             };
 
             $scope.execute = function() {
-                console.log($scope.report);
                 if ($scope.meta.online && !$scope.options.deliverReport && !$scope.options.scheduleReport) {
                     $scope.runReport();
                 }
@@ -437,7 +466,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 ReportScheduleResource.list(function(data) {
                     $scope.scheduledReports = data;
                 }, function(response) {
-                    $scope.handleGlobalError(response);
+                    handleGlobalError($scope, response);
                 });
             };
 
@@ -445,7 +474,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 ReportScheduleResource.deleteAll({}, function(response) {
                    $scope.refresh();
                 }, function(response) {
-                    $scope.handleGlobalError(response);
+                    handleGlobalError($scope, response);
                 });
             };
 
@@ -453,7 +482,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 ReportScheduleResource.delete({id: schedule.triggerName || -1}, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    $scope.handleGlobalError(response);
+                    handleGlobalError($scope, response);
                 })
             };
 
@@ -492,6 +521,11 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             $scope.report = new ReportDetails({id: $scope.meta.reportId});
             $scope.options = {};
             $scope.loading = false;
+            $scope.reportForm = { $invalid : false };
+
+            $scope.onReportFormInvalidStateChange = function(invalidState) {
+                $scope.reportForm.$invalid = invalidState;
+            };
 
             $scope.loadDetails = function() {
                 $scope.loading = true;
@@ -511,17 +545,17 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     canEditTriggerName: false,  // When in edit mode, the trigger name should be unique
                 };
 
-                console.log($scope.meta);
                 ReportScheduleResource.get({id: $scope.meta.triggerName}, function(response) {
                     $scope.loading = false;
                     $scope.report = new ReportDetails(response);
                 }, function(response) {
                     $scope.loading = false;
-                    $scope.handleGlobalError(response);
+                    handleGlobalError($scope, response);
                 });
             };
 
             $scope.update = function() {
+                $scope.report.resetErrors();
                 const data = {
                     id: $scope.report.id,
                     triggerName: $scope.meta.triggerName,
@@ -530,16 +564,10 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                     deliveryOptions: $scope.report.deliveryOptions,
                     cronExpression: $scope.report.scheduleOptions.getCronExpression(),
                 };
-                ReportScheduleResource.update(data, function(response) {
-                  // TODO MVR user feedback?
+                ReportScheduleResource.update(data, function() {
                  $scope.$close();
               }, function(response) {
-                    // TODO MVR we should implement proper error handling here, but this requires better errors on backend first
-                    if (response && response.data && response.data.message) {
-                        $scope.error = response.data.message;
-                    } else {
-                        $scope.error = "An unexpected error occurred";
-                    }
+                    handleReportError(response, $scope.report, () => handleGlobalError($scope, response));
               });
             };
 
@@ -551,7 +579,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 ReportStorageResource.list(function(data) {
                     $scope.persistedReports = data;
                 }, function(response) {
-                    $scope.handleGlobalError(response);
+                    handleGlobalError($scope, response);
                 });
             };
 
@@ -559,7 +587,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 ReportStorageResource.deleteAll({}, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    $scope.handleGlobalError(response);
+                    handleGlobalError($scope, response);
                 });
             };
 
@@ -567,7 +595,7 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
                 ReportStorageResource.delete({id: report.id || -1}, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    $scope.handleGlobalError(response);
+                    handleGlobalError($scope, response);
                 })
             };
 
