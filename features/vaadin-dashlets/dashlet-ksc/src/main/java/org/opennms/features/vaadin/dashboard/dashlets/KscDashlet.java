@@ -108,6 +108,16 @@ public class KscDashlet extends AbstractDashlet {
                     m_gridLayout.setSizeFull();
                     m_gridLayout.setColumns(1);
                     m_gridLayout.setRows(1);
+                    injectWallboardStyles();
+                }
+
+                /**
+                 * Injects CSS styles in the current page
+                 */
+                private void injectWallboardStyles() {
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
                 }
 
                 @Override
@@ -170,10 +180,6 @@ public class KscDashlet extends AbstractDashlet {
                     /**
                      * adding the components
                      */
-
-                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    ui.getPage().getStyles().add(".margin { margin:5px; }");
 
                     for (int y = 0; y < m_gridLayout.getRows(); y++) {
                         for (int x = 0; x < m_gridLayout.getColumns(); x++) {
@@ -275,6 +281,16 @@ public class KscDashlet extends AbstractDashlet {
                 {
                     m_verticalLayout.setCaption(getName());
                     m_verticalLayout.setSizeFull();
+                    injectWallboardStyles();
+                }
+
+                /**
+                 * Injects CSS styles in the current page
+                 */
+                private void injectWallboardStyles() {
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
                 }
 
                 @Override
@@ -307,10 +323,6 @@ public class KscDashlet extends AbstractDashlet {
                     }
 
                     Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
-
-                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    ui.getPage().getStyles().add(".margin { margin:5px; }");
 
                     Accordion accordion = new Accordion();
                     accordion.setSizeFull();
