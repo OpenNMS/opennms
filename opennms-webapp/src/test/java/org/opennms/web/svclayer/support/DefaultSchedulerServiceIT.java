@@ -48,7 +48,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
-import org.opennms.api.reporting.parameter.ReportIntParm;
+import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -151,19 +151,19 @@ public class DefaultSchedulerServiceIT {
 
     @Test
     public void testExecuteFailure() {
-        final ReportIntParm intParm = new ReportIntParm();
-        intParm.setName("intParm1");
+        final ReportFloatParm intParm = new ReportFloatParm();
+        intParm.setName("floatParm1");
         intParm.setValue(null);
 
         final ReportParameters parameters = new ReportParameters();
         parameters.setReportId(REPORT_ID);
-        parameters.setIntParms(Lists.newArrayList(intParm));
+        parameters.setFloatParms(Lists.newArrayList(intParm));
 
         try {
             m_schedulerService.execute(new DeliveryConfig(parameters /* should fail due to missing value */, deliveryOptions));
             fail("Expected exception, but wasn't thrown");
         } catch (org.opennms.web.svclayer.support.SchedulerContextException ex) {
-            assertThat(ex.getContext(), is("intParm1"));
+            assertThat(ex.getContext(), is("floatParm1"));
         }
 
         assertThat(jobListener.actualExecutions, is(0));

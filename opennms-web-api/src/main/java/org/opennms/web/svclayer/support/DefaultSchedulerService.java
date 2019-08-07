@@ -315,9 +315,6 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
         @Override
         public void visit(ReportIntParm parm) {
-            if (parm.getValue() == null) {
-                throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
-            }
         }
 
         @Override

@@ -37,8 +37,8 @@ public class DeliveryOptions implements Serializable {
     private static final long serialVersionUID = 7983363859009905407L;
 
     protected String m_mailTo;
-    protected boolean m_persist;
-    protected boolean m_sendMail;
+    protected Boolean m_persist;
+    protected Boolean m_sendMail;
     protected ReportFormat m_format;
     protected String m_instanceId;
 
