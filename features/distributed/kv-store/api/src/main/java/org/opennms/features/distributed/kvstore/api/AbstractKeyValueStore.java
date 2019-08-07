@@ -34,9 +34,9 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Skeleton implementation of {@link KeyValueStore} that defaults calls without ttl specified.
  */
-public abstract class AbstractKeyValueStore implements KeyValueStore {
+public abstract class AbstractKeyValueStore<T> implements KeyValueStore<T> {
     @Override
-    public final long put(String key, byte[] value, String context) {
+    public final long put(String key, T value, String context) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         Objects.requireNonNull(context);
@@ -45,7 +45,7 @@ public abstract class AbstractKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public final CompletableFuture<Long> putAsync(String key, byte[] value, String context) {
+    public final CompletableFuture<Long> putAsync(String key, T value, String context) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         Objects.requireNonNull(context);

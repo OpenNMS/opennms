@@ -40,26 +40,33 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * Asynchronous calls to this API that fail exceptionally will return their future completed exceptionally with the
  * original exception.
+ *
+ * @param <T> the type this store puts/gets
  */
-public interface KeyValueStore {
+public interface KeyValueStore<T> {
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
      * @return the timestamp the value was persisted with
      */
-    long put(String key, byte[] value, String context);
+    long put(String key, T value, String context);
 
     /**
+     * Put a value with a suggested time-to-live after which the value should be expired and removed from the store.
+     * <p>
+     * Records are expired on a best effort basis and depending on the implementation it is possible to get an expired
+     * record.
+     *
      * @param context      a context used to differentiate between keys with the same name (forms a compound key)
      * @param ttlInSeconds the time to live in seconds for this key or no ttl if null
      * @return the timestamp the value was persisted with
      */
-    long put(String key, byte[] value, String context, Integer ttlInSeconds);
+    long put(String key, T value, String context, Integer ttlInSeconds);
 
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
      * @return an optional containing the value if present or empty if the key did not exist
      */
-    Optional<byte[]> get(String key, String context);
+    Optional<T> get(String key, String context);
 
     /**
      * @param context   a context used to differentiate between keys with the same name (forms a compound key)
@@ -68,7 +75,7 @@ public interface KeyValueStore {
      * @return an optional that will be empty if the key was not found or will contain another optional that will be
      * empty if not stale or contain the value if stale
      */
-    Optional<Optional<byte[]>> getIfStale(String key, String context, long timestamp);
+    Optional<Optional<T>> getIfStale(String key, String context, long timestamp);
 
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
@@ -81,20 +88,25 @@ public interface KeyValueStore {
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
      * @return a future containing the timestamp the value was persisted with
      */
-    CompletableFuture<Long> putAsync(String key, byte[] value, String context);
+    CompletableFuture<Long> putAsync(String key, T value, String context);
 
     /**
+     * Put a value with a suggested time-to-live after which the value should be expired and removed from the store.
+     * <p>
+     * Records are expired on a best effort basis and depending on the implementation it is possible to get an expired
+     * record.
+     *
      * @param context      a context used to differentiate between keys with the same name (forms a compound key)
      * @param ttlInSeconds the time to live in seconds for this key or no ttl if null
      * @return a future containing the timestamp the value was persisted with
      */
-    CompletableFuture<Long> putAsync(String key, byte[] value, String context, Integer ttlInSeconds);
+    CompletableFuture<Long> putAsync(String key, T value, String context, Integer ttlInSeconds);
 
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
      * @return a future containing an optional of the value if present or empty if the key did not exist
      */
-    CompletableFuture<Optional<byte[]>> getAsync(String key, String context);
+    CompletableFuture<Optional<T>> getAsync(String key, String context);
 
     /**
      * @param context   a context used to differentiate between keys with the same name (forms a compound key)
@@ -103,7 +115,7 @@ public interface KeyValueStore {
      * @return a future containing an optional that will be empty if the key was not found or will contain another
      * optional that will be empty if not stale or contain the value if stale
      */
-    CompletableFuture<Optional<Optional<byte[]>>> getIfStaleAsync(String key, String context, long timestamp);
+    CompletableFuture<Optional<Optional<T>>> getIfStaleAsync(String key, String context, long timestamp);
 
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)

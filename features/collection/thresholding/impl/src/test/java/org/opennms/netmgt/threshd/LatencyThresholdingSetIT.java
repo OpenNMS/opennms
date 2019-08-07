@@ -116,7 +116,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/mockSinkConsumerManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
-        "classpath:/META-INF/opennms/applicationContext-noOpKVStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 @JUnitConfigurationEnvironment
