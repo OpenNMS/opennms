@@ -351,7 +351,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                         position = offset;
                     } else {
                         var previousRule = $scope.rules[newIndex -1];
-                        position = previousRule.position +1;
+                        position = (newIndex > oldIndex) ? previousRule.position : previousRule.position + 1;
                     }
                     rule.position = position;
 

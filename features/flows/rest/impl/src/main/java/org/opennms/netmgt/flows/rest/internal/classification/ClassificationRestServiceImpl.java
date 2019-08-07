@@ -178,10 +178,12 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setExporterFilter(newValue.getExporterFilter());
 
         // adjust position
-        int oldPosition = rule.getPosition();
-        int newPosition = newValue.getPosition();
-        int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
-        rule.setPosition(newComputedPosition);
+        Integer newPosition = newValue.getPosition();
+        if(newPosition != null) {
+            int oldPosition = rule.getPosition();
+            int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
+            rule.setPosition(newComputedPosition);
+        }
 
         // Persist
         classificationService.updateRule(rule);
@@ -277,6 +279,8 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     private static Rule convert(RuleDTO ruleDTO) {
         if (ruleDTO == null) return null;
         final Rule rule = new Rule();
+        // if no position is set for the new rule we put it at the end of the list:
+        rule.setPosition(ruleDTO.getPosition() == null ? Integer.MAX_VALUE : ruleDTO.getPosition());
         if (!Strings.isNullOrEmpty(ruleDTO.getName())) {
             rule.setName(ruleDTO.getName());
         }
@@ -295,8 +299,6 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         if (!Strings.isNullOrEmpty(ruleDTO.getExporterFilter())) {
             rule.setExporterFilter(ruleDTO.getExporterFilter());
         }
-        // if no position is set for the new rule we put it at the end of the list:
-        rule.setPosition(ruleDTO.getPosition() == null ? Integer.MAX_VALUE : ruleDTO.getPosition());
         rule.setOmnidirectional(ruleDTO.isOmnidirectional());
         rule.setProtocol(ruleDTO.getProtocols().stream().collect(Collectors.joining(",")));
         return rule;
