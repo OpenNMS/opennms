@@ -31,6 +31,7 @@ package org.opennms.netmgt.dnsresolver.netty;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -54,6 +55,7 @@ import io.netty.handler.codec.dns.DnsResponse;
 import io.netty.handler.codec.dns.DnsResponseCode;
 import io.netty.handler.codec.dns.DnsSection;
 import io.netty.resolver.dns.DnsCache;
+import io.netty.resolver.dns.DnsCacheEntry;
 import io.netty.resolver.dns.DnsNameResolver;
 import io.netty.resolver.dns.DnsNameResolverBuilder;
 import io.netty.resolver.dns.DnsNameResolverTimeoutException;
@@ -69,13 +71,13 @@ import io.netty.util.concurrent.Future;
 public class NettyResolverContext implements DnsResolver {
 
     private final NettyDnsResolver parent;
-    private final DnsCache cache;
+    private final ExtendedDnsCache cache;
     private final int idx;
 
     private EventLoopGroup group;
     private DnsNameResolver resolver;
 
-    public NettyResolverContext(NettyDnsResolver parent, DnsCache cache, int idx) {
+    public NettyResolverContext(NettyDnsResolver parent, ExtendedDnsCache cache, int idx) {
         this.parent = Objects.requireNonNull(parent);
         this.cache = Objects.requireNonNull(cache);
         this.idx = idx;
@@ -145,25 +147,53 @@ public class NettyResolverContext implements DnsResolver {
     public CompletableFuture<Optional<String>> reverseLookup(InetAddress inetAddress) {
         final CompletableFuture<Optional<String>> future = new CompletableFuture<>();
         final String name = ReverseMap.fromAddress(inetAddress).toString();
+
+        // Netty does not perform caching when we query directly for DNS questions i.e. PTR requests
+        // so we perform the caching logic ourselves
+        final List<? extends DnsCacheEntry> entries = cache.get(name, null);
+        if (entries != null) {
+            // We've got a hit, so we have some cached result for this entry
+            // Try and find a hostname, or return an empty optional if none was found
+            final Optional<String> cachedHostname = entries.stream()
+                    .filter(e -> e instanceof ExtendedDnsCacheEntry)
+                    .map(e -> ((ExtendedDnsCacheEntry)e).hostnameFromPtrRecord())
+                    .filter(Objects::nonNull)
+                    .findFirst();
+            if (cachedHostname.isPresent()) {
+                // We found a cached hostname
+                return CompletableFuture.completedFuture(Optional.of(removeTrailingDot(cachedHostname.get())));
+            } else {
+                // No hostname found return an empty result
+                return CompletableFuture.completedFuture(Optional.empty());
+            }
+        }
+
         final Future<AddressedEnvelope<DnsResponse, InetSocketAddress>> requestFuture = resolver.query(new DefaultDnsQuestion(name, DnsRecordType.PTR, DnsRecord.CLASS_IN));
         requestFuture.addListener(responseFuture -> {
             try {
                 final AddressedEnvelope<DnsResponse, InetSocketAddress> envelope = (AddressedEnvelope<DnsResponse, InetSocketAddress>) responseFuture.get();
                 final DnsResponse response = envelope.content();
                 if (response.code() != DnsResponseCode.NOERROR) {
+                    // Cache the failure (will only be cached if negative-ttl is > 0)
+                    cache.cache(name, null, new Exception("Request failed with response code: " + response.code()), group.next());
                     future.complete(Optional.empty());
                     return;
                 }
 
                 final DnsPtrRecord ptrRecord = envelope.content().recordAt(DnsSection.ANSWER);
                 if (ptrRecord == null) {
+                    // Cache the failure (will only be cached if negative-ttl is > 0)
+                    cache.cache(name, null, new Exception("No PTR record found."), group.next());
                     future.complete(Optional.empty());
                     return;
                 }
 
+                // Cache the result
+                cache.cache(name, ptrRecord, group.next());
+
                 final String hostname = ptrRecord.hostname();
                 // Strip of the trailing dot
-                final String trimmedHostname = hostname.substring(0, hostname.length() - 1);
+                final String trimmedHostname = removeTrailingDot(hostname);
                 future.complete(Optional.of(trimmedHostname));
             } catch (InterruptedException e) {
                 future.completeExceptionally(e);
@@ -177,5 +207,9 @@ public class NettyResolverContext implements DnsResolver {
             }
         });
         return future;
+    }
+
+    private static String removeTrailingDot(String hostname) {
+        return hostname.substring(0, hostname.length() - 1);
     }
 }

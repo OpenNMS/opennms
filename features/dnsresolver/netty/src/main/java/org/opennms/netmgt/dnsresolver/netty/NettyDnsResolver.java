@@ -48,9 +48,11 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.net.HostAndPort;
 
@@ -81,6 +83,7 @@ public class NettyDnsResolver implements DnsResolver {
     public static final String CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI = "uei.opennms.org/circuitBreaker/stateChange";
 
     private final EventForwarder eventForwarder;
+    private final MetricRegistry metrics;
     private final Timer lookupTimer;
     private final Meter lookupsSuccessful;
     private final Meter lookupsFailed;
@@ -92,21 +95,21 @@ public class NettyDnsResolver implements DnsResolver {
     private int minTtlSeconds = -1;
     private int maxTtlSeconds = -1;
     private int negativeTtlSeconds = -1;
+    private long maxCacheSize = -1;
 
     private List<NettyResolverContext> contexts;
     private Iterator<NettyResolverContext> iterator;
-    private DnsCache cache;
+    private CaffeineDnsCache cache;
 
     private CircuitBreaker circuitBreaker;
 
     public NettyDnsResolver(EventForwarder eventForwarder, MetricRegistry metrics) {
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
+        this.metrics = Objects.requireNonNull(metrics);
         lookupTimer = metrics.timer("lookups");
         lookupsSuccessful = metrics.meter("lookupsSuccessful");
         lookupsFailed = metrics.meter("lookupsFailed");
         lookupsRejectedByCircuitBreaker = metrics.meter("lookupsRejectedByCircuitBreaker");
-        // It would be nice to expose cache statistics too, but Netty's cache doesn't currently
-        // make any statistics available - see https://github.com/netty/netty/issues/9412
     }
 
     public void init() {
@@ -114,17 +117,17 @@ public class NettyDnsResolver implements DnsResolver {
         if (numContexts == 0) {
             numContexts = Runtime.getRuntime().availableProcessors() * 2;
         }
-        LOG.debug("Initializing Netty resolver with {} contexts and resolvers: {}", numContexts);
+        LOG.debug("Initializing Netty resolver with {} contexts and nameservers: {}", numContexts, nameservers);
 
-
-        contexts = new ArrayList<>(numContexts);
-
-        // Initialize the cache with the given TTL settings - use Netty's default if the configured values
+        // Initialize the cache with the given TTL settings - use defaults if the configured values
         // are less than 0
-        final DefaultDnsCache cacheWithDefaults = new DefaultDnsCache();
-        cache = new DefaultDnsCache(minTtlSeconds < 0 ? cacheWithDefaults.minTtl() : minTtlSeconds,
+        final CaffeineDnsCache cacheWithDefaults = new CaffeineDnsCache();
+        cache = new CaffeineDnsCache(minTtlSeconds < 0 ? cacheWithDefaults.minTtl() : minTtlSeconds,
                 maxTtlSeconds < 0 ? cacheWithDefaults.maxTtl() : maxTtlSeconds,
-                negativeTtlSeconds < 0 ? cacheWithDefaults.negativeTtl() : negativeTtlSeconds);
+                negativeTtlSeconds < 0 ? cacheWithDefaults.negativeTtl() : negativeTtlSeconds,
+                maxCacheSize < 0 ? cacheWithDefaults.maxSize() : maxCacheSize);
+        cache.registerMetrics(metrics);
+        contexts = new ArrayList<>(numContexts);
         for (int i = 0; i < numContexts; i++) {
             // Share the same cache across all of the contexts
             NettyResolverContext context = new NettyResolverContext(this, cache, i);
@@ -173,6 +176,7 @@ public class NettyDnsResolver implements DnsResolver {
             }
         }
         contexts.clear();
+        cache.unregisterMetrics(metrics);
     }
 
     @Override
@@ -195,6 +199,11 @@ public class NettyDnsResolver implements DnsResolver {
                 timerContext.stop();
             });
         }).toCompletableFuture();
+    }
+
+    @VisibleForTesting
+    CaffeineDnsCache getCache() {
+        return cache;
     }
 
     public int getNumContexts() {
@@ -243,6 +252,14 @@ public class NettyDnsResolver implements DnsResolver {
 
     public void setNegativeTtlSeconds(int negativeTtlSeconds) {
         this.negativeTtlSeconds = negativeTtlSeconds;
+    }
+
+    public long getMaxCacheSize() {
+        return maxCacheSize;
+    }
+
+    public void setMaxCacheSize(long maxCacheSize) {
+        this.maxCacheSize = maxCacheSize;
     }
 
     public CircuitBreaker getCircuitBreaker() {

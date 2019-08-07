@@ -18,6 +18,7 @@
             <cm:property name="min-ttl-seconds" value="60" />
             <cm:property name="max-ttl-seconds" value="-1" />
             <cm:property name="negative-ttl-seconds" value="300" />
+            <cm:property name="max-cache-size" value="10000" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -51,7 +52,7 @@
         <property name="minTtlSeconds" value="${min-ttl-seconds}"/>
         <property name="maxTtlSeconds" value="${min-ttl-seconds}"/>
         <property name="negativeTtlSeconds" value="${negative-ttl-seconds}"/>
-
+        <property name="maxCacheSize" value="${max-cache-size}"/>
     </bean>
 
     <service ref="dnsResolver" interface="org.opennms.netmgt.dnsresolver.api.DnsResolver">

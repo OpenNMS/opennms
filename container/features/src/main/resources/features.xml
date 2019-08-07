@@ -1466,6 +1466,7 @@
         <feature>opennms-events-api</feature>
         <feature>opennms-model</feature>
 
+        <bundle dependency="true">mvn:com.github.ben-manes.caffeine/caffeine/${caffeineVersion}</bundle>
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.netty/${project.version}</bundle>
     </feature>
 
