@@ -55,6 +55,8 @@
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-persistence</feature>
                                 <feature>opennms-spring-extender</feature>
+                                <feature>opennms-blobstore-shell</feature>
+                                <feature>opennms-jsonstore-shell</feature>
 
                                 <!-- Sentinel specific features -->
                                 <feature>sentinel-core</feature>
@@ -461,27 +463,33 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.kv-store.cassandra</artifactId>
+            <artifactId>org.opennms.features.distributed.kv-store.blob.cassandra</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.kv-store.no-op</artifactId>
+            <artifactId>org.opennms.features.distributed.kv-store.blob.no-op</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.kv-store.shell</artifactId>
+            <artifactId>org.opennms.features.distributed.kv-store.blob.shell</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.cassandra.newts-impl</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.json.shell</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

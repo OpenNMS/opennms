@@ -115,6 +115,7 @@
         <feature>opennms-jest</feature>
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-netty</feature>
+        <feature>sentinel-kvstore-api</feature>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
