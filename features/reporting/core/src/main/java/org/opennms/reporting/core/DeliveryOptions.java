@@ -55,7 +55,7 @@ public class DeliveryOptions implements Serializable {
     }
 
     public boolean isPersist() {
-        return m_persist;
+        return m_persist == null ? false : m_persist;
     }
 
     public void setSendMail(boolean sendEmail) {
@@ -63,7 +63,7 @@ public class DeliveryOptions implements Serializable {
     }
 
     public boolean isSendMail() {
-        return m_sendMail;
+        return m_sendMail == null ? false : m_sendMail;
     }
 
     public ReportFormat getFormat() {
