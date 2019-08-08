@@ -40,47 +40,26 @@ import java.util.Objects;
 public class ReportFloatParm extends ReportParm implements Serializable {
     
     private static final long serialVersionUID = 5242917854258286117L;
+
     Float m_value;
     String m_type;
     
-    /**
-     * <p>Constructor for ReportFloatParm.</p>
-     */
     public ReportFloatParm() {
       super();
     }
     
-    /**
-     * <p>getValue</p>
-     *
-     * @return {@link java.lang.Float} object.
-     */
     public Float getValue() {
         return m_value;
     }
     
-    /**
-     * <p>setValue</p>
-     *
-     * @param value a {@link java.lang.Float} object.
-     */
     public void setValue(Float value) {
         m_value = value;
     }
     
-    /**
-     * <p>getInputType</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getInputType() {
         return m_type;
     }
-    /**
-     * <p>setInputType</p>
-     *
-     * @param type a {@link java.lang.String} object.
-     */
+
     public void setInputType(String type) {
         m_type = type;
     }

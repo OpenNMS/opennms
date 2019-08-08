@@ -22,11 +22,6 @@ const editScheduleModalTemplate  = require('./modals/schedule-edit-modal.html');
 const reportDetailsTemplate = require('./report-details.html');
 const confirmTopoverTemplate = require('../onms-classifications/views/modals/popover.html');
 
-const handleGlobalError = function($scope, errorResponse) {
-    $scope.globalError = 'An unexpected error occurred: ' + errorResponse.statusText;
-    $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
-};
-
 const handleReportError = function(response, report, optionalCallbackIfNoContextError) {
     if (report && response) {
         const errorResponse = new ErrorResponse(response);
@@ -190,7 +185,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                                 scope.selected.dashboard = scope.dashboards[0];
                             }
                         }, function (errorResponse) {
-                            handleGlobalError(scope, errorResponse);
+                            $scope.setGlobalError(errorResponse);
                         });
                     };
 
@@ -208,7 +203,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                                 scope.endpointChanged();
                             }
                         }, function (errorResponse) {
-                            handleGlobalError(scope, errorResponse);
+                            $scope.setGlobalError(errorResponse);
                         });
                     };
 
@@ -243,27 +238,32 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 }
             }
         }])
-        .controller('ReportsController', ['$scope', '$http', 'UserService', function($scope, $http, UserService) {
+        .controller('ReportsController', ['$scope', '$rootScope', '$http', 'UserService', function($scope, $rootScope, $http, UserService) {
             $scope.fetchUserInfo = function() {
                 UserService.whoami(function(user) {
                     $scope.userInfo = user;
                 }, function(errorResponse) {
-                    handleGlobalError($scope, errorResponse);
+                    $scope.setGlobalError(errorResponse);
                 });
             };
             $scope.fetchUserInfo();
+            $scope.setGlobalError = function(errorResponse) {
+                $scope.globalError = 'An unexpected error occurred: ' + errorResponse.status + ' ' + errorResponse.statusText;
+                $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
+            };
+            $scope.globalError = undefined;
+            $scope.globalErrorDetails = undefined;
         }])
         .controller('ReportTemplatesController', ['$scope', '$http', 'ReportTemplateResource', function($scope, $http, ReportTemplateResource) {
             $scope.refresh = function() {
                 $scope.reports = [];
-                $scope.globalError = undefined;
 
                 ReportTemplateResource.list(function(response) {
                     if (response && Array.isArray(response)) {
                         $scope.reports = response;
                     }
                 }, function(errorResponse) {
-                    handleGlobalError($scope, errorResponse);
+                    $scope.setGlobalError(errorResponse);
                 })
             };
 
@@ -312,7 +312,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                     $scope.report = new ReportDetails(response);
                 }, function(response) {
                     $scope.loading = false;
-                    handleGlobalError($scope, response);
+                    $scope.setGlobalError(response);
                 });
             };
 
@@ -347,9 +347,9 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                             const bodyAsString = String.fromCharCode.apply(null, new Uint8Array(response.data));
                             const bodyAsJson = JSON.parse(bodyAsString);
                             response.data = bodyAsJson;
-                            handleReportError(response, $scope.report, (response) => handleGlobalError($scope, response));
+                            handleReportError(response, $scope.report, (response) => $scope.setGlobalError(response));
                         } else {
-                            handleGlobalError($scope, response);
+                            $scope.setGlobalError(response);
                         }
                     });
             };
@@ -466,7 +466,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 ReportScheduleResource.list(function(data) {
                     $scope.scheduledReports = data;
                 }, function(response) {
-                    handleGlobalError($scope, response);
+                    $scope.setGlobalError(response);
                 });
             };
 
@@ -474,7 +474,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 ReportScheduleResource.deleteAll({}, function(response) {
                    $scope.refresh();
                 }, function(response) {
-                    handleGlobalError($scope, response);
+                    $scope.setGlobalError(response);
                 });
             };
 
@@ -482,7 +482,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 ReportScheduleResource.delete({id: schedule.triggerName || -1}, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    handleGlobalError($scope, response);
+                    $scope.setGlobalError(response);
                 })
             };
 
@@ -503,6 +503,9 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                                 online: false,
                                 triggerName: triggerName
                             }
+                        },
+                        setGlobalError: function() {
+                            return $scope.setGlobalError;
                         }
                     }
 
@@ -515,7 +518,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.refresh();
         }])
-        .controller('ScheduleEditController', ['$scope', 'userInfo', 'meta', 'ReportScheduleResource', function($scope, userInfo, meta, ReportScheduleResource) {
+        .controller('ScheduleEditController', ['$scope', 'userInfo', 'meta', 'setGlobalError', 'ReportScheduleResource', function($scope, userInfo, meta, setGlobalError, ReportScheduleResource) {
             $scope.meta = meta;
             $scope.userInfo = userInfo;
             $scope.report = new ReportDetails({id: $scope.meta.reportId});
@@ -525,6 +528,10 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.onReportFormInvalidStateChange = function(invalidState) {
                 $scope.reportForm.$invalid = invalidState;
+            };
+
+            $scope.setGlobalError = function(response) {
+                setGlobalError(response);
             };
 
             $scope.loadDetails = function() {
@@ -550,7 +557,8 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                     $scope.report = new ReportDetails(response);
                 }, function(response) {
                     $scope.loading = false;
-                    handleGlobalError($scope, response);
+                    $scope.setGlobalError(response);
+                    $scope.$close();
                 });
             };
 
@@ -567,7 +575,10 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 ReportScheduleResource.update(data, function() {
                  $scope.$close();
               }, function(response) {
-                    handleReportError(response, $scope.report, () => handleGlobalError($scope, response));
+                    handleReportError(response, $scope.report, () => {
+                        $scope.setGlobalError(response);
+                        $scope.$close();
+                    });
               });
             };
 
@@ -579,7 +590,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 ReportStorageResource.list(function(data) {
                     $scope.persistedReports = data;
                 }, function(response) {
-                    handleGlobalError($scope, response);
+                    $scope.setGlobalError(response);
                 });
             };
 
@@ -587,7 +598,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 ReportStorageResource.deleteAll({}, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    handleGlobalError($scope, response);
+                    $scope.setGlobalError(response);
                 });
             };
 
@@ -595,7 +606,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 ReportStorageResource.delete({id: report.id || -1}, function(response) {
                     $scope.refresh();
                 }, function(response) {
-                    handleGlobalError($scope, response);
+                    $scope.setGlobalError(response);
                 })
             };
 

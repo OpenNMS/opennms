@@ -38,51 +38,28 @@ import java.util.Objects;
  * @version $Id: $
  */
 public class ReportStringParm extends ReportParm implements Serializable {
-    
-    
+
     private static final long serialVersionUID = -2057597127243217834L;
     
     String m_value;
     String m_type;
     
-    /**
-     * <p>Constructor for ReportStringParm.</p>
-     */
     public ReportStringParm() {
       super();
     }
     
-    /**
-     * <p>getValue</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getValue() {
         return m_value;
     }
     
-    /**
-     * <p>setValue</p>
-     *
-     * @param value a {@link java.lang.String} object.
-     */
     public void setValue(String value) {
         m_value = value;
     }
     
-    /**
-     * <p>getInputType</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getInputType() {
         return m_type;
     }
-    /**
-     * <p>setInputType</p>
-     *
-     * @param type a {@link java.lang.String} object.
-     */
+
     public void setInputType(String type) {
         m_type = type;
     }
