@@ -85,7 +85,6 @@ public class GrafanaQueryExecutor extends JRAbstractQueryExecuter {
         final GrafanaClient client;
         final String grafanaEndpointUid = getStringParameterOrProperty(GRAFANA_ENDPOINT_UID_PARM);
         if (Strings.isNullOrEmpty(grafanaEndpointUid)) {
-            // TODO MVR, do we want to support this, or not
             LOG.debug("No Grafana endpoint UID was set, using server configuration from the user's environment.");
             final GrafanaServerConfiguration config = GrafanaServerConfiguration.fromEnv();
             client = new GrafanaClientImpl(config);
