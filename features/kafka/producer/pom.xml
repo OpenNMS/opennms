@@ -100,7 +100,6 @@
     <dependency>
       <groupId> com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>${protobuf3Version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

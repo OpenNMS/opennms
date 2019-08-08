@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import org.bson.BsonBinary;
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
@@ -74,14 +75,14 @@ public class HostDescr implements CounterData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeString("hostname", this.hostname.value);
         bsonWriter.writeBinaryData("uuid", new BsonBinary(this.uuid.value));
         bsonWriter.writeName("machine_type");
         this.machine_type.writeBson(bsonWriter);
         bsonWriter.writeName("os_name");
-        this.os_name.writeBson(bsonWriter);
+        this.os_name.writeBson(bsonWriter, enr);
         bsonWriter.writeString("os_release", this.os_release.value);
         bsonWriter.writeEndDocument();
     }

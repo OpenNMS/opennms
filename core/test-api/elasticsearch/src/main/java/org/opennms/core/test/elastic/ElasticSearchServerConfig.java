@@ -42,6 +42,8 @@ import org.elasticsearch.plugins.Plugin;
 
 public class ElasticSearchServerConfig {
 
+    public static final String ES_HTTP_PORT = "9205";
+
     private static final String DEFAULT_HOME_DIRECTORY = "target/elasticsearch-home";
 
     private final Settings.Builder builder = Settings.builder();
@@ -50,20 +52,20 @@ public class ElasticSearchServerConfig {
     private boolean keepElasticHomeAfterShutdown;
     private List<Class<? extends Plugin>> plugins = new ArrayList<>();
 
+    public ElasticSearchServerConfig() {
+        withDefaults();
+    }
+
     public ElasticSearchServerConfig withDefaults() {
         withNodeName("testNode");
         withTransportType("local");
         withClusterName("testCluster");
         withHomeDirectory(DEFAULT_HOME_DIRECTORY);
-        withHttpEnabled(false);
+        withSetting("http.port", ES_HTTP_PORT);
+        withSetting(NetworkModule.HTTP_TYPE_KEY, "netty4");
+        withSetting(NetworkModule.TRANSPORT_TYPE_KEY, "netty4");
         // make startup faster
-        withSetting("discovery.zen.ping_timeout", 0);
-
-        return this;
-    }
-
-    public ElasticSearchServerConfig withHttpEnabled(boolean httpEnabled) {
-        builder.put(NetworkModule.HTTP_ENABLED.getKey(), httpEnabled);
+        withSetting("discovery.zen.ping_timeout", "1ms");
         return this;
     }
 

@@ -41,7 +41,7 @@ import org.joda.time.Duration;
 import org.nustaq.serialization.FSTConfiguration;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.distributed.kvstore.api.SerializingKeyValueStore;
+import org.opennms.features.distributed.kvstore.api.SerializingBlobStore;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -77,7 +77,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
 
     private final String key;
 
-    private final SerializingKeyValueStore<T> kvStore;
+    private final SerializingBlobStore<T> kvStore;
 
     protected T state;
     
@@ -106,10 +106,10 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
                                            ThresholdingSession thresholdingSession) {
         Objects.requireNonNull(threshold);
         Objects.requireNonNull(thresholdingSession);
-        Objects.requireNonNull(thresholdingSession.getKVStore());
+        Objects.requireNonNull(thresholdingSession.getBlobStore());
 
         this.thresholdingSession = thresholdingSession;
-        kvStore = new SerializingKeyValueStore<>(thresholdingSession.getKVStore(),
+        kvStore = new SerializingBlobStore<>(thresholdingSession.getBlobStore(),
                 fst::asByteArray,
                 bytes -> (T) fst.asObject(bytes));
         key = String.format("%d-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
@@ -149,11 +149,11 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
 
             // If we don't have a record of when this was last updated locally, get it from the store
             if (lastKnownUpdate == null) {
-                kvStore.get(key, THRESHOLDING_KV_CONTEXT).ifPresent(v -> state = (T) v);
+                kvStore.get(key, THRESHOLDING_KV_CONTEXT).ifPresent(v -> state = v);
             } else {
                 // Otherwise get it from the store only if our record is stale
                 kvStore.getIfStale(key, THRESHOLDING_KV_CONTEXT, lastKnownUpdate)
-                        .ifPresent(o -> o.ifPresent(v -> state = (T) v));
+                        .ifPresent(o -> o.ifPresent(v -> state = v));
             }
         } catch (RuntimeException e) {
             RATE_LIMITED_LOGGER.warn("Failed to retrieve state for threshold {}", key, e);

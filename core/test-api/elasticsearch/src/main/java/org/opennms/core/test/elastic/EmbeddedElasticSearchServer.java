@@ -96,12 +96,8 @@ public class EmbeddedElasticSearchServer {
 
     private static class PluginNode extends Node {
         public PluginNode(Settings settings, Collection<Class<? extends Plugin>> plugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null) , plugins, false);
-        }
-
-        @Override
-        protected void registerDerivedNodeNameWithLogger(String s) {
-            // pass
+            super(InternalSettingsPreparer.prepareEnvironment(settings, Collections.emptyMap(),
+                    null, null) , plugins, false);
         }
     }
 }

@@ -63,21 +63,12 @@ import com.jayway.awaitility.Awaitility;
 import io.searchbox.client.JestClient;
 
 public class ElasticAlarmIndexerIT {
-    private static final String HTTP_PORT = "9205";
-    private static final String HTTP_TRANSPORT_PORT = "9305";
-
     private JestClient jestClient;
     private AlarmHistoryRepository alarmHistoryRepo;
     private ElasticAlarmIndexer elasticAlarmIndexer;
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-            .withDefaults()
-            .withSetting("http.enabled", true)
-            .withSetting("http.port", HTTP_PORT)
-            .withSetting("http.type", "netty4")
-            .withSetting("transport.type", "netty4")
-            .withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
             .withPlugins(PainlessPlugin.class, ReindexPlugin.class)
     );
 
@@ -90,7 +81,7 @@ public class ElasticAlarmIndexerIT {
 
     @Before
     public void setUp() throws IOException {
-        RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT);
+        RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         jestClient = restClientFactory.createClient();
         alarmHistoryRepo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY, new IndexSettings());
 

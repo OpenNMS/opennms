@@ -33,7 +33,10 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An implementation of {@link KeyValueStore} to extend for implementations that do not otherwise have access to
@@ -41,9 +44,10 @@ import java.util.concurrent.Executors;
  * <p>
  * This implementation wraps the synchronous get/put calls in a {@link CompletableFuture} and executes them async.
  * <p>
- * A separate thread will be used by this implementation by each blocked async call while waiting for the response.
+ * This implementation attempts to process all requests async but may instead process synchronously depending on the
+ * executor implementation used. The default is to degrade to synchronous processing if the executor is full.
  */
-public abstract class AbstractAsyncKeyValueStore extends AbstractKeyValueStore {
+public abstract class AbstractAsyncKeyValueStore<T> extends AbstractKeyValueStore<T> {
     private final Executor executor;
 
     protected AbstractAsyncKeyValueStore(Executor executor) {
@@ -51,12 +55,23 @@ public abstract class AbstractAsyncKeyValueStore extends AbstractKeyValueStore {
     }
 
     protected AbstractAsyncKeyValueStore() {
-        // Default impl using a cached thread pool
-        this(Executors.newCachedThreadPool(r -> new Thread(r, "kvstore-async-thread")));
+        ThreadFactory threadFactory = r -> {
+            Thread t = new Thread(r, "kvstore-async-thread");
+            t.setDaemon(true);
+            return t;
+        };
+        // A reasonable default executor based on available processors that degrades to synchronous processing when full
+        executor = new ThreadPoolExecutor(1,
+                Runtime.getRuntime().availableProcessors() * 10,
+                60,
+                TimeUnit.SECONDS,
+                new SynchronousQueue<>(),
+                threadFactory,
+                new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     @Override
-    public final CompletableFuture<Long> putAsync(String key, byte[] value, String context, Integer ttlInSeconds) {
+    public final CompletableFuture<Long> putAsync(String key, T value, String context, Integer ttlInSeconds) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         Objects.requireNonNull(context);
@@ -65,7 +80,7 @@ public abstract class AbstractAsyncKeyValueStore extends AbstractKeyValueStore {
     }
 
     @Override
-    public final CompletableFuture<Optional<byte[]>> getAsync(String key, String context) {
+    public final CompletableFuture<Optional<T>> getAsync(String key, String context) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
 
@@ -73,8 +88,8 @@ public abstract class AbstractAsyncKeyValueStore extends AbstractKeyValueStore {
     }
 
     @Override
-    public final CompletableFuture<Optional<Optional<byte[]>>> getIfStaleAsync(String key, String context,
-                                                                               long timestamp) {
+    public final CompletableFuture<Optional<Optional<T>>> getIfStaleAsync(String key, String context,
+                                                                          long timestamp) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
 

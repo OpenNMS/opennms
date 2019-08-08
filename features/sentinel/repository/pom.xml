@@ -55,6 +55,8 @@
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-persistence</feature>
                                 <feature>opennms-spring-extender</feature>
+                                <feature>opennms-blobstore-shell</feature>
+                                <feature>opennms-jsonstore-shell</feature>
 
                                 <!-- Sentinel specific features -->
                                 <feature>sentinel-core</feature>
@@ -69,8 +71,9 @@
                                 <feature>sentinel-coordination-zookeeper</feature>
                                 <feature>sentinel-coordination-shell</feature>
                                 <feature>sentinel-newts</feature>
-                                <feature>sentinel-kvstore-noop</feature>
-                                <feature>sentinel-kvstore-cassandra</feature>
+                                <feature>sentinel-blobstore-noop</feature>
+                                <feature>sentinel-blobstore-cassandra</feature>
+                                <feature>sentinel-jsonstore-postgres</feature>
 
 
                                 <!-- Other features -->
@@ -433,7 +436,22 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.serviceregistry</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.dnsresolver</groupId>
+            <artifactId>org.opennms.features.dnsresolver.netty</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.dnsresolver</groupId>
+            <artifactId>org.opennms.features.dnsresolver.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -442,6 +460,36 @@
             <version>${newtsVersion}</version>
             <classifier>features</classifier>
             <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.blob.cassandra</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.blob.no-op</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.blob.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.cassandra.newts-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.json.shell</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

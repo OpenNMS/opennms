@@ -158,6 +158,11 @@ public abstract class AbstractEventUtil implements EventUtil {
 	protected static final String TAG_INTERFACE_RESOLVE = "interfaceresolve";
 
 	/**
+	 * The primary interface
+	 */
+	protected static final String TAG_PRIMARY_INTERFACE_ADDRESS = "primaryinterface";
+
+	/**
 	 * The reverse DNS lookup of the interface
 	 */
 	protected static final String TAG_IFALIAS = "ifalias";

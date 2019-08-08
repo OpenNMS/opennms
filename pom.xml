@@ -444,15 +444,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <!--
-          CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the
-          org.opennms.core.test.karaf.KarafTestCase classes are experiencing
-          the following bug in those versions (even thought it is claimed to
-          have been fixed in 2.19.1):
-
-          https://issues.apache.org/jira/browse/SUREFIRE-1193
-        -->
-        <version>2.18</version>
+        <version>${maven.failsafe.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -720,43 +712,6 @@
           </lifecycleMappingMetadata>
         </configuration>
       </plugin>    
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.6.201602180812</version>
-        <configuration>
-          <!-- TODO: Figure out how to configure this to be the same path for all projects -->
-          <classDumpDir>${opennms.build.basedir}/target/jacoco/classes</classDumpDir>
-          <!-- TODO: Figure out how to configure this to be the same path for all projects -->
-          <destFile>${opennms.build.basedir}/target/jacoco/jacoco.exec</destFile>
-          <!-- Append all .exec content to the same file -->
-          <append>true</append>
-          <includes>
-            <!-- All OpenNMS Java packages -->
-            <include>org/opennms/**</include>
-            <include>liquibase/ext/opennms/**</include>
-            <include>org/openoss/opennms/**</include>
-          </includes>
-          <excludes>
-            <!-- Spring CGLIB proxies -->
-            <exclude>**/*FastClassBySpringCGLIB*</exclude>
-            <exclude>**/*EnhancerBySpringCGLIB*</exclude>
-            <!-- CGLIB proxies -->
-            <exclude>**/*EnhancerByCGLIB*</exclude>
-            <!-- javassist proxies -->
-            <exclude>**/*_jvst*</exclude>
-            <!-- Unit test classes -->
-            <exclude>**/*Test.*</exclude>
-            <exclude>**/*TestCase.*</exclude>
-            <exclude>**/*IT.*</exclude>
-            <exclude>**/*ITCase.*</exclude>
-            <!-- Duplicate classes -->
-            <exclude>**/SnmpUtilsTest*</exclude>
-            <!-- Drools rules -->
-            <exclude>org/opennms/netmgt/correlation/drools/Println*</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -858,7 +813,6 @@
               </target>
               <target>
                 <property name="opennms.build.basedir" location="." />
-                <mkdir dir="${opennms.build.basedir}/target/jacoco/classes" />
                 <echo message="base directory is ${opennms.build.basedir}" />
               </target>
             </configuration>
@@ -927,10 +881,8 @@
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <rerunFailingTestsCount>1</rerunFailingTestsCount>
-          <includes>
-            <include>**/*Test.java</include>
-          </includes>
+          <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
+          <reportsDirectory>${project.build.directory}/surefire-reports-${ci.instance}</reportsDirectory>
         </configuration>
       </plugin>
       <plugin>
@@ -953,11 +905,11 @@
  
             https://jira.atlassian.com/browse/BAM-15446
           -->
-          <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <rerunFailingTestsCount>1</rerunFailingTestsCount>
+          <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <skipITs>${skipITs}</skipITs>
+          <reportsDirectory>${project.build.directory}/failsafe-reports-${ci.instance}</reportsDirectory>
         </configuration>
         <executions>
           <execution>
@@ -994,29 +946,6 @@
           <generateHtml>true</generateHtml>
         </configuration>
       </plugin>
-      <!-- jacoco code coverage testing library -->
-      <!--
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>default-prepare-agent</id>
-            <goals>
-              <!- - Add the jacoco agent configuration to the argLine for surefire - ->
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>default-prepare-agent-integration</id>
-            <goals>
-              <!- - Add the jacoco agent configuration to the argLine for surefire - ->
-              <goal>prepare-agent-integration</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
       <plugin>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-xjc-plugin</artifactId>
@@ -1034,8 +963,15 @@
         <version>${maven.surefire.report.plugin.version}</version>
         <reportSets>
           <reportSet>
+            <id>unit-tests</id>
             <reports>
-               <report>report-only</report>
+              <report>report-only</report>
+            </reports>
+          </reportSet>
+          <reportSet>
+            <id>integration-tests</id>
+            <reports>
+              <report>failsafe-report-only</report>
             </reports>
           </reportSet>
         </reportSets>
@@ -1139,7 +1075,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <!-- maven surefire version added here so it could be overridden -->
+    <!-- maven surefire/failsafe version added here so it could be overridden -->
     <!-- 
       CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the 
       org.opennms.core.test.karaf.KarafTestCase classes are experiencing
@@ -1148,8 +1084,10 @@
 
       https://issues.apache.org/jira/browse/SUREFIRE-1193
     -->
-    <maven.surefire.plugin.version>2.18</maven.surefire.plugin.version>
-    <maven.surefire.report.plugin.version>2.18</maven.surefire.report.plugin.version>
+    <maven.testing.plugin.version>2.18</maven.testing.plugin.version>
+    <maven.failsafe.plugin.version>${maven.testing.plugin.version}</maven.failsafe.plugin.version>
+    <maven.surefire.plugin.version>${maven.testing.plugin.version}</maven.surefire.plugin.version>
+    <maven.surefire.report.plugin.version>${maven.testing.plugin.version}</maven.surefire.report.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
@@ -1217,24 +1155,24 @@
     <rpm.database.password>opennms</rpm.database.password>
 
 
-   <!-- code signing properties - used in opennms-webstart -->
-   <!-- NOTE: because of maven property initialization, webstart.keystore must match the hardcoded activation in features/remote-poller/pom.xml -->
-   <webstart.keystore>${project.build.directory}/build-generated-keystore.ks</webstart.keystore>
-   <webstart.keypass>opennms</webstart.keypass>
-   <webstart.storepass>opennms</webstart.storepass>
-   <webstart.keyalias>opennms-webstart-key</webstart.keyalias>
-   <webstart.keystore.delete>true</webstart.keystore.delete>
-   <webstart.keygen>true</webstart.keygen>
-   <webstart.dnameCn>${user.name}</webstart.dnameCn>
-   <webstart.dnameL/>
-   <webstart.dnameSt/>
-   <webstart.dnameC/>
+    <!-- code signing properties - used in opennms-webstart -->
+    <!-- NOTE: because of maven property initialization, webstart.keystore must match the hardcoded activation in features/remote-poller/pom.xml -->
+    <webstart.keystore>${project.build.directory}/build-generated-keystore.ks</webstart.keystore>
+    <webstart.keypass>opennms</webstart.keypass>
+    <webstart.storepass>opennms</webstart.storepass>
+    <webstart.keyalias>opennms-webstart-key</webstart.keyalias>
+    <webstart.keystore.delete>true</webstart.keystore.delete>
+    <webstart.keygen>true</webstart.keygen>
+    <webstart.dnameCn>${user.name}</webstart.dnameCn>
+    <webstart.dnameL/>
+    <webstart.dnameSt/>
+    <webstart.dnameC/>
 
-   <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
-   <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
+    <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
+    <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
-   <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
-   <hawtio.version>2.0.0</hawtio.version>
+    <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
+    <hawtio.version>2.0.0</hawtio.version>
 
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
@@ -1274,7 +1212,7 @@
     <cxfVersion>3.2.8</cxfVersion>
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
-    <dnsjavaVersion>2.1.3</dnsjavaVersion>
+    <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
@@ -1300,6 +1238,7 @@
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jackson2Version>2.9.8</jackson2Version>
+    <jacocoVersion>0.8.4</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jcifsVersion>1.3.14</jcifsVersion>
@@ -1328,13 +1267,13 @@
     <mapstructVersion>1.3.0.Final</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
     <mockitoVersion>1.10.19</mockitoVersion>
-    <netty4Version>4.1.9.Final</netty4Version>
+    <netty4Version>4.1.37.Final</netty4Version>
     <newtsVersion>1.5.1</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.2.8</paxWebVersion>
-    <protobufVersion>2.6.1</protobufVersion>
-    <protobuf3Version>3.5.1</protobuf3Version>
+    <protobufVersion>3.6.1</protobufVersion>
+    <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.5</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
     <opennmsApiVersion>0.2.1-SNAPSHOT</opennmsApiVersion>
@@ -1350,6 +1289,7 @@
     <quartzVersion>2.2.3</quartzVersion>
     <rancidApiVersion>1.0.4</rancidApiVersion>
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
+    <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>5.15.10</rocksdbjniVersion>
     <scalaLibraryVersion>2.12.8</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.0</scalaLoggingVersion>
@@ -1385,7 +1325,7 @@
     <vaadinAddonContextMenuVersion>2.0.0</vaadinAddonContextMenuVersion>
     <vaadinAddonConfirmDialogVersion>3.2.0</vaadinAddonConfirmDialogVersion>
     <vaadinJavaMaxMemory>1g</vaadinJavaMaxMemory>
-    <vaddinLocalWorkers>${maxCpus}</vaddinLocalWorkers>
+    <vaadinLocalWorkers>${maxCpus}</vaadinLocalWorkers>
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
 
@@ -1394,6 +1334,10 @@
     <nodeVersion>v8.16.0</nodeVersion>
     <npmVersion>6.4.1</npmVersion>
     <yarnVersion>v1.16.0</yarnVersion>
+
+    <!-- CircleCI Settings -->
+    <ci.instance>0</ci.instance>
+    <ci.rerunFailingTestsCount>0</ci.rerunFailingTestsCount>
   </properties>
 
   <profiles>
@@ -1619,6 +1563,69 @@
                   <goal>check</goal>
                 </goals>
                 <phase>process-sources</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>code-coverage</id>
+      <activation>
+        <property>
+          <name>code.coverage</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <!-- Jacoco code coverage testing library -->
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacocoVersion}</version>
+            <executions>
+              <execution>
+                <id>default-prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <append>true</append>
+                  <destFile>${project.build.directory}/jacoco-${ci.instance}.exec</destFile>
+                </configuration>
+              </execution>
+              <execution>
+                <id>pre-integration-test</id>
+                <goals>
+                  <goal>prepare-agent-integration</goal>
+                </goals>
+                <configuration>
+                  <append>true</append>
+                  <destFile>${project.build.directory}/jacoco-it-${ci.instance}.exec</destFile>
+                </configuration>
+              </execution>
+              <execution>
+                <id>report</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <dataFile>${project.build.directory}/jacoco-${ci.instance}.exec</dataFile>
+                  <outputDirectory>${project.build.directory}/jacoco-surefire-${ci.instance}</outputDirectory>
+                </configuration>
+              </execution>
+              <execution>
+                <id>report-integration</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>report-integration</goal>
+                </goals>
+                <configuration>
+                  <dataFile>${project.build.directory}/jacoco-it-${ci.instance}.exec</dataFile>
+                  <outputDirectory>${project.build.directory}/jacoco-failsafe-${ci.instance}</outputDirectory>
+                </configuration>
               </execution>
             </executions>
           </plugin>
