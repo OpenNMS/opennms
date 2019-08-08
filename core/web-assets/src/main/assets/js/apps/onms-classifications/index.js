@@ -302,6 +302,9 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                         },
                         group: function() {
                             return group;
+                        },
+                        groups: function () {
+                            return $scope.groups;
                         }
                     }
                 });
@@ -485,13 +488,14 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             };
 
         }])
-        .controller('ClassificationModalController', ['$scope', '$uibModalInstance', 'ProtocolService', 'ClassificationRuleService', 'classification', 'group', function($scope, $uibModalInstance, ProtocolService, ClassificationRuleService, classification, group) {
-            $scope.classification = classification || {};
+        .controller('ClassificationModalController', ['$scope', '$uibModalInstance', 'ProtocolService', 'ClassificationRuleService', 'classification', 'group', 'groups', function($scope, $uibModalInstance, ProtocolService, ClassificationRuleService, classification, group, groups) {
+            $scope.classification = classification || {group:group};
             $scope.protocols = [];
             $scope.currentSelection = undefined;
             $scope.selectedProtocols = [];
             $scope.buttonName = $scope.classification.id ? 'Update' : 'Create';
             $scope.group = group;
+            $scope.selectableGroups = groups.filter((group) => group.readOnly === false);
 
             var convertStringArrayToProtocolsArray = function(string) {
                 return string.map(function(protocol) {
