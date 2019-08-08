@@ -176,6 +176,14 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setName(newRule.getName());
         rule.setOmnidirectional(newRule.isOmnidirectional());
         rule.setExporterFilter(newValue.getExporterFilter());
+        final Group oldGroup = rule.getGroup();
+        boolean groupChanged = !oldGroup.getId().equals(newRule.getGroup().getId());
+        if(groupChanged) {
+            final Group group = classificationService.getGroup(newRule.getGroup().getId());
+            if(!group.isReadOnly()) {
+                rule.setGroup(group);
+            }
+        }
 
         // adjust position
         Integer newPosition = newValue.getPosition();
@@ -187,6 +195,9 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
 
         // Persist
         classificationService.updateRule(rule);
+        if(groupChanged) {
+            classificationService.updateGroup(oldGroup); // reorder old group as well
+        }
         return Response.ok(convert(rule)).build();
     }
 
@@ -301,6 +312,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         }
         rule.setOmnidirectional(ruleDTO.isOmnidirectional());
         rule.setProtocol(ruleDTO.getProtocols().stream().collect(Collectors.joining(",")));
+        rule.setGroup(convert(ruleDTO.getGroup()));
         return rule;
     }
 
@@ -332,6 +344,18 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         groupDTO.setReadOnly(group.isReadOnly());
         groupDTO.setRuleCount(group.getRules().size());
         return groupDTO;
+    }
+
+    private static Group convert(GroupDTO groupDTO) {
+        if (groupDTO == null) return null;
+        Group group = new Group();
+        group.setId(groupDTO.getId());
+        group.setName(groupDTO.getName());
+        group.setDescription(groupDTO.getDescription());
+        group.setPriority(groupDTO.getPriority());
+        group.setEnabled(groupDTO.isEnabled());
+        group.setReadOnly(groupDTO.isReadOnly());
+        return group;
     }
 
     private static <T, X> Response createResponse(CriteriaBuilder criteriaBuilder,

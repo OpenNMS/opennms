@@ -105,8 +105,11 @@ public class DefaultClassificationService implements ClassificationService {
     @Override
     public Integer saveRule(Rule rule) throws InvalidRuleException {
         return runInTransaction((status) -> {
-            // All rules are automatically added to the user defined group
-            final Group group = classificationGroupDao.findByName(Groups.USER_DEFINED);
+
+            final Group group = classificationGroupDao.get(rule.getGroup().getId());
+            if(group == null) {
+                throw new NoSuchElementException(String.format("Unknown group with id=%s", rule.getGroup().getId()));
+            }
 
             ruleValidator.validate(rule);
             groupValidator.validate(group, rule);
@@ -207,6 +210,7 @@ public class DefaultClassificationService implements ClassificationService {
             ruleValidator.validate(rule);
             groupValidator.validate(rule.getGroup(), rule);
             classificationRuleDao.saveOrUpdate(rule);
+            Group group = getGroup(rule.getGroup().getId()); // reload group since we might just have been added
             updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(rule));
             return null;
         });
