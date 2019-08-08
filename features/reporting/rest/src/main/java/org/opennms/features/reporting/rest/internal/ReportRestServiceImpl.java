@@ -142,7 +142,7 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response scheduleReport(final Map<String, Object> parameters) {
-        final ReportParameters reportParameters = parseParameters(parameters);
+        final ReportParameters reportParameters = parseParameters(parameters, ReportMode.SCHEDULED);
         final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
         final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
         try {
@@ -157,7 +157,7 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response deliverReport(final Map<String, Object> parameters) {
-        final ReportParameters reportParameters = parseParameters(parameters);
+        final ReportParameters reportParameters = parseParameters(parameters, ReportMode.IMMEDIATE);
         final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
         final DeliveryConfig deliveryConfig = new DeliveryConfig(reportParameters, deliveryOptions);
         try {
@@ -174,7 +174,7 @@ public class ReportRestServiceImpl implements ReportRestService {
     public Response runReport(final String reportId, final Map<String, Object> inputParameters) {
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            final ReportParameters parameters = parseParameters(inputParameters);
+            final ReportParameters parameters = parseParameters(inputParameters, ReportMode.IMMEDIATE);
             parameters.setReportId(reportId);
             reportWrapperService.runAndRender(parameters, ReportMode.IMMEDIATE, outputStream);
             if ((parameters.getFormat() == ReportFormat.PDF) || (parameters.getFormat() == ReportFormat.SVG)) {
@@ -287,7 +287,7 @@ public class ReportRestServiceImpl implements ReportRestService {
                 .filter(triggerDescription -> triggerDescription.getTriggerName().equals(triggerName))
                 .findAny();
         if (any.isPresent()) {
-            final ReportParameters reportParameters = parseParameters(parameters);
+            final ReportParameters reportParameters = parseParameters(parameters, ReportMode.SCHEDULED);
             final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
             final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
             try {
@@ -380,7 +380,7 @@ public class ReportRestServiceImpl implements ReportRestService {
         return errorObject;
     }
 
-    private ReportParameters parseParameters(Map<String, Object> inputParameters) {
+    private ReportParameters parseParameters(final Map<String, Object> inputParameters, final ReportMode mode) {
         final String reportId = (String) inputParameters.get("id");
         final ReportParameters actualParameters = reportWrapperService.getParameters(reportId);
         final ReportFormat reportFormat = parseReportFormat((String) inputParameters.get("format"));
@@ -411,13 +411,15 @@ public class ReportRestServiceImpl implements ReportRestService {
                 final ReportDateParm actualDateParm = actualParameters.getParameter(parameterName);
                 final int hours = jsonParameter.getInt("hours");
                 final int minutes = jsonParameter.getInt("minutes");
-                if (actualDateParm.getUseAbsoluteDate() || jsonParameter.has("date")) {
-                    try {
-                        final String dateString = jsonParameter.getString("date");
-                        final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-                        reportParameterBuilder.withDate(parameterName, parsedDate, hours, minutes);
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
+                if (actualDateParm.getUseAbsoluteDate() == true || mode == ReportMode.IMMEDIATE) {
+                    if (jsonParameter.has("date")) {
+                        try {
+                            final String dateString = jsonParameter.getString("date");
+                            final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+                            reportParameterBuilder.withDate(parameterName, parsedDate, hours, minutes);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 } else {
                     final String interval = jsonParameter.getString("interval");

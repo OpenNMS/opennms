@@ -152,7 +152,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     public void updateCronTrigger(String cronTrigger, ScheduleConfig scheduleConfig) {
         Objects.requireNonNull(cronTrigger);
         Objects.requireNonNull(scheduleConfig);
-        validate(scheduleConfig, true);
+        validate(scheduleConfig, ReportMode.SCHEDULED, true);
 
         final TriggerKey triggerKey = new TriggerKey(cronTrigger, m_triggerGroup);
         final ReportParameters parameters = scheduleConfig.getReportParameters();
@@ -177,7 +177,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     @Override
     public void addCronTrigger(ScheduleConfig scheduleConfig) {
         Objects.requireNonNull(scheduleConfig);
-        validate(scheduleConfig, false);
+        validate(scheduleConfig, ReportMode.SCHEDULED, false);
 
         final CronTriggerImpl cronTrigger = new CronTriggerImpl();
         final ReportParameters parameters = scheduleConfig.getReportParameters();
@@ -208,7 +208,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     @Override
     public void execute(DeliveryConfig deliveryConfig) {
         Objects.requireNonNull(deliveryConfig);
-        validate(deliveryConfig, false);
+        validate(deliveryConfig, ReportMode.IMMEDIATE, false);
 
         final ReportParameters parameters = deliveryConfig.getReportParameters();
         final DeliveryOptions deliveryOptions = deliveryConfig.getDeliveryOptions();
@@ -237,9 +237,10 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         m_triggerGroup = triggerGroup;
     }
 
-    private void validate(DeliveryConfig deliveryConfig, boolean update) {
+    private void validate(DeliveryConfig deliveryConfig, ReportMode reportMode, boolean update) {
         Objects.requireNonNull(deliveryConfig);
-        validate(deliveryConfig.getReportParameters());
+        Objects.requireNonNull(reportMode);
+        validate(deliveryConfig.getReportParameters(), reportMode);
         validate(deliveryConfig.getDeliveryOptions(), update);
     }
 
@@ -273,9 +274,10 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         }
     }
 
-    private void validate(ReportParameters reportParameters) {
+    private void validate(ReportParameters reportParameters, ReportMode reportMode) {
         Objects.requireNonNull(reportParameters);
-        final ReportParmVisitor validator = new ParameterRequiredVisitor();
+        Objects.requireNonNull(reportMode);
+        final ReportParmVisitor validator = new ParameterRequiredVisitor(reportMode);
         if (reportParameters.getStringParms() != null) {
             for (ReportStringParm eachParm : reportParameters.getStringParms()) {
                 validator.visit(eachParm);
@@ -308,6 +310,12 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      */
     private static class ParameterRequiredVisitor implements ReportParmVisitor {
 
+        private final ReportMode mode;
+
+        public ParameterRequiredVisitor(ReportMode reportMode) {
+            this.mode = Objects.requireNonNull(reportMode);
+        }
+
         @Override
         public void visit(ReportStringParm parm) {
             if (Strings.isNullOrEmpty(parm.getValue())) {
@@ -317,6 +325,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
         @Override
         public void visit(ReportIntParm parm) {
+
         }
 
         @Override
@@ -335,8 +344,10 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
         @Override
         public void visit(ReportDateParm parm) {
-            if (parm.getUseAbsoluteDate() && parm.getDate() == null) {
-                throw new SchedulerContextException(parm.getName() + "Date", PROVIDE_A_VALUE_TEXT);
+            if (parm.getUseAbsoluteDate() || mode == ReportMode.IMMEDIATE) {
+                if (parm.getDate() == null){
+                    throw new SchedulerContextException(parm.getName() + "Date", PROVIDE_A_VALUE_TEXT);
+                }
             } else {
                 if (parm.getInterval() == null || !Intervals.ALL.contains(parm.getInterval())) {
                     throw new SchedulerContextException(parm.getName() + "Interval", "The provided value must be any of the following {0}", Intervals.ALL);

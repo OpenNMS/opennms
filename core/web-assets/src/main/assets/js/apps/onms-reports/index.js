@@ -184,8 +184,19 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                             if (scope.dashboards.length > 0) {
                                 scope.selected.dashboard = scope.dashboards[0];
                             }
-                        }, function (errorResponse) {
-                            $scope.setGlobalError(errorResponse);
+                        }, function (response) {
+                            // In case the dashboards could not be loaded, it may be due to
+                            // an issue with talking to Grafana itself.
+                            const errorResponse = new ErrorResponse(response);
+                            if (errorResponse.isContextError()) {
+                                const contextError = errorResponse.asContextError();
+                                if (contextError.context === 'entity') {
+                                    contextError.context = 'GRAFANA_ENDPOINT_UID';
+                                }
+                                scope.report.setErrors(contextError);
+                            }  else {
+                                handleReportError(response, scope.report, () => scope.setGlobalError(response));
+                            }
                         });
                     };
 
@@ -203,7 +214,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                                 scope.endpointChanged();
                             }
                         }, function (errorResponse) {
-                            $scope.setGlobalError(errorResponse);
+                            scope.setGlobalError(errorResponse);
                         });
                     };
 
@@ -227,7 +238,10 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                                 scope.loadEndpoints();
                             }
                         }
-                        scope.report.updateParameters(scope.selected);
+                    });
+
+                    scope.$watchCollection('selected', function(newVal, oldVal) {
+                       scope.report.updateParameters(scope.selected);
                     });
 
                     scope.$watch('reportForm.$invalid', function(newVal, oldVal) {
@@ -329,7 +343,6 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                         var fileURL = URL.createObjectURL(fileBlob);
                         var contentDisposition = response.headers("Content-Disposition");
                         // var filename = (contentDisposition.split(';')[1].trim().split('=')[1]).replace(/"/g, '');
-                        console.log(contentDisposition);
                         var filename = $stateParams.id + '.' + $scope.report.format.toLowerCase();
 
                         var a = document.createElement('a');
@@ -338,7 +351,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                         a.href = fileURL;
                         a.download = filename;
                         a.click();
-                        window.URL.revokeObjectURL(url);
+                        window.URL.revokeObjectURL(fileURL);
                         document.body.removeChild(a);
                     },
                     function(response) {

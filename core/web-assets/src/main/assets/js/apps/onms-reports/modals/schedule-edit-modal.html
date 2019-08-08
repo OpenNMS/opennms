@@ -11,5 +11,5 @@
 </div>
 <div class="modal-footer">
     <button class="btn btn-danger" id="action.cancel.{{meta.triggerName}}" ng-click="$close()"><i class="fa fa-times"></i> Cancel</button>
-    <button class="btn btn-primary" id="action.update.{{meta.triggerName}}" ng-click="update()" ng-disabled="reportForm.$invalid || !report.scheduleOptions.isValid()"><i class="fa fa-save"></i> Update</button>
+    <button class="btn btn-primary" id="action.update.{{meta.triggerName}}" ng-click="update()" ng-disabled="reportForm.$invalid || !report.scheduleOptions.isValid() || (report.isGrafanaReport() && !report.isGrafanaEndpointSelected())"><i class="fa fa-save"></i> Update</button>
 </div>

@@ -11,20 +11,17 @@ export default class ErrorResponse {
     }
 
     isContextError() {
-        return this.response.status === 400 && this.response.data && this.response.data.context && this.response.data.message;
+        return this.response.data && this.response.data.context && this.response.data.message;
     }
 
     asContextError() {
         if (this.isContextError()) {
             return new ContextError(this.response.data.context, this.response.data.message);
         }
-        if (this.response.status === 400) {
-            if (this.response.data && this.response.data.message) {
-                return new ContextError('entity', this.response.data.message);
-            }
-            return new ContextError('entity', 'Unexpected error occurred. No details about the nature of the error were provided');
+        if (this.response.data && this.response.data.message) {
+            return new ContextError('entity', this.response.data.message);
         }
-        throw new Error('Cannot convert to ContextError');
+        return new ContextError('entity', 'Unexpected error occurred. No details about the nature of the error were provided');
     }
 
     isBadRequest() {

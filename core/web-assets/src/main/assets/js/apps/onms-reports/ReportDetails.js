@@ -95,7 +95,7 @@ export default class ReportDetails {
         const dashboardUid = this.parametersByName['GRAFANA_DASHBOARD_UID'];
 
         const endpointSelected = endpointUid.value && typeof endpointUid.value === 'string' && endpointUid.value.length > 0
-            && dashboardUid.value && typeof dashboardUid.value && dashboardUid.value.length > 0
+            && dashboardUid.value && typeof dashboardUid.value && dashboardUid.value.length > 0;
         return endpointSelected;
     }
 
@@ -107,11 +107,9 @@ export default class ReportDetails {
     // Before sending the report we must replace the values of some parameters
     // e.g. the Endpoint UID or Dashboard UID
     updateParameters(selected) {
-        if (this.isGrafanaReport()
-                && typeof selected.endpoint !== 'undefined'
-                && selected.dashboard !== 'undefined') {
-            this.parametersByName['GRAFANA_ENDPOINT_UID'].value = selected.endpoint.uid;
-            this.parametersByName['GRAFANA_DASHBOARD_UID'].value = selected.dashboard.uid;
+        if (this.isGrafanaReport()) {
+            this.parametersByName['GRAFANA_ENDPOINT_UID'].value = selected.endpoint ? selected.endpoint.uid : undefined;
+            this.parametersByName['GRAFANA_DASHBOARD_UID'].value = selected.dashboard ? selected.dashboard.uid : undefined;
         }
 
         // Set the date value

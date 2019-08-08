@@ -10,6 +10,7 @@
             <select class="form-control custom-select"
                     ng-model="selected.endpoint"
                     ng-show="endpoints.length > 0"
+                    ng-class="{ 'is-invalid': report.errors.GRAFANA_ENDPOINT_UID }"
                     ng-change="endpointChanged()"
                     ng-options="endpoint as endpoint.label for endpoint in endpoints"
             >
@@ -18,6 +19,9 @@
                 There is no Grafana Endpoint defined.
                 Please <a href="/opennms/admin/endpoint/index.jsp">add a Grafana Endpoint</a>.
             </p>
+            <div class="invalid-feedback" ng-if="report.errors.GRAFANA_ENDPOINT_UID">
+                {{report.errors.GRAFANA_ENDPOINT_UID}}: <a href="/opennms/admin/endpoint/index.jsp#!/endpoints/grafana">Configure Grafana Endpoints</a>
+            </div>
         </div>
         <div ng-show="report.isGrafanaReport() && selected.endpoint" class="form-group">
             <label>Grafana Dashboard</label>
@@ -266,12 +270,6 @@
         </div>
         <hr />
     </div>
-
-    <!-- TODO MVR this is weird and should go away -->
-    <div class="alert alert-warning" ng-if="report.isGrafanaReport() && !report.isGrafanaReady()">
-        Please select a Grafana Endpoint and Grafana Dashboard in order to continue.
-    </div>
-
     <p class="text-danger" style="font-size: 80%" ng-if="report.errors.entity">
         {{report.errors.entity}}
     </p>
