@@ -65,11 +65,9 @@ public class ReportsPageIT extends OpenNMSSeleniumIT {
 
         reportsPage();
         findElementByLink("Database Reports").click();
-        findElementByXpath("//div[@class='card-header']/span[text()='Database Reports']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
-        findElementByLink("List reports");
-        findElementByLink("View and manage pre-run reports");
-        findElementByLink("Manage the batch report schedule");
+        pageContainsText("Report Templates");
+        pageContainsText("Report Schedules");
+        pageContainsText("Persisted Reports");
 
         reportsPage();
         findElementByLink("Statistics Reports").click();
