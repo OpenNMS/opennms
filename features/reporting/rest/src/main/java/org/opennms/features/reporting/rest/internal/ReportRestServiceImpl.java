@@ -208,16 +208,15 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response listPersistedReports(UriInfo uriInfo) {
-        final List<ReportCatalogEntry> persistedReports = reportStoreService.getAll();
+        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
+        final List<ReportCatalogEntry> persistedReports = reportStoreService.getPage(queryParameters.getOffset(), queryParameters.getLimit());
         if (persistedReports.isEmpty()) {
             return Response.noContent().build();
         }
-        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
-        final List<ReportCatalogEntry> persistedReportsForPage = queryParameters.getPage().apply(persistedReports);
 
         final Map<String, Object> formatMap = reportStoreService.getFormatMap();
         final JSONArray jsonArray = new JSONArray();
-        for (ReportCatalogEntry eachEntry : persistedReportsForPage) {
+        for (ReportCatalogEntry eachEntry : persistedReports) {
             final JSONObject jsonObject = new JSONObject(eachEntry);
             final List<ReportFormat> formats = (List<ReportFormat>)formatMap.get(eachEntry.getReportId());
             if (formats != null && !formats.isEmpty()) {
@@ -226,7 +225,7 @@ public class ReportRestServiceImpl implements ReportRestService {
             jsonArray.put(jsonObject);
         }
         return Response.ok()
-                .header("Content-Range", ResponseUtils.getContentRange(jsonArray.length(), queryParameters.getOffset(), persistedReports.size()))
+                .header("Content-Range", ResponseUtils.getContentRange(jsonArray.length(), queryParameters.getOffset(), reportStoreService.countAll()))
                 .entity(jsonArray.toString())
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build();
