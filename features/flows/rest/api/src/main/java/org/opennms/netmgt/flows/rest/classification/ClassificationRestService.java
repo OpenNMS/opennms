@@ -88,6 +88,10 @@ public interface ClassificationRestService {
                       @QueryParam("filename") String requestedFilename,
                       @HeaderParam("Accept") String acceptHeader);
 
+    @POST
+    @Path("groups")
+    Response saveGroup(GroupDTO groupDTO);
+
     @DELETE
     @Path("groups/{id}")
     Response deleteGroup(int groupId);
