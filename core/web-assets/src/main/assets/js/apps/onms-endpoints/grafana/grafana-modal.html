@@ -9,9 +9,9 @@
       </div>
       <div class="form-group form-row">
         <label class="col-form-label" for="endpoint.uid">Grafana ID</label>
-        <button class="btn btn-link"
+        <button class="btn btn-link text-secondary px-0"
                 popover-trigger="'mouseenter'"
-                uib-popover="A unique identifier of this endpoint. The identifier can only contain alpha numeric values as well as  - and _ but may not start with those. The full regular expression to match is: {{uidRegex}}"><i class="fa fa-question-circle"/>
+                uib-popover="A unique identifier of this endpoint. The identifier can only contain alpha numeric values as well as  - and _ but may not start with those. The full regular expression to match is: {{uidRegex}}"><i class="fa fa-info-circle"/>
         </button>
         <input class="form-control" type="text" id="endpoint.uid" name="uid" placeholder="Unique Grafana ID" ng-model="endpoint.uid"
                ng-class="{ 'is-invalid' : endpointForm.uid.$invalid || error.uid }"
@@ -42,9 +42,9 @@
       </div>
       <div class="form-group form-row">
         <label class="col-form-label" for="endpoint.connectTimeout">Grafana Connect Timeout</label>
-        <button class="btn btn-link"
+        <button class="btn btn-link text-secondary px-0"
                 popover-trigger="'mouseenter'"
-                uib-popover="The connect timeout in seconds for this endpoint. If omitted a the the default timeout of {{defaultConnectTimeout}} seconds is applied."><i class="fa fa-question-circle"/>
+                uib-popover="The connect timeout in seconds for this endpoint. If omitted a default timeout of {{defaultConnectTimeout}} seconds is applied."><i class="fa fa-info-circle"/>
         </button>
         <input class="form-control" type="number" id="endpoint.connectTimeout" name="connectTimeout" min="0" max="9999" ng-model="endpoint.connectTimeout"
                ng-class="{ 'is-invalid' : endpointForm.connectTimeout.$invalid || error.connectTimeout}"/>
@@ -53,9 +53,9 @@
       </div>
       <div class="form-group form-row">
         <label class="col-form-label" for="endpoint.readTimeout">Grafana Read Timeout</label>
-        <button class="btn btn-link"
+        <button class="btn btn-link text-secondary px-0"
                 popover-trigger="'mouseenter'"
-                uib-popover="The read timeout in seconds for this endpoint. If omitted a the the default timeout of {{defaultReadTimeout}} seconds is applied."><i class="fa fa-question-circle"/>
+                uib-popover="The read timeout in seconds for this endpoint. If omitted a default timeout of {{defaultReadTimeout}} seconds is applied."><i class="fa fa-info-circle"/>
         </button>
 
         <input class="form-control" type="number" id="endpoint.readTimeout" name="readTimeout" min="0" max="9999" ng-model="endpoint.readTimeout"
