@@ -240,6 +240,11 @@ public class DefaultClassificationService implements ClassificationService {
     }
 
     @Override
+    public Integer saveGroup(Group group) {
+        return runInTransaction((status) -> classificationGroupDao.save(group));
+    }
+
+    @Override
     public void deleteGroup(int groupId) {
         runInTransaction(status -> {
             final Group group = classificationGroupDao.get(groupId);

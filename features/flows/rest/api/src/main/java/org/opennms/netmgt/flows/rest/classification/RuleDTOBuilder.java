@@ -76,6 +76,11 @@ public class RuleDTOBuilder {
         return this;
     }
 
+    public RuleDTOBuilder withGroup(GroupDTO group) {
+        this.ruleDTO.setGroup(group);
+        return this;
+    }
+
     public RuleDTO build() {
         return ruleDTO;
     }
