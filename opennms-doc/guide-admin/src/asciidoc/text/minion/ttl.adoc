@@ -18,7 +18,7 @@ TIP: To troubleshoot TTLs, consider enabling the link:#opentracing[OpenTracing] 
 The TTL used when invoking monitors and collectors remotely is:
 
 1. The value from the `ttl` parameter associated with the service
-2. Fall-back to using the service interval as the TTL (this is rate at which the service is scheduled)
+2. Fall-back to using the service interval as the TTL (this is the rate at which the service is scheduled)
 
 These rules apply to all monitors and collectors, excluding the `SnmpCollector`.
 
@@ -27,14 +27,14 @@ These rules apply to all monitors and collectors, excluding the `SnmpCollector`.
 The TTL used when invoking the `SnmpCollector` remotely is:
 
 1. The value of the `ttl` associate with the SNMP agent's configuration
-2. Fall-back to using the service interval as the TTL (this is rate at which the service is scheduled)
+2. Fall-back to using the service interval as the TTL (this is the rate at which the service is scheduled)
 
 ==== TTLs for the other SNMP communication
 
 The TTL used when invoking other types of SNMP requests remotely is:
 
 1. The value of the `ttl` associate with the SNMP agent's configuration
-2. Fall-back to using the service interval as the TTL (this is rate at which the service is scheduled)
+2. Fall-back to using the service interval as the TTL (this is the rate at which the service is scheduled)
 
 TIP: These rules apply to SNMP queries like agent scans in provisiond, table scans in enlinkd, etc...
 
