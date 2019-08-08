@@ -32,19 +32,19 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
-import org.opennms.features.distributed.kvstore.api.KeyValueStore;
-import org.opennms.features.distributed.kvstore.inmemory.InMemoryMapKeyValueStore;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
+import org.opennms.features.distributed.kvstore.blob.inmemory.InMemoryMapBlobStore;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 
 public class ThresholdStateTest {
-    private final KeyValueStore kvStore = new InMemoryMapKeyValueStore(System::currentTimeMillis);
+    private final BlobStore blobStore = new InMemoryMapBlobStore(System::currentTimeMillis);
     
     @Test
     public void canResumeWithState() {
         ThresholdingSession thresholdingSession = MockSession.getSession();
-        when(thresholdingSession.getKVStore()).thenReturn(kvStore);
+        when(thresholdingSession.getBlobStore()).thenReturn(blobStore);
         
         // The following test simulates Sentinel A thresholding a high-low threshold with an exceeded value then going
         // down
