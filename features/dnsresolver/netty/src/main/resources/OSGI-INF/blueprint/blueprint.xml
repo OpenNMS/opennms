@@ -10,6 +10,7 @@
 
     <cm:property-placeholder id="netty-dns-resolver" persistent-id="org.opennms.features.dnsresolver.netty" update-strategy="reload">
         <cm:default-properties>
+            <cm:property name="lookup-enabled" value="true" />
             <!-- Defaults to 2 * num cores when the value is <= 0 -->
             <cm:property name="num-contexts" value="0" />
             <cm:property name="nameservers" value="" />
@@ -18,6 +19,12 @@
             <cm:property name="min-ttl-seconds" value="60" />
             <cm:property name="max-ttl-seconds" value="-1" />
             <cm:property name="negative-ttl-seconds" value="300" />
+            <!-- CircuitBreaker Settings -->
+            <cm:property name="breaker-enabled" value="true" />
+            <cm:property name="breaker-failureRateThreshold" value="80" />
+            <cm:property name="breaker-waitDurationInOpenState" value="15" />
+            <cm:property name="breaker-ringBufferSizeInHalfOpenState" value="10" />
+            <cm:property name="breaker-ringBufferSizeInClosedState" value="100" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -45,6 +52,7 @@
         <argument index="0" ref="eventForwarder"/>
         <argument index="1" ref="metricRegistry"/>
 
+        <property name="lookupEnabled" value="${lookup-enabled}"/>
         <property name="numContexts" value="${num-contexts}"/>
         <property name="nameservers" value="${nameservers}"/>
         <property name="queryTimeoutMillis" value="${query-timeout-millis}"/>
@@ -52,6 +60,11 @@
         <property name="maxTtlSeconds" value="${min-ttl-seconds}"/>
         <property name="negativeTtlSeconds" value="${negative-ttl-seconds}"/>
 
+        <property name="breakerEnabled" value="${breaker-enabled}"/>
+        <property name="breakerFailureRateThreshold" value="${breaker-failureRateThreshold}"/>
+        <property name="breakerWaitDurationInOpenState" value="${breaker-waitDurationInOpenState}"/>
+        <property name="breakerRingBufferSizeInHalfOpenState" value="${breaker-ringBufferSizeInHalfOpenState}"/>
+        <property name="breakerRingBufferSizeInClosedState" value="${breaker-ringBufferSizeInClosedState}"/>
     </bean>
 
     <service ref="dnsResolver" interface="org.opennms.netmgt.dnsresolver.api.DnsResolver">

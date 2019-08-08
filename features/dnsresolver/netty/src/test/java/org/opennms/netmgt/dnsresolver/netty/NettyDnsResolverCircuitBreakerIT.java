@@ -56,6 +56,10 @@ public class NettyDnsResolverCircuitBreakerIT {
         NettyDnsResolver dnsResolver = new NettyDnsResolver(eventForwarder, new MetricRegistry());
         // Use a non-routable address as the target - we want the queries to fail due to timeouts
         dnsResolver.setNameservers(InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS));
+        dnsResolver.setBreakerFailureRateThreshold(80);
+        dnsResolver.setBreakerWaitDurationInOpenState(15);
+        dnsResolver.setBreakerRingBufferSizeInHalfOpenState(10);
+        dnsResolver.setBreakerRingBufferSizeInClosedState(100);
         dnsResolver.init();
 
         // Now trigger enough requests to open the circuit breaker
@@ -81,6 +85,46 @@ public class NettyDnsResolverCircuitBreakerIT {
             fail("Expected an CallNotPermittedException to be thrown");
         } catch (ExecutionException e) {
             assertThat(e.getCause(), is(instanceOf(CallNotPermittedException.class)));
+        }
+    }
+
+    @Test
+    public void canDisableCircuitBreaker() throws InterruptedException, TimeoutException {
+        // Create the resolver
+        EventForwarder eventForwarder = mock(EventForwarder.class);
+        NettyDnsResolver dnsResolver = new NettyDnsResolver(eventForwarder, new MetricRegistry());
+        // Use a non-routable address as the target - we want the queries to fail due to timeouts
+        dnsResolver.setNameservers(InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS));
+        dnsResolver.setBreakerFailureRateThreshold(80);
+        dnsResolver.setBreakerWaitDurationInOpenState(15);
+        dnsResolver.setBreakerRingBufferSizeInHalfOpenState(10);
+        dnsResolver.setBreakerRingBufferSizeInClosedState(100);
+        dnsResolver.setBreakerEnabled(false);
+        dnsResolver.init();
+
+        // Now trigger enough requests to open the circuit breaker
+        final int N = 2 * dnsResolver.getCircuitBreaker().getCircuitBreakerConfig().getRingBufferSizeInClosedState();
+        final CompletableFuture futures[] = new CompletableFuture[N];
+        for (int i = 0; i < N; i++) {
+            futures[i] = dnsResolver.reverseLookup(InetAddressUtils.addr("fe80::"));
+        }
+
+        // Wait for the requests to complete
+        try {
+            CompletableFuture.allOf(futures)
+                    // This should not take longer than the query timeout
+                    .get(2 * dnsResolver.getQueryTimeoutMillis(), TimeUnit.MILLISECONDS);
+            fail("Expected an ExecutionException to be thrown");
+        } catch (ExecutionException e) {
+            // pass
+        }
+
+        // The circuit breaker should be disabled and netty should return a DnsNameResolverTimeoutException
+        try {
+            dnsResolver.reverseLookup(InetAddressUtils.addr("fe80::")).get();
+            fail("Expected an DnsNameResolverTimeoutException to be thrown");
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(instanceOf(io.netty.resolver.dns.DnsNameResolverTimeoutException.class)));
         }
     }
 }

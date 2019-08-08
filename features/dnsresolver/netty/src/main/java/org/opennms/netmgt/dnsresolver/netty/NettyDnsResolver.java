@@ -86,12 +86,19 @@ public class NettyDnsResolver implements DnsResolver {
     private final Meter lookupsFailed;
     private final Meter lookupsRejectedByCircuitBreaker;
 
+    private boolean lookupEnabled = true;
     private int numContexts = 0;
     private String nameservers = null;
     private long queryTimeoutMillis = TimeUnit.SECONDS.toMillis(5);
     private int minTtlSeconds = -1;
     private int maxTtlSeconds = -1;
     private int negativeTtlSeconds = -1;
+
+    private boolean breakerEnabled = true;
+    private int breakerFailureRateThreshold = -1;
+    private int breakerWaitDurationInOpenState = -1;
+    private int breakerRingBufferSizeInHalfOpenState = -1;
+    private int breakerRingBufferSizeInClosedState = -1;
 
     private List<NettyResolverContext> contexts;
     private Iterator<NettyResolverContext> iterator;
@@ -135,10 +142,10 @@ public class NettyDnsResolver implements DnsResolver {
 
         // Configure this statically for now, we can expose this as needed
         final CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
-                .failureRateThreshold(80)
-                .waitDurationInOpenState(Duration.ofSeconds(15))
-                .ringBufferSizeInHalfOpenState(10)
-                .ringBufferSizeInClosedState(100)
+                .failureRateThreshold(breakerFailureRateThreshold)
+                .waitDurationInOpenState(Duration.ofSeconds(breakerWaitDurationInOpenState))
+                .ringBufferSizeInHalfOpenState(breakerRingBufferSizeInHalfOpenState)
+                .ringBufferSizeInClosedState(breakerRingBufferSizeInClosedState)
                 .recordExceptions(DnsNameResolverTimeoutException.class)
                 .build();
         circuitBreaker = CircuitBreaker.of("nettyDnsResolver", circuitBreakerConfig);
@@ -162,6 +169,12 @@ public class NettyDnsResolver implements DnsResolver {
                 .onCallNotPermitted(e -> {
                     lookupsRejectedByCircuitBreaker.mark();
                 });
+
+        if (breakerEnabled) {
+            getCircuitBreaker().transitionToClosedState();
+        } else {
+            getCircuitBreaker().transitionToDisabledState();
+        }
     }
 
     public void destroy() {
@@ -177,24 +190,80 @@ public class NettyDnsResolver implements DnsResolver {
 
     @Override
     public CompletableFuture<Optional<InetAddress>> lookup(String hostname) {
-        return circuitBreaker.executeCompletionStage(() -> {
-            final NettyResolverContext resolverContext = iterator.next();
-            final Timer.Context timerContext = lookupTimer.time();
-            return resolverContext.lookup(hostname).whenComplete((res, ex) -> {
-                timerContext.stop();
-            });
-        }).toCompletableFuture();
+        if (lookupEnabled) {
+            return circuitBreaker.executeCompletionStage(() -> {
+                final NettyResolverContext resolverContext = iterator.next();
+                final Timer.Context timerContext = lookupTimer.time();
+                return resolverContext.lookup(hostname).whenComplete((res, ex) -> {
+                    timerContext.stop();
+                });
+            }).toCompletableFuture();
+        } else {
+            return CompletableFuture.completedFuture(Optional.empty());
+        }
     }
 
     @Override
     public CompletableFuture<Optional<String>> reverseLookup(InetAddress inetAddress) {
-        return circuitBreaker.executeCompletionStage(() -> {
-            final NettyResolverContext resolverContext = iterator.next();
-            final Timer.Context timerContext = lookupTimer.time();
-            return resolverContext.reverseLookup(inetAddress).whenComplete((res, ex) -> {
-                timerContext.stop();
-            });
-        }).toCompletableFuture();
+        if (lookupEnabled) {
+            return circuitBreaker.executeCompletionStage(() -> {
+                final NettyResolverContext resolverContext = iterator.next();
+                final Timer.Context timerContext = lookupTimer.time();
+                return resolverContext.reverseLookup(inetAddress).whenComplete((res, ex) -> {
+                    timerContext.stop();
+                });
+            }).toCompletableFuture();
+        } else {
+            return CompletableFuture.completedFuture(Optional.empty());
+        }
+    }
+
+    public boolean getLookupEnabled() {
+        return lookupEnabled;
+    }
+
+    public void setLookupEnabled(boolean lookupEnabled) {
+        this.lookupEnabled = lookupEnabled;
+    }
+
+    public boolean getBreakerEnabled() {
+        return breakerEnabled;
+    }
+
+    public void setBreakerEnabled(boolean breakerEnabled) {
+        this.breakerEnabled = breakerEnabled;
+    }
+
+    public int getBreakerFailureRateThreshold() {
+        return breakerFailureRateThreshold;
+    }
+
+    public void setBreakerFailureRateThreshold(int breakerFailureRateThreshold) {
+        this.breakerFailureRateThreshold = breakerFailureRateThreshold;
+    }
+
+    public int getBreakerWaitDurationInOpenState() {
+        return breakerWaitDurationInOpenState;
+    }
+
+    public void setBreakerWaitDurationInOpenState(int breakerWaitDurationInOpenState) {
+        this.breakerWaitDurationInOpenState = breakerWaitDurationInOpenState;
+    }
+
+    public int getBreakerRingBufferSizeInHalfOpenState() {
+        return breakerRingBufferSizeInHalfOpenState;
+    }
+
+    public void setBreakerRingBufferSizeInHalfOpenState(int breakerRingBufferSizeInHalfOpenState) {
+        this.breakerRingBufferSizeInHalfOpenState = breakerRingBufferSizeInHalfOpenState;
+    }
+
+    public int getBreakerRingBufferSizeInClosedState() {
+        return breakerRingBufferSizeInClosedState;
+    }
+
+    public void setBreakerRingBufferSizeInClosedState(int breakerRingBufferSizeInClosedState) {
+        this.breakerRingBufferSizeInClosedState = breakerRingBufferSizeInClosedState;
     }
 
     public int getNumContexts() {

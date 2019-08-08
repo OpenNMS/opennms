@@ -91,6 +91,10 @@ public class NettyDnsResolverTest {
         EventForwarder eventForwarder = mock(EventForwarder.class);
         dnsResolver = new NettyDnsResolver(eventForwarder, new MetricRegistry());
         dnsResolver.setNameservers(String.format("%s:%d", InetAddressUtils.getLocalHostName(), DNS_SERVER_PORT));
+        dnsResolver.setBreakerFailureRateThreshold(80);
+        dnsResolver.setBreakerWaitDurationInOpenState(15);
+        dnsResolver.setBreakerRingBufferSizeInHalfOpenState(10);
+        dnsResolver.setBreakerRingBufferSizeInClosedState(100);
         dnsResolver.init();
     }
 
@@ -116,6 +120,19 @@ public class NettyDnsResolverTest {
         // But not about these
         assertThat(dnsResolver.reverseLookup(InetAddress.getByName("1.1.1.1")).get(), equalTo(Optional.empty()));
         assertThat(dnsResolver.reverseLookup(InetAddressUtils.addr("2606:4700:4700::1111")).get(), equalTo(Optional.empty()));
+    }
+
+    @Test
+    public void canDisableAllLookups() throws UnknownHostException, ExecutionException, InterruptedException {
+        // Disable Lookups
+        dnsResolver.setLookupEnabled(false);
+
+        // Test valid lookups are empty
+        assertThat(dnsResolver.lookup("rnd.opennms.ca").get(), equalTo(Optional.empty()));
+
+        // Test valid reverse lookups are empty
+        assertThat(dnsResolver.reverseLookup(InetAddress.getByName("173.242.186.51")).get(), equalTo(Optional.empty()));
+        assertThat(dnsResolver.reverseLookup(InetAddress.getByName("2600:5800:fc29:0003:0000:0000:0000:0001")).get(), equalTo(Optional.empty()));
     }
 
     @Test
