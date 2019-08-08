@@ -38,6 +38,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.opennms.core.sysprops.SystemProperties;
+
 import com.google.common.base.Throwables;
 
 /**
@@ -46,6 +48,10 @@ import com.google.common.base.Throwables;
  * @author jwhite
  */
 public class ExceptionToPngRenderer {
+
+    private static final String MAX_STACKTRACE_LINES_SYS_PROP = "org.opennms.netmgt.jasper.grafana.maxStackTraceLines";
+
+    private static final int MAX_STACKTRACE_LINES =  SystemProperties.getInteger(MAX_STACKTRACE_LINES_SYS_PROP, 5);
 
     /**
      * Use the system default font.
@@ -65,7 +71,7 @@ public class ExceptionToPngRenderer {
         sb.append("Exception occurred: ");
         final String stack = Throwables.getStackTraceAsString(e) ;
         // Limit the length of the stack
-        sb.append(getFirstNLines(stack, 5));
+        sb.append(getFirstNLines(stack, MAX_STACKTRACE_LINES));
         final String text = sb.toString();
         final String[] lines = text.split("\n");
 
