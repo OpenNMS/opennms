@@ -48,6 +48,7 @@ import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
+import org.opennms.netmgt.icmp.NullPinger;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath:/pinger.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(
+        systemProperties = {"org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.TestPinger"}
+)
 public class LocationAwarePingClientIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
