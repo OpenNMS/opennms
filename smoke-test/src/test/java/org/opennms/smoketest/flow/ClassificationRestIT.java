@@ -42,13 +42,15 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
+import org.opennms.netmgt.flows.rest.classification.GroupDTO;
+import org.opennms.netmgt.flows.rest.classification.GroupDTOBuilder;
 import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.opennms.smoketest.containers.OpenNMSContainer;
-import org.opennms.smoketest.stacks.OpenNMSStack;
 
 public class ClassificationRestIT {
 
@@ -170,6 +172,97 @@ public class ClassificationRestIT {
 
         // Verify DELETE ALL is not allowed
         given().delete().then().assertThat().statusCode(400);
+    }
+
+    @Test
+    public void verifyChangeGroupOfRule() {
+        // Verify GET Groups (system-defined and user-defined rules should be there)
+        given().get("/groups").then().assertThat().statusCode(200).body("", hasSize(2));
+
+        // POST (create) two groups
+        final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
+                .withEnabled(true).withReadOnly(false).withPriority(30).build());
+        final GroupDTO group4 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group4").withDescription("another user defined group with name group4")
+                .withEnabled(true).withReadOnly(false).withPriority(30).build());
+
+        // Create rule with group3
+        RuleDTO rule = builder().withName("myrule").withDstPort("80").withGroup(group3).build();
+        rule = saveAndRetrieveRule(rule);
+
+        // Move rule to another group
+        rule.setGroup(group4);
+        updateAndRetrieveRule(rule);
+    }
+
+    private GroupDTO saveAndRetrieveGroup(GroupDTO groupDTO) {
+        final String header = given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(groupDTO)
+                .post("/groups").then().assertThat().statusCode(201) // created
+                .extract().header("Location");
+        final String[] split = header.split("/");
+        int groupId = Integer.parseInt(split[split.length - 1]);
+        final GroupDTO receivedGroup = given().get("groups/" + groupId)
+                .then().log().body(true)
+                .assertThat()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response().as(GroupDTO.class);
+        assertThat(receivedGroup.getId(), is(groupId));
+        assertThat(receivedGroup.getDescription(), is(groupDTO.getDescription()));
+        assertThat(receivedGroup.getName(), is(groupDTO.getName()));
+        assertThat(receivedGroup.getPriority(), is(groupDTO.getPriority()));
+        assertThat(receivedGroup.getRuleCount(), is(0)); // we just created group => must be empty
+        return receivedGroup;
+    }
+
+    private RuleDTO saveAndRetrieveRule(RuleDTO ruleDTO) {
+        String header = given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(ruleDTO)
+                .post().then().assertThat().statusCode(201) // created
+                .extract().header("Location");
+        final String[] split = header.split("/");
+        int classificationId = Integer.parseInt(split[split.length - 1]);
+
+        // Verify Creation of rule
+        final RuleDTO receivedHttpRule = given().get("" + classificationId)
+                .then().log().body(true)
+                .assertThat()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response().as(RuleDTO.class);
+        assertThat(receivedHttpRule.getId(), is(classificationId));
+        assertThat(receivedHttpRule.getName(), is(ruleDTO.getName()));
+        assertThat(receivedHttpRule.getDstAddress(), is(ruleDTO.getDstAddress()));
+        assertThat(receivedHttpRule.getProtocols(), is(ruleDTO.getProtocols()));
+        assertThat(receivedHttpRule.getGroup().getName(), is(ruleDTO.getGroup().getName()));
+        return receivedHttpRule;
+    }
+
+    private RuleDTO updateAndRetrieveRule(RuleDTO ruleDTO) {
+        given().contentType(ContentType.JSON)
+                .body(ruleDTO)
+                .log().all()
+                .put(Integer.toString(ruleDTO.getId()))
+                .then().assertThat()
+                .log().all()
+                .statusCode(200);
+
+        // Verify update worked
+        final RuleDTO updatedRule = given().get(Integer.toString(ruleDTO.getId()))
+                .then()
+                .log().body(true)
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .statusCode(200)
+                .extract().response().as(RuleDTO.class);
+        assertThat(updatedRule.getId(), is(ruleDTO.getId()));
+        assertThat(updatedRule.getName(), is(ruleDTO.getName()));
+        assertThat(updatedRule.getDstAddress(), is(ruleDTO.getDstAddress()));
+        assertThat(updatedRule.getProtocols(), is(ruleDTO.getProtocols()));
+        assertThat(updatedRule.getGroup().getName(), is(ruleDTO.getGroup().getName()));
+        return updatedRule;
     }
 
     @Test

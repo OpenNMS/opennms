@@ -58,6 +58,8 @@ public interface ClassificationService {
 
     Group getGroup(int groupId);
 
+    Integer saveGroup(Group group);
+
     void deleteGroup(int groupId);
 
     void updateGroup(Group group);

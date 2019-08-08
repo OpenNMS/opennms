@@ -266,6 +266,17 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     }
 
     @Override
+    public Response saveGroup(GroupDTO groupDTO) {
+        final Group group = convert(groupDTO);
+        group.setId(null);
+
+        final int groupId = classificationService.saveGroup(group);
+        final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
+        final URI uri = builder.path(ClassificationRestService.class, "getGroup").build(groupId);
+        return Response.created(uri).build();
+    }
+
+    @Override
     public Response deleteGroup(int groupId) {
         classificationService.deleteGroup(groupId);
         return Response.noContent().build();
