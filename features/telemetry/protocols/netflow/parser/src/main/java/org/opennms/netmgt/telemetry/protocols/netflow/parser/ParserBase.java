@@ -223,22 +223,30 @@ public class ParserBase implements Parser {
                         future.completeExceptionally(ex);
                         return;
                     }
-                    // Enrichment was successful, let's serialize
-                    final ByteBuffer buffer = serializeRecords(this.protocol, record, enrichment);
+                    // Enrichment was successful
 
-                    // Build the message to dispatch
-                    final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
+                    // We're currently in the callback thread from the enrichment process
+                    // We want the remainder of the serialization and dispatching to be performed
+                    // from one of our executor threads so that we can put back-pressure on the listener
+                    // if we can't keep up
+                    executor.execute(() -> {
+                        // Let's serialize
+                        final ByteBuffer buffer = serializeRecords(this.protocol, record, enrichment);
 
-                    // Dispatch
-                    dispatcher.send(msg).whenComplete((b,exx) -> {
-                        if (exx != null) {
-                            future.completeExceptionally(exx);
-                            return;
-                        }
-                        future.complete(b);
+                        // Build the message to dispatch
+                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
+
+                        // Dispatch
+                        dispatcher.send(msg).whenComplete((b,exx) -> {
+                            if (exx != null) {
+                                future.completeExceptionally(exx);
+                                return;
+                            }
+                            future.complete(b);
+                        });
+
+                        recordsDispatched.mark();
                     });
-
-                    recordsDispatched.mark();
                 });
                 return future;
             }).toArray(CompletableFuture[]::new);
