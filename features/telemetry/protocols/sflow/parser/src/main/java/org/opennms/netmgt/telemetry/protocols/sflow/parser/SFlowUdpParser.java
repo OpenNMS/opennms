@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -60,6 +61,10 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
     private static final int DEFAULT_NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
+    private final ThreadLocal<Boolean> isParserThread = new ThreadLocal<>();
+
+    private final ThreadFactory threadFactory;
+
     private final String name;
 
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
@@ -75,6 +80,20 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
                           final DnsResolver dnsResolver) {
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
+
+        // Create a thread factory that sets a thread local variable when the thread is created
+        // This variable is used to identify the thread as one that belongs to this class
+        final LogPreservingThreadFactory logPreservingThreadFactory = new LogPreservingThreadFactory("Telemetryd-sFlow-" + name, Integer.MAX_VALUE);
+        threadFactory = new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return logPreservingThreadFactory.newThread(() -> {
+                    isParserThread.set(true);
+                    r.run();
+                });
+            }
+        };
+
         enricher = new SampleDatagramEnricher(dnsResolver);
     }
 
@@ -105,7 +124,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
                 // We want the remainder of the serialization and dispatching to be performed
                 // from one of our executor threads so that we can put back-pressure on the listener
                 // if we can't keep up
-                executor.execute(() -> {
+                final Runnable dispatch = () -> {
                     // Serialize
                     final BasicOutputBuffer output = new BasicOutputBuffer();
                     try (final BsonBinaryWriter bsonWriter = new BsonBinaryWriter(output)) {
@@ -129,7 +148,16 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
                         }
                         future.complete(any);
                     });
-                });
+                };
+
+                // It's possible that the callback thread is already a thread from the pool, if that's the case
+                // execute within the current thread. This helps avoid deadlocks.
+                if (Boolean.TRUE.equals(isParserThread.get())) {
+                    dispatch.run();
+                } else {
+                    // We're not in one of the parsers threads, execute the dispatch in the pool
+                    executor.execute(dispatch);
+                }
             });
         });
         return future;
@@ -147,7 +175,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
                 1, threads,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(true),
-                new LogPreservingThreadFactory("Telemetryd-sFlow-" + name, Integer.MAX_VALUE),
+                threadFactory,
                 (r, executor) -> {
                     // We enter this block when the queue is full and the caller is attempting to submit additional tasks
                     try {
