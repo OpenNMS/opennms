@@ -95,10 +95,10 @@ public class NettyDnsResolver implements DnsResolver {
     private int negativeTtlSeconds = -1;
 
     private boolean breakerEnabled = true;
-    private int breakerFailureRateThreshold = -1;
-    private int breakerWaitDurationInOpenState = -1;
-    private int breakerRingBufferSizeInHalfOpenState = -1;
-    private int breakerRingBufferSizeInClosedState = -1;
+    private int breakerFailureRateThreshold = 80;
+    private int breakerWaitDurationInOpenState = 15;
+    private int breakerRingBufferSizeInHalfOpenState = 10;
+    private int breakerRingBufferSizeInClosedState = 100;
 
     private List<NettyResolverContext> contexts;
     private Iterator<NettyResolverContext> iterator;
@@ -171,9 +171,9 @@ public class NettyDnsResolver implements DnsResolver {
                 });
 
         if (breakerEnabled) {
-            getCircuitBreaker().transitionToClosedState();
+            circuitBreaker.transitionToClosedState();
         } else {
-            getCircuitBreaker().transitionToDisabledState();
+            circuitBreaker.transitionToDisabledState();
         }
     }
 

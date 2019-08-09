@@ -56,10 +56,6 @@ public class NettyDnsResolverCircuitBreakerIT {
         NettyDnsResolver dnsResolver = new NettyDnsResolver(eventForwarder, new MetricRegistry());
         // Use a non-routable address as the target - we want the queries to fail due to timeouts
         dnsResolver.setNameservers(InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS));
-        dnsResolver.setBreakerFailureRateThreshold(80);
-        dnsResolver.setBreakerWaitDurationInOpenState(15);
-        dnsResolver.setBreakerRingBufferSizeInHalfOpenState(10);
-        dnsResolver.setBreakerRingBufferSizeInClosedState(100);
         dnsResolver.init();
 
         // Now trigger enough requests to open the circuit breaker
@@ -95,10 +91,6 @@ public class NettyDnsResolverCircuitBreakerIT {
         NettyDnsResolver dnsResolver = new NettyDnsResolver(eventForwarder, new MetricRegistry());
         // Use a non-routable address as the target - we want the queries to fail due to timeouts
         dnsResolver.setNameservers(InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS));
-        dnsResolver.setBreakerFailureRateThreshold(80);
-        dnsResolver.setBreakerWaitDurationInOpenState(15);
-        dnsResolver.setBreakerRingBufferSizeInHalfOpenState(10);
-        dnsResolver.setBreakerRingBufferSizeInClosedState(100);
         dnsResolver.setBreakerEnabled(false);
         dnsResolver.init();
 

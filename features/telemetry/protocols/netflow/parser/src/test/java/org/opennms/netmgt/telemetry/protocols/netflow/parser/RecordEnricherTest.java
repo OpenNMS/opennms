@@ -57,22 +57,31 @@ public class RecordEnricherTest {
      */
     @Test
     public void canEnrichFlow() throws InvalidPacketException, ExecutionException, InterruptedException, UnknownHostException {
-        enrichFlow(CompletableFuture.completedFuture(Optional.of("test")), Optional.of("test"));
-        enrichFlow(CompletableFuture.completedFuture(Optional.empty()), Optional.empty());
+        enrichFlow(CompletableFuture.completedFuture(Optional.of("test")), Optional.of("test"), true);
+        enrichFlow(CompletableFuture.completedFuture(Optional.empty()), Optional.empty(), true);
 
         CompletableFuture exceptionalFuture = new CompletableFuture();
         exceptionalFuture.completeExceptionally(new RuntimeException());
-        enrichFlow(exceptionalFuture, Optional.empty());
+        enrichFlow(exceptionalFuture, Optional.empty(), true);
     }
 
-    private void enrichFlow(CompletableFuture reverseLookupFuture, Optional<String> expectedValue) throws InvalidPacketException, ExecutionException, InterruptedException, UnknownHostException {
+    @Test
+    public void canDisableEnrichFlow() throws InvalidPacketException, ExecutionException, InterruptedException, UnknownHostException {
+        enrichFlow(CompletableFuture.completedFuture(Optional.of("test")), Optional.empty(), false);
+
+        CompletableFuture exceptionalFuture = new CompletableFuture();
+        exceptionalFuture.completeExceptionally(new RuntimeException());
+        enrichFlow(exceptionalFuture, Optional.empty(), false);
+    }
+
+    private void enrichFlow(CompletableFuture reverseLookupFuture, Optional<String> expectedValue, boolean lookupsEnabled) throws InvalidPacketException, ExecutionException, InterruptedException, UnknownHostException {
         DnsResolver dnsResolver = mock(DnsResolver.class);
         when(dnsResolver.reverseLookup(any())).thenReturn(reverseLookupFuture);
 
         RecordEnricher enricher = new RecordEnricher(dnsResolver);
 
         final Packet packet = getSampleNf5Packet();
-        final List<CompletableFuture<RecordEnrichment>> enrichmentFutures = packet.getRecords().map(enricher::enrich)
+        final List<CompletableFuture<RecordEnrichment>> enrichmentFutures = packet.getRecords().map(x -> enricher.enrich(x, lookupsEnabled))
                 .collect(Collectors.toList());
 
         CompletableFuture.allOf(enrichmentFutures.toArray(new CompletableFuture[]{}));

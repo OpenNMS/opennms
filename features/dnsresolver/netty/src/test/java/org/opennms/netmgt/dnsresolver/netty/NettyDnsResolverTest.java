@@ -91,10 +91,6 @@ public class NettyDnsResolverTest {
         EventForwarder eventForwarder = mock(EventForwarder.class);
         dnsResolver = new NettyDnsResolver(eventForwarder, new MetricRegistry());
         dnsResolver.setNameservers(String.format("%s:%d", InetAddressUtils.getLocalHostName(), DNS_SERVER_PORT));
-        dnsResolver.setBreakerFailureRateThreshold(80);
-        dnsResolver.setBreakerWaitDurationInOpenState(15);
-        dnsResolver.setBreakerRingBufferSizeInHalfOpenState(10);
-        dnsResolver.setBreakerRingBufferSizeInClosedState(100);
         dnsResolver.init();
     }
 
