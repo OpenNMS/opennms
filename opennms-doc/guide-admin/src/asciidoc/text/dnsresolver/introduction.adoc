@@ -1,0 +1,38 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+In order to customize the DNS servers that are queried, the following commands can be used:
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.dnsresolver.netty
+admin@minion()> property-set lookup-enabled true
+admin@minion()> property-set nameservers 8.8.8.8,4.2.2.2:53,[::1]:5353
+admin@minion()> property-set query-timeout-millis 5000
+admin@minion()> config:update
+----
+
+If no nameservers are set (or set to an empty string), the servers configured by the system running the JVM will be used.
+
+The resolved host names are cached for their TTL as specified in the returned DNS records.
+TTL handling can be customized by setting the `min-ttl-seconds`, `max-ttl-seconds` and `negative-ttl-seconds` properties in the configuration above.
+
+DNS lookups can be disabled globally by setting the property `lookup-enabled` to `false`.
+
+Circuit Breaker functionality exist that helps prevent your DNS infrastructure from being flooded with requests when multiple failures occur. It is enabled by default but can be disabled by setting `breaker-enabled` to `false`
+
+Additional parameters can be modified to tune the functionality of the circuit breaker:
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.dnsresolver.netty
+admin@minion()> property-set breaker-enabled true
+admin@minion()> property-set breaker-failureRateThreshold 80
+admin@minion()> property-set breaker-waitDurationInOpenState 15
+admin@minion()> property-set breaker-ringBufferSizeInHalfOpenState 10
+admin@minion()> property-set breaker-ringBufferSizeInClosedState 100
+admin@minion()> config:update
+----

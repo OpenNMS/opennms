@@ -23,10 +23,12 @@ The Netflow v9 UDP Parser supports protocol detection.
 .Parameters for the Netflow v9 UDP Parser
 [options="header, autowidth"]
 |===
-| Parameter         | Description                                                                | Required | Default value
-| `templateTimeout` | Templates must be re-declared in the given duration or the will be dropped | required | 30 minutes
+| Parameter            | Description                                                                  | Required | Default value
+| `templateTimeout`    | Templates must be re-declared in the given duration or they will be dropped. | no       | 30 minutes
+| `maxClockSkew`       | The maximum delta in seconds between exporter and Minion timestamps.         | no       | 0
+| `clockSkewEventRate` | Used to rate-limit clock skew events in seconds.                             | no       | 3600
+| `lookupsEnabled`     | Used to enable or disable DNS resolution for flows.                          | no       | true
 |===
-
 
 [[telemetryd-netflow9-adapter]]
 ===== Netflow v9 Adapter
