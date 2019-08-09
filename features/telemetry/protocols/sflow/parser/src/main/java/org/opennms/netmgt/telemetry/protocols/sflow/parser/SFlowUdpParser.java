@@ -58,14 +58,14 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
     private final SampleDatagramEnricher enricher;
 
-    private boolean lookupsEnabled = true;
+    private boolean dnsLookupsEnabled = true;
 
     public SFlowUdpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
                           final DnsResolver dnsResolver) {
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
-        enricher = new SampleDatagramEnricher(dnsResolver);
+        enricher = new SampleDatagramEnricher(dnsResolver, getDnsLookupsEnabled());
     }
 
     @Override
@@ -82,7 +82,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
         LOG.trace("Got packet: {}", packet);
 
         final CompletableFuture<TelemetryMessage> future = new CompletableFuture<>();
-        enricher.enrich(packet, getLookupsEnabled()).whenComplete((enrichment,ex) -> {
+        enricher.enrich(packet).whenComplete((enrichment,ex) -> {
             if (ex != null) {
                 // Enrichment failed
                 future.completeExceptionally(ex);
@@ -116,12 +116,12 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
         return future;
     }
 
-    public boolean getLookupsEnabled() {
-        return lookupsEnabled;
+    public boolean getDnsLookupsEnabled() {
+        return dnsLookupsEnabled;
     }
 
-    public void setLookupsEnabled(boolean lookupsEnabled) {
-        this.lookupsEnabled = lookupsEnabled;
+    public void setDnsLookupsEnabled(boolean dnsLookupsEnabled) {
+        this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
     @Override

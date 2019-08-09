@@ -113,7 +113,7 @@ public class ParserBase implements Parser {
 
     private long clockSkewEventRate = 0;
 
-    private boolean lookupsEnabled = true;
+    private boolean dnsLookupsEnabled = true;
 
     private LoadingCache<InetAddress, Optional<Instant>> eventCache;
 
@@ -197,12 +197,12 @@ public class ParserBase implements Parser {
         });
     }
 
-    public boolean getLookupsEnabled() {
-        return lookupsEnabled;
+    public boolean getDnsLookupsEnabled() {
+        return dnsLookupsEnabled;
     }
 
-    public void setLookupsEnabled(boolean lookupsEnabled) {
-        this.lookupsEnabled = lookupsEnabled;
+    public void setDnsLookupsEnabled(boolean dnsLookupsEnabled) {
+        this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
     public int getThreads() {
@@ -225,8 +225,8 @@ public class ParserBase implements Parser {
                 final CompletableFuture<TelemetryMessage> future = new CompletableFuture<>();
                 final Timer.Context timerContext = recordEnrichmentTimer.time();
                 // Trigger record enrichment (performing DNS reverse lookups for example)
-                final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver);
-                recordEnricher.enrich(record, getLookupsEnabled()).whenComplete((enrichment, ex) -> {
+                final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver, getDnsLookupsEnabled());
+                recordEnricher.enrich(record).whenComplete((enrichment, ex) -> {
                     timerContext.close();
                     if (ex != null) {
                         // Enrichment failed

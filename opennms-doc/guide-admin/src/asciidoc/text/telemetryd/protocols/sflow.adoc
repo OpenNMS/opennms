@@ -27,7 +27,7 @@ The sFlow UDP Parser supports protocol detection.
 [options="header, autowidth"]
 |===
 | Parameter             | Description                                                                | Required | Default value
-| `lookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
+| `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
 |===
 
 [[telemetryd-sflow-adapter-flow]]

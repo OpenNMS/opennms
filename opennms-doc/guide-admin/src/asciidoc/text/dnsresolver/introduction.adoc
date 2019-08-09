@@ -30,9 +30,9 @@ $ ssh -p 8201 admin@localhost
 ...
 admin@minion()> config:edit org.opennms.features.dnsresolver.netty
 admin@minion()> property-set breaker-enabled true
-admin@minion()> property-set breaker-failureRateThreshold 80
-admin@minion()> property-set breaker-waitDurationInOpenState 15
-admin@minion()> property-set breaker-ringBufferSizeInHalfOpenState 10
-admin@minion()> property-set breaker-ringBufferSizeInClosedState 100
+admin@minion()> property-set breaker-failure-rate-threshold 80
+admin@minion()> property-set breaker-wait-duration-in-open-state 15
+admin@minion()> property-set breaker-ring-buffer-size-in-half-open-state 10
+admin@minion()> property-set breaker-ring-buffer-size-in-closed-state 100
 admin@minion()> config:update
 ----

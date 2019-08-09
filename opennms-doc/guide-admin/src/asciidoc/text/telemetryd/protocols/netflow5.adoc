@@ -26,7 +26,7 @@ The Netflow v5 UDP Parser supports protocol detection.
 | Parameter             | Description                                                                | Required | Default value
 | `maxClockSkew`        | The maximum delta in seconds between exporter and Minion timestamps.       | no       | 0
 | `clockSkewEventRate`  | Used to rate-limit clock skew events in seconds.                           | no       | 3600
-| `lookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
+| `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
 |===
 
 [[telemetryd-netflow5-adapter]]

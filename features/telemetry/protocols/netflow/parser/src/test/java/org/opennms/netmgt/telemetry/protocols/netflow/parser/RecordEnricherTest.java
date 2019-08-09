@@ -74,14 +74,14 @@ public class RecordEnricherTest {
         enrichFlow(exceptionalFuture, Optional.empty(), false);
     }
 
-    private void enrichFlow(CompletableFuture reverseLookupFuture, Optional<String> expectedValue, boolean lookupsEnabled) throws InvalidPacketException, ExecutionException, InterruptedException, UnknownHostException {
+    private void enrichFlow(CompletableFuture reverseLookupFuture, Optional<String> expectedValue, boolean dnsLookupsEnabled) throws InvalidPacketException, ExecutionException, InterruptedException, UnknownHostException {
         DnsResolver dnsResolver = mock(DnsResolver.class);
         when(dnsResolver.reverseLookup(any())).thenReturn(reverseLookupFuture);
 
-        RecordEnricher enricher = new RecordEnricher(dnsResolver);
+        RecordEnricher enricher = new RecordEnricher(dnsResolver, dnsLookupsEnabled);
 
         final Packet packet = getSampleNf5Packet();
-        final List<CompletableFuture<RecordEnrichment>> enrichmentFutures = packet.getRecords().map(x -> enricher.enrich(x, lookupsEnabled))
+        final List<CompletableFuture<RecordEnrichment>> enrichmentFutures = packet.getRecords().map(enricher::enrich)
                 .collect(Collectors.toList());
 
         CompletableFuture.allOf(enrichmentFutures.toArray(new CompletableFuture[]{}));

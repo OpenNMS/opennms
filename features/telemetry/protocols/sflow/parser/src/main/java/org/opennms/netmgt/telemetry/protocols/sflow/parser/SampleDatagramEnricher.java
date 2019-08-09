@@ -54,13 +54,15 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.Inet6He
 public class SampleDatagramEnricher {
 
     private final DnsResolver dnsResolver;
+    private boolean dnsLookupsEnabled;
 
-    public SampleDatagramEnricher(DnsResolver dnsResolver) {
+    public SampleDatagramEnricher(DnsResolver dnsResolver, boolean dnsLookupsEnabled) {
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
-    public CompletableFuture<SampleDatagramEnrichment> enrich(SampleDatagram datagram, boolean lookupEnabled) {
-        if (lookupEnabled) {
+    public CompletableFuture<SampleDatagramEnrichment> enrich(SampleDatagram datagram) {
+        if (this.dnsLookupsEnabled) {
             final Set<InetAddress> addressesToReverseLookup = new HashSet<>();
             datagram.visit(new SampleDatagramVisitor() {
                 @Override

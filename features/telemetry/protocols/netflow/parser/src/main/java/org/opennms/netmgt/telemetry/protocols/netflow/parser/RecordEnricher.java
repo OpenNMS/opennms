@@ -63,12 +63,15 @@ public class RecordEnricher {
 
     private final DnsResolver dnsResolver;
 
-    public RecordEnricher(DnsResolver dnsResolver) {
+    private boolean dnsLookupsEnabled;
+
+    public RecordEnricher(DnsResolver dnsResolver, boolean dnsLookupsEnabled) {
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
-    public CompletableFuture<RecordEnrichment> enrich(Iterable<Value<?>> record, boolean lookupsEnabled) {
-        if (lookupsEnabled) {
+    public CompletableFuture<RecordEnrichment> enrich(Iterable<Value<?>> record) {
+        if (this.dnsLookupsEnabled) {
             final IpAddressCapturingVisitor ipAddressCapturingVisitor = new IpAddressCapturingVisitor();
             for (final Value<?> value : record) {
                 value.visit(ipAddressCapturingVisitor);
