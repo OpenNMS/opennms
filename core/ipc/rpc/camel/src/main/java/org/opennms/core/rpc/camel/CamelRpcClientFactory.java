@@ -30,6 +30,10 @@ package org.opennms.core.rpc.camel;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
@@ -50,18 +54,45 @@ import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
-public class CamelRpcClientFactory implements RpcClientFactory {
+import com.google.common.util.concurrent.SimpleTimeLimiter;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.common.util.concurrent.TimeLimiter;
+
+public class CamelRpcClientFactory implements RpcClientFactory, InitializingBean, DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerProcessor.class);
 
+    private static final long rpcExecTimeoutMs = Long.getLong("org.opennms.core.rpc.camel.rpcExecTimeoutMs", TimeUnit.SECONDS.toMillis(30));
+
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("CamelRpcClientFactory-Pool-%d")
+            .build();
+
     private String location;
+
+    private ExecutorService executor;
+
+    private TimeLimiter timeLimiter;
 
     @EndpointInject(uri = "direct:executeRpc", context = "rpcClient")
     private ProducerTemplate template;
 
     @EndpointInject(uri = "direct:executeRpc", context = "rpcClient")
     private Endpoint endpoint;
+
+    @Override
+    public void afterPropertiesSet() {
+        executor = Executors.newCachedThreadPool(threadFactory);
+        timeLimiter = new SimpleTimeLimiter(executor);
+    }
+
+    @Override
+    public void destroy() {
+        executor.shutdownNow();
+    }
 
     @Override
     public <S extends RpcRequest, T extends RpcResponse> RpcClient<S,T> getClient(RpcModule<S,T> module) {
@@ -79,46 +110,61 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                 // Wrap the request in a CamelRpcRequest and forward it to the Camel route
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 try {
-                    template.asyncCallbackSendBody(endpoint, new CamelRpcRequest<>(module, request), new Synchronization() {
-                        @Override
-                        public void onComplete(Exchange exchange) {
-                            try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
-                                final T response = module.unmarshalResponse(exchange.getOut().getBody(String.class));
-                                if (response.getErrorMessage() != null) {
-                                    future.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
-                                } else {
-                                    future.complete(response);
-                                }
-                            } catch (Throwable ex) {
-                                LOG.error("Unmarshalling a response in RPC module {} failed.", module, ex);
-                                future.completeExceptionally(ex);
-                            }
-                            // Ensure that future log statements on this thread are routed properly
-                            Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
-                        }
+                    // Even though these calls are expected to be async, we've encountered cases where
+                    // they do block. In order to prevent this, we wrap the calls with a timeout.
 
-                        @Override
-                        public void onFailure(Exchange exchange) {
-                            try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
-                                final ExchangeTimedOutException timeoutException = exchange.getException(ExchangeTimedOutException.class);
-                                final DirectConsumerNotAvailableException directConsumerNotAvailableException = exchange.getException(DirectConsumerNotAvailableException.class);
-                                if (timeoutException != null) {
-                                    // Wrap timeout exceptions within a RequestTimedOutException
-                                    future.completeExceptionally(new RequestTimedOutException(exchange.getException()));
-                                } else if (directConsumerNotAvailableException != null) {
-                                    // Wrap consumer not available exceptions with a RequestRejectedException
-                                    future.completeExceptionally(new RequestRejectedException(exchange.getException()));
-                                } else {
-                                    future.completeExceptionally(exchange.getException());
+                    // Compute the amount of maximum amount of time we're willing to wait for the call to be dispatched
+                    Long execTimeoutMs = request.getTimeToLiveMs();
+                    if (execTimeoutMs != null) {
+                        // If a TTL is set, the use the minimum value, of the TTL, or our exec timeout
+                        execTimeoutMs = Math.min(execTimeoutMs, rpcExecTimeoutMs);
+                    } else {
+                        execTimeoutMs = rpcExecTimeoutMs;
+                    }
+
+                    timeLimiter.callWithTimeout(() -> {
+                        template.asyncCallbackSendBody(endpoint, new CamelRpcRequest<>(module, request), new Synchronization() {
+                            @Override
+                            public void onComplete(Exchange exchange) {
+                                try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
+                                    final T response = module.unmarshalResponse(exchange.getOut().getBody(String.class));
+                                    if (response.getErrorMessage() != null) {
+                                        future.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
+                                    } else {
+                                        future.complete(response);
+                                    }
+                                } catch (Throwable ex) {
+                                    LOG.error("Unmarshalling a response in RPC module {} failed.", module, ex);
+                                    future.completeExceptionally(ex);
                                 }
+                                // Ensure that future log statements on this thread are routed properly
+                                Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                             }
-                            // Ensure that future log statements on this thread are routed properly
-                            Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
-                        }
-                    });
-                } catch (IllegalStateException e) {
+
+                            @Override
+                            public void onFailure(Exchange exchange) {
+                                try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
+                                    final ExchangeTimedOutException timeoutException = exchange.getException(ExchangeTimedOutException.class);
+                                    final DirectConsumerNotAvailableException directConsumerNotAvailableException = exchange.getException(DirectConsumerNotAvailableException.class);
+                                    if (timeoutException != null) {
+                                        // Wrap timeout exceptions within a RequestTimedOutException
+                                        future.completeExceptionally(new RequestTimedOutException(exchange.getException()));
+                                    } else if (directConsumerNotAvailableException != null) {
+                                        // Wrap consumer not available exceptions with a RequestRejectedException
+                                        future.completeExceptionally(new RequestRejectedException(exchange.getException()));
+                                    } else {
+                                        future.completeExceptionally(exchange.getException());
+                                    }
+                                }
+                                // Ensure that future log statements on this thread are routed properly
+                                Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
+                            }
+                        });
+                        return null;
+                    }, execTimeoutMs, TimeUnit.MILLISECONDS, true);
+                } catch (Exception e) {
                     try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
-                        // Wrap ProducerTemplate exceptions with a RequestRejectedException
+                        // Wrap exceptions with a RequestRejectedException
                         future.completeExceptionally(new RequestRejectedException(e));
                     }
                     // Ensure that future log statements on this thread are routed properly
@@ -132,4 +178,5 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     public void setLocation(String location) {
         this.location = location;
     }
+
 }
