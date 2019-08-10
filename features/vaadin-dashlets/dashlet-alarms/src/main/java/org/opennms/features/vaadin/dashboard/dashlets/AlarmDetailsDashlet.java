@@ -141,7 +141,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                     m_verticalLayout = new VerticalLayout();
                     m_verticalLayout.setCaption(getName());
                     m_verticalLayout.setWidth("100%");
-
+                    injectWallboardStyles();
                     refresh();
                 }
 
@@ -165,7 +165,6 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 public void refresh() {
                     List<OnmsAlarm> alarms = getAlarms();
                     m_verticalLayout.removeAllComponents();
-                    injectWallboardStyles();
 
                     setBoosted(false);
 
