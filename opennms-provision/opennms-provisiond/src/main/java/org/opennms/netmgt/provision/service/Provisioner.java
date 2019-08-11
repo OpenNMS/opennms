@@ -62,7 +62,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
@@ -858,6 +857,21 @@ public class Provisioner implements SpringServiceDaemon {
         
         return rescanExisting;
     }
+
+    /**
+     * Strips credentials from the given resource URL. See issue NMS-9535.
+     *
+     * @param string the URL
+     * @return the URL with masked username/password values
+     */
+    static String stripCredentials(final String string) {
+        if (string == null) {
+            return null;
+        } else {
+            return string.replaceAll("(username=)[^;&]*(;&)?", "$1***$2")
+                         .replaceAll("(password=)[^;&]*(;&)?", "$1***$2");
+        }
+    }
     
     /**
      * <p>getStats</p>
@@ -869,7 +883,7 @@ public class Provisioner implements SpringServiceDaemon {
     private Event importSuccessEvent(final TimeTrackingMonitor stats, final String url, final String rescanExisting, final String foreignSource) {
     
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
+            .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(url) )
             .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
             .addParam( EventConstants.PARM_IMPORT_STATS, stats.toString() )
             .addParam( EventConstants.PARM_FOREIGN_SOURCE, foreignSource )
@@ -883,7 +897,7 @@ public class Provisioner implements SpringServiceDaemon {
     private Event importFailedEvent(final String msg, final String url, final String rescanExisting) {
     
         return new EventBuilder( EventConstants.IMPORT_FAILED_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
+            .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(url) )
             .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
             .addParam( EventConstants.PARM_FAILURE_MESSAGE, msg )
             .getEvent();
@@ -892,7 +906,7 @@ public class Provisioner implements SpringServiceDaemon {
     private Event importStartedEvent(final Resource resource, final String rescanExisting) {
     
         return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
+            .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(resource.toString()) )
             .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
             .getEvent();
     }

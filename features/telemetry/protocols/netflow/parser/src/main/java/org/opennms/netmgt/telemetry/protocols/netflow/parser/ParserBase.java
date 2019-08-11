@@ -41,6 +41,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -91,6 +92,8 @@ public class ParserBase implements Parser {
 
     public static final String CLOCK_SKEW_EVENT_UEI = "uei.opennms.org/internal/telemetry/clockSkewDetected";
 
+    private final ThreadLocal<Boolean> isParserThread = new ThreadLocal<>();
+
     private final Protocol protocol;
 
     private final String name;
@@ -106,6 +109,8 @@ public class ParserBase implements Parser {
     private final Meter recordsDispatched;
 
     private final Timer recordEnrichmentTimer;
+
+    private final ThreadFactory threadFactory;
 
     private int threads = DEFAULT_NUM_THREADS;
 
@@ -134,6 +139,19 @@ public class ParserBase implements Parser {
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         Objects.requireNonNull(metricRegistry);
 
+        // Create a thread factory that sets a thread local variable when the thread is created
+        // This variable is used to identify the thread as one that belongs to this class
+        final LogPreservingThreadFactory logPreservingThreadFactory = new LogPreservingThreadFactory("Telemetryd-" + protocol + "-" + name, Integer.MAX_VALUE);
+        threadFactory = new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return logPreservingThreadFactory.newThread(() -> {
+                    isParserThread.set(true);
+                    r.run();
+                });
+            }
+        };
+
         recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsDispatched"));
         recordEnrichmentTimer = metricRegistry.timer(MetricRegistry.name("parsers",  name, "recordEnrichment"));
 
@@ -149,7 +167,7 @@ public class ParserBase implements Parser {
                 1, threads,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(true),
-                new LogPreservingThreadFactory("Telemetryd-" + protocol + "-" + name, Integer.MAX_VALUE),
+                threadFactory,
                 (r, executor) -> {
                     // We enter this block when the queue is full and the caller is attempting to submit additional tasks
                     try {
@@ -233,22 +251,39 @@ public class ParserBase implements Parser {
                         future.completeExceptionally(ex);
                         return;
                     }
-                    // Enrichment was successful, let's serialize
-                    final ByteBuffer buffer = serializeRecords(this.protocol, record, enrichment);
+                    // Enrichment was successful
 
-                    // Build the message to dispatch
-                    final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
+                    // We're currently in the callback thread from the enrichment process
+                    // We want the remainder of the serialization and dispatching to be performed
+                    // from one of our executor threads so that we can put back-pressure on the listener
+                    // if we can't keep up
+                    final Runnable dispatch = () -> {
+                        // Let's serialize
+                        final ByteBuffer buffer = serializeRecords(this.protocol, record, enrichment);
 
-                    // Dispatch
-                    dispatcher.send(msg).whenComplete((b,exx) -> {
-                        if (exx != null) {
-                            future.completeExceptionally(exx);
-                            return;
-                        }
-                        future.complete(b);
-                    });
+                        // Build the message to dispatch
+                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
 
-                    recordsDispatched.mark();
+                        // Dispatch
+                        dispatcher.send(msg).whenComplete((b,exx) -> {
+                            if (exx != null) {
+                                future.completeExceptionally(exx);
+                                return;
+                            }
+                            future.complete(b);
+                        });
+
+                        recordsDispatched.mark();
+                    };
+
+                    // It's possible that the callback thread is already a thread from the pool, if that's the case
+                    // execute within the current thread. This helps avoid deadlocks.
+                    if (Boolean.TRUE.equals(isParserThread.get())) {
+                        dispatch.run();
+                    } else {
+                        // We're not in one of the parsers threads, execute the dispatch in the pool
+                        executor.execute(dispatch);
+                    }
                 });
                 return future;
             }).toArray(CompletableFuture[]::new);
