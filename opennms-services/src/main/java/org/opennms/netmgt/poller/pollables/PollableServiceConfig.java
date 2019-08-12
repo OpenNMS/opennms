@@ -132,6 +132,10 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .execute()
                 .get().getPollStatus();
             LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
+
+            // Track the results of the poll
+            m_service.getContext().trackPoll(m_service, result);
+
             return result;
         } catch (Throwable e) {
             return RpcExceptionUtils.handleException(e, new RpcExceptionHandler<PollStatus>() {

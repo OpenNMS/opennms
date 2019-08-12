@@ -5,7 +5,7 @@
 This section will cover the basic functionalities how _{opennms-product-name}_ tests if a service or device available and measure his latency.
 
 In _{opennms-product-name}_ this task is provided by a _Service Monitor_ framework.
-The main component is _Pollerd_ which provides the following functionalities:
+The main component is _Pollerd_ which provides the following functionality:
 
 * Track the status of a management resource or an application for availability calculations
 * Measure response times for service quality
@@ -25,6 +25,9 @@ The availability is calculated over the last 24 hours and is shown in the _Surve
 Response times are displayed as _Resource Graphs_ of the _IP Interface_ on the _Node Detail Page_.
 Configuration parameters of the _Service Monitor_ can be seen in the _Service Page_ by clicking on the _Service Name_ on the _Node Detail Page_.
 The status of a _Service_ can be _Up_ or _Down_.
+
+TIP: The _Service Page_ also includes timestamps indicating the last time at which the service was polled and found to to be _Up_ (Last Good) or _Down_ (Last Fail).
+These fields can be used to validate that _Pollerd_ is polling the services as expected.
 
 When a _Service Monitor_ detects an outage, _Pollerd_ sends an _Event_ which is used to create an _Alarm_.
 _Events_ can also be used to generate _Notifications_ for on-call network or server administrators.
