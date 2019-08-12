@@ -838,7 +838,7 @@
           "tcp_flags": {
             "type": "integer"
           },
-          "timeout_switched": {
+          "delta_switched": {
             "type": "date"
           },
           "tos": {

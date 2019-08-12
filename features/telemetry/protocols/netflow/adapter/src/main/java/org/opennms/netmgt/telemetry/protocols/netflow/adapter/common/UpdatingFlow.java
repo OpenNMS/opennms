@@ -54,7 +54,7 @@ public abstract class UpdatingFlow implements Flow {
     public abstract Optional<Timeout> getTimeout();
 
     @Override
-    public Long getTimeoutSwitched() {
+    public Long getDeltaSwitched() {
         // The timespan for this flow export depends on the timeout, if present: use the active or inactive timeout,
         // whether the flow was active or not, and subtract it from last switched timestamp. Short living flows are
         // capped to the real first switched timestamp. If there is no timeout information available the first switched

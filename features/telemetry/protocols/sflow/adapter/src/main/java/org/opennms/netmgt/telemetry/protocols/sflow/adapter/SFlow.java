@@ -297,7 +297,7 @@ public class SFlow implements Flow {
     }
 
     @Override
-    public Long getTimeoutSwitched() {
+    public Long getDeltaSwitched() {
         return this.getFirstSwitched();
     }
 

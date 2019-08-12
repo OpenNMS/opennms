@@ -57,7 +57,7 @@ public class FlowTimeoutTest {
         assertThat(flow.getTimeout().isPresent(), is(false));
 
         assertThat(flow.getFirstSwitched(), is(123000L));
-        assertThat(flow.getTimeoutSwitched(), is(123000L)); // Timeout is same as first
+        assertThat(flow.getDeltaSwitched(), is(123000L)); // Timeout is same as first
         assertThat(flow.getLastSwitched(), is(987000L));
     }
 
@@ -90,7 +90,7 @@ public class FlowTimeoutTest {
         assertThat(flow.getTimeout().get().getInactive(), is(300000L));
 
         assertThat(flow.getFirstSwitched(), is(123000L));
-        assertThat(flow.getTimeoutSwitched(), is(987000L - 10000L));
+        assertThat(flow.getDeltaSwitched(), is(987000L - 10000L));
         assertThat(flow.getLastSwitched(), is(987000L));
     }
 
@@ -123,7 +123,7 @@ public class FlowTimeoutTest {
         assertThat(flow.getTimeout().get().getInactive(), is(300000L));
 
         assertThat(flow.getFirstSwitched(), is(123000L));
-        assertThat(flow.getTimeoutSwitched(), is(987000L - 300000L));
+        assertThat(flow.getDeltaSwitched(), is(987000L - 300000L));
         assertThat(flow.getLastSwitched(), is(987000L));
     }
 }

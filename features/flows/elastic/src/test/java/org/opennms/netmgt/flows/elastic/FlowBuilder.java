@@ -82,11 +82,11 @@ public class FlowBuilder {
         return withFlow(firstSwitched, firstSwitched, lastSwitched, sourceIp, sourcePort, destIp, destPort, numBytes);
     }
 
-    public FlowBuilder withFlow(Date firstSwitched, Date timeoutSwitched, Date lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
+    public FlowBuilder withFlow(Date firstSwitched, Date deltaSwitched, Date lastSwitched, String sourceIp, int sourcePort, String destIp, int destPort, long numBytes) {
         final FlowDocument flow = new FlowDocument();
         flow.setTimestamp(lastSwitched.getTime());
         flow.setFirstSwitched(firstSwitched.getTime());
-        flow.setTimeoutSwitched(timeoutSwitched.getTime());
+        flow.setDeltaSwitched(deltaSwitched.getTime());
         flow.setLastSwitched(lastSwitched.getTime());
         flow.setSrcAddr(sourceIp);
         flow.setSrcPort(sourcePort);

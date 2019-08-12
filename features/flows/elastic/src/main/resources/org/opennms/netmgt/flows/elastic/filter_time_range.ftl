@@ -1,6 +1,6 @@
 {
   "range": {
-    "netflow.timeout_switched": {
+    "netflow.delta_switched": {
       "lte": ${end?long?c},
       "format": "epoch_millis"
     }

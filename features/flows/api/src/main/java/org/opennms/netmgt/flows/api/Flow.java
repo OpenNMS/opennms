@@ -111,7 +111,7 @@ public interface Flow {
      * Unix timestamp in ms at which the previous exported packet
      * associated with this flow was switched.
      */
-    Long getTimeoutSwitched();
+    Long getDeltaSwitched();
 
     /**
      * Unix timestamp in ms at which the first packet

@@ -28,7 +28,7 @@
             "bytes": {
               "proportional_sum": {
                 "fields": [
-                  "netflow.timeout_switched",
+                  "netflow.delta_switched",
                   "netflow.last_switched",
                   "netflow.bytes",
                   "netflow.sampling_interval"

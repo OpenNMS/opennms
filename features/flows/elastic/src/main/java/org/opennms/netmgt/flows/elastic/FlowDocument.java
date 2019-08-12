@@ -280,8 +280,8 @@ public class FlowDocument {
      * Unix timestamp in ms at which the previous exported packet
      * associated with this flow was switched.
      */
-    @SerializedName("netflow.timeout_switched")
-    private Long timeoutSwitched;
+    @SerializedName("netflow.delta_switched")
+    private Long deltaSwitched;
 
     /**
      * TOS.
@@ -630,12 +630,12 @@ public class FlowDocument {
         this.tcpFlags = tcpFlags;
     }
 
-    public Long getTimeoutSwitched() {
-        return timeoutSwitched;
+    public Long getDeltaSwitched() {
+        return deltaSwitched;
     }
 
-    public void setTimeoutSwitched(Long timeoutSwitched) {
-        this.timeoutSwitched = timeoutSwitched;
+    public void setDeltaSwitched(Long deltaSwitched) {
+        this.deltaSwitched = deltaSwitched;
     }
 
     public Integer getTos() {
@@ -717,7 +717,7 @@ public class FlowDocument {
         doc.setSrcMaskLen(flow.getSrcMaskLen());
         doc.setSrcPort(flow.getSrcPort());
         doc.setTcpFlags(flow.getTcpFlags());
-        doc.setTimeoutSwitched(flow.getTimeoutSwitched());
+        doc.setDeltaSwitched(flow.getDeltaSwitched());
         doc.setTos(flow.getTos());
         doc.setNetflowVersion(NetflowVersion.from(flow.getNetflowVersion()));
         doc.setVlan(flow.getVlan() != null ? Integer.toUnsignedString(flow.getVlan()) : null);
