@@ -324,6 +324,7 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
+                - jira/NMS-12058
       - smoke-test-minimal:
           requires:
             - horizon-package-build
@@ -338,6 +339,7 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
+                - jira/NMS-12058
       - horizon-publish-oci:
           requires:
             - horizon-package-build

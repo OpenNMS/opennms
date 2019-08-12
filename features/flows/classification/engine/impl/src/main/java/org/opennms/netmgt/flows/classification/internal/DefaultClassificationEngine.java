@@ -158,6 +158,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
                 portRule.setDstAddress(rule.getDstAddress());
                 portRule.setExporterFilter(rule.getExporterFilter());
                 portRule.setGroupPriority(rule.getGroupPriority());
+                portRule.setPosition(rule.getPosition());
 
                 // Check weather to apply rule for src or dst port (both may be very unlikely, but possible)
                 if (rule.hasDstPortDefinition() && rule.hasSrcPortDefinition()) {
