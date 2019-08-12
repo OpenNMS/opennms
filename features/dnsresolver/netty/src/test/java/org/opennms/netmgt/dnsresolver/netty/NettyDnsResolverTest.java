@@ -119,19 +119,6 @@ public class NettyDnsResolverTest {
     }
 
     @Test
-    public void canDisableAllLookups() throws UnknownHostException, ExecutionException, InterruptedException {
-        // Disable Lookups
-        dnsResolver.setLookupEnabled(false);
-
-        // Test valid lookups are empty
-        assertThat(dnsResolver.lookup("rnd.opennms.ca").get(), equalTo(Optional.empty()));
-
-        // Test valid reverse lookups are empty
-        assertThat(dnsResolver.reverseLookup(InetAddress.getByName("173.242.186.51")).get(), equalTo(Optional.empty()));
-        assertThat(dnsResolver.reverseLookup(InetAddress.getByName("2600:5800:fc29:0003:0000:0000:0000:0001")).get(), equalTo(Optional.empty()));
-    }
-
-    @Test
     public void canTriggerTimeoutException() throws InterruptedException {
         // Reinitialize the resolver using a non-routable address as the target - we want the queries to fail due to timeouts
         dnsResolver.destroy();
