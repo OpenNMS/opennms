@@ -176,8 +176,6 @@ public class ClassificationRestIT {
 
     @Test
     public void verifyChangeGroupOfRule() {
-        // Verify GET Groups (system-defined and user-defined rules should be there)
-        given().get("/groups").then().assertThat().statusCode(200).body("", hasSize(2));
 
         // POST (create) two groups
         final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
