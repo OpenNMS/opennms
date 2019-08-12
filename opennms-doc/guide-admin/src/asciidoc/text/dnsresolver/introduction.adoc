@@ -2,6 +2,13 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+The DNS Resolver is used internally by OpenNMS modules and functions to provide lookup functionality as required.
+
+=== Modules that use DNS Resolution
+* <<ga-telemetryd, TelemetryD>>
+
+
+=== Configuring DNS Resolution
 In order to customize the DNS servers that are queried, the following commands can be used:
 [source]
 ----
@@ -21,6 +28,8 @@ TTL handling can be customized by setting the `min-ttl-seconds`, `max-ttl-second
 
 DNS lookups can be disabled globally by setting the property `lookup-enabled` to `false`.
 
+
+=== Configuring Circuit Breaker
 Circuit Breaker functionality exist that helps prevent your DNS infrastructure from being flooded with requests when multiple failures occur. It is enabled by default but can be disabled by setting `breaker-enabled` to `false`
 
 Additional parameters can be modified to tune the functionality of the circuit breaker:

@@ -138,7 +138,6 @@ public class RecordEnricher {
         @Override
         public void accept(IPv4AddressValue value) {
             addresses.add(value.getValue());
-
         }
 
         @Override
