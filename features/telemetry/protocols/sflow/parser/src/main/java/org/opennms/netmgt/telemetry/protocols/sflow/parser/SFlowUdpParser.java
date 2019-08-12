@@ -72,7 +72,9 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
     private final SampleDatagramEnricher enricher;
 
     private int threads = DEFAULT_NUM_THREADS;
-
+	
+    private boolean dnsLookupsEnabled = true;
+	
     private ExecutorService executor;
 
     public SFlowUdpParser(final String name,
@@ -94,7 +96,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
             }
         };
 
-        enricher = new SampleDatagramEnricher(dnsResolver);
+        enricher = new SampleDatagramEnricher(dnsResolver, getDnsLookupsEnabled());
     }
 
     @Override
@@ -161,6 +163,14 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
             });
         });
         return future;
+    }
+
+    public boolean getDnsLookupsEnabled() {
+        return dnsLookupsEnabled;
+    }
+
+    public void setDnsLookupsEnabled(boolean dnsLookupsEnabled) {
+        this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
     @Override

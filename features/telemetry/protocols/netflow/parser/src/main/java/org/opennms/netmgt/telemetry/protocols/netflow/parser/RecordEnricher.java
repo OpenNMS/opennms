@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -61,12 +62,20 @@ public class RecordEnricher {
     private static final Logger LOG = LoggerFactory.getLogger(RecordEnricher.class);
 
     private final DnsResolver dnsResolver;
+    private boolean dnsLookupsEnabled;
 
-    public RecordEnricher(DnsResolver dnsResolver) {
+    public RecordEnricher(DnsResolver dnsResolver, boolean dnsLookupsEnabled) {
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
     public CompletableFuture<RecordEnrichment> enrich(Iterable<Value<?>> record) {
+        if (!this.dnsLookupsEnabled) {
+            final CompletableFuture<RecordEnrichment> emptyFuture = new CompletableFuture<>();
+            final RecordEnrichment emptyEnrichment = new DefaultRecordEnrichment(Collections.<InetAddress, String>emptyMap());
+            emptyFuture.complete(emptyEnrichment);
+            return emptyFuture;
+        }
         final IpAddressCapturingVisitor ipAddressCapturingVisitor = new IpAddressCapturingVisitor();
         for (final Value<?> value : record) {
             value.visit(ipAddressCapturingVisitor);
@@ -100,7 +109,6 @@ public class RecordEnricher {
             final RecordEnrichment enrichment = new DefaultRecordEnrichment(hostnamesByAddress);
             future.complete(enrichment);
         });
-
         return future;
     }
 
@@ -127,7 +135,6 @@ public class RecordEnricher {
         @Override
         public void accept(IPv4AddressValue value) {
             addresses.add(value.getValue());
-
         }
 
         @Override
