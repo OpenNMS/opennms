@@ -23,8 +23,12 @@ The sFlow UDP Parser supports protocol detection.
 
 ====== Parameters
 
-This parser does not currently have any configurable parameters.
-
+.Parameters for the Netflow v5 UDP Parser
+[options="header, autowidth"]
+|===
+| Parameter             | Description                                                                | Required | Default value
+| `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
+|===
 
 [[telemetryd-sflow-adapter-flow]]
 ===== sFlow Adapter

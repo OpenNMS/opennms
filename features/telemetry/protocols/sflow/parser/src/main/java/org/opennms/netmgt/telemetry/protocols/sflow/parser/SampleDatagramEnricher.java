@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.sflow.parser;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,12 +54,20 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.Inet6He
 public class SampleDatagramEnricher {
 
     private final DnsResolver dnsResolver;
+    private final boolean dnsLookupsEnabled;
 
-    public SampleDatagramEnricher(DnsResolver dnsResolver) {
+    public SampleDatagramEnricher(DnsResolver dnsResolver, boolean dnsLookupsEnabled) {
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
     public CompletableFuture<SampleDatagramEnrichment> enrich(SampleDatagram datagram) {
+        if (!this.dnsLookupsEnabled) {
+            final CompletableFuture<SampleDatagramEnrichment> emptyFuture = new CompletableFuture<>();
+            final SampleDatagramEnrichment emptyEnrichment = new DefaultSampleDatagramEnrichment(Collections.<InetAddress, String>emptyMap());
+            emptyFuture.complete(emptyEnrichment);
+            return emptyFuture;
+        }
         final Set<InetAddress> addressesToReverseLookup = new HashSet<>();
         datagram.visit(new SampleDatagramVisitor() {
             @Override

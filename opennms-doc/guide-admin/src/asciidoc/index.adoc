@@ -344,6 +344,11 @@ include::text/workarounds/snmp.adoc[]
 == IFTTT Integration
 include::text/ifttt/ifttt-integration.adoc[]
 
+
+[[ga-dnsresolver]]
+== DNS Resolver
+include::text/dnsresolver/introduction.adoc[]
+
 [[ga-telemetryd]]
 == Telemetry Daemon
 include::text/telemetryd/introduction.adoc[]
