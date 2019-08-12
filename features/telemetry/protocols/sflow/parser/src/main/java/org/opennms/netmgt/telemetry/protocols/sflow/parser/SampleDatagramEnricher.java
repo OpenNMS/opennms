@@ -54,7 +54,7 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.Inet6He
 public class SampleDatagramEnricher {
 
     private final DnsResolver dnsResolver;
-    private boolean dnsLookupsEnabled;
+    private final boolean dnsLookupsEnabled;
 
     public SampleDatagramEnricher(DnsResolver dnsResolver, boolean dnsLookupsEnabled) {
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
@@ -62,56 +62,55 @@ public class SampleDatagramEnricher {
     }
 
     public CompletableFuture<SampleDatagramEnrichment> enrich(SampleDatagram datagram) {
-        if (this.dnsLookupsEnabled) {
-            final Set<InetAddress> addressesToReverseLookup = new HashSet<>();
-            datagram.visit(new SampleDatagramVisitor() {
-                @Override
-                public void accept(Inet4Header inet4Header) {
-                    addressesToReverseLookup.add(inet4Header.getSrcAddress());
-                    addressesToReverseLookup.add(inet4Header.getDstAddress());
-                }
-
-                @Override
-                public void accept(Inet6Header inet6Header) {
-                    addressesToReverseLookup.add(inet6Header.getSrcAddress());
-                    addressesToReverseLookup.add(inet6Header.getDstAddress());
-                }
-
-                @Override
-                public void accept(IpV4 ipV4) {
-                    addressesToReverseLookup.add(ipV4.getAddress());
-                }
-
-                @Override
-                public void accept(IpV6 ipV6) {
-                    addressesToReverseLookup.add(ipV6.getAddress());
-                }
-            });
-
-            final Map<InetAddress, String> hostnamesByAddress = new HashMap<>(addressesToReverseLookup.size());
-            final List<CompletableFuture<Optional<String>>> reverseLookupFutures = addressesToReverseLookup.stream()
-                    .map(addr -> dnsResolver.reverseLookup(addr).whenComplete((hostname, ex) -> {
-                        if (ex != null) {
-                            synchronized (hostnamesByAddress) {
-                                hostnamesByAddress.put(addr, hostname.orElse(null));
-                            }
-                        }
-                    })).collect(Collectors.toList());
-
-            final CompletableFuture<SampleDatagramEnrichment> future = new CompletableFuture<>();
-            CompletableFuture.allOf(reverseLookupFutures.toArray(new CompletableFuture[]{})).whenComplete((any, ex) -> {
-                // All of the reverse lookups have completed, note that some may have failed though
-                // Build the enrichment object with the results we do have
-                final SampleDatagramEnrichment enrichment = new DefaultSampleDatagramEnrichment(hostnamesByAddress);
-                future.complete(enrichment);
-            });
-            return future;
-        } else {
+        if (!this.dnsLookupsEnabled) {
             final CompletableFuture<SampleDatagramEnrichment> emptyFuture = new CompletableFuture<>();
             final SampleDatagramEnrichment emptyEnrichment = new DefaultSampleDatagramEnrichment(Collections.<InetAddress, String>emptyMap());
             emptyFuture.complete(emptyEnrichment);
             return emptyFuture;
         }
+        final Set<InetAddress> addressesToReverseLookup = new HashSet<>();
+        datagram.visit(new SampleDatagramVisitor() {
+            @Override
+            public void accept(Inet4Header inet4Header) {
+                addressesToReverseLookup.add(inet4Header.getSrcAddress());
+                addressesToReverseLookup.add(inet4Header.getDstAddress());
+            }
+
+            @Override
+            public void accept(Inet6Header inet6Header) {
+                addressesToReverseLookup.add(inet6Header.getSrcAddress());
+                addressesToReverseLookup.add(inet6Header.getDstAddress());
+            }
+
+            @Override
+            public void accept(IpV4 ipV4) {
+                addressesToReverseLookup.add(ipV4.getAddress());
+            }
+
+            @Override
+            public void accept(IpV6 ipV6) {
+                addressesToReverseLookup.add(ipV6.getAddress());
+            }
+        });
+
+        final Map<InetAddress, String> hostnamesByAddress = new HashMap<>(addressesToReverseLookup.size());
+        final List<CompletableFuture<Optional<String>>> reverseLookupFutures = addressesToReverseLookup.stream()
+                .map(addr -> dnsResolver.reverseLookup(addr).whenComplete((hostname, ex) -> {
+                    if (ex != null) {
+                        synchronized (hostnamesByAddress) {
+                            hostnamesByAddress.put(addr, hostname.orElse(null));
+                        }
+                    }
+                })).collect(Collectors.toList());
+
+        final CompletableFuture<SampleDatagramEnrichment> future = new CompletableFuture<>();
+        CompletableFuture.allOf(reverseLookupFutures.toArray(new CompletableFuture[]{})).whenComplete((any, ex) -> {
+            // All of the reverse lookups have completed, note that some may have failed though
+            // Build the enrichment object with the results we do have
+            final SampleDatagramEnrichment enrichment = new DefaultSampleDatagramEnrichment(hostnamesByAddress);
+            future.complete(enrichment);
+        });
+        return future;
     }
 
     private static class DefaultSampleDatagramEnrichment implements SampleDatagramEnrichment {

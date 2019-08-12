@@ -86,7 +86,6 @@ public class NettyDnsResolver implements DnsResolver {
     private final Meter lookupsFailed;
     private final Meter lookupsRejectedByCircuitBreaker;
 
-    private boolean lookupEnabled = true;
     private int numContexts = 0;
     private String nameservers = null;
     private long queryTimeoutMillis = TimeUnit.SECONDS.toMillis(5);
@@ -190,40 +189,24 @@ public class NettyDnsResolver implements DnsResolver {
 
     @Override
     public CompletableFuture<Optional<InetAddress>> lookup(String hostname) {
-        if (lookupEnabled) {
-            return circuitBreaker.executeCompletionStage(() -> {
-                final NettyResolverContext resolverContext = iterator.next();
-                final Timer.Context timerContext = lookupTimer.time();
-                return resolverContext.lookup(hostname).whenComplete((res, ex) -> {
-                    timerContext.stop();
-                });
-            }).toCompletableFuture();
-        } else {
-            return CompletableFuture.completedFuture(Optional.empty());
-        }
+        return circuitBreaker.executeCompletionStage(() -> {
+            final NettyResolverContext resolverContext = iterator.next();
+            final Timer.Context timerContext = lookupTimer.time();
+            return resolverContext.lookup(hostname).whenComplete((res, ex) -> {
+                timerContext.stop();
+            });
+        }).toCompletableFuture();
     }
 
     @Override
     public CompletableFuture<Optional<String>> reverseLookup(InetAddress inetAddress) {
-        if (lookupEnabled) {
-            return circuitBreaker.executeCompletionStage(() -> {
-                final NettyResolverContext resolverContext = iterator.next();
-                final Timer.Context timerContext = lookupTimer.time();
-                return resolverContext.reverseLookup(inetAddress).whenComplete((res, ex) -> {
-                    timerContext.stop();
-                });
-            }).toCompletableFuture();
-        } else {
-            return CompletableFuture.completedFuture(Optional.empty());
-        }
-    }
-
-    public boolean getLookupEnabled() {
-        return lookupEnabled;
-    }
-
-    public void setLookupEnabled(boolean lookupEnabled) {
-        this.lookupEnabled = lookupEnabled;
+        return circuitBreaker.executeCompletionStage(() -> {
+            final NettyResolverContext resolverContext = iterator.next();
+            final Timer.Context timerContext = lookupTimer.time();
+            return resolverContext.reverseLookup(inetAddress).whenComplete((res, ex) -> {
+                timerContext.stop();
+            });
+        }).toCompletableFuture();
     }
 
     public boolean getBreakerEnabled() {

@@ -15,7 +15,6 @@ In order to customize the DNS servers that are queried, the following commands c
 $ ssh -p 8201 admin@localhost
 ...
 admin@minion()> config:edit org.opennms.features.dnsresolver.netty
-admin@minion()> property-set lookup-enabled true
 admin@minion()> property-set nameservers 8.8.8.8,4.2.2.2:53,[::1]:5353
 admin@minion()> property-set query-timeout-millis 5000
 admin@minion()> config:update
@@ -25,9 +24,6 @@ If no nameservers are set (or set to an empty string), the servers configured by
 
 The resolved host names are cached for their TTL as specified in the returned DNS records.
 TTL handling can be customized by setting the `min-ttl-seconds`, `max-ttl-seconds` and `negative-ttl-seconds` properties in the configuration above.
-
-DNS lookups can be disabled globally by setting the property `lookup-enabled` to `false`.
-
 
 === Configuring Circuit Breaker
 Circuit Breaker functionality exist that helps prevent your DNS infrastructure from being flooded with requests when multiple failures occur. It is enabled by default but can be disabled by setting `breaker-enabled` to `false`
@@ -45,3 +41,5 @@ admin@minion()> property-set breaker-ring-buffer-size-in-half-open-state 10
 admin@minion()> property-set breaker-ring-buffer-size-in-closed-state 100
 admin@minion()> config:update
 ----
+
+NOTE: If the circuit breaker is disabled, the lookup statistics `lookupsSuccessful` and `lookupsFailed` are no longer tracked.

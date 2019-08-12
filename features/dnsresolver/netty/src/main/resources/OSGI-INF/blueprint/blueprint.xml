@@ -10,7 +10,6 @@
 
     <cm:property-placeholder id="netty-dns-resolver" persistent-id="org.opennms.features.dnsresolver.netty" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="lookup-enabled" value="true" />
             <!-- Defaults to 2 * num cores when the value is <= 0 -->
             <cm:property name="num-contexts" value="0" />
             <cm:property name="nameservers" value="" />
@@ -52,7 +51,6 @@
         <argument index="0" ref="eventForwarder"/>
         <argument index="1" ref="metricRegistry"/>
 
-        <property name="lookupEnabled" value="${lookup-enabled}"/>
         <property name="numContexts" value="${num-contexts}"/>
         <property name="nameservers" value="${nameservers}"/>
         <property name="queryTimeoutMillis" value="${query-timeout-millis}"/>
