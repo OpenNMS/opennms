@@ -117,7 +117,6 @@ public class ReportParameters implements Serializable {
         m_format = format;
     }
 
-    // TODO MVR this should live somewhere else
     public ReportFormat getFormat() {
         return m_format;
     }
@@ -172,7 +171,6 @@ public class ReportParameters implements Serializable {
         return parmMap;
     }
     
-    // TODO MVR remove me :D
     public Map<String, Object> getReportParms() {
         return getReportParms(ReportMode.IMMEDIATE);
     }
