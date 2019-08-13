@@ -202,7 +202,7 @@ public class DefaultClassificationService implements ClassificationService {
     }
 
     @Override
-    public void updateRule(Rule rule) {
+    public void updateRule(final Rule rule) {
         if (rule.getId() == null) throw new NoSuchElementException();
 
         // Persist
@@ -210,8 +210,9 @@ public class DefaultClassificationService implements ClassificationService {
             ruleValidator.validate(rule);
             groupValidator.validate(rule.getGroup(), rule);
             classificationRuleDao.saveOrUpdate(rule);
-            Group group = getGroup(rule.getGroup().getId()); // reload group since we might just have been added
-            updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(rule));
+            // reload to get updated group since we might just have switched groups
+            Rule reloaded = classificationRuleDao.get(rule.getId());
+            updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(reloaded));
             return null;
         });
     }
