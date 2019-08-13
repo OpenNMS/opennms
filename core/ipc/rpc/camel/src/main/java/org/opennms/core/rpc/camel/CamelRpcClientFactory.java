@@ -28,6 +28,9 @@
 
 package org.opennms.core.rpc.camel;
 
+import static org.opennms.core.rpc.camel.CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT;
+import static org.opennms.core.rpc.camel.CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -65,7 +68,11 @@ public class CamelRpcClientFactory implements RpcClientFactory, InitializingBean
 
     private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerProcessor.class);
 
-    private static final long rpcExecTimeoutMs = Long.getLong("org.opennms.core.rpc.camel.rpcExecTimeoutMs", TimeUnit.SECONDS.toMillis(30));
+    /**
+     * Re-use the value of the default TTL as the default timeout for RPC request execution.
+     * This value is bounded by the actual value of the TTL in the request when set.
+     */
+    private static final long rpcExecTimeoutMs = Long.getLong(CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT);
 
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("CamelRpcClientFactory-Pool-%d")

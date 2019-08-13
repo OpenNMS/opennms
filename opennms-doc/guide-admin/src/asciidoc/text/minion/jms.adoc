@@ -9,7 +9,7 @@ This is used for both issuing remote procedure calls (RPCs, ie. ping this host) 
 _{opennms-product-name}_ provides an embedded _ActiveMQ_ broker to help simplify installation.
 
 
-TIP: It is also possible (and recommended for large installations) to use an external an external broker.
+TIP: It is also possible (and recommended for large installations) to use an external broker.
 
 ==== Tuning the ActiveMQ broker
 
@@ -41,6 +41,29 @@ The `opennms-activemq:purge-queue` command can be used to delete all of the avai
 ----
 opennms-activemq:purge-queue OpenNMS.Sink.Trap
 ----
+
+==== Authentication and authorization with ActiveMQ
+
+The embedded ActiveMQ broker is pre-configured to authenticate clients using the same authentication mechanisms (JAAS) as the _{opennms-product-name}_ web application.
+
+Users associated with the `ADMIN` role can read, write or create any queue or topic.
+
+Users associated with the `MINION` role are restricted in such a way that prevents them from making RPC requests to other locations, but can otherwise read or write to the queues they need.
+
+See the `authorizationPlugin` section in `$OPENNMS_HOME/etc/opennms-activemq.xml` for details.
+
+==== Multi-tenancy with _{opennms-product-name}_ and ActiveMQ
+
+The queue names used by _{opennms-product-name}_ are prefixed with a constant value.
+If many _{opennms-product-name}_ are configured to use the same broker, then these queues would end up being shared amongst the instances, which is not desired.
+In order to isolate multiple instances on the same broker, you can customize the prefix by setting the value of the `org.opennms.instance.id` system property to something that is unique per instance.
+
+[source, sh]
+----
+echo 'org.opennms.instance.id=MyNMS' > "$OPENNMS_HOME/etc/opennms.properties.d/instance-id.properties"
+----
+
+CAUTION: If you change the instance id setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix.
 
 ==== Tuning the RPC client in OpenNMS
 
