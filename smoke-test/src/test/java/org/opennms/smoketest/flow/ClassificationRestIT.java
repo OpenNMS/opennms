@@ -74,7 +74,7 @@ public class ClassificationRestIT {
     }
 
     @Test
-    public void verifyCRUD() {
+    public void verifyCRUDforRule() {
         // Verify GET Rules
         given().get().then().assertThat().statusCode(200); // 200 because "system defined" rules are enabled
 
@@ -192,14 +192,35 @@ public class ClassificationRestIT {
         updateAndRetrieveRule(rule);
     }
 
-    private GroupDTO saveAndRetrieveGroup(GroupDTO groupDTO) {
-        final String header = given().contentType(ContentType.JSON)
+    @Test
+    public void verifyCRUDforGroup() {
+        // POST (create) group
+        final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
+                .withEnabled(true).withReadOnly(false).withPriority(30).build());
+
+        //  POST (create) group with same name => shouldn't be allowed
+        given().contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body(groupDTO)
-                .post("/groups").then().assertThat().statusCode(201) // created
-                .extract().header("Location");
-        final String[] split = header.split("/");
-        int groupId = Integer.parseInt(split[split.length - 1]);
+                .body(group3)
+                .post("/groups").then().assertThat().statusCode(400) // bad request
+                .body(is(String.format("{ context: 'name', message: 'A group with name \"%s\" already exists' }", group3.getName())));
+
+        // Update
+        // TODO: Patrick add when update is implemented
+
+        // DELETE group
+        given().param("groupId", group3.getId()).delete()
+                .then().statusCode(204);
+        given().get("groups/" + group3.getId())
+                .then()
+                .assertThat()
+                .statusCode(404); // not found => group is really gone
+        // Saving the same group should work again...
+        saveAndRetrieveGroup(group3);
+    }
+
+    private GroupDTO saveAndRetrieveGroup(GroupDTO groupDTO) {
+        int groupId = saveGroup(groupDTO);
         final GroupDTO receivedGroup = given().get("groups/" + groupId)
                 .then().log().body(true)
                 .assertThat()
@@ -212,6 +233,17 @@ public class ClassificationRestIT {
         assertThat(receivedGroup.getPriority(), is(groupDTO.getPriority()));
         assertThat(receivedGroup.getRuleCount(), is(0)); // we just created group => must be empty
         return receivedGroup;
+    }
+
+    private int saveGroup(GroupDTO groupDTO) {
+        final String header = given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(groupDTO)
+                .post("/groups").then().assertThat().statusCode(201) // created
+                .extract().header("Location");
+        final String[] split = header.split("/");
+        int groupId = Integer.parseInt(split[split.length - 1]);
+        return groupId;
     }
 
     private RuleDTO saveAndRetrieveRule(RuleDTO ruleDTO) {
