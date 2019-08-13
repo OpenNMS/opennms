@@ -182,7 +182,10 @@
         <div class="">
             <div class="form-group">
                 <label for="instanceId">Unique name</label>
-                <!-- TODO MVR tooltip? -->
+                <button class="btn btn-link text-secondary px-0"
+                        popover-trigger="'mouseenter'"
+                        uib-popover="A name to identify this report. Must be unique overall schedules/deliveries."><i class="fa fa-info-circle"/>
+                </button>
                 <input ng-disabled="!options.canEditTriggerName"
                        id="instanceId"
                        name="instanceId"
@@ -199,7 +202,6 @@
             </div>
             <div class="form-group">
                 <label for="format" class="">Format</label>
-                <!-- TODO MVR tooltip? -->
                 <select id="format"
                         name="format"
                         class="form-control custom-select"
@@ -212,7 +214,6 @@
             </div>
             <div class="form-group ml-4">
                 <input type="checkbox" id="persistToggle" ng-model="report.deliveryOptions.persist" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist }"/>
-                <!-- TODO MVR tooltip? -->
                 <label class="form-check-label"
                        data-toggle="tooltip"
                        data-placement="right"
@@ -223,7 +224,6 @@
             </div>
             <div class="form-group ml-4">
                 <input type="checkbox" id="sendMailToggle" ng-model="report.deliveryOptions.sendMail" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist }" />
-                <!-- TODO MVR tooltip? -->
                 <label class="form-check-label" for="sendMailToggle" data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
                     Email report
                 </label>
@@ -231,7 +231,6 @@
             </div>
 
             <div class="form-group" ng-if="report.deliveryOptions.sendMail">
-                <!-- TODO MVR tooltip? -->
                 <label for="mailRecipient">Recipient</label>
                 <input id="mailRecipient"
                        name="mailRecipient"
