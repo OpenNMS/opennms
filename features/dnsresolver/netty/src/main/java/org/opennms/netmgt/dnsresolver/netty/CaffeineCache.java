@@ -31,6 +31,7 @@ package org.opennms.netmgt.dnsresolver.netty;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -56,22 +57,24 @@ public abstract class CaffeineCache<E> {
     protected abstract boolean shouldReplaceAll(E entry);
 
     public CaffeineCache(long maxSize) {
-        final Caffeine<String, Entries> caffeine = Caffeine.newBuilder()
-                .expireAfter(new Expiry<String, Entries>() {
+        final Caffeine<String, Entries<E>> caffeine = Caffeine.newBuilder()
+                .expireAfter(new Expiry<String, Entries<E>>() {
                     @Override
-                    public long expireAfterCreate(String key, Entries value, long currentTime) {
-                        // Use the TTL of the first entry added for the key as the expiry time
+                    public long expireAfterCreate(String key, Entries<E> value, long currentTime) {
+                        // Use the TTL of the first entry added for the key as the initial expiry time
+                        // We'll recompute the expiry if/when subsequent entries are added
                         return TimeUnit.SECONDS.toNanos(value.ttl());
                     }
 
                     @Override
-                    public long expireAfterUpdate(String key, Entries value, long currentTime, long currentDuration) {
-                        // Don't expire after update
-                        return currentDuration;
+                    public long expireAfterUpdate(String key, Entries<E> value, long currentTime, long currentDuration) {
+                        // The value has been updated and may now contain an entry with a shorter TTL then what we originally used
+                        // Use the minimum value of the entry TTL and the current expiry duration
+                        return Math.min(TimeUnit.SECONDS.toNanos(value.ttl()), currentDuration);
                     }
 
                     @Override
-                    public long expireAfterRead(String key, Entries value, long currentTime, long currentDuration) {
+                    public long expireAfterRead(String key, Entries<E> value, long currentTime, long currentDuration) {
                         // Don't expire after read
                         return currentDuration;
                     }
@@ -101,7 +104,13 @@ public abstract class CaffeineCache<E> {
     }
 
     public void cache(String key, E entry, int ttl) {
-        cache.get(key, k -> new Entries<>(ttl)).add(entry, shouldReplaceAll(entry));
+        Entries<E> entries = cache.getIfPresent(key);
+        if (entries == null) {
+            entries = new Entries<>(ttl);
+        }
+        entries.add(entry, ttl, shouldReplaceAll(entry));
+        // Always call a put() after an update so that expiry time is recomputed
+        cache.put(key, entries);
     }
 
     public long size() {
@@ -113,25 +122,27 @@ public abstract class CaffeineCache<E> {
     }
 
     private static class Entries<E> {
-        private final int ttl;
+        private final AtomicInteger ttl;
         private final CopyOnWriteArraySet<E> container = new CopyOnWriteArraySet<>();
 
-        public Entries(int ttl) {
-            this.ttl = ttl;
+        Entries(int initialTtl) {
+            ttl = new AtomicInteger(initialTtl);
         }
 
-        public int ttl() {
-            return ttl;
+        int ttl() {
+            return ttl.get();
         }
 
-        public void add(E entry, boolean shouldReplaceAll) {
+        void add(E entry, int ttl, boolean shouldReplaceAll) {
             if (shouldReplaceAll) {
                 container.clear();
             }
             container.add(entry);
+            // Update the TTL with the minimum value
+            this.ttl.updateAndGet(existingTtl -> Math.min(existingTtl, ttl));
         }
 
-        public Collection<E> get() {
+        Collection<E> get() {
             return container;
         }
     }

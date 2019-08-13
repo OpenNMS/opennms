@@ -60,11 +60,11 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import io.netty.channel.EventLoop;
 import io.netty.handler.codec.dns.DnsPtrRecord;
 import io.netty.handler.codec.dns.DnsRecord;
-import io.netty.resolver.dns.DnsCache;
 import io.netty.resolver.dns.DnsCacheEntry;
 import io.netty.util.internal.StringUtil;
 
@@ -107,10 +107,7 @@ public class CaffeineDnsCache implements ExtendedDnsCache {
     public CaffeineDnsCache(int minTtl, int maxTtl, int negativeTtl, long maxSize) {
         this.minTtl = Math.min(MAX_SUPPORTED_TTL_SECS, checkPositiveOrZero(minTtl, "minTtl"));
         this.maxTtl = Math.min(MAX_SUPPORTED_TTL_SECS, checkPositiveOrZero(maxTtl, "maxTtl"));
-        if (minTtl > maxTtl) {
-            throw new IllegalArgumentException(
-                    "minTtl: " + minTtl + ", maxTtl: " + maxTtl + " (expected: 0 <= minTtl <= maxTtl)");
-        }
+        Preconditions.checkArgument(minTtl <= maxTtl, "minTtl: " + minTtl + ", maxTtl: " + maxTtl + " (expected: 0 <= minTtl <= maxTtl)");
         this.negativeTtl = checkPositiveOrZero(negativeTtl, "negativeTtl");
         this.maxSize = checkPositiveOrZero(maxSize, "maxSize");
 
@@ -163,7 +160,7 @@ public class CaffeineDnsCache implements ExtendedDnsCache {
     @Override
     public boolean clear(String hostname) {
         checkNotNull(hostname, "hostname");
-        resolveCache.clear(appendDot(hostname));
+        resolveCache.clear(ensureTrailingDot(hostname));
         // The backing cache doesn't provide a return value for whether or not
         // the value was actually removed, so we always return false
         return false;
@@ -175,7 +172,7 @@ public class CaffeineDnsCache implements ExtendedDnsCache {
         if (!emptyAdditionals(additionals)) {
             return Collections.<DnsCacheEntry>emptyList();
         }
-        final Collection<? extends  DnsCacheEntry> cachedEntries = resolveCache.get(appendDot(hostname));
+        final Collection<? extends  DnsCacheEntry> cachedEntries = resolveCache.get(ensureTrailingDot(hostname));
         if (cachedEntries == null) {
             cacheMisses.mark();
             return null;
@@ -198,7 +195,7 @@ public class CaffeineDnsCache implements ExtendedDnsCache {
         if (maxTtl == 0 || !emptyAdditionals(additionals)) {
             return e;
         }
-        resolveCache.cache(appendDot(hostname), e, Math.max(minTtl, (int) Math.min(maxTtl, originalTtl)));
+        resolveCache.cache(ensureTrailingDot(hostname), e, Math.max(minTtl, (int) Math.min(maxTtl, originalTtl)));
         return e;
     }
 
@@ -214,7 +211,7 @@ public class CaffeineDnsCache implements ExtendedDnsCache {
         if (maxTtl == 0) {
             return e;
         }
-        resolveCache.cache(appendDot(hostname), e, Math.max(minTtl, (int) Math.min(maxTtl, ptrRecord.timeToLive())));
+        resolveCache.cache(ensureTrailingDot(hostname), e, Math.max(minTtl, (int) Math.min(maxTtl, ptrRecord.timeToLive())));
         return e;
     }
 
@@ -232,7 +229,7 @@ public class CaffeineDnsCache implements ExtendedDnsCache {
             return e;
         }
 
-        resolveCache.cache(appendDot(hostname), e, negativeTtl);
+        resolveCache.cache(ensureTrailingDot(hostname), e, negativeTtl);
         return e;
     }
 
@@ -295,22 +292,22 @@ public class CaffeineDnsCache implements ExtendedDnsCache {
         DefaultExtendedDnsCacheEntry(String hostname, InetAddress address) {
             this.hostname = hostname;
             this.address = address;
-            cause = null;
-            hostnameFromPtrRecord = null;
+            this.cause = null;
+            this.hostnameFromPtrRecord = null;
         }
 
         DefaultExtendedDnsCacheEntry(String hostname, Throwable cause) {
             this.hostname = hostname;
             this.cause = cause;
-            address = null;
-            hostnameFromPtrRecord = null;
+            this.address = null;
+            this.hostnameFromPtrRecord = null;
         }
 
         public DefaultExtendedDnsCacheEntry(String hostname, DnsPtrRecord ptrRecord) {
             this.hostname = hostname;
             this.hostnameFromPtrRecord = ptrRecord.hostname();
-            address = null;
-            cause = null;
+            this.address = null;
+            this.cause = null;
         }
 
         @Override
@@ -364,7 +361,7 @@ public class CaffeineDnsCache implements ExtendedDnsCache {
         return additionals == null || additionals.length == 0;
     }
 
-    private static String appendDot(String hostname) {
+    private static String ensureTrailingDot(String hostname) {
         return StringUtil.endsWith(hostname, '.') ? hostname : hostname + '.';
     }
 }
