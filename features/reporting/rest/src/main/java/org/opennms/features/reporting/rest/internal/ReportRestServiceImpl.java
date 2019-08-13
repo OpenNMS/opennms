@@ -147,10 +147,10 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response scheduleReport(final Map<String, Object> parameters) {
-        final ReportParameters reportParameters = parseParameters(parameters, ReportMode.SCHEDULED);
-        final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-        final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
         try {
+            final ReportParameters reportParameters = parseParameters(parameters, ReportMode.SCHEDULED);
+            final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
+            final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
             schedulerService.addCronTrigger(scheduleConfig);
         } catch (SchedulerContextException ex) {
             return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
@@ -162,10 +162,10 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response deliverReport(final Map<String, Object> parameters) {
-        final ReportParameters reportParameters = parseParameters(parameters, ReportMode.IMMEDIATE);
-        final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-        final DeliveryConfig deliveryConfig = new DeliveryConfig(reportParameters, deliveryOptions);
         try {
+            final ReportParameters reportParameters = parseParameters(parameters, ReportMode.IMMEDIATE);
+            final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
+            final DeliveryConfig deliveryConfig = new DeliveryConfig(reportParameters, deliveryOptions);
             schedulerService.execute(deliveryConfig);
         } catch (SchedulerContextException ex) {
             return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));

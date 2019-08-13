@@ -208,6 +208,7 @@
                 <label for="format" class="">Format</label>
                 <select id="format"
                         name="format"
+                        ng-class="{ 'is-invalid' : reportForm.format.$invalid || report.errors.format }"
                         class="form-control custom-select"
                         ng-model="report.format"
                         data-toggle="tooltip"
@@ -215,6 +216,7 @@
                         title="The output format of the generated report."
                         ng-options="format as format for format in report.supportedFormats">
                 </select>
+                <div ng-show="report.errors.format" class="invalid-feedback">{{report.errors.format}}</div>
             </div>
             <div class="form-group ml-4">
                 <input type="checkbox" id="persistToggle" ng-model="report.deliveryOptions.persist" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist }"/>
