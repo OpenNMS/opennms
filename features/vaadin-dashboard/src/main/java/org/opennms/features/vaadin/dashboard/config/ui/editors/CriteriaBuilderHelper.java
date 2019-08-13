@@ -138,7 +138,7 @@ public class CriteriaBuilderHelper {
                     .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
                     .toFormatter();
 
-            final String DELTA_PATTERN = "^[+-]\\d+";
+            final String DELTA_PATTERN = "^[+-]\\d+$";
 
             private ZonedDateTime parseZonedDateTinme(final String string) {
                 if ("0".equals(string)) {
