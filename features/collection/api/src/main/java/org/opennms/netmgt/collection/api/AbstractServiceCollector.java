@@ -49,7 +49,7 @@ public abstract class AbstractServiceCollector implements ServiceCollector {
     }
 
     @Override
-    public void validateAgent(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
+    public void validateAgent(CollectionAgent agent, Map<String, String> parameters) throws CollectionInitializationException {
         // pass
     }
 

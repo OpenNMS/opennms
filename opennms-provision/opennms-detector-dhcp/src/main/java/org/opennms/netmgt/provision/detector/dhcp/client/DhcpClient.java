@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collections;
 
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 
 import org.opennms.features.dhcpd.Dhcpd;
 import org.opennms.features.dhcpd.Transaction;

@@ -41,10 +41,12 @@ import org.opennms.integration.api.v1.pollers.Status;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
 import com.google.common.base.Enums;
+import com.google.common.collect.Maps;
 
 /**
  * Builder implementation for {@link org.opennms.integration.api.v1.pollers.ServicePollerClient}.
@@ -106,7 +108,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     @Override
     public CompletableFuture<PollerResult> execute() {
-        Map<String, Object> props = Collections.unmodifiableMap(attributes);
+        Map<String, PollerParameter> props = Collections.unmodifiableMap(Maps.transformValues(attributes, PollerParameter::simple));
         MonitoredService service = new SimpleMonitoredService(address, serviceName);
         CompletableFuture<PollerResponse> future = pollerClient.poll()
                 .withService(service)

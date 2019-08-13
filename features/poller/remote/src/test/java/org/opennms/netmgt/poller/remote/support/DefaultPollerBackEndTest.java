@@ -32,13 +32,22 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
+import javax.xml.bind.JAXB;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMResult;
+
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.poller.PollerParameter;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.springframework.util.SerializationUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.google.common.collect.Lists;
 
@@ -61,7 +70,7 @@ public class DefaultPollerBackEndTest {
         Parameter paramWithNonSerializableObject = new Parameter();
         paramWithNonSerializableObject.setKey("c");
         // This can be any object, provided that it does not implement the Serializable interface
-        paramWithNonSerializableObject.setAnyObject(new DefaultPollerBackEndTest());
+        paramWithNonSerializableObject.setAnyObject(marshall(new DefaultPollerBackEndTest()));
 
         Service svc = new Service();
         svc.setParameters(Lists.newArrayList(paramWithStringValue, paramWithNullValue, paramWithNonSerializableObject));
@@ -91,13 +100,25 @@ public class DefaultPollerBackEndTest {
 
         Parameter paramWithPageSequenceValue = new Parameter();
         paramWithPageSequenceValue.setKey("psm");
-        paramWithPageSequenceValue.setAnyObject(ps);
+        paramWithPageSequenceValue.setAnyObject(marshall(ps));
 
         Service svc = new Service();
         svc.setParameters(Lists.newArrayList(paramWithPageSequenceValue));
-        Map<String, Object> params = DefaultPollerBackEnd.getParameterMap(svc);
+        Map<String, PollerParameter> params = DefaultPollerBackEnd.getParameterMap(svc);
 
-        PageSequence unmarshalledPs = JaxbUtils.unmarshal(PageSequence.class, (String)params.get("psm"));
+        PageSequence unmarshalledPs = AbstractServiceMonitor.getKeyedInstance(params, "psm", PageSequence.class, null);
         assertEquals(ps, unmarshalledPs);
+    }
+
+    private static Element marshall(final Object value) {
+        final Document document;
+        try {
+            document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        } catch (final ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+
+        JAXB.marshal(value, new DOMResult(document));
+        return document.getDocumentElement();
     }
 }

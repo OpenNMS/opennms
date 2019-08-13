@@ -35,6 +35,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.LoopPlugin;
 public class LoopPluginTest extends TestCase {
 
@@ -68,9 +69,9 @@ public class LoopPluginTest extends TestCase {
      * Test method for 'org.opennms.netmgt.capsd.plugins.LoopPlugin.isProtocolSupported(InetAddress, Map)'
      */
     public void testIsProtocolSupportedInetAddressMap() throws UnknownHostException {
-        Map<String, Object> qualifiers = new HashMap<String, Object>();
-        qualifiers.put("ip-match", "127.*.*.1-2");
-        qualifiers.put("is-supported", "true");
+        Map<String, PollerParameter> qualifiers = new HashMap<>();
+        qualifiers.put("ip-match", PollerParameter.simple("127.*.*.1-2"));
+        qualifiers.put("is-supported", PollerParameter.simple("true"));
         LoopPlugin plugin = new LoopPlugin();
         assertTrue(plugin.isProtocolSupported(InetAddressUtils.addr("127.0.0.1"), qualifiers));
         assertFalse(plugin.isProtocolSupported(InetAddressUtils.addr("127.0.0.3"), qualifiers));

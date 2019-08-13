@@ -63,7 +63,7 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
     }
 
     @Override
-    public void validateAgent(org.opennms.netmgt.collection.api.CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
+    public void validateAgent(org.opennms.netmgt.collection.api.CollectionAgent agent, Map<String, String> parameters) throws CollectionInitializationException {
         // not implemented in Integration API
     }
 

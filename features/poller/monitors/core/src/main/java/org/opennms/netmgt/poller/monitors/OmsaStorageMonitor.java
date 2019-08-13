@@ -46,6 +46,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -76,7 +77,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = svc.getAddress();
 
@@ -84,7 +85,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         
         SnmpAgentConfig agentConfig = configureAgent(svc, parameters);
 
-        Integer virtualDiskNumber = ParameterMap.getKeyedInteger(parameters, "virtualDiskNumber", 1);
+        Integer virtualDiskNumber = getKeyedInteger(parameters, "virtualDiskNumber", 1);
         
         LOG.debug("poll: service= SNMP address= {}", agentConfig);
         
@@ -163,14 +164,14 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return status;
     }
 
-	private SnmpAgentConfig configureAgent(MonitoredService svc, Map<String, Object> parameters) {
+	private SnmpAgentConfig configureAgent(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // Retrieve this interface's SNMP peer object
         //
 	    final SnmpAgentConfig agentConfig = getAgentConfig(svc, parameters);
         LOG.debug("poll: setting SNMP peer attribute for interface {}", InetAddressUtils.str(svc.getAddress()));
-        agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
-        agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
-        agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
+        agentConfig.setTimeout(getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
+        agentConfig.setRetries(getKeyedInteger(parameters, "retry", getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
+        agentConfig.setPort(getKeyedInteger(parameters, "port", agentConfig.getPort()));
 		return agentConfig;
 	}
 

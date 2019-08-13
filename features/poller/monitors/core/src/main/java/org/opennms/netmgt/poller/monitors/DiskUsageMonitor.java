@@ -38,6 +38,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -107,7 +108,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
      *                             Thrown for any unrecoverable errors.
      */
     @Override
-    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
+    public PollStatus poll(final MonitoredService svc, final Map<String, PollerParameter> parameters) {
         MatchType matchType = MatchType.EXACT;
         RequireType reqType = RequireType.ALL;
 
@@ -120,24 +121,24 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         final String hostAddress = InetAddressUtils.str(ipaddr);
         LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
-        agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
-        agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
-        agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
+        agentConfig.setTimeout(getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
+        agentConfig.setRetries(getKeyedInteger(parameters, "retry", getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
+        agentConfig.setPort(getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
-        String diskNamePattern = ParameterMap.getKeyedString(parameters, "disk", null);
+        String diskNamePattern = getKeyedString(parameters, "disk", null);
         if (diskNamePattern == null) {
             throw new RuntimeException("Invalid null value for parameter 'disk'");
         }
-        Integer percentFree = ParameterMap.getKeyedInteger(parameters, "free", 15);
+        Integer percentFree = getKeyedInteger(parameters, "free", 15);
 
-        String matchTypeStr = ParameterMap.getKeyedString(parameters, "match-type", "exact");
+        String matchTypeStr = getKeyedString(parameters, "match-type", "exact");
         try {
             matchType = MatchType.valueOf(matchTypeStr.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Unknown value '" + matchTypeStr + "' for parameter 'match-type'");
         }
 
-        String reqTypeStr = ParameterMap.getKeyedString(parameters, "require-type", "all");
+        String reqTypeStr = getKeyedString(parameters, "require-type", "all");
         try {
             reqType = RequireType.valueOf(reqTypeStr.toUpperCase());
         } catch (IllegalArgumentException e) {

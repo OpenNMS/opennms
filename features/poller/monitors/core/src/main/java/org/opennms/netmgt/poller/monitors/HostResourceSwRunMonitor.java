@@ -36,11 +36,12 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.StringUtils;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -100,7 +101,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
      *                Thrown for any uncrecoverable errors.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         InetAddress ipaddr =  svc.getAddress();
 
         // Retrieve this interface's SNMP peer object
@@ -112,13 +113,13 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         // Get configuration parameters
         //
         // This should never need to be overridden, but it can be in order to be used with similar tables.
-        String serviceNameOid = ParameterMap.getKeyedString(parameters, "service-name-oid", HOSTRESOURCE_SW_NAME_OID);
+        String serviceNameOid = getKeyedString(parameters, "service-name-oid", HOSTRESOURCE_SW_NAME_OID);
         // This should never need to be overridden, but it can be in order to be used with similar tables.
-        String serviceStatusOid = ParameterMap.getKeyedString(parameters, "service-status-oid", HOSTRESOURCE_SW_STATUS_OID);
+        String serviceStatusOid = getKeyedString(parameters, "service-status-oid", HOSTRESOURCE_SW_STATUS_OID);
         // This is the string that represents the service name to be monitored.
-        String serviceName = ParameterMap.getKeyedString(parameters, "service-name", null);
+        String serviceName = getKeyedString(parameters, "service-name", null);
         // The service name may appear in the table more than once. If this is set to true, all values must match the run level.
-        String matchAll = ParameterMap.getKeyedString(parameters, "match-all", "false");
+        String matchAll = getKeyedString(parameters, "match-all", "false");
         // This is one of: 
         //                   running(1),
         //                   runnable(2),    -- waiting for resource
@@ -127,20 +128,20 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         //                   invalid(4)      -- not loaded
         //
         // This represents the maximum run-level, i.e. 2 means either running(1) or runnable(2) pass.
-        String runLevel = ParameterMap.getKeyedString(parameters, "run-level", "2");
+        String runLevel = getKeyedString(parameters, "run-level", "2");
         // If "match-all" is true, there can be an optional "min-services" and "max-services" parameters that can define a range. The service is up if:
         // a) services_count >= min-services and services_count <= max-services
         // b) either one is not defined, then only one has to pass.
         // c) neither are defined, the monitor acts just like it used to - checking all instances to see if they are all running.
         // It is assumed that all services would have to pass the minimum run state test, no matter what the count.
-        int minServices = ParameterMap.getKeyedInteger(parameters, "min-services", -1);
-        int maxServices = ParameterMap.getKeyedInteger(parameters, "max-services", -1);
+        int minServices = getKeyedInteger(parameters, "min-services", -1);
+        int maxServices = getKeyedInteger(parameters, "max-services", -1);
 
         // set timeout and retries on SNMP peer object
         //
-        agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
-        agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
-        agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
+        agentConfig.setTimeout(getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
+        agentConfig.setRetries(getKeyedInteger(parameters, "retry", getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
+        agentConfig.setPort(getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
         LOG.debug("poll: service= SNMP address= {}", agentConfig);
         PollStatus status = PollStatus.unavailable("HostResourceSwRunMonitor service not found, addr=" + hostAddress + ", service-name=" + serviceName);

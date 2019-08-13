@@ -43,9 +43,9 @@ public interface CollectorRequestBuilder {
 
     CollectorRequestBuilder withTimeToLive(Long ttlInMs);
 
-    CollectorRequestBuilder withAttribute(String key, Object value);
+    CollectorRequestBuilder withAttribute(String key, String value);
 
-    CollectorRequestBuilder withAttributes(Map<String, Object> attributes);
+    CollectorRequestBuilder withAttributes(Map<String, String> attributes);
 
     CompletableFuture<CollectionSet> execute();
 

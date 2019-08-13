@@ -44,11 +44,12 @@ import org.jolokia.client.request.J4pReadRequest;
 import org.jolokia.client.request.J4pReadResponse;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +109,7 @@ final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
      * interface's response is valid we set the service status to
      * SERVICE_AVAILABLE and return.
      */
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         //
         // Process parameters
         //
@@ -116,7 +117,7 @@ final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
-        int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
+        int port = getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
 
         //URL
         String strURL = resolveKeyedString(parameters, PARAMETER_URL, DEFAULT_URL);
@@ -128,13 +129,13 @@ final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
         String strPasswd = resolveKeyedString(parameters, PARAMETER_PASSWORD, null);
 
         //AttrName
-        String strAttrName = ParameterMap.getKeyedString(parameters, PARAMETER_ATTRNAME, null);
+        String strAttrName = getKeyedString(parameters, PARAMETER_ATTRNAME, null);
 
         //AttrPath
-        String strAttrPath = ParameterMap.getKeyedString(parameters, PARAMETER_ATTRPATH, null);
+        String strAttrPath = getKeyedString(parameters, PARAMETER_ATTRPATH, null);
 
         //BeanName
-        String strBeanName = ParameterMap.getKeyedString(parameters, PARAMETER_BEANNAME, null);
+        String strBeanName = getKeyedString(parameters, PARAMETER_BEANNAME, null);
 
         //MethodName
         String strMethodName = resolveKeyedString(parameters, PARAMETER_METHODNAME, null);

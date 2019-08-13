@@ -68,6 +68,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -123,7 +124,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
             this.values = values;
         }
         @Override
-        public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+        public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
             return (PollStatus.get(PollStatus.SERVICE_AVAILABLE, values[current++]));
         }
     }
@@ -215,11 +216,11 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
 
     private void executeThresholdTest(Double[] rtValues) throws Exception {
 
-        Map<String,Object> parameters = new HashMap<String,Object>();
-        parameters.put("rrd-repository", "/tmp");
-        parameters.put("ds-name", "icmp");
-        parameters.put("rrd-base-name", "icmp");
-        parameters.put("thresholding-enabled", "true");
+        Map<String, PollerParameter> parameters = new HashMap<>();
+        parameters.put("rrd-repository", PollerParameter.simple("/tmp"));
+        parameters.put("ds-name", PollerParameter.simple("icmp"));
+        parameters.put("rrd-base-name", PollerParameter.simple("icmp"));
+        parameters.put("thresholding-enabled", PollerParameter.simple("true"));
 
         FilterDao filterDao = m_mocks.createMock(FilterDao.class);
         expect(filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,13 +39,16 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
-import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.junit.runner.SeleniumComputer;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import groovy.lang.GroovyClassLoader;
 
 public class SeleniumMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(SeleniumMonitor.class);
@@ -73,7 +74,7 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
 	private static final int DEFAULT_TIMEOUT = 3000;
 	
 	@Override
-	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) 
+	public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters)
 	{
 		PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");
 		TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
@@ -117,37 +118,31 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
 		return serviceStatus;
 	}
 
-    private int getTimeout(Map<String, Object> parameters) {
-        if(parameters.containsKey("timeout")) {
-            return Integer.parseInt("" + parameters.get("timeout"));
-        }else {
-            return 3;
-        }
+    private int getTimeout(Map<String, PollerParameter> parameters) {
+	    return getKeyedInteger(parameters, "timeout", 3);
     }
 
-    private String getBaseUrl(Map<String, Object> parameters, MonitoredService svc)
+    private String getBaseUrl(Map<String, PollerParameter> parameters, MonitoredService svc)
     {
-        if(parameters.containsKey("base-url")) {
-            String baseUrl = (String) parameters.get("base-url");
-            
-            if(!baseUrl.contains("http")) {
-                baseUrl = "http://" + baseUrl;
-            }
-            
-            if(baseUrl.contains("${ipAddr}")) {
-                baseUrl = BaseUrlUtils.replaceIpAddr(baseUrl, svc.getIpAddr());
-            }
-            
-            if(parameters.containsKey("port")) {
-                String port = (String) parameters.get("port");
-                baseUrl = baseUrl + ":" + port;
-            }
-            
-            return baseUrl;
-        }else {
-            return null;
-        }
-        
+        return getKeyedSimple(parameters, "base-url")
+                .map(baseUrl -> {
+                    if (!baseUrl.contains("http")) {
+                        return "http://" + baseUrl;
+                    }
+                    return baseUrl;
+                })
+                .map(baseUrl -> {
+                    if (baseUrl.contains("${ipAddr}")) {
+                        return BaseUrlUtils.replaceIpAddr(baseUrl, svc.getIpAddr());
+                    }
+                    return baseUrl;
+                })
+                .map(baseUrl -> {
+                    return getKeyedSimple(parameters, "port")
+                            .map(port -> baseUrl + ":" + port)
+                            .orElse(baseUrl);
+                })
+                .orElse(null);
     }
 
     private String getFailureMessage(Result result, MonitoredService svc)
@@ -169,11 +164,11 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
         return JUnitCore.runClasses(new SeleniumComputer(baseUrl, timeoutInSeconds), clazz);
     }
 
-    private String  getGroovyFilename(Map<String, Object> parameters) 
+    private String  getGroovyFilename(Map<String, PollerParameter> parameters)
     {
-        if(parameters.containsKey("selenium-test")) {
-            return (String) parameters.get("selenium-test");
-        }else {
+        if (parameters.containsKey("selenium-test")) {
+            return getKeyedString(parameters, "selenium-test", null);
+        } else {
             return "";
         }
         

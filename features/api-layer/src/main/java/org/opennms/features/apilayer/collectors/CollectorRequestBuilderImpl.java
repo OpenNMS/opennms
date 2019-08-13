@@ -43,6 +43,8 @@ import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Maps;
+
 public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(CollectorRequestBuilderImpl.class);
@@ -59,7 +61,7 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
     private Long ttlInMs;
 
-    private Map<String, Object> attributes = new HashMap<>();
+    private Map<String, String> attributes = new HashMap<>();
 
     public CollectorRequestBuilderImpl(LocationAwareCollectorClient locationAwareCollectorClient,
                                        CollectionAgentFactory collectionAgentFactory,
@@ -89,13 +91,13 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
     @Override
     public CollectorRequestBuilder withAttribute(String key, Object value) {
-        this.attributes.put(key, value);
+        this.attributes.put(key, value.toString());
         return this;
     }
 
     @Override
     public CollectorRequestBuilder withAttributes(Map<String, Object> attributes) {
-        this.attributes.putAll(attributes);
+        this.attributes.putAll(Maps.transformValues(attributes, Object::toString));
         return this;
     }
 

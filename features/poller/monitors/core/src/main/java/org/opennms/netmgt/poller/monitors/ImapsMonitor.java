@@ -34,6 +34,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
 import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.PollerParameter;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -51,8 +52,8 @@ final public class ImapsMonitor extends ImapMonitor {
     private static final int DEFAULT_IMAPS_PORT = 993;
 
     @Override
-    protected int determinePort(Map<String, Object> parameters) {
-        return ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_IMAPS_PORT);
+    protected int determinePort(Map<String, PollerParameter> parameters) {
+        return getKeyedInteger(parameters, "port", DEFAULT_IMAPS_PORT);
     }
 
     /** {@inheritDoc} */

@@ -33,6 +33,7 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +50,8 @@ public class Win32ServiceMonitor extends SnmpMonitor {
 	
 	/** {@inheritDoc} */
 	@Override
-	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-		String serviceName = ParameterMap.getKeyedString(parameters, "service-name", DEFAULT_SERVICE_NAME);
+	public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
+		String serviceName = getKeyedString(parameters, "service-name", DEFAULT_SERVICE_NAME);
 		int snLength = serviceName.length();
 		
 		final StringBuilder serviceOidBuf = new StringBuilder(SV_SVC_OPERATING_STATE_OID);
@@ -61,9 +62,9 @@ public class Win32ServiceMonitor extends SnmpMonitor {
 		
 		LOG.debug("For Win32 service '{}', OID to check is {}", serviceName, serviceOidBuf);
 		
-		parameters.put("oid", serviceOidBuf.toString());
-		parameters.put("operator", "=");
-		parameters.put("operand", "1");
+		parameters.put("oid", PollerParameter.simple(serviceOidBuf.toString()));
+		parameters.put("operator", PollerParameter.simple("="));
+		parameters.put("operand", PollerParameter.simple("1"));
 		
 		return super.poll(svc, parameters);
 	}

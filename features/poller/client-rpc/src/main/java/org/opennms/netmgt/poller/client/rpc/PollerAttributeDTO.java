@@ -35,9 +35,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.netmgt.config.poller.PollerClassObjectAdapter;
+import org.opennms.netmgt.poller.PollerParameter;
+import org.w3c.dom.Element;
 
 @XmlRootElement(name = "attribute")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -50,8 +50,7 @@ public class PollerAttributeDTO {
     private String value;
 
     @XmlAnyElement(lax=false)
-    @XmlJavaTypeAdapter(PollerClassObjectAdapter.class)
-    private Object contents;
+    private Element contents;
 
     public PollerAttributeDTO() {
         // no-arg constructor for JAXB
@@ -62,13 +61,10 @@ public class PollerAttributeDTO {
         this.value = value;
     }
 
-    public PollerAttributeDTO(String key, Object contents) {
+    public PollerAttributeDTO(String key, PollerParameter contents) {
         this.key = key;
-        if (contents != null && contents instanceof String) {
-            this.value = (String)contents;
-        } else {
-            this.contents = contents;
-        }
+        contents.asSimple().ifPresent(simple -> this.value = simple.getValue());
+        contents.asComplex().ifPresent(complex -> this.contents = complex.getElement());
     }
 
     public String getKey() {
@@ -87,11 +83,21 @@ public class PollerAttributeDTO {
         this.value = value;
     }
 
-    public Object getContents() {
+    public Element getContents() {
         return contents;
     }
 
-    public void setContents(Object contents) {
+    public PollerParameter asPollerParameter() {
+        if (this.value != null) {
+            return PollerParameter.simple(this.value);
+        } else if (this.contents != null) {
+            return PollerParameter.complex(this.contents);
+        } else {
+            return PollerParameter.empty();
+        }
+    }
+
+    public void setContents(Element contents) {
         this.contents = contents;
     }
 

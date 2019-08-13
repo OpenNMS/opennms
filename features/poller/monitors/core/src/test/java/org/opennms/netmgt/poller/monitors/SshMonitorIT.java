@@ -42,6 +42,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -61,7 +62,7 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
+        Map<String, PollerParameter> parms = new HashMap<>();
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
@@ -73,8 +74,8 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("match", "SSH");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("match", PollerParameter.simple("SSH"));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
@@ -86,8 +87,8 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("banner", "*");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("banner", PollerParameter.simple("*"));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
@@ -99,8 +100,8 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("banner", "^SSH");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("banner", PollerParameter.simple("^SSH"));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
@@ -112,8 +113,8 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("banner", "OpenSSH");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("banner", PollerParameter.simple("OpenSSH"));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
@@ -125,8 +126,8 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("banner", "OpenNMS");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("banner", PollerParameter.simple("OpenNMS"));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Down"), ps.isDown());
@@ -138,8 +139,8 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+.*$");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("banner", PollerParameter.simple("^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+.*$"));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
@@ -151,8 +152,8 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+\\g$");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("banner", PollerParameter.simple("^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+\\g$"));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUnavailable());
@@ -164,8 +165,8 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+\\g$");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("banner", PollerParameter.simple("^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+\\g$"));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Unavailable"), ps.isUnavailable());
@@ -176,7 +177,7 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.UNPINGABLE_ADDRESS, "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
+        Map<String, PollerParameter> parms = new HashMap<>();
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Unavailable"), ps.isUnavailable());
@@ -187,8 +188,8 @@ public class SshMonitorIT {
 
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", null, "SSH");
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("banner", "OpenNMS");
+        Map<String, PollerParameter> parms = new HashMap<>();
+        parms.put("banner", PollerParameter.simple("OpenNMS"));
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(createAssertMessage(ps, "Down"), ps.isDown());

@@ -37,13 +37,14 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -335,11 +336,11 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     private final Supplier<NodeDao> nodeDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class));
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-        final Map<String, Object> attributes = new HashMap<>(super.getRuntimeAttributes(svc, parameters));
+    public Map<String, PollerParameter> getRuntimeAttributes(MonitoredService svc, Map<String, PollerParameter> parameters) {
+        final Map<String, PollerParameter> attributes = new HashMap<>(super.getRuntimeAttributes(svc, parameters));
 
         // Determine the target address
-        final InetAddress targetIpAddr = (InetAddress) determineTargetAddress(svc, parameters);
+        final InetAddress targetIpAddr = determineTargetAddress(svc, parameters);
 
         // Determine the node to use as our IOS ping proxy
         final InetAddress proxyIpAddr = determineProxyAddress(parameters, svc);
@@ -348,8 +349,8 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
             throw new IllegalStateException("Unable to determine proxy address for this service");
         }
 
-        attributes.put("targetIpAddr", InetAddrUtils.str(targetIpAddr));
-        attributes.put("proxyIpAddr", InetAddrUtils.str(proxyIpAddr));
+        attributes.put("targetIpAddr", PollerParameter.simple(InetAddrUtils.str(targetIpAddr)));
+        attributes.put("proxyIpAddr", PollerParameter.simple(InetAddrUtils.str(proxyIpAddr)));
         return attributes;
     }
  
@@ -365,7 +366,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
      *                Thrown for any unrecoverable errors.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         final InetAddress targetIpAddr = InetAddrUtils.addr(getKeyedString(parameters, "targetIpAddr", null));
         final InetAddress proxyIpAddr = InetAddrUtils.addr(getKeyedString(parameters, "proxyIpAddr", null));
 
@@ -380,19 +381,19 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         // Get configuration parameters into a CiscoPingEntry object
         //
         CiscoPingEntry pingEntry = new CiscoPingEntry();
-        pingEntry.setCiscoPingPacketCount(ParameterMap.getKeyedInteger(parameters, PARM_PACKET_COUNT, PARM_PACKET_COUNT_DEFAULT));
-        pingEntry.setCiscoPingPacketSize(ParameterMap.getKeyedInteger(parameters, PARM_PACKET_SIZE, PARM_PACKET_SIZE_DEFAULT));
-        pingEntry.setCiscoPingPacketTimeout(ParameterMap.getKeyedInteger(parameters, PARM_PACKET_TIMEOUT, PARM_PACKET_TIMEOUT_DEFAULT));
-        pingEntry.setCiscoPingPacketDelay(ParameterMap.getKeyedInteger(parameters, PARM_PACKET_DELAY, PARM_PACKET_DELAY_DEFAULT));
-        pingEntry.setCiscoPingEntryOwner(ParameterMap.getKeyedString(parameters, PARM_ENTRY_OWNER, PARM_ENTRY_OWNER_DEFAULT));
-        pingEntry.setCiscoPingVrfName(ParameterMap.getKeyedString(parameters, PARM_VRF_NAME, PARM_VRF_NAME_DEFAULT));
+        pingEntry.setCiscoPingPacketCount(getKeyedInteger(parameters, PARM_PACKET_COUNT, PARM_PACKET_COUNT_DEFAULT));
+        pingEntry.setCiscoPingPacketSize(getKeyedInteger(parameters, PARM_PACKET_SIZE, PARM_PACKET_SIZE_DEFAULT));
+        pingEntry.setCiscoPingPacketTimeout(getKeyedInteger(parameters, PARM_PACKET_TIMEOUT, PARM_PACKET_TIMEOUT_DEFAULT));
+        pingEntry.setCiscoPingPacketDelay(getKeyedInteger(parameters, PARM_PACKET_DELAY, PARM_PACKET_DELAY_DEFAULT));
+        pingEntry.setCiscoPingEntryOwner(getKeyedString(parameters, PARM_ENTRY_OWNER, PARM_ENTRY_OWNER_DEFAULT));
+        pingEntry.setCiscoPingVrfName(getKeyedString(parameters, PARM_VRF_NAME, PARM_VRF_NAME_DEFAULT));
         
         pingEntry.setCiscoPingSerialNumber(Double.valueOf(System.currentTimeMillis() / 1000d).intValue());
         pingEntry.setCiscoPingProtocol(pingProtocol);
         pingEntry.setCiscoPingAddress(targetIpAddr);
         pingEntry.setCiscoPingEntryStatus(ROWSTATUS_CREATE_AND_GO);
         
-        int minSuccessPercent = ParameterMap.getKeyedInteger(parameters, PARM_SUCCESS_PERCENT, PARM_SUCCESS_PERCENT_DEFAULT);
+        int minSuccessPercent = getKeyedInteger(parameters, PARM_SUCCESS_PERCENT, PARM_SUCCESS_PERCENT_DEFAULT);
         
         // FIXME: Should the cleanup stuff be fixed to actually use this? Not clear if it really matters.
         // int cleanupInterval = ParameterMap.getKeyedInteger(parameters, PARM_CLEANUP_INTERVAL, PARM_CLEANUP_INTERVAL_DEFAULT);
@@ -404,9 +405,9 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 
         // set timeout and retries on SNMP peer object
         //
-        agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
-        agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
-        agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
+        agentConfig.setTimeout(getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
+        agentConfig.setRetries(getKeyedInteger(parameters, "retry", getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
+        agentConfig.setPort(getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
         LOG.debug("Setting up CISCO-PING-MIB proxy poll for service {} on interface {} -- {}", svc.getSvcName(), targetIpAddr, pingEntry);
 
@@ -498,8 +499,8 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         if (destroyValues[0].toInt() != ROWSTATUS_DESTROY) LOG.warn("SNMP SET to delete just-used ciscoPingEntry indicated row not deleted on proxy interface {} with instance ID {}", proxyIpAddr, pingEntry.getCiscoPingSerialNumber());
 	}
 
-	private InetAddress determineTargetAddress(MonitoredService svc, Map<String, Object> parameters) {
-		String rawOverrideTarget = ParameterMap.getKeyedString(parameters, PARM_TARGET_IP_ADDR, null);
+	private InetAddress determineTargetAddress(MonitoredService svc, Map<String, PollerParameter> parameters) {
+		String rawOverrideTarget = getKeyedString(parameters, PARM_TARGET_IP_ADDR, null);
 		String overrideTarget = rawOverrideTarget;
 		if (rawOverrideTarget != null) {
 			overrideTarget = PropertiesUtils.substitute(rawOverrideTarget, getServiceProperties(svc));
@@ -518,15 +519,15 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		return svc.getAddress();
 	}
 
-	private InetAddress determineProxyAddress(Map<String, Object> parameters, MonitoredService svc) {
+	private InetAddress determineProxyAddress(Map<String, PollerParameter> parameters, MonitoredService svc) {
 		LOG.debug("Determining the proxy address on which to set up the ciscoPingEntry for target interface {}", svc.getAddress());
 		OnmsNode proxyNode = null;
 		InetAddress proxyAddress = null;
-		String proxyNodeId = ParameterMap.getKeyedString(parameters, PARM_PROXY_NODE_ID, null);
-		String proxyNodeFS = ParameterMap.getKeyedString(parameters, PARM_PROXY_FOREIGN_SOURCE, null);
-		String proxyNodeFI = ParameterMap.getKeyedString(parameters, PARM_PROXY_FOREIGN_ID, null);
+		String proxyNodeId = getKeyedString(parameters, PARM_PROXY_NODE_ID, null);
+		String proxyNodeFS = getKeyedString(parameters, PARM_PROXY_FOREIGN_SOURCE, null);
+		String proxyNodeFI = getKeyedString(parameters, PARM_PROXY_FOREIGN_ID, null);
 		
-		String rawProxyIpAddr = ParameterMap.getKeyedString(parameters, PARM_PROXY_IP_ADDR, null);
+		String rawProxyIpAddr = getKeyedString(parameters, PARM_PROXY_IP_ADDR, null);
 		String proxyIpAddr = rawProxyIpAddr;
 		if (rawProxyIpAddr != null) {
 			proxyIpAddr = PropertiesUtils.substitute(rawProxyIpAddr, getServiceProperties(svc));

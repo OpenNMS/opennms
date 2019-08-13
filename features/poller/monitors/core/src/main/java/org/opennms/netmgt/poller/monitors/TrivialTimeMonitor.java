@@ -45,10 +45,11 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +117,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
      * the service is considered available.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         //
         // Process parameters
         //
@@ -125,7 +126,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
 
         // Port
         //
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+        int port = getKeyedInteger(parameters, "port", DEFAULT_PORT);
 
         // Get the address instance.
         //
@@ -135,16 +136,16 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
         
         // Get the permissible amount of skew.
         //
-        int allowedSkew = ParameterMap.getKeyedInteger(parameters, "allowed-skew", DEFAULT_ALLOWED_SKEW);
+        int allowedSkew = getKeyedInteger(parameters, "allowed-skew", DEFAULT_ALLOWED_SKEW);
 
         // Determine whether to persist the skew value in addition to the latency
-        boolean persistSkew = ParameterMap.getKeyedBoolean(parameters, "persist-skew", DEFAULT_PERSIST_SKEW);
+        boolean persistSkew = getKeyedBoolean(parameters, "persist-skew", DEFAULT_PERSIST_SKEW);
 
         // Give it a whirl
         //
         PollStatus serviceStatus = PollStatus.unavailable();
 
-        String protocol = ParameterMap.getKeyedString(parameters, "protocol", DEFAULT_PROTOCOL).toLowerCase();
+        String protocol = getKeyedString(parameters, "protocol", DEFAULT_PROTOCOL).toLowerCase();
         if (! protocol.equalsIgnoreCase("tcp") && ! protocol.equalsIgnoreCase("udp")) {
             throw new  IllegalArgumentException("Unsupported protocol, only TCP and UDP currently supported");
         } else if (protocol.equalsIgnoreCase("udp")) {
@@ -188,14 +189,14 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      * @param parameters a {@link java.util.Map} object.
      * @param serviceStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
-     * @param tracker a {@link org.opennms.core.utils.TimeoutTracker} object.
+     * @param tracker a {@link TimeoutTracker} object.
      * @param ipv4Addr a {@link java.net.InetAddress} object.
      * @param port a int.
      * @param allowedSkew a int.
      * @param persistSkew a boolean.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public PollStatus pollTimeTcp(MonitoredService svc, Map<String, Object> parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
+    public PollStatus pollTimeTcp(MonitoredService svc, Map<String, PollerParameter> parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
         int localTime = 0;
         int remoteTime = 0;
         boolean gotTime = false;
@@ -271,14 +272,14 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      * @param parameters a {@link java.util.Map} object.
      * @param serviceStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
-     * @param tracker a {@link org.opennms.core.utils.TimeoutTracker} object.
+     * @param tracker a {@link TimeoutTracker} object.
      * @param ipv4Addr a {@link java.net.InetAddress} object.
      * @param port a int.
      * @param allowedSkew a int.
      * @param persistSkew a boolean.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public PollStatus pollTimeUdp(MonitoredService svc, Map<String, Object> parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
+    public PollStatus pollTimeUdp(MonitoredService svc, Map<String, PollerParameter> parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
         int localTime = 0;
         int remoteTime = 0;
         boolean gotTime = false;

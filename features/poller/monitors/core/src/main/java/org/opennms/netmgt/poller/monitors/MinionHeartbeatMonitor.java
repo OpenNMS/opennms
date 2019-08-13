@@ -42,6 +42,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
 import com.google.common.base.Supplier;
@@ -54,9 +55,9 @@ public class MinionHeartbeatMonitor extends AbstractServiceMonitor {
     private final Supplier<MinionDao> minionDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "minionDao", MinionDao.class));
 
     @Override
-    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
+    public PollStatus poll(final MonitoredService svc, final Map<String, PollerParameter> parameters) {
         // Minions send heartbeat every 30 seconds - we check that we can skip not more than one beat
-        final int period = 2 * ParameterMap.getKeyedInteger(parameters, "period", 30 * 1000);
+        final int period = 2 * getKeyedInteger(parameters, "period", 30 * 1000);
 
         // Get the minion to test whereas the minion ID is the nodes foreign ID by convention
         final OnmsNode node = nodeDao.get().get(svc.getNodeId());

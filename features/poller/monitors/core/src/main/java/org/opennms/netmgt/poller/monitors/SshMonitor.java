@@ -34,11 +34,12 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.InsufficientParametersException;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.monitors.support.Ssh;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
@@ -86,14 +87,14 @@ public final class SshMonitor extends AbstractServiceMonitor {
      * @param parameters
      * @return
      */
-    public PollStatus poll(final InetAddress address, final Map<String, Object> parameters) {
+    public PollStatus poll(final InetAddress address, final Map<String, PollerParameter> parameters) {
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        String banner = ParameterMap.getKeyedString(parameters, "banner", null);
-        String match = ParameterMap.getKeyedString(parameters, "match", null);
-        String clientBanner = ParameterMap.getKeyedString(parameters, "client-banner", Ssh.DEFAULT_CLIENT_BANNER);
+        int port = getKeyedInteger(parameters, "port", DEFAULT_PORT);
+        String banner = getKeyedString(parameters, "banner", null);
+        String match = getKeyedString(parameters, "match", null);
+        String clientBanner = getKeyedString(parameters, "client-banner", Ssh.DEFAULT_CLIENT_BANNER);
         PollStatus ps = PollStatus.unavailable();
 
         Ssh ssh = new Ssh(address, port, tracker.getConnectionTimeout());
@@ -166,7 +167,7 @@ public final class SshMonitor extends AbstractServiceMonitor {
      * @see #poll(InetAddress, Map)
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         return poll(svc.getAddress(), parameters);
     }
 

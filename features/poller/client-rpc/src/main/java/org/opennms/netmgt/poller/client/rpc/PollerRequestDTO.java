@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.PollerRequest;
 
 @XmlRootElement(name = "poller-request")
@@ -171,23 +172,19 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
         this.attributes = attributes;
     }
 
-    public void addAttribute(String key, Object value) {
+    public void addAttribute(String key, PollerParameter value) {
         attributes.add(new PollerAttributeDTO(key, value));
     }
 
-    public void addAttributes(Map<String, Object> attributes) {
+    public void addAttributes(Map<String, PollerParameter> attributes) {
         attributes.entrySet().stream().forEach(e -> addAttribute(e.getKey(), e.getValue()));
     }
 
     @Override
-    public Map<String, Object> getMonitorParameters() {
-        Map<String, Object> pollerAttributeMap = new HashMap<>();
+    public Map<String, PollerParameter> getMonitorParameters() {
+        Map<String, PollerParameter> pollerAttributeMap = new HashMap<>();
         for (PollerAttributeDTO attribute : attributes) {
-            if (attribute.getContents() != null) {
-                pollerAttributeMap.put(attribute.getKey(), attribute.getContents());
-            } else {
-                pollerAttributeMap.put(attribute.getKey(), attribute.getValue());
-            }
+            pollerAttributeMap.put(attribute.getKey(), attribute.asPollerParameter());
         }
         return pollerAttributeMap;
     }

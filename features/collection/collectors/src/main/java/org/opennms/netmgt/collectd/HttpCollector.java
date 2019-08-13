@@ -73,6 +73,7 @@ import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
 import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -244,7 +245,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
             Integer retryCount = ParameterMap.getKeyedInteger(collectorAgent.getParameters(), key, DEFAULT_RETRY_COUNT);
             clientWrapper.setRetries(retryCount);
 
-            setUseSystemProxyIfDefined(clientWrapper, collectorAgent.getParameters());
+            setUseSystemProxyIfDefined(clientWrapper, ParameterMap.getKeyedBoolean(collectorAgent.getParameters(), HttpClientWrapperConfigHelper.USE_SYSTEM_PROXY, false));
 
             method = buildHttpMethod(collectorAgent);
             method.setProtocolVersion(httpVersion);

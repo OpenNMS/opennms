@@ -50,12 +50,15 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
+import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -69,7 +72,7 @@ import org.springframework.test.context.ContextConfiguration;
 public class PageSequenceMonitorIT {
 
     AbstractServiceMonitor m_monitor;
-    Map<String, Object> m_params;
+    Map<String, PollerParameter> m_params;
 
     @Before
     public void setUp() throws Exception {
@@ -79,9 +82,9 @@ public class PageSequenceMonitorIT {
 
         m_monitor = new PageSequenceMonitor();
 
-        m_params = new HashMap<String, Object>();
-        m_params.put("timeout", "8000");
-        m_params.put("retries", "1");
+        m_params = new HashMap<>();
+        m_params.put("timeout", PollerParameter.simple("8000"));
+        m_params.put("retries", PollerParameter.simple("1"));
     }
 
     protected MonitoredService getHttpService(String hostname) throws Exception {
@@ -108,8 +111,8 @@ public class PageSequenceMonitorIT {
     @Test
     public void testSimpleBogus() throws Exception {
         setPageSequenceParam(null);
-        m_params.put("timeout", "500");
-        m_params.put("retries", "0");
+        m_params.put("timeout", PollerParameter.simple("500"));
+        m_params.put("retries", PollerParameter.simple("0"));
         PollStatus notLikely = m_monitor.poll(getHttpService("bogus", InetAddressUtils.addr("1.1.1.1")), m_params);
         assertTrue("Should not be available", notLikely.isUnavailable());
         // Check to make sure that the connection message is nice
@@ -125,21 +128,21 @@ public class PageSequenceMonitorIT {
             virtualHostParam = "virtual-host=\"" + virtualHost + "\"";
         }
 
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/index.html\" port=\"10342\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"It was written by monkeys.\" " + virtualHostParam + "/>\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
     }
 
     @Test
     @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
     public void testHttps() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page scheme=\"https\" host=\"scgi.ebay.com\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\"/>\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         try {
             PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
@@ -153,11 +156,11 @@ public class PageSequenceMonitorIT {
     @Test
     @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
     public void testHttpsWithHostValidation() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-ssl-verification=\"false\"/>\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         try {
             m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
@@ -170,11 +173,11 @@ public class PageSequenceMonitorIT {
     @Test
     @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
     public void testHttpsWithoutHostValidation() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\"/>\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         try {
             PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
@@ -184,11 +187,11 @@ public class PageSequenceMonitorIT {
             // Print some debug output if necessary
         }
 
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-host-verification=\"true\"/>\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         try {
             PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
@@ -203,7 +206,7 @@ public class PageSequenceMonitorIT {
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testLogin() throws Exception {
 
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" successMatch=\"Password\" />\n" + 
@@ -213,7 +216,7 @@ public class PageSequenceMonitorIT {
             "  </page>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
@@ -223,11 +226,11 @@ public class PageSequenceMonitorIT {
     @Test
     @Ignore("Don't depend on external services for ITs")
     public void testVirtualHost() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page user-agent=\"Donald\" path=\"/\" scheme=\"https\" port=\"443\" successMatch=\"OpenNMS monitors millions of devices from a single instance\" virtual-host=\"www.opennms.com\"/>\n" +
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
@@ -237,11 +240,11 @@ public class PageSequenceMonitorIT {
     @Test
     @Ignore("This test doesn't work against the new version of the website")
     public void testVirtualHostBadBehaviorForWordpressPlugin() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/\" port=\"80\" successMatch=\"OpenNMS monitors millions of devices from a single instance\" user-agent=\"Jakarta Commons-HttpClient/3.0.1\" virtual-host=\"www.opennms.com\"/>\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
         assertTrue("Expected unavailable but was "+status+": reason = "+status.getReason(), status.isDown());
@@ -251,7 +254,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testLoginDynamicCredentials() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
@@ -266,7 +269,7 @@ public class PageSequenceMonitorIT {
             "  </page>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
@@ -276,7 +279,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testLoginDynamicCredentialsTwice() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&gt;Login (.)(.)(.)(.) Username and Password&lt;\">\n" +
@@ -304,7 +307,7 @@ public class PageSequenceMonitorIT {
             "  </page>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         try {
             PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
@@ -318,7 +321,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testLoginDynamicCredentialsRedirectPost() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
@@ -333,10 +336,10 @@ public class PageSequenceMonitorIT {
             "  </page>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
-        Map<String,Object> params = new HashMap<String,Object>();
-        for (Entry<String,Object> entry : m_params.entrySet()) {
+        Map<String, PollerParameter> params = new HashMap<>();
+        for (Entry<String, PollerParameter> entry : m_params.entrySet()) {
             params.put(entry.getKey(), entry.getValue());
         }
 
@@ -352,7 +355,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRedirectLocationMatch() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
@@ -365,7 +368,7 @@ public class PageSequenceMonitorIT {
             "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
@@ -375,7 +378,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRedirectLocationDoesNotMatch() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
@@ -388,7 +391,7 @@ public class PageSequenceMonitorIT {
             "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected down but was "+status+": reason = "+status.getReason(), status.isDown());
@@ -399,12 +402,12 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testDsNamePerPage() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" ds-name=\"test1\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"&lt;title&gt;(.*?)&lt;/title&gt;\" />\n" +
             "  <page path=\"/opennms/j_spring_security_check\" ds-name=\"test2\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"&lt;title&gt;(.*?)&lt;/title&gt;\" />\n" +
-                "</page-sequence>\n");
+                "</page-sequence>\n")));
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
@@ -418,11 +421,11 @@ public class PageSequenceMonitorIT {
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRequireIPv6() throws Exception {
         assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv6=\"true\"/>\n" +
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
@@ -432,11 +435,11 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRequireIPv4() throws Exception {
-        m_params.put("page-sequence", "" +
+        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n" +
-            "</page-sequence>\n");
+            "</page-sequence>\n")));
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());

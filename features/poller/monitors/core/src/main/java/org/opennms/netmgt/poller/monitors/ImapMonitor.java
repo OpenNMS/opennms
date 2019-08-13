@@ -42,10 +42,11 @@ import java.util.Map;
 import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +136,7 @@ public class ImapMonitor extends AbstractServiceMonitor {
      * </P>
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // Process parameters
         //
 
@@ -247,8 +248,8 @@ public class ImapMonitor extends AbstractServiceMonitor {
         return serviceStatus;
     }
 
-    protected int determinePort(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+    protected int determinePort(final Map<String, PollerParameter> parameters) {
+        return getKeyedInteger(parameters, "port", DEFAULT_PORT);
     }
 
     /**

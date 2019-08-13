@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.rt;
 
-import static org.opennms.core.web.HttpClientWrapperConfigHelper.PARAMETER_KEYS.useSystemProxy;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -522,7 +520,7 @@ public class RequestTracker {
         .append("password", m_password.replaceAll(".", "*"))
         .append("timeout", m_timeout)
         .append("retries", m_retries)
-        .append(useSystemProxy.name(), m_useSystemProxy)
+        .append("useSystemProxy", m_useSystemProxy)
         .toString();
     }
 

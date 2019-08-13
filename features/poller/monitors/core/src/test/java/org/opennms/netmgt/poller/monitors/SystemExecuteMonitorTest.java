@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 
 public class SystemExecuteMonitorTest {
@@ -45,14 +46,14 @@ public class SystemExecuteMonitorTest {
 
     private final String NODELABEL = "www.OpenNMS.org";
     private MonitoredService svc;
-    private Map<String, Object> parameters;
+    private Map<String, PollerParameter> parameters;
 
 
     @Before
     public void setup() throws Exception {
         monitor = new SystemExecuteMonitor();
         svc = new MockMonitoredService(42, NODELABEL, InetAddress.getLocalHost(), "myService");
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<>();
     }
 
     @Test
@@ -65,7 +66,7 @@ public class SystemExecuteMonitorTest {
     @Test
     public void testPollScriptParameterEmpty() {
         monitor = new SystemExecuteMonitor();
-        parameters.put("script", "");
+        parameters.put("script", PollerParameter.simple(""));
         PollStatus pollStatus = monitor.poll(svc, parameters);
         Assert.assertEquals("Unknown", pollStatus.getStatusName());
     }

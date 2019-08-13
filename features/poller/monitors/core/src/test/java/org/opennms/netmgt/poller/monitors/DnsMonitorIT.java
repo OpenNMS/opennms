@@ -49,6 +49,7 @@ import org.opennms.core.test.dns.annotations.DNSZone;
 import org.opennms.core.test.dns.annotations.JUnitDNSServer;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -92,15 +93,15 @@ public class DnsMonitorIT {
     @Test
     public void testIPV6Response() throws UnknownHostException {
         assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("::1"), "DNS");
 
-        m.put("port", "9153");
-        m.put("retry", "1");
-        m.put("timeout", "1000");
-        m.put("lookup", "ipv6.example.com");
+        m.put("port", PollerParameter.simple("9153"));
+        m.put("retry", PollerParameter.simple("1"));
+        m.put("timeout", PollerParameter.simple("1000"));
+        m.put("lookup", PollerParameter.simple("ipv6.example.com"));
 
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -110,15 +111,15 @@ public class DnsMonitorIT {
     @Test
     // type not found is still considered a valid response with the default response codes
     public void testNotFound() throws UnknownHostException {
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
 
-        m.put("port", "9153");
-        m.put("retry", "2");
-        m.put("timeout", "5000");
-        m.put("lookup", "bogus.example.com");
+        m.put("port", PollerParameter.simple("9153"));
+        m.put("retry", PollerParameter.simple("2"));
+        m.put("timeout", PollerParameter.simple("5000"));
+        m.put("lookup", PollerParameter.simple("bogus.example.com"));
 
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -128,16 +129,16 @@ public class DnsMonitorIT {
     @Test
     // type not found is still considered a valid response with the default response codes
     public void testNotFoundWithCustomRcode() throws UnknownHostException {
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
 
-        m.put("port", "9153");
-        m.put("retry", "2");
-        m.put("timeout", "5000");
-        m.put("lookup", "bogus.example.com");
-        m.put("fatal-response-codes", "3");
+        m.put("port", PollerParameter.simple("9153"));
+        m.put("retry", PollerParameter.simple("2"));
+        m.put("timeout", PollerParameter.simple("5000"));
+        m.put("lookup", PollerParameter.simple("bogus.example.com"));
+        m.put("fatal-response-codes", PollerParameter.simple("3"));
 
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -146,14 +147,14 @@ public class DnsMonitorIT {
 
     @Test
     public void testUnrecoverable() throws UnknownHostException {
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("192.168.1.120"), "DNS");
 
-        m.put("port", "9000");
-        m.put("retry", "2");
-        m.put("timeout", "500");
+        m.put("port", PollerParameter.simple("9000"));
+        m.put("retry", PollerParameter.simple("2"));
+        m.put("timeout", PollerParameter.simple("500"));
 
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -162,15 +163,15 @@ public class DnsMonitorIT {
 
     @Test
     public void testDNSIPV4Response() throws UnknownHostException {
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
 
-        m.put("port", "9153");
-        m.put("retry", "1");
-        m.put("timeout", "3000");
-        m.put("lookup", "example.com");
+        m.put("port", PollerParameter.simple("9153"));
+        m.put("retry", PollerParameter.simple("1"));
+        m.put("timeout", PollerParameter.simple("3000"));
+        m.put("lookup", PollerParameter.simple("example.com"));
 
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -179,16 +180,16 @@ public class DnsMonitorIT {
 
     @Test
     public void testTooFewAnswers() throws UnknownHostException {
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
 
-        m.put("port", "9153");
-        m.put("retry", "1");
-        m.put("timeout", "3000");
-        m.put("lookup", "example.empty");
-        m.put("min-answers", "1");
+        m.put("port", PollerParameter.simple("9153"));
+        m.put("retry", PollerParameter.simple("1"));
+        m.put("timeout", PollerParameter.simple("3000"));
+        m.put("lookup", PollerParameter.simple("example.empty"));
+        m.put("min-answers", PollerParameter.simple("1"));
 
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -197,16 +198,16 @@ public class DnsMonitorIT {
 
     @Test
     public void testTooManyAnswers() throws UnknownHostException {
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
 
-        m.put("port", "9153");
-        m.put("retry", "1");
-        m.put("timeout", "3000");
-        m.put("lookup", "example.com");
-        m.put("max-answers", "0");
+        m.put("port", PollerParameter.simple("9153"));
+        m.put("retry", PollerParameter.simple("1"));
+        m.put("timeout", PollerParameter.simple("3000"));
+        m.put("lookup", PollerParameter.simple("example.com"));
+        m.put("max-answers", PollerParameter.simple("0"));
 
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());

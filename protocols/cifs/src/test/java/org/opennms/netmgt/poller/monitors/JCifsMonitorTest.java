@@ -54,6 +54,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -116,7 +117,7 @@ public class JCifsMonitorTest {
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddress.getByName("10.123.123.123"), "JCIFS");
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, PollerParameter> m = Collections.synchronizedMap(new TreeMap<>());
 
         replay(mockSmbFolderEmpty, mockSmbFolderNotEmpty, mockSmbFileValidPath, mockSmbFileInvalidPath, SmbFile.class);
 
@@ -127,11 +128,11 @@ public class JCifsMonitorTest {
         /*
          * checking path does exist and mode is PATH_EXIST => up
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "PATH_EXIST");
-        m.put("path", "/validPath");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("PATH_EXIST"));
+        m.put("path", PollerParameter.simple("/validPath"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.up(), pollStatus);
@@ -139,11 +140,11 @@ public class JCifsMonitorTest {
         /*
          * checking path does not exist and mode is PATH_EXIST => down
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "PATH_EXIST");
-        m.put("path", "/invalidPath");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("PATH_EXIST"));
+        m.put("path", PollerParameter.simple("/invalidPath"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.down(), pollStatus);
@@ -151,11 +152,11 @@ public class JCifsMonitorTest {
         /*
          * checking path does exist and mode is PATH_NOT_EXIST => down
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "PATH_NOT_EXIST");
-        m.put("path", "/validPath");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("PATH_NOT_EXIST"));
+        m.put("path", PollerParameter.simple("/validPath"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.down(), pollStatus);
@@ -163,11 +164,11 @@ public class JCifsMonitorTest {
         /*
          * checking path does not exist and mode is PATH_NOT_EXIST => up
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "PATH_NOT_EXIST");
-        m.put("path", "/invalidPath");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("PATH_NOT_EXIST"));
+        m.put("path", PollerParameter.simple("/invalidPath"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.up(), pollStatus);
@@ -175,11 +176,11 @@ public class JCifsMonitorTest {
         /*
          * checking folder not empty and mode is FOLDER_EMPTY => down
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "FOLDER_EMPTY");
-        m.put("path", "/folderNotEmpty");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("FOLDER_EMPTY"));
+        m.put("path", PollerParameter.simple("/folderNotEmpty"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.down(), pollStatus);
@@ -187,11 +188,11 @@ public class JCifsMonitorTest {
         /*
          * checking folder empty and mode is FOLDER_EMPTY => up
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "FOLDER_EMPTY");
-        m.put("path", "/folderEmpty");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("FOLDER_EMPTY"));
+        m.put("path", PollerParameter.simple("/folderEmpty"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.up(), pollStatus);
@@ -199,11 +200,11 @@ public class JCifsMonitorTest {
         /*
          * checking folder not empty and mode is FOLDER_NOT_EMPTY => up
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "FOLDER_NOT_EMPTY");
-        m.put("path", "/folderNotEmpty");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("FOLDER_NOT_EMPTY"));
+        m.put("path", PollerParameter.simple("/folderNotEmpty"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.up(), pollStatus);
@@ -211,11 +212,11 @@ public class JCifsMonitorTest {
         /*
          * checking folder empty and mode is FOLDER_NOT_EMPTY => down
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "FOLDER_NOT_EMPTY");
-        m.put("path", "/folderEmpty");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("FOLDER_NOT_EMPTY"));
+        m.put("path", PollerParameter.simple("/folderEmpty"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.down(), pollStatus);
@@ -223,11 +224,11 @@ public class JCifsMonitorTest {
         /*
          * checking for invalid mode => down
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "ABC");
-        m.put("path", "/folderEmpty");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("ABC"));
+        m.put("path", PollerParameter.simple("/folderEmpty"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.unknown(), pollStatus);
@@ -235,11 +236,11 @@ public class JCifsMonitorTest {
         /*
          * checking for SmbException => down
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "PATH_EXIST");
-        m.put("path", "/smbException");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("PATH_EXIST"));
+        m.put("path", PollerParameter.simple("/smbException"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.down(), pollStatus);
@@ -247,11 +248,11 @@ public class JCifsMonitorTest {
         /*
          * checking for MalformedUrlException => down
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "PATH_EXIST");
-        m.put("path", "/malformedUrlException");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("PATH_EXIST"));
+        m.put("path", PollerParameter.simple("/malformedUrlException"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.down(), pollStatus);
@@ -259,12 +260,12 @@ public class JCifsMonitorTest {
         /*
          * checking for overriding Ip address via empty string => up
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "PATH_EXIST");
-        m.put("smbHost", "");
-        m.put("path", "/validPath");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("PATH_EXIST"));
+        m.put("smbHost", PollerParameter.simple(""));
+        m.put("path", PollerParameter.simple("/validPath"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.up(), pollStatus);
@@ -272,12 +273,12 @@ public class JCifsMonitorTest {
         /*
          * checking for overriding Ip address via smbHost => down
          */
-        m.put("username", "user");
-        m.put("password", "pass");
-        m.put("domain", "dom");
-        m.put("mode", "PATH_EXIST");
-        m.put("smbHost", "192.168.0.123");
-        m.put("path", "/smbException");
+        m.put("username", PollerParameter.simple("user"));
+        m.put("password", PollerParameter.simple("pass"));
+        m.put("domain", PollerParameter.simple("dom"));
+        m.put("mode", PollerParameter.simple("PATH_EXIST"));
+        m.put("smbHost", PollerParameter.simple("192.168.0.123"));
+        m.put("path", PollerParameter.simple("/smbException"));
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.down(), pollStatus);
@@ -289,17 +290,17 @@ public class JCifsMonitorTest {
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddress.getByName("10.123.123.123"), "JCIFS");
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, PollerParameter> m = Collections.synchronizedMap(new TreeMap<>());
 
         JCifsMonitor jCifsMonitor = new JCifsMonitor();
 
-        m.put("username", "{ipAddr}");
-        m.put("password", "{nodeLabel}");
-        m.put("domain", "{nodeId}");
-        m.put("mode", "PATH_EXIST");
-        m.put("path", "/validPath");
+        m.put("username", PollerParameter.simple("{ipAddr}"));
+        m.put("password", PollerParameter.simple("{nodeLabel}"));
+        m.put("domain", PollerParameter.simple("{nodeId}"));
+        m.put("mode", PollerParameter.simple("PATH_EXIST"));
+        m.put("path", PollerParameter.simple("/validPath"));
 
-        Map<String, Object> subbedParams = jCifsMonitor.getRuntimeAttributes(svc, m);
+        Map<String, PollerParameter> subbedParams = jCifsMonitor.getRuntimeAttributes(svc, m);
         assertTrue(subbedParams.get("subbed-username").equals("10.123.123.123"));
         assertTrue(subbedParams.get("subbed-password").equals("10.123.123.123"));
         assertTrue(subbedParams.get("subbed-domain").equals("99"));

@@ -32,12 +32,12 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.nsclient.NsclientCheckParams;
 import org.opennms.protocols.nsclient.NsclientException;
@@ -84,7 +84,7 @@ public class NsclientMonitor extends AbstractServiceMonitor {
      * SERVICE_AVAILABLE and return.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
         // Holds the response reason.
         String reason = null;
         // Used to exit the retry loop early, if possible.
@@ -95,20 +95,13 @@ public class NsclientMonitor extends AbstractServiceMonitor {
         Double responseTime = null;
 
         // NSClient related parameters.
-        String command = ParameterMap.getKeyedString(
-                                                     parameters,
-                                                     "command",
-                                                     NsclientManager.convertTypeToString(NsclientManager.CHECK_CLIENTVERSION));
-        int port = ParameterMap.getKeyedInteger(parameters, "port",
-                                                NsclientManager.DEFAULT_PORT);
+        String command = getKeyedString(parameters, "command", NsclientManager.convertTypeToString(NsclientManager.CHECK_CLIENTVERSION));
+        int port = getKeyedInteger(parameters, "port", NsclientManager.DEFAULT_PORT);
         
-        String password = ParameterMap.getKeyedString(parameters, "password", NSClientAgentConfig.DEFAULT_PASSWORD);
-        String params = ParameterMap.getKeyedString(parameters, "parameter",
-                                                    null);
-        int critPerc = ParameterMap.getKeyedInteger(parameters,
-                                                    "criticalPercent", 0);
-        int warnPerc = ParameterMap.getKeyedInteger(parameters,
-                                                    "warningPercent", 0);
+        String password = getKeyedString(parameters, "password", NSClientAgentConfig.DEFAULT_PASSWORD);
+        String params = getKeyedString(parameters, "parameter", null);
+        int critPerc = getKeyedInteger(parameters, "criticalPercent", 0);
+        int warnPerc = getKeyedInteger(parameters, "warningPercent", 0);
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -136,8 +129,7 @@ public class NsclientMonitor extends AbstractServiceMonitor {
                                                                            params);
 
                 // Send the request to the server and receive the response.
-                response = client.processCheckCommand(
-                                                      NsclientManager.convertStringToType(command),
+                response = client.processCheckCommand(NsclientManager.convertStringToType(command),
                                                       clientParams);
                 // Now save the time it took to process the check command.
                 responseTime = tracker.elapsedTimeInMillis();

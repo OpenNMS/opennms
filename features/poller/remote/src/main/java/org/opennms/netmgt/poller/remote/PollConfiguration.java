@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.poller.PollerParameter;
 
 /**
  * <p>PollConfiguration class.</p>
@@ -44,7 +45,7 @@ public class PollConfiguration {
 	
 	private OnmsMonitoredService m_monitoredService;
 	private OnmsPollModel m_pollModel;
-	private Map<String,Object> m_monitorConfiguration;
+	private Map<String, PollerParameter> m_monitorConfiguration;
 	
 	/**
 	 * <p>Constructor for PollConfiguration.</p>
@@ -53,7 +54,7 @@ public class PollConfiguration {
 	 * @param monitorConfiguration a {@link java.util.Map} object.
 	 * @param pollInterval a long.
 	 */
-	public PollConfiguration(OnmsMonitoredService monitoredService, Map<String,Object> monitorConfiguration, long pollInterval) {
+	public PollConfiguration(OnmsMonitoredService monitoredService, Map<String, PollerParameter> monitorConfiguration, long pollInterval) {
 		m_monitoredService = monitoredService;
 		m_monitorConfiguration = monitorConfiguration;
 		m_pollModel = new OnmsPollModel();
@@ -83,7 +84,7 @@ public class PollConfiguration {
 	 *
 	 * @return a {@link java.util.Map} object.
 	 */
-	public Map<String,Object> getMonitorConfiguration() {
+	public Map<String, PollerParameter> getMonitorConfiguration() {
 		return Collections.unmodifiableMap(m_monitorConfiguration);
 	}
 

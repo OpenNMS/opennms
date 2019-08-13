@@ -41,6 +41,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollerParameter;
 
 /**
  * <p>PolledService class.</p>
@@ -53,7 +54,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     private static final long serialVersionUID = 3L;
 
     private final InetAddress m_address;
-    private final Map<String,Object> m_monitorConfiguration;
+    private final Map<String, PollerParameter> m_monitorConfiguration;
     private final OnmsPollModel m_pollModel;
     private final Integer m_serviceId;
     private final Integer m_nodeId;
@@ -69,7 +70,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
 	 * @param monitorConfiguration a {@link java.util.Map} object.
 	 * @param pollModel a {@link org.opennms.netmgt.poller.remote.OnmsPollModel} object.
 	 */
-	public PolledService(final OnmsMonitoredService monitoredService, final Map<String,Object> monitorConfiguration, final OnmsPollModel pollModel) {
+	public PolledService(final OnmsMonitoredService monitoredService, final Map<String, PollerParameter> monitorConfiguration, final OnmsPollModel pollModel) {
         m_serviceId = monitoredService.getId();
         m_nodeId = monitoredService.getNodeId();
         m_nodeLabel = monitoredService.getIpInterface().getNode().getLabel();
@@ -159,7 +160,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
 	 *
 	 * @return a {@link java.util.Map} object.
 	 */
-	public Map<String,Object> getMonitorConfiguration() {
+	public Map<String, PollerParameter> getMonitorConfiguration() {
         return m_monitorConfiguration;
     }
     

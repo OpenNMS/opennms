@@ -47,11 +47,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.w3c.dom.Element;
 
 /**
  * Test for the mail monitor
@@ -61,7 +64,7 @@ import org.springframework.core.io.Resource;
 public class MailTransportMonitorTest {
 
     MailTransportMonitor m_monitor;
-    Map<String, Object> m_params;
+    Map<String, PollerParameter> m_params;
 
     @Before
     public void setUp() throws Exception {
@@ -75,9 +78,9 @@ public class MailTransportMonitorTest {
 
         m_monitor = new MailTransportMonitor();
 
-        m_params = new HashMap<String, Object>();
-        m_params.put("timeout", "3000");
-        m_params.put("retries", "1");
+        m_params = new HashMap<>();
+        m_params.put("timeout", PollerParameter.simple("3000"));
+        m_params.put("retries", PollerParameter.simple("1"));
     }
 
     @After
@@ -102,10 +105,10 @@ public class MailTransportMonitorTest {
     @Test
     @Ignore("requires real mail server")
     public void readOnlyTest() throws Exception {
-        m_params.put("timeout", "3000");
-        m_params.put("retry", "1");
-        m_params.put("strict-timeouts", "true");
-        m_params.put("mail-transport-test", 
+        m_params.put("timeout", PollerParameter.simple("3000"));
+        m_params.put("retry", PollerParameter.simple("1"));
+        m_params.put("strict-timeouts", PollerParameter.simple("true"));
+        m_params.put("mail-transport-test", PollerParameter.complex(JaxbUtils.unmarshal(Element.class,
         "    <mail-transport-test >\n" + 
         "      <mail-test>\n" + 
         "        <readmail-test attempt-interval=\"2000\" mail-folder=\"INBOX\" subject-match=\"READTEST\" >\n" + 
@@ -115,7 +118,7 @@ public class MailTransportMonitorTest {
         "          <user-auth user-name=\"username\" password=\"password\"/>\n" + 
         "        </readmail-test>\n" + 
         "      </mail-test>\n"+
-        "    </mail-transport-test>\n");
+        "    </mail-transport-test>\n")));
         PollStatus status = m_monitor.poll(getMailService("127.0.0.1"), m_params);
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
     }
@@ -137,10 +140,11 @@ public class MailTransportMonitorTest {
     }
 
     private void setupLocalhostSendGoogleRead2() {
-        m_params.put("timeout", "3000");
-        m_params.put("retry", "1");
-        m_params.put("strict-timeouts", "true");
-        m_params.put("mail-transport-test", "<mail-transport-test >\n" + 
+        m_params.put("timeout", PollerParameter.simple("3000"));
+        m_params.put("retry", PollerParameter.simple("1"));
+        m_params.put("strict-timeouts", PollerParameter.simple("true"));
+        m_params.put("mail-transport-test", PollerParameter.complex(JaxbUtils.unmarshal(Element.class,
+                "<mail-transport-test >\n" +
         		"\n" + 
         		"<!--  Example end2end test sending to localhost and reading from gmail.  In an\n" + 
         		"      end2end test, mail is sent to the specified host and read from the specified host.\n" + 
@@ -194,7 +198,7 @@ public class MailTransportMonitorTest {
         		"    </readmail-test>\n" + 
         		"  </mail-test>\n" + 
         		"</mail-transport-test>\n" + 
-        		"");
+        		"")));
         
     }
         

@@ -37,6 +37,7 @@ import java.util.Map;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.poller.PollerParameter;
 
 /**
  * <p>DemoPollerConfiguration class.</p>
@@ -60,12 +61,12 @@ public class DemoPollerConfiguration implements PollerConfiguration {
         NetworkBuilder m_builder = new NetworkBuilder();
         m_builder.addNode("Google").setId(1);
         m_builder.addInterface("64.233.161.99").setId(11);
-        polledServices.add(createPolledService(111, m_builder.addService(http), new HashMap<String,Object>(), 3000));
+        polledServices.add(createPolledService(111, m_builder.addService(http), new HashMap<>(), 3000));
         m_builder.addInterface("64.233.161.104").setId(12);
-        polledServices.add(createPolledService(121, m_builder.addService(http), new HashMap<String,Object>(), 3000));
+        polledServices.add(createPolledService(121, m_builder.addService(http), new HashMap<>(), 3000));
         m_builder.addNode("OpenNMS").setId(2);
         m_builder.addInterface("209.61.128.9").setId(21);
-        polledServices.add(createPolledService(211, m_builder.addService(http), new HashMap<String,Object>(), 3000));
+        polledServices.add(createPolledService(211, m_builder.addService(http), new HashMap<>(), 3000));
         
         m_polledServices = (PolledService[]) polledServices.toArray(new PolledService[polledServices.size()]);
         
@@ -95,7 +96,7 @@ public class DemoPollerConfiguration implements PollerConfiguration {
         return m_polledServices;
     }
 
-    private PolledService createPolledService(int serviceID, OnmsMonitoredService service, Map<String,Object> monitorConfiguration, long interval) {
+    private PolledService createPolledService(int serviceID, OnmsMonitoredService service, Map<String, PollerParameter> monitorConfiguration, long interval) {
         service.setId(serviceID);
         return new PolledService(service, monitorConfiguration, new OnmsPollModel(interval));
     }

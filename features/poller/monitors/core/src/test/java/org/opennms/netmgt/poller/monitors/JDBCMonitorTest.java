@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
@@ -87,10 +88,10 @@ public class JDBCMonitorTest {
     @Test
     public void testParameterSubstitution() throws Exception {
         JDBCMonitor monitor = new JDBCMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("url", "{nodeLabel}");
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
+        parameters.put("url", PollerParameter.simple("{nodeLabel}"));
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "JDBC");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-url").toString().equals("localhost"));
+        Map<String, PollerParameter> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-url").asSimple().get().getValue().equals("localhost"));
     }
 }

@@ -40,7 +40,10 @@ import org.opennms.integration.api.v1.pollers.ServicePoller;
 import org.opennms.integration.api.v1.pollers.ServicePollerFactory;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
+
+import com.google.common.collect.Maps;
 
 /**
  * Maps {@link ServicePollerFactory} to {@link ServiceMonitor}.
@@ -56,9 +59,8 @@ public class ServicePollerImpl<T extends ServicePoller> implements ServiceMonito
     }
 
     @Override
-    public org.opennms.netmgt.poller.PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        Map<String, String> attributes = getAttributes(parameters);
-        PollerRequest monitoredService = new PollerRequestImpl(svc, attributes);
+    public org.opennms.netmgt.poller.PollStatus poll(MonitoredService svc, Map<String, PollerParameter> parameters) {
+        PollerRequest monitoredService = PollerRequestImpl.fromObjectParameters(svc, parameters);
         ServicePoller servicePoller = servicePollerFactory.createPoller();
         CompletableFuture<PollerResult> future = servicePoller.poll(monitoredService);
         PollerResult pollStatus;
@@ -81,21 +83,9 @@ public class ServicePollerImpl<T extends ServicePoller> implements ServiceMonito
     }
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-        Map<String, Object> runTimeAttributes = new HashMap<>();
-        Map<String, String> attributes = servicePollerFactory.getRuntimeAttributes(new PollerRequestImpl(svc, getAttributes(parameters)));
-        attributes.forEach(runTimeAttributes::put);
-        return runTimeAttributes;
-    }
-
-    private Map<String, String> getAttributes(Map<String, Object> parameters) {
-        Map<String, String> attributes = new HashMap<>();
-        parameters.forEach((parameter, value) -> {
-            if (value instanceof String) {
-                attributes.put(parameter, (String) value);
-            }
-        });
-        return attributes;
+    public Map<String, PollerParameter> getRuntimeAttributes(MonitoredService svc, Map<String, PollerParameter> parameters) {
+        Map<String, String> attributes = servicePollerFactory.getRuntimeAttributes(PollerRequestImpl.fromPollerParameters(svc, parameters));
+        return Maps.transformValues(attributes, PollerParameter::simple);
     }
 
     @Override
@@ -103,7 +93,7 @@ public class ServicePollerImpl<T extends ServicePoller> implements ServiceMonito
         return null;
     }
 
-    protected class PollerRequestImpl implements PollerRequest {
+    protected static class PollerRequestImpl implements PollerRequest {
 
         private MonitoredService monitoredService;
 
@@ -132,6 +122,28 @@ public class ServicePollerImpl<T extends ServicePoller> implements ServiceMonito
         @Override
         public Map<String, String> getPollerAttributes() {
             return this.attributes;
+        }
+
+        public static PollerRequest fromObjectParameters(MonitoredService svc, Map<String, PollerParameter> parameters) {
+            Map<String, String> attributes = new HashMap<>();
+            parameters.forEach((parameter, value) -> {
+                value.asSimple().ifPresent(simple -> {
+                    attributes.put(parameter, simple.getValue());
+                });
+            });
+
+            return new PollerRequestImpl(svc, attributes);
+        }
+
+        public static PollerRequest fromPollerParameters(MonitoredService svc, Map<String, PollerParameter> parameters) {
+            Map<String, String> attributes = new HashMap<>();
+            parameters.forEach((parameter, value) -> {
+                value.asSimple().ifPresent(simple -> {
+                    attributes.put(parameter, simple.getValue());
+                });
+            });
+
+            return new PollerRequestImpl(svc, attributes);
         }
     }
 }

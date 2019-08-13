@@ -237,8 +237,8 @@ public class CollectCommand implements Action {
         }
     }
 
-    private Map<String, Object> parse(List<String> attributeList) {
-        final Map<String, Object> properties = new HashMap<>();
+    private Map<String, String> parse(List<String> attributeList) {
+        final Map<String, String> properties = new HashMap<>();
         if (attributeList != null) {
             for (String keyValue : attributeList) {
                 int splitAt = keyValue.indexOf("=");

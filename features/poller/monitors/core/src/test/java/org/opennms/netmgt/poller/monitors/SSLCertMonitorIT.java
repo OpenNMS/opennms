@@ -45,6 +45,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.netmgt.utils.DnsUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -78,12 +79,12 @@ public class SSLCertMonitorIT {
             }
         };
 
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("port", "10342");
-        parameters.put("retry", "0");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("days", "5");
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
+        parameters.put("port", PollerParameter.simple("10342"));
+        parameters.put("retry", PollerParameter.simple("0"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("days", PollerParameter.simple("5"));
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);
@@ -102,12 +103,12 @@ public class SSLCertMonitorIT {
             }
         };
 
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("port", "10342");
-        parameters.put("retry", "0");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("days", "5");
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
+        parameters.put("port", PollerParameter.simple("10342"));
+        parameters.put("retry", PollerParameter.simple("0"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("days", PollerParameter.simple("5"));
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);
@@ -126,12 +127,12 @@ public class SSLCertMonitorIT {
             }
         };
 
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("port", "10342");
-        parameters.put("retry", "0");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("days", "5");
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
+        parameters.put("port", PollerParameter.simple("10342"));
+        parameters.put("retry", PollerParameter.simple("0"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("days", PollerParameter.simple("5"));
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);
@@ -150,13 +151,13 @@ public class SSLCertMonitorIT {
             }
         };
 
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("port", "10342");
-        parameters.put("retry", "0");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("days", "5");
-        parameters.put("server-name", "${nodelabel}.example.com");
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
+        parameters.put("port", PollerParameter.simple("10342"));
+        parameters.put("retry", PollerParameter.simple("0"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("days", PollerParameter.simple("5"));
+        parameters.put("server-name", PollerParameter.simple("${nodelabel}.example.com"));
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "test", DnsUtils.resolveHostname("localhost", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);
@@ -175,13 +176,13 @@ public class SSLCertMonitorIT {
             }
         };
 
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("port", "10342");
-        parameters.put("retry", "0");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("days", "5");
-        parameters.put("server-name", "klatschmohnwiese");
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
+        parameters.put("port", PollerParameter.simple("10342"));
+        parameters.put("retry", PollerParameter.simple("0"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("days", PollerParameter.simple("5"));
+        parameters.put("server-name", PollerParameter.simple("klatschmohnwiese"));
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);
@@ -193,12 +194,12 @@ public class SSLCertMonitorIT {
     @Ignore
     public void testInternetWebsite() throws UnknownHostException {
         SSLCertMonitor monitor = new SSLCertMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("port", "443");
-        parameters.put("retry", "0");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("days", "5");
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
+        parameters.put("port", PollerParameter.simple("10342"));
+        parameters.put("retry", PollerParameter.simple("0"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("days", PollerParameter.simple("5"));
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "www.google.com", DnsUtils.resolveHostname("www.google.com", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);

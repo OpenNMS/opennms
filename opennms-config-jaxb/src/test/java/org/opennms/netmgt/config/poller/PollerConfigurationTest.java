@@ -37,6 +37,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 
+import javax.xml.bind.JAXB;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.dom.DOMResult;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
@@ -48,6 +52,8 @@ import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration> {
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationTest.class);
@@ -196,7 +202,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         return config;
     }
 
-    protected static PollerConfiguration get18PollerConfiguration() {
+    protected static PollerConfiguration get18PollerConfiguration() throws Exception {
         final PollerConfiguration config = new PollerConfiguration();
         config.setThreads(30);
         config.setServiceUnresponsiveEnabled("false");
@@ -379,7 +385,10 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         page.setSuccessMatch("HQ Login");
         ps.addPage(page);
 
-        hypericPageSequence.setAnyObject(ps);
+        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        JAXB.marshal(ps, new DOMResult(document));
+        final Element element = document.getDocumentElement();
+        hypericPageSequence.setAnyObject(element);
 
         hyperichq.addParameter(hypericPageSequence);
         example1.addService(hyperichq);

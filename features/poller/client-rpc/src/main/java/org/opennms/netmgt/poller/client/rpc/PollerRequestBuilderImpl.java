@@ -28,11 +28,15 @@
 
 package org.opennms.netmgt.poller.client.rpc;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
@@ -44,10 +48,13 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+
+import com.google.common.collect.Maps;
 
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
@@ -61,7 +68,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private LocationAwarePollerClientImpl client;
 
-    private final Map<String, Object> attributes = new HashMap<>();
+    private final Map<String, PollerParameter> attributes = new HashMap<>();
 
     private final List<ServiceMonitorAdaptor> adaptors = new LinkedList<>();
 
@@ -105,13 +112,13 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
-    public PollerRequestBuilder withAttribute(String key, Object value) {
+    public PollerRequestBuilder withAttribute(String key, PollerParameter value) {
         this.attributes.put(key, value);
         return this;
     }
 
     @Override
-    public PollerRequestBuilder withAttributes(Map<String, Object> attributes) {
+    public PollerRequestBuilder withAttributes(Map<String, PollerParameter> attributes) {
         this.attributes.putAll(attributes);
         return this;
     }
@@ -136,18 +143,23 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitored service is required.");
         }
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new FallbackScope(
-            this.client.getEntityScopeProvider().getScopeForNode(service.getNodeId()),
-            this.client.getEntityScopeProvider().getScopeForInterface(service.getNodeId(), service.getIpAddr()),
-            this.client.getEntityScopeProvider().getScopeForService(service.getNodeId(), service.getAddress(), service.getSvcName()),
-            MapScope.singleContext("pattern", this.patternVariables)
-        ));
+        final FallbackScope scope = new FallbackScope(
+                this.client.getEntityScopeProvider().getScopeForNode(service.getNodeId()),
+                this.client.getEntityScopeProvider().getScopeForInterface(service.getNodeId(), service.getIpAddr()),
+                this.client.getEntityScopeProvider().getScopeForService(service.getNodeId(), service.getAddress(), service.getSvcName()),
+                MapScope.singleContext("pattern", this.patternVariables));
+        final Map<String, PollerParameter> interpolatedAttributes = Maps.transformValues(attributes, (raw) -> Interpolator.interpolate(raw, scope));
+
+        final Map<String, String> simpleAttributes = interpolatedAttributes.entrySet().stream()
+                .map(e -> e.getValue().asSimple().map(v -> new AbstractMap.SimpleEntry<>(e.getKey(), v)))
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getValue()));
 
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(service.getNodeId())
                 .withLocation(service.getNodeLocation())
                 .withSystemId(systemId)
-                .withServiceAttributes(interpolatedAttributes)
+                .withServiceAttributes(simpleAttributes)
                 .withLocationOverride((s) -> serviceMonitor.getEffectiveLocation(s))
                 .build();
 
@@ -173,8 +185,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         // Retrieve the runtime attributes, which may include attributes
         // such as the agent details and other state related attributes
         // which should be included in the request
-        final Map<String, Object> parameters = request.getMonitorParameters();
-        request.addAttributes(serviceMonitor.getRuntimeAttributes(request, parameters));
+        request.addAttributes(serviceMonitor.getRuntimeAttributes(request, interpolatedAttributes));
 
         // Execute the request
         return client.getDelegate().execute(request).thenApply(results -> {

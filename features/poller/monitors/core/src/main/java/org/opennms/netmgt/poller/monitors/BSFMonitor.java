@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
@@ -47,6 +48,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
+import org.opennms.netmgt.poller.SimplePollerParameter;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +152,7 @@ public class BSFMonitor extends AbstractServiceMonitor {
         }
     }
 
-    private void undeclareBeans(Map<String, Object> map) {
+    private void undeclareBeans(Map<String, PollerParameter> map) {
         undeclareBean("map");
         undeclareBean("ip_addr");
         undeclareBean("node_id");
@@ -158,17 +161,15 @@ public class BSFMonitor extends AbstractServiceMonitor {
         undeclareBean("bsf_monitor");
         undeclareBean("results");
         undeclareBean("times");
-        for (final Entry<String, Object> entry : map.entrySet()) {
-            undeclareBean(entry.getKey());
-        }
+        map.keySet().forEach(this::undeclareBean);
     }
-    private synchronized PollStatus executeScript(MonitoredService svc, Map<String, Object> map) {
+    private synchronized PollStatus executeScript(MonitoredService svc, Map<String, PollerParameter> map) {
         PollStatus pollStatus = PollStatus.unavailable();
-        String fileName = ParameterMap.getKeyedString(map,"file-name", null);
-        String lang = ParameterMap.getKeyedString(map, "lang-class", null);
-        String langEngine = ParameterMap.getKeyedString(map, "bsf-engine", null);
-        String[] langExtensions = ParameterMap.getKeyedString(map, "file-extensions", "").split(",");
-        String runType = ParameterMap.getKeyedString(map, "run-type", "eval");
+        String fileName = getKeyedString(map,"file-name", null);
+        String lang = getKeyedString(map, "lang-class", null);
+        String langEngine = getKeyedString(map, "bsf-engine", null);
+        String[] langExtensions = getKeyedString(map, "file-extensions", "").split(",");
+        String runType = getKeyedString(map, "run-type", "eval");
         File file = new File(fileName);
 
         try {
@@ -199,8 +200,11 @@ public class BSFMonitor extends AbstractServiceMonitor {
                     m_bsfManager.declareBean("results", results, Map.class);
                     m_bsfManager.declareBean("times", times, Map.class);
                     
-                    for (final Entry<String, Object> entry : map.entrySet()) {
-                        m_bsfManager.declareBean(entry.getKey(),entry.getValue(),String.class);
+                    for (final Entry<String, PollerParameter> entry : map.entrySet()) {
+                        final Optional<SimplePollerParameter> simple = entry.getValue().asSimple();
+                        if (simple.isPresent()) {
+                            m_bsfManager.declareBean(entry.getKey(), simple.get().getValue(), String.class);
+                        }
                     }
                     
                     pollStatus = PollStatus.unknown("The script did not update the service status");
@@ -270,7 +274,7 @@ public class BSFMonitor extends AbstractServiceMonitor {
     
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
+    public PollStatus poll(MonitoredService svc, Map<String, PollerParameter> map) {
         return executeScript(svc, map);
     }
     

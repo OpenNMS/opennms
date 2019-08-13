@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
@@ -70,6 +71,8 @@ import org.opennms.test.mock.MockUtil;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Maps;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -100,7 +103,7 @@ public class HttpMonitorIT {
     public void testPollStatusReason() throws UnknownHostException {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
@@ -110,15 +113,15 @@ public class HttpMonitorIT {
 
         p.setKey("port");
         p.setValue("3020");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         p.setKey("retry");
         p.setValue("1");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         p.setKey("timeout");
         p.setValue("500");
-        m.put(p.getKey(), p.getValue());
+        m.put(p.getKey(), p.asPollerParameter());
 
         PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -152,27 +155,27 @@ public class HttpMonitorIT {
     public void callTestResponseRange(boolean preferIPv6) throws UnknownHostException {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            m.put("port", String.valueOf(port));
+            m.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        m.put("retry", "1");
-        m.put("timeout", "500");
-        m.put("response", "100-199");
+        m.put("retry", PollerParameter.simple("1"));
+        m.put("timeout", PollerParameter.simple("500"));
+        m.put("response", PollerParameter.simple("100-199"));
 
         PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
 
-        m.put("response", "100,200,302,400-500");
+        m.put("response", PollerParameter.simple("100,200,302,400-500"));
 
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
@@ -180,7 +183,7 @@ public class HttpMonitorIT {
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
-        m.put("response", "*");
+        m.put("response", PollerParameter.simple("*"));
 
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
@@ -222,16 +225,16 @@ public class HttpMonitorIT {
     public void callTestTimeout(boolean preferIPv6) throws UnknownHostException {
         if (m_runTests == false) return;
 
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         final ServiceMonitor monitor = new HttpMonitor();
         // We need a routable but unreachable address in order to simulate a timeout
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(3, preferIPv6 ? InetAddressUtils.UNPINGABLE_ADDRESS_IPV6 : InetAddressUtils.UNPINGABLE_ADDRESS, "HTTP");
 
-        m.put("port", "12345");
-        m.put("retry", "1");
-        m.put("timeout", "500");
-        m.put("response", "100-199");
+        m.put("port", PollerParameter.simple("12345"));
+        m.put("retry", PollerParameter.simple("1"));
+        m.put("timeout", PollerParameter.simple("500"));
+        m.put("response", PollerParameter.simple("100-199"));
 
         final PollStatus status = monitor.poll(svc, m);
         final String reason = status.getReason();
@@ -261,29 +264,29 @@ public class HttpMonitorIT {
         PollStatus status = null;
         ServiceMonitor monitor = new HttpMonitor();
 
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            m.put("port", String.valueOf(port));
+            m.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        m.put("retry", "0");
-        m.put("timeout", "500");
-        m.put("response", "100-499");
-        m.put("verbose", "true");
-        m.put("host-name", "localhost");
-        m.put("url", "/");
-        m.put("response-text", "opennmsrulz");
+        m.put("retry", PollerParameter.simple("0"));
+        m.put("timeout", PollerParameter.simple("500"));
+        m.put("response", PollerParameter.simple("100-499"));
+        m.put("verbose", PollerParameter.simple("true"));
+        m.put("host-name", PollerParameter.simple("localhost"));
+        m.put("url", PollerParameter.simple("/"));
+        m.put("response-text", PollerParameter.simple("opennmsrulz"));
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
 
-        m.put("response-text", "written by monkeys");
+        m.put("response-text", PollerParameter.simple("written by monkeys"));
 
         MockUtil.println("\nliteral text check: \"written by monkeys\"");
         monitor = new HttpMonitor();
@@ -292,7 +295,7 @@ public class HttpMonitorIT {
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
-        m.put("response-text", "~.*[Tt]est HTTP [Ss]erver.*");
+        m.put("response-text", PollerParameter.simple("~.*[Tt]est HTTP [Ss]erver.*"));
 
         MockUtil.println("\nregex check: \".*[Tt]est HTTP [Ss]erver.*\"");
         monitor = new HttpMonitor();
@@ -307,8 +310,8 @@ public class HttpMonitorIT {
     public void testBase64Encoding() {
         if (m_runTests == false) return;
 
-        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        m.put("basic-authentication", "Aladdin:open sesame");
+        final Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
+        m.put("basic-authentication", PollerParameter.simple("Aladdin:open sesame"));
         assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", HttpMonitor.determineBasicAuthentication(m));
         assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(HttpMonitor.determineBasicAuthentication(m)));
     }
@@ -330,7 +333,7 @@ public class HttpMonitorIT {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpMonitor();
@@ -338,24 +341,24 @@ public class HttpMonitorIT {
 
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            m.put("port", String.valueOf(port));
+            m.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        m.put("retry", "0");
-        m.put("timeout", "500");
-        m.put("response", "100-302");
-        m.put("verbose", "true");
-        m.put("host-name", "localhost");
-        m.put("url", "/");
-        m.put("basic-authentication", "admin:istrator");
+        m.put("retry", PollerParameter.simple("0"));
+        m.put("timeout", PollerParameter.simple("500"));
+        m.put("response", PollerParameter.simple("100-302"));
+        m.put("verbose", PollerParameter.simple("true"));
+        m.put("host-name", PollerParameter.simple("localhost"));
+        m.put("url", PollerParameter.simple("/"));
+        m.put("basic-authentication", PollerParameter.simple("admin:istrator"));
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
-        m.put("basic-authentication", "admin:flagrator");
+        m.put("basic-authentication", PollerParameter.simple("admin:flagrator"));
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -382,7 +385,7 @@ public class HttpMonitorIT {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpsMonitor();
@@ -390,23 +393,23 @@ public class HttpMonitorIT {
 
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            m.put("port", String.valueOf(port));
+            m.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        m.put("retry", "1");
-        m.put("timeout", "500");
-        m.put("response", "100-302");
-        m.put("verbose", "true");
-        m.put("host-name", "localhost");
-        m.put("url", "/index.html");
+        m.put("retry", PollerParameter.simple("1"));
+        m.put("timeout", PollerParameter.simple("500"));
+        m.put("response", PollerParameter.simple("100-302"));
+        m.put("verbose", PollerParameter.simple("true"));
+        m.put("host-name", PollerParameter.simple("localhost"));
+        m.put("url", PollerParameter.simple("/index.html"));
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertEquals("HTTP response value: 401. Expecting: 100-302./Ports: " + port, status.getReason());
 
-        m.put("basic-authentication", "admin:istrator");
+        m.put("basic-authentication", PollerParameter.simple("admin:istrator"));
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -430,7 +433,7 @@ public class HttpMonitorIT {
     public void callTestWithUrl(boolean preferIPv6) throws UnknownHostException {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpMonitor();
@@ -438,17 +441,17 @@ public class HttpMonitorIT {
 
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            m.put("port", String.valueOf(port));
+            m.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        m.put("retry", "0");
-        m.put("timeout", "500");
-        m.put("response", "100-499");
-        m.put("verbose", "true");
-        m.put("host-name", "localhost");
-        m.put("url", "/twinkies.html");
-        m.put("response-text", "~.*Don.t you love twinkies..*");
+        m.put("retry", PollerParameter.simple("0"));
+        m.put("timeout", PollerParameter.simple("500"));
+        m.put("response", PollerParameter.simple("100-499"));
+        m.put("verbose", PollerParameter.simple("true"));
+        m.put("host-name", PollerParameter.simple("localhost"));
+        m.put("url", PollerParameter.simple("/twinkies.html"));
+        m.put("response-text", PollerParameter.simple("~.*Don.t you love twinkies..*"));
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -473,7 +476,7 @@ public class HttpMonitorIT {
     public void callTestWithInvalidNodelabelHostName(boolean preferIPv6) throws UnknownHostException {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpMonitor();
@@ -482,16 +485,16 @@ public class HttpMonitorIT {
 
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            m.put("port", String.valueOf(port));
+            m.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        m.put("retry", "0");
-        m.put("timeout", "500");
+        m.put("retry", PollerParameter.simple("0"));
+        m.put("timeout", PollerParameter.simple("500"));
         // Ensure that we get a 404 for this GET since we're using an inappropriate virtual host
-        m.put("response", "404");
-        m.put("verbose", "true");
-        m.put("nodelabel-host-name", "true");
+        m.put("response", PollerParameter.simple("404"));
+        m.put("verbose", PollerParameter.simple("true"));
+        m.put("nodelabel-host-name", PollerParameter.simple("true"));
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -517,22 +520,22 @@ public class HttpMonitorIT {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            m.put("port", String.valueOf(port));
+            m.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        m.put("retry", "0");
-        m.put("timeout", "500");
-        m.put("host-name", "www.google.com");
-        m.put("url", "/twinkies.html");
-        m.put("response-text", "~.*twinkies.*");
+        m.put("retry", PollerParameter.simple("0"));
+        m.put("timeout", PollerParameter.simple("500"));
+        m.put("host-name", PollerParameter.simple("www.google.com"));
+        m.put("url", PollerParameter.simple("/twinkies.html"));
+        m.put("response-text", PollerParameter.simple("~.*twinkies.*"));
 
         PollStatus status = monitor.poll(svc, m);
         assertEquals("poll status available", PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
@@ -555,22 +558,22 @@ public class HttpMonitorIT {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> m = new ConcurrentSkipListMap<>();
 
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            m.put("port", String.valueOf(port));
+            m.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        m.put("retry", "1");
-        m.put("timeout", "500");
-        m.put("host-name", "www.opennms.org");
-        m.put("url", "/twinkies.html");
-        m.put("response-text", "~.*twinkies.*");
+        m.put("retry", PollerParameter.simple("1"));
+        m.put("timeout", PollerParameter.simple("500"));
+        m.put("host-name", PollerParameter.simple("www.opennms.org"));
+        m.put("url", PollerParameter.simple("/twinkies.html"));
+        m.put("response-text", PollerParameter.simple("~.*twinkies.*"));
 
         PollStatus status = monitor.poll(svc, m);
         assertEquals("poll status not available", PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
@@ -580,26 +583,26 @@ public class HttpMonitorIT {
     @JUnitHttpServer()
     public void testNMS2702() throws UnknownHostException {
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            parameters.put("port", String.valueOf(port));
+            parameters.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        parameters.put("url", "/test-NMS2702.html");
-        parameters.put("retry", "1");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
+        parameters.put("url", PollerParameter.simple("/test-NMS2702.html"));
+        parameters.put("retry", PollerParameter.simple("1"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
 
         // Match a string included on Initial Server Response
-        parameters.put("response-text", "~.*OK.*");
+        parameters.put("response-text", PollerParameter.simple("~.*OK.*"));
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         PollStatus status = monitor.poll(svc, parameters);
         assertTrue(status.isAvailable());
 
         // Match a string included on Header
-        parameters.put("response-text", "~.*Jetty.*");
+        parameters.put("response-text", PollerParameter.simple("~.*Jetty.*"));
         svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         status = monitor.poll(svc, parameters);
         assertTrue(status.isAvailable());
@@ -609,23 +612,23 @@ public class HttpMonitorIT {
     @JUnitHttpServer()
     public void testParameterSubstitution() throws UnknownHostException {
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            parameters.put("port", String.valueOf(port));
+            parameters.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        parameters.put("url", "/test-NMS2702.html");
-        parameters.put("retry", "1");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("user-agent", "Hello from {ipAddr} {ipAddress} {nodeId} {nodeLabel}");
-        parameters.put("response-text", "~.*OK.*");
+        parameters.put("url", PollerParameter.simple("/test-NMS2702.html"));
+        parameters.put("retry", PollerParameter.simple("1"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("user-agent", PollerParameter.simple("Hello from {ipAddr} {ipAddress} {nodeId} {nodeLabel}"));
+        parameters.put("response-text", PollerParameter.simple("~.*OK.*"));
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         svc.setNodeLabel("localhost.localdomain");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-user-agent").toString().equals("Hello from 127.0.0.1 127.0.0.1 3 localhost.localdomain"));
+        Map<String, PollerParameter> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-user-agent").asSimple().get().toString().equals("Hello from 127.0.0.1 127.0.0.1 3 localhost.localdomain"));
     }
 
     @Test
@@ -658,22 +661,22 @@ public class HttpMonitorIT {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            parameters.put("port", String.valueOf(port));
+            parameters.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        parameters.put("url", "/test-NMS2702.html");
-        parameters.put("retry", "1");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("user-agent", "Hello from {foreignId} {foreignSource} {nodeLabel}");
-        parameters.put("response-text", "~.*OK.*");
+        parameters.put("url", PollerParameter.simple("/test-NMS2702.html"));
+        parameters.put("retry", PollerParameter.simple("1"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("user-agent", PollerParameter.simple("Hello from {foreignId} {foreignSource} {nodeLabel}"));
+        parameters.put("response-text", PollerParameter.simple("~.*OK.*"));
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel", InetAddress.getByName("10.0.1.1"), "HTTP");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-user-agent").toString().equals("Hello from 31337 AlienSource devjam2018nodelabel"));
+        Map<String, PollerParameter> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-user-agent").asSimple().get().getValue().equals("Hello from 31337 AlienSource devjam2018nodelabel"));
     }
 
     @Test
@@ -709,24 +712,24 @@ public class HttpMonitorIT {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            parameters.put("port", String.valueOf(port));
+            parameters.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        parameters.put("url", "/test-NMS2702.html");
-        parameters.put("retry", "1");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("user", "dude{username}");
-        parameters.put("password", "channel{password}");
-        parameters.put("response-text", "~.*OK.*");
+        parameters.put("url", PollerParameter.simple("/test-NMS2702.html"));
+        parameters.put("retry", PollerParameter.simple("1"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("user", PollerParameter.simple("dude{username}"));
+        parameters.put("password", PollerParameter.simple("channel{password}"));
+        parameters.put("response-text", PollerParameter.simple("~.*OK.*"));
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel2", InetAddress.getByName("10.0.1.2"), "HTTP");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-user").toString().equals("dudepeterman"));
-        assertTrue(subbedParams.get("subbed-password").toString().equals("channelnine"));
+        Map<String, PollerParameter> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-user").asSimple().get().getValue().equals("dudepeterman"));
+        assertTrue(subbedParams.get("subbed-password").asSimple().get().getValue().equals("channelnine"));
     }
 
     @Test
@@ -761,20 +764,20 @@ public class HttpMonitorIT {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            parameters.put("port", String.valueOf(port));
+            parameters.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        parameters.put("url", "/test-{city}.html");
-        parameters.put("retry", "1");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("response-text", "~.*OK.*");
+        parameters.put("url", PollerParameter.simple("/test-{city}.html"));
+        parameters.put("retry", PollerParameter.simple("1"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("response-text", PollerParameter.simple("~.*OK.*"));
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel3", InetAddress.getByName("127.0.0.1"), "HTTP");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        Map<String, PollerParameter> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         // this would normally happen in the poller request builder implementation
         subbedParams.forEach((k, v) -> {
             parameters.put(k, v);
@@ -816,21 +819,21 @@ public class HttpMonitorIT {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         HttpMonitor monitor = new HttpMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        Map<String, PollerParameter> parameters = new ConcurrentSkipListMap<>();
         final int port = JUnitHttpServerExecutionListener.getPort();
         if (port > 0) {
-            parameters.put("port", String.valueOf(port));
+            parameters.put("port", PollerParameter.simple(String.valueOf(port)));
         } else {
             throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
         }
-        parameters.put("url", "/test-NMS2702.html");
-        parameters.put("retry", "1");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("basic-authentication", "{username}:{password}");
-        parameters.put("response-text", "~.*OK.*");
+        parameters.put("url", PollerParameter.simple("/test-NMS2702.html"));
+        parameters.put("retry", PollerParameter.simple("1"));
+        parameters.put("timeout", PollerParameter.simple("500"));
+        parameters.put("verbose", PollerParameter.simple("true"));
+        parameters.put("basic-authentication", PollerParameter.simple("{username}:{password}"));
+        parameters.put("response-text", PollerParameter.simple("~.*OK.*"));
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel2", InetAddress.getByName("10.0.1.2"), "HTTP");
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-basic-authentication").toString().equals("nimda:@dm1n"));
+        Map<String, PollerParameter> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-basic-authentication").asSimple().get().getValue().equals("nimda:@dm1n"));
     }
 }

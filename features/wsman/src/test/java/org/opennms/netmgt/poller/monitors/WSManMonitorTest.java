@@ -44,6 +44,7 @@ import org.opennms.netmgt.config.wsman.Definition;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.springframework.expression.spel.SpelParseException;
 import org.w3c.dom.Node;
 
@@ -111,10 +112,10 @@ public class WSManMonitorTest {
         monitor.setWSManConfigDao(configDao);
         monitor.setWSManClientFactory(clientFactory);
 
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put(WsManMonitor.RESOURCE_URI_PARAM, resourceUri);
-        selectors.entrySet().stream().forEach(e -> parameters.put(WsManMonitor.SELECTOR_PARAM_PREFIX + e.getKey(), e.getValue()));
-        parameters.put(WsManMonitor.RULE_PARAM, rule);
+        Map<String, PollerParameter> parameters = Maps.newHashMap();
+        parameters.put(WsManMonitor.RESOURCE_URI_PARAM, PollerParameter.simple(resourceUri));
+        selectors.entrySet().stream().forEach(e -> parameters.put(WsManMonitor.SELECTOR_PARAM_PREFIX + e.getKey(), PollerParameter.simple(e.getValue())));
+        parameters.put(WsManMonitor.RULE_PARAM, PollerParameter.simple(rule));
 
         InetAddress localhost;
         try {
@@ -127,7 +128,7 @@ public class WSManMonitorTest {
         when(svc.getIpAddr()).thenReturn("127.0.0.1");
         when(svc.getNodeLabel()).thenReturn("C7BBBP1");
 
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        Map<String, PollerParameter> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         // this would normally happen in the poller request builder implementation
         subbedParams.forEach((k, v) -> {
             parameters.put(k, v);

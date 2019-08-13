@@ -32,12 +32,22 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Supplier;
 
+import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.poller.ComplexPollerParameter;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.SimplePollerParameter;
 
 /**
  * <p>
@@ -54,7 +64,7 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 public abstract class AbstractServiceMonitor implements ServiceMonitor {
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+    public Map<String, PollerParameter> getRuntimeAttributes(MonitoredService svc, Map<String, PollerParameter> parameters) {
         return Collections.emptyMap();
     }
 
@@ -63,85 +73,84 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         return location;
     }
 
-    public static Object getKeyedObject(final Map<String, Object> parameterMap, final String key, final Object defaultValue) {
-        if (key == null) return defaultValue;
+    public static Optional<String> getKeyedSimple(final Map<String, PollerParameter> parameterMap, final String key) {
+        if (key == null) return Optional.empty();
 
-        final Object value = parameterMap.get(key);
-        if (value == null) return defaultValue;
+        final PollerParameter value = parameterMap.get(key);
+        if (value == null) return Optional.empty();
 
-        return value;
+        return value.asSimple().map(SimplePollerParameter::getValue);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getKeyedInstance(final Map<String, Object> parameterMap, final String key, final Supplier<T> defaultValue) {
+    public static <T> T getKeyedInstance(final Map<String, PollerParameter> parameterMap, final String key, Class<T> clazz, final Supplier<T> defaultValue) {
         if (key == null) return defaultValue.get();
 
-        final Object value = parameterMap.get(key);
+        final PollerParameter value = parameterMap.get(key);
         if (value == null) return defaultValue.get();
 
-        return (T)value;
+        return value.asComplex()
+                .map(complex -> {
+                    try {
+                        return complex.getInstance(clazz);
+                    } catch (final JAXBException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .orElseGet(defaultValue);
     }
 
-    public static Boolean getKeyedBoolean(final Map<String, Object> parameterMap, final String key, final Boolean defaultValue) {
-        final Object value = getKeyedObject(parameterMap, key, defaultValue);
-        if (value == null) return defaultValue;
-
-        if (value instanceof String) {
-            return "true".equalsIgnoreCase((String)value) ? Boolean.TRUE : Boolean.FALSE;
-        } else if (value instanceof Boolean) {
-            return (Boolean)value;
-        }
-
-        return defaultValue;
+    public static Boolean getKeyedBoolean(final Map<String, PollerParameter> parameterMap, final String key, final Boolean defaultValue) {
+        return getKeyedSimple(parameterMap, key)
+                .map(value -> "true".equalsIgnoreCase(value) ? Boolean.TRUE : Boolean.FALSE)
+                .orElse(defaultValue);
     }
 
-    public static String getKeyedString(final Map<String, Object> parameterMap, final String key, final String defaultValue) {
-        final Object value = getKeyedObject(parameterMap, key, defaultValue);
-        if (value == null) return defaultValue;
-
-        if (value instanceof String) {
-            return (String)value;
-        }
-
-        return value.toString();
+    public static String getKeyedString(final Map<String, PollerParameter> parameterMap, final String key, final String defaultValue) {
+        return getKeyedSimple(parameterMap, key)
+                .orElse(defaultValue);
     }
 
-    public static Integer getKeyedInteger(final Map<String, Object> parameterMap, final String key, final Integer defaultValue) {
-        final Object value = getKeyedObject(parameterMap, key, defaultValue);
-        if (value == null) return defaultValue;
-
-        if (value instanceof String) {
-            try {
-                return Integer.valueOf((String)value);
-            } catch (final NumberFormatException e) {
-                return defaultValue;
-            }
-        } else if (value instanceof Integer) {
-            return (Integer)value;
-        } else if (value instanceof Number) {
-            return Integer.valueOf(((Number)value).intValue());
-        }
-
-        return defaultValue;
+    public static Integer getKeyedInteger(final Map<String, PollerParameter> parameterMap, final String key, final Integer defaultValue) {
+        return getKeyedSimple(parameterMap, key)
+                .map(value -> {
+                    try {
+                        return Integer.valueOf(value);
+                    } catch (final NumberFormatException e) {
+                        return defaultValue;
+                    }
+                })
+                .orElse(defaultValue);
     }
 
-    public static Long getKeyedLong(final Map<String, Object> parameterMap, final String key, final Long defaultValue) {
-        final Object value = getKeyedObject(parameterMap, key, defaultValue);
-        if (value == null) return defaultValue;
+    public static Integer getKeyedDecodedInteger(final Map<String, PollerParameter> parameterMap, final String key, final Integer defaultValue) {
+        return getKeyedSimple(parameterMap, key)
+                .map(value -> {
+                    try {
+                        return Integer.decode(value);
+                    } catch (final NumberFormatException e) {
+                        return defaultValue;
+                    }
+                })
+                .orElse(defaultValue);
+    }
 
-        if (value instanceof String) {
-            try {
-                return Long.valueOf((String)value);
-            } catch (final NumberFormatException e) {
-                return defaultValue;
-            }
-        } else if (value instanceof Long) {
-            return (Long)value;
-        } else if (value instanceof Number) {
-            return Long.valueOf(((Number)value).longValue());
-        }
+    public int[] getKeyedIntegerArray(Map<String, PollerParameter> parameters, String key, int[] defaultValues) {
+        return getKeyedSimple(parameters, key)
+                .map(simple -> ParameterMap.getIntegerArrayValue(key, simple))
+                .orElse(defaultValues);
+    }
 
-        return defaultValue;
+    public static Long getKeyedLong(final Map<String, PollerParameter> parameterMap, final String key, final Long defaultValue) {
+        return getKeyedSimple(parameterMap, key)
+                .map(value -> {
+                    try {
+                        return Long.valueOf(value);
+                    } catch (final NumberFormatException e) {
+                        return defaultValue;
+                    }
+                })
+                .orElse(defaultValue);
     }
 
     public static Properties getServiceProperties(final MonitoredService svc) {
