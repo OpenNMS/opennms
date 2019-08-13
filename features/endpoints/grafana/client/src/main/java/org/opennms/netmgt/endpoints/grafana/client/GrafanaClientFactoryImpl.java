@@ -39,8 +39,8 @@ public class GrafanaClientFactoryImpl implements GrafanaClientFactory {
         final GrafanaServerConfiguration serverConfiguration = new GrafanaServerConfiguration(
                 grafanaEndpoint.getUrl(),
                 grafanaEndpoint.getApiKey(),
-                grafanaEndpoint.getConnectTimeout() == null ? 120 : grafanaEndpoint.getConnectTimeout(), // TODO MVR this is not a good place to do this
-                grafanaEndpoint.getReadTimeout() == null ? 120 : grafanaEndpoint.getReadTimeout()  // TODO MVR this is not a good place to do this
+                grafanaEndpoint.getConnectTimeout(),
+                grafanaEndpoint.getReadTimeout()
         );
         final GrafanaClient client = new GrafanaClientImpl(serverConfiguration);
         return client;

@@ -36,37 +36,41 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Properties;
 
-/**
- * TODO MVR: Migrate this to immutable with builder pattern
- */
+import com.google.common.base.Preconditions;
+
 public class GrafanaServerConfiguration {
+
+    public static int DEFAULT_CONNECT_TIMEOUT_IN_SECONDS = 30;
+    public static int DEFAULT_READ_TIMEOUT_IN_SECONDS = 30;
+
     private final String url;
     private final String apiKey;
     private final int connectTimeoutSeconds;
     private final int readTimeoutSeconds;
 
     public static GrafanaServerConfiguration fromEnv() {
-        final File configFile = Paths.get(System.getProperty("user.home"), ".grafana", "server.properties").toFile(); // TODO MVR this is bäh
-
+        final File configFile = Paths.get(System.getProperty("user.home"), ".grafana", "server.properties").toFile();
         try (InputStream input = new FileInputStream(configFile)) {
             final Properties prop = new Properties();
             prop.load(input);
             final String url = prop.getProperty("url");
             final String apiKey = prop.getProperty("apiKey");
-            // TODO MVR: Be more defensive and add defaults
-            final int connectTimeout = Integer.parseInt(prop.getProperty("connectTimeout"));
-            final int readTimeout = Integer.parseInt(prop.getProperty("readTimeout"));
+            final int connectTimeout = Integer.parseInt(prop.getProperty("connectTimeout", Integer.toString(DEFAULT_CONNECT_TIMEOUT_IN_SECONDS)));
+            final int readTimeout = Integer.parseInt(prop.getProperty("readTimeout", Integer.toString(DEFAULT_READ_TIMEOUT_IN_SECONDS)));
             return new GrafanaServerConfiguration(url, apiKey, connectTimeout, readTimeout);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public GrafanaServerConfiguration(String url, String apiKey, int connectTimeoutSeconds, int readTimeoutSeconds) {
+    public GrafanaServerConfiguration(String url, String apiKey, Integer connectTimeoutSeconds, Integer readTimeoutSeconds) {
         this.url = Objects.requireNonNull(url);
         this.apiKey = Objects.requireNonNull(apiKey);
-        this.connectTimeoutSeconds = connectTimeoutSeconds;
-        this.readTimeoutSeconds = readTimeoutSeconds;
+        this.connectTimeoutSeconds = connectTimeoutSeconds == null ? DEFAULT_CONNECT_TIMEOUT_IN_SECONDS : connectTimeoutSeconds;
+        this.readTimeoutSeconds = readTimeoutSeconds == null ? DEFAULT_READ_TIMEOUT_IN_SECONDS : readTimeoutSeconds;
+
+        Preconditions.checkArgument(connectTimeoutSeconds >= 0, "connectTimeoutSeconds must be >= 0");
+        Preconditions.checkArgument(readTimeoutSeconds >= 0, "readTimeoutSeconds msut be >= 0");
     }
 
     public String getUrl() {
