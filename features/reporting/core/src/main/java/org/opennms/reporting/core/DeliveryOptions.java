@@ -32,9 +32,6 @@ import java.io.Serializable;
 
 import org.opennms.api.reporting.ReportFormat;
 
-/**
- * <p>DeliveryOptions class.</p>
- */
 public class DeliveryOptions implements Serializable {
 
     private static final long serialVersionUID = 7983363859009905407L;
@@ -42,95 +39,45 @@ public class DeliveryOptions implements Serializable {
     protected String m_mailTo;
     protected Boolean m_persist;
     protected Boolean m_sendMail;
-    protected ReportFormat m_format; // TODO MVR this is probably not used anymore
+    protected ReportFormat m_format;
     protected String m_instanceId;
 
-    /**
-     * <p>getMailTo</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getMailTo() {
         return m_mailTo;
     }
 
-    /**
-     * <p>setMailTo</p>
-     *
-     * @param email a {@link java.lang.String} object.
-     */
     public void setMailTo(String email) {
         m_mailTo = email;
     }
 
-    /**
-     * <p>setPersist</p>
-     *
-     * @param persist a {@link java.lang.Boolean} object.
-     */
-    public void setPersist(Boolean persist) {
+    public void setPersist(boolean persist) {
         m_persist = persist;
     }
 
-    /**
-     * <p>getPersist</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
-    public Boolean getPersist() {
-        return m_persist;
+    public boolean isPersist() {
+        return m_persist == null ? false : m_persist;
     }
 
-    /**
-     * <p>setSendMail</p>
-     *
-     * @param sendEmail a {@link java.lang.Boolean} object.
-     */
-    public void setSendMail(Boolean sendEmail) {
+    public void setSendMail(boolean sendEmail) {
         m_sendMail = sendEmail;
     }
 
-    /**
-     * <p>getSendMail</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
-    public Boolean getSendMail() {
-        return m_sendMail;
+    public boolean isSendMail() {
+        return m_sendMail == null ? false : m_sendMail;
     }
 
-    /**
-     * <p>getFormat</p>
-     *
-     * @return a {@link org.opennms.api.reporting.ReportFormat} object.
-     */
     public ReportFormat getFormat() {
         return m_format;
     }
 
-    /**
-     * <p>setFormat</p>
-     *
-     * @param format a {@link org.opennms.api.reporting.ReportFormat} object.
-     */
     public void setFormat(ReportFormat format) {
         m_format = format;
     }
 
-    /**
-     * <p>getInstanceId</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getInstanceId() {
         return m_instanceId;
     }
 
-    /**
-     * <p>setInstanceId</p>
-     *
-     * @param instanceId a {@link java.lang.String} object.
-     */
     public void setInstanceId(String instanceId) {
         m_instanceId = instanceId;
     }

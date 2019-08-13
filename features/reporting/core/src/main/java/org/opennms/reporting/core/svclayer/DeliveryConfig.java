@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,47 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.api.reporting.parameter;
+package org.opennms.reporting.core.svclayer;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * <p>ReportFloatParm class.</p>
- *
- * @author jonathan@opennms.org
- * @version $Id: $
- */
-public class ReportFloatParm extends ReportParm implements Serializable {
-    
-    private static final long serialVersionUID = 5242917854258286117L;
+import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.reporting.core.DeliveryOptions;
 
-    Float m_value;
-    String m_type;
-    
-    public ReportFloatParm() {
-      super();
-    }
-    
-    public Float getValue() {
-        return m_value;
-    }
-    
-    public void setValue(Float value) {
-        m_value = value;
-    }
-    
-    public String getInputType() {
-        return m_type;
+public class DeliveryConfig {
+
+    private final ReportParameters reportParameters;
+    private final DeliveryOptions deliveryOptions;
+
+    public DeliveryConfig(ReportParameters reportParameters, DeliveryOptions deliveryOptions) {
+        this.reportParameters = Objects.requireNonNull(reportParameters);
+        this.deliveryOptions = Objects.requireNonNull(deliveryOptions);
+        Objects.requireNonNull(reportParameters.getReportId());
     }
 
-    public void setInputType(String type) {
-        m_type = type;
+    public ReportParameters getReportParameters() {
+        return reportParameters;
     }
 
-    @Override
-    void accept(ReportParmVisitor visitor) {
-        Objects.requireNonNull(visitor).visit(this);
+    public DeliveryOptions getDeliveryOptions() {
+        return deliveryOptions;
     }
 
+    public String getReportId() {
+        return reportParameters.getReportId();
+    }
 }

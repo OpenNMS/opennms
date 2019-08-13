@@ -31,18 +31,17 @@ package org.opennms.features.reporting.rest.internal;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
@@ -52,12 +51,9 @@ import org.json.JSONObject;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
+import org.opennms.api.reporting.ReportParameterBuilder;
 import org.opennms.api.reporting.parameter.ReportDateParm;
-import org.opennms.api.reporting.parameter.ReportDoubleParm;
-import org.opennms.api.reporting.parameter.ReportFloatParm;
-import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.features.reporting.rest.ReportRestService;
 import org.opennms.netmgt.config.categories.Category;
@@ -65,17 +61,18 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.DeliveryOptions;
+import org.opennms.reporting.core.svclayer.DeliveryConfig;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
+import org.opennms.reporting.core.svclayer.ScheduleConfig;
 import org.opennms.web.svclayer.DatabaseReportListService;
-import org.opennms.web.svclayer.SchedulerMessage;
-import org.opennms.web.svclayer.SchedulerMessageSeverity;
-import org.opennms.web.svclayer.SchedulerRequestContext;
 import org.opennms.web.svclayer.SchedulerService;
 import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.model.DatabaseReportDescription;
 import org.opennms.web.svclayer.model.ReportRepositoryDescription;
 import org.opennms.web.svclayer.model.TriggerDescription;
+import org.opennms.web.svclayer.support.SchedulerContextException;
+import org.opennms.web.svclayer.support.SchedulerException;
 import org.opennms.web.utils.QueryParameters;
 import org.opennms.web.utils.QueryParametersBuilder;
 import org.opennms.web.utils.ResponseUtils;
@@ -149,58 +146,61 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response scheduleReport(final Map<String, Object> parameters) {
-        final ReportParameters reportParameters = parseParameters(parameters);
+        final ReportParameters reportParameters = parseParameters(parameters, ReportMode.SCHEDULED);
         final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-        final SchedulerRequestContext requestContext = new DummyRequestContext();
-
-        schedulerService.addCronTrigger(reportParameters.getReportId(), reportParameters, deliveryOptions, (String) parameters.get("cronExpression"), requestContext);
-        final SchedulerMessage errorMessage = extractErrorMessage(requestContext);
-        if (errorMessage != null) {
-            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
+        final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
+        try {
+            schedulerService.addCronTrigger(scheduleConfig);
+        } catch (SchedulerContextException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
+        } catch (SchedulerException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
         }
-
         return Response.accepted().build();
     }
 
     @Override
     public Response deliverReport(final Map<String, Object> parameters) {
-        final ReportParameters reportParameters = parseParameters(parameters);
+        final ReportParameters reportParameters = parseParameters(parameters, ReportMode.IMMEDIATE);
         final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-        final SchedulerRequestContext requestContext = new DummyRequestContext();
-        schedulerService.execute(reportParameters.getReportId(), reportParameters, deliveryOptions, requestContext);
-        final SchedulerMessage errorMessage = extractErrorMessage(requestContext);
-        if (errorMessage != null) {
-            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
+        final DeliveryConfig deliveryConfig = new DeliveryConfig(reportParameters, deliveryOptions);
+        try {
+            schedulerService.execute(deliveryConfig);
+        } catch (SchedulerContextException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
+        } catch (SchedulerException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
         }
         return Response.accepted().build();
     }
 
     @Override
     public Response runReport(final String reportId, final Map<String, Object> inputParameters) {
-        final ReportParameters parameters = parseParameters(inputParameters);
-        parameters.setReportId(reportId);
-
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
+            final ReportParameters parameters = parseParameters(inputParameters, ReportMode.IMMEDIATE);
+            parameters.setReportId(reportId);
             reportWrapperService.runAndRender(parameters, ReportMode.IMMEDIATE, outputStream);
-            if ((parameters.getFormat() == ReportFormat.PDF) || (parameters.getFormat() == ReportFormat.SVG) ) {
+            if ((parameters.getFormat() == ReportFormat.PDF) || (parameters.getFormat() == ReportFormat.SVG)) {
                 return Response.ok().type("application/pdf;charset=UTF-8")
-                    .header("Content-disposition", "inline; filename=report.pdf")
-                    .header("Pragma", "public")
-                    .header("Cache-Control", "cache")
-                    .header("Cache-Control", "must-revalidate")
-                    .entity(outputStream.toByteArray()).build();
+                        .header("Content-disposition", "inline; filename=report.pdf")
+                        .header("Pragma", "public")
+                        .header("Cache-Control", "cache")
+                        .header("Cache-Control", "must-revalidate")
+                        .entity(outputStream.toByteArray()).build();
             }
-            if(parameters.getFormat() == ReportFormat.CSV) {
+            if (parameters.getFormat() == ReportFormat.CSV) {
                 return Response.ok().type("text/csv;charset=UTF-8")
-                    .header("Content-disposition", "inline; filename=report.csv")
-                    .header("Cache-Control", "cache")
-                    .header("Cache-Control", "must-revalidate")
-                    .entity(outputStream.toByteArray()).build();
+                        .header("Content-disposition", "inline; filename=report.csv")
+                        .header("Cache-Control", "cache")
+                        .header("Cache-Control", "must-revalidate")
+                        .entity(outputStream.toByteArray()).build();
             }
-            return Response.status(Response.Status.BAD_REQUEST).build(); // TODO MVR unsupported format
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject("format", "Only PDF, SVG or CSV are supported"));
+        } catch (SchedulerContextException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
         } catch (ReportException ex) {
-            throw new RuntimeException(ex);
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
         } finally {
             IOUtils.closeQuietly(outputStream);
         }
@@ -245,7 +245,7 @@ public class ReportRestServiceImpl implements ReportRestService {
             reportStoreService.delete(any.get().getId());
             return Response.accepted().build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     @Override
@@ -295,7 +295,7 @@ public class ReportRestServiceImpl implements ReportRestService {
 
             return Response.ok(reportDetails.toJson().toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     @Override
@@ -304,17 +304,25 @@ public class ReportRestServiceImpl implements ReportRestService {
                 .filter(triggerDescription -> triggerDescription.getTriggerName().equals(triggerName))
                 .findAny();
         if (any.isPresent()) {
-            final ReportParameters reportParameters = parseParameters(parameters);
+            final ReportParameters reportParameters = parseParameters(parameters, ReportMode.SCHEDULED);
             final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-            final SchedulerRequestContext requestContext = new DummyRequestContext();
-            schedulerService.updateCronTrigger(triggerName, reportParameters, deliveryOptions, (String) parameters.get("cronExpression"), requestContext);
-            final SchedulerMessage errorMessage = extractErrorMessage(requestContext);
-            if (errorMessage != null) {
-                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(convert(errorMessage).toString()).build();
+            final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
+            try {
+                schedulerService.updateCronTrigger(triggerName, scheduleConfig);
+            } catch (SchedulerContextException ex) {
+                return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
+            } catch (SchedulerException ex) {
+                return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex));
             }
             return Response.accepted().build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Status.NOT_FOUND).build();
+    }
+
+    private static Response createErrorResponse(Status status, JSONObject errorObject) {
+        Objects.requireNonNull(status);
+        Objects.requireNonNull(errorObject);
+        return Response.status(status).type(MediaType.APPLICATION_JSON_TYPE).entity(errorObject.toString()).build();
     }
 
     @Override
@@ -330,27 +338,28 @@ public class ReportRestServiceImpl implements ReportRestService {
             schedulerService.removeTrigger(triggerName);
             return Response.accepted().build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     @Override
     public Response downloadReport(final String format, final String locatorId) {
         if (Strings.isNullOrEmpty(format)) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Status.BAD_REQUEST)
                     .type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(createErrorObject("entity", "Property 'format' is null or empty").toString())
                     .build();
         }
         if (Strings.isNullOrEmpty(locatorId)) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Status.BAD_REQUEST)
                     .type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(createErrorObject("entity", "Property 'locatorId' is null or empty").toString())
                     .build();
         }
         try {
             final Integer reportCatalogEntryId = Integer.valueOf(WebSecurityUtils.safeParseInt(locatorId));
+            final ReportFormat reportFormat = parseReportFormat(format);
             final StreamingOutput streamingOutput = outputStream -> {
-                reportStoreService.render(reportCatalogEntryId, ReportFormat.valueOf(format), outputStream);
+                reportStoreService.render(reportCatalogEntryId, reportFormat, outputStream);
                 outputStream.flush();
             };
             final Response.ResponseBuilder responseBuilder = Response.ok()
@@ -358,132 +367,90 @@ public class ReportRestServiceImpl implements ReportRestService {
                     .header("Cache-Control", "cache")
                     .header("Cache-Control", "must-revalidate")
                     .entity(streamingOutput);
-            if ((ReportFormat.PDF == ReportFormat.valueOf(format)) || (ReportFormat.SVG == ReportFormat.valueOf(format)) ) {
+            if (ReportFormat.PDF == reportFormat || ReportFormat.SVG == reportFormat ) {
                 return responseBuilder.type("application/pdf;charset=UTF-8")
                         .header("Content-disposition", "inline; filename=" + reportCatalogEntryId.toString() + ".pdf")
                         .build();
             }
-            if (ReportFormat.CSV == ReportFormat.valueOf(format)) {
+            if (ReportFormat.CSV == reportFormat) {
                 responseBuilder.type("text/csv;charset=UTF-8")
                 .header("Content-disposition", "inline; filename=" + reportCatalogEntryId.toString() + ".csv");
             }
             return responseBuilder.build();
         } catch (NumberFormatException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Status.BAD_REQUEST)
                         .type(MediaType.APPLICATION_JSON_TYPE)
                         .entity(createErrorObject(e).toString()).build();
+        } catch (SchedulerContextException ex) {
+            return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
         }
     }
 
-    // TODO MVR this is duplicated all over the place
     private JSONObject createErrorObject(Exception exception) {
         return createErrorObject("entity", exception.getMessage());
     }
 
-    // TODO MVR this is duplicated all over the place
-    private JSONObject createErrorObject(String message, String context) {
+    private JSONObject createErrorObject(String context, String message) {
         final JSONObject errorObject = new JSONObject()
                 .put("message", message)
                 .put("context", context);
         return errorObject;
     }
 
-    private static <T> List<T> parseParameters(JSONArray inputParameters, String type, Function<JSONObject, T> converter) {
-        Objects.requireNonNull(inputParameters);
-        Objects.requireNonNull(type);
-        Objects.requireNonNull(converter);
+    private ReportParameters parseParameters(final Map<String, Object> inputParameters, final ReportMode mode) {
+        final String reportId = (String) inputParameters.get("id");
+        final ReportParameters actualParameters = reportWrapperService.getParameters(reportId);
+        final ReportFormat reportFormat = parseReportFormat((String) inputParameters.get("format"));
+        actualParameters.setReportId(reportId);
+        actualParameters.setFormat(reportFormat);
 
-        final List<T> parsedParameters = new ArrayList<>();
-        for (int i=0; i<inputParameters.length(); i++) {
-            final JSONObject eachInput = inputParameters.getJSONObject(i);
-            if (eachInput.getString("type").equalsIgnoreCase(type)) {
-                final T eachConvertedParameter = converter.apply(eachInput);
-                if (eachConvertedParameter != null) {
-                    parsedParameters.add(eachConvertedParameter);
+        // Determine the new values
+        final JSONObject jsonInputParameters = new JSONObject(inputParameters);
+        final ReportParameterBuilder reportParameterBuilder = new ReportParameterBuilder();
+        final JSONArray jsonParameters = jsonInputParameters.getJSONArray("parameters");
+        for (int i=0; i< jsonParameters.length(); i++) {
+            final JSONObject jsonParameter = jsonParameters.getJSONObject(i);
+            final String parameterName = jsonParameter.getString("name");
+            final String parameterType = jsonParameter.getString("type");
+            if (parameterType.equals("string")) {
+                reportParameterBuilder.withString(parameterName, jsonParameter.getString("value"));
+            }
+            if (parameterType.equals("double")) {
+                reportParameterBuilder.withDouble(parameterName, jsonParameter.getDouble("value"));
+            }
+            if (parameterType.equals("integer")) {
+                reportParameterBuilder.withInteger(parameterName, jsonParameter.getInt("value"));
+            }
+            if (parameterType.equals("float")) {
+                reportParameterBuilder.withFloat(parameterName, jsonParameter.getFloat("value"));
+            }
+            if (parameterType.equals("date")) {
+                final ReportDateParm actualDateParm = actualParameters.getParameter(parameterName);
+                final int hours = jsonParameter.getInt("hours");
+                final int minutes = jsonParameter.getInt("minutes");
+                if (actualDateParm.getUseAbsoluteDate() == true || mode == ReportMode.IMMEDIATE) {
+                    if (jsonParameter.has("date")) {
+                        try {
+                            final String dateString = jsonParameter.getString("date");
+                            final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+                            reportParameterBuilder.withDate(parameterName, parsedDate, hours, minutes);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                } else {
+                    final String interval = jsonParameter.getString("interval");
+                    final int count = jsonParameter.getInt("count");
+                    reportParameterBuilder.withDate(parameterName, interval, count, hours, minutes);
                 }
             }
         }
-        return parsedParameters;
-    }
 
-    private JSONObject convert(SchedulerMessage message) {
-        final JSONObject errorMessage = new JSONObject();
-        errorMessage.put("severity", message.getSeverity().name());
-        errorMessage.put("message", message.getText());
-        return errorMessage;
-    }
+        // Finally apply the new values
+        final ReportParameters mergeWithParameters = reportParameterBuilder.build();
+        actualParameters.apply(mergeWithParameters);
 
-    private ReportParameters parseParameters(Map<String, Object> inputParameters) {
-        final JSONObject jsonParameters = new JSONObject(inputParameters);
-        final ReportParameters parameters = new ReportParameters();
-        parameters.setReportId((String) inputParameters.get("id"));
-        parameters.setFormat(ReportFormat.valueOf(jsonParameters.getString("format")));
-        parameters.setStringParms(parseParameters(jsonParameters.getJSONArray("parameters"), "string", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportStringParm parm = new ReportStringParm();
-            if (jsonObject.has("inputType")) {
-                parm.setInputType(jsonObject.getString("inputType"));
-            }
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setValue(jsonObject.getString("value"));
-            return parm;
-        }));
-        parameters.setDoubleParms(parseParameters(jsonParameters.getJSONArray("parameters"), "double", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportDoubleParm parm = new ReportDoubleParm();
-            if (jsonObject.has("inputType")) {
-                parm.setInputType(jsonObject.getString("inputType"));
-            }
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setValue(jsonObject.getDouble("value"));
-            return parm;
-        }));
-        parameters.setIntParms(parseParameters(jsonParameters.getJSONArray("parameters"), "integer", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportIntParm parm = new ReportIntParm();
-            if (jsonObject.has("inputType")) {
-                parm.setInputType(jsonObject.getString("inputType"));
-            }
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setValue(jsonObject.getInt("value"));
-            return parm;
-        }));
-        parameters.setFloatParms(parseParameters(jsonParameters.getJSONArray("parameters"), "float", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportFloatParm parm = new ReportFloatParm();
-            if (jsonObject.has("inputType")) {
-                parm.setInputType(jsonObject.getString("inputType"));
-            }
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setValue(jsonObject.getFloat("value"));
-            return parm;
-        }));
-        parameters.setDateParms(parseParameters(jsonParameters.getJSONArray("parameters"), "date", jsonObject -> {
-            // TODO MVR this is not ideal, as we override name and such as well, should only apply the values
-            final ReportDateParm parm = new ReportDateParm();
-            parm.setName(jsonObject.getString("name"));
-            parm.setDisplayName(jsonObject.getString("displayName"));
-            parm.setCount(jsonObject.getInt("count"));
-            parm.setInterval(jsonObject.getString("interval"));
-            if (jsonObject.has("date")) {
-                try {
-                    final String dateString = jsonObject.getString("date");
-                    final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-                    parm.setDate(parsedDate);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            parm.setHours(jsonObject.getInt("hours"));
-            parm.setMinutes(jsonObject.getInt("minutes"));
-            parm.setUseAbsoluteDate(jsonObject.getBoolean("useAbsoluteDate")); // TODO MVR this is already known and should not be overriden
-            return parm;
-        }));
-        return parameters;
+        return actualParameters;
     }
 
     private DeliveryOptions parseDeliveryOptions(Map<String, Object> parameters) {
@@ -492,17 +459,23 @@ public class ReportRestServiceImpl implements ReportRestService {
         final JSONObject jsonOptions = jsonParameters.getJSONObject("deliveryOptions");
         options.setInstanceId(jsonOptions.getString("instanceId"));
         options.setSendMail(jsonOptions.getBoolean("sendMail"));
-        if (options.getSendMail()) {
+        if (options.isSendMail() && jsonOptions.has("mailTo")) {
             options.setMailTo(jsonOptions.getString("mailTo"));
         }
         options.setPersist(jsonOptions.getBoolean("persist"));
-        options.setFormat(ReportFormat.valueOf(jsonOptions.getString("format")));
+        options.setFormat(parseReportFormat(jsonOptions.getString("format")));
         return options;
     }
 
-    private SchedulerMessage extractErrorMessage(SchedulerRequestContext requestContext) {
-        return requestContext.getAllMessages().stream()
-                .filter(message -> message.getSeverity() == SchedulerMessageSeverity.ERROR || message.getSeverity() == SchedulerMessageSeverity.FATAL)
-                .findFirst().orElse(null);
+    private ReportFormat parseReportFormat(String input) {
+        if (Strings.isNullOrEmpty(input)) {
+            throw new SchedulerContextException("format", "Please provide a value");
+        }
+        for (ReportFormat eachFormat : ReportFormat.values()) {
+            if (eachFormat.name().equalsIgnoreCase(input)) {
+                return eachFormat;
+            }
+        }
+        throw new SchedulerContextException("format", "Provided format ''{0}'' is not supported", input);
     }
 }

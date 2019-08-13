@@ -214,7 +214,6 @@ public class ReportDetails {
         // Create return object
         final JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", reportId);
-        jsonObject.put("name", parameters.getDisplayName());
         jsonObject.put("parameters", jsonParameters);
         jsonObject.put("formats", jsonFormats);
         jsonObject.put("categories", jsonCategories);

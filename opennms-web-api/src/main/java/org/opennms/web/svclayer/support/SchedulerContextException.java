@@ -26,12 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.support;
 
-// TODO MVR delete me
-public enum SchedulerMessageSeverity {
-    INFO,
-    WARNING,
-    ERROR,
-    FATAL
+import java.text.MessageFormat;
+import java.util.Objects;
+
+public class SchedulerContextException extends SchedulerException {
+
+    private final String context;
+
+    public SchedulerContextException(String context, String message) {
+        super(Objects.requireNonNull(message));
+        this.context = Objects.requireNonNull(context);
+    }
+
+    public SchedulerContextException(String context, String message, Exception ex) {
+        super(message, ex);
+        this.context = Objects.requireNonNull(context);
+    }
+
+    public SchedulerContextException(String context, String messageFormat, Object... arguments) {
+        this(context, new MessageFormat(messageFormat).format(arguments));
+    }
+
+    @Override
+    public String getMessage() {
+        return this.context + ":" + super.getMessage();
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public String getRawMessage() {
+        return super.getMessage();
+    }
 }

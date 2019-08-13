@@ -30,8 +30,8 @@ package org.opennms.web.svclayer;
 
 import java.util.List;
 
-import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.reporting.core.DeliveryOptions;
+import org.opennms.reporting.core.svclayer.DeliveryConfig;
+import org.opennms.reporting.core.svclayer.ScheduleConfig;
 import org.opennms.web.svclayer.model.TriggerDescription;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,30 +44,24 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional(readOnly = true)
 public interface SchedulerService {
-    
+
     List<TriggerDescription> getTriggerDescriptions();
 
-    @Transactional(readOnly = false)
+    @Transactional
     void removeTrigger(String triggerName);
-    
-    @Transactional(readOnly = false)
+
+    @Transactional
     void removeTriggers(String[] triggerNames);
     
     Boolean exists(String triggerName);
 
-    String updateCronTrigger(String cronTrigger, ReportParameters criteria, DeliveryOptions deliveryOptions, String cronExpression, SchedulerRequestContext context);
+    @Transactional
+    void updateCronTrigger(String cronTrigger, ScheduleConfig scheduleConfig);
 
-    @Transactional(readOnly = false)
-    String addCronTrigger(String id,
-            ReportParameters criteria, 
-            DeliveryOptions deliveryOptions,
-            String cronExpression, 
-            SchedulerRequestContext context);
+    @Transactional
+    void addCronTrigger(ScheduleConfig scheduleConfig);
 
-    @Transactional(readOnly = false)
-    String execute(String id,
-            ReportParameters criteria, 
-            DeliveryOptions deliveryOptions,
-                   SchedulerRequestContext context);
+    @Transactional
+    void execute(DeliveryConfig deliveryConfig);
 
 }

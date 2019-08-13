@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,171 +55,73 @@ public class ReportParameters implements Serializable {
     private static final long serialVersionUID = -3848794546173077375L;
     protected String m_reportId;
     protected ReportFormat m_format;
-    protected String m_displayName;
     protected List <ReportDateParm> m_dateParms;
     protected List <ReportStringParm> m_stringParms;
     protected List <ReportIntParm> m_intParms;
     protected List<ReportFloatParm> m_floatParms;
     protected List<ReportDoubleParm> m_doubleParms;
 
-    /**
-     * <p>Constructor for ReportParameters.</p>
-     */
     public ReportParameters() {
         super();
     }
 
-    /**
-     * <p>getDateParms</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     public List<ReportDateParm> getDateParms() {
         return m_dateParms;
     }
 
-    /**
-     * <p>setDateParms</p>
-     *
-     * @param dateParms a {@link java.util.List} object.
-     */
     public void setDateParms(List<ReportDateParm> dateParms) {
         m_dateParms = dateParms;
     }
     
-    /**
-     * <p>getStringParms</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     public List<ReportStringParm> getStringParms() {
         return m_stringParms;
     }
 
-    /**
-     * <p>setStringParms</p>
-     *
-     * @param strings a {@link java.util.List} object.
-     */
     public void setStringParms(List<ReportStringParm> strings) {
         m_stringParms = strings;
     }
     
-    /**
-     * <p>getIntParms</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     public List<ReportIntParm> getIntParms() {
         return m_intParms;
     }
 
-    /**
-     * <p>setIntParms</p>
-     *
-     * @param ints a {@link java.util.List} object.
-     */
     public void setIntParms(List<ReportIntParm> ints) {
         m_intParms = ints;
     }
     
-    /**
-     * <p>getFloatParms</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     public List<ReportFloatParm> getFloatParms() {
         return m_floatParms;
     }
 
-    /**
-     * <p>setFloatParms</p>
-     *
-     * @param ints a {@link java.util.List} object.
-     */
     public void setFloatParms(List<ReportFloatParm> floats) {
         m_floatParms = floats;
     }
 
-    /**
-     * <p>getDoubleParms</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
 	public List<ReportDoubleParm> getDoubleParms() {
 		return m_doubleParms;
 	}
 
-	/**
-     * <p>setDoubleParms</p>
-     *
-     * @param ints a {@link java.util.List} object.
-     */
 	public void setDoubleParms(List<ReportDoubleParm> doubleParms) {
 		m_doubleParms = doubleParms;
 	}
 
-	/**
-     * <p>setReportId</p>
-     *
-     * @param reportId a {@link java.lang.String} object.
-     */
     public void setReportId(String reportId) {
         m_reportId = reportId;
     }
 
-    /**
-     * <p>getReportId</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getReportId() {
         return m_reportId;
     }
 
-    /**
-     * <p>setDisplayName</p>
-     *
-     * @param displayName a {@link java.lang.String} object.
-     */
-    public void setDisplayName(String displayName) {
-        m_displayName = displayName;
-    }
-
-    /**
-     * <p>getDisplayName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDisplayName() {
-        return m_displayName;
-    }
-    
-    /**
-     * <p>setFormat</p>
-     *
-     * @param format a {@link org.opennms.api.reporting.ReportFormat} object.
-     */
     public void setFormat(ReportFormat format) {
         m_format = format;
     }
 
-    /**
-     * <p>getFormat</p>
-     *
-     * @return a {@link org.opennms.api.reporting.ReportFormat} object.
-     */
+    // TODO MVR this should live somewhere else
     public ReportFormat getFormat() {
         return m_format;
     }
 
-    /**
-     * <p>getReportParms</p>
-     *
-     * * @param format a {@link org.opennms.api.reporting.ReportMode} object.
-     * 
-     * @return a {@link java.util.HashMap} object.
-     */
     public Map<String, Object> getReportParms(ReportMode mode) {
         
         HashMap <String,Object>parmMap = new HashMap<String, Object>();
@@ -266,28 +169,39 @@ public class ReportParameters implements Serializable {
                 parmMap.put(parm.getName(), parm.getValue());
             }
         }
-        
         return parmMap;
     }
     
-    /**
-     * <p>getReportParms</p>
-     *
-     * @return a {@link java.util.HashMap} object.
-     */
+    // TODO MVR remove me :D
     public Map<String, Object> getReportParms() {
-        
         return getReportParms(ReportMode.IMMEDIATE);
-        
     }
 
-    protected <T extends ReportParm> Map<String, T> asMap() {
-        final Map<String, ? extends ReportParm> reportMap = Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms)
+    public List<? extends ReportParm> getParameters() {
+        return Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms)
                 .stream()
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
+    protected <T extends ReportParm> Map<String, T> asMap() {
+        final Map<String, ? extends ReportParm> reportMap = getParameters()
+                .stream()
                 .collect(Collectors.toMap(p -> p.getName(), Function.identity()));
         return (Map<String, T>) reportMap;
+    }
+
+    public <T extends ReportParm> T getParameter(String key) {
+        Objects.requireNonNull(key);
+        final Optional<? extends ReportParm> any = getParameters()
+                .stream()
+                .filter(param -> key.equals(param.getName()))
+                .findAny();
+        if (any.isPresent()) {
+            return (T) any.get();
+        }
+        return null;
     }
 
     public void apply(ReportParameters parameters) {

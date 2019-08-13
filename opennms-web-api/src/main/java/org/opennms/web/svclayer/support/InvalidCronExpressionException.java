@@ -26,28 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.reporting.rest.internal;
+package org.opennms.web.svclayer.support;
 
-import java.util.Collections;
-import java.util.List;
+import java.text.ParseException;
 
-import org.opennms.web.svclayer.SchedulerMessage;
-import org.opennms.web.svclayer.SchedulerRequestContext;
+public class InvalidCronExpressionException extends SchedulerContextException {
 
-import com.google.common.collect.Lists;
+    private static final String TEMPLATE = "The provided cron expression '%s' cannot be parsed: %s";
 
-// TODO MVR get rid of this ugly beast
-public class DummyRequestContext implements SchedulerRequestContext {
-
-    private List<SchedulerMessage> messages = Lists.newArrayList();
-
-    @Override
-    public void addMessage(SchedulerMessage message) {
-        messages.add(message);
-    }
-
-    @Override
-    public List<SchedulerMessage> getAllMessages() {
-        return Collections.unmodifiableList(messages);
+    public InvalidCronExpressionException(ParseException exception, String cronExpression) {
+        super("cronExpression", String.format(TEMPLATE, cronExpression, exception.getMessage()), exception);
     }
 }

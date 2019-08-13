@@ -26,26 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.api.reporting.parameter;
 
-import java.util.Objects;
-
-// TODO MVR delete me
-public class SchedulerMessage {
-
-    private final SchedulerMessageSeverity severity;
-    private final String message;
-
-    public SchedulerMessage(SchedulerMessageSeverity severity, String message) {
-        this.severity = Objects.requireNonNull(severity);
-        this.message = message;
-    }
-
-    public SchedulerMessageSeverity getSeverity() {
-        return severity;
-    }
-
-    public String getText() {
-        return message;
-    }
+public interface ReportParmVisitor {
+    void visit(ReportStringParm parm);
+    void visit(ReportIntParm parm);
+    void visit(ReportFloatParm parm);
+    void visit(ReportDoubleParm parm);
+    void visit(ReportDateParm parm);
 }

@@ -177,6 +177,10 @@ export default class ScheduleOptions {
         }
     }
 
+    isValid() {
+        return typeof this.errors === 'undefined' || Object.keys(this.errors).length === 0;
+    }
+
     static createFrom(input) {
        const parsers = [
             new DailyParser(),
