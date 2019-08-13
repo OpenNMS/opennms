@@ -447,6 +447,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.deleteAll = function() {
                 ReportScheduleResource.deleteAll({}, function(response) {
+                   $scope.pagination.page = 1; // go back to page 1
                    $scope.refresh();
                 }, function(response) {
                     $scope.setGlobalError(response);
@@ -455,6 +456,10 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.delete = function(schedule) {
                 ReportScheduleResource.delete({id: schedule.triggerName || -1}, function(response) {
+                    // If we deleted the last report on this page
+                    if ($scope.scheduledReports.length === 1 && $scope.pagination.page > 1) {
+                        $scope.pagination.page--; // go a page back
+                    }
                     $scope.refresh();
                 }, function(response) {
                     $scope.setGlobalError(response);
@@ -579,6 +584,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.deleteAll = function() {
                 ReportStorageResource.deleteAll({}, function(response) {
+                    $scope.pagination.page = 1; // go back to page 1
                     $scope.refresh();
                 }, function(response) {
                     $scope.setGlobalError(response);
@@ -587,6 +593,10 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.delete = function(report) {
                 ReportStorageResource.delete({id: report.id || -1}, function(response) {
+                    // If we deleted the last report on this page
+                    if ($scope.persistedReports.length === 1 && $scope.pagination.page > 1) {
+                        $scope.pagination.page--; // go back a page
+                    }
                     $scope.refresh();
                 }, function(response) {
                     $scope.setGlobalError(response);
