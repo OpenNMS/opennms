@@ -3,11 +3,6 @@
 </div>
 <div class="modal-body">
     <onms-report-details ng-model="report" options="options" on-invalid-change="onReportFormInvalidStateChange"></onms-report-details>
-
-    <!-- TODO MVR we may wanna do this a bit different -->
-    <div class="alert alert-danger" ng-if="error">
-        {{error}}
-    </div>
 </div>
 <div class="modal-footer">
     <button class="btn btn-danger" id="action.cancel.{{meta.triggerName}}" ng-click="$close()"><i class="fa fa-times"></i> Cancel</button>

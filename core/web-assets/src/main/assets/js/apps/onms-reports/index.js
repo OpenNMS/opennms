@@ -17,8 +17,6 @@ const templatesTemplate  = require('./templates.html');
 const persistedtTemplate  = require('./persisted.html');
 const schedulesTemplate  = require('./schedules.html');
 const detailsTemplate  = require('./details.html');
-const successModalTemplate  = require('./modals/success-modal.html');
-const errorModalTemplate  = require('./modals/error-modal.html');
 const editScheduleModalTemplate  = require('./modals/schedule-edit-modal.html');
 
 const reportDetailsTemplate = require('./report-details.html');
@@ -370,55 +368,6 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                     });
             };
 
-            $scope.showSuccessModal = function(scope) {
-                return $uibModal.open({
-                    templateUrl: successModalTemplate,
-                    backdrop: 'static',
-                    keyboard: false,
-                    size: 'md',
-                    controller: function($scope, options) {
-                        $scope.options = options;
-                        $scope.goToSchedules = function() {
-                            $scope.$close();
-                            $state.go('report.schedules');
-                        };
-                        $scope.goToPersisted = function() {
-                            $scope.$close();
-                            $state.go('report.persisted');
-                        }
-                    },
-                    resolve: {
-                        options: function() {
-                            return scope.options;
-                        }
-                    },
-                });
-            };
-
-            $scope.showErrorModal = function(scope, errorResponse) {
-                var modal = $uibModal.open({
-                    templateUrl: errorModalTemplate,
-                    backdrop: 'static',
-                    keyboard: false,
-                    size: 'md',
-                    controller: function($scope, errorResponse, options) {
-                        $scope.options = options;
-                        if (errorResponse && errorResponse.data && errorResponse.data.message) {
-                            $scope.errorMessage = errorResponse.data.message;
-                        }
-                    },
-                    resolve: {
-                        options: function() {
-                            return scope.options;
-                        },
-                        errorResponse: function() {
-                            return errorResponse;
-                        }
-                    },
-                });
-                return modal;
-            };
-
             $scope.deliverReport = function() {
                 $scope.report.resetErrors();
                 $http({
@@ -431,9 +380,9 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                         deliveryOptions: $scope.report.deliveryOptions
                     }
                 }).then(function() {
-                    $scope.showSuccessModal($scope);
+                    $scope.deliverySuccess = true;
                 }, function(response) {
-                    handleReportError(response, $scope.report, (response) => $scope.showErrorModal($scope, response));
+                    handleReportError(response, $scope.report, (response) => $scope.setGlobalError(response));
                 })
             };
 
@@ -450,13 +399,15 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                         cronExpression: $scope.report.scheduleOptions.getCronExpression(),
                     }
                 }).then(function(response) {
-                    $scope.showSuccessModal($scope);
+                    $scope.scheduleSuccess = true;
                 }, function(response) {
-                    handleReportError(response, $scope.report, (response) => $scope.showErrorModal($scope, response));
+                    handleReportError(response, $scope.report, (response) => $scope.setGlobalError(response));
                 })
             };
 
             $scope.execute = function() {
+                $scope.deliverySuccess = false;
+                $scope.scheduleSuccess = false;
                 if ($scope.meta.online && !$scope.options.deliverReport && !$scope.options.scheduleReport) {
                     $scope.runReport();
                 }
