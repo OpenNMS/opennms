@@ -3,11 +3,13 @@ import ReportDetails from './ReportDetails';
 
 const angular = require('vendor/angular-js');
 require('../../lib/onms-http');
+require('../../lib/onms-pagination');
 require('../../lib/onms-datetimepicker');
 require('../../lib/onms-schedule-editor');
 require('angular-ui-router');
 require('angular-bootstrap-confirm');
 
+const elementList = require('../onms-elementList/lib/elementList');
 const indexTemplate  = require('./index.html');
 const templatesTemplate  = require('./templates.html');
 const persistedtTemplate  = require('./persisted.html');
@@ -33,7 +35,8 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
             'mwl.confirm',
             'onms.http',
             'onms.datetimepicker',
-            'onms.schedule.editor'
+            'onms.schedule.editor',
+            'onms.pagination'
         ])
         .config( ['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
@@ -433,9 +436,17 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
         }])
         .controller('ReportSchedulesController', ['$scope', '$uibModal', 'ReportScheduleResource', function($scope, $uibModal, ReportScheduleResource) {
             $scope.scheduledReports = [];
+            $scope.pagination = { page: 1, limit: 20, totalItems : 0, offset: 0 };
+
             $scope.refresh = function() {
-                ReportScheduleResource.list(function(data) {
+                const parameters = $scope.pagination || {};
+                ReportScheduleResource.list({
+                    limit: parameters.limit || 20,
+                    offset: (parameters.page -1) * parameters.limit || 0,
+                }, function(data, headers) {
                     $scope.scheduledReports = data;
+                    const contentRange = elementList.parseContentRange(headers('Content-Range'));
+                    $scope.pagination.totalItems = contentRange.total;
                 }, function(response) {
                     $scope.handleGlobalError(response);
                 });
@@ -547,9 +558,17 @@ const confirmTopoverTemplate = require('../onms-classifications/views/modals/pop
         }])
         .controller('ReportStorageController', ['$scope', '$http', '$window', '$stateParams', 'ReportStorageResource', function($scope, $http, $window, $stateParams, ReportStorageResource) {
             $scope.persistedReports = [];
+            $scope.pagination = { page: 1, limit: 20, totalItems : 0, offset: 0 };
+
             $scope.refresh = function() {
-                ReportStorageResource.list(function(data) {
+                const parameters = $scope.pagination || {};
+                ReportStorageResource.list({
+                    limit: parameters.limit || 20,
+                    offset: (parameters.page -1) * parameters.limit || 0,
+                }, function(data, headers) {
                     $scope.persistedReports = data;
+                    const contentRange = elementList.parseContentRange(headers('Content-Range'));
+                    $scope.pagination.totalItems = contentRange.total;
                 }, function(response) {
                     $scope.handleGlobalError(response);
                 });

@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -75,6 +76,9 @@ import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.model.DatabaseReportDescription;
 import org.opennms.web.svclayer.model.ReportRepositoryDescription;
 import org.opennms.web.svclayer.model.TriggerDescription;
+import org.opennms.web.utils.QueryParameters;
+import org.opennms.web.utils.QueryParametersBuilder;
+import org.opennms.web.utils.ResponseUtils;
 
 import com.google.common.base.Strings;
 
@@ -203,11 +207,13 @@ public class ReportRestServiceImpl implements ReportRestService {
     }
 
     @Override
-    public Response listPersistedReports() {
-        final List<ReportCatalogEntry> persistedReports = reportStoreService.getAll();
+    public Response listPersistedReports(UriInfo uriInfo) {
+        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
+        final List<ReportCatalogEntry> persistedReports = reportStoreService.getPage(queryParameters.getOffset(), queryParameters.getLimit());
         if (persistedReports.isEmpty()) {
             return Response.noContent().build();
         }
+
         final Map<String, Object> formatMap = reportStoreService.getFormatMap();
         final JSONArray jsonArray = new JSONArray();
         for (ReportCatalogEntry eachEntry : persistedReports) {
@@ -218,7 +224,11 @@ public class ReportRestServiceImpl implements ReportRestService {
             }
             jsonArray.put(jsonObject);
         }
-        return Response.ok().entity(jsonArray.toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
+        return Response.ok()
+                .header("Content-Range", ResponseUtils.getContentRange(jsonArray.length(), queryParameters.getOffset(), reportStoreService.countAll()))
+                .entity(jsonArray.toString())
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build();
     }
 
     @Override
@@ -239,16 +249,23 @@ public class ReportRestServiceImpl implements ReportRestService {
     }
 
     @Override
-    public Response listScheduledReports() {
+    public Response listScheduledReports(UriInfo uriInfo) {
         final List<TriggerDescription> triggerDescriptions = schedulerService.getTriggerDescriptions();
         if (triggerDescriptions.isEmpty()) {
             return Response.noContent().build();
         }
+        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
+        final List<TriggerDescription> triggerDescriptionsForPage = queryParameters.getPage().apply(triggerDescriptions);
+
         final JSONArray scheduledReports = new JSONArray();
-        for (TriggerDescription eachDescription : triggerDescriptions) {
+        for (TriggerDescription eachDescription : triggerDescriptionsForPage) {
             scheduledReports.put(new JSONObject(eachDescription));
         }
-        return Response.ok().entity(scheduledReports.toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
+        return Response.ok()
+                .header("Content-Range", ResponseUtils.getContentRange(scheduledReports.length(), queryParameters.getOffset(), triggerDescriptions.size()))
+                .entity(scheduledReports.toString())
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build();
     }
 
     @Override
