@@ -269,7 +269,13 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response saveGroup(GroupDTO groupDTO) {
         final Group group = convert(groupDTO);
         group.setId(null);
-
+        if(classificationService.countMatchingGroups(new CriteriaBuilder(Group.class)
+                .eq("name", group.getName()).toCriteria()) > 0){
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(String.format("{ context: 'name', message: 'A group with name \"%s\" already exists' }", group.getName()))
+                            .build();
+        }
         final int groupId = classificationService.saveGroup(group);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
         final URI uri = builder.path(ClassificationRestService.class, "getGroup").build(groupId);
