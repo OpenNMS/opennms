@@ -74,9 +74,10 @@
                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
                    class="form-control"
                    type="text"
+                   ng-pattern="/^-?[0-9]*$/"
                    ng-model="parameter.value"
                    required />
-            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a value.</div>
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide an integer value.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
         <!-- FLOAT -->
@@ -86,10 +87,10 @@
                    name="{{parameter.name}}"
                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
                    class="form-control"
-                   type="text"
+                   type="number"
                    ng-model="parameter.value"
                    required/>
-            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a value.</div>
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a decimal number.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
         <!-- DOUBLE -->
@@ -99,10 +100,10 @@
                    name="{{parameter.name}}"
                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
                    class="form-control"
-                   type="text"
+                   type="number"
                    ng-model="parameter.value"
                    required/>
-            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a value.</div>
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a decimal number.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
         <!-- DATE -->
@@ -113,7 +114,8 @@
                        name="{{parameter.name}}Count"
                        ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Count'].$invalid || report.errors[parameter.name + 'Count'] }"
                        class="form-control"
-                       min="0" max="31"
+                       min="0" max="31" step="1"
+                       ng-pattern="/^[0-9]*$/"
                        ng-model="parameter.count"
                        placeholder="count"
                        required/>
@@ -128,6 +130,7 @@
                        ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Hours'].$invalid || report.errors[parameter.name + 'Hours'] }"
                        class="form-control"
                        min="0" max="23" step="1"
+                       ng-pattern="/^[0-9]*$/"
                        ng-model="parameter.hours"
                        placeholder="hours"
                        required />
@@ -135,7 +138,8 @@
                        name="{{parameter.name}}Minutes"
                        ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Minutes'].$invalid || report.errors[parameter.name + 'Minutes'] }"
                        class="form-control"
-                       min="0" max="59"
+                       min="0" max="59" step="1"
+                       ng-pattern="/^[0-9]*$/"
                        ng-model="parameter.minutes"
                        placeholder="minutes"
                        required />
