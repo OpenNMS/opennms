@@ -137,10 +137,8 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
                 result: undefined
             };
             $scope.error = {};
-            // TODO MVR apply default value: 30 seconds
-            $scope.defaultReadTimeout = "undefined";
-            // TODO MVR apply default value: 30 seconds
-            $scope.defaultConnectTimeout = "undefined";
+            $scope.defaultReadTimeout = 30;
+            $scope.defaultConnectTimeout = 30;
 
             var handleErrorResponse = function(response) {
                 if (response.status === 400 && response.data) {

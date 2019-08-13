@@ -87,6 +87,13 @@ public class RrdDashlet extends AbstractDashlet {
                 {
                     m_verticalLayout.setCaption(getName());
                     m_verticalLayout.setSizeFull();
+                    injectWallboardStyles();
+                }
+
+                private void injectWallboardStyles() {
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100% }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
                 }
 
                 @Override
@@ -148,10 +155,6 @@ public class RrdDashlet extends AbstractDashlet {
 
                     int i = 0;
 
-                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100% }");
-                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    ui.getPage().getStyles().add(".margin { margin:5px; }");
-
                     Accordion accordion = new Accordion();
                     accordion.setSizeFull();
 
@@ -194,6 +197,16 @@ public class RrdDashlet extends AbstractDashlet {
                     m_gridLayout.setSizeFull();
                     m_gridLayout.setColumns(1);
                     m_gridLayout.setRows(1);
+                    injectWallboardStyles();
+                }
+
+                /**
+                 * Injects CSS styles in the current page
+                 */
+                private void injectWallboardStyles() {
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100%; }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
                 }
 
                 @Override
@@ -260,10 +273,6 @@ public class RrdDashlet extends AbstractDashlet {
                     m_gridLayout.setRows(rows);
 
                     int i = 0;
-
-                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100%; }");
-                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    ui.getPage().getStyles().add(".margin { margin:5px; }");
 
                     /**
                      * adding the components

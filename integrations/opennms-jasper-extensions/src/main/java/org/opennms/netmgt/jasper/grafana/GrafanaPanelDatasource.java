@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.jasper.grafana;
 
+import static org.opennms.netmgt.jasper.grafana.ExceptionToPngRenderer.renderExceptionToPng;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -102,7 +104,7 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
     }
 
     @Override
-    public Object getFieldValue(JRField jrField) throws JRException {
+    public Object getFieldValue(JRField jrField) {
         final String fieldName = jrField.getName();
         if (Objects.equals(WIDTH_FIELD_NAME, fieldName)) {
             return query.getWidth();
@@ -117,14 +119,16 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
         } else if (Objects.equals(IMAGE_FIELD_NAME, fieldName)) {
             try {
                 maybeRenderPanels();
-                LOG.debug("Waiting for panel with id: {} on dashboard with uid: {} to finish rendering.", currentPanel.getId(), dashboard.getUid());
+                LOG.debug("Waiting for panel with id: {} on dashboard with uid: {} to finish rendering.",
+                        currentPanel.getId(), dashboard.getUid());
                 final byte[] pngBytes = panelRenders.get(currentPanel).get(5, TimeUnit.MINUTES);
-                LOG.debug("PNG successfully rendered ({} bytes) for panel with id: {} on dashboard with uid: {}", pngBytes.length, currentPanel.getId(), dashboard.getUid());
+                LOG.debug("PNG successfully rendered ({} bytes) for panel with id: {} on dashboard with uid: {}",
+                        pngBytes.length, currentPanel.getId(), dashboard.getUid());
                 return pngBytes;
             } catch (TimeoutException|InterruptedException|ExecutionException e) {
-                // TODO: We should render the exception details to an image for inclusion in the report rather
-                // than aborting the report altogether. See NMS-12170.
-                throw new JRException("Exception while rendering panel: " + currentPanel.getTitle(), e);
+                LOG.warn("Exception while rendering panel with id: {} on dashboard with uid: {}",
+                        currentPanel.getId(), dashboard.getUid(), e);
+                return renderExceptionToPng(e);
             }
         }
         return "<unknown field name: " + fieldName + ">" ;

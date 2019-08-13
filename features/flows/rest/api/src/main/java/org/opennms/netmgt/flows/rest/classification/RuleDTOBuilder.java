@@ -71,6 +71,11 @@ public class RuleDTOBuilder {
         return this;
     }
 
+    public RuleDTOBuilder withPosition(int position) {
+        this.ruleDTO.setPosition(position);
+        return this;
+    }
+
     public RuleDTO build() {
         return ruleDTO;
     }

@@ -238,7 +238,7 @@ fi
 
 # Generate an SSH key if necessary
 if [ ! -f "${ROOT_INST}/etc/host.key" ]; then
-    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
+    /usr/bin/ssh-keygen -m PEM -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
     chown minion:minion "${ROOT_INST}/etc/"host.key*
 fi
 

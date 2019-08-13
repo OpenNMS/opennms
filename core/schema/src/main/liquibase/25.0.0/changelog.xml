@@ -45,5 +45,30 @@
     </rollback>
   </changeSet>
 
+    <changeSet author="mbrooks" id="25.0.0-kvstore_jsonb">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kvstore_jsonb"/>
+            </not>
+        </preConditions>
+        <createTable tableName="kvstore_jsonb">
+            <column name="key" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="context" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="value" type="jsonb">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="kvstore_jsonb" constraintName="pk_kvstore_jsonb" columnNames="key,context"/>
+    </changeSet>
 
 </databaseChangeLog>

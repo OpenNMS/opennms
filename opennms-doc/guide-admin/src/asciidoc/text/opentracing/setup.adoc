@@ -1,7 +1,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-[[ga-opentracing-setup]]
+[[ga-opentracing]]
 
 === Introduction
 

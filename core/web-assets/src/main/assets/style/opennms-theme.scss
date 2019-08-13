@@ -149,6 +149,10 @@ Bootstrap Theme Specific Stylesheet
 
 /* =14.0 Tables
 ----------------------------------------------- */
+// for dragging by ui-sortable:
+.ui-sortable-helper {
+  cursor: move;
+}
 
 
 /* =15.0 Miscellaneous and Workarounds

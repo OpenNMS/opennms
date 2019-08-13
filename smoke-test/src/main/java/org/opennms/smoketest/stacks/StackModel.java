@@ -51,7 +51,8 @@ public class StackModel {
     private final boolean telemetryProcessingEnabled;
     private final IpcStrategy ipcStrategy;
     private final TimeSeriesStrategy timeSeriesStrategy;
-    private final KeyValueStoreStrategy keyValueStoreStrategy;
+    private final BlobStoreStrategy blobStoreStrategy;
+    private final JSONStoreStrategy jsonStoreStrategy;
 
     private StackModel(Builder builder) {
         // Profiles
@@ -66,7 +67,8 @@ public class StackModel {
         // Enums
         ipcStrategy = builder.ipcStrategy;
         timeSeriesStrategy = builder.timeSeriesStrategy;
-        keyValueStoreStrategy = builder.keyValueStoreStrategy;
+        blobStoreStrategy = builder.blobStoreStrategy;
+        jsonStoreStrategy = builder.jsonStoreStrategy;
     }
 
     public static Builder newBuilder() {
@@ -83,7 +85,8 @@ public class StackModel {
         private IpcStrategy ipcStrategy = IpcStrategy.JMS;
         private TimeSeriesStrategy timeSeriesStrategy = TimeSeriesStrategy.RRD;
         
-        private KeyValueStoreStrategy keyValueStoreStrategy = KeyValueStoreStrategy.NOOP;
+        private BlobStoreStrategy blobStoreStrategy = BlobStoreStrategy.NOOP;
+        private JSONStoreStrategy jsonStoreStrategy;
 
         /**
          * Profile for the OpenNMS container.
@@ -187,12 +190,22 @@ public class StackModel {
         }
 
         /**
-         * Choose the key value store to use.
+         * Choose the key value store to use for blobs.
          *
          * @return this builder
          */
-        public Builder withKeyValueStoreStrategy(KeyValueStoreStrategy keyValueStoreStrategy) {
-            this.keyValueStoreStrategy = keyValueStoreStrategy;
+        public Builder withBlobStoreStrategy(BlobStoreStrategy blobStoreStrategy) {
+            this.blobStoreStrategy = blobStoreStrategy;
+            return this;
+        }
+
+        /**
+         * Choose the key value store to use for JSON documents.
+         *
+         * @return this builder
+         */
+        public Builder withJSONStoreStrategy(JSONStoreStrategy jsonStoreStrategy) {
+            this.jsonStoreStrategy = jsonStoreStrategy;
             return this;
         }
 
@@ -243,7 +256,11 @@ public class StackModel {
         return timeSeriesStrategy;
     }
 
-    public KeyValueStoreStrategy getKeyValueStoreStrategy() {
-        return keyValueStoreStrategy;
+    public BlobStoreStrategy getBlobStoreStrategy() {
+        return blobStoreStrategy;
+    }
+
+    public JSONStoreStrategy getJsonStoreStrategy() {
+        return jsonStoreStrategy;
     }
 }

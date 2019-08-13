@@ -1,5 +1,5 @@
 <div class="mx-2 my-2">
-    <div class="">
+    <div class="mb-4">
         <button class="btn btn-secondary" id="action.refresh" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
         <button class="btn btn-secondary"
                 ng-if="userInfo.isReportDesigner() || userInfo.isAdmin() && persistedReports.length > 0"
@@ -16,11 +16,11 @@
             <i class="fa fa-trash"></i>
         </button>
     </div>
-    <div ng-if="persistedReports.length == 0" class="mt-4">
+    <div ng-if="persistedReports.length == 0">
         <span>No Data available</span>
     </div>
-    <div ng-if="persistedReports.length > 0" class="mt-4">
-        <table class="table table-sm table-striped">
+    <pagination model="pagination" ng-if="persistedReports.length > 0" position="bottom" on-change="refresh">
+        <table class="table table-sm table-striped mb-2">
             <thead>
             <tr>
                 <th ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">Action</th>
@@ -48,8 +48,5 @@
             </tr>
             </tbody>
         </table>
-        <div class="mt-2">
-            <span class="text-muted">{{persistedReports.length}} persisted Report(s)</span>
-        </div>
-    </div>
+    </pagination>
 </div>

@@ -87,6 +87,7 @@ drop table hwentity cascade;
 drop table hwentityattribute cascade;
 drop table hwentityattributetype cascade;
 drop table user_defined_links cascade;
+drop table kvstore_jsonb cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -2748,3 +2749,15 @@ ALTER TABLE endpoints_grafana ADD CONSTRAINT endpoints_grafana_unique_uid UNIQUE
 --#          sequence, column, table
 --# install: endpointsnxtid id endponts_grafana
 create sequence endpointsnxtid minvalue 1;
+
+--##################################################################
+--# Key Value Stores
+--##################################################################
+CREATE TABLE kvstore_jsonb (
+    key text NOT NULL,
+    context text NOT NULL,
+    last_updated timestamp NOT NULL,
+    expires_at timestamp,
+    value jsonb NOT NULL,
+    CONSTRAINT pk_kvstore_jsonb PRIMARY KEY (key, context)
+);

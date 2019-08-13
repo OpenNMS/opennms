@@ -1501,17 +1501,24 @@
         -->
     </feature>
 
-    <feature name="opennms-kvstore-api" description="OpenNMS :: Features :: Distributed :: Key Value Store :: API" version="${project.version}">
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+    <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.shell/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-kvstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Shell" version="${project.version}">
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.shell/${project.version}</bundle>
-    </feature>
     <feature name="opennms-kvstore-noop"
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: No-Op" version="${project.version}">
         <feature>opennms-kvstore-shell</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.no-op/${project.version}</bundle>
+    </feature>
+    
+    <feature name="opennms-blobstore-noop"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: No-Op" version="${project.version}">
+        <feature>opennms-blobstore-shell</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.no-op/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-jsonstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: JSON :: Shell" version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.shell/${project.version}</bundle>
     </feature>
 
 </features>
