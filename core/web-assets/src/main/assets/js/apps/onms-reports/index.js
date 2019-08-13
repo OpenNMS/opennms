@@ -175,7 +175,10 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                         endpoint: undefined,
                         dashboard: undefined
                     };
-                    scope.onInvalidChange = scope.onInvalidChange || function() { return function() {} };
+                    scope.onInvalidChange = scope.onInvalidChange || function(invalidState) {};
+                    scope.onDateParamStateChange = function(invalidState) {
+                        scope.onInvalidChange({invalidState: invalidState});
+                    };
 
                     scope.endpointChanged = function () {
                         scope.dashboards = [];
@@ -247,7 +250,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
                     scope.$watch('reportForm.$invalid', function(newVal, oldVal) {
                         if (scope.onInvalidChange) {
-                            scope.onInvalidChange()(newVal);
+                            scope.onInvalidChange({invalidState: newVal});
                         }
                     });
                 }
