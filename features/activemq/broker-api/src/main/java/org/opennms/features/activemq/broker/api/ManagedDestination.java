@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.rpc.api;
+package org.opennms.features.activemq.broker.api;
 
-/**
- * Thrown when the requested cannot be executed.
- *
- * This can occur when the the client is in the process of shutting down or
- * if the broker is unable to accept the requests.
- *
- * @author jesse
- */
-public class RequestRejectedException extends Exception {
+public interface ManagedDestination {
 
-    private static final long serialVersionUID = -1152277169594951011L;
+    String getName();
 
-    public RequestRejectedException(Throwable cause) {
-        super(cause);
-    }
+    boolean isQueue();
+
+    boolean isTopic();
+
+    boolean isTemporary();
+
+    long getMessageCount();
+
+    long getEnqueueCount();
+
+    long getDequeueCount();
+
+    boolean isCursorFull();
+
+    void purge() throws Exception;
+
 }
