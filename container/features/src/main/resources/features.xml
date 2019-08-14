@@ -687,6 +687,7 @@
     </feature>
     <feature name="opennms-snmp-commands" version="${project.version}" description="OpenNMS :: Core :: SNMP :: Commands">
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.profile-mapper/${project.version}</bundle>
     </feature>
     <feature name="opennms-icmp-commands" version="${project.version}" description="OpenNMS :: Core :: ICMP :: Commands">
         <feature>opennms-icmp-api</feature>

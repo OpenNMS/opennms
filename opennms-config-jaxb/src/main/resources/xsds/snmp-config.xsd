@@ -288,7 +288,7 @@
                 <documentation>A unique label to identify Snmp profile</documentation>
               </annotation>
             </element>
-            <element maxOccurs="1" minOccurs="0" type="string" name="filter-expression">
+            <element maxOccurs="1" minOccurs="0" type="string" name="filter">
               <annotation>
                 <documentation>expression that can be used to filter SNMP profiles
                   for a given IP address/Hostname.</documentation>

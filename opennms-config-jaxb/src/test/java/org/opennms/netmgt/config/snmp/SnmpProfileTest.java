@@ -84,7 +84,7 @@ public class SnmpProfileTest extends XmlTestNoCastor<SnmpProfile> {
                         + "  privacy-protocol=\"DES\" "
                         + "  enterprise-id=\"enterpriseId\">"
                         + "  <label>profile-1</label>"
-                        + "  <filter-expression>nodeLabel LIKE 'Minion%'</filter-expression>"
+                        + "  <filter>nodeLabel LIKE 'Minion%'</filter>"
                         + "</profile>\n",
                 "target/classes/xsds/snmp-config.xsd"}});
     }

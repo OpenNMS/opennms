@@ -29,7 +29,6 @@
 package org.opennms.core.snmp.profile.mapper;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -37,17 +36,12 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.opennms.core.snmp.profile.mapper.mapper.SnmpProfileMapperImpl;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
-import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 public class SnmpProfileMapperTest {
@@ -62,7 +56,7 @@ public class SnmpProfileMapperTest {
         SnmpPeerFactory snmpPeerFactory = SnmpPeerFactory.getInstance();
         assertNotNull(snmpPeerFactory.getSnmpConfig());
         List<SnmpProfile> profiles = snmpPeerFactory.getProfiles();
-        assertEquals(profiles.size(), 3);
+        assertEquals(4, profiles.size());
         SnmpAgentConfig agentConfig = snmpPeerFactory.getAgentConfigFromProfile(profiles.get(0),
                 InetAddressUtils.getInetAddress("10.0.1.12"));
         // Check that it picks up config from profile.
@@ -74,7 +68,7 @@ public class SnmpProfileMapperTest {
         assertEquals(161, agentConfig.getPort());
         assertEquals(3, agentConfig.getRetries());
         assertEquals(3000, agentConfig.getTimeout());
-        assertEquals(30000L, agentConfig.getTTL().longValue());
+        assertEquals(3000L, agentConfig.getTTL().longValue());
         assertEquals("private", agentConfig.getWriteCommunity());
         // Check that it picks up config from defaults.
         assertEquals("MD5", agentConfig.getAuthProtocol());
@@ -88,7 +82,7 @@ public class SnmpProfileMapperTest {
         assertEquals(10, agentConfig.getMaxVarsPerPdu());
         assertEquals(65535, agentConfig.getMaxRequestSize());
 
-        snmpPeerFactory.saveAgentConfigAsDefinition(agentConfig, "Default");
+        snmpPeerFactory.saveAgentConfigAsDefinition(agentConfig, "Default", "test");
         List<Definition> definitionList = snmpPeerFactory.getSnmpConfig().getDefinitions();
         Optional<Definition> result = definitionList.stream().filter(def -> def.getSpecifics().contains("10.0.1.16")).findFirst();
         assertTrue(result.isPresent());
@@ -98,64 +92,4 @@ public class SnmpProfileMapperTest {
 
     }
 
-    // This tests profile mapper get and save calls.
-    @Test
-    public void testGetAgentConfigFromMapper() throws InterruptedException {
-
-        URL url = getClass().getResource("/snmp-config.xml");
-        assertNotNull(url);
-        SnmpPeerFactory.setFile(new File(url.getFile()));
-        SnmpPeerFactory snmpPeerFactory = SnmpPeerFactory.getInstance();
-        assertNotNull(snmpPeerFactory.getSnmpConfig());
-        FilterDao filterDao = Mockito.mock(FilterDao.class);
-        SortedMap<Integer, String> nodeMap = new TreeMap<>();
-        nodeMap.put(124, "node1");
-        nodeMap.put(358, "node2");
-        Mockito.when(filterDao.isRuleMatching(Mockito.anyString())).thenReturn(true);
-        Mockito.when(filterDao.getNodeMap(Mockito.contains("power"))).thenReturn(nodeMap);
-        SnmpProfileMapperImpl  profileMapper = new SnmpProfileMapperImpl();
-        profileMapper.setAgentConfigFactory(snmpPeerFactory);
-        profileMapper.setFilterDao(filterDao);
-
-        // Should match profile that has no filter-expression and one match
-        List<SnmpAgentConfig> agentConfigList = profileMapper.getAgentConfigs(InetAddressUtils
-                .getInetAddress("10.0.1.15"));
-        assertEquals(2, agentConfigList.size());
-
-        // Should match profile that has no filter-expression and one match
-        Mockito.when(filterDao.getNodeMap(Mockito.contains("Minion"))).thenReturn(nodeMap);
-        agentConfigList = profileMapper.getAgentConfigs(InetAddressUtils
-                .getInetAddress("10.0.1.15"));
-        assertEquals(2, agentConfigList.size());
-        // No filtering needed, just return the default profile
-        Mockito.when(filterDao.getNodeMap(Mockito.anyString())).thenReturn(new TreeMap<>());
-        agentConfigList = profileMapper.getAgentConfigs(InetAddressUtils
-                .getInetAddress("10.0.1.15"));
-        // There is always a default one without filter expression.
-        assertEquals(1, agentConfigList.size());
-        // Get the default one.
-        SnmpAgentConfig agentConfig = agentConfigList.get(0);
-        assertEquals(false, agentConfig.isDefault());
-        assertEquals(agentConfig.getSecurityName(), "opennmsUser");
-        assertEquals(agentConfig.getReadCommunity(), "power3");
-        // Definitions shouldn't be updated with the profile config.
-        List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
-        Optional<Definition> result = definitions.stream().filter(def -> def.getSpecifics().contains("10.0.1.15")).findFirst();
-        assertFalse(result.isPresent());
-
-        // Update definition and verify config.
-        profileMapper.updateDefinition(agentConfig, "Minion");
-        definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
-        result = definitions.stream().filter(def -> def.getSpecifics().contains("10.0.1.15")).findFirst();
-        assertTrue(result.isPresent());
-        Definition definition = result.get();
-        System.out.println(definition);
-        assertEquals("power3", definition.getReadCommunity());
-        assertEquals("Minion", definition.getLocation());
-
-    }
-
-    public void testSnmpProfileWithSnmpWalk() {
-
-    }
 }

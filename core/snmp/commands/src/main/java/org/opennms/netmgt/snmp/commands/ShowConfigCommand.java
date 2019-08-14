@@ -40,7 +40,7 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
-@Command(scope = "snmp", name = "show-config", description = "Display the effective SNMP agent configuration.")
+@Command(scope = "opennms-snmp", name = "show-config", description = "Display the effective SNMP agent configuration.")
 @Service
 public class ShowConfigCommand implements Action {
 

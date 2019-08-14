@@ -61,14 +61,23 @@ public interface SnmpAgentConfigFactory {
     void saveDefinition(Definition definition);
 
     /**
-     * Create definition and merge this definition into currentConfig.
-     * @param snmpAgentConfig agentConfig that might have succeeded in snmp walk/get.
-     * @param location
+     * Remove an address from the definitions
+     * @param ipAddress ipAddress that needs to be removed from definition
+     * @param location  location at which this ipaddress belongs.
+     * @param module
      */
-    void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location);
+    boolean removeFromDefinition(InetAddress ipAddress, String location, String module);
 
     /**
-     * Get all the profiles from snmp config.
+     * Create definition and merge this definition into currentConfig.
+     * @param snmpAgentConfig agentConfig that might have succeeded in snmp walk/get.
+     * @param location the location that this agent config belongs.
+     * @param module
+     */
+    void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module);
+
+    /**
+     * Get all the Snmp profiles from snmp config.
      * @return a List of snmp profiles.
      */
     List<SnmpProfile> getProfiles();

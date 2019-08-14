@@ -29,13 +29,35 @@
 package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
-import java.util.List;
+import java.util.Optional;
 
 public interface SnmpProfileMapper {
 
-    List<SnmpAgentConfig> getAgentConfigs(InetAddress inetAddress);
+    /**
+     * Get @{@link SnmpAgentConfig} from Snmp profiles.
+     * @param inetAddress IpAddress for which agent config need to be retrieved.
+     * @param location    location of IpAddress.
+     * @param oid         OID with which Snmp get needs to be performed.
+     * @return  snmpAgentConfig, a @{@link SnmpAgentConfig} if ipaddress matches the profile.
+     */
+    Optional<SnmpAgentConfig> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid);
 
-    void updateDefinition(SnmpAgentConfig snmpAgentConfig, String location);
+    /**
+     *  Get @{@link SnmpAgentConfig} from Snmp profiles.
+     * @param inetAddress IpAddress for which agent config need to be retrieved.
+     * @param location    location of IpAddress
+     * @return  snmpAgentConfig, a @{@link SnmpAgentConfig} if ipaddress matches the profile.
+     */
+    Optional<SnmpAgentConfig> getAgentConfigFromProfiles(InetAddress inetAddress, String location);
 
-    void deleteFromDefinition(InetAddress inetAddress);
+    /**
+     * Fit a profile with specified IpAddress.
+     * @param profileLabel  label of profile with which Snmp profile will be retrieved
+     * @param inetAddress   IpAddress that needs fitting
+     * @param location      location of IpAddress
+     * @param oid           OID with which Snmp get needs to be performed
+     * @return snmpAgentConfig, a @{@link SnmpAgentConfig} if ipaddress matches the profile.
+     */
+    Optional<SnmpAgentConfig> fitProfile(String profileLabel, InetAddress inetAddress, String location, String oid);
+
 }

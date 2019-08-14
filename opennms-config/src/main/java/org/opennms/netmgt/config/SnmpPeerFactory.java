@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.config;
 
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -355,10 +358,17 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         definition.setMaxRepetitions(snmpAgentConfig.getMaxRepetitions());
         definition.setTTL(snmpAgentConfig.getTTL());
         if (snmpAgentConfig.getProxyFor() != null) {
-            definition.setProxyHost(snmpAgentConfig.getProxyFor().getHostAddress());
+            definition.addSpecific(snmpAgentConfig.getProxyFor().getHostAddress());
+            definition.setProxyHost(snmpAgentConfig.getAddress().getHostAddress());
+        } else {
+            definition.addSpecific(snmpAgentConfig.getAddress().getHostAddress());
         }
-        definition.setSecurityLevel(snmpAgentConfig.getSecurityLevel());
-        definition.setSecurityName(snmpAgentConfig.getSecurityName());
+        if (DEFAULT_SECURITY_LEVEL != snmpAgentConfig.getSecurityLevel()) {
+            definition.setSecurityLevel(snmpAgentConfig.getSecurityLevel());
+        }
+        if (!DEFAULT_SECURITY_NAME.equals(snmpAgentConfig.getSecurityName())) {
+            definition.setSecurityName(snmpAgentConfig.getSecurityName());
+        }
         definition.setAuthProtocol(snmpAgentConfig.getAuthProtocol());
         definition.setAuthPassphrase(snmpAgentConfig.getAuthPassPhrase());
         definition.setPrivacyPassphrase(snmpAgentConfig.getPrivPassPhrase());
@@ -432,15 +442,46 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     @Override
-    public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location) {
+    public boolean removeFromDefinition(InetAddress inetAddress, String location, String module) {
+        boolean succeeded = false;
+        getWriteLock().lock();
+        try {
+            Definition definition = new Definition();
+            definition.setLocation(location);
+            SnmpAgentConfig agentConfig = getAgentConfig(inetAddress, location);
+            setDefinitionFromAgentConfig(definition, agentConfig);
+            final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
+            succeeded = mgr.removeDefinition(definition);
+        } finally {
+            getWriteLock().unlock();
+        }
+        if(succeeded) {
+            try {
+                saveCurrent();
+                LOG.info("Removed {} at location {} from definitions by module {}", inetAddress.getHostAddress(), location, module);
+            } catch (IOException e) {
+                // This never should happen, we currently don't support rollback of configuration.
+                LOG.error("Exception while saving current config", e);
+            }
+        }
+        return succeeded;
+    }
+
+    @Override
+    public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
         Definition definition = new Definition();
         //agent config always have one ip-address.
-        List<String> specificIpAddresses = new ArrayList<>();
-        specificIpAddresses.add(snmpAgentConfig.getAddress().getHostAddress());
-        definition.setSpecifics(specificIpAddresses);
+        String ipAddress = snmpAgentConfig.getAddress().getHostAddress();
         definition.setLocation(location);
         setDefinitionFromAgentConfig(definition, snmpAgentConfig);
         saveDefinition(definition);
+        LOG.info("Definition saved for {} by module {}", ipAddress, module);
+        try {
+            saveCurrent();
+        } catch (IOException e) {
+            // This never should happen, we currently don't support rollback of configuration.
+            LOG.error("Exception while saving current config", e);
+        }
     }
 
 

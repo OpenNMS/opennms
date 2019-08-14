@@ -180,7 +180,12 @@ public class AgentConfigurationResourceTest {
         }
 
         @Override
-        public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location) {
+        public boolean removeFromDefinition(InetAddress ipAddress, String location, String module) {
+            return true;
+        }
+
+        @Override
+        public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
 
         }
 

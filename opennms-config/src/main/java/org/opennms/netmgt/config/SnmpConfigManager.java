@@ -153,6 +153,22 @@ public class SnmpConfigManager {
 
 	}
 
+	public boolean removeDefinition(final Definition definition) {
+		removeDefaults(definition);
+		MergeableDefinition removableDefinition = new MergeableDefinition(definition);
+
+		removeDefinitionsthatDontMatchLocation(definition);
+
+		// Find a matching definition and remove range from that definition
+		MergeableDefinition matchingDef = findMatchingDefinition(removableDefinition);
+		if(matchingDef != null) {
+			matchingDef.removeRanges(removableDefinition);
+			removeEmptyDefinitions();
+			return true;
+		}
+        return false;
+	}
+
     private void removeDefinitionsthatDontMatchLocation(Definition eventToDef) {
 
         for (Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {

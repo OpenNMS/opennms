@@ -29,59 +29,120 @@
 package org.opennms.core.snmp.profile.mapper.mapper;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpProfileMapper;
+import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 public class SnmpProfileMapperImpl implements SnmpProfileMapper {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpProfileMapperImpl.class);
+
     private SnmpAgentConfigFactory agentConfigFactory;
 
     private FilterDao filterDao;
 
+    private LocationAwareSnmpClient locationAwareSnmpClient;
+
+    private static final String SYS_OBJECTID_INSTANCE = ".1.3.6.1.2.1.1.2.0";
 
     @Override
-    public List<SnmpAgentConfig> getAgentConfigs(InetAddress inetAddress) {
-        List<SnmpProfile> snmpProfiles = agentConfigFactory.getProfiles();
-        // Always return profiles that don't have any filter expression defined.
-        List<SnmpProfile> matchedProfiles = snmpProfiles.stream().filter(snmpProfile ->
-                Strings.isNullOrEmpty(snmpProfile.getFilterExpression())).collect(Collectors.toList());
+    public Optional<SnmpAgentConfig> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid) {
 
-        for (SnmpProfile snmpProfile : snmpProfiles) {
-            if (Strings.isNullOrEmpty(snmpProfile.getFilterExpression())) {
-                boolean isRuleValid = filterDao.isRuleMatching(snmpProfile.getFilterExpression());
-                if (isRuleValid) {
-                    List<InetAddress> addressList = filterDao.getIPAddressList(snmpProfile.getFilterExpression());
-                    if (addressList.contains(inetAddress)) {
-                        matchedProfiles.add(snmpProfile);
-                    }
-                }
+        List<SnmpProfile> snmpProfiles = agentConfigFactory.getProfiles();
+        // Get matching profiles for this IpAddress.
+        List<SnmpProfile> matchedProfiles = snmpProfiles.stream()
+                .filter(snmpProfile -> isFilterExpressionValid(inetAddress, snmpProfile.getFilterExpression()))
+                .collect(Collectors.toList());
+
+        for (SnmpProfile snmpProfile : matchedProfiles) {
+
+            Optional<SnmpAgentConfig> config = fitProfile(snmpProfile, inetAddress, location, oid);
+            if (config.isPresent()) {
+                return config;
             }
         }
-        List<SnmpAgentConfig> agentConfigList = new ArrayList<>();
-        matchedProfiles.forEach(snmpProfile -> {
-            SnmpAgentConfig agentConfig = agentConfigFactory.getAgentConfigFromProfile(snmpProfile, inetAddress);
-            agentConfigList.add(agentConfig);
-        });
-        return agentConfigList;
+        return Optional.empty();
+    }
+
+    private Optional<SnmpAgentConfig> fitProfile(SnmpProfile snmpProfile, InetAddress inetAddress, String location, String oid) {
+        //Get agent config from profile.
+        SnmpAgentConfig agentConfig = agentConfigFactory.getAgentConfigFromProfile(snmpProfile, inetAddress);
+        try {
+            if (Strings.isNullOrEmpty(oid)) {
+                oid = SYS_OBJECTID_INSTANCE;
+            }
+            if (Strings.isNullOrEmpty(location)) {
+                location = "Default";
+            }
+            SnmpValue snmpValue = locationAwareSnmpClient.get(agentConfig, oid)
+                    .withLocation(location)
+                    .withDescription("Snmp-Profile:" + snmpProfile.getLabel())
+                    .execute()
+                    .get();
+            if (snmpValue != null && !snmpValue.isError()) {
+                return Optional.of(agentConfig);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("Exception while trying to get sys oid for the profile {}", snmpProfile.getLabel(), e);
+        }
+        return Optional.empty();
+    }
+
+
+    @Override
+    public Optional<SnmpAgentConfig> getAgentConfigFromProfiles(InetAddress inetAddress, String location) {
+        return getAgentConfigFromProfiles(inetAddress, location, SYS_OBJECTID_INSTANCE);
     }
 
     @Override
-    public void updateDefinition(SnmpAgentConfig snmpAgentConfig, String location) {
-        agentConfigFactory.saveAgentConfigAsDefinition(snmpAgentConfig, location);
+    public Optional<SnmpAgentConfig> fitProfile(String profileLabel, InetAddress inetAddress, String location, String oid) {
+
+        Optional<SnmpAgentConfig> agentConfig = Optional.empty();
+        if (Strings.isNullOrEmpty(profileLabel)) {
+            agentConfig = getAgentConfigFromProfiles(inetAddress, location, oid);
+
+        } else {
+            List<SnmpProfile> profiles = agentConfigFactory.getProfiles();
+            Optional<SnmpProfile> matchingProfile = profiles.stream()
+                    .filter(profile -> profile.getLabel().equals(profileLabel))
+                    .findFirst();
+            if (matchingProfile.isPresent()) {
+                agentConfig = fitProfile(matchingProfile.get(), inetAddress, location, oid);
+            }
+        }
+        return agentConfig;
     }
 
-    @Override
-    public void deleteFromDefinition(InetAddress inetAddress) {
+    private boolean isFilterExpressionValid(InetAddress inetAddress, String filterExpression) {
+        // Consider profiles without filter expression or an empty one as matching.
+        if (Strings.isNullOrEmpty(filterExpression)) {
+            return true;
+        } else {
+            try {
+                return filterDao.isValid(inetAddress.getHostAddress(), filterExpression);
+            } catch (FilterParseException e) {
+                LOG.warn("Filter expression '{}' is invalid. ", e);
+            }
+        }
+        return false;
+    }
 
+    public void setLocationAwareSnmpClient(LocationAwareSnmpClient locationAwareSnmpClient) {
+        this.locationAwareSnmpClient = locationAwareSnmpClient;
     }
 
     public SnmpAgentConfigFactory getAgentConfigFactory() {

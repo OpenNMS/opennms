@@ -169,8 +169,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         return isDefault;
     }
 
-    public void setDefault(boolean defaultConfig) {
-        isDefault = defaultConfig;
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
 
     @Override

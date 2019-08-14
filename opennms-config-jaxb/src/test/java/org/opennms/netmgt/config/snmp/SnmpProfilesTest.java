@@ -104,7 +104,7 @@ public class SnmpProfilesTest  extends XmlTestNoCastor<SnmpProfiles> {
                                 + "  privacy-protocol=\"DES\" "
                                 + "  enterprise-id=\"enterpriseId\">"
                                 + " <label>profile1</label>"
-                                + "<filter-expression>*.opennms.com</filter-expression>"
+                                + "<filter>*.opennms.com</filter>"
                             + "</profile>"
                             + "<profile " + "  port=\"18980\" " + "  retry=\"5\" "
                                 + "  timeout=\"300\" "
@@ -126,7 +126,7 @@ public class SnmpProfilesTest  extends XmlTestNoCastor<SnmpProfiles> {
                                 + "  privacy-protocol=\"DES\" "
                                 + "  enterprise-id=\"enterpriseId\">"
                                 + " <label>profile2</label>"
-                                + "<filter-expression>nodeLabel LIKE 'Minion%'</filter-expression>"
+                                + "<filter>nodeLabel LIKE 'Minion%'</filter>"
                             + "</profile>"
                         + "</profiles>\n",
                 "target/classes/xsds/snmp-config.xsd"}});

@@ -11,13 +11,10 @@
 
 	<context:annotation-config />
 
-    <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
-    </bean>
-
-    <bean id="snmpProfileMapper" class="org.opennms.core.snmp.profile.mapper.mapper.SnmpProfileMapperImpl" depends-on="snmpPeerFactory-init">
-      <property name="agentConfigFactory" ref="snmpPeerFactory" />
-      <property name="filterDao" ref="filterDao" />
+    <bean id="snmpProfileMapper" class="org.opennms.core.snmp.profile.mapper.mapper.SnmpProfileMapperImpl">
+      <property name="agentConfigFactory" ref="snmpPeerFactory"/>
+      <property name="filterDao" ref="filterDao"/>
+      <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient"/>
     </bean>
 
     <onmsgi:service interface="org.opennms.netmgt.snmp.SnmpProfileMapper" ref="snmpProfileMapper"/>

@@ -269,7 +269,7 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
                                     + "  privacy-protocol=\"DES\" "
                                     + "  enterprise-id=\"enterpriseId\">"
                                     + " <label>profile1</label>"
-                                    + "<filter-expression>nodeLabel LIKE 'Minion%'</filter-expression>"
+                                    + "<filter>nodeLabel LIKE 'Minion%'</filter>"
                                     + "</profile>"
                                     + "<profile " + "  port=\"18980\" " + "  retry=\"5\" "
                                     + "  timeout=\"300\" "
@@ -291,7 +291,7 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
                                     + "  privacy-protocol=\"DES\" "
                                     + "  enterprise-id=\"enterpriseId\">"
                                     + " <label>profile2</label>"
-                                    + "<filter-expression>nodeLabel LIKE 'Minion%'</filter-expression>"
+                                    + "<filter>nodeLabel LIKE 'Minion%'</filter>"
                                     + "</profile>"
                                 + "</profiles>"
                         + "</snmp-config>\n",

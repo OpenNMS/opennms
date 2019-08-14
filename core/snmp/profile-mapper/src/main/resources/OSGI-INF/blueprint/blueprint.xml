@@ -11,8 +11,19 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <service interface="org.opennms.netmgt.snmp.SnmpProfileMapper" >
-        <bean class="org.opennms.core.snmp.profile.mapper.mapper.SnmpProfileMapperImpl" />
-    </service>
+    <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
+
+    <reference id="snmpAgentConfigFactory" interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" availability="mandatory"/>
+
+    <reference id="locationAwareSnmpClient" interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient" availability="mandatory"/>
+
+
+    <bean id="snmpProfileMapper" class="org.opennms.core.snmp.profile.mapper.mapper.SnmpProfileMapperImpl" >
+        <property name="filterDao" ref="filterDao" />
+        <property name="agentConfigFactory" ref="agentConfigFactory" />
+        <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient" />
+    </bean>
+
+    <service interface="org.opennms.netmgt.snmp.SnmpProfileMapper" ref="snmpProfileMapper" />
 
 </blueprint>

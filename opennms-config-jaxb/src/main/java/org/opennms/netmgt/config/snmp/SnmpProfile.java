@@ -80,7 +80,7 @@ public class SnmpProfile extends Configuration {
     @XmlElement(name="label")
     private String label;
 
-    @XmlElement(name="filter-expression")
+    @XmlElement(name="filter")
     private String filterExpression;
 
 

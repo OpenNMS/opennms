@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<snmp-config retry="3" timeout="3000" ttl="30000" read-community="public"
+<snmp-config retry="3" timeout="3000" ttl="3000" read-community="public"
              write-community="private" port="161" version="v1">
 
   <definition version="v1" read-community="specificv1">
@@ -48,16 +48,19 @@
     <profile version="v3" read-community="power1" security-name="user1"
              auth-passphrase="0p3nNMSv3">
       <label>profile1-v3</label>
-      <filter-expression>nodeLabel LIKE '%chandra%'</filter-expression>
+      <filter>nodeLabel LIKE '%chandra%'</filter>
     </profile>
     <profile version="v2c" read-community="power2" security-name="user2"
              auth-passphrase="0p3nNMSv2"
              privacy-passphrase="Op3nNMS">
       <label>profile1-v2c</label>
-      <filter-expression>nodeLabel LIKE '%power%' AND nodeLocation LIKE '%Minion'</filter-expression>
+      <filter>nodeLabel LIKE '%power%' AND nodeLocation LIKE '%Minion'</filter>
     </profile>
     <profile version="v1" read-community="power3" write-community="write1">
       <label>profile1-v1</label>
+    </profile>
+    <profile version="v1" ttl="5000">
+      <label>profile2</label>
     </profile>
   </profiles>
 
