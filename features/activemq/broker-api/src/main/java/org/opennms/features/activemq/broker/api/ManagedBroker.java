@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.rpc.api;
+package org.opennms.features.activemq.broker.api;
+
+import java.util.List;
 
 /**
- * Thrown when the requested cannot be executed.
+ * A simple interface over our embedded ActiveMQ broker that is used
+ * to expose basic statistics and management functionality to the Karaf shell.
  *
- * This can occur when the the client is in the process of shutting down or
- * if the broker is unable to accept the requests.
- *
- * @author jesse
+ * @author jwhite
  */
-public class RequestRejectedException extends Exception {
+public interface ManagedBroker {
 
-    private static final long serialVersionUID = -1152277169594951011L;
+    int getCurrentConnections();
 
-    public RequestRejectedException(Throwable cause) {
-        super(cause);
-    }
+    int getMemoryPercentUsage();
+
+    long getMemoryUsage();
+
+    long getMemoryLimit();
+
+    List<ManagedDestination> getDestinations();
+
 }
