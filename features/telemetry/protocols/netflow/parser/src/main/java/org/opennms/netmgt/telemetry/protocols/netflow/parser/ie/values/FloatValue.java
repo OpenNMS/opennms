@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
@@ -47,7 +48,11 @@ public class FloatValue extends Value<Double> {
                       final Optional<Semantics> semantics,
                       final double value) {
         super(name, semantics);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public FloatValue(final String name, final double value) {
+        this(name, Optional.empty(), value);
     }
 
     @Override

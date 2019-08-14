@@ -8855,10 +8855,6 @@ Up.&lt;/p></logmsg>
    <event>
       <mask>
          <maskelement>
-            <mename>snmphost</mename>
-            <mevalue>65.171.227.205</mevalue>
-         </maskelement>
-         <maskelement>
             <mename>id</mename>
             <mevalue>.1.3.6.1.4.1.9.9.41.2</mevalue>
          </maskelement>

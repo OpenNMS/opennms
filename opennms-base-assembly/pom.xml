@@ -351,6 +351,10 @@
       <artifactId>opennms-detector-jmx</artifactId>
     </dependency>
     <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-jms</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-lineoriented</artifactId>
     </dependency>
@@ -1029,6 +1033,12 @@
     <dependency>
       <groupId>org.opennms.container.bridge</groupId>
       <artifactId>org.opennms.container.bridge.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- JSON KV Store using Postgres -->
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

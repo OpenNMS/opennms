@@ -90,6 +90,7 @@ include::text/service-assurance/polling-packages.adoc[]
 [[ga-service-monitors]]
 === Service monitors
 include::text/service-assurance/monitors/introduction.adoc[]
+include::text/service-assurance/monitors/ActiveMQMonitor.adoc[]
 include::text/service-assurance/monitors/AvailabilityMonitor.adoc[]
 include::text/service-assurance/monitors/BgpSessionMonitor.adoc[]
 include::text/service-assurance/monitors/BSFMonitor.adoc[]
@@ -302,6 +303,7 @@ include::text/operation/daemon-config-files/trapd.adoc[]
 [[ga-opennms-system-properties]]
 == System Properties
 include::text/system-properties/introduction.adoc[]
+include::text/system-properties/system-proxies.adoc[]
 
 [[ga-ticketing]]
 == Ticketing
@@ -341,6 +343,11 @@ include::text/workarounds/snmp.adoc[]
 [[ga-ifttt]]
 == IFTTT Integration
 include::text/ifttt/ifttt-integration.adoc[]
+
+
+[[ga-dnsresolver]]
+== DNS Resolver
+include::text/dnsresolver/introduction.adoc[]
 
 [[ga-telemetryd]]
 == Telemetry Daemon

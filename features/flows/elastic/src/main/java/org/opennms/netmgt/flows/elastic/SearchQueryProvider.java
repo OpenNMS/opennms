@@ -208,4 +208,18 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("snmpInterfaceId", snmpInterfaceIdFilter.getSnmpInterfaceId())
                 .build());
     }
+
+    public String getHostnameByConversationQuery(final String convoKey, final List<Filter> filters) {
+        return render("hostname_by_convo.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("convoKey", convoKey)
+                .build());
+    }
+
+    public String getHostnameByHostQuery(final String host, final List<Filter> filters) {
+        return render("hostname_by_host.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("host", host)
+                .build());
+    }
 }

@@ -994,4 +994,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }
         return false;
     }
+
+    public List<String> getCategories() {
+        return m_categoryDao.findAll().stream().map(c -> c.getName()).sorted().collect(Collectors.toList());
+    }
 }

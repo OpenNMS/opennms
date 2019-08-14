@@ -35,7 +35,9 @@ import java.util.Optional;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,5 +137,7 @@ public abstract class Record<T> {
                 .toString();
     }
 
-    public abstract void writeBson(final BsonWriter bsonWriter);
+    public abstract void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr);
+    public abstract void visit(SampleDatagramVisitor visitor);
+
 }

@@ -29,11 +29,13 @@
 package org.opennms.plugins.elasticsearch.rest.archive.manual;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.plugins.elasticsearch.rest.EventForwarderImpl;
 import org.opennms.plugins.elasticsearch.rest.archive.OnmsHistoricEventsToEs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Ignore
 public class OnmsHistoricEventsToEsIT {
 	private static final Logger LOG = LoggerFactory.getLogger(OnmsHistoricEventsToEsIT.class);
 	

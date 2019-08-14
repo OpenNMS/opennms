@@ -257,6 +257,10 @@
       <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.poller.monitors</groupId>
       <artifactId>org.opennms.features.poller.monitors.core</artifactId>
       <version>${project.version}</version>
@@ -457,6 +461,12 @@
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.no-op</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

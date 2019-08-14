@@ -55,22 +55,25 @@ public class DefaultTemplateInitializer implements TemplateInitializer {
     private final String templateLocation;
     private final String templateName;
 
+    private final IndexSettings indexSettings;
+
     private boolean initialized;
 
     public DefaultTemplateInitializer(final BundleContext bundleContext, final JestClient client, final String templateLocation, final String templateName) {
-        this(client, templateLocation, templateName, new CachingTemplateLoader(new OsgiTemplateLoader(bundleContext)));
+        this(client, templateLocation, templateName, new CachingTemplateLoader(new OsgiTemplateLoader(bundleContext)), new IndexSettings());
     }
 
     public DefaultTemplateInitializer(final BundleContext bundleContext, JestClient client, String templateLocation, String templateName, IndexSettings indexSettings) {
         this(client, templateLocation, templateName, new CachingTemplateLoader(
-                new MergingTemplateLoader(new OsgiTemplateLoader(bundleContext), indexSettings)));
+                new MergingTemplateLoader(new OsgiTemplateLoader(bundleContext), indexSettings)), indexSettings);
     }
 
-    protected DefaultTemplateInitializer(final JestClient client, final String templateLocation, final String templateName, final TemplateLoader templateLoader) {
+    protected DefaultTemplateInitializer(final JestClient client, final String templateLocation, final String templateName, final TemplateLoader templateLoader, final IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(client);
         this.templateLocation = templateLocation;
         this.templateName = Objects.requireNonNull(templateName);
         this.templateLoader = Objects.requireNonNull(templateLoader);
+        this.indexSettings = Objects.requireNonNull(indexSettings);
     }
 
     @Override
@@ -111,8 +114,15 @@ public class DefaultTemplateInitializer implements TemplateInitializer {
         // Load the appropriate template
         final String template = templateLoader.load(version, templateLocation);
 
+        // Apply the index prefix to the template name as well so that templates from multiple instances
+        // do not overwrite each other
+        String effectiveTemplateName = templateName;
+        if (indexSettings.getIndexPrefix() != null) {
+            effectiveTemplateName = indexSettings.getIndexPrefix() + templateName;
+        }
+
         // Post it to elastic
-        final PutTemplate putTemplate = new PutTemplate.Builder(templateName, template).build();
+        final PutTemplate putTemplate = new PutTemplate.Builder(effectiveTemplateName, template).build();
         final JestResult result = client.execute(putTemplate);
         if (!result.isSucceeded()) {
             // In case the template could not be created, we bail
@@ -140,4 +150,7 @@ public class DefaultTemplateInitializer implements TemplateInitializer {
         return Version.fromVersionString(versionNumber);
     }
 
+    public IndexSettings getIndexSettings() {
+        return indexSettings;
+    }
 }

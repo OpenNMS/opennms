@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 import org.opennms.netmgt.config.api.PathOutageConfig;
@@ -327,12 +328,7 @@ public interface PollerConfig extends PathOutageConfig {
      */
     public int getThreads();
 
-    /**
-     * <p>getServiceMonitors</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
-    public Map<String, ServiceMonitor> getServiceMonitors();
+    public Set<String> getServiceMonitorNames();
 
     /**
      * <p>getServiceMonitor</p>
@@ -402,4 +398,30 @@ public interface PollerConfig extends PathOutageConfig {
      * @return a Lock
      */
     Lock getWriteLock();
+
+    default Package findPackageForService(String ipAddr, String serviceName) {
+        Enumeration<Package> en = this.enumeratePackage();
+        Package lastPkg = null;
+
+        while (en.hasMoreElements()) {
+            Package pkg = en.nextElement();
+            if (pollableServiceInPackage(ipAddr, serviceName, pkg))
+                lastPkg = pkg;
+        }
+        return lastPkg;
+    }
+
+    default boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
+        if (pkg.getRemote()) {
+            return false;
+        }
+
+        if (!this.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
+
+        boolean inPkg = this.isInterfaceInPackage(ipAddr, pkg);
+        if (inPkg) return true;
+
+        this.rebuildPackageIpListMap();
+        return this.isInterfaceInPackage(ipAddr, pkg);
+    }
 }

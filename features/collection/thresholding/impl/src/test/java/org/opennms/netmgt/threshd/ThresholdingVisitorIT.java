@@ -119,6 +119,8 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.FileAnticipator;
@@ -1658,7 +1660,7 @@ public class ThresholdingVisitorIT {
     private ThresholdingVisitor createVisitor(int node, String location, String serviceName, ServiceParameters svcParams) throws ThresholdInitializationException {
         ThresholdingEventProxyImpl eventProxy = new ThresholdingEventProxyImpl();
         eventProxy.setEventMgr(eventMgr);
-        ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(), svcParams, m_resourceStorageDao, eventProxy);
+        ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(), svcParams, m_resourceStorageDao, eventProxy, MockSession.getSession());
         ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, m_resourceStorageDao, eventProxy);
         assertNotNull(visitor);
         return visitor;

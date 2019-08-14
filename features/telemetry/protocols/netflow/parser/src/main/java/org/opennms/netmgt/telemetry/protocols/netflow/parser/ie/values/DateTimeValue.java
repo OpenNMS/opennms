@@ -33,6 +33,7 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint64;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
@@ -55,7 +56,11 @@ public class DateTimeValue extends Value<Instant> {
                          final Optional<Semantics> semantics,
                          final Instant value) {
         super(name, semantics);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public DateTimeValue(final String name, final Instant value) {
+        this(name, Optional.empty(), value);
     }
 
     @Override

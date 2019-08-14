@@ -125,25 +125,18 @@ public class RawEventToIndexIT extends AbstractEventToIndexITCase {
 					+ "\n   error message: "+eventsresult.getErrorMessage());
 
 			assertEquals(200, eventsresult.getResponseCode());
+			assertEquals(1L, SearchResultUtils.getTotal(eventsresult));
 
 			JSONParser parser = new JSONParser();
 			Object obj2 = parser.parse(eventsresult.getJsonString());
 			JSONObject eventsresultValues = (JSONObject) obj2;
 
 			JSONObject eventhits = (JSONObject) eventsresultValues.get("hits");
-			LOG.debug("search result event hits:total="+eventhits.get("total"));
-			assertEquals(Long.valueOf(1), eventhits.get("total"));
-
 			JSONArray eventhitsvalues = (JSONArray) eventhits.get("hits");
 			LOG.debug("   eventhitsvalues: "+eventhitsvalues.toJSONString());
 
 			JSONObject hitObj = (JSONObject) eventhitsvalues.get(0);
 			LOG.debug("   hitsObj: "+hitObj.toJSONString());
-			
-			String typeStr =  hitObj.get("_type").toString();
-
-			LOG.debug("search result index type="+typeStr);
-			assertEquals(EVENT_INDEX_TYPE, typeStr);
 
 			JSONObject sourceObj = (JSONObject) hitObj.get("_source");
 			LOG.debug("   sourceObj: "+sourceObj.toJSONString());

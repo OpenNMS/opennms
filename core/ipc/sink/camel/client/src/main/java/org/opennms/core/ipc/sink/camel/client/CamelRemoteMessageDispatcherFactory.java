@@ -30,6 +30,7 @@ package org.opennms.core.ipc.sink.camel.client;
 
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
-import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.Identity;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -70,7 +71,7 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     @Autowired
     private TracerRegistry tracerRegistry;
 
-    private MinionIdentity minionIdentity;
+    private Identity identity;
 
     public <S extends Message, T extends Message> Map<String, Object> getModuleMetadata(SinkModule<S, T> module) {
         // Pre-compute the JMS headers instead of recomputing them every dispatch
@@ -78,29 +79,32 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                 CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
         Map<String, Object> headers = new HashMap<>();
         headers.put(CamelSinkConstants.JMS_QUEUE_NAME_HEADER, queueNameFactory.getName());
-        return headers;
+        return Collections.unmodifiableMap(headers);
     }
 
     @Override
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Map<String, Object> headers, T message) {
+        final Map<String, Object> messageHeaders = new HashMap<>(headers);
+        module.getRoutingKey(message).ifPresent(id -> messageHeaders.put(CamelSinkConstants.JMS_XGROUP_ID, id));
 
-        byte[] sinkMessageBytes = module.marshal((T) message);
+        byte[] sinkMessageBytes = module.marshal(message);
         // Add tracing info to jms headers
         final Tracer tracer = tracerRegistry.getTracer();
         if (tracer.activeSpan() != null) {
             TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
-            tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, minionIdentity.getLocation());
-            if (headers.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER) instanceof String) {
-                tracer.activeSpan().setTag(TracerConstants.TAG_TOPIC, (String) headers.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER));
+            tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, identity.getLocation());
+            tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+            if (messageHeaders.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER) instanceof String) {
+                tracer.activeSpan().setTag(TracerConstants.TAG_TOPIC, (String) messageHeaders.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER));
             }
             tracer.activeSpan().setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageBytes.length);
             String tracingInfo = TracingInfoCarrier.marshalTracingInfo(tracingInfoCarrier.getTracingInfoMap());
             if (tracingInfo != null) {
-                headers.put(CamelSinkConstants.JMS_SINK_TRACING_INFO, tracingInfo);
+                messageHeaders.put(CamelSinkConstants.JMS_SINK_TRACING_INFO, tracingInfo);
             }
         }
-        template.sendBodyAndHeaders(endpoint, sinkMessageBytes, headers);
+        template.sendBodyAndHeaders(endpoint, sinkMessageBytes, messageHeaders);
     }
 
     @Override
@@ -114,8 +118,8 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     }
 
     public void init() {
-        if (tracerRegistry != null && minionIdentity != null) {
-            tracerRegistry.init(minionIdentity.getLocation() + "@" + minionIdentity.getId());
+        if (tracerRegistry != null && identity != null) {
+            tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
         }
         onInit();
     }
@@ -144,11 +148,11 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         this.tracerRegistry = tracerRegistry;
     }
 
-    public MinionIdentity getMinionIdentity() {
-        return minionIdentity;
+    public Identity getIdentity() {
+        return identity;
     }
 
-    public void setMinionIdentity(MinionIdentity minionIdentity) {
-        this.minionIdentity = minionIdentity;
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
     }
 }

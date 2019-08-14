@@ -31,14 +31,19 @@ package org.opennms.netmgt.telemetry.listeners;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadFactory;
 
 import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -62,6 +67,8 @@ public class UdpListener implements Listener {
     private final String name;
     private final List<UdpParser> parsers;
 
+    private final Meter packetsReceived;
+
     private EventLoopGroup bossGroup;
     private ChannelFuture socketFuture;
 
@@ -69,13 +76,10 @@ public class UdpListener implements Listener {
     private int port = 50000;
     private int maxPacketSize = 8096;
 
-    public UdpListener(final String name, final UdpParser parser) {
-        this(name, Lists.newArrayList(Objects.requireNonNull(parser)));
-    }
-
-    public UdpListener(final String name, final List<UdpParser> parsers) {
+    public UdpListener(final String name, final List<UdpParser> parsers, final MetricRegistry metrics) {
         this.name = Objects.requireNonNull(name);
         this.parsers = Objects.requireNonNull(parsers);
+        Objects.requireNonNull(metrics);
 
         if (this.parsers.isEmpty()) {
             throw new IllegalArgumentException("At least 1 parsers must be defined");
@@ -85,10 +89,15 @@ public class UdpListener implements Listener {
                 throw new IllegalArgumentException("If more than 1 parser is defined, all parsers must be Dispatchable");
             }
         }
+
+        packetsReceived = metrics.meter(MetricRegistry.name("listeners",  name, "packetsReceived"));
     }
 
     public void start() throws InterruptedException {
-        this.bossGroup = new NioEventLoopGroup();
+        // Netty defaults to 2 * num cores when the number of threads is set to 0
+        this.bossGroup = new NioEventLoopGroup(0, new ThreadFactoryBuilder()
+                .setNameFormat("telemetryd-nio-" + name + "-%d")
+                .build() );
 
         this.parsers.forEach(parser -> parser.start(this.bossGroup));
 
@@ -111,7 +120,7 @@ public class UdpListener implements Listener {
         LOG.info("Closing channel...");
         this.socketFuture.channel().close().sync();
 
-        this.parsers.forEach(parser -> parser.stop());
+        this.parsers.forEach(Parser::stop);
 
         LOG.info("Closing boss group...");
         this.bossGroup.shutdownGracefully().sync();
@@ -150,7 +159,7 @@ public class UdpListener implements Listener {
     private class DefaultChannelInitializer extends ChannelInitializer<DatagramChannel> {
 
         @Override
-        protected void initChannel(DatagramChannel ch) throws Exception {
+        protected void initChannel(DatagramChannel ch) {
 
             if (parsers.size() == 1) {
                 final UdpParser parser = parsers.get(0);
@@ -172,6 +181,9 @@ public class UdpListener implements Listener {
                 });
             }
 
+            // Accounting
+            ch.pipeline().addFirst(new AccountingHandler());
+
             // Add error handling
             ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                 @Override
@@ -180,6 +192,14 @@ public class UdpListener implements Listener {
                     LOG.debug("", cause);
                 }
             });
+        }
+    }
+
+    private class AccountingHandler extends ChannelInboundHandlerAdapter {
+        @Override
+        public  void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+            packetsReceived.mark();
+            super.channelRead(ctx, msg);
         }
     }
 

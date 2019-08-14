@@ -31,6 +31,9 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.factory;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
@@ -43,9 +46,15 @@ import org.springframework.beans.PropertyAccessorFactory;
 public class IpfixUdpParserFactory implements ParserFactory {
 
     private final TelemetryRegistry telemetryRegistry;
+    private final EventForwarder eventForwarder;
+    private final Identity identity;
+    private final DnsResolver dnsResolver;
 
-    public IpfixUdpParserFactory(TelemetryRegistry telemetryRegistry) {
+    public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry, final EventForwarder eventForwarder, final Identity identity, final DnsResolver dnsResolver) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
+        this.eventForwarder =  Objects.requireNonNull(eventForwarder);
+        this.identity = Objects.requireNonNull(identity);
+        this.dnsResolver = Objects.requireNonNull(dnsResolver);
     }
 
     @Override
@@ -56,7 +65,7 @@ public class IpfixUdpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        final IpfixUdpParser parser = new IpfixUdpParser(parserDefinition.getName(), dispatcher);
+        final IpfixUdpParser parser = new IpfixUdpParser(parserDefinition.getName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(parser);
         wrapper.setPropertyValues(parserDefinition.getParameterMap());
         return parser;

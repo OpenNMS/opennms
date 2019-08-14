@@ -164,7 +164,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .withEnv("OPENNMS_CASSANDRA_PORT", Integer.toString(CassandraContainer.CQL_PORT))
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
-                .withEnv("JAVA_OPTS", "-Xms1g -Xmx1g -Djava.security.egd=file:/dev/./urandom")
+                .withEnv("JAVA_OPTS", "-Xms1536m -Xmx1536m -Djava.security.egd=file:/dev/./urandom")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
@@ -366,7 +366,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         protected void waitUntilReady() {
             LOG.info("Waiting for startup to begin.");
             final Path managerLog = Paths.get("/opt", "opennms", "logs", "manager.log");
-            await().atMost(2, MINUTES).ignoreExceptions()
+            await().atMost(3, MINUTES).ignoreExceptions()
                     .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                     containsString("Starter: Beginning startup"));
             LOG.info("OpenNMS has begun starting up.");

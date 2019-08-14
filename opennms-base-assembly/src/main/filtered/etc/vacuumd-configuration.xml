@@ -29,6 +29,12 @@
       SELECT eventid FROM notifications WHERE eventid = events.eventid) 
     AND eventtime &lt; now() - interval '6 weeks';
   </statement>
+  
+  <statement>
+    <!-- this deletes values from the JSON key value store that have expired due to TTL -->
+    DELETE from kvstore_jsonb
+    WHERE expires_at &lt; now()
+  </statement>
     
   <automations>
     <automation name="purgeStatisticsReports" active="true"

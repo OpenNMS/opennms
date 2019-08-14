@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.collection;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -37,6 +39,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import javax.script.ScriptException;
@@ -51,17 +54,24 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
-import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -76,6 +86,17 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     @Autowired
     private PersisterFactory persisterFactory;
+
+    @Autowired
+    private ThresholdingService thresholdingService;
+
+    // Changed to False if no ThresholdingService has been wired.
+    private AtomicBoolean isThresholdingEnabled = new AtomicBoolean(true);
+
+    // Default TTL for ThresholdingSessions is one day.
+    private Integer thresholdingSessionTtlMinutes = SystemProperties.getInteger("org.opennms.netmgt.telemetry.protocols.collection.thresholdingSessionTtlMinutes", 1440);
+
+    private Cache<String, ThresholdingSession> agentThresholdingSessions = CacheBuilder.newBuilder().expireAfterAccess(thresholdingSessionTtlMinutes, TimeUnit.MINUTES).build();
 
     private AdapterDefinition adapterConfig;
 
@@ -147,6 +168,24 @@ public abstract class AbstractPersistingAdapter implements Adapter {
             });
 
     /**
+     * Time taken to handle a log
+     */
+    private final Timer logParsingTimer;
+
+    /**
+     * Number of message per log
+     */
+    private final Histogram packetsPerLogHistogram;
+
+    public AbstractPersistingAdapter(String name, MetricRegistry metricRegistry) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(metricRegistry);
+
+        logParsingTimer = metricRegistry.timer(name("adapters", name, "logParsing"));
+        packetsPerLogHistogram = metricRegistry.histogram(name("adapters", name, "packetsPerLog"));
+    }
+
+    /**
      * Build a collection set from the given message.
      *
      * The message log is also provided in case the log contains additional
@@ -167,29 +206,68 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     @Override
     public void handleMessageLog(TelemetryMessageLog messageLog) {
-        for (TelemetryMessageLogEntry message : messageLog.getMessageList()) {
-            handleMessage(message, messageLog).forEach(result -> {
-                // Locate the matching package definition
-                final PackageDefinition pkg = getPackageFor(adapterConfig, result.getAgent());
-                if (pkg == null) {
-                    LOG.warn("No matching package found for message: {}. Dropping.", message);
-                    return;
-                }
+        try (Timer.Context ctx = logParsingTimer.time()) {
+            for (TelemetryMessageLogEntry message : messageLog.getMessageList()) {
+                handleMessage(message, messageLog).forEach(result -> {
+                    // Locate the matching package definition
+                    final PackageDefinition pkg = getPackageFor(adapterConfig, result.getAgent());
+                    if (pkg == null) {
+                        LOG.warn("No matching package found for message: {}. Dropping.", message);
+                        return;
+                    }
 
-                // Build the repository from the package definition
-                final RrdRepository repository = new RrdRepository();
-                repository.setStep(pkg.getRrd().getStep());
-                repository.setHeartBeat(repository.getStep() * 2);
-                repository.setRraList(pkg.getRrd().getRras());
-                repository.setRrdBaseDir(new File(pkg.getRrd().getBaseDir()));
+                    // Build the repository from the package definition
+                    final RrdRepository repository = new RrdRepository();
+                    repository.setStep(pkg.getRrd().getStep());
+                    repository.setHeartBeat(repository.getStep() * 2);
+                    repository.setRraList(pkg.getRrd().getRras());
+                    repository.setRrdBaseDir(new File(pkg.getRrd().getBaseDir()));
 
-                // Persist!
-                final CollectionSet collectionSet = result.getCollectionSet();
-                LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
-                final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
-                collectionSet.visit(persister);
-            });
+                    // Persist!
+                    final CollectionSet collectionSet = result.getCollectionSet();
+                    LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
+                    final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
+                    collectionSet.visit(persister);
+
+                    // Thresholding
+                    try {
+                        if (isThresholdingEnabled.get()) {
+                            ThresholdingSession session = getSessionForAgent(result.getAgent(), repository);
+                            session.accept(collectionSet);
+                        }
+                    } catch (ThresholdInitializationException e) {
+                        LOG.warn("Failed Thresholding of CollectionSet : {} for agent: {}", e.getMessage(), result.getAgent());
+                    }
+                });
+            }
+            packetsPerLogHistogram.update(messageLog.getMessageList().size());
         }
+    }
+
+    private ThresholdingSession getSessionForAgent(CollectionAgent agent, RrdRepository repository) throws ThresholdInitializationException {
+        if (thresholdingService == null) {
+            // If we don't have a ThresholdingService,
+            // we are running in the OSGi container (i.e. on a Sentinal) with no Thresholding Service Configured
+            // Disable Thresholding.
+            isThresholdingEnabled.set(false);
+            throw new ThresholdInitializationException("No ThresholdingService available. No future Threshholding will be done");
+        }
+        // Map of sessions keyed by agent
+        int nodeId = agent.getNodeId();
+        String hostAddress = agent.getHostAddress();
+        String serviceName = adapterConfig.getName();
+        String sessionKey = getSessionKey(nodeId, hostAddress, serviceName);
+
+        ThresholdingSession session = agentThresholdingSessions.getIfPresent(sessionKey);
+        if (session == null) {
+            session = thresholdingService.createSession(nodeId, hostAddress, serviceName, repository, EMPTY_SERVICE_PARAMETERS);
+            agentThresholdingSessions.put(sessionKey, session);
+        }
+        return session;
+    }
+
+    private String getSessionKey(int nodeId, String hostAddress, String serviceName) {
+        return new StringBuilder(String.valueOf(nodeId)).append(hostAddress).append(serviceName).toString();
     }
 
     @Override
@@ -213,6 +291,14 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         this.persisterFactory = persisterFactory;
+    }
+
+    public ThresholdingService getThresholdingService() {
+        return thresholdingService;
+    }
+
+    public void setThresholdingService(ThresholdingService thresholdingService) {
+        this.thresholdingService = thresholdingService;
     }
 
     private static class CacheKey {

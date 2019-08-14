@@ -83,7 +83,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 				.build();
 		final SearchResult result = jestClient.execute(search);
 		assertEquals(200, result.getResponseCode());
-		assertEquals(Long.valueOf(1), result.getTotal());
+		assertEquals(1L, SearchResultUtils.getTotal(result));
 	}
 
 
@@ -104,7 +104,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 				.build();
 		final SearchResult result = jestClient.execute(search);
 		assertEquals(200, result.getResponseCode());
-		assertEquals(Long.valueOf(1), result.getTotal());
+		assertEquals(1L, SearchResultUtils.getTotal(result));
 
 		// Verify oids
 		final JsonArray oids = result.getJsonObject()
@@ -152,7 +152,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 				.build();
 		final SearchResult result = jestClient.execute(search);
 		assertEquals(200, result.getResponseCode());
-		assertEquals(Long.valueOf(1), result.getTotal());
+		assertEquals(1L, SearchResultUtils.getTotal(result));
 		final JsonArray jsonArray = result.getJsonObject().get("hits").getAsJsonObject().get("hits").getAsJsonArray();
 		assertEquals(jsonObject, jsonArray.get(0).getAsJsonObject().get("_source").getAsJsonObject().get("p_name").getAsJsonObject());
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -94,6 +94,12 @@ public class CollectionResourceWrapper implements CollectionResource {
     @Override
     public String getInstance() {
         return m_wrapped.getInstance();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getUnmodifiedInstance() {
+        return m_wrapped.getUnmodifiedInstance();
     }
 
     /** {@inheritDoc} */

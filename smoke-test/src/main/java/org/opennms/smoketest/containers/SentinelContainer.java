@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.io.FileUtils;
 import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.JSONStoreStrategy;
 import org.opennms.smoketest.stacks.SentinelProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
@@ -162,6 +163,12 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                         .put("acks", "1")
                         .build());
 
+        writeProps(etc.resolve("org.opennms.core.ipc.sink.kafka.cfg"),
+                ImmutableMap.<String,String>builder()
+                        .put("bootstrap.servers", OpenNMSContainer.KAFKA_ALIAS + ":9092")
+                        .put("acks", "1")
+                        .build());
+
         writeProps(etc.resolve("org.opennms.features.flows.persistence.elastic.cfg"),
                 ImmutableMap.<String,String>builder()
                         .put("elasticUrl", "http://" + OpenNMSContainer.ELASTIC_ALIAS + ":9200")
@@ -192,6 +199,20 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
             featuresOnBoot.add("sentinel-telemetry-jti");
             featuresOnBoot.add("sentinel-telemetry-nxos");
         }
+        
+        switch (model.getBlobStoreStrategy()) {
+            case NOOP:
+                featuresOnBoot.add("sentinel-blobstore-noop");
+                break;
+            case NEWTS_CASSANDRA:
+                featuresOnBoot.add("sentinel-blobstore-cassandra");
+                break;
+        }
+
+        if (model.getJsonStoreStrategy() == JSONStoreStrategy.POSTGRES) {
+            featuresOnBoot.add("sentinel-jsonstore-postgres");
+        }
+
         return featuresOnBoot;
     }
 

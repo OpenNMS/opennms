@@ -68,7 +68,7 @@ public class TcpListenerFactory implements ListenerFactory {
         if (parser.size() != listenerDefinition.getParsers().size()) {
             throw new IllegalArgumentException("Each parser must be of type TcpParser but was not.");
         }
-        final TcpListener listener = new TcpListener(listenerDefinition.getName(), parser.iterator().next());
+        final TcpListener listener = new TcpListener(listenerDefinition.getName(), parser.iterator().next(), telemetryRegistry.getMetricRegistry());
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(listener);
         wrapper.setPropertyValues(listenerDefinition.getParameterMap());
         return listener;

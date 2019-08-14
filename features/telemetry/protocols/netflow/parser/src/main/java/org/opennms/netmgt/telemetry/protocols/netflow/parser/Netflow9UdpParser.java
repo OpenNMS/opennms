@@ -36,6 +36,9 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
@@ -45,19 +48,26 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Pack
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispatchable {
     public Netflow9UdpParser(final String name,
-                             final AsyncDispatcher<TelemetryMessage> dispatcher) {
-        super(Protocol.NETFLOW9, name, dispatcher);
+                             final AsyncDispatcher<TelemetryMessage> dispatcher,
+                             final EventForwarder eventForwarder,
+                             final Identity identity,
+                             final DnsResolver dnsResolver,
+                             final MetricRegistry metricRegistry) {
+        super(Protocol.NETFLOW9, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
     }
 
     @Override
     protected RecordProvider parse(Session session, ByteBuffer buffer) throws Exception {
         final Header header = new Header(slice(buffer, Header.SIZE));
         final Packet packet = new Packet(session, header, buffer);
+
+        detectClockSkew(header.unixSecs * 1000L, session.getRemoteAddress());
 
         return packet;
     }
@@ -101,6 +111,11 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
                     .add("remoteAddress", remoteAddress)
                     .add("localAddress", localAddress)
                     .toString();
+        }
+
+        @Override
+        public InetAddress getRemoteAddress() {
+            return this.remoteAddress;
         }
     }
 }

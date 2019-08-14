@@ -38,6 +38,8 @@ import java.util.Set;
 
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
+import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -59,33 +61,33 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     
     /** {@inheritDoc} */
     @Override
-    public ThresholdGroup get(String name) {
-        return get(name, null);
+    public ThresholdGroup get(String name, ThresholdingSession thresholdingSession) {
+        return get(name, null, thresholdingSession);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ThresholdGroup merge(ThresholdGroup group) {
-        return get(group.getName(), group);
+    public ThresholdGroup merge(ThresholdGroup group, ThresholdingSession thresholdingSession) {
+        return get(group.getName(), group, thresholdingSession);
     }
 
-    private ThresholdGroup get(String name, ThresholdGroup group) {
+    private ThresholdGroup get(String name, ThresholdGroup group, ThresholdingSession thresholdingSession) {
         boolean merge = group != null;
         ThresholdGroup newGroup = new ThresholdGroup(name);
 
         File rrdRepository = new File(getThresholdingConfigFactory().getRrdRepository(name));
         newGroup.setRrdRepository(rrdRepository);
 
-        ThresholdResourceType nodeType = getThresholdResourceType(name, "node", merge ? group.getNodeResourceType() : null);
+        ThresholdResourceType nodeType = getThresholdResourceType(name, "node", merge ? group.getNodeResourceType() : null, thresholdingSession);
         newGroup.setNodeResourceType(nodeType);
 
-        ThresholdResourceType ifType = getThresholdResourceType(name, "if", merge ? group.getIfResourceType() : null);
+        ThresholdResourceType ifType = getThresholdResourceType(name, "if", merge ? group.getIfResourceType() : null, thresholdingSession);
         newGroup.setIfResourceType(ifType);
 
         for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(name)) {
             final String id = thresh.getDsType();
             if (!(id.equals("if") || id.equals("node") || newGroup.getGenericResourceTypeMap().containsKey(id))) {
-                ThresholdResourceType genericType = getThresholdResourceType(name, id, merge ? group.getGenericResourceTypeMap().get(id) : null);
+                ThresholdResourceType genericType = getThresholdResourceType(name, id, merge ? group.getGenericResourceTypeMap().get(id) : null, thresholdingSession);
                 if (genericType.getThresholdMap().size() > 0) {
                     LOG.info("Adding {}::{} with {} elements", name, id, genericType.getThresholdMap().size());
                     newGroup.getGenericResourceTypeMap().put(id, genericType);
@@ -96,22 +98,22 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         return newGroup;
     }
 
-    private ThresholdResourceType getThresholdResourceType(String groupName, String typeName, ThresholdResourceType type) {
+    private ThresholdResourceType getThresholdResourceType(String groupName, String typeName, ThresholdResourceType type, ThresholdingSession thresholdingSession) {
         ThresholdResourceType resourceType = new ThresholdResourceType(typeName);
         Map<String, Set<ThresholdEntity>> thresholdMap = null;
         if (type == null) {
             thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
-            fillThresholdStateMap(groupName, typeName, thresholdMap);
+            fillThresholdStateMap(groupName, typeName, thresholdMap, thresholdingSession);
         } else {
             thresholdMap = type.getThresholdMap();
-            fillThresholdStateMap(groupName, type.getDsType(), thresholdMap);
+            fillThresholdStateMap(groupName, type.getDsType(), thresholdMap, thresholdingSession);
 
         }
         resourceType.setThresholdMap(thresholdMap);
         return resourceType;
     }
 
-    private void fillThresholdStateMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap) {
+    private void fillThresholdStateMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap, ThresholdingSession thresholdingSession) {
         boolean merge = !thresholdMap.isEmpty();
         for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
             // See if map entry already exists for this datasource; if not, create a new one.
@@ -128,7 +130,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                     try {
                         ThresholdEntity thresholdEntity = new ThresholdEntity();
                         thresholdEntity.setEventProxy(m_eventProxy);
-                        thresholdEntity.addThreshold(wrapper);
+                        thresholdEntity.addThreshold(wrapper, thresholdingSession);
                         if (merge) {
                             boolean updated = false;
                             for (ThresholdEntity e : thresholdEntitySet) {

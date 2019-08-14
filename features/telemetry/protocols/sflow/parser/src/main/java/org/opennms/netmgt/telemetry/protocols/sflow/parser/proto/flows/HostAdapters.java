@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
@@ -56,10 +57,10 @@ public class HostAdapters implements CounterData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartArray();
         for (final HostAdapter hostAdapter : this.adapters) {
-            hostAdapter.writeBson(bsonWriter);
+            hostAdapter.writeBson(bsonWriter, enr);
         }
         bsonWriter.writeEndArray();
     }

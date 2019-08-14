@@ -32,7 +32,9 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.collect.ImmutableMap;
@@ -97,11 +99,19 @@ public class FlowRecord extends Record<FlowData> {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         if (data.value != null) {
-            this.data.value.writeBson(bsonWriter);
+            this.data.value.writeBson(bsonWriter, enr);
         } else {
             bsonWriter.writeNull();
+        }
+    }
+
+    @Override
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
+        if (this.data != null) {
+            this.data.value.visit(visitor);
         }
     }
 }

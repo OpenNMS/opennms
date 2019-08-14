@@ -35,6 +35,10 @@ import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
@@ -54,8 +58,9 @@ public class TcpListener implements Listener {
     private static final Logger LOG = LoggerFactory.getLogger(TcpListener.class);
 
     private final String name;
-
     private final TcpParser parser;
+
+    private final Meter packetsReceived;
 
     private String host = null;
     private int port = 50000;
@@ -66,9 +71,12 @@ public class TcpListener implements Listener {
     private ChannelFuture socketFuture;
 
     public TcpListener(final String name,
-                       final TcpParser parser) {
+                       final TcpParser parser,
+                       final MetricRegistry metrics) {
         this.name = Objects.requireNonNull(name);
         this.parser = Objects.requireNonNull(parser);
+
+        packetsReceived = metrics.meter(MetricRegistry.name("listeners", name, "packetsReceived"));
     }
 
     public void start() throws InterruptedException {
@@ -92,6 +100,13 @@ public class TcpListener implements Listener {
                     protected void initChannel(final SocketChannel ch) {
                         final TcpParser.Handler session = TcpListener.this.parser.accept(ch.remoteAddress(), ch.localAddress());
                         ch.pipeline()
+                                .addFirst(new ChannelInboundHandlerAdapter() {
+                                    @Override
+                                    public  void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                        packetsReceived.mark();
+                                        super.channelRead(ctx, msg);
+                                    }
+                                })
                                 .addLast(new SimpleChannelInboundHandler<ByteBuf>() {
                                     @Override
                                     protected void channelRead0(final ChannelHandlerContext ctx,
@@ -108,7 +123,7 @@ public class TcpListener implements Listener {
                                 })
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
-                                    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+                                    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
                                         LOG.debug("", cause);
 

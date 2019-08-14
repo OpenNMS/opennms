@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
 public enum Protocol {
+    NETFLOW5(org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header.VERSION),
     NETFLOW9(org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header.VERSION),
     IPFIX(org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header.VERSION);
 

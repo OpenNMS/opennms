@@ -37,8 +37,6 @@ import java.util.Optional;
 import org.bson.RawBsonDocument;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.BooleanValue;
@@ -98,4 +96,5 @@ public class PacketHandlerTest {
         Assert.assertEquals(5, bson.getDocument("name5").getArray("values").get(0).asDocument().getInt64("name5t0e0").getValue());
         Assert.assertEquals(1.5, bson.getDocument("name5").getArray("values").get(3).asDocument().getDocument("name5t3e0").getArray("values").get(0).asDocument().getDouble("name5t3e0t0e0").doubleValue(), 0.0);
     }
+
 }

@@ -54,16 +54,14 @@ angular.module('onms-search', [
 
 }])
 
-.controller('KscSearchCtrl', ['$scope', '$window', '$http', function($scope, $window, $http) {
+.controller('KscSearchCtrl', ['$scope', '$window', '$http', '$filter', function($scope, $window, $http, $filter) {
 
   $scope.getKscReports = function(criteria) {
     return $http({
       url: 'rest/ksc',
       method: 'GET'
     }).then(function(response) {
-        return response.data.kscReport.filter(function(report) {
-            return report.label.indexOf(criteria) !== -1
-        });
+       return $filter('filter')(response.data.kscReport, criteria);
     });
   };
 

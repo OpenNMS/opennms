@@ -39,6 +39,7 @@ import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.core.rpc.utils.MetadataConstants;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.MapScope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -63,6 +64,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     private final Map<String, Object> attributes = new HashMap<>();
 
     private final List<ServiceMonitorAdaptor> adaptors = new LinkedList<>();
+
+    private final Map<String, String> patternVariables = new HashMap<>();
 
     private Long ttlInMs;
 
@@ -120,6 +123,12 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
+    public PollerRequestBuilder withPatternVariables(Map<String, String> patternVariables) {
+        this.patternVariables.putAll(patternVariables);
+        return this;
+    }
+
+    @Override
     public CompletableFuture<PollerResponse> execute() {
         if (serviceMonitor == null) {
             throw new IllegalArgumentException("Monitor or monitor class name is required.");
@@ -130,7 +139,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new FallbackScope(
             this.client.getEntityScopeProvider().getScopeForNode(service.getNodeId()),
             this.client.getEntityScopeProvider().getScopeForInterface(service.getNodeId(), service.getIpAddr()),
-            this.client.getEntityScopeProvider().getScopeForService(service.getNodeId(), service.getAddress(), service.getSvcName())
+            this.client.getEntityScopeProvider().getScopeForService(service.getNodeId(), service.getAddress(), service.getSvcName()),
+            MapScope.singleContext("pattern", this.patternVariables)
         ));
 
         final RpcTarget target = client.getRpcTargetHelper().target()

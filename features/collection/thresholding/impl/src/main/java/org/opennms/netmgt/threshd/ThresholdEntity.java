@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
+import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -162,7 +164,7 @@ public final class ThresholdEntity implements Cloneable {
     public ThresholdEntity clone() {
         ThresholdEntity clone = new ThresholdEntity();
         for (ThresholdEvaluatorState thresholdItem : getThresholdEvaluatorStates(null)) {
-            clone.addThreshold(thresholdItem.getThresholdConfig());
+            clone.addThreshold(thresholdItem.getThresholdConfig(), thresholdItem.getThresholdingSession());
         }
 
         return clone;
@@ -270,7 +272,7 @@ public final class ThresholdEntity implements Cloneable {
      *
      * @param threshold a {@link org.opennms.netmgt.threshd.BaseThresholdDefConfigWrapper} object.
      */
-    public void addThreshold(BaseThresholdDefConfigWrapper threshold) {
+    public void addThreshold(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
         ThresholdEvaluator evaluator = getEvaluatorForThreshold(threshold);
         //Get the default list of evaluators (the null key)
         List<ThresholdEvaluatorState> defaultList=m_thresholdEvaluatorStates.get(null);
@@ -281,7 +283,7 @@ public final class ThresholdEntity implements Cloneable {
             }
         }
 
-        defaultList.add(evaluator.getThresholdEvaluatorState(threshold));
+        defaultList.add(evaluator.getThresholdEvaluatorState(threshold, thresholdingSession));
     }
 
     private ThresholdEvaluator getEvaluatorForThreshold(BaseThresholdDefConfigWrapper threshold) {

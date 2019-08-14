@@ -151,5 +151,5 @@ The following properties in `etc/org.opennms.features.geocoder.nominatim.cfg` ar
 | `no`
 | false
 | Should the system wide proxy settings be used?
-  The system proxy settings can be configured in link:#ga-opennms-system-properties[opennms.conf]
+  The system proxy settings can be configured in link:#ga-opennms-system-properties[system properties]
 |===
