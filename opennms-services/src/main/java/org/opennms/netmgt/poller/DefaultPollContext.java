@@ -89,7 +89,7 @@ public class DefaultPollContext implements PollContext, EventListener {
      * Poll timestamps are updated using a DB transaction in the same thread and immediately following the poll.
      * This may cause unnecessary overhead in extreme cases, so we add the ability to disable this functionality.
      */
-    private static final boolean DISABLE_POLL_TIMESTAMP_TRACKING = Boolean.getBoolean("org.opennms.netmgt.poller.disablePollTimestampTracking");
+    public static final boolean DISABLE_POLL_TIMESTAMP_TRACKING = Boolean.getBoolean("org.opennms.netmgt.poller.disablePollTimestampTracking");
 
     private volatile PollerConfig m_pollerConfig;
     private volatile QueryManager m_queryManager;
