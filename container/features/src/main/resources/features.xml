@@ -48,6 +48,11 @@
       <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.component/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-activemq-shell" description="OpenNMS :: Features :: ActiveMQ :: Shell" version="${project.version}">
+      <!-- Additional dependenices are expected to be pulled from the root classloader -->
+      <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.shell/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-amqp-event-forwarder" description="OpenNMS :: Features :: AMQP :: Event Forwarder" version="${project.version}">
       <feature>camel-core</feature>
       <feature>camel-blueprint</feature>
