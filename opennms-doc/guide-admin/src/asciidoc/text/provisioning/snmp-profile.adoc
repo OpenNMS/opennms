@@ -1,0 +1,68 @@
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Snmp Profiles
+
+Snmp Profile is a combination of standard Snmp configuration with an unique label and a filter expression that matches a given IpAddress/Hostname.
+Snmp profiles can be added to snmp-config.xml to allow scanning of Snmp interfaces with a matching profile.
+
+[source, xml]
+.Sample snmp-config.xml with profiles
+----
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp" write-community="private" read-community="public" timeout="800" retry="3">
+   <definition version="v1" ttl="6000">
+      <specific>127.0.0.1</specific>
+   </definition>
+   <profiles>
+      <profile version="v1" read-community="horizon" timeout="10000">
+         <label>profile1</label>
+      </profile>
+      <profile version="v1" ttl="6000">
+         <label>profile2</label>
+         <filter>iphostname LIKE '%opennms%'</filter>
+      </profile>
+      <profile version="v1" read-community="meridian">
+         <label>profile3</label>
+         <filter>IPADDR IPLIKE 172.1.*.*</filter>
+      </profile>
+   </profiles>
+</snmp-config>
+----
+In above config,
+
+1. `profile1` doesn't have a filter expression, these are default profiles. These profiles will be tried for all interfaces.
+
+2. `profile2` have a filter expression that matches iphostname.
+All interfaces before scanning will have a DNS resolved hostname in the `iphostname` field which can be used to match hostnames.
+
+3. `profile3` has a IPLIKE expression that can matches all interfaces in the range specified in the filter.
+
+NOTE: All the profiles will be tried in the order they are configured. The first match that succeeds SNMP `get` on `sysObjectID` instance will be saved as definition by `Provisiond`.
+
+.Fit a Snmp profile
+
+`opennms-snmp:fit` command will find a matching profile for a given ipaddress and gives back resulting config.
+
+Matching or fitting an Snmp profile should be understood as matching the filter expression and successful in getting sysObjectID instance.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms-snmp:fit -l MINION -s 172.1.1.105 <1>
+admin@opennms()> opennms-snmp:fit 172.1.1.106 profile1     <2>
+----
+<1> will search the profiles that fits the IpAddress `172.1.1.105` at location Minion and saves resulting configuration in definitions.
+<2> will try to check if profile with label `profile1` can match 172.1.1.106. If it succeeds it gets back the resulting agent config, it doesn't save any definition.
+
+.Remove an IpAddress from definition.
+
+`opennms-snmp:remove-from-definition` command will remove an IpAddress from definitions.
+
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms-snmp:remove-from-definition -l MINION 172.1.0.255
+----
+
+This allows an IpAddress `172.1.0.255` at location MINION to be removed from definitions so that this IpAddress can map/fit a new profile.

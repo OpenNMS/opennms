@@ -489,7 +489,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     public List<SnmpProfile> getProfiles() {
         SnmpConfig snmpConfig = getSnmpConfig();
         if (snmpConfig != null && snmpConfig.getSnmpProfiles() != null) {
-            return getSnmpConfig().getSnmpProfiles().getSnmpProfiles();
+            return snmpConfig.getSnmpProfiles().getSnmpProfiles();
         }
         return new ArrayList<>();
     }

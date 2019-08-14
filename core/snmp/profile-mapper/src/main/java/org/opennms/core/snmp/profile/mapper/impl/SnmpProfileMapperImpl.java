@@ -26,12 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.snmp.profile.mapper.mapper;
+package org.opennms.core.snmp.profile.mapper.impl;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
@@ -44,6 +44,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
 
@@ -51,11 +52,23 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpProfileMapperImpl.class);
 
+    @Autowired
     private SnmpAgentConfigFactory agentConfigFactory;
 
+    @Autowired
     private FilterDao filterDao;
 
+    @Autowired
     private LocationAwareSnmpClient locationAwareSnmpClient;
+
+    public SnmpProfileMapperImpl(FilterDao filterDao, SnmpAgentConfigFactory agentConfigFactory, LocationAwareSnmpClient locationAwareSnmpClient) {
+        this.agentConfigFactory = Objects.requireNonNull(agentConfigFactory);
+        this.filterDao = Objects.requireNonNull(filterDao);
+        this.locationAwareSnmpClient = Objects.requireNonNull(locationAwareSnmpClient);
+    }
+
+    public SnmpProfileMapperImpl() {
+    }
 
     private static final String SYS_OBJECTID_INSTANCE = ".1.3.6.1.2.1.1.2.0";
 
@@ -96,8 +109,8 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
             if (snmpValue != null && !snmpValue.isError()) {
                 return Optional.of(agentConfig);
             }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("Exception while trying to get sys oid for the profile {}", snmpProfile.getLabel(), e);
+        } catch (Exception e) {
+            LOG.warn("Exception while trying to get sysObjectID for the profile {}", snmpProfile.getLabel(), e);
         }
         return Optional.empty();
     }

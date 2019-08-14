@@ -11,7 +11,7 @@
 
 	<context:annotation-config />
 
-    <bean id="snmpProfileMapper" class="org.opennms.core.snmp.profile.mapper.mapper.SnmpProfileMapperImpl">
+    <bean id="snmpProfileMapper" class="org.opennms.core.snmp.profile.mapper.impl.SnmpProfileMapperImpl">
       <property name="agentConfigFactory" ref="snmpPeerFactory"/>
       <property name="filterDao" ref="filterDao"/>
       <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient"/>

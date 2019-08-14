@@ -13,15 +13,15 @@
 
     <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
 
-    <reference id="snmpAgentConfigFactory" interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" availability="mandatory"/>
+    <reference id="agentConfigFactory" interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" availability="mandatory"/>
 
     <reference id="locationAwareSnmpClient" interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient" availability="mandatory"/>
 
 
-    <bean id="snmpProfileMapper" class="org.opennms.core.snmp.profile.mapper.mapper.SnmpProfileMapperImpl" >
-        <property name="filterDao" ref="filterDao" />
-        <property name="agentConfigFactory" ref="agentConfigFactory" />
-        <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient" />
+    <bean id="snmpProfileMapper" class="org.opennms.core.snmp.profile.mapper.impl.SnmpProfileMapperImpl" >
+        <argument ref="filterDao" />
+        <argument ref="agentConfigFactory" />
+        <argument ref="locationAwareSnmpClient" />
     </bean>
 
     <service interface="org.opennms.netmgt.snmp.SnmpProfileMapper" ref="snmpProfileMapper" />

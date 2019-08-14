@@ -63,14 +63,16 @@ public class FitProfileCommand implements Action {
     @Argument(name = "host", description = "IPAddress that needed to be fit", required = true)
     String ipAddress;
 
+    @Option(name = "-s", aliases = "--save", description = "Save the resulting definition")
+    boolean save = false;
+
     @Argument(index = 1, name = "label", description = "Label of the Snmp Profile used to fit")
     String label;
 
     @Argument(index = 2, name = "oid", description = "custom oid used to fit profile")
     String oid;
 
-    @Option(name = "-s", aliases = "--save", description = "Save the resulting definition")
-    boolean save = false;
+
 
     @Override
     public Object execute() throws Exception {

@@ -165,6 +165,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         return m_proxyFor;
     }
 
+    @XmlTransient
     public boolean isDefault() {
         return isDefault;
     }

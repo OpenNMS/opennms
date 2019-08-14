@@ -43,7 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.opennms.core.snmp.profile.mapper.mapper.SnmpProfileMapperImpl;
+import org.opennms.core.snmp.profile.mapper.impl.SnmpProfileMapperImpl;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
