@@ -288,6 +288,12 @@
         <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.pool/${project.version}</bundle>
     </feature>
+
+    <feature name="opennms-activemq-shell" description="OpenNMS :: Features :: ActiveMQ :: Shell" version="${project.version}">
+      <!-- Additional dependenices are expected to be pulled from the root classloader -->
+      <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.shell/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-bootstrap" version="${project.version}" description="opennms-bootstrap">
         <bundle>wrap:mvn:org.opennms/opennms-bootstrap/${project.version}</bundle>
     </feature>

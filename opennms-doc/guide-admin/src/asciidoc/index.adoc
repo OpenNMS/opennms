@@ -318,15 +318,14 @@ include::text/ticketing/tsrm.adoc[]
 == Enabling RMI
 include::text/rmi.adoc[]
 
-ifndef::opennms-prime[]
 [[ga-minion]]
 == Minion
+include::text/minion/jms.adoc[]
 include::text/minion/kafka.adoc[]
 include::text/minion/aws-sqs.adoc[]
 include::text/minion/offheap.adoc[]
 include::text/minion/jdbc-driver.adoc[]
 include::text/minion/ttl.adoc[]
-endif::opennms-prime[]
 
 [[ga-sentinel]]
 == Sentinel

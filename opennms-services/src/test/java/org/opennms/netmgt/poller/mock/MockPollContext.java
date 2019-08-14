@@ -43,6 +43,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -166,6 +167,11 @@ public class MockPollContext implements PollContext, EventListener {
     @Override
     public boolean isServiceUnresponsiveEnabled() {
         return m_serviceUnresponsiveEnabled;
+    }
+
+    @Override
+    public void trackPoll(PollableService service, PollStatus result) {
+        // pass, nothing to track
     }
 
     public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {

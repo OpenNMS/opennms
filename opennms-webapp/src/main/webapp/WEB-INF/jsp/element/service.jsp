@@ -42,7 +42,8 @@
         org.opennms.netmgt.config.poller.Service,
         org.opennms.netmgt.config.poller.Parameter,
         org.opennms.netmgt.model.OnmsMonitoredService,
-        org.opennms.netmgt.poller.ServiceMonitor
+        org.opennms.netmgt.poller.ServiceMonitor,
+        org.opennms.netmgt.poller.DefaultPollContext
 	"
 %>
 <%@ page import="java.util.Optional" %>
@@ -50,6 +51,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%
     OnmsMonitoredService service = (OnmsMonitoredService)request.getAttribute("service");
@@ -227,6 +229,25 @@ function doDelete() {
                         <c:otherwise><td>Unknown</td></c:otherwise>
                     </c:choose>
                 </tr>
+              <c:choose>
+                <%-- Hide the last good/fail timestamp rows when poll timestamp tracking is disabled. --%>
+                <c:when test="${!DefaultPollContext.DISABLE_POLL_TIMESTAMP_TRACKING}">
+                  <tr>
+                    <th>Last Good</th>
+                    <c:choose>
+                        <c:when test="${service.lastGood != null}"><td><onms:datetime date="${service.lastGood}" /></td></c:when>
+                        <c:otherwise><td>Unknown</td></c:otherwise>
+                    </c:choose>
+                  </tr>
+                  <tr>
+                    <th>Last Fail</th>
+                    <c:choose>
+                        <c:when test="${service.lastFail != null}"><td><onms:datetime date="${service.lastFail}" /></td></c:when>
+                        <c:otherwise><td>Unknown</td></c:otherwise>
+                    </c:choose>
+                  </tr>
+                </c:when>
+              </c:choose>
             </table>
             </div>
             <!-- patterns variables box -->
