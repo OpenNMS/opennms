@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.mock;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.QueryManager;
 
 public class MockQueryManager implements QueryManager {
@@ -176,5 +178,10 @@ public class MockQueryManager implements QueryManager {
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public void updateLastGoodOrFail(int nodeId, InetAddress ipAddr, String serviceName, PollStatus status) {
+        // pass
+    }
 
 }

@@ -18,8 +18,10 @@
 
   <modules>
     <module>broker</module>
+    <module>broker-api</module>
     <module>component</module>
     <module>pool</module>
+    <module>shell</module>
   </modules>
 
 </project>
