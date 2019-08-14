@@ -433,7 +433,7 @@ public class ReportRestServiceImpl implements ReportRestService {
                 reportParameterBuilder.withFloat(parameterName, floatValue);
             } else if (parameterType.equals("date")) {
                 final int hours = jsonParameter.has("hours") ? parseInteger(parameterName + "Hours", jsonParameter.get("hours")) : 0;
-                final int minutes = jsonParameter.has("minuteS") ? parseInteger(parameterName + "Minutes", jsonParameter.get("minutes")) : 0;
+                final int minutes = jsonParameter.has("minutes") ? parseInteger(parameterName + "Minutes", jsonParameter.get("minutes")) : 0;
                 final ReportDateParm actualDateParm = actualParameters.getParameter(parameterName);
                 if (actualDateParm.getUseAbsoluteDate() == true || mode == ReportMode.IMMEDIATE) {
                     if (jsonParameter.has("date")) {

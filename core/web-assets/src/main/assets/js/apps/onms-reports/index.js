@@ -411,6 +411,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
             $scope.execute = function() {
                 $scope.deliverySuccess = false;
                 $scope.scheduleSuccess = false;
+                $scope.report.updateParameters($scope.selected);
                 if ($scope.meta.online && !$scope.options.deliverReport && !$scope.options.scheduleReport) {
                     $scope.runReport();
                 }

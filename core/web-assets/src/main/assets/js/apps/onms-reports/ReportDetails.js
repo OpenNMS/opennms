@@ -116,10 +116,9 @@ export default class ReportDetails {
         this.parameters.filter(function (parameter) {
             return parameter.type === 'date';
         }).forEach(function (p) {
-            var momentDate = moment(p.internalValue, p.internalFormat);
-            p.date = moment(p.internalValue, p.internalFormat).format('YYYY-MM-DD');
-            p.hours = momentDate.hours();
-            p.minutes = momentDate.minutes();
+            p.date = p.internalValue.format('YYYY-MM-DD');
+            p.hours = p.internalValue.hours();
+            p.minutes = p.internalValue.minutes();
         });
     }
 }
