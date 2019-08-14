@@ -101,8 +101,6 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
     public void setUp() throws Exception {
         System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level", "INFO");
         MockLogAppender.setupLogging();
-
-        TemporaryDatabasePostgreSQL temp = new TemporaryDatabasePostgreSQL();
     }
 
     @Test
@@ -200,7 +198,7 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
         assertEquals("test-api.schema.b", ids.get(1).getId());
     }
 
-    public static Predicate<Resource> createTestApiLiquibaseChangelogFilter() {
+    public static final Predicate<Resource> createTestApiLiquibaseChangelogFilter() {
         return r -> {
             try {
                 URI uri = r.getURI();
@@ -416,7 +414,7 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
                         urls.add(u.toString());
                     }
                 } else {
-                    System.err.println("*** Couldn't get classloader URLs for classloader " + l + ", not an instance of URLClassLoader");
+                    throw new RuntimeException("Couldn't get URLs for classloader " + l + ", not an instance of URLClassLoader. (This shouldn't happen.)");
                 }
             }
         }

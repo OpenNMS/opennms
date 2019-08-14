@@ -144,7 +144,7 @@ public class AssetLocatorImpl extends AbstractResourceResolver implements AssetL
 
     @Override
     public Optional<InputStream> open(final String assetName, final String type, final boolean minified) throws IOException {
-        return this.<Optional<InputStream>>withLogPrefix(() -> {
+        return withLogPrefix(() -> {
             final Optional<AssetResource> r = getResource(assetName, type, minified);
             if (!r.isPresent()) {
                 LOG.info("Unable to locate asset resource {}:{}", assetName, type);

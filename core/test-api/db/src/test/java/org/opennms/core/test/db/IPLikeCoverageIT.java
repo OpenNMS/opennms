@@ -37,11 +37,9 @@ import java.sql.ResultSet;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.DBUtils;
 
-@Ignore("ignoring for now to see if we can get things passing")
 public class IPLikeCoverageIT {
     private TemporaryDatabasePostgreSQL m_db;
 
