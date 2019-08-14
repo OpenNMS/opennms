@@ -19,6 +19,10 @@ commands:
               - source-v1-{{ .Branch }}-
               - source-v1-
         - checkout
+        - run:
+            name: git fetch origin
+            command: |
+              git fetch origin
         - save_cache:
             key: source-v1-{{ .Branch }}-{{ .Revision }}
             paths:
@@ -179,63 +183,6 @@ commands:
           paths:
             - project
             - .m2
-  run-integration-tests-with-coverage:
-    parameters:
-      run-code-coverage:
-        default: true
-        type: boolean
-      rerun-failtest-count:
-        default: 0
-        type: integer
-      failure-option:
-        default: -fn
-        type: string
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Integration Tests
-          no_output_timeout: 1.0h
-          command: |
-            export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
-            export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
-            export CCI_FAILURE_OPTION=<< parameters.failure-option >>
-            .circleci/scripts/itest.sh
-      - run:
-          name: Gather test results
-          when: always
-          command: |
-            mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/surefire-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/failsafe-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-      - run:
-          name: Gather tests
-          when: always
-          command: |
-            mkdir -p ~/generated-tests
-            cp ./surefire_classname* ~/generated-tests/
-            cp ./failsafe_classname* ~/generated-tests/
-            cp ./projects_with_path ~/generated-tests/
-            cp /tmp/this_node* ~/generated-tests/
-      - run:
-          name: Compress Target Directories (Code Coverage)
-          when: always
-          command: |
-            .circleci/scripts/codecoverage-save.sh
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - code-coverage
-      - store_test_results:
-          path: ~/test-results
-      - store_artifacts:
-          when: always
-          path: ~/test-results
-          destination: test-results
-      - store_artifacts:
-          when: always
-          path: ~/generated-tests
-          destination: generated-tests
   run-integration-tests:
     parameters:
       run-code-coverage:
@@ -247,6 +194,9 @@ commands:
       failure-option:
         default: -fae
         type: string
+      changes-only:
+        default: true
+        type: boolean
     steps:
       - attach_workspace:
           at: ~/
@@ -257,6 +207,7 @@ commands:
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
+            export CCI_CHANGES_ONLY=<< parameters.changes-only >>
             .circleci/scripts/itest.sh
       - run:
           name: Gather test results
@@ -272,8 +223,19 @@ commands:
             mkdir -p ~/generated-tests
             cp ./surefire_classname* ~/generated-tests/
             cp ./failsafe_classname* ~/generated-tests/
-            cp ./projects_with_path ~/generated-tests/
             cp /tmp/this_node* ~/generated-tests/
+      - when:
+          condition: << parameters.run-code-coverage >>
+          steps:
+            - run:
+                name: Compress Target Directories (Code Coverage)
+                when: always
+                command: |
+                  .circleci/scripts/codecoverage-save.sh
+            - persist_to_workspace:
+                root: ~/
+                paths:
+                  - code-coverage
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
@@ -520,7 +482,7 @@ jobs:
             ./publish.sh 
   integration-test:
     executor: integration-test-executor
-    parallelism: 12
+    parallelism: 4
     steps:
       - run-integration-tests:
           rerun-failtest-count: 1
@@ -528,8 +490,11 @@ jobs:
     executor: integration-test-executor
     parallelism: 12
     steps:
-      - run-integration-tests-with-coverage:
+      - run-integration-tests:
+          run-code-coverage: true
           rerun-failtest-count: 0
+          failure-option: -fn
+          changes-only: false
   code-coverage:
     executor: build-executor
     resource_class: medium

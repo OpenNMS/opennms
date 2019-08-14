@@ -1,59 +1,40 @@
 #!/bin/sh -e
 
-remove_paths()
-{
-    while read -r data; do
-        echo "$data" |\
-        sed '/^opennms-tools[/,].*/d' |\
-        sed '/^smoke-test-v2[/,].*/d' |\
-        sed '/^smoke-test[/,].*/d' |\
-        sed '/^opennms-assemblies[/,].*/d' |\
-        sed '/^opennms-full-assembly[/,].*/d' |\
-        sed '/.*\/remote-poller-18[/,].*/d' |\
-        sed '/^org.opennms.features.topology.plugins.ssh[/,].*/d' |\
-        sed '/^opennms-install[/,].*/d'
-    done
-}
-
 find_tests()
 {
-    # Generate project name list with path
+    # Generate surefire & failsafe test list based on current
+    # branch and the list of files changed
+    # (The format of the output files contains the canonical class names i.e. org.opennms.core.soa.filter.FilterTest)
     pyenv local 3.5.2
-    python3 .circleci/scripts/find-tests.py . -p |\
-        remove_paths > projects_with_path
+    python3 .circleci/scripts/find-tests/find-tests.py generate-test-lists \
+      --changes-only="${CCI_CHANGES_ONLY:-true}" \
+      --output-unit-test-classes=surefire_classnames \
+      --output-integration-test-classes=failsafe_classnames \
+      .
 
-    # Generate surefire test list
-    circleci tests glob ./**/src/test/java/**/*Test*.java |\
-        remove_paths |\
-        sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > surefire_classnames
-    circleci tests glob ./**/src/test/java/**/*Test*.java |\
-        remove_paths |\
-        sed -e 's#^\(.*\)\/src/test/java/\(.*\)\.java#\1,\2#' |\
-        sed -e ':a' -e 's_^\([^,]*\)/_\1\\_;t a' |\
-        sed 's#/#.#g;s#\\#/#g' > surefire_classnames_with_path
-
-    # Generate failsafe test list
-    circleci tests glob ./**/src/test/java/**/*IT*.java |\
-        remove_paths |\
-        sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > failsafe_classnames
-    circleci tests glob ./**/src/test/java/**/*IT*.java |\
-        remove_paths |\
-        sed -e 's#^\(.*\)\/src/test/java/\(.*\)\.java#\1,\2#' |\
-        sed -e ':a' -e 's_^\([^,]*\)/_\1\\_;t a' |\
-        sed 's#/#.#g;s#\\#/#g' > failsafe_classnames_with_path
-
-    # Generate tests for this container
+    # Now determine the tests for this particular container based on the parallelism level and the test timings
     < surefire_classnames circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
     < failsafe_classnames circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_it_tests
 
-    # Match project name with test classname
-    cat /tmp/this_node* | while IFS= read -r classname
-    do
-        grep -h "$classname" ./*_classnames_with_path |\
-            cut -d',' -f1
-    done | sort | uniq | xargs -I {} grep -h {} projects_with_path |\
-        cut -d',' -f2 | sort | uniq > /tmp/this_node_projects
+    # Now determine the Maven modules related to the tests we need to run
+    cat /tmp/this_node* | python3 .circleci/scripts/find-tests/find-tests.py generate-test-modules \
+      --output=/tmp/this_node_projects \
+      .
 }
+
+echo "#### Generate project structure .json"
+(cd /tmp && mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
+      -DremoteRepositories=http://maven.opennms.org/content/groups/opennms.org-release/ \
+      -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0)
+mvn org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+
+echo "#### Determining tests to run"
+cd ~/project
+find_tests
+if [ ! -s /tmp/this_node_projects ]; then
+  echo "No tests to run."
+  exit 0
+fi
 
 echo "#### Allowing non-root ICMP"
 sudo sysctl net.ipv4.ping_group_range='0 429496729'
@@ -63,6 +44,12 @@ cd ~/project
 ./.circleci/scripts/postgres.sh
 
 echo "#### Installing other dependencies"
+# limit the sources we need to update
+sudo rm -f /etc/apt/sources.list.d/*
+# limit more sources and add mirrors
+echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ trusty main restricted
+deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /etc/apt/sources.list
 
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt-get || true && \
@@ -70,9 +57,6 @@ sudo killall -9 apt-get || true && \
             sudo apt-get install -f R-base rrdtool
 
 echo "#### Executing tests"
-cd ~/project
-find_tests
-echo "Build complete. Verifying..."
 mvn verify -P'!checkstyle' \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
@@ -86,3 +70,4 @@ mvn verify -P'!checkstyle' \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
            -pl "$(< /tmp/this_node_projects paste -s -d, -)"
+
