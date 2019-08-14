@@ -422,6 +422,12 @@
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.test-api</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -438,11 +444,6 @@
     <dependency>
       <groupId>com.jayway.awaitility</groupId>
       <artifactId>awaitility</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
