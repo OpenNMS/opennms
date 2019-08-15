@@ -150,7 +150,9 @@ public class ReportDetails {
                 jsonDateParm.put("minutes", dateParm.getMinutes()); // also used for absolute dates
 
                 // Absolute date values
-                jsonDateParm.put("date", new SimpleDateFormat("yyyy-MM-dd").format(dateParm.getDate()));
+                if (dateParm.getDate() != null) {
+                    jsonDateParm.put("date", new SimpleDateFormat("yyyy-MM-dd").format(dateParm.getDate()));
+                }
                 jsonParameters.put(jsonDateParm);
             }
         }
