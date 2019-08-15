@@ -35,16 +35,15 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.xml.JacksonUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 
-public class JsonWriterFactory {
-    private static final ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
+public interface JaxbToJsonStore<T> {
+    ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
 
-    public static <T> Consumer<T> getJsonWriterCallbackFunction(Class<T> clazz, JsonStore jsonStore, String key,
-                                                                String context) {
-        return (T config) -> {
+    default Consumer<T> getJsonWriterCallbackFunction(JsonStore jsonStore, String key, String context) {
+        return config -> {
             try {
-                synchronized (clazz) {
-                    String value = objectMapper.writeValueAsString(config);
-                    jsonStore.put(key, value, context);
+                // Synchronize to ensure mapping the pojo and writing it to the store is atomic
+                synchronized (this) {
+                    jsonStore.put(key, objectMapper.writeValueAsString(config), context);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

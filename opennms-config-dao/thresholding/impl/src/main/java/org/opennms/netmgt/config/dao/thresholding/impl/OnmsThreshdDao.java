@@ -37,13 +37,13 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.common.api.SaveableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.FileSystemSaveableConfigContainer;
-import org.opennms.netmgt.config.dao.common.impl.JsonWriterFactory;
+import org.opennms.netmgt.config.dao.common.impl.JaxbToJsonStore;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThreshdDao {
+public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThreshdDao, JaxbToJsonStore<ThreshdConfiguration> {
     private final SaveableConfigContainer<ThreshdConfiguration> saveableConfigContainer;
 
     @VisibleForTesting
@@ -51,8 +51,8 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
         super(jsonStore);
         Objects.requireNonNull(configFile);
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class, "threshd-configuration",
-                Collections.singleton(JsonWriterFactory.getJsonWriterCallbackFunction(ThreshdConfiguration.class, jsonStore,
-                        JSON_STORE_KEY, JSON_STORE_CONTEXT)), configFile);
+                Collections.singleton(getJsonWriterCallbackFunction(jsonStore, JSON_STORE_KEY, JSON_STORE_CONTEXT)),
+                configFile);
         reload();
     }
 

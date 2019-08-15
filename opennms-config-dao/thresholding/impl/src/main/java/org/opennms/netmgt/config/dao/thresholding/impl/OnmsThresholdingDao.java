@@ -37,13 +37,13 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.common.api.SaveableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.FileSystemSaveableConfigContainer;
-import org.opennms.netmgt.config.dao.common.impl.JsonWriterFactory;
+import org.opennms.netmgt.config.dao.common.impl.JaxbToJsonStore;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class OnmsThresholdingDao extends AbstractThresholdingDao implements WriteableThresholdingDao {
+public class OnmsThresholdingDao extends AbstractThresholdingDao implements WriteableThresholdingDao, JaxbToJsonStore<ThresholdingConfig> {
     private final SaveableConfigContainer<ThresholdingConfig> saveableConfigContainer;
 
     @VisibleForTesting
@@ -51,8 +51,8 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
         super(jsonStore);
         Objects.requireNonNull(configFile);
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThresholdingConfig.class, "thresholds",
-                Collections.singleton(JsonWriterFactory.getJsonWriterCallbackFunction(ThresholdingConfig.class, jsonStore,
-                        JSON_STORE_KEY, JSON_STORE_CONTEXT)), configFile);
+                Collections.singleton(getJsonWriterCallbackFunction(jsonStore, JSON_STORE_KEY, JSON_STORE_CONTEXT)),
+                configFile);
         reload();
     }
 
