@@ -69,8 +69,8 @@ public class GrafanaServerConfiguration {
         this.connectTimeoutSeconds = connectTimeoutSeconds == null ? DEFAULT_CONNECT_TIMEOUT_IN_SECONDS : connectTimeoutSeconds;
         this.readTimeoutSeconds = readTimeoutSeconds == null ? DEFAULT_READ_TIMEOUT_IN_SECONDS : readTimeoutSeconds;
 
-        Preconditions.checkArgument(connectTimeoutSeconds >= 0, "connectTimeoutSeconds must be >= 0");
-        Preconditions.checkArgument(readTimeoutSeconds >= 0, "readTimeoutSeconds msut be >= 0");
+        Preconditions.checkArgument(this.connectTimeoutSeconds >= 0, "connectTimeoutSeconds must be >= 0");
+        Preconditions.checkArgument(this.readTimeoutSeconds >= 0, "readTimeoutSeconds must be >= 0");
     }
 
     public String getUrl() {
