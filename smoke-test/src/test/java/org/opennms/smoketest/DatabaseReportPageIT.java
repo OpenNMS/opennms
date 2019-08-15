@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.util.Strings;
 import org.hamcrest.Matchers;
@@ -99,6 +98,7 @@ public class DatabaseReportPageIT extends UiPageTest {
                 .deliverReport(DeliveryOptions.DEFAULTS);
 
         // Verify delivery
+        new PersistedReportsTab(getDriver()).open();
         await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                 .until( () -> {
                         new Button(driver, "action.refresh").click();
@@ -161,11 +161,6 @@ public class DatabaseReportPageIT extends UiPageTest {
                 .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(updatedCronExpression))
                 .findAny();
         assertThat(findMe.isPresent(), is(true));
-    }
-
-
-    private static void closeDialogue(Element element) {
-        element.findElementByXpath("//div[@class='modal-body']//button[text()='Show me']").click();
     }
 
     public interface EarlyMorningReport {
@@ -246,7 +241,11 @@ public class DatabaseReportPageIT extends UiPageTest {
             final WebElement executeButton = execute(() -> findElementById("execute"));
             assertThat(executeButton.getText(), Matchers.is("Deliver Report"));
             executeButton.click();
-            closeDialogue(this);
+
+            // Verify it was scheduled for delivery
+            await().atMost(5, SECONDS)
+                    .pollInterval(1, SECONDS)
+                    .until(() -> findElementByXpath("//div[contains(@class, 'alert alert-success') and contains(text(), 'The report was scheduled for delivery')]") != null);
             return this;
         }
 
@@ -258,7 +257,11 @@ public class DatabaseReportPageIT extends UiPageTest {
             final WebElement executeButton = execute(() -> findElementById("execute"));
             assertThat(executeButton.getText(), Matchers.is("Schedule Report"));
             executeButton.click();
-            closeDialogue(this);
+
+            // Verify it was scheduled
+            await().atMost(5, SECONDS)
+                    .pollInterval(1, SECONDS)
+                    .until(() -> findElementByXpath("//div[contains(@class, 'alert alert-success') and contains(text(), 'The report was scheduled')]") != null);
             return this;
         }
 
