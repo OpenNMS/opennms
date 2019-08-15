@@ -42,6 +42,7 @@ import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
+import org.opennms.api.reporting.parameter.ReportTimezoneParm;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.reporting.core.DeliveryOptions;
@@ -52,14 +53,11 @@ import com.google.common.collect.Lists;
 public class ReportDetails {
 
     private String reportId;
-
     private ReportParameters parameters = new ReportParameters();
-
-    private List<ReportFormat> formats = Lists.newArrayList();;
-
-    private List<Category> categories = Lists.newArrayList();;
-
+    private List<ReportFormat> formats = Lists.newArrayList();
+    private List<Category> categories = Lists.newArrayList();
     private List<OnmsCategory> surveillanceCategories = Lists.newArrayList();
+    private List<String> timezones = Lists.newArrayList();
     private DeliveryOptions deliveryOptions;
     private String cronExpression;
 
@@ -118,6 +116,18 @@ public class ReportDetails {
 
     public void setCronExpression(String cronExpression) {
         this.cronExpression = Objects.requireNonNull(cronExpression);
+    }
+
+    public String getCronExpression() {
+        return cronExpression;
+    }
+
+    public List<String> getTimezones() {
+        return timezones;
+    }
+
+    public void setTimezones(List<String> timezones) {
+        this.timezones = Objects.requireNonNull(timezones);
     }
 
     public JSONObject toJson() {
@@ -200,6 +210,16 @@ public class ReportDetails {
                 jsonParameters.put(jsonStringParm);
             }
         }
+        if (parameters.getTimezoneParms() != null) {
+            for (ReportTimezoneParm parm : parameters.getTimezoneParms()) {
+                final JSONObject jsonTimezoneParm = new JSONObject();
+                jsonTimezoneParm.put("type", "timezone");
+                jsonTimezoneParm.put("name", parm.getName());
+                jsonTimezoneParm.put("displayName", parm.getDisplayName());
+                jsonTimezoneParm.put("value", parm.getValue());
+                jsonParameters.put(jsonTimezoneParm);
+            }
+        }
 
         // Convert categories
         final JSONArray jsonCategories = new JSONArray();
@@ -213,6 +233,9 @@ public class ReportDetails {
             jsonSurveillanceCategories.put(eachCategory.getLabel());
         }
 
+        // Convert timezones
+        final JSONArray jsonTimezones = new JSONArray(timezones);
+
         // Create return object
         final JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", reportId);
@@ -220,6 +243,7 @@ public class ReportDetails {
         jsonObject.put("formats", jsonFormats);
         jsonObject.put("categories", jsonCategories);
         jsonObject.put("surveillanceCategories", jsonSurveillanceCategories);
+        jsonObject.put("timezones", jsonTimezones);
 
         // Apply deliveryOptions if defined
         if (deliveryOptions != null) {

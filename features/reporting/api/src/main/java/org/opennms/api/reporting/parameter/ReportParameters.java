@@ -60,6 +60,7 @@ public class ReportParameters implements Serializable {
     protected List <ReportIntParm> m_intParms;
     protected List<ReportFloatParm> m_floatParms;
     protected List<ReportDoubleParm> m_doubleParms;
+    protected List<ReportTimezoneParm> m_timezoneParms;
 
     public ReportParameters() {
         super();
@@ -121,6 +122,14 @@ public class ReportParameters implements Serializable {
         return m_format;
     }
 
+    public void setTimezoneParms(List<ReportTimezoneParm> timezoneParms) {
+        m_timezoneParms = timezoneParms;
+    }
+
+    public List<ReportTimezoneParm> getTimezoneParms() {
+        return m_timezoneParms;
+    }
+
     public Map<String, Object> getReportParms(ReportMode mode) {
         
         HashMap <String,Object>parmMap = new HashMap<String, Object>();
@@ -168,6 +177,11 @@ public class ReportParameters implements Serializable {
                 parmMap.put(parm.getName(), parm.getValue());
             }
         }
+        if (m_timezoneParms != null) {
+            for (ReportTimezoneParm parm : m_timezoneParms) {
+                parmMap.put(parm.getName(), parm.getValue());
+            }
+        }
         return parmMap;
     }
     
@@ -176,7 +190,7 @@ public class ReportParameters implements Serializable {
     }
 
     public List<? extends ReportParm> getParameters() {
-        return Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms)
+        return Lists.newArrayList(m_stringParms, m_dateParms, m_doubleParms, m_floatParms, m_intParms, m_timezoneParms)
                 .stream()
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
@@ -234,6 +248,8 @@ public class ReportParameters implements Serializable {
                 thisReportDateParm.setMinutes(othersReportDateParm.getMinutes());
                 thisReportDateParm.setCount(othersReportDateParm.getCount());
                 thisReportDateParm.setInterval(othersReportDateParm.getInterval());
+            } else if (thisReportParm instanceof ReportTimezoneParm) {
+                ((ReportTimezoneParm) thisReportParm).setValue(((ReportTimezoneParm) otherReportParm).getValue());
             } else {
                 throw new IllegalArgumentException("Unknown parameter type " + otherReportParm.getClass() + " of property with name " + e.getKey());
             }

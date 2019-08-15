@@ -28,6 +28,7 @@
 
 package org.opennms.api.reporting;
 
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +39,7 @@ import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
+import org.opennms.api.reporting.parameter.ReportTimezoneParm;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -56,6 +58,7 @@ public class ReportParameterBuilder {
     private final List<ReportFloatParm> floatParams = Lists.newArrayList();
     private final List<ReportDateParm> dateParams = Lists.newArrayList();
     private final List<ReportDoubleParm> doubleParms = Lists.newArrayList();
+    private final List<ReportTimezoneParm> timezoneParms = Lists.newArrayList();
 
     public ReportParameterBuilder withString(String name, String value) {
         Objects.requireNonNull(name);
@@ -148,6 +151,18 @@ public class ReportParameterBuilder {
         return this;
     }
 
+    public ReportParameterBuilder withTimezone(String name, ZoneId zoneId) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(zoneId);
+
+        final ReportTimezoneParm parm = new ReportTimezoneParm();
+        parm.setName(name);
+        parm.setValue(zoneId);
+
+        timezoneParms.add(parm);
+        return this;
+    }
+
     public ReportParameters build() {
         final ReportParameters parameters = new ReportParameters();
         parameters.setStringParms(stringParams);
@@ -155,7 +170,7 @@ public class ReportParameterBuilder {
         parameters.setFloatParms(floatParams);
         parameters.setDateParms(dateParams);
         parameters.setDoubleParms(doubleParms);
-
+        parameters.setTimezoneParms(timezoneParms);
         return parameters;
     }
 }

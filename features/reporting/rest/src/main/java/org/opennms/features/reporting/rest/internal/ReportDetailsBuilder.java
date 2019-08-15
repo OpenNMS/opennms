@@ -28,8 +28,10 @@
 
 package org.opennms.features.reporting.rest.internal;
 
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.parameter.ReportParameters;
@@ -79,6 +81,17 @@ public class ReportDetailsBuilder {
     public ReportDetailsBuilder withCronExpression(final String cronExpression) {
         reportDetails.setCronExpression(cronExpression);
         return this;
+    }
+
+    public ReportDetailsBuilder withTimezones(List<String> timezones) {
+        reportDetails.setTimezones(timezones);
+        return this;
+    }
+
+    public ReportDetailsBuilder withDefaultTimezones() {
+        final List<String> allAvailableIds = Lists.newArrayList(TimeZone.getAvailableIDs());
+        allAvailableIds.removeAll(ZoneId.SHORT_IDS.keySet()); // these cannot be used via ZoneId.of(...) so we remove them
+        return withTimezones((allAvailableIds));
     }
 
     public ReportDetails build() {

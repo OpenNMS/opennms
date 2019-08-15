@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,6 +55,7 @@ import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
+import org.opennms.api.reporting.parameter.ReportTimezoneParm;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
@@ -62,6 +64,8 @@ import org.opennms.reporting.jasperreports.compiler.CustomJRJdtCompiler;
 import org.opennms.reporting.jasperreports.filter.ParameterFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -159,6 +163,9 @@ public class JasperReportService implements ReportService {
                     final List<ReportDateParm> dateParms = new ArrayList<>();
                     reportParameters.setDateParms(dateParms);
 
+                    final List<ReportTimezoneParm> timezoneParms = new ArrayList<>();
+                    reportParameters.setTimezoneParms(timezoneParms);
+
                     for (final JRParameter reportParm : reportParms) {
                         if (apply(parameterFilters, reportParm)) {
                             if (reportParm.getValueClassName().equals("java.lang.String")) {
@@ -197,6 +204,27 @@ public class JasperReportService implements ReportService {
                                     intParm.setValue(0);
                                 }
                                 intParms.add(intParm);
+                                continue;
+                            }
+
+                            if (reportParm.getValueClassName().equals("java.time.ZoneId")) {
+                                LOG.debug("adding a ZoneId parm name {}", reportParm.getName());
+                                final ReportTimezoneParm timezoneParm = new ReportTimezoneParm();
+                                timezoneParm.setName(reportParm.getName());
+                                if (reportParm.getDescription() != null) {
+                                    timezoneParm.setDisplayName(reportParm.getDescription());
+                                } else {
+                                    timezoneParm.setDisplayName(reportParm.getName());
+                                }
+                                if (defaultValues.containsKey(reportParm.getName()) && (defaultValues.get(reportParm.getName()) != null)) {
+                                    final Object timezoneValue = defaultValues.get(reportParm.getName());
+                                    if (timezoneValue instanceof ZoneId) {
+                                        timezoneParm.setValue((ZoneId) timezoneValue);
+                                    } else if (timezoneValue instanceof String && !Strings.isNullOrEmpty((String) timezoneValue)) {
+                                        timezoneParm.setValue((String) timezoneValue);
+                                    }
+                                }
+                                timezoneParms.add(timezoneParm);
                                 continue;
                             }
 
@@ -525,6 +553,11 @@ public class JasperReportService implements ReportService {
                 if (reportParm.getValueClassName().equals("java.sql.Timestamp")) {
                     final Date date = (Date)onmsReportParms.get(parmName);
                     jrReportParms.put(parmName, new java.sql.Timestamp(date.getTime()));
+                    continue;
+                }
+                if (reportParm.getValueClassName().equals("java.time.ZoneId")) {
+                    final ZoneId zoneId = ZoneId.of((String) onmsReportParms.get(parmName));
+                    jrReportParms.put(parmName, zoneId);
                     continue;
                 }
                 throw new ReportException("Unsupported report parameter type " + reportParm.getValueClassName());

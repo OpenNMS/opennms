@@ -30,7 +30,7 @@ package org.opennms.netmgt.jasper.grafana;
 
 import static org.opennms.netmgt.jasper.grafana.ExceptionToPngRenderer.renderExceptionToPng;
 
-import java.io.IOException;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,10 +46,10 @@ import java.util.stream.Stream;
 import org.opennms.netmgt.endpoints.grafana.api.Dashboard;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaClient;
 import org.opennms.netmgt.endpoints.grafana.api.Panel;
+import org.opennms.netmgt.jasper.helper.TimezoneHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 
@@ -143,11 +143,21 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
 
         // Issue the requests for all of the panels simultaneously
         LOG.debug("Triggering asynchronous rendering of PNGs for {} panels for dashboard: {}", panels.size(), dashboard.getTitle());
+        final String utcOffset = getUtcOffset(query);
         for (Panel panel : panels) {
             final CompletableFuture<byte[]> panelImageBytes = client.renderPngForPanel(dashboard, panel, query.getWidth(), query.getHeight(),
-                    query.getFrom().getTime(), query.getTo().getTime(), query.getVariables());
+                    query.getFrom().getTime(), query.getTo().getTime(), utcOffset, query.getVariables());
             panelRenders.put(panel, panelImageBytes);
         }
+    }
+
+    private static String getUtcOffset(GrafanaQuery query) {
+        if (query.getTimezone() != null) {
+            final ZoneId zoneId = ZoneId.of(query.getTimezone());
+            final String utcOffset = TimezoneHelper.getUtcOffset(zoneId, query.getFrom());
+            return utcOffset;
+        }
+        return null;
     }
 
 }

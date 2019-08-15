@@ -39,13 +39,18 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
   <parameter name="GRAFANA_ENDPOINT_UID" class="java.lang.String">
     <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
   </parameter>
+  <parameter name="timezone" class="java.time.ZoneId">
+    <parameterDescription><![CDATA[Report Timezone]]></parameterDescription>
+    <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+  </parameter>
   <queryString language="grafana"><![CDATA[{
                         "dashboard": {
                         "uid": "$P{GRAFANA_DASHBOARD_UID}"
                         },
                         "time": {
                           "from": $P{startDateTime},
-                          "to": $P{endDateTime}
+                          "to": $P{endDateTime},
+                          "tz": "$P{timezone}"
                         },
                         "render": {
                           "width": 1149,
@@ -86,22 +91,29 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
         </textElement>
         <textFieldExpression><![CDATA[$P{reportDescription}]]></textFieldExpression>
       </textField>
-      <textField pattern="EEE dd MMM yyyy HH:mm:ss z">
-        <reportElement x="680" y="89" width="210" height="20" forecolor="#000000" uuid="ac9d2b31-2a51-4768-90e9-b5a1f1698b67"/>
+      <textField pattern="EEE dd MMM yyyy HH:mm:ss">
+        <reportElement x="500" y="89" width="210" height="20" forecolor="#000000" uuid="ac9d2b31-2a51-4768-90e9-b5a1f1698b67"/>
         <textElement verticalAlignment="Middle">
           <font size="12" isBold="false"/>
         </textElement>
         <textFieldExpression><![CDATA[$P{startDate}]]></textFieldExpression>
       </textField>
-      <textField pattern="EEE dd MMM yyyy HH:mm:ss z">
-        <reportElement x="930" y="89" width="219" height="20" forecolor="#000000" uuid="558f5fde-80e7-4515-976e-643bc23ad397"/>
+      <textField pattern="EEE dd MMM yyyy HH:mm:ss">
+        <reportElement x="700" y="89" width="219" height="20" forecolor="#000000" uuid="558f5fde-80e7-4515-976e-643bc23ad397"/>
         <textElement verticalAlignment="Middle">
           <font size="12" isBold="false"/>
         </textElement>
         <textFieldExpression><![CDATA[$P{endDate}]]></textFieldExpression>
       </textField>
+      <textField>
+        <reportElement x="870" y="89" width="300" height="20" forecolor="#000000" uuid="d4f139e5-6af9-44fa-bb50-eca765c5b6f3"/>
+        <textElement verticalAlignment="Middle">
+          <font size="12" isBold="false"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{timezone} + " " + org.opennms.netmgt.jasper.helper.TimezoneHelper.getUtcOffset($P{timezone}, $P{startDate})]]></textFieldExpression>
+      </textField>
       <staticText>
-        <reportElement x="646" y="89" width="34" height="20" uuid="30cb5bcf-d0b2-48cd-940e-f6bef7bcc753">
+        <reportElement x="470" y="89" width="34" height="20" uuid="30cb5bcf-d0b2-48cd-940e-f6bef7bcc753">
           <property name="com.jaspersoft.studio.unit.width" value="pixel"/>
           <property name="com.jaspersoft.studio.unit.x" value="pixel"/>
         </reportElement>
@@ -111,7 +123,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
         <text><![CDATA[Start:]]></text>
       </staticText>
       <staticText>
-        <reportElement x="900" y="89" width="30" height="20" uuid="4bcd92a9-04e0-4706-b6dc-02ab02356f40"/>
+        <reportElement x="670" y="89" width="30" height="20" uuid="4bcd92a9-04e0-4706-b6dc-02ab02356f40"/>
         <textElement verticalAlignment="Middle">
           <font size="12"/>
         </textElement>

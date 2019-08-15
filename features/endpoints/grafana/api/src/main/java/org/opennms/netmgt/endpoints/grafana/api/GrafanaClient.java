@@ -39,5 +39,5 @@ public interface GrafanaClient {
 
     Dashboard getDashboardByUid(String uid) throws IOException;
 
-    CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, Map<String, String> variables);
+    CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, final String utcOffset, final Map<String, String> variables);
 }

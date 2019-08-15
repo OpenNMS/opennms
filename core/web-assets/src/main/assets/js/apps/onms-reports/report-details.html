@@ -110,7 +110,7 @@
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
         <!-- DATE -->
-        <div ng-if="parameter.type === 'date'" class="form-group" ng-repeat-end>
+        <div ng-if="parameter.type === 'date'" class="form-group">
             <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
             <div class="input-group" ng-if="options.scheduleReport && parameter.useAbsoluteDate === false">
                 <input type="number"
@@ -157,6 +157,18 @@
                             expand="true"
                             on-state-change="onDateParamStateChange(invalidState)"
             ></datetimepicker>
+        </div>
+        <!-- TimeZone -->
+        <div ng-if="parameter.type === 'timezone'" class="form-group" ng-repeat-end>
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <select id="{{parameter.name}}"
+                    name="{{parameter.name}}"
+                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
+                    class="form-control custom-select"
+                    ng-model="parameter.value"
+                    ng-options="tz as tz for tz in report.supportedTimezones">
+            </select>
+            <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
         <hr class="mb-4"/>
     </div>

@@ -129,7 +129,7 @@ public class GrafanaClientImpl implements GrafanaClient {
     }
 
     @Override
-    public CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, Map<String, String> variables) {
+    public CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, String utcOffset, Map<String, String> variables) {
         final HttpUrl.Builder builder = baseUrl.newBuilder()
                 .addPathSegment("render")
                 .addPathSegment("d-solo")
@@ -143,6 +143,9 @@ public class GrafanaClientImpl implements GrafanaClient {
                 .addQueryParameter("width", Integer.toString(width))
                 .addQueryParameter("height", Integer.toString(height))
                 .addQueryParameter("theme", "light"); // Use the light theme
+        if (!Strings.isNullOrEmpty(utcOffset)) {
+            builder.addQueryParameter("tz", utcOffset);
+        }
         variables.forEach((k,v) -> builder.addQueryParameter("var-"+ k, v));
 
         final Request request = new Request.Builder()

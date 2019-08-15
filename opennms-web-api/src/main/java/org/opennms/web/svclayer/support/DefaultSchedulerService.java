@@ -46,6 +46,7 @@ import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportParmVisitor;
 import org.opennms.api.reporting.parameter.ReportStringParm;
+import org.opennms.api.reporting.parameter.ReportTimezoneParm;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.DeliveryConfig;
 import org.opennms.reporting.core.svclayer.ScheduleConfig;
@@ -337,6 +338,13 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
         @Override
         public void visit(ReportDoubleParm parm) {
+            if (parm.getValue() == null) {
+                throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
+            }
+        }
+
+        @Override
+        public void visit(ReportTimezoneParm parm) {
             if (parm.getValue() == null) {
                 throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
             }
