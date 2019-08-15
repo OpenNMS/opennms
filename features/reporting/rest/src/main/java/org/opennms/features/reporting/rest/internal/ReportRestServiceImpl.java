@@ -442,7 +442,7 @@ public class ReportRestServiceImpl implements ReportRestService {
                             final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
                             reportParameterBuilder.withDate(parameterName, parsedDate, hours, minutes);
                         } catch (ParseException e) {
-                            throw new SchedulerContextException(parameterName, "The provided value ''{0}}' cannot be parsed as a date. Expected format is yyy-MM-dd", dateString);
+                            throw new SchedulerContextException(parameterName, "The provided value ''{0}'' cannot be parsed as a date. Expected format is yyyy-MM-dd", dateString);
                         }
                     }
                 } else {
@@ -451,7 +451,7 @@ public class ReportRestServiceImpl implements ReportRestService {
                     reportParameterBuilder.withDate(parameterName, interval, count, hours, minutes);
                 }
             } else {
-                throw new SchedulerContextException(parameterName, "Unknown type ''{0}''. Supported types are: ''{{1}}",
+                throw new SchedulerContextException(parameterName, "Unknown type ''{0}''. Supported types are: ''{1}''",
                         parameterType, Lists.newArrayList("string", "integer", "float", "double", "date"));
             }
         }

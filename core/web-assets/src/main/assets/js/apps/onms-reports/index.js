@@ -252,7 +252,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                     });
 
                     scope.$watchCollection('selected', function(newVal, oldVal) {
-                       scope.report.updateParameters(scope.selected);
+                        scope.report.updateGrafanaParameters(scope.selected);
                     });
 
                     scope.$watch('reportForm.$invalid', function(newVal, oldVal) {
@@ -418,7 +418,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             $scope.execute = function() {
                 $scope.deliverySuccess = false;
                 $scope.scheduleSuccess = false;
-                $scope.report.updateParameters($scope.selected);
+                $scope.report.updateDateParameters();
                 if ($scope.meta.online && !$scope.options.deliverReport && !$scope.options.scheduleReport) {
                     $scope.runReport();
                 }

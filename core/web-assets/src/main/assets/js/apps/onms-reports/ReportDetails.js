@@ -81,7 +81,7 @@ export default class ReportDetails {
                 this.errors[contextError.context] = contextError.message;
                 return;
             } else if (contextError.context === 'cronExpression' && this.scheduleOptions.type !== Types.CUSTOM) {
-                throw new Error("Generated cronExpression was not parseable by backend. If this happens contact OpenNMS support");
+                throw new Error("Generated cronExpression was not parsable by backend. If this happens contact OpenNMS support");
             }
         }
         throw new Error("Provided contextError must be of type ContextError")
@@ -104,21 +104,24 @@ export default class ReportDetails {
             && typeof this.parametersByName['GRAFANA_DASHBOARD_UID'] !== 'undefined'
     }
 
-    // Before sending the report we must replace the values of some parameters
-    // e.g. the Endpoint UID or Dashboard UID
-    updateParameters(selected) {
+    // Before sending the report we must replace the values for the Endpoint UID and Dashboard UID
+    updateGrafanaParameters(selected) {
         if (this.isGrafanaReport()) {
             this.parametersByName['GRAFANA_ENDPOINT_UID'].value = selected.endpoint ? selected.endpoint.uid : undefined;
             this.parametersByName['GRAFANA_DASHBOARD_UID'].value = selected.dashboard ? selected.dashboard.uid : undefined;
         }
+    }
 
+    // Before sending the report, the date values must be updated accordingly
+    updateDateParameters() {
         // Set the date value
         this.parameters.filter(function (parameter) {
             return parameter.type === 'date';
         }).forEach(function (p) {
-            p.date = p.internalValue.format('YYYY-MM-DD');
-            p.hours = p.internalValue.hours();
-            p.minutes = p.internalValue.minutes();
+            const date = moment(p.internalValue, p.internalFormat);
+            p.date = date.format('YYYY-MM-DD');
+            p.hours = date.hours();
+            p.minutes = date.minutes();
         });
     }
 }
