@@ -84,6 +84,27 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.11]
+
+==== Release Meridian-2018.1.11
+
+Release 2018.1.11 is a small update to 2018.1.10 that adds improved diagnostics for JMS RPC and fixes a few
+other small bugs.
+
+The codename for 2018.1.11 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_11[Violent Storm]_.
+
+CAUTION: This update modifies the `custom.properties` file in `$OPENNMS_HOME/etc`.
+This is generally not a user-modified file and should always be overwritten, but if you are in the unlikely situation of modifying `custom.properties` in your local environment, make sure you incorporate the update.
+
+===== Bug
+
+* DNS Requisition import fails if location is specified (Issue http://issues.opennms.org/browse/NMS-11748[NMS-11748])
+* Drools engine hangs on shutdown (Issue http://issues.opennms.org/browse/NMS-12201[NMS-12201])
+
+===== Enhancement
+
+* Improve diagnostics and resiliency of JMS RPC (w/ embedded ActiveMQ) (Issue http://issues.opennms.org/browse/NMS-12222[NMS-12222])
+
 [releasenotes-changelog-Meridian-2018.1.10]
 
 ==== Release Meridian-2018.1.10
