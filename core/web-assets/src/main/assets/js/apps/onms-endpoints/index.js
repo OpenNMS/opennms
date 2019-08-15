@@ -161,7 +161,13 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
                     result: undefined
                 };
 
-                GrafanaEndpointsService.verify({apiKey: $scope.endpoint.apiKey, url: $scope.endpoint.url}, function(response) {
+                const endpoint = {
+                    apiKey: $scope.endpoint.apiKey,
+                    url: $scope.endpoint.url,
+                    readTimeout: $scope.endpoint.readTimeout,
+                    connectTimeout: $scope.endpoint.connectTimeout
+                };
+                GrafanaEndpointsService.verify(endpoint, function(response) {
                     $scope.verification.state = 'success';
                 }, function(response) {
                     $scope.verification.state = 'failure';

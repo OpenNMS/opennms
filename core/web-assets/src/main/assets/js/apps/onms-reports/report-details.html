@@ -5,12 +5,12 @@
         <!-- Grafana Parameters -->
         <div ng-show="report.isGrafanaReport()" class="form-group">
             <label>Grafana Endpoint</label>
-            <a ng-if="endpoints.length > 0" href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
-            <a ng-if="endpoints.length == 0" href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>
+            <a href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
+            <a href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>
             <select class="form-control custom-select"
                     ng-model="selected.endpoint"
                     ng-show="endpoints.length > 0"
-                    ng-class="{ 'is-invalid': report.errors.GRAFANA_ENDPOINT_UID }"
+                    ng-class="{ 'is-invalid': report.errors.GRAFANA_ENDPOINT_UID || report.errors.GRAFANA_DASHBOARD_UID }"
                     ng-change="endpointChanged()"
                     ng-options="endpoint as endpoint.label for endpoint in endpoints"
             >
@@ -22,11 +22,14 @@
             <div class="invalid-feedback" ng-if="report.errors.GRAFANA_ENDPOINT_UID">
                 {{report.errors.GRAFANA_ENDPOINT_UID}}: <a href="/opennms/admin/endpoint/index.jsp#!/endpoints/grafana">Configure Grafana Endpoints</a>
             </div>
+            <div class="invalid-feedback" ng-if="report.errors.GRAFANA_DASHBOARD_UID">
+                {{report.errors.GRAFANA_DASHBOARD_UID}}
+            </div>
         </div>
         <div ng-show="report.isGrafanaReport() && selected.endpoint" class="form-group">
             <label>Grafana Dashboard</label>
             <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dasbhoard" target="_blank"> <i class="fa fa-dashboard"></i></a>
-            <a ng-if="dashboards.length == 0" href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
+            <a href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
             <select class="form-control custom-select"
                     ng-model="selected.dashboard"
                     ng-show="dashboards.length > 0"

@@ -78,6 +78,8 @@ public class GrafanaEndpointRestServiceImpl implements GrafanaEndpointRestServic
             final GrafanaEndpoint endpointToUse = new GrafanaEndpoint();
             endpointToUse.setApiKey(grafanaEndpoint.getApiKey());
             endpointToUse.setUrl(grafanaEndpoint.getUrl());
+            endpointToUse.setConnectTimeout(grafanaEndpoint.getConnectTimeout());
+            endpointToUse.setReadTimeout(grafanaEndpoint.getReadTimeout());
             client = grafanaEndpointService.getClient(endpointToUse);
         } else {
             client = grafanaEndpointService.getClient(grafanaEndpoint.getUid());

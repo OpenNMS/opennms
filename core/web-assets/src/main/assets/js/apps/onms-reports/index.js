@@ -34,6 +34,21 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
     }
 };
 
+const handleGrafanaError = function(response, report, optionalCallbackIfNoContextError) {
+    // In case the dashboards could not be loaded, it may be due to
+    // an issue with talking to Grafana itself.
+    const errorResponse = new ErrorResponse(response);
+    if (errorResponse.isContextError()) {
+        const contextError = errorResponse.asContextError();
+        if (contextError.context === 'entity') {
+            contextError.context = 'GRAFANA_ENDPOINT_UID';
+        }
+        report.setErrors(contextError);
+    }  else {
+        handleReportError(response, report, optionalCallbackIfNoContextError);
+    }
+};
+
 (function() {
     'use strict';
 
@@ -166,7 +181,8 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 scope: {
                     report: '=?ngModel',
                     options: '=?options',
-                    onInvalidChange: '&?onInvalidChange'
+                    onInvalidChange: '&?onInvalidChange',
+                    onGlobalError: '&onGlobalError'
                 },
                 link: function (scope, element, attrs) {
                     scope.endpoints = [];
@@ -183,28 +199,19 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                     scope.endpointChanged = function () {
                         scope.dashboards = [];
                         scope.selected.dashboard = undefined;
+                        scope.report.resetErrors();
                         GrafanaResource.dashboards({uid: scope.selected.endpoint.uid}, function (dashboards) {
                             scope.dashboards = dashboards;
                             if (scope.dashboards.length > 0) {
                                 scope.selected.dashboard = scope.dashboards[0];
                             }
                         }, function (response) {
-                            // In case the dashboards could not be loaded, it may be due to
-                            // an issue with talking to Grafana itself.
-                            const errorResponse = new ErrorResponse(response);
-                            if (errorResponse.isContextError()) {
-                                const contextError = errorResponse.asContextError();
-                                if (contextError.context === 'entity') {
-                                    contextError.context = 'GRAFANA_ENDPOINT_UID';
-                                }
-                                scope.report.setErrors(contextError);
-                            }  else {
-                                handleReportError(response, scope.report, () => scope.setGlobalError(response));
-                            }
+                            handleGrafanaError(response, scope.report, () => scope.onGlobalError({response: response}));
                         });
                     };
 
                     scope.loadEndpoints = function () {
+                        scope.report.resetErrors();
                         GrafanaResource.list(function (endpoints) {
                             scope.endpoints = endpoints;
                             scope.endpoints.forEach(function (item) {
@@ -218,7 +225,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                                 scope.endpointChanged();
                             }
                         }, function (errorResponse) {
-                            scope.setGlobalError(errorResponse);
+                            handleGrafanaError(errorResponse, scope.report, () => scope.onGlobalError({response: errorResponse}));
                         });
                     };
 
