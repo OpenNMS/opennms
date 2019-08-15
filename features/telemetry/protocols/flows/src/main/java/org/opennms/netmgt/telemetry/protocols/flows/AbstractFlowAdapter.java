@@ -39,10 +39,13 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.elastic.FlowDocument;
+import org.opennms.netmgt.flows.elastic.PersistenceException;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,8 +111,13 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             LOG.debug("Persisting {} packets, {} flows.", flowPackets.size(), flows.size());
             final FlowSource source = new FlowSource(messageLog.getLocation(), messageLog.getSourceAddress());
             flowRepository.persist(flows, source);
+        } catch (PersistenceException ex) {
+            LOG.error("Error while persisting flows: {}", ex.getMessage());
+            for (final FailedItem<FlowDocument> failedItem : ex.getFailedItems()) {
+                LOG.error("Failed to persist item with convoKey '{}' and index {}: {}", failedItem.getItem().getConvoKey(), failedItem.getIndex(), failedItem.getCause().getMessage(), failedItem.getCause());
+            }
         } catch (FlowException ex) {
-            LOG.error("Failed to persist one or more packets: {}", ex.getMessage());
+            LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
         }
 
         LOG.debug("Completed processing {} telemetry messages.",
