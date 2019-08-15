@@ -470,6 +470,7 @@
                 <feature>json-lib</feature>
                 <feature>lmax-disruptor</feature>
                 <feature>opennms-activemq-pool</feature>
+                <feature>opennms-activemq-shell</feature>
                 <feature>opennms-bootstrap</feature>
                 <feature>opennms-bundle-refresher</feature>
                 <feature>opennms-collection-api</feature>
