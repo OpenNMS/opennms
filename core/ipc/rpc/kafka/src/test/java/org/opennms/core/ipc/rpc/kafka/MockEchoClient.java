@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
+import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
@@ -39,14 +40,21 @@ import org.opennms.core.rpc.echo.EchoRpcModule;
 public class MockEchoClient implements RpcClient<EchoRequest, EchoResponse> {
     
     private final RpcClientFactory rpcProxy;
-    
+
+    private RpcModule<EchoRequest, EchoResponse> rpcModule;
+
     public MockEchoClient(RpcClientFactory rpcProxy) {
+        this(rpcProxy, new EchoRpcModule());
+    }
+
+    public MockEchoClient(RpcClientFactory rpcProxy, RpcModule<EchoRequest, EchoResponse> rpcModule) {
         this.rpcProxy = rpcProxy;
+        this.rpcModule = rpcModule;
     }
 
     @Override
     public CompletableFuture<EchoResponse> execute(EchoRequest request) {
-        return getRpcProxy().getClient(new EchoRpcModule()).execute(request);
+        return getRpcProxy().getClient(rpcModule).execute(request);
     }
 
     public RpcClientFactory getRpcProxy() {
