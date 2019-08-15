@@ -59,20 +59,6 @@ Some _Parsers_ support reverse hostname resolution to annotate IP addresses with
 The reverse name lookup will be performed by the _Minion_ while parsing the protocol data.
 The resolved hostname, if found, is attached to the address information and both will be sent to the _Adapter_ for further processing.
 
-In order to customize the DNS servers that are queried, the following commands can be used:
-[source]
-----
-$ ssh -p 8201 admin@localhost
-...
-admin@minion()> config:edit org.opennms.features.dnsresolver.netty
-admin@minion()> property-set nameservers 8.8.8.8,4.2.2.2:53,[::1]:5353
-admin@minion()> property-set query-timeout-millis 5000
-admin@minion()> config:update
-----
-
-If no nameservers are set (or set to an empty string), the servers configured by the system running the JVM will be used.
-
-The resolved host names are cached for their TTL as specified in the returned DNS records.
-TTL handling can be customized by setting the `min-ttl-seconds`, `max-ttl-seconds` and `negative-ttl-seconds` properties in the configuration above.
+For more information see <<ga-dnsresolver, DNS Resolver>>
 
 The following _Parsers_ currently support reverse hostname resolution: Netflow v5, Netflow v9, IPFIX and SFlow.

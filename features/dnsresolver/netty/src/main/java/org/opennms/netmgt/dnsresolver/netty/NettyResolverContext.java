@@ -172,32 +172,41 @@ public class NettyResolverContext implements DnsResolver {
         requestFuture.addListener(responseFuture -> {
             try {
                 final AddressedEnvelope<DnsResponse, InetSocketAddress> envelope = (AddressedEnvelope<DnsResponse, InetSocketAddress>) responseFuture.get();
-                final DnsResponse response = envelope.content();
-                if (response.code() != DnsResponseCode.NOERROR) {
-                    // Cache the failure (will only be cached if negative-ttl is > 0)
-                    cache.cache(name, null, new Exception("Request failed with response code: " + response.code()), group.next());
-                    future.complete(Optional.empty());
-                    return;
+                // This shouldn't happen, but just to be safe
+                if (envelope == null) {
+                    future.completeExceptionally(new Exception("Got a null envelope!"));
                 }
 
-                final DnsPtrRecord ptrRecord = envelope.content().recordAt(DnsSection.ANSWER);
-                if (ptrRecord == null) {
-                    // Cache the failure (will only be cached if negative-ttl is > 0)
-                    cache.cache(name, null, new Exception("No PTR record found."), group.next());
-                    future.complete(Optional.empty());
-                    return;
+                try {
+                    final DnsResponse response = envelope.content();
+                    if (response.code() != DnsResponseCode.NOERROR) {
+                        // Cache the failure (will only be cached if negative-ttl is > 0)
+                        cache.cache(name, null, new Exception("Request failed with response code: " + response.code()), group.next());
+                        future.complete(Optional.empty());
+                        return;
+                    }
+
+                    final DnsPtrRecord ptrRecord = response.recordAt(DnsSection.ANSWER);
+                    if (ptrRecord == null) {
+                        // Cache the failure (will only be cached if negative-ttl is > 0)
+                        cache.cache(name, null, new Exception("No PTR record found."), group.next());
+                        future.complete(Optional.empty());
+                        return;
+                    }
+
+                    // Cache the result
+                    cache.cache(name, ptrRecord, group.next());
+
+                    final String hostname = ptrRecord.hostname();
+                    // Strip of the trailing dot
+                    final String trimmedHostname = hostname.substring(0, hostname.length() - 1);
+                    future.complete(Optional.of(trimmedHostname));
+                } finally {
+                    envelope.release();
                 }
-
-                // Cache the result
-                cache.cache(name, ptrRecord, group.next());
-
-                final String hostname = ptrRecord.hostname();
-                // Strip of the trailing dot
-                final String trimmedHostname = removeTrailingDot(hostname);
-                future.complete(Optional.of(trimmedHostname));
             } catch (InterruptedException e) {
                 future.completeExceptionally(e);
-            } catch (ExecutionException e) {
+            } catch (Exception e) {
                 if (e.getCause() != null) {
                     // Pass the cause if we can
                     future.completeExceptionally(e.getCause());

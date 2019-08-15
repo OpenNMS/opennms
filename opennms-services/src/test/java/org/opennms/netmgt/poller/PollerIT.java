@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.poller;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -40,12 +44,14 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -115,7 +121,8 @@ import com.google.common.collect.Sets;
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
+        // We don't need a real pinger here
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"
 })
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
@@ -1606,6 +1613,34 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         // Sleep some more and verify that no invalid polls have occurred
         sleep(3000);
         assertEquals("Received a poll for an element that doesn't exist", 0, m_network.getInvalidPollCount());
+    }
+
+    @Test
+    public void canUpdateLastGoodAndLastFailTimestamps() {
+        final Date startOfTest = new Date();
+
+        MockInterface iface = m_network.getInterface(3, "192.168.1.4");
+        MockService svc = iface.getService("SMTP");
+        assertThat(svc, notNullValue());
+
+        // Start the poller
+        startDaemons();
+
+        // Wait until we poll the service
+        await().atMost(1, TimeUnit.MINUTES)
+                .ignoreExceptions()
+                .until(() -> m_monitoredServiceDao.get(svc.getNodeId(), svc.getAddress(), svc.getSvcName()).getLastGood(),
+                        greaterThanOrEqualTo(startOfTest));
+
+        // Now take the service offline
+        final Date beforeDown = new Date();
+        svc.bringDown();
+
+        // Wait until we detect the service to be offline
+        await().atMost(1, TimeUnit.MINUTES)
+                .ignoreExceptions()
+                .until(() -> m_monitoredServiceDao.get(svc.getNodeId(), svc.getAddress(), svc.getSvcName()).getLastFail(),
+                        greaterThanOrEqualTo(beforeDown));
     }
 
     //

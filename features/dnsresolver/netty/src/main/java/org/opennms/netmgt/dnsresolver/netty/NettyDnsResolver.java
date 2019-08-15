@@ -97,6 +97,12 @@ public class NettyDnsResolver implements DnsResolver {
     private int negativeTtlSeconds = -1;
     private long maxCacheSize = -1;
 
+    private boolean breakerEnabled = true;
+    private int breakerFailureRateThreshold = 80;
+    private int breakerWaitDurationInOpenState = 15;
+    private int breakerRingBufferSizeInHalfOpenState = 10;
+    private int breakerRingBufferSizeInClosedState = 100;
+
     private List<NettyResolverContext> contexts;
     private Iterator<NettyResolverContext> iterator;
     private CaffeineDnsCache cache;
@@ -138,10 +144,10 @@ public class NettyDnsResolver implements DnsResolver {
 
         // Configure this statically for now, we can expose this as needed
         final CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
-                .failureRateThreshold(80)
-                .waitDurationInOpenState(Duration.ofSeconds(15))
-                .ringBufferSizeInHalfOpenState(10)
-                .ringBufferSizeInClosedState(100)
+                .failureRateThreshold(breakerFailureRateThreshold)
+                .waitDurationInOpenState(Duration.ofSeconds(breakerWaitDurationInOpenState))
+                .ringBufferSizeInHalfOpenState(breakerRingBufferSizeInHalfOpenState)
+                .ringBufferSizeInClosedState(breakerRingBufferSizeInClosedState)
                 .recordExceptions(DnsNameResolverTimeoutException.class)
                 .build();
         circuitBreaker = CircuitBreaker.of("nettyDnsResolver", circuitBreakerConfig);
@@ -165,6 +171,12 @@ public class NettyDnsResolver implements DnsResolver {
                 .onCallNotPermitted(e -> {
                     lookupsRejectedByCircuitBreaker.mark();
                 });
+
+        if (breakerEnabled) {
+            circuitBreaker.transitionToClosedState();
+        } else {
+            circuitBreaker.transitionToDisabledState();
+        }
     }
 
     public void destroy() {
@@ -204,6 +216,46 @@ public class NettyDnsResolver implements DnsResolver {
     @VisibleForTesting
     CaffeineDnsCache getCache() {
         return cache;
+    }
+
+    public boolean getBreakerEnabled() {
+        return breakerEnabled;
+    }
+
+    public void setBreakerEnabled(boolean breakerEnabled) {
+        this.breakerEnabled = breakerEnabled;
+    }
+
+    public int getBreakerFailureRateThreshold() {
+        return breakerFailureRateThreshold;
+    }
+
+    public void setBreakerFailureRateThreshold(int breakerFailureRateThreshold) {
+        this.breakerFailureRateThreshold = breakerFailureRateThreshold;
+    }
+
+    public int getBreakerWaitDurationInOpenState() {
+        return breakerWaitDurationInOpenState;
+    }
+
+    public void setBreakerWaitDurationInOpenState(int breakerWaitDurationInOpenState) {
+        this.breakerWaitDurationInOpenState = breakerWaitDurationInOpenState;
+    }
+
+    public int getBreakerRingBufferSizeInHalfOpenState() {
+        return breakerRingBufferSizeInHalfOpenState;
+    }
+
+    public void setBreakerRingBufferSizeInHalfOpenState(int breakerRingBufferSizeInHalfOpenState) {
+        this.breakerRingBufferSizeInHalfOpenState = breakerRingBufferSizeInHalfOpenState;
+    }
+
+    public int getBreakerRingBufferSizeInClosedState() {
+        return breakerRingBufferSizeInClosedState;
+    }
+
+    public void setBreakerRingBufferSizeInClosedState(int breakerRingBufferSizeInClosedState) {
+        this.breakerRingBufferSizeInClosedState = breakerRingBufferSizeInClosedState;
     }
 
     public int getNumContexts() {
