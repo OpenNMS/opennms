@@ -72,4 +72,11 @@
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
+
+    <!-- Health check -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class=" org.opennms.netmgt.dnsresolver.netty.NettyDnsHealthCheck" >
+            <argument ref="dnsResolver"/>
+        </bean>
+    </service>
 </blueprint>

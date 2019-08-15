@@ -17,6 +17,7 @@ $ ssh -p 8201 admin@localhost
 admin@minion()> config:edit org.opennms.features.dnsresolver.netty
 admin@minion()> property-set nameservers 8.8.8.8,4.2.2.2:53,[::1]:5353
 admin@minion()> property-set query-timeout-millis 5000
+admin@minion()> property-set max-cache-size 10000
 admin@minion()> config:update
 ----
 
