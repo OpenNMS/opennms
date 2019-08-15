@@ -67,7 +67,6 @@ public class WhoamiRestService {
             }
         }
 
-        // TODO MVR probably add timezone here
         final JSONObject userInfo = new JSONObject();
         userInfo.put("id", userName);
         userInfo.put("roles", userRoles);
