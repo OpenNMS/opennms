@@ -46,8 +46,11 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
+    private static final Logger LOG = LoggerFactory.getLogger(OpsBoardAdminPageIT.class);
 
     private OpsBoardAdminPage adminPage;
 
@@ -59,6 +62,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
 
     @After
     public void tearDown() {
+        LOG.debug("Tearing down. Removing all boards.");
         this.adminPage.open(); // reload page to reset any invalid state
         this.adminPage.removeAll();
     }
