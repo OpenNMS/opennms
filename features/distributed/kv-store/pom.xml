@@ -13,9 +13,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>api</module>
-        <module>no-op</module>
-        <module>cassandra</module>
-        <module>kv-store-shell</module>
-        <module>in-memory</module>
+        <module>blob</module>
+        <module>json</module>
+        <module>postgres-shared</module>
     </modules>
 </project>

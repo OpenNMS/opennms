@@ -87,6 +87,7 @@ drop table hwentity cascade;
 drop table hwentityattribute cascade;
 drop table hwentityattributetype cascade;
 drop table user_defined_links cascade;
+drop table kvstore_jsonb cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -2728,3 +2729,15 @@ CREATE TABLE user_defined_links (
 ALTER TABLE ONLY user_defined_links ADD CONSTRAINT user_defined_links_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_a FOREIGN KEY (node_id_a) REFERENCES node(nodeid) ON DELETE CASCADE;
 ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_z FOREIGN KEY (node_id_z) REFERENCES node(nodeid) ON DELETE CASCADE;
+
+--##################################################################
+--# Key Value Stores
+--##################################################################
+CREATE TABLE kvstore_jsonb (
+    key text NOT NULL,
+    context text NOT NULL,
+    last_updated timestamp NOT NULL,
+    expires_at timestamp,
+    value jsonb NOT NULL,
+    CONSTRAINT pk_kvstore_jsonb PRIMARY KEY (key, context)
+);

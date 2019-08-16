@@ -296,6 +296,12 @@
         <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.pool/${project.version}</bundle>
     </feature>
+
+    <feature name="opennms-activemq-shell" description="OpenNMS :: Features :: ActiveMQ :: Shell" version="${project.version}">
+      <!-- Additional dependenices are expected to be pulled from the root classloader -->
+      <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.shell/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-bootstrap" version="${project.version}" description="opennms-bootstrap">
         <bundle>wrap:mvn:org.opennms/opennms-bootstrap/${project.version}</bundle>
     </feature>
@@ -939,7 +945,7 @@
         <feature version="${kafkaVersion}">kafka-streams</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-situation-feedback-api</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf3Version}</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>
@@ -978,12 +984,12 @@
     </feature>
     <feature name="opennms-telemetry-jti" version="${project.version}" description="OpenNMS :: Telemetry :: JTI">
         <feature>opennms-telemetry-collection</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf2Version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.jti/org.opennms.features.telemetry.protocols.jti.adapter/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-nxos" version="${project.version}" description="OpenNMS :: Telemetry :: NX-OS">
         <feature>opennms-telemetry-collection</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/3.4.0</bundle>
+	<bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
     <feature name="opennms-bundle-refresher" description="OpenNMS :: Vaadin-Theme Bundle Refresher">
@@ -1493,18 +1499,18 @@
         -->
     </feature>
 
-    <feature name="opennms-kvstore-api" description="OpenNMS :: Features :: Distributed :: Key Value Store :: API" version="${project.version}">
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
-    </feature>
-
-    <feature name="opennms-kvstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Shell" version="${project.version}">
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.shell/${project.version}</bundle>
+    <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.shell/${project.version}</bundle>
     </feature>
     
-    <feature name="opennms-kvstore-noop"
-             description="OpenNMS :: Features :: Distributed :: Key Value Store :: No-Op" version="${project.version}">
-        <feature>opennms-kvstore-shell</feature>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.no-op/${project.version}</bundle>
+    <feature name="opennms-blobstore-noop"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: No-Op" version="${project.version}">
+        <feature>opennms-blobstore-shell</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.no-op/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-jsonstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: JSON :: Shell" version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.shell/${project.version}</bundle>
     </feature>
 
 </features>
