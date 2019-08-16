@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,31 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.api;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.opennms.netmgt.flows.api.DetailedFlowException;
-import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
-
-public class PersistenceException extends DetailedFlowException {
-
-    private List<FailedItem<FlowDocument>> failedItems = new ArrayList<>();
-
-    public PersistenceException(String message, List<FailedItem<FlowDocument>> failedItems) {
+public abstract class DetailedFlowException extends FlowException {
+    public DetailedFlowException(String message) {
         super(message);
-        this.failedItems = failedItems;
     }
 
-    public List<FailedItem<FlowDocument>> getFailedItems() {
-        return failedItems;
+    public DetailedFlowException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    @Override
-    public List<String> getDetailedLogMessages() {
-        return getFailedItems().stream()
-                .map(e -> String.format("Failed to persist item with convoKey '%s' and index %d: %s", e.getItem().getConvoKey(), e.getIndex(), e.getCause().getMessage())).collect(Collectors.toList());
-    }
+    public abstract List<String> getDetailedLogMessages();
 }
