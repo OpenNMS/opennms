@@ -1519,6 +1519,13 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.no-op/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-blobstore-postgres"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Postgres" version="${project.version}">
+        <feature>opennms-blobstore-shell</feature>
+        <bundle dependency="true">mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.postgres-shared/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.postgres/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-jsonstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: JSON :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.shell/${project.version}</bundle>
     </feature>

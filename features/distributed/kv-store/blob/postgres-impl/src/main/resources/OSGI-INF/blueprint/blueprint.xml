@@ -1,0 +1,11 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference id="dataSource" interface="javax.sql.DataSource"/>
+    <bean id="postgresBlobStore" class="org.opennms.features.distributed.kvstore.blob.postgres.PostgresBlobStore">
+        <argument ref="dataSource"/>
+    </bean>
+    <service ref="postgresBlobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+</blueprint>

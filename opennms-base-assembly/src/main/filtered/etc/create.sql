@@ -2761,3 +2761,12 @@ CREATE TABLE kvstore_jsonb (
     value jsonb NOT NULL,
     CONSTRAINT pk_kvstore_jsonb PRIMARY KEY (key, context)
 );
+
+CREATE TABLE kvstore_bytea (
+    key text NOT NULL,
+    context text NOT NULL,
+    last_updated timestamp NOT NULL,
+    expires_at timestamp,
+    value bytea NOT NULL,
+    CONSTRAINT pk_kvstore_bytea PRIMARY KEY (key, context)
+);

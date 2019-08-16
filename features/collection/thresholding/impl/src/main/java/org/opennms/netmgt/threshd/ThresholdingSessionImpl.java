@@ -54,15 +54,18 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     private ServiceParameters serviceParameters;
     
     private final BlobStore blobStore;
+    
+    private final boolean isDistributed;
 
     public ThresholdingSessionImpl(ThresholdingServiceImpl service, ThresholdingSessionKey sessionKey, ResourceStorageDao resourceStorageDao, RrdRepository rrdRepository,
-                                   ServiceParameters serviceParams, BlobStore blobStore) {
+                                   ServiceParameters serviceParams, BlobStore blobStore, boolean isDistributed) {
         this.service = service;
         this.sessionKey = sessionKey;
         this.resourceStorageDao = resourceStorageDao;
         this.rrdRepository = rrdRepository;
         this.serviceParameters = serviceParams;
         this.blobStore = blobStore;
+        this.isDistributed = isDistributed;
     }
 
     @Override
@@ -114,4 +117,8 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
         }
     }
 
+    @Override
+    public boolean isDistributed() {
+        return isDistributed;
+    }
 }
