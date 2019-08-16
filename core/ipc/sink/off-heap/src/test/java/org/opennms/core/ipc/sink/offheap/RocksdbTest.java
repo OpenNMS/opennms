@@ -44,6 +44,7 @@ import java.util.concurrent.Executors;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -137,6 +138,7 @@ public class RocksdbTest {
      * We should be able to read messages after that and write new messages.
      */
     @Test
+    @Ignore("Want to verify if this test is causing issues in bamboo")
     public void testRocksDBThrowExceptionWhenMaxLimitReached() throws InterruptedException, WriteFailedException, IOException, RocksDBException {
 
         int numOfElements = 2000000;
