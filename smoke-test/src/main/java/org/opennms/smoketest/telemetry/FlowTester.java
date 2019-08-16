@@ -41,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -130,7 +131,10 @@ public class FlowTester {
 
         // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
+        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl)
+                .connTimeout(10000)
+                .readTimeout(60000)
+                .multiThreaded(true).build());
 
         try {
             client = factory.getObject();

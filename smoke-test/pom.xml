@@ -17,6 +17,8 @@
     <selenium.version>3.141.59</selenium.version>
     <testcontainers.version>1.11.3</testcontainers.version>
     <test.fork.count>1</test.fork.count>
+    <!-- Limit ITs to 30 minutes by default -->
+    <test.fork.timeout>1800</test.fork.timeout>
   </properties>
   <build>
     <testResources>
@@ -127,6 +129,8 @@
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
           <forkCount>${test.fork.count}</forkCount>
+	  <!-- We don't reuse forks - any given test should not take longer than the given timeout -->
+	  <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
           <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
           <reuseForks>false</reuseForks>
         </configuration>
