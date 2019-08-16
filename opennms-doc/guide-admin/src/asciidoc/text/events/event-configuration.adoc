@@ -95,7 +95,7 @@ Not all events will have values for all tokens, and some refer specifically to i
 `%host%`::
 `%interface%`::
     The IP interface associated with the event, if any.
-`%interfaceresolv%`::
+`%interfaceresolve%`::
     Does a reverse lookup on the `%interface%` and returns its name if available.
 `%service%`::
     The service associated with the event, if any.
