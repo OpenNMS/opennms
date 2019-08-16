@@ -63,8 +63,11 @@ cd ~/project
 ./.circleci/scripts/postgres.sh
 
 echo "#### Installing other dependencies"
-sudo apt update
-sudo apt -y install R-base rrdtool
+
+# kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
+sudo killall -9 apt-get || true && \
+            sudo apt-get update && \
+            sudo apt-get install -f R-base rrdtool
 
 echo "#### Executing tests"
 cd ~/project
