@@ -243,8 +243,8 @@ public class DatabaseReportPageIT extends UiPageTest {
             executeButton.click();
 
             // Verify it was scheduled for delivery
-            await().atMost(5, SECONDS)
-                    .pollInterval(1, SECONDS)
+            await().atMost(2, MINUTES)
+                    .pollInterval(5, SECONDS)
                     .until(() -> findElementByXpath("//div[contains(@class, 'alert alert-success') and contains(text(), 'The report was scheduled for delivery')]") != null);
             return this;
         }
@@ -259,8 +259,8 @@ public class DatabaseReportPageIT extends UiPageTest {
             executeButton.click();
 
             // Verify it was scheduled
-            await().atMost(5, SECONDS)
-                    .pollInterval(1, SECONDS)
+            await().atMost(2, MINUTES)
+                    .pollInterval(5, SECONDS)
                     .until(() -> findElementByXpath("//div[contains(@class, 'alert alert-success') and contains(text(), 'The report was scheduled')]") != null);
             return this;
         }
