@@ -78,7 +78,7 @@ public class NettyDnsHealthCheck implements HealthCheck {
             return new Response(Status.Failure, String.format("Reverse failed for '%s'. No PTR record.", ipAddressToReverseLookup));
         }
 
-        return new Response(Status.Success, String.format("%s -> %s (cache %d/%d)", hostnameToLookup, addr.get().getHostAddress(),
+        return new Response(Status.Success, String.format("%s is at %s (cache %d/%d)", hostnameToLookup, addr.get().getHostAddress(),
                 dnsResolver.getCache().getSize(), dnsResolver.getMaxCacheSize()));
     }
 }

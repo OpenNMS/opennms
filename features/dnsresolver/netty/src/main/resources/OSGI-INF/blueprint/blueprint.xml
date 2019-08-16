@@ -26,6 +26,9 @@
             <cm:property name="breaker-wait-duration-in-open-state" value="15" />
             <cm:property name="breaker-ring-buffer-size-in-half-open-state" value="10" />
             <cm:property name="breaker-ring-buffer-size-in-closed-state" value="100" />
+            <!-- Bulkhead Settings -->
+            <cm:property name="bulkhead-max-concurrent-calls" value="1000" />
+            <cm:property name="bulkhead-max-wait-duration-millis" value="5100" /> <!-- query-timeout-millis + 100ms -->
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -65,6 +68,8 @@
         <property name="breakerWaitDurationInOpenState" value="${breaker-wait-duration-in-open-state}"/>
         <property name="breakerRingBufferSizeInHalfOpenState" value="${breaker-ring-buffer-size-in-half-open-state}"/>
         <property name="breakerRingBufferSizeInClosedState" value="${breaker-ring-buffer-size-in-closed-state}"/>
+        <property name="bulkheadMaxConcurrentCalls" value="${bulkhead-max-concurrent-calls}"/>
+        <property name="bulkheadMaxWaitDurationMillis" value="${bulkhead-max-wait-duration-millis}"/>
     </bean>
 
     <service ref="dnsResolver" interface="org.opennms.netmgt.dnsresolver.api.DnsResolver">

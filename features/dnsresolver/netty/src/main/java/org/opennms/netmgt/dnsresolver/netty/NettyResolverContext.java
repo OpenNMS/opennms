@@ -43,6 +43,7 @@ import org.xbill.DNS.ReverseMap;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import io.github.resilience4j.bulkhead.Bulkhead;
 import io.netty.channel.AddressedEnvelope;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -72,14 +73,16 @@ public class NettyResolverContext implements DnsResolver {
 
     private final NettyDnsResolver parent;
     private final ExtendedDnsCache cache;
+    private final Bulkhead bulkhead;
     private final int idx;
 
     private EventLoopGroup group;
     private DnsNameResolver resolver;
 
-    public NettyResolverContext(NettyDnsResolver parent, ExtendedDnsCache cache, int idx) {
+    public NettyResolverContext(NettyDnsResolver parent, ExtendedDnsCache cache, Bulkhead bulkhead, int idx) {
         this.parent = Objects.requireNonNull(parent);
         this.cache = Objects.requireNonNull(cache);
+        this.bulkhead = Objects.requireNonNull(bulkhead);
         this.idx = idx;
     }
 
@@ -110,6 +113,8 @@ public class NettyResolverContext implements DnsResolver {
     @Override
     public CompletableFuture<Optional<InetAddress>> lookup(String hostname) {
         final CompletableFuture<Optional<InetAddress>> future = new CompletableFuture<>();
+        // Limit # of concurrent calls using the bulkhead
+        bulkhead.acquirePermission();
         final Future<InetAddress> requestFuture = resolver.resolve(hostname);
         requestFuture.addListener(responseFuture -> {
             try {
@@ -138,6 +143,8 @@ public class NettyResolverContext implements DnsResolver {
                 } else {
                     future.completeExceptionally(e);
                 }
+            } finally {
+                bulkhead.releasePermission();
             }
         });
         return future;
@@ -168,6 +175,8 @@ public class NettyResolverContext implements DnsResolver {
             }
         }
 
+        // Limit # of concurrent calls using the bulkhead
+        bulkhead.acquirePermission();
         final Future<AddressedEnvelope<DnsResponse, InetSocketAddress>> requestFuture = resolver.query(new DefaultDnsQuestion(name, DnsRecordType.PTR, DnsRecord.CLASS_IN));
         requestFuture.addListener(responseFuture -> {
             try {
@@ -213,6 +222,8 @@ public class NettyResolverContext implements DnsResolver {
                 } else {
                     future.completeExceptionally(e);
                 }
+            } finally {
+                bulkhead.releasePermission();
             }
         });
         return future;
