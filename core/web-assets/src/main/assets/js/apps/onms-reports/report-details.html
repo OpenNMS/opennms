@@ -5,12 +5,12 @@
         <!-- Grafana Parameters -->
         <div ng-show="report.isGrafanaReport()" class="form-group">
             <label>Grafana Endpoint</label>
-            <a ng-if="endpoints.length > 0" href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
-            <a ng-if="endpoints.length == 0" href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>
+            <a href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
+            <a href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>
             <select class="form-control custom-select"
                     ng-model="selected.endpoint"
                     ng-show="endpoints.length > 0"
-                    ng-class="{ 'is-invalid': report.errors.GRAFANA_ENDPOINT_UID }"
+                    ng-class="{ 'is-invalid': report.errors.GRAFANA_ENDPOINT_UID || report.errors.GRAFANA_DASHBOARD_UID }"
                     ng-change="endpointChanged()"
                     ng-options="endpoint as endpoint.label for endpoint in endpoints"
             >
@@ -22,11 +22,14 @@
             <div class="invalid-feedback" ng-if="report.errors.GRAFANA_ENDPOINT_UID">
                 {{report.errors.GRAFANA_ENDPOINT_UID}}: <a href="/opennms/admin/endpoint/index.jsp#!/endpoints/grafana">Configure Grafana Endpoints</a>
             </div>
+            <div class="invalid-feedback" ng-if="report.errors.GRAFANA_DASHBOARD_UID">
+                {{report.errors.GRAFANA_DASHBOARD_UID}}
+            </div>
         </div>
         <div ng-show="report.isGrafanaReport() && selected.endpoint" class="form-group">
             <label>Grafana Dashboard</label>
             <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dasbhoard" target="_blank"> <i class="fa fa-dashboard"></i></a>
-            <a ng-if="dashboards.length == 0" href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
+            <a href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
             <select class="form-control custom-select"
                     ng-model="selected.dashboard"
                     ng-show="dashboards.length > 0"
@@ -74,9 +77,10 @@
                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
                    class="form-control"
                    type="text"
+                   ng-pattern="/^-?[0-9]*$/"
                    ng-model="parameter.value"
                    required />
-            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a value.</div>
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide an integer value.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
         <!-- FLOAT -->
@@ -86,10 +90,10 @@
                    name="{{parameter.name}}"
                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
                    class="form-control"
-                   type="text"
+                   type="number"
                    ng-model="parameter.value"
                    required/>
-            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a value.</div>
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a decimal number.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
         <!-- DOUBLE -->
@@ -99,10 +103,10 @@
                    name="{{parameter.name}}"
                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
                    class="form-control"
-                   type="text"
+                   type="number"
                    ng-model="parameter.value"
                    required/>
-            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a value.</div>
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a decimal number.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
         <!-- DATE -->
@@ -113,7 +117,8 @@
                        name="{{parameter.name}}Count"
                        ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Count'].$invalid || report.errors[parameter.name + 'Count'] }"
                        class="form-control"
-                       min="0" max="31"
+                       min="0" max="31" step="1"
+                       ng-pattern="/^[0-9]*$/"
                        ng-model="parameter.count"
                        placeholder="count"
                        required/>
@@ -128,6 +133,7 @@
                        ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Hours'].$invalid || report.errors[parameter.name + 'Hours'] }"
                        class="form-control"
                        min="0" max="23" step="1"
+                       ng-pattern="/^[0-9]*$/"
                        ng-model="parameter.hours"
                        placeholder="hours"
                        required />
@@ -135,7 +141,8 @@
                        name="{{parameter.name}}Minutes"
                        ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Minutes'].$invalid || report.errors[parameter.name + 'Minutes'] }"
                        class="form-control"
-                       min="0" max="59"
+                       min="0" max="59" step="1"
+                       ng-pattern="/^[0-9]*$/"
                        ng-model="parameter.minutes"
                        placeholder="minutes"
                        required />
@@ -148,6 +155,7 @@
                             format="parameter.internalFormat"
                             ng-model="parameter.internalValue"
                             expand="true"
+                            on-state-change="onDateParamStateChange(invalidState)"
             ></datetimepicker>
         </div>
         <hr class="mb-4"/>
@@ -182,7 +190,10 @@
         <div class="">
             <div class="form-group">
                 <label for="instanceId">Unique name</label>
-                <!-- TODO MVR tooltip? -->
+                <button class="btn btn-link text-secondary px-0"
+                        popover-trigger="'mouseenter'"
+                        uib-popover="A name to identify this report. Must be unique overall schedules/deliveries."><i class="fa fa-info-circle"/>
+                </button>
                 <input ng-disabled="!options.canEditTriggerName"
                        id="instanceId"
                        name="instanceId"
@@ -199,9 +210,9 @@
             </div>
             <div class="form-group">
                 <label for="format" class="">Format</label>
-                <!-- TODO MVR tooltip? -->
                 <select id="format"
                         name="format"
+                        ng-class="{ 'is-invalid' : reportForm.format.$invalid || report.errors.format }"
                         class="form-control custom-select"
                         ng-model="report.format"
                         data-toggle="tooltip"
@@ -209,10 +220,10 @@
                         title="The output format of the generated report."
                         ng-options="format as format for format in report.supportedFormats">
                 </select>
+                <div ng-show="report.errors.format" class="invalid-feedback">{{report.errors.format}}</div>
             </div>
             <div class="form-group ml-4">
                 <input type="checkbox" id="persistToggle" ng-model="report.deliveryOptions.persist" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist }"/>
-                <!-- TODO MVR tooltip? -->
                 <label class="form-check-label"
                        data-toggle="tooltip"
                        data-placement="right"
@@ -223,7 +234,6 @@
             </div>
             <div class="form-group ml-4">
                 <input type="checkbox" id="sendMailToggle" ng-model="report.deliveryOptions.sendMail" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist }" />
-                <!-- TODO MVR tooltip? -->
                 <label class="form-check-label" for="sendMailToggle" data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
                     Email report
                 </label>
@@ -231,7 +241,6 @@
             </div>
 
             <div class="form-group" ng-if="report.deliveryOptions.sendMail">
-                <!-- TODO MVR tooltip? -->
                 <label for="mailRecipient">Recipient</label>
                 <input id="mailRecipient"
                        name="mailRecipient"

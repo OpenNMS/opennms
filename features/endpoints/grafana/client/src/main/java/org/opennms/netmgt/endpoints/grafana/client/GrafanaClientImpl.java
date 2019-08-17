@@ -44,11 +44,14 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.opennms.netmgt.endpoints.grafana.api.Dashboard;
 import org.opennms.netmgt.endpoints.grafana.api.DashboardWithMeta;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaClient;
 import org.opennms.netmgt.endpoints.grafana.api.Panel;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import okhttp3.Call;
@@ -91,7 +94,7 @@ public class GrafanaClientImpl implements GrafanaClient {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Request failed: " + response.body().string());
+                throw new IOException("Request failed: " + extractMessageFromErrorResponse(response));
             }
             final String json = response.body().string();
             final Dashboard[] dashboards = gson.fromJson(json, Dashboard[].class);
@@ -115,7 +118,7 @@ public class GrafanaClientImpl implements GrafanaClient {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Request failed: " + response.body().string());
+                throw new IOException("Request failed: " + extractMessageFromErrorResponse(response));
             }
             final String json = response.body().string();
             final DashboardWithMeta dashboardWithMeta = gson.fromJson(json, DashboardWithMeta.class);
@@ -158,7 +161,11 @@ public class GrafanaClientImpl implements GrafanaClient {
             public void onResponse(Call call, Response response) {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
-                        future.completeExceptionally(new IOException("Request failed: " + response));
+                        try {
+                            future.completeExceptionally(new IOException("Request failed: " + extractMessageFromErrorResponse(response)));
+                        } catch (IOException e) {
+                            future.completeExceptionally(new IOException("Could not extract message from error response", e));
+                        }
                     }
 
                     try (InputStream is = responseBody.byteStream()) {
@@ -216,5 +223,19 @@ public class GrafanaClientImpl implements GrafanaClient {
             throw new RuntimeException(e);
         }
         return builder;
+    }
+
+    private static String extractMessageFromErrorResponse(Response response) throws IOException {
+        final String contentType = response.header("Content-Type");
+        if (contentType.toLowerCase().contains("application/json")) {
+            final JSONTokener tokener = new JSONTokener(response.body().string());
+            final JSONObject json = new JSONObject(tokener);
+            if (json.has("message")) {
+                return json.getString("message");
+            } else {
+                return json.toString();
+            }
+        }
+        return response.body().string();
     }
 }

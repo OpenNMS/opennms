@@ -17,8 +17,6 @@ const templatesTemplate  = require('./templates.html');
 const persistedtTemplate  = require('./persisted.html');
 const schedulesTemplate  = require('./schedules.html');
 const detailsTemplate  = require('./details.html');
-const successModalTemplate  = require('./modals/success-modal.html');
-const errorModalTemplate  = require('./modals/error-modal.html');
 const editScheduleModalTemplate  = require('./modals/schedule-edit-modal.html');
 
 const reportDetailsTemplate = require('./report-details.html');
@@ -33,6 +31,21 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
         } else if (optionalCallbackIfNoContextError) {
             optionalCallbackIfNoContextError(response);
         }
+    }
+};
+
+const handleGrafanaError = function(response, report, optionalCallbackIfNoContextError) {
+    // In case the dashboards could not be loaded, it may be due to
+    // an issue with talking to Grafana itself.
+    const errorResponse = new ErrorResponse(response);
+    if (errorResponse.isContextError()) {
+        const contextError = errorResponse.asContextError();
+        if (contextError.context === 'entity') {
+            contextError.context = 'GRAFANA_ENDPOINT_UID';
+        }
+        report.setErrors(contextError);
+    }  else {
+        handleReportError(response, report, optionalCallbackIfNoContextError);
     }
 };
 
@@ -168,7 +181,8 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                 scope: {
                     report: '=?ngModel',
                     options: '=?options',
-                    onInvalidChange: '&?onInvalidChange'
+                    onInvalidChange: '&?onInvalidChange',
+                    onGlobalError: '&onGlobalError'
                 },
                 link: function (scope, element, attrs) {
                     scope.endpoints = [];
@@ -177,33 +191,27 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                         endpoint: undefined,
                         dashboard: undefined
                     };
-                    scope.onInvalidChange = scope.onInvalidChange || function() { return function() {} };
+                    scope.onInvalidChange = scope.onInvalidChange || function(invalidState) {};
+                    scope.onDateParamStateChange = function(invalidState) {
+                        scope.onInvalidChange({invalidState: invalidState});
+                    };
 
                     scope.endpointChanged = function () {
                         scope.dashboards = [];
                         scope.selected.dashboard = undefined;
+                        scope.report.resetErrors();
                         GrafanaResource.dashboards({uid: scope.selected.endpoint.uid}, function (dashboards) {
                             scope.dashboards = dashboards;
                             if (scope.dashboards.length > 0) {
                                 scope.selected.dashboard = scope.dashboards[0];
                             }
                         }, function (response) {
-                            // In case the dashboards could not be loaded, it may be due to
-                            // an issue with talking to Grafana itself.
-                            const errorResponse = new ErrorResponse(response);
-                            if (errorResponse.isContextError()) {
-                                const contextError = errorResponse.asContextError();
-                                if (contextError.context === 'entity') {
-                                    contextError.context = 'GRAFANA_ENDPOINT_UID';
-                                }
-                                scope.report.setErrors(contextError);
-                            }  else {
-                                handleReportError(response, scope.report, () => scope.setGlobalError(response));
-                            }
+                            handleGrafanaError(response, scope.report, () => scope.onGlobalError({response: response}));
                         });
                     };
 
                     scope.loadEndpoints = function () {
+                        scope.report.resetErrors();
                         GrafanaResource.list(function (endpoints) {
                             scope.endpoints = endpoints;
                             scope.endpoints.forEach(function (item) {
@@ -217,7 +225,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                                 scope.endpointChanged();
                             }
                         }, function (errorResponse) {
-                            scope.setGlobalError(errorResponse);
+                            handleGrafanaError(errorResponse, scope.report, () => scope.onGlobalError({response: errorResponse}));
                         });
                     };
 
@@ -244,12 +252,12 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                     });
 
                     scope.$watchCollection('selected', function(newVal, oldVal) {
-                       scope.report.updateParameters(scope.selected);
+                        scope.report.updateGrafanaParameters(scope.selected);
                     });
 
                     scope.$watch('reportForm.$invalid', function(newVal, oldVal) {
                         if (scope.onInvalidChange) {
-                            scope.onInvalidChange()(newVal);
+                            scope.onInvalidChange({invalidState: newVal});
                         }
                     });
                 }
@@ -370,55 +378,6 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                     });
             };
 
-            $scope.showSuccessModal = function(scope) {
-                return $uibModal.open({
-                    templateUrl: successModalTemplate,
-                    backdrop: 'static',
-                    keyboard: false,
-                    size: 'md',
-                    controller: function($scope, options) {
-                        $scope.options = options;
-                        $scope.goToSchedules = function() {
-                            $scope.$close();
-                            $state.go('report.schedules');
-                        };
-                        $scope.goToPersisted = function() {
-                            $scope.$close();
-                            $state.go('report.persisted');
-                        }
-                    },
-                    resolve: {
-                        options: function() {
-                            return scope.options;
-                        }
-                    },
-                });
-            };
-
-            $scope.showErrorModal = function(scope, errorResponse) {
-                var modal = $uibModal.open({
-                    templateUrl: errorModalTemplate,
-                    backdrop: 'static',
-                    keyboard: false,
-                    size: 'md',
-                    controller: function($scope, errorResponse, options) {
-                        $scope.options = options;
-                        if (errorResponse && errorResponse.data && errorResponse.data.message) {
-                            $scope.errorMessage = errorResponse.data.message;
-                        }
-                    },
-                    resolve: {
-                        options: function() {
-                            return scope.options;
-                        },
-                        errorResponse: function() {
-                            return errorResponse;
-                        }
-                    },
-                });
-                return modal;
-            };
-
             $scope.deliverReport = function() {
                 $scope.report.resetErrors();
                 $http({
@@ -431,9 +390,9 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                         deliveryOptions: $scope.report.deliveryOptions
                     }
                 }).then(function() {
-                    $scope.showSuccessModal($scope);
+                    $scope.deliverySuccess = true;
                 }, function(response) {
-                    handleReportError(response, $scope.report, (response) => $scope.showErrorModal($scope, response));
+                    handleReportError(response, $scope.report, (response) => $scope.setGlobalError(response));
                 })
             };
 
@@ -450,13 +409,16 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
                         cronExpression: $scope.report.scheduleOptions.getCronExpression(),
                     }
                 }).then(function(response) {
-                    $scope.showSuccessModal($scope);
+                    $scope.scheduleSuccess = true;
                 }, function(response) {
-                    handleReportError(response, $scope.report, (response) => $scope.showErrorModal($scope, response));
+                    handleReportError(response, $scope.report, (response) => $scope.setGlobalError(response));
                 })
             };
 
             $scope.execute = function() {
+                $scope.deliverySuccess = false;
+                $scope.scheduleSuccess = false;
+                $scope.report.updateDateParameters();
                 if ($scope.meta.online && !$scope.options.deliverReport && !$scope.options.scheduleReport) {
                     $scope.runReport();
                 }
@@ -496,6 +458,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.deleteAll = function() {
                 ReportScheduleResource.deleteAll({}, function(response) {
+                   $scope.pagination.page = 1; // go back to page 1
                    $scope.refresh();
                 }, function(response) {
                     $scope.setGlobalError(response);
@@ -504,6 +467,10 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.delete = function(schedule) {
                 ReportScheduleResource.delete({id: schedule.triggerName || -1}, function(response) {
+                    // If we deleted the last report on this page
+                    if ($scope.scheduledReports.length === 1 && $scope.pagination.page > 1) {
+                        $scope.pagination.page--; // go a page back
+                    }
                     $scope.refresh();
                 }, function(response) {
                     $scope.setGlobalError(response);
@@ -628,6 +595,7 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.deleteAll = function() {
                 ReportStorageResource.deleteAll({}, function(response) {
+                    $scope.pagination.page = 1; // go back to page 1
                     $scope.refresh();
                 }, function(response) {
                     $scope.setGlobalError(response);
@@ -636,6 +604,10 @@ const handleReportError = function(response, report, optionalCallbackIfNoContext
 
             $scope.delete = function(report) {
                 ReportStorageResource.delete({id: report.id || -1}, function(response) {
+                    // If we deleted the last report on this page
+                    if ($scope.persistedReports.length === 1 && $scope.pagination.page > 1) {
+                        $scope.pagination.page--; // go back a page
+                    }
                     $scope.refresh();
                 }, function(response) {
                     $scope.setGlobalError(response);

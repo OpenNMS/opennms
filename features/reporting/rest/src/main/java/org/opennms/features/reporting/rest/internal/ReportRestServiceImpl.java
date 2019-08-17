@@ -78,6 +78,7 @@ import org.opennms.web.utils.QueryParametersBuilder;
 import org.opennms.web.utils.ResponseUtils;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 public class ReportRestServiceImpl implements ReportRestService {
 
@@ -146,10 +147,10 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response scheduleReport(final Map<String, Object> parameters) {
-        final ReportParameters reportParameters = parseParameters(parameters, ReportMode.SCHEDULED);
-        final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-        final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
         try {
+            final ReportParameters reportParameters = parseParameters(parameters, ReportMode.SCHEDULED);
+            final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
+            final ScheduleConfig scheduleConfig = new ScheduleConfig(reportParameters, deliveryOptions, (String) parameters.get("cronExpression"));
             schedulerService.addCronTrigger(scheduleConfig);
         } catch (SchedulerContextException ex) {
             return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
@@ -161,10 +162,10 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response deliverReport(final Map<String, Object> parameters) {
-        final ReportParameters reportParameters = parseParameters(parameters, ReportMode.IMMEDIATE);
-        final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
-        final DeliveryConfig deliveryConfig = new DeliveryConfig(reportParameters, deliveryOptions);
         try {
+            final ReportParameters reportParameters = parseParameters(parameters, ReportMode.IMMEDIATE);
+            final DeliveryOptions deliveryOptions = parseDeliveryOptions(parameters);
+            final DeliveryConfig deliveryConfig = new DeliveryConfig(reportParameters, deliveryOptions);
             schedulerService.execute(deliveryConfig);
         } catch (SchedulerContextException ex) {
             return createErrorResponse(Status.BAD_REQUEST, createErrorObject(ex.getContext(), ex.getRawMessage()));
@@ -410,32 +411,38 @@ public class ReportRestServiceImpl implements ReportRestService {
         final JSONArray jsonParameters = jsonInputParameters.getJSONArray("parameters");
         for (int i=0; i< jsonParameters.length(); i++) {
             final JSONObject jsonParameter = jsonParameters.getJSONObject(i);
+            if (!jsonParameter.has("name") || !jsonParameter.has("type")) {
+                continue;
+            }
             final String parameterName = jsonParameter.getString("name");
             final String parameterType = jsonParameter.getString("type");
+            final Object parameterValue = jsonParameter.has("value") ? jsonParameter.get("value") : null;
             if (parameterType.equals("string")) {
+                if (!(parameterValue instanceof String)) {
+                    throw new SchedulerContextException(parameterName, "Provided value ''{0}'' is not a string.", parameterValue);
+                }
                 reportParameterBuilder.withString(parameterName, jsonParameter.getString("value"));
-            }
-            if (parameterType.equals("double")) {
-                reportParameterBuilder.withDouble(parameterName, jsonParameter.getDouble("value"));
-            }
-            if (parameterType.equals("integer")) {
-                reportParameterBuilder.withInteger(parameterName, jsonParameter.getInt("value"));
-            }
-            if (parameterType.equals("float")) {
-                reportParameterBuilder.withFloat(parameterName, jsonParameter.getFloat("value"));
-            }
-            if (parameterType.equals("date")) {
+            } else if (parameterType.equals("double")) {
+                final Double doubleValue = parseDouble(parameterName, parameterValue);
+                reportParameterBuilder.withDouble(parameterName, doubleValue);
+            } else if (parameterType.equals("integer")) {
+                final Integer integerValue = parseInteger(parameterName, parameterValue);
+                reportParameterBuilder.withInteger(parameterName, integerValue);
+            } else if (parameterType.equals("float")) {
+                final Float floatValue = parseFloat(parameterName, parameterValue);
+                reportParameterBuilder.withFloat(parameterName, floatValue);
+            } else if (parameterType.equals("date")) {
+                final int hours = jsonParameter.has("hours") ? parseInteger(parameterName + "Hours", jsonParameter.get("hours")) : 0;
+                final int minutes = jsonParameter.has("minutes") ? parseInteger(parameterName + "Minutes", jsonParameter.get("minutes")) : 0;
                 final ReportDateParm actualDateParm = actualParameters.getParameter(parameterName);
-                final int hours = jsonParameter.getInt("hours");
-                final int minutes = jsonParameter.getInt("minutes");
                 if (actualDateParm.getUseAbsoluteDate() == true || mode == ReportMode.IMMEDIATE) {
                     if (jsonParameter.has("date")) {
+                        final String dateString = jsonParameter.getString("date");
                         try {
-                            final String dateString = jsonParameter.getString("date");
                             final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
                             reportParameterBuilder.withDate(parameterName, parsedDate, hours, minutes);
                         } catch (ParseException e) {
-                            throw new RuntimeException(e);
+                            throw new SchedulerContextException(parameterName, "The provided value ''{0}'' cannot be parsed as a date. Expected format is yyyy-MM-dd", dateString);
                         }
                     }
                 } else {
@@ -443,6 +450,9 @@ public class ReportRestServiceImpl implements ReportRestService {
                     final int count = jsonParameter.getInt("count");
                     reportParameterBuilder.withDate(parameterName, interval, count, hours, minutes);
                 }
+            } else {
+                throw new SchedulerContextException(parameterName, "Unknown type ''{0}''. Supported types are: ''{1}''",
+                        parameterType, Lists.newArrayList("string", "integer", "float", "double", "date"));
             }
         }
 
@@ -477,5 +487,53 @@ public class ReportRestServiceImpl implements ReportRestService {
             }
         }
         throw new SchedulerContextException("format", "Provided format ''{0}'' is not supported", input);
+    }
+
+    private static Double parseDouble(String name, Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof String) {
+            try {
+                return Double.valueOf((String) value);
+            } catch (NumberFormatException ex) {
+                throw new SchedulerContextException(name, "Provided value ''{0}'' is not a floating number", value);
+            }
+        } else if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+        throw new SchedulerContextException(name, "Provided value ''{0}'' must be of type string or double");
+    }
+
+    private static Integer parseInteger(String name, Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof String) {
+            try {
+                return Integer.valueOf((String) value);
+            } catch (NumberFormatException ex) {
+                throw new SchedulerContextException(name, "Provided value ''{0}'' is not an integer number", value);
+            }
+        } else if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        throw new SchedulerContextException(name, "Provided value ''{0}'' must be of type string or integer");
+    }
+
+    private static Float parseFloat(String name, Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof String) {
+            try {
+                return Float.valueOf((String) value);
+            } catch (NumberFormatException ex) {
+                throw new SchedulerContextException(name, "Provided value ''{0}'' is not a floating number", value);
+            }
+        } else if (value instanceof Number) {
+            return ((Number) value).floatValue();
+        }
+        throw new SchedulerContextException(name, "Provided value ''{0}'' must be of type string or float");
     }
 }
