@@ -1481,6 +1481,8 @@
         <feature>opennms-events-api</feature>
         <feature>opennms-model</feature>
 
+        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:com.github.ben-manes.caffeine/caffeine/${caffeineVersion}</bundle>
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.netty/${project.version}</bundle>
     </feature>
 
@@ -1490,6 +1492,7 @@
         <bundle>mvn:io.vavr/vavr-match/0.10.0</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-core/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-circuitbreaker/${resilience4jVersion}</bundle>
+        <bundle>mvn:io.github.resilience4j/resilience4j-bulkhead/${resilience4jVersion}</bundle>
     </feature>
 
     <feature name="netty4" version="${netty4Version}" description="Netty">
