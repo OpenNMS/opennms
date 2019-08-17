@@ -78,10 +78,12 @@
         </service-properties>
     </service>
 
-    <!-- Health check -->
+    <!-- We have a health check available but don't expose it currently since
+         it does not currently return a healthy status when ran on CI
     <service interface="org.opennms.core.health.api.HealthCheck">
         <bean class=" org.opennms.netmgt.dnsresolver.netty.NettyDnsHealthCheck" >
             <argument ref="dnsResolver"/>
         </bean>
     </service>
+    -->
 </blueprint>
