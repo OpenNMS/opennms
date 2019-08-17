@@ -268,6 +268,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         setSnmpAgentConfig(agentConfig, definition, VERSION_UNSPECIFIED);
         // config is derived from profile
         agentConfig.setDefault(false);
+        agentConfig.setProfileLabel(snmpProfile.getLabel());
         return agentConfig;
     }
 

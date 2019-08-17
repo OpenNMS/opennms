@@ -209,6 +209,7 @@ final class NodeInfoScan implements RunInBatch {
         if (validConfig.isPresent()) {
             SnmpAgentConfig agentConfig = validConfig.get();
             getAgentConfigFactory().saveAgentConfigAsDefinition(agentConfig, getLocationName(), "Provisiond");
+            LOG.info("IpAddress {} is fitted with profile {}", primaryAddress.getHostAddress(), agentConfig.getProfileLabel());
             SystemGroup systemGroup = new SystemGroup(primaryAddress);
             try {
                 m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, systemGroup)

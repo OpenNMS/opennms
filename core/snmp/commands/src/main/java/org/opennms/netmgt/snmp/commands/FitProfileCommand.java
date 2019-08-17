@@ -77,18 +77,17 @@ public class FitProfileCommand implements Action {
     @Override
     public Object execute() throws Exception {
 
-
         InetAddress inetAddress = InetAddress.getByName(ipAddress);
         CompletableFuture<SnmpAgentConfig> future = fitProfile(label, inetAddress, location, oid);
         while (true) {
             try {
                 SnmpAgentConfig agentConfig = future.get(1, TimeUnit.SECONDS);
                 if (agentConfig != null) {
-                    System.out.println("Fitted with following agent config:");
+                    System.out.printf("Fitted IpAddress '%s' with profile '%s', agent config: \n", ipAddress, agentConfig.getProfileLabel());
                     System.out.println(agentConfig.toString());
                     if (save) {
                         agentConfigFactory.saveAgentConfigAsDefinition(agentConfig, location, "karaf-shell");
-                        System.out.println("Saved above config in definitions");
+                        System.out.println("***Saved above config in definitions***");
                     }
                 }
                 break;
