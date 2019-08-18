@@ -132,8 +132,8 @@ public class FlowTester {
         // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl)
-                .connTimeout(10000)
-                .readTimeout(60000)
+                .connTimeout(5000)
+                .readTimeout(10000)
                 .multiThreaded(true).build());
 
         try {
@@ -161,10 +161,11 @@ public class FlowTester {
                 LOG.info("Verifying flows for {}", netflowVersion);
                 verify(() -> {
                     // Verify directly in Elasticsearch that the flows have been created
-                    final SearchResult response = client.execute(new Search.Builder(
-                            "{\"query\":{\"term\":{\"netflow.version\":{\"value\":"
-                                    + gson.toJson(netflowVersion)
-                                    + "}}}}")
+                    final String query = "{\"query\":{\"term\":{\"netflow.version\":{\"value\":"
+                            + gson.toJson(netflowVersion)
+                            + "}}}}";
+                    LOG.info("Executing query: {}", query);
+                    final SearchResult response = client.execute(new Search.Builder(query)
                             .addIndex("netflow-*")
                             .build());
                     LOG.info("Response {} with {} flow documents: {}", response.isSucceeded() ? "successful" : "failed", SearchResultUtils.getTotal(response), response.getJsonString());
