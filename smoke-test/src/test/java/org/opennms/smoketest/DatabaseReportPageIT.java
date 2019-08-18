@@ -33,8 +33,10 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -57,6 +59,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -389,13 +393,17 @@ public class DatabaseReportPageIT extends UiPageTest {
     }
 
     public static class ScheduledReportsTab extends Element {
-
         public ScheduledReportsTab(WebDriver driver) {
             super(driver);
         }
 
         public ScheduledReportsTab open() {
             LOG.debug("Open Scheduled Reports Tab");
+            new FluentWait<>(driver)
+                    .withTimeout(Duration.ofSeconds(15))
+                    .pollingEvery(Duration.ofSeconds(1))
+                    .ignoring(Exception.class)
+                    .until(driver -> elementToBeClickable(getElement()));
             getElement().click();
             assertThat(isActive(), Matchers.is(true));
             return this;
