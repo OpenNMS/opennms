@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Element {
-    private static final Logger LOG = LoggerFactory.getLogger(Element.class);
+    protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
     protected final WebDriver driver;
     private final int implicitWait;

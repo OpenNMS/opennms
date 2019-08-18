@@ -58,9 +58,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.shaded.com.google.common.collect.Lists;
 
+import com.google.common.base.MoreObjects;
+
 public class DatabaseReportPageIT extends UiPageTest {
+
+    private static Logger LOG = LoggerFactory.getLogger(DatabaseReportPageIT.class);
 
     private DatabaseReportPage page;
 
@@ -144,6 +150,7 @@ public class DatabaseReportPageIT extends UiPageTest {
                 .getScheduledReports().stream()
                 .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(cronExpression))
                 .findAny();
+        LOG.debug("Expecting one schedule matching the schedule: {}", any.isPresent());
         assertThat(any.isPresent(), is(true));
 
         // Edit Schedule
@@ -160,6 +167,7 @@ public class DatabaseReportPageIT extends UiPageTest {
                 .getScheduledReports().stream()
                 .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(updatedCronExpression))
                 .findAny();
+        LOG.debug("Schedule was edited, now verify exactly one schedule matches: {}", findMe.isPresent());
         assertThat(findMe.isPresent(), is(true));
     }
 
@@ -199,6 +207,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportTemplateTab select(String reportName) {
+            LOG.debug("Selecting report {} from list", reportName);
             final WebElement element = findElementByXpath(String.format("//a/h5[text() = '%s']", reportName));
             element.click();
             return this;
@@ -211,6 +220,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportTemplateTab open() {
+            LOG.debug("Open Report Template Tab");
             getElement().click();
             assertThat(isActive(), Matchers.is(true));
             return this;
@@ -250,6 +260,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportTemplateTab scheduleReport(DeliveryOptions options, String cronExpression) {
+            LOG.debug("Try scheduling report with delivery options {} and corn Expression", options, cronExpression);
             ensureReportIsSelected();
             new ReportDetailsForm(getDriver())
                     .applyDeliveryOptions(options)
@@ -262,6 +273,7 @@ public class DatabaseReportPageIT extends UiPageTest {
             await().atMost(2, MINUTES)
                     .pollInterval(5, SECONDS)
                     .until(() -> findElementByXpath("//div[contains(@class, 'alert alert-success') and contains(text(), 'The report was scheduled')]") != null);
+            LOG.debug("Report scheduled!");
             return this;
         }
 
@@ -295,6 +307,7 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         public ReportDetailsForm applyDeliveryOptions(DeliveryOptions options) {
             Objects.requireNonNull(options);
+            LOG.debug("Apply delivery options {}", options);
 
             // Enable delivery
             if (!this.editMode) {
@@ -321,6 +334,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportDetailsForm applyCronExpression(String cronExpression) {
+            LOG.debug("Apply corn expression {}", cronExpression);
             if (!this.editMode) {
                 new CheckBox(driver, "createSchedule").setSelected(true);
             }
@@ -337,6 +351,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public PersistedReportsTab open() {
+            LOG.debug("Open Persisted Reports Tab");
             getElement().click();
             assertThat(isActive(), Matchers.is(true));
             return this;
@@ -379,6 +394,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ScheduledReportsTab open() {
+            LOG.debug("Open Scheduled Reports Tab");
             getElement().click();
             assertThat(isActive(), Matchers.is(true));
             return this;
@@ -450,6 +466,14 @@ public class DatabaseReportPageIT extends UiPageTest {
         private DeliveryOptions emailRecipients(List<String> recipients) {
             this.emailRecipients = new ArrayList<>(recipients);
             return this;
+        }
+
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("format", format)
+                    .add("persistToDisk", persistToDisk)
+                    .add("emailRecipientes", emailRecipients)
+                    .toString();
         }
     }
 
