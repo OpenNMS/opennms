@@ -39,9 +39,11 @@ public class CheckBox extends UiElement {
     }
 
     public void setSelected(boolean selected) {
+        LOG.debug("Update setSelected {} of element with id: {}", selected, elementId);
         if (selected != isSelected()) {
             getElement().click();
         }
+        LOG.debug("Expecting {} for isSelected. Actual value is {}. Element id: {}", selected, isSelected(), elementId);
         assertEquals(selected, isSelected());
     }
 
