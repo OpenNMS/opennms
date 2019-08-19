@@ -32,10 +32,8 @@ import static org.junit.Assert.assertEquals;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 
 import java.time.Duration;
-import java.util.function.Function;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
@@ -48,7 +46,7 @@ public class CheckBox extends UiElement {
     public void setSelected(boolean selected) {
         LOG.debug("Update setSelected {} of element with id: {}", selected, elementId);
         final Wait<WebDriver> wait = new FluentWait<>(driver)
-                .withTimeout(Duration.ofSeconds(15))
+                .withTimeout(Duration.ofSeconds(30))
                 .pollingEvery(Duration.ofSeconds(1))
                 .ignoring(Exception.class);
 
@@ -62,6 +60,7 @@ public class CheckBox extends UiElement {
         }
 
         // Fail if we have not produced the expected state
+        LOG.debug("Expecting {} for isSelected. Actual value is {}. Element id: {}", selected, isSelected(), elementId);
         assertEquals(String.format("Expected checkbox to be selected=%s", selected), selected, isSelected());
     }
 

@@ -264,7 +264,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportTemplateTab scheduleReport(DeliveryOptions options, String cronExpression) {
-            LOG.debug("Try scheduling report with delivery options {} and corn Expression", options, cronExpression);
+            LOG.debug("Try scheduling report with delivery options {} and cron expression", options, cronExpression);
             ensureReportIsSelected();
             new ReportDetailsForm(getDriver())
                     .applyDeliveryOptions(options)
