@@ -214,6 +214,7 @@
     <feature name="sentinel-kvstore-api"
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: API"
              version="${project.version}">
+        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
     </feature>
 

@@ -37,6 +37,8 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 /**
  * An implementation of {@link KeyValueStore} to extend for implementations that do not otherwise have access to
  * async get/put operations.
@@ -60,7 +62,7 @@ public abstract class AbstractAsyncKeyValueStore<T> extends AbstractKeyValueStor
                 60,
                 TimeUnit.SECONDS,
                 new SynchronousQueue<>(),
-                r -> new Thread(r, "kvstore-async-thread"),
+                new ThreadFactoryBuilder().setNameFormat("kvstore-async-thread-%d").build(),
                 new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
