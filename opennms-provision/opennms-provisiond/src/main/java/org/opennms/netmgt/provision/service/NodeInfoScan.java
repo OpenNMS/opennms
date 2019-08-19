@@ -203,26 +203,32 @@ final class NodeInfoScan implements RunInBatch {
 
     private boolean peformScanWithMatchingProfile(InetAddress primaryAddress) throws InterruptedException {
 
-        Optional<SnmpAgentConfig> validConfig = m_provisionService.getSnmpProfileMapper()
-                                                    .getAgentConfigFromProfiles(primaryAddress, getLocationName());
-
-        if (validConfig.isPresent()) {
-            SnmpAgentConfig agentConfig = validConfig.get();
-            getAgentConfigFactory().saveAgentConfigAsDefinition(agentConfig, getLocationName(), "Provisiond");
-            LOG.info("IpAddress {} is fitted with profile {}", primaryAddress.getHostAddress(), agentConfig.getProfileLabel());
-            SystemGroup systemGroup = new SystemGroup(primaryAddress);
-            try {
-                m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, systemGroup)
-                        .withDescription("systemGroup")
-                        .withLocation(getLocationName())
-                        .execute()
-                        .get();
-                systemGroup.updateSnmpDataForNode(getNode());
-                return true;
-            } catch (ExecutionException e) {
-                LOG.error("Exception while doing snmp walk with config from snmp profiles", e);
+        try {
+            Optional<SnmpAgentConfig> validConfig = m_provisionService.getSnmpProfileMapper()
+                                                        .getAgentConfigFromProfiles(primaryAddress, getLocationName())
+                                                        .get();
+            if (validConfig.isPresent()) {
+                SnmpAgentConfig agentConfig = validConfig.get();
+                getAgentConfigFactory().saveAgentConfigAsDefinition(agentConfig, getLocationName(), "Provisiond");
+                LOG.info("IP address {} is fitted with profile {}", primaryAddress.getHostAddress(), agentConfig.getProfileLabel());
+                SystemGroup systemGroup = new SystemGroup(primaryAddress);
+                try {
+                    m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, systemGroup)
+                            .withDescription("systemGroup")
+                            .withLocation(getLocationName())
+                            .execute()
+                            .get();
+                    systemGroup.updateSnmpDataForNode(getNode());
+                    return true;
+                } catch (ExecutionException e) {
+                    LOG.error("Exception while doing SNMP walk with config from SNMP profile {}.", agentConfig.getProfileLabel(), e);
+                }
             }
+        } catch (ExecutionException e) {
+            LOG.error("Exception while trying to get SNMP profiles.", e);
         }
+
+
         return false;
     }
 

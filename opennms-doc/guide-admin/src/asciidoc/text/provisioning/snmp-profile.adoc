@@ -46,7 +46,7 @@ This profile's SNMP parameters will be fitted only against IP addresses in the r
 NOTE: Profiles will be tried in the order they are configured.
 The first match that produces a successful SNMP `GET-REQUEST` on the scalar instance of `sysObjectID` will be saved by `Provisiond` as the SNMP configuratoin definition to use for all future SNMP operations against the fitted IP address.
 
-.Fit a Snmp profile
+.Fit a SNMP profile
 
 The `opennms-snmp:fit` Karaf shell command finds a matching profile for a given IP address and prints out the resulting config.
 
@@ -63,7 +63,7 @@ admin@opennms()> opennms-snmp:fit 172.1.1.106 profile1     <2>
 <2> checks whether the profile with label `profile1` is a fit for IP address `172.1.1.106`.
 If it succeeds, it prints out the resulting agent config, but does not save any definition.
 
-.Remove an IpAddress from definition.
+.Remove an IP address from definition.
 
 The `opennms-snmp:remove-from-definition` Karaf shell command removes an IP address from the system-wide SNMP configuration definitions.
 

@@ -1481,7 +1481,7 @@ public class SnmpEventInfoTest {
 
 
     /**
-     * Tests removal of ipaddress from definition removes that ipaddress from range.
+     * Tests removal of IP address from definition.
      * @throws IOException
      */
     @Test
@@ -1512,7 +1512,7 @@ public class SnmpEventInfoTest {
     }
 
     /**
-     * Tests removal of ipaddress from middle of range splits the range.
+     * Tests removal of IP address from middle of range splits the range.
      * @throws IOException
      */
     @Test
@@ -1544,7 +1544,7 @@ public class SnmpEventInfoTest {
     }
 
     /**
-     * Tests removal of ipaddress with location that is not matching definition wouldn't change definitions.
+     * Tests removal of IP address with location that is not matching definition wouldn't change definitions.
      * @throws IOException
      */
     @Test
@@ -1575,7 +1575,7 @@ public class SnmpEventInfoTest {
     }
 
     /**
-     * Tests removal of ipaddress with matching location
+     * Tests removal of IP address from definition with matching location.
      * @throws IOException
      */
     @Test
@@ -1605,17 +1605,17 @@ public class SnmpEventInfoTest {
                 "";
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
-
         SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.25"), "Minion", "test");
-        SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.1.25"));
-        assertFalse(snmpAgentConfig.isDefault());
+
+        SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.1.25"), "Minion");
+        assertFalse("Config should be derived from default location", snmpAgentConfig.isDefault());
         String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
     }
 
 
     /**
-     * Tests removal of one ip address which has only one definition specific removes definition completely.
+     * Tests removal of one IP address which has only one definition with one specific.
      * @throws IOException
      */
     @Test
@@ -1638,7 +1638,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.0.8"), null, "test");
         SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.8"));
-        assertTrue(snmpAgentConfig.isDefault());
+        assertTrue("Should fall back to default config", snmpAgentConfig.isDefault());
         String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
 
         assertXmlEquals(expectedConfig, actualConfig);
@@ -1686,7 +1686,7 @@ public class SnmpEventInfoTest {
 
         SnmpProfile snmpProfile = SnmpPeerFactory.getInstance().getProfiles().get(0);
         SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfigFromProfile(snmpProfile, InetAddress.getByName("192.168.1.25"));
-        assertFalse(snmpAgentConfig.isDefault());
+        assertFalse("Config should be not be default config", snmpAgentConfig.isDefault());
         SnmpPeerFactory.getInstance().saveAgentConfigAsDefinition(snmpAgentConfig, null, "test");
         String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
@@ -1731,7 +1731,7 @@ public class SnmpEventInfoTest {
 
         SnmpProfile snmpProfile = SnmpPeerFactory.getInstance().getProfiles().get(0);
         SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfigFromProfile(snmpProfile, InetAddress.getByName("192.168.1.25"));
-        assertFalse(snmpAgentConfig.isDefault());
+        assertFalse("Config should be not be default config", snmpAgentConfig.isDefault());
         SnmpPeerFactory.getInstance().saveAgentConfigAsDefinition(snmpAgentConfig, null, "test");
         String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);

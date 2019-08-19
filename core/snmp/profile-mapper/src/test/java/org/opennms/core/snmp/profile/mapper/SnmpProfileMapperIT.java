@@ -32,12 +32,16 @@ import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +72,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitSnmpAgent(host = "192.0.1.206", resource = "classpath:/snmpTestData1.properties")
-@DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SnmpProfileMapperIT {
 
     @Autowired
@@ -86,11 +90,9 @@ public class SnmpProfileMapperIT {
     public void setup() throws IOException {
         SnmpPeerFactory.setInstance(snmpPeerFactory);
         assertTrue(snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
-        profileMapper = new SnmpProfileMapperImpl();
-        profileMapper.setAgentConfigFactory(snmpPeerFactory);
-        profileMapper.setLocationAwareSnmpClient(locationAwareSnmpClient);
         filterDao = Mockito.mock(FilterDao.class);
-        profileMapper.setFilterDao(filterDao);
+        when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);
+        profileMapper = new SnmpProfileMapperImpl(filterDao, snmpPeerFactory, locationAwareSnmpClient);
     }
 
     @Test
@@ -98,22 +100,42 @@ public class SnmpProfileMapperIT {
 
         int timeout = 4000;
         long ttl = 6000;
+        SnmpProfiles snmpProfiles = new SnmpProfiles();
         SnmpProfile snmpProfile = new SnmpProfile();
+        snmpProfile = new SnmpProfile();
         snmpProfile.setLabel("profile1");
         snmpProfile.setVersion("v1");
         snmpProfile.setTimeout(timeout);
         snmpProfile.setTTL(ttl);
-        SnmpProfiles snmpProfiles = new SnmpProfiles();
+        snmpProfiles.addSnmpProfile(snmpProfile);
+        snmpProfile = new SnmpProfile();
+        snmpProfile.setLabel("profile2");
+        snmpProfile.setVersion("v1");
+        snmpProfile.setFilterExpression("IPADDR IPLIKE 192.0.*.*");
+        snmpProfile.setTimeout(10000);
+        snmpProfile.setTTL(ttl);
+        snmpProfiles.addSnmpProfile(snmpProfile);
+        snmpProfile = new SnmpProfile();
+        snmpProfile.setLabel("profile3");
+        snmpProfile.setVersion("v2c");
+        snmpProfile.setTimeout(12000);
+        snmpProfile.setTTL(ttl);
         snmpProfiles.addSnmpProfile(snmpProfile);
         snmpPeerFactory.getSnmpConfig().setSnmpProfiles(snmpProfiles);
-        Optional<SnmpAgentConfig> agentConfig = profileMapper.getAgentConfigFromProfiles(InetAddress.getByName("192.0.1.206"), null);
-        assertTrue(agentConfig.isPresent());
-        assertEquals(agentConfig.get().getTTL().longValue(), ttl);
-        assertEquals(agentConfig.get().getTimeout(), timeout);
-        snmpPeerFactory.saveAgentConfigAsDefinition(agentConfig.get(), "Default", "test");
-        List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
-        Optional<Definition> definition = definitions.stream().filter(def -> def.getTimeout() == timeout).findFirst();
-        assertTrue(definition.isPresent());
+        CompletableFuture<Optional<SnmpAgentConfig>> future = profileMapper.getAgentConfigFromProfiles(InetAddress.getByName("192.0.1.206"),
+                null);
+        try {
+            Optional<SnmpAgentConfig> agentConfig = future.get();
+            assertTrue(agentConfig.isPresent());
+            assertEquals(ttl, agentConfig.get().getTTL().longValue());
+            assertEquals(timeout, agentConfig.get().getTimeout());
+            snmpPeerFactory.saveAgentConfigAsDefinition(agentConfig.get(), "Default", "test");
+            List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
+            Optional<Definition> definition = definitions.stream().filter(def -> def.getTimeout() == timeout).findFirst();
+            assertTrue(definition.isPresent());
+        } catch (InterruptedException | ExecutionException e) {
+            fail();
+        }
     }
 
     @Test
@@ -131,14 +153,20 @@ public class SnmpProfileMapperIT {
         snmpProfiles.addSnmpProfile(snmpProfile);
         snmpPeerFactory.getSnmpConfig().setSnmpProfiles(snmpProfiles);
         //Profile without filter expression should always match and that would be set.
-        Optional<SnmpAgentConfig> agentConfig = profileMapper.getAgentConfigFromProfiles(InetAddress.getByName("192.0.1.206"), "Minion", ".1.3.6.1.2.1.1.3.0");
-        assertTrue(agentConfig.isPresent());
-        assertEquals(agentConfig.get().getTTL().longValue(), ttl);
-        assertEquals(agentConfig.get().getTimeout(), timeout);
-        snmpPeerFactory.saveAgentConfigAsDefinition(agentConfig.get(), "Default", "test");
-        List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
-        Optional<Definition> definition = definitions.stream().filter(def -> def.getTimeout() == timeout).findFirst();
-        assertTrue(definition.isPresent());
+        CompletableFuture<Optional<SnmpAgentConfig>> future = profileMapper.getAgentConfigFromProfiles(InetAddress.getByName("192.0.1.206"),
+                "Minion", ".1.3.6.1.2.1.1.3.0");
+        try {
+            Optional<SnmpAgentConfig> agentConfig = future.get();
+            assertTrue(agentConfig.isPresent());
+            assertEquals(agentConfig.get().getTTL().longValue(), ttl);
+            assertEquals(agentConfig.get().getTimeout(), timeout);
+            snmpPeerFactory.saveAgentConfigAsDefinition(agentConfig.get(), "Default", "test");
+            List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
+            Optional<Definition> definition = definitions.stream().filter(def -> def.getTimeout() == timeout).findFirst();
+            assertTrue(definition.isPresent());
+        } catch (InterruptedException | ExecutionException e) {
+            fail();
+        }
     }
 
 
@@ -158,21 +186,23 @@ public class SnmpProfileMapperIT {
         snmpProfiles.addSnmpProfile(snmpProfile);
         snmpPeerFactory.getSnmpConfig().setSnmpProfiles(snmpProfiles);
         //Profile without filter expression should always match and that would be set.
-        Optional<SnmpAgentConfig> agentConfig = profileMapper.fitProfile("profile1", InetAddress.getByName("192.0.1.206"), "Minion", ".1.3.6.1.2.1.1.3.0");
-
-        if(agentConfig.isPresent()) {
-            snmpAgentConfig = agentConfig.get();
+        CompletableFuture<Optional<SnmpAgentConfig>> future = profileMapper.fitProfile("profile1", InetAddress.getByName("192.0.1.206"), "Minion", ".1.3.6.1.2.1.1.3.0");
+        try {
+            Optional<SnmpAgentConfig> agentConfig = future.get();
+            if (agentConfig.isPresent()) {
+                snmpAgentConfig = agentConfig.get();
+            }
+            assertNotNull(snmpAgentConfig);
+            assertEquals(snmpAgentConfig.getTTL().longValue(), ttl);
+            assertEquals(snmpAgentConfig.getTimeout(), timeout);
+            List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
+            Optional<Definition> definition = definitions.stream().filter(def -> def.getTimeout() == timeout).findFirst();
+            assertFalse(definition.isPresent());
+        } catch (InterruptedException | ExecutionException e) {
+            fail();
         }
-        assertNotNull(snmpAgentConfig);
-        assertEquals(snmpAgentConfig.getTTL().longValue(), ttl);
-        assertEquals(snmpAgentConfig.getTimeout(), timeout);
 
-        List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
-        Optional<Definition> definition = definitions.stream().filter(def -> def.getTimeout() == timeout).findFirst();
-        assertFalse(definition.isPresent());
     }
-
-
 
 
 }

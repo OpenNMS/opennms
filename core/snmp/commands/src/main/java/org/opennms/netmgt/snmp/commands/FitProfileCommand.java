@@ -29,10 +29,8 @@
 package org.opennms.netmgt.snmp.commands;
 
 import java.net.InetAddress;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -46,8 +44,10 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpProfileMapper;
 
+import com.google.common.base.Strings;
 
-@Command(scope = "opennms-snmp", name = "fit", description = "Fit a profile with an IPAddress")
+
+@Command(scope = "opennms-snmp", name = "fit", description = "Fit a profile for a given IP address")
 @Service
 public class FitProfileCommand implements Action {
 
@@ -57,40 +57,47 @@ public class FitProfileCommand implements Action {
     @Reference
     private SnmpAgentConfigFactory agentConfigFactory;
 
-    @Option(name = "-l", aliases = "--location", description = "location of IpAddress that needs fitting")
+    @Option(name = "-l", aliases = "--location", description = "Location of IP address that needs fitting")
     String location;
-
-    @Argument(name = "host", description = "IPAddress that needed to be fit", required = true)
-    String ipAddress;
 
     @Option(name = "-s", aliases = "--save", description = "Save the resulting definition")
     boolean save = false;
 
-    @Argument(index = 1, name = "label", description = "Label of the Snmp Profile used to fit")
-    String label;
-
-    @Argument(index = 2, name = "oid", description = "custom oid used to fit profile")
+    @Option(name = "-o", aliases = "--oid", description = "Custom OID used to fit profile")
     String oid;
 
+    @Argument(name = "host", description = "IP address to fit", required = true)
+    String ipAddress;
+
+    @Argument(index = 1, name = "label", description = "Label of the Snmp Profile used to fit")
+    String label;
 
 
     @Override
     public Object execute() throws Exception {
 
         InetAddress inetAddress = InetAddress.getByName(ipAddress);
-        CompletableFuture<SnmpAgentConfig> future = fitProfile(label, inetAddress, location, oid);
+        CompletableFuture<Optional<SnmpAgentConfig>> future = snmpProfileMapper.fitProfile(label, inetAddress, location, oid);
         while (true) {
             try {
-                SnmpAgentConfig agentConfig = future.get(1, TimeUnit.SECONDS);
-                if (agentConfig != null) {
-                    System.out.printf("Fitted IpAddress '%s' with profile '%s', agent config: \n", ipAddress, agentConfig.getProfileLabel());
-                    System.out.println(agentConfig.toString());
+                Optional<SnmpAgentConfig> agentConfig = future.get(1, TimeUnit.SECONDS);
+                if (agentConfig.isPresent()) {
+                    System.out.printf("Fitted IP address '%s' with profile '%s', agent config: \n", ipAddress, agentConfig.get().getProfileLabel());
+                    ShowConfigCommand.prettyPrint(agentConfig.get());
                     if (save) {
-                        agentConfigFactory.saveAgentConfigAsDefinition(agentConfig, location, "karaf-shell");
-                        System.out.println("***Saved above config in definitions***");
+                        agentConfigFactory.saveAgentConfigAsDefinition(agentConfig.get(), location, "karaf-shell");
+                        System.out.println("*** Saved above config in definitions ***");
                     }
+                    break;
+                } else {
+                    if (Strings.isNullOrEmpty(label)) {
+                        System.out.printf("\nDidn't find any matching profile for IP address %s \n", ipAddress);
+                    } else {
+                        System.out.printf("\nProfile with label '%s' didn't fit for IP address '%s'\n", label, ipAddress);
+                    }
+                    break;
                 }
-                break;
+
             } catch (TimeoutException e1) {
                 // Ignore
             }
@@ -100,18 +107,5 @@ public class FitProfileCommand implements Action {
         return null;
     }
 
-    private CompletableFuture<SnmpAgentConfig> fitProfile(String profileLabel, InetAddress inetAddress, String location, String oid) {
-
-        CompletableFuture<SnmpAgentConfig> future = new CompletableFuture<>();
-        Executors.newSingleThreadExecutor().execute(() -> {
-            Optional<SnmpAgentConfig> agentConfig = snmpProfileMapper.fitProfile(profileLabel, inetAddress, location, oid);
-            if (agentConfig.isPresent()) {
-                future.complete(agentConfig.get());
-            } else {
-                future.completeExceptionally(new NoSuchElementException("No matching profiles found for ipaddress : " + inetAddress.getHostAddress()));
-            }
-        });
-        return future;
-    }
 
 }

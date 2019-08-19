@@ -40,7 +40,7 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 
 import com.google.common.base.Strings;
 
-@Command(scope = "opennms-snmp", name = "remove-from-definition", description = "Remove an IPAddress from definition")
+@Command(scope = "opennms-snmp", name = "remove-from-definition", description = "Remove an IP address from a definition")
 @Service
 public class RemoveFromDefinitionsCommand implements Action {
 
@@ -50,7 +50,7 @@ public class RemoveFromDefinitionsCommand implements Action {
     @Option(name = "-l", aliases = "--location", description = "Location")
     String location;
 
-    @Argument(name = "ipAddress", description = "IPAddress that needs to be removed from definition", required = true)
+    @Argument(name = "ipAddress", description = "IP address to remove from definition", required = true)
     String ipAddress;
 
     @Override
@@ -60,9 +60,9 @@ public class RemoveFromDefinitionsCommand implements Action {
             location = "Default";
         }
         if (succeeded) {
-            System.out.printf("IPAddress '%s' at location '%s' removed from SNMP Definitions \n", ipAddress, location);
+            System.out.printf("IP address '%s' at location '%s' removed from SNMP Definitions \n", ipAddress, location);
         } else {
-            System.out.printf("Failed to remove IPAddress '%s' at location '%s' from SNMP Definitions \n ", ipAddress, location);
+            System.out.printf("Failed to remove IP address '%s' at location '%s' from SNMP Definitions \n ", ipAddress, location);
         }
         return null;
     }

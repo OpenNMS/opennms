@@ -179,7 +179,6 @@ public class SnmpPeerFactoryTest extends TestCase {
                         + "  engine-id=\"engineId\" "
                         + "  context-engine-id=\"contextEngineId\" "
                         + "  context-name=\"profileContext\" "
-                        //+ "  privacy-protocol=\"DES\" "
                         + "  enterprise-id=\"enterpriseId\">"
                         + "<label>profile2</label>"
                         + "<filter>*.opennms.com</filter>"

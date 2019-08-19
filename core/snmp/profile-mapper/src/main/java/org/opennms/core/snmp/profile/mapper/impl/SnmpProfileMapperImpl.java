@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
@@ -39,6 +40,7 @@ import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
@@ -61,83 +63,104 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
     @Autowired
     private LocationAwareSnmpClient locationAwareSnmpClient;
 
+    private static final String SYS_OBJECTID_INSTANCE = ".1.3.6.1.2.1.1.2.0";
+
+    private SnmpObjId snmpObjId = SnmpObjId.get(SYS_OBJECTID_INSTANCE);
+
+    public SnmpProfileMapperImpl() {
+    }
+
     public SnmpProfileMapperImpl(FilterDao filterDao, SnmpAgentConfigFactory agentConfigFactory, LocationAwareSnmpClient locationAwareSnmpClient) {
         this.agentConfigFactory = Objects.requireNonNull(agentConfigFactory);
         this.filterDao = Objects.requireNonNull(filterDao);
         this.locationAwareSnmpClient = Objects.requireNonNull(locationAwareSnmpClient);
     }
 
-    public SnmpProfileMapperImpl() {
-    }
-
-    private static final String SYS_OBJECTID_INSTANCE = ".1.3.6.1.2.1.1.2.0";
-
     @Override
-    public Optional<SnmpAgentConfig> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid) {
+    public CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid) {
 
+        CompletableFuture<Optional<SnmpAgentConfig>> future = new CompletableFuture<>();
         List<SnmpProfile> snmpProfiles = agentConfigFactory.getProfiles();
         // Get matching profiles for this IpAddress.
         List<SnmpProfile> matchedProfiles = snmpProfiles.stream()
                 .filter(snmpProfile -> isFilterExpressionValid(inetAddress, snmpProfile.getFilterExpression()))
                 .collect(Collectors.toList());
-
-        for (SnmpProfile snmpProfile : matchedProfiles) {
-
-            Optional<SnmpAgentConfig> config = fitProfile(snmpProfile, inetAddress, location, oid);
-            if (config.isPresent()) {
-                return config;
+        // Run and collect futures.
+        List<CompletableFuture<Optional<SnmpAgentConfig>>> futures = matchedProfiles.stream()
+                .map(matchedProfile -> fitProfile(matchedProfile, inetAddress, location, oid))
+                .collect(Collectors.toList());
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+        //Join all the results.
+        CompletableFuture<List<Optional<SnmpAgentConfig>>> results = allFutures.thenApply( agentConfig -> {
+            return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        });
+        //Complete the future with first non-empty agent config.
+        results.whenComplete((configList, t) -> {
+            if(t == null) {
+                Optional<Optional<SnmpAgentConfig>> configOptional = configList.stream().filter(Optional::isPresent).findFirst();
+                future.complete(configOptional.orElse(Optional.empty()));
+            } else {
+                future.complete(Optional.empty());
             }
-        }
-        return Optional.empty();
+        });
+        return future;
     }
 
-    private Optional<SnmpAgentConfig> fitProfile(SnmpProfile snmpProfile, InetAddress inetAddress, String location, String oid) {
+    private CompletableFuture<Optional<SnmpAgentConfig>> fitProfile(SnmpProfile snmpProfile, InetAddress inetAddress, String location, String oid) {
+
         //Get agent config from profile.
-        SnmpAgentConfig agentConfig = agentConfigFactory.getAgentConfigFromProfile(snmpProfile, inetAddress);
-        try {
-            if (Strings.isNullOrEmpty(oid)) {
-                oid = SYS_OBJECTID_INSTANCE;
-            }
-            if (Strings.isNullOrEmpty(location)) {
-                location = "Default";
-            }
-            SnmpValue snmpValue = locationAwareSnmpClient.get(agentConfig, oid)
-                    .withLocation(location)
-                    .withDescription("Snmp-Profile:" + snmpProfile.getLabel())
-                    .execute()
-                    .get();
-            if (snmpValue != null && !snmpValue.isError()) {
-                return Optional.of(agentConfig);
-            }
-        } catch (Exception e) {
-            LOG.warn("Exception while trying to get sysObjectID for the profile {}", snmpProfile.getLabel(), e);
+        final SnmpAgentConfig agentConfig = agentConfigFactory.getAgentConfigFromProfile(snmpProfile, inetAddress);
+        if (!Strings.isNullOrEmpty(oid)) {
+            snmpObjId = SnmpObjId.get(oid);
         }
-        return Optional.empty();
+        if (Strings.isNullOrEmpty(location)) {
+            location = "Default";
+        }
+        CompletableFuture<Optional<SnmpAgentConfig>> future = new CompletableFuture<>();
+
+        CompletableFuture<SnmpValue> snmpResult = locationAwareSnmpClient.get(agentConfig, snmpObjId)
+                .withLocation(location)
+                .withDescription("Snmp-Profile:" + snmpProfile.getLabel())
+                .execute();
+        snmpResult.whenComplete(((snmpValue, throwable) -> {
+            if(throwable == null) {
+                if (snmpValue != null && !snmpValue.isError()) {
+                    future.complete(Optional.of(agentConfig));
+                } else {
+                    future.complete(Optional.empty());
+                }
+            } else {
+                LOG.warn("Exception while doing SNMP get on OID '{}' with profile '{}'", snmpObjId, snmpProfile.getLabel(), throwable);
+                future.complete(Optional.empty());
+            }
+        }));
+        return future;
     }
 
 
     @Override
-    public Optional<SnmpAgentConfig> getAgentConfigFromProfiles(InetAddress inetAddress, String location) {
-        return getAgentConfigFromProfiles(inetAddress, location, SYS_OBJECTID_INSTANCE);
+    public CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location) {
+        return getAgentConfigFromProfiles(inetAddress, location, null);
     }
 
     @Override
-    public Optional<SnmpAgentConfig> fitProfile(String profileLabel, InetAddress inetAddress, String location, String oid) {
+    public CompletableFuture<Optional<SnmpAgentConfig>> fitProfile(String profileLabel, InetAddress inetAddress, String location, String oid) {
 
         Optional<SnmpAgentConfig> agentConfig = Optional.empty();
         if (Strings.isNullOrEmpty(profileLabel)) {
-            agentConfig = getAgentConfigFromProfiles(inetAddress, location, oid);
-
+            return getAgentConfigFromProfiles(inetAddress, location, oid);
         } else {
             List<SnmpProfile> profiles = agentConfigFactory.getProfiles();
             Optional<SnmpProfile> matchingProfile = profiles.stream()
                     .filter(profile -> profile.getLabel().equals(profileLabel))
                     .findFirst();
             if (matchingProfile.isPresent()) {
-                agentConfig = fitProfile(matchingProfile.get(), inetAddress, location, oid);
+                return fitProfile(matchingProfile.get(), inetAddress, location, oid);
             }
         }
-        return agentConfig;
+        CompletableFuture<Optional<SnmpAgentConfig>> future = new CompletableFuture<>();
+        future.complete(agentConfig);
+        return future;
     }
 
     private boolean isFilterExpressionValid(InetAddress inetAddress, String filterExpression) {
@@ -148,7 +171,7 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
             try {
                 return filterDao.isValid(inetAddress.getHostAddress(), filterExpression);
             } catch (FilterParseException e) {
-                LOG.warn("Filter expression '{}' is invalid. ", e);
+                LOG.warn("Filter expression '{}' is invalid. ", filterExpression, e);
             }
         }
         return false;

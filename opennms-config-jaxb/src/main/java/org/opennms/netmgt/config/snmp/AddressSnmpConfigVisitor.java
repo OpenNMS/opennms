@@ -74,7 +74,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
     private boolean m_isMatchingDefault = true;
     private Definition m_generatedDefinition = null;
-    private SnmpProfile snmpProfile;
+    private SnmpProfile m_snmpProfile;
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
         this(addr, null);
@@ -185,13 +185,11 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
     @Override
     public void visitDefinitionFinished() {
-        //LOG.debug("matched = {}", m_matchedDefinition);
         m_currentDefinition = null;
     }
 
     @Override
     public void visitSnmpConfigFinished() {
-        final Definition ret = new Definition();
 
         final Configuration sourceConfig;
         if (getBestMatch() != null) {
@@ -201,7 +199,6 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
             sourceConfig = m_currentConfig;
         }
 
-        //LOG.debug("generated: {}", ret);
         m_generatedDefinition = createDefinitionFromConfig(sourceConfig);
     }
 
@@ -359,21 +356,16 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
         }
 
         if (sourceConfig.hasSecurityLevel()) {
-            //LOG.debug("setSecurityLevel: {}", sourceConfig.getSecurityLevel());
             definition.setSecurityLevel(sourceConfig.getSecurityLevel());
         } else if (m_currentConfig.hasSecurityLevel()) {
-            //LOG.debug("setSecurityLevel: {}", m_currentConfig.getSecurityLevel());
             definition.setSecurityLevel(m_currentConfig.getSecurityLevel());
         } else {
             int securityLevel = NOAUTH_NOPRIV;
             if (isBlank(definition.getAuthPassphrase())) {
-                //LOG.debug("authPassphrase is null, NOAUTH_NOPRIV");
                 securityLevel = NOAUTH_NOPRIV;
             } else if (isBlank(definition.getPrivacyPassphrase())) {
-                //LOG.debug("privacyPassphrase is null, AUTH_NOPRIV");
                 securityLevel = AUTH_NOPRIV;
             } else {
-                //LOG.debug("auth {} privacy {} AUTH_PRIV", ret.getAuthPassphrase(), ret.getPrivacyPassphrase());
                 securityLevel = AUTH_PRIV;
             }
             definition.setSecurityLevel(securityLevel);
@@ -389,11 +381,11 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
     @Override
     public void visitSnmpProfile(SnmpProfile snmpProfile) {
-        this.snmpProfile = snmpProfile;
+        this.m_snmpProfile = snmpProfile;
     }
     @Override
     public void visitSnmpProfileFinished() {
-        m_generatedDefinition = createDefinitionFromConfig(snmpProfile);
+        m_generatedDefinition = createDefinitionFromConfig(m_snmpProfile);
     }
 
     public Definition getDefinition() {

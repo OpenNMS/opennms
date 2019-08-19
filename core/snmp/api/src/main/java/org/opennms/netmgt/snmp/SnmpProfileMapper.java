@@ -30,34 +30,38 @@ package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface SnmpProfileMapper {
 
     /**
-     * Get @{@link SnmpAgentConfig} from Snmp profiles.
-     * @param inetAddress IpAddress for which agent config need to be retrieved.
-     * @param location    location of IpAddress.
-     * @param oid         OID with which Snmp get needs to be performed.
-     * @return  snmpAgentConfig, a @{@link SnmpAgentConfig} if ipaddress matches the profile.
+     * Get @{@link SnmpAgentConfig} from SNMP profiles.
+     *
+     * @param inetAddress IP address for which agent config need to be retrieved.
+     * @param location    location of Ip address.
+     * @param oid         OID with which SNMP get needs to be performed.
+     * @return snmpAgentConfig, a @{@link SnmpAgentConfig} from the matching profile.
      */
-    Optional<SnmpAgentConfig> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid);
+    CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid);
 
     /**
-     *  Get @{@link SnmpAgentConfig} from Snmp profiles.
-     * @param inetAddress IpAddress for which agent config need to be retrieved.
-     * @param location    location of IpAddress
-     * @return  snmpAgentConfig, a @{@link SnmpAgentConfig} if ipaddress matches the profile.
+     * Get @{@link SnmpAgentConfig} from SNMP profiles.
+     *
+     * @param inetAddress IP address for which agent config need to be retrieved.
+     * @param location    location of IP address.
+     * @return snmpAgentConfig, a @{@link SnmpAgentConfig} from the matching profile.
      */
-    Optional<SnmpAgentConfig> getAgentConfigFromProfiles(InetAddress inetAddress, String location);
+    CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location);
 
     /**
-     * Fit a profile with specified IpAddress.
-     * @param profileLabel  label of profile with which Snmp profile will be retrieved
-     * @param inetAddress   IpAddress that needs fitting
-     * @param location      location of IpAddress
-     * @param oid           OID with which Snmp get needs to be performed
-     * @return snmpAgentConfig, a @{@link SnmpAgentConfig} if ipaddress matches the profile.
+     * Fit a profile with specified IP address and label. If no label is specified, it will try to find first matching profile.
+     *
+     * @param label       label of profile with which SNMP profile will be retrieved.
+     * @param inetAddress IP address that needs fitting.
+     * @param location    location of IP address.
+     * @param oid         OID with which SNMP get needs to be performed
+     * @return snmpAgentConfig, a @{@link SnmpAgentConfig} from the matching profile.
      */
-    Optional<SnmpAgentConfig> fitProfile(String profileLabel, InetAddress inetAddress, String location, String oid);
+    CompletableFuture<Optional<SnmpAgentConfig>> fitProfile(String label, InetAddress inetAddress, String location, String oid);
 
 }
