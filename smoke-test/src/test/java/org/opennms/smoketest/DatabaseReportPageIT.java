@@ -340,7 +340,7 @@ public class DatabaseReportPageIT extends UiPageTest {
             }
             new CheckBox(driver, "scheduleTypeCustom").setSelected(true);
             new TextInput(driver, "customCronExpressionInput").setInput(cronExpression);
-            await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> findElementById("customCronExpressionInput").getText().equals(cronExpression));
+            await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> findElementById("customCronExpressionInput").getAttribute("value").equals(cronExpression));
             return this;
         }
     }
