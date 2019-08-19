@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractThreshdDao implements ReadableThreshdDao {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractThreshdDao.class);
     public static final String JSON_STORE_KEY = "threshd-configuration";
-    public static final String JSON_STORE_CONTEXT = "config";
 
     private IPMap ipMap;
     final JsonStore jsonStore;

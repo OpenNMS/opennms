@@ -54,7 +54,6 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment
-// TODO: Should this db be used?
 @JUnitTemporaryDatabase(tempDbClass = MockDatabase.class)
 public class StatsdIT implements InitializingBean {
     @Autowired

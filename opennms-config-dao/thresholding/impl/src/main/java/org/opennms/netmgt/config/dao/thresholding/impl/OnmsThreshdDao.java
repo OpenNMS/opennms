@@ -35,6 +35,7 @@ import java.util.Objects;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.common.api.SaveableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.FileSystemSaveableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.JaxbToJsonStore;
@@ -50,9 +51,9 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
     OnmsThreshdDao(JsonStore jsonStore, File configFile) {
         super(jsonStore);
         Objects.requireNonNull(configFile);
-        saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class, "threshd-configuration",
-                Collections.singleton(getJsonWriterCallbackFunction(jsonStore, JSON_STORE_KEY, JSON_STORE_CONTEXT)),
-                configFile);
+        saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class,
+                "threshd-configuration", Collections.singleton(getJsonWriterCallbackFunction(jsonStore, JSON_STORE_KEY,
+                ConfigDaoConstants.JSON_KEY_STORE_CONTEXT)), configFile);
         reload();
     }
 

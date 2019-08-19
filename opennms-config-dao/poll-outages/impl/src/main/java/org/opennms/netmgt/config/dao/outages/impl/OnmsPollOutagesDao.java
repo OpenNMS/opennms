@@ -37,6 +37,7 @@ import java.util.function.Consumer;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.common.api.SaveableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.FileSystemSaveableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.JaxbToJsonStore;
@@ -53,8 +54,8 @@ public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements Writea
         super(jsonStore);
         Objects.requireNonNull(configFile);
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(Outages.class, "poll-outages",
-                Collections.singleton(getJsonWriterCallbackFunction(jsonStore, JSON_STORE_KEY, JSON_STORE_CONTEXT)),
-                configFile);
+                Collections.singleton(getJsonWriterCallbackFunction(jsonStore, JSON_STORE_KEY,
+                        ConfigDaoConstants.JSON_KEY_STORE_CONTEXT)), configFile);
         reload();
     }
 

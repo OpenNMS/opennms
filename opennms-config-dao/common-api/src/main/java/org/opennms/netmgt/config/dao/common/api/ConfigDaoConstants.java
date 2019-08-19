@@ -26,40 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.kvstore.blob.shell;
+package org.opennms.netmgt.config.dao.common.api;
 
-import java.util.Objects;
+public final class ConfigDaoConstants {
+    public static final String JSON_KEY_STORE_CONTEXT = "config";
 
-import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Argument;
-import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.lifecycle.Reference;
-import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.features.distributed.kvstore.api.BlobStore;
-
-@Command(scope = "opennms-kv-blob", name = "put", description = "Insert a string record into the blob store")
-@Service
-public class BlobStorePut implements Action {
-    @Reference
-    private BlobStore blobStore;
-
-    @Argument(index = 0, description = "The key", required = true)
-    private String key;
-
-    @Argument(index = 1, description = "The key's context", required = true)
-    private String context;
-
-    @Argument(index = 2, description = "The value to put", required = true)
-    private String value;
-
-    @Override
-    public Object execute() {
-        Objects.requireNonNull(key);
-        Objects.requireNonNull(context);
-        Objects.requireNonNull(value);
-
-        blobStore.put(key, value.getBytes(), context);
-
-        return null;
+    private ConfigDaoConstants() {
     }
 }

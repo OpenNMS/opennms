@@ -41,6 +41,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.opennms.core.xml.JacksonUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.poller.outages.Node;
 import org.opennms.netmgt.config.poller.outages.Outage;
@@ -60,9 +61,9 @@ public class SentinelPollOutagesDaoTest {
 
         JsonStore mockJsonStore = mock(JsonStore.class);
         when(mockJsonStore.getLastUpdated(AbstractPollOutagesDao.JSON_STORE_KEY,
-                AbstractPollOutagesDao.JSON_STORE_CONTEXT))
+                ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(OptionalLong.of(System.currentTimeMillis()));
-        when(mockJsonStore.get(AbstractPollOutagesDao.JSON_STORE_KEY, AbstractPollOutagesDao.JSON_STORE_CONTEXT))
+        when(mockJsonStore.get(AbstractPollOutagesDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(Optional.of(configToJson(configToServe)));
 
         ReadablePollOutagesDao threshdDao = new SentinelPollOutagesDao(mockJsonStore);
@@ -70,9 +71,9 @@ public class SentinelPollOutagesDaoTest {
 
         configToServe.removeOutage(outageToAdd);
         when(mockJsonStore.getLastUpdated(AbstractPollOutagesDao.JSON_STORE_KEY,
-                AbstractPollOutagesDao.JSON_STORE_CONTEXT))
+                ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(OptionalLong.of(System.currentTimeMillis()));
-        when(mockJsonStore.get(AbstractPollOutagesDao.JSON_STORE_KEY, AbstractPollOutagesDao.JSON_STORE_CONTEXT))
+        when(mockJsonStore.get(AbstractPollOutagesDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(Optional.of(configToJson(configToServe)));
         threshdDao.reload();
         assertThat(threshdDao.getConfig(), CoreMatchers.equalTo(configToServe));

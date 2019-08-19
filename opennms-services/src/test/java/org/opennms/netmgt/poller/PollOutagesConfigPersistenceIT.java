@@ -49,6 +49,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao;
 import org.opennms.netmgt.config.dao.outages.impl.AbstractPollOutagesDao;
 import org.opennms.netmgt.config.dao.outages.impl.OnmsPollOutagesDao;
@@ -116,6 +117,6 @@ public class PollOutagesConfigPersistenceIT {
     private void waitForInitialConfig() {
         await().atMost(10, TimeUnit.SECONDS).until(() ->
                 jsonStore.get(AbstractPollOutagesDao.JSON_STORE_KEY,
-                        AbstractPollOutagesDao.JSON_STORE_CONTEXT).isPresent());
+                        ConfigDaoConstants.JSON_KEY_STORE_CONTEXT).isPresent());
     }
 }

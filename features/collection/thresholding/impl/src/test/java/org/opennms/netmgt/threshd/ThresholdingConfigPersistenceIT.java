@@ -38,6 +38,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
 import org.opennms.netmgt.config.dao.thresholding.impl.AbstractThreshdDao;
@@ -67,8 +68,8 @@ public class ThresholdingConfigPersistenceIT {
     @Test
     public void canStoreInitialConfig() {
         await().atMost(10, TimeUnit.SECONDS).until(() ->
-                jsonStore.get(AbstractThreshdDao.JSON_STORE_KEY, AbstractThreshdDao.JSON_STORE_CONTEXT).isPresent() &&
+                jsonStore.get(AbstractThreshdDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT).isPresent() &&
                         jsonStore.get(AbstractThresholdingDao.JSON_STORE_KEY,
-                                AbstractThresholdingDao.JSON_STORE_CONTEXT).isPresent());
+                                ConfigDaoConstants.JSON_KEY_STORE_CONTEXT).isPresent());
     }
 }

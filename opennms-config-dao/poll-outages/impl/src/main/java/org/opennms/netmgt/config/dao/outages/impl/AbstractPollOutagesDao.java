@@ -43,7 +43,6 @@ import org.opennms.netmgt.config.poller.outages.Time;
 
 public abstract class AbstractPollOutagesDao implements ReadablePollOutagesDao {
     public static final String JSON_STORE_KEY = "poll-outages";
-    public static final String JSON_STORE_CONTEXT = "config";
 
     final JsonStore jsonStore;
 

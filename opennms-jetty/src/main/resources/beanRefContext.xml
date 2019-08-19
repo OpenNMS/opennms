@@ -11,7 +11,7 @@
      </constructor-arg>
    </bean>
 
-    <bean id="restContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+    <bean id="webContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
         <!-- Use thresholdingContext as the parent so the thresholding and poll outages config DAOs are exposed  -->
         <constructor-arg ref="thresholdingContext" />
     </bean>

@@ -42,6 +42,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.opennms.core.xml.JacksonUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
 import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
@@ -57,9 +58,9 @@ public class SentinelThresholdingDaoTest {
 
         JsonStore mockJsonStore = mock(JsonStore.class);
         when(mockJsonStore.getLastUpdated(AbstractThresholdingDao.JSON_STORE_KEY,
-                AbstractThresholdingDao.JSON_STORE_CONTEXT))
+                ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(OptionalLong.of(System.currentTimeMillis()));
-        when(mockJsonStore.get(AbstractThresholdingDao.JSON_STORE_KEY, AbstractThresholdingDao.JSON_STORE_CONTEXT))
+        when(mockJsonStore.get(AbstractThresholdingDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(Optional.of(configToJson(configToServe)));
 
         ReadableThresholdingDao thresholdingDao = new SentinelThresholdingDao(mockJsonStore);
@@ -67,9 +68,9 @@ public class SentinelThresholdingDaoTest {
         
         groupToServe.setName("new name");
         when(mockJsonStore.getLastUpdated(AbstractThresholdingDao.JSON_STORE_KEY,
-                AbstractThresholdingDao.JSON_STORE_CONTEXT))
+                ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(OptionalLong.of(System.currentTimeMillis()));
-        when(mockJsonStore.get(AbstractThresholdingDao.JSON_STORE_KEY, AbstractThresholdingDao.JSON_STORE_CONTEXT))
+        when(mockJsonStore.get(AbstractThresholdingDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(Optional.of(configToJson(configToServe)));
         thresholdingDao.reload();
         assertThat(thresholdingDao.getConfig(), equalTo(configToServe));

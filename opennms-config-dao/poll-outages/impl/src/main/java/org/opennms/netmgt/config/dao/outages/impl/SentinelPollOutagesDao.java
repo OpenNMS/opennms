@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.dao.outages.impl;
 
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.common.api.ReloadableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.PollingJsonStoreReloadableConfigContainer;
 import org.opennms.netmgt.config.poller.outages.Outages;
@@ -39,7 +40,7 @@ public class SentinelPollOutagesDao extends AbstractPollOutagesDao {
     public SentinelPollOutagesDao(JsonStore jsonStore) {
         super(jsonStore);
         outagesReloadableConfigContainer = new PollingJsonStoreReloadableConfigContainer<>(jsonStore, JSON_STORE_KEY,
-                JSON_STORE_CONTEXT, Outages.class);
+                ConfigDaoConstants.JSON_KEY_STORE_CONTEXT, Outages.class);
     }
 
     @Override

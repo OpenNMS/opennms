@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.dao.thresholding.impl;
 
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.common.api.ReloadableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.PollingJsonStoreReloadableConfigContainer;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
@@ -39,7 +40,7 @@ public class SentinelThreshdDao extends AbstractThreshdDao {
     public SentinelThreshdDao(JsonStore jsonStore) {
         super(jsonStore);
         threshdReloadableConfigContainer = new PollingJsonStoreReloadableConfigContainer<>(jsonStore, JSON_STORE_KEY,
-                JSON_STORE_CONTEXT, ThreshdConfiguration.class);
+                ConfigDaoConstants.JSON_KEY_STORE_CONTEXT, ThreshdConfiguration.class);
     }
 
     @Override

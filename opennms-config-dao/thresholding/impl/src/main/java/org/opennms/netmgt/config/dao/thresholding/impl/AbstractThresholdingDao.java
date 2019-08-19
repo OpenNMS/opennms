@@ -45,7 +45,6 @@ public abstract class AbstractThresholdingDao implements ReadableThresholdingDao
     private final Map<String, Group> groupMap = new HashMap<>();
     final JsonStore jsonStore;
     public static final String JSON_STORE_KEY = "thresholds";
-    public static final String JSON_STORE_CONTEXT = "config";
 
     AbstractThresholdingDao() {
         jsonStore = null;
