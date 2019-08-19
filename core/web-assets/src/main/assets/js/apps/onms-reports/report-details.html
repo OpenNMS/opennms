@@ -1,13 +1,19 @@
+<style type="text/css">
+    .ui-select-bootstrap.is-invalid > .ui-select-match > .btn {
+        border-color: #dc3545;
+    }
+
+
+    .ui-select-bootstrap > .ui-select-match > .btn {
+        border-color: #ced4da;
+        background-color: #fff;
+        background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23{$custom-select-indicator-color}' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px;
+    }
+</style>
+
 <form name="reportForm" class="form mx-4 mt-2" role="form" novalidate>
     <div class="" ng-if="report.parameters && report.parameters.length > 0">
         <h3 class="">Report Parameters</h3>
-
-
-
-
-        <hr />
-
-
 
         <!-- Grafana Parameters -->
         <div ng-show="report.isGrafanaReport()" class="form-group">
