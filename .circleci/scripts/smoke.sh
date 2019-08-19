@@ -19,6 +19,9 @@ find_tests()
     cat failsafe_classnames | circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_it_tests
 }
 
+# Tests are forked out in separate JVMs, so the Maven runner shouldn't need a big heap
+export MAVEN_OPTS="-Xms256m -Xms256m"
+
 cd ~/project/smoke-test
 if [ $MINIMAL -eq 1 ]; then
   echo "#### Executing minimal set smoke/system tests"
