@@ -94,6 +94,7 @@ commands:
       - run:
           name: Load Horizon OCI image
           command: |
+            wget https://9397-9377198-gh.circle-artifacts.com/0/horizon.oci -O opennms-container/horizon/container.oci
             cd opennms-container/horizon
             docker image load -i images/container.oci
       - run:
@@ -387,7 +388,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
-            ./makerpm.sh -a -d -S tools/packages/opennms/opennms.spec
+            echo "NOOP"
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
