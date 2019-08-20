@@ -112,6 +112,13 @@ commands:
           command: |
             .circleci/scripts/smoke.sh << parameters.minimal >>
       - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/test-results/system-logs
+            dmesg > ~/test-results/system-logs/dmesg
+            ps auxf > ~/test-results/system-logs/ps
+      - run:
           name: Gather test artifacts
           when: always
           command: |
