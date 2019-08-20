@@ -44,10 +44,10 @@ public class BlobStoreGet implements Action {
     @Reference
     private BlobStore blobStore;
 
-    @Argument(index = 0, description = "The key to look up")
+    @Argument(index = 0, description = "The key to look up", required = true)
     private String key;
 
-    @Argument(index = 1, description = "The key's context")
+    @Argument(index = 1, description = "The key's context", required = true)
     private String context;
 
     @Override

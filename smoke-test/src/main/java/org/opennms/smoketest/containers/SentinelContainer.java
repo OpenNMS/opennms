@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.io.FileUtils;
 import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
-import org.opennms.smoketest.stacks.JSONStoreStrategy;
+import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.SentinelProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
@@ -209,7 +209,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                 break;
         }
 
-        if (model.getJsonStoreStrategy() == JSONStoreStrategy.POSTGRES) {
+        if (model.getJsonStoreStrategy() == null || model.getJsonStoreStrategy() == JsonStoreStrategy.POSTGRES) {
             featuresOnBoot.add("sentinel-jsonstore-postgres");
         }
 

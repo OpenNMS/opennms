@@ -67,7 +67,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -246,7 +245,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_poller.setNetwork(network);
         m_poller.setQueryManager(m_queryManager);
         m_poller.setPollerConfig(m_pollerConfig);
-        m_poller.setPollOutagesConfig(m_pollerConfig);
+        m_poller.setPollOutagesDao(m_pollerConfig);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
     }
 

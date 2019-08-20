@@ -52,7 +52,7 @@ public class StackModel {
     private final IpcStrategy ipcStrategy;
     private final TimeSeriesStrategy timeSeriesStrategy;
     private final BlobStoreStrategy blobStoreStrategy;
-    private final JSONStoreStrategy jsonStoreStrategy;
+    private final JsonStoreStrategy jsonStoreStrategy;
 
     private StackModel(Builder builder) {
         // Profiles
@@ -86,7 +86,7 @@ public class StackModel {
         private TimeSeriesStrategy timeSeriesStrategy = TimeSeriesStrategy.RRD;
         
         private BlobStoreStrategy blobStoreStrategy = BlobStoreStrategy.NOOP;
-        private JSONStoreStrategy jsonStoreStrategy;
+        private JsonStoreStrategy jsonStoreStrategy;
 
         /**
          * Profile for the OpenNMS container.
@@ -204,7 +204,7 @@ public class StackModel {
          *
          * @return this builder
          */
-        public Builder withJSONStoreStrategy(JSONStoreStrategy jsonStoreStrategy) {
+        public Builder withJsonStoreStrategy(JsonStoreStrategy jsonStoreStrategy) {
             this.jsonStoreStrategy = jsonStoreStrategy;
             return this;
         }
@@ -260,7 +260,7 @@ public class StackModel {
         return blobStoreStrategy;
     }
 
-    public JSONStoreStrategy getJsonStoreStrategy() {
+    public JsonStoreStrategy getJsonStoreStrategy() {
         return jsonStoreStrategy;
     }
 }

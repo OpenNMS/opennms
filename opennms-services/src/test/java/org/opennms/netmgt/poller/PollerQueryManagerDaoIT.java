@@ -222,7 +222,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setNetwork(network);
 		m_poller.setQueryManager(m_queryManager);
 		m_poller.setPollerConfig(m_pollerConfig);
-		m_poller.setPollOutagesConfig(m_pollerConfig);
+		m_poller.setPollOutagesDao(m_pollerConfig);
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
 	}
 

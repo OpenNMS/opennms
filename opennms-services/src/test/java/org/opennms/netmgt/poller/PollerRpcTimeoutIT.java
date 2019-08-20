@@ -58,8 +58,8 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -93,7 +93,9 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-icmp.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
-        "classpath:/META-INF/opennms/applicationContext-pollerd.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerd.xml",
+        "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger",
@@ -115,9 +117,6 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
     private MockNetwork m_network;
 
     private MockDatabase m_db;
-
-    @Autowired
-    private PollOutagesConfig m_pollOutagesConfig;
 
     @Autowired
     private MockEventIpcManager m_eventMgr;
@@ -145,6 +144,9 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
 
     @Autowired
     private LocationAwarePingClient m_locationAwarePingClient;
+    
+    @Autowired
+    private ReadablePollOutagesDao m_pollOutagesDao;
 
     @Override
     public void setTemporaryDatabase(MockDatabase database) {
@@ -231,8 +233,8 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         m_poller.setNetwork(network);
         m_poller.setQueryManager(m_queryManager);
         m_poller.setPollerConfig(factory);
-        m_poller.setPollOutagesConfig(m_pollOutagesConfig);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
+        m_poller.setPollOutagesDao(m_pollOutagesDao);
     }
 
     @After

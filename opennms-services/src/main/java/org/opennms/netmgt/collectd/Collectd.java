@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -62,10 +63,10 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -92,6 +93,8 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * <p>Collectd class.</p>
@@ -191,6 +194,9 @@ public class Collectd extends AbstractServiceDaemon implements
 
     @Autowired
     private ThresholdingService m_thresholdingService;
+    
+    @Autowired
+    private ReadablePollOutagesDao pollOutagesDao;
 
     /**
      * Constructor.
@@ -608,7 +614,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
             LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
             
-            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient));
+            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao));
         }
         return matchingPkgs;
     }
@@ -1555,4 +1561,8 @@ public class Collectd extends AbstractServiceDaemon implements
         return m_collectableServices.size();
     }
 
+    @VisibleForTesting
+    public void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
+        this.pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+    }
 }

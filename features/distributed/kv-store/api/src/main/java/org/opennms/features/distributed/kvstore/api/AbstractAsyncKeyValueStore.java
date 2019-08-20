@@ -34,9 +34,10 @@ import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * An implementation of {@link KeyValueStore} to extend for implementations that do not otherwise have access to
@@ -55,18 +56,13 @@ public abstract class AbstractAsyncKeyValueStore<T> extends AbstractKeyValueStor
     }
 
     protected AbstractAsyncKeyValueStore() {
-        ThreadFactory threadFactory = r -> {
-            Thread t = new Thread(r, "kvstore-async-thread");
-            t.setDaemon(true);
-            return t;
-        };
         // A reasonable default executor based on available processors that degrades to synchronous processing when full
         executor = new ThreadPoolExecutor(1,
                 Runtime.getRuntime().availableProcessors() * 10,
                 60,
                 TimeUnit.SECONDS,
                 new SynchronousQueue<>(),
-                threadFactory,
+                new ThreadFactoryBuilder().setNameFormat("kvstore-async-thread-%d").build(),
                 new ThreadPoolExecutor.CallerRunsPolicy());
     }
 

@@ -7,9 +7,9 @@
 
     <bean name="dataSource" class="org.opennms.core.db.DataSourceFactory" factory-method="getInstance"/>
 
-    <bean name="jsonStore" class="org.opennms.features.distributed.kvstore.json.postgres.PostgresJSONStore">
+    <bean name="jsonStore" class="org.opennms.features.distributed.kvstore.json.postgres.PostgresJsonStore">
         <constructor-arg ref="dataSource"/>
     </bean>
-    <onmsgi:service interface="org.opennms.features.distributed.kvstore.api.JSONStore" ref="jsonStore"/>
+    <onmsgi:service interface="org.opennms.features.distributed.kvstore.api.JsonStore" ref="jsonStore"/>
 
 </beans>
