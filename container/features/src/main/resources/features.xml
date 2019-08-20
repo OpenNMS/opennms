@@ -1065,7 +1065,6 @@
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
-        <bundle>blueprint:mvn:org.opennms.container/scv/${project.version}/xml/blueprint-scv</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-osgi-core-rest" version="${project.version}" description="OpenNMS :: Features :: OSGI :: Core :: Rest">
