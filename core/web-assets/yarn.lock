@@ -9213,6 +9213,10 @@ ui-bootstrap4@^3.0.6:
   resolved "https://registry.yarnpkg.com/ui-bootstrap4/-/ui-bootstrap4-3.0.6.tgz#bec796879455569872a1575786ca643ab00172ea"
   integrity sha512-Kh38WAu/S8EiyKRMaATkFjsbQplJHvP+g2lxitE5SbjQTDieua8T7d+mQNxbxTjfmJqGtVzsHQCHRmBVdKPeOg==
 
+"ui-select-bs4@https://github.com/bmontgomery/ui-select#300af1b2b5c8aa94faa3c6d3bb1df4e543d097ae":
+  version "0.19.8"
+  resolved "https://github.com/bmontgomery/ui-select#300af1b2b5c8aa94faa3c6d3bb1df4e543d097ae"
+
 uid-number@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/uid-number/-/uid-number-0.0.6.tgz#0ea10e8035e8eb5b8e4449f06da1c730663baa81"
