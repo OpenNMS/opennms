@@ -838,6 +838,9 @@
           "tcp_flags": {
             "type": "integer"
           },
+          "delta_switched": {
+            "type": "date"
+          },
           "tos": {
             "type": "keyword",
             "norms": false

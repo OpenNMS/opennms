@@ -40,12 +40,13 @@ import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.UpdatingFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.UnsignedLong;
 
-class IpfixFlow implements Flow {
+class IpfixFlow extends UpdatingFlow implements Flow {
     private static final Logger LOG = LoggerFactory.getLogger(IpfixFlow.class);
 
     private final BsonDocument document;
@@ -419,5 +420,17 @@ class IpfixFlow implements Flow {
                 getInt64(this.document, "postDot1qCustomerVlanId"))
                 .map(Long::intValue)
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<Timeout> getTimeout() {
+        final Optional<Long> active = getInt64(this.document, "flowActiveTimeout").map(t -> t * 1000L);
+        final Optional<Long> inactive = getInt64(this.document, "flowInactiveTimeout").map(t -> t * 1000L);
+
+        if (active.isPresent() && inactive.isPresent()) {
+            return Optional.of(new Timeout(active.get(), inactive.get()));
+        } else {
+            return Optional.empty();
+        }
     }
 }

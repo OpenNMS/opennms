@@ -66,7 +66,12 @@ public class RemoteMeasurementDataSourceWrapperIT {
                         .withStatus(500)
                         .withBody("This did not work as you might have expected, ugh?")));
 
-        // Everything else is automatically bound to a 404
+        // Map everything else to a 404 Response
+        WireMock.stubFor(WireMock.any(WireMock.anyUrl())
+                .atPriority(10)
+                .willReturn(WireMock.aResponse()
+                        .withStatus(404)
+                        .withBody("{\"status\":\"Error\",\"message\":\"Endpoint not found\"}")));
     }
 
     @Test
@@ -100,7 +105,7 @@ public class RemoteMeasurementDataSourceWrapperIT {
             Assert.fail("JRException was expected, but was not thrown");
         } catch (JRException jre) {
             Assert.assertTrue(jre.toString().contains("Invalid request. Response was"));
-            Assert.assertTrue(jre.toString().contains("500 (Internal Server Error)"));
+            Assert.assertTrue(jre.toString().contains("500 (Server Error)"));
             Assert.assertTrue(jre.toString().endsWith("This did not work as you might have expected, ugh?"));
         }
     }

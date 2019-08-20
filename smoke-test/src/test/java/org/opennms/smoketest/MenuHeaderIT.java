@@ -133,4 +133,39 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         findElementById("input_j_username");
     }
 
+    @Test
+    public void verifyReportsPage() {
+        // testAllTextIsPresent
+        reportsPage();
+        findElementByXpath("//div[@class='card-header']/span[text()='Reports']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
+
+        // testAllFormsArePresent()
+        reportsPage();
+        findElementByName("resourceGraphs");
+        findElementByName("kscReports");
+
+
+        // testAllLinks
+        reportsPage();
+        findElementByLink("Resource Graphs").click();
+        findElementByXpath("//label[contains(text()[normalize-space()], 'Standard Resource')]");
+        findElementByXpath("//div[@class='card-header']/span[text()='Network Performance Data']");
+
+        reportsPage();
+        findElementByLink("KSC Performance, Nodes, Domains").click();
+        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
+
+        reportsPage();
+        findElementByLink("Database Reports").click();
+        pageContainsText("Report Templates");
+        pageContainsText("Report Schedules");
+        pageContainsText("Persisted Reports");
+
+        reportsPage();
+        findElementByLink("Statistics Reports").click();
+        findElementByXpath("//div[@class='card-header']/span[text()='Statistics Report List']");
+    }
+
 }

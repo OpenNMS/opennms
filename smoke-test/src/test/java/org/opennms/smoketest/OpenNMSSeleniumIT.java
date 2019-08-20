@@ -28,13 +28,18 @@
 
 package org.opennms.smoketest;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermissions;
+
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.opennms.smoketest.containers.OpenNMSContainer;
-import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -42,11 +47,6 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.containers.Network;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.attribute.PosixFilePermissions;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
 

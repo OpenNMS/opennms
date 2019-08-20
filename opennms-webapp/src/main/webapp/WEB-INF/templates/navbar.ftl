@@ -84,6 +84,9 @@
               <#if isAdmin || isProvision >
                 <a class="dropdown-item" name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" style="white-space: nowrap">Quick-Add Node</a>
               </#if>
+              <#if isAdmin || isFlow >
+                <a class="dropdown-item" name="nav-admin-flow" href="${baseHref}admin/classification/index.jsp" style="white-space: nowrap">Flow Management</a>
+              </#if>
               <#if isAdmin >
                 <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.htm">Support</a>
               </#if>
