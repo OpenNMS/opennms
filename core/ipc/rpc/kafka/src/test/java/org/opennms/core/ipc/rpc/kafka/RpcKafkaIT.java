@@ -210,7 +210,7 @@ public class RpcKafkaIT {
         }
     }
 
-    @Test(timeout = 60000)
+    @Test(timeout = 90000)
     public void stressTestKafkaRpcWithDifferentTimeouts() {
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.setId(System.currentTimeMillis());
@@ -223,7 +223,7 @@ public class RpcKafkaIT {
             int randomNum = ThreadLocalRandom.current().nextInt(5, 30);
             sendRequestAndVerifyResponse(request, randomNum*1000);
         }
-        await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
+        await().atMost(60, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
     }
     
     @Test(timeout = 60000)
