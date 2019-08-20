@@ -54,9 +54,9 @@ import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RocksdbTest {
+public class RocksdbIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RocksdbTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RocksdbIT.class);
     private RocksdbStore rocksdb;
     private final long NUM_OF_MESSAGES = 1000;
     private ConfigurationAdmin configAdmin;
