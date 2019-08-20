@@ -90,11 +90,6 @@ public class BusinessServiceEdgeDaoIT {
 
     private IdentityEntity m_identity;
 
-    @BeforeClass
-    public static void setUpClass() {
-        MockLogAppender.setupLogging(true, "TRACE", new Properties());
-    }
-
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);
