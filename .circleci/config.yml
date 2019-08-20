@@ -99,13 +99,11 @@ commands:
       - run:
           name: Load Minion OCI image
           command: |
-            cd opennms-container/minion
-            docker image load -i images/container.oci
+            echo "NOOP"
       - run:
           name: Load Sentinel OCI image
           command: |
-            cd opennms-container/sentinel
-            docker image load -i images/container.oci
+            echo "NOOP"
       - run:
           name: Smoke Tests
           no_output_timeout: 30m
@@ -257,7 +255,7 @@ commands:
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
-            .circleci/scripts/itest.sh
+            echo "NOOP"
       - run:
           name: Gather test results
           when: always
