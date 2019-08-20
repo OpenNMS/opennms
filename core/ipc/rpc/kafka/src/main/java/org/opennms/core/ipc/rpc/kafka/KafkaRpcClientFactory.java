@@ -136,7 +136,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private final ThreadFactory timerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-client-timeout-tracker-%d")
             .build();
-    private final ExecutorService kafkaConsumerExecutor = Executors.newCachedThreadPool(consumerThreadFactory);
+    private final ExecutorService kafkaConsumerExecutor = Executors.newSingleThreadExecutor(consumerThreadFactory);
     private final ExecutorService timerExecutor = Executors.newSingleThreadExecutor(timerThreadFactory);
     private final ExecutorService responseHandlerExecutor = Executors.newCachedThreadPool(responseHandlerThreadFactory);
     private final Map<String, ResponseCallback> rpcResponseMap = new ConcurrentHashMap<>();
@@ -185,9 +185,6 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                         expirationTime, loggingContext, request.getLocation(), span);
                 delayQueue.offer(responseHandler);
                 rpcResponseMap.put(rpcId, responseHandler);
-                if(kafkaConsumerRunner.isClosed() && !kafkaConsumerExecutor.isShutdown()) {
-                    startKafkaConsumer();
-                }
                 kafkaConsumerRunner.startConsumingForModule(module.getId());
                 byte[] messageInBytes = marshalRequest.getBytes();
                 int totalChunks = IntMath.divide(messageInBytes.length, MAX_BUFFER_SIZE, RoundingMode.UP);
@@ -392,7 +389,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 rpcResponseMap.remove(rpcId);
                 messageCache.remove(rpcId);
             } catch (Throwable e) {
-                LOG.warn("error while handling response for RPC module {} , response = \n {} \n", rpcModule.getId(), message, e);
+                LOG.warn("Error while handling response for RPC module: {}. Response string: {}", rpcModule.getId(), message, e);
             }
         }
 
@@ -488,21 +485,16 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 } catch (WakeupException e) {
                     LOG.info("consumer got wakeup exception, closed = {} ", closed.get(), e);
                 } catch (Throwable e) {
-                    LOG.info("error in kafka consumer", e);
+                    LOG.error("Unexpected error in kafka consumer.", e);
                 }
             }
             // Close consumer when while loop is closed.
             consumer.close();
-            closed.set(true);
         }
 
         public void stop() {
             closed.set(true);
             consumer.wakeup();
-        }
-
-        public boolean isClosed() {
-            return closed.get();
         }
 
         private void waitTillFirstTopicIsAdded() {
@@ -511,11 +503,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     firstTopicAdded.await(1, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     LOG.info("Interrupted before first topic was added. Terminating Kafka RPC consumer thread.", e);
-                    closed.set(true);
                     return;
                 } catch(Throwable e) {
-                    LOG.error("Unknown exception before first topic is added, Terminating Kafka RPC consumer thread", e);
-                    closed.set(true);
+                    LOG.error("Unknown exception before first topic is added. Terminating Kafka RPC consumer thread.", e);
                     return;
                 }
             }
