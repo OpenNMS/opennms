@@ -217,6 +217,11 @@ public class ClassificationRestIT {
                 .statusCode(404); // not found => group is really gone
         // Saving the same group should work again...
         saveAndRetrieveGroup(group3);
+
+        // try to delete predefined group => should not work
+        int predefinedGroupId = 1;
+        given().param("groupId", predefinedGroupId).delete()
+                .then().statusCode(400);
     }
 
     private GroupDTO saveAndRetrieveGroup(GroupDTO groupDTO) {
