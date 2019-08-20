@@ -94,7 +94,7 @@ public interface ClassificationRestService {
 
     @DELETE
     @Path("groups/{id}")
-    Response deleteGroup(int groupId);
+    Response deleteGroup(@PathParam("id") int groupId);
 
     @PUT
     @Path("groups/{id}")

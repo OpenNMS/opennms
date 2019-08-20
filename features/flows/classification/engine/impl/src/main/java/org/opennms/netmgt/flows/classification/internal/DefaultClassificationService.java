@@ -41,6 +41,8 @@ import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.csv.CsvImportResult;
 import org.opennms.netmgt.flows.classification.csv.CsvService;
+import org.opennms.netmgt.flows.classification.error.ErrorContext;
+import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.exception.CSVImportException;
 import org.opennms.netmgt.flows.classification.exception.ClassificationException;
 import org.opennms.netmgt.flows.classification.exception.InvalidRuleException;
@@ -106,12 +108,13 @@ public class DefaultClassificationService implements ClassificationService {
     public Integer saveRule(Rule rule) throws InvalidRuleException {
         return runInTransaction((status) -> {
 
+            ruleValidator.validate(rule);
+
             final Group group = classificationGroupDao.get(rule.getGroup().getId());
             if(group == null) {
                 throw new NoSuchElementException(String.format("Unknown group with id=%s", rule.getGroup().getId()));
             }
 
-            ruleValidator.validate(rule);
             groupValidator.validate(group, rule);
 
             // persist
@@ -249,7 +252,11 @@ public class DefaultClassificationService implements ClassificationService {
     public void deleteGroup(int groupId) {
         runInTransaction(status -> {
             final Group group = classificationGroupDao.get(groupId);
-            if (group == null) throw new NoSuchElementException();
+            if (group == null) {
+                throw new NoSuchElementException();
+            } else if(group.isReadOnly()) {
+                throw new ClassificationException(ErrorContext.Entity, Errors.GROUP_READ_ONLY);
+            }
             classificationGroupDao.delete(group);
             classificationEngine.reload();
             return null;

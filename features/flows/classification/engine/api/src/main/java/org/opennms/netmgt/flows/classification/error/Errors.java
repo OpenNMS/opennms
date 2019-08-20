@@ -33,9 +33,12 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 // Pre-defined ErrorTemplate messages.
 public interface Errors {
 
-    ErrorTemplate RULE_NAME_IS_REQUIRED = new ErrorTemplate("rule.name.required", "No name provided. Please provide a name.");
+    ErrorTemplate GROUP_READ_ONLY = new ErrorTemplate("group.readonly", "The group is read only.");
     ErrorTemplate GROUP_DUPLICATE_RULE = new ErrorTemplate("rule.duplicate", "A rule with the same definition already exists");
+
+    ErrorTemplate RULE_NAME_IS_REQUIRED = new ErrorTemplate("rule.name.required", "No name provided. Please provide a name.");
     ErrorTemplate RULE_NO_DEFINITIONS = new ErrorTemplate("rule.nodefinitions", "You must provide at least one definition for src/dst port, src/dst address, protocol or exporter filter");
+    ErrorTemplate RULE_GROUP_IS_REQUIRED = new ErrorTemplate("rule.group.required", "Group is required");
 
     ErrorTemplate RULE_PROTOCOL_DOES_NOT_EXIST = new ErrorTemplate("rule.protocol.doesnotexist", "The defined protocol ''{0}'' does not exist");
     ErrorTemplate RULE_PROTOCOL_IS_REQUIRED = new ErrorTemplate("rule.protocol.required", "Protocol is required");

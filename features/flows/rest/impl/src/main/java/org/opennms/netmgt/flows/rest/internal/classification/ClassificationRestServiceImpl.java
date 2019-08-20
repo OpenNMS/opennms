@@ -177,7 +177,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setOmnidirectional(newRule.isOmnidirectional());
         rule.setExporterFilter(newValue.getExporterFilter());
         final Group oldGroup = rule.getGroup();
-        boolean groupChanged = !oldGroup.getId().equals(newRule.getGroup().getId());
+        boolean groupChanged = newRule!=null && !oldGroup.getId().equals(newRule.getGroup().getId());
         if(groupChanged) {
             final Group group = classificationService.getGroup(newRule.getGroup().getId());
             if(!group.isReadOnly()) {
