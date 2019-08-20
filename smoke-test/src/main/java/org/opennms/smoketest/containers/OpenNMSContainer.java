@@ -108,10 +108,12 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final int OPENNMS_TELEMETRY_IPFIX_TCP_PORT = 4730;
     private static final int OPENNMS_TELEMETRY_JTI_PORT = 50001;
     private static final int OPENNMS_TELEMETRY_NXOS_PORT = 50002;
+    private static final int OPENNMS_DEBUG_PORT = 8001;
 
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)
             .put(NetworkProtocol.HTTP, OPENNMS_WEB_PORT)
+            .put(NetworkProtocol.JDWP, OPENNMS_DEBUG_PORT)
             .put(NetworkProtocol.SNMP, OPENNMS_SNMP_PORT)
             .put(NetworkProtocol.SYSLOG, OPENNMS_SYSLOG_PORT)
             .put(NetworkProtocol.FLOWS, OPENNMS_TELEMETRY_FLOW_PORT)
@@ -142,6 +144,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .mapToInt(Map.Entry::getValue)
                 .toArray();
 
+        String javaOpts = "-Xms1536m -Xmx1536m -Djava.security.egd=file:/dev/./urandom ";
+        if (profile.isJvmDebuggingEnabled()) {
+            javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
+        }
+
         withExposedPorts(exposedPorts)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
@@ -164,7 +171,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .withEnv("OPENNMS_CASSANDRA_PORT", Integer.toString(CassandraContainer.CQL_PORT))
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
-                .withEnv("JAVA_OPTS", "-Xms1536m -Xmx1536m -Djava.security.egd=file:/dev/./urandom")
+                .withEnv("JAVA_OPTS", javaOpts)
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
