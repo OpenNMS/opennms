@@ -189,8 +189,6 @@ commands:
         default: -fn
         type: string
     steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Integration Tests
           no_output_timeout: 1.0h
@@ -198,7 +196,7 @@ commands:
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
-            .circleci/scripts/itest.sh
+            echo "NOOP"
       - run:
           name: Gather test results
           when: always
@@ -219,7 +217,7 @@ commands:
           name: Compress Target Directories (Code Coverage)
           when: always
           command: |
-            .circleci/scripts/codecoverage-save.sh
+            echo "NOOP"
       - persist_to_workspace:
           root: ~/
           paths:
@@ -421,14 +419,13 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            ./makerpm.sh -a -d -S tools/packages/minion/minion.spec
+            echo "NOOP"
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
           name: Fetch RPM artifacts and build Minion container image
           command: |
-            cd opennms-container/minion
-            ./build_container_image.sh
+            echo "NOOP"
       - store_artifacts:
           path: ~/project/opennms-container/minion/images/container.oci
           destination: minion.oci
@@ -453,7 +450,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            ./makerpm.sh -a -d -S tools/packages/sentinel/sentinel.spec
+            echo "NOOP"
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -497,10 +494,7 @@ jobs:
       - run:
           name: Load Minion OCI image, tag it and publish to registry
           command: |
-            cd opennms-container/minion
-            docker image load -i images/container.oci
-            ./tag.sh
-            ./publish.sh
+            echo "NOOP"
   sentinel-publish-oci:
     executor: build-executor
     steps:
@@ -512,10 +506,7 @@ jobs:
       - run:
           name: Load Sentinel OCI image, tag it and publish to registry
           command: |
-            cd opennms-container/sentinel
-            docker image load -i images/container.oci
-            ./tag.sh
-            ./publish.sh 
+            echo "NOOP"
   integration-test:
     executor: integration-test-executor
     parallelism: 12
