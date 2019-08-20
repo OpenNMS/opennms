@@ -390,18 +390,7 @@ jobs:
       - run:
           name: Fetch RPM artifacts and build Horizon container image
           command: |
-            cd opennms-container/horizon
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/horizon/images/container.oci
-          destination: horizon.oci
-      - store_artifacts:
-          path: ~/project/target/rpm/RPMS/noarch
-          destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/opennms-container/horizon/images/
+            echo "NOOP"
   minion-package-build:
     executor: build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -421,16 +410,6 @@ jobs:
           name: Fetch RPM artifacts and build Minion container image
           command: |
             echo "NOOP"
-      - store_artifacts:
-          path: ~/project/opennms-container/minion/images/container.oci
-          destination: minion.oci
-      - store_artifacts:
-          path: ~/project/target/rpm/RPMS/noarch
-          destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/opennms-container/minion/images/
   sentinel-package-build:
     executor: build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -449,18 +428,7 @@ jobs:
       - run:
           name: Fetch RPM artifacts and build Sentinel container image
           command: |
-            cd opennms-container/sentinel
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/sentinel/images/container.oci
-          destination: sentinel.oci
-      - store_artifacts:
-          path: ~/project/target/rpm/RPMS/noarch
-          destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/opennms-container/sentinel/images/
+            echo "NOOP"
   horizon-publish-oci:
     executor: build-executor
     steps:
