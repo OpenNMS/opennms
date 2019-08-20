@@ -245,8 +245,6 @@ commands:
         default: -fae
         type: string
     steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Integration Tests
           no_output_timeout: 1.0h
@@ -381,8 +379,6 @@ jobs:
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Build RPMs
           command: |
@@ -412,8 +408,6 @@ jobs:
     # Will need to increase resource class if horizon-package-build is under 15 min
     resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Build RPMs
           command: |
@@ -443,8 +437,6 @@ jobs:
     # Will need to increase resource class if horizon-package-build is under 19 min
     resource_class: large
     steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Build RPMs
           command: |
@@ -472,23 +464,16 @@ jobs:
   horizon-publish-oci:
     executor: build-executor
     steps:
-      - attach_workspace:
-          at: ~/
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
       - run:
           name: Load Horizon OCI image, tag it and publish to registry
           command: |
-            cd opennms-container/horizon
-            docker image load -i images/container.oci
-            ./tag.sh
-            ./publish.sh
+            echo "NOOP"
   minion-publish-oci:
     executor: build-executor
     steps:
-      - attach_workspace:
-          at: ~/
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
@@ -499,8 +484,6 @@ jobs:
   sentinel-publish-oci:
     executor: build-executor
     steps:
-      - attach_workspace:
-          at: ~/
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
