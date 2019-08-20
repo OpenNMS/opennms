@@ -2,6 +2,7 @@ import Types from '../../lib/onms-schedule-editor/scripts/Types';
 import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOptions';
 import ContextError from "../../lib/onms-http/ContextError";
 import moment from 'moment';
+require('moment-timezone');
 
 export default class ReportDetails {
 
@@ -14,6 +15,7 @@ export default class ReportDetails {
                 return item.name
             });
         }
+        this.supportedTimezones = input.timezones || ['US/Eastern'];
         this.parameters = input.parameters || [];
         this.parametersByName = {};
         this.deliveryOptions = input.deliveryOptions || {};
@@ -23,7 +25,7 @@ export default class ReportDetails {
         this.errors = input.errors || {};
 
         // In order to have the ui look the same as before, just order the parameters
-        const order = ['string', 'integer', 'float', 'double', 'date'];
+        const order = ['string', 'integer', 'float', 'double', 'date', 'timezone'];
         this.parameters.sort(function(left, right) {
             return order.indexOf(left.type) - order.indexOf(right.type);
         });
@@ -48,10 +50,26 @@ export default class ReportDetails {
         this.parameters.filter(function(parameter) {
             return parameter.type === 'date'
         }).forEach(function(parameter) {
-            parameter.internalFormat = 'YYYY-MM-DD HH:mm'; // TODO MVR use user time zone
-            parameter.internalLocale = 'en'; // TODO MVR use user locale
+            // Originally the idea was to format the date using the user locale setting
+            // However this format is ISO conform, so we always use it instead
+            parameter.internalFormat = 'YYYY-MM-DD HH:mm';
+            parameter.internalLocale = 'en'; // Always assume en as locale
             parameter.internalValue = moment(parameter.date, parameter.internalFormat).hours(parameter.hours).minutes(parameter.minutes).toDate();
         });
+
+        // Ensure timezone has a valid value
+        this.parameters.filter(function(parameter) {
+           return parameter.type === 'timezone' && (typeof parameter.value === 'undefined' || parameter.value === '');
+        }).forEach(function(parameter) {
+            // We guess the timezone. If it actually exist, it is used
+            // otherwise the first is selected
+            const guessedTimezone = moment.tz.guess(true);
+            if (this.supportedTimezones.indexOf(guessedTimezone) >= 0) {
+                parameter.value = guessedTimezone;
+            } else {
+                parameter.value = this.supportedTimezones[0];
+            }
+        }, this);
 
         // Adjust format
         if (this.supportedFormats.indexOf(this.format) === -1) {

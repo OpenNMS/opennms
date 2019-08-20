@@ -92,7 +92,7 @@ public class GrafanaClientImplIT {
                         .withHeader("Content-Type", "image/png")
                         .withBodyFile("panel.png")));
 
-        byte[] pngBytes = client.renderPngForPanel(dashboard, panel, 128, 128, 0L, 1L, Collections.emptyMap()).get();
+        byte[] pngBytes = client.renderPngForPanel(dashboard, panel, 128, 128, 0L, 1L, null, Collections.emptyMap()).get();
         assertThat(pngBytes.length, equalTo(6401));
     }
 

@@ -28,11 +28,27 @@
 
 package org.opennms.api.reporting.parameter;
 
-public interface ReportParmVisitor {
-    void visit(ReportStringParm parm);
-    void visit(ReportIntParm parm);
-    void visit(ReportFloatParm parm);
-    void visit(ReportDoubleParm parm);
-    void visit(ReportDateParm parm);
-    void visit(ReportTimezoneParm parm);
+import java.time.ZoneId;
+import java.util.Objects;
+
+public class ReportTimezoneParm extends ReportParm {
+
+    private String m_value;
+
+    public String getValue() {
+        return m_value;
+    }
+
+    public void setValue(String timezone) {
+        m_value = timezone;
+    }
+
+    public void setValue(ZoneId zoneId) {
+        m_value = Objects.requireNonNull(zoneId).getId();
+    }
+
+    @Override
+    void accept(ReportParmVisitor visitor) {
+        visitor.visit(this);
+    }
 }

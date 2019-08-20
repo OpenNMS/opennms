@@ -31,6 +31,8 @@ package org.opennms.features.reporting.rest.internal;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -132,7 +134,8 @@ public class ReportRestServiceImpl implements ReportRestService {
                 .withFormats(formats)
                 .withParameters(parameters)
                 .withCategories(categories)
-                .withSurveillanceCategories(surveillanceCategories);
+                .withSurveillanceCategories(surveillanceCategories)
+                .withDefaultTimezones();
 
         // Apply delivery Options if user Id is provided
         if (userId != null) {
@@ -292,6 +295,7 @@ public class ReportRestServiceImpl implements ReportRestService {
                     .withSurveillanceCategories(surveillanceCategories)
                     .withDeliveryOptions(triggerDescription.getDeliveryOptions())
                     .withCronExpression(triggerDescription.getCronExpression())
+                    .withDefaultTimezones()
                     .build();
 
             return Response.ok(reportDetails.toJson().toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
@@ -450,6 +454,9 @@ public class ReportRestServiceImpl implements ReportRestService {
                     final int count = jsonParameter.getInt("count");
                     reportParameterBuilder.withDate(parameterName, interval, count, hours, minutes);
                 }
+            } else if(parameterType.equals("timezone")) {
+                final ZoneId zoneId = parseTimezone(parameterName, jsonParameter.has("value") ? jsonParameter.getString("value") : "");
+                reportParameterBuilder.withTimezone(parameterName, zoneId);
             } else {
                 throw new SchedulerContextException(parameterName, "Unknown type ''{0}''. Supported types are: ''{1}''",
                         parameterType, Lists.newArrayList("string", "integer", "float", "double", "date"));
@@ -536,4 +543,13 @@ public class ReportRestServiceImpl implements ReportRestService {
         }
         throw new SchedulerContextException(name, "Provided value ''{0}'' must be of type string or float");
     }
+
+    private static ZoneId parseTimezone(String name, String timezoneValue) {
+        try {
+            return ZoneId.of(timezoneValue);
+        } catch (DateTimeException e) {
+            throw new SchedulerContextException(name, "Provided timezone ''{0}'' could not be parsed: ''{1}''.", timezoneValue, e.getMessage());
+        }
+    }
+
 }
