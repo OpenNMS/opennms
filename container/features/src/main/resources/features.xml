@@ -1455,9 +1455,6 @@
         <!-- All other dependencies are wired in through custom.properties -->
         <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.rest/${project.version}</bundle>
     </feature>
-    <feature name="opennms-kvstore-api" description="OpenNMS :: Features :: Distributed :: Key Value Store :: API" version="${project.version}">
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
-    </feature>
 
     <feature name="opennms-dnsresolver-api" version="${project.version}" description="OpenNMS :: Features :: DNS Resolver :: API">
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.api/${project.version}</bundle>
@@ -1513,12 +1510,6 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.shell/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-kvstore-noop"
-             description="OpenNMS :: Features :: Distributed :: Key Value Store :: No-Op" version="${project.version}">
-        <feature>opennms-kvstore-shell</feature>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.no-op/${project.version}</bundle>
-    </feature>
-    
     <feature name="opennms-blobstore-noop"
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: No-Op" version="${project.version}">
         <feature>opennms-blobstore-shell</feature>
