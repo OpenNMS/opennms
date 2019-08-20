@@ -38,6 +38,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportDateParm;
 import org.opennms.api.reporting.parameter.ReportDoubleParm;
@@ -46,6 +49,7 @@ import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportParmVisitor;
 import org.opennms.api.reporting.parameter.ReportStringParm;
+import org.opennms.api.reporting.parameter.ReportTimezoneParm;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.DeliveryConfig;
 import org.opennms.reporting.core.svclayer.ScheduleConfig;
@@ -266,8 +270,16 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             if (deliveryOptions.getFormat() == null) {
                 throw new SchedulerContextException("format", PROVIDE_A_VALUE_TEXT);
             }
-            if (deliveryOptions.isSendMail() && Strings.isNullOrEmpty(deliveryOptions.getMailTo())) {
-                throw new SchedulerContextException("mailTo", PROVIDE_A_VALUE_TEXT);
+            if (deliveryOptions.isSendMail()) {
+                if (Strings.isNullOrEmpty(deliveryOptions.getMailTo())) {
+                    throw new SchedulerContextException("mailTo", PROVIDE_A_VALUE_TEXT);
+                }
+                // Try parsing the input
+                try {
+                    InternetAddress.parse(deliveryOptions.getMailTo(), false);
+                } catch (AddressException e) {
+                    throw new SchedulerContextException("mailTo", "Provided recipients could not be parsed: {0}", e.getMessage(), e);
+                }
             }
         } catch (SchedulerException e) {
             throw new org.opennms.web.svclayer.support.SchedulerException(e);
@@ -337,6 +349,13 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
         @Override
         public void visit(ReportDoubleParm parm) {
+            if (parm.getValue() == null) {
+                throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
+            }
+        }
+
+        @Override
+        public void visit(ReportTimezoneParm parm) {
             if (parm.getValue() == null) {
                 throw new SchedulerContextException(parm.getName(), PROVIDE_A_VALUE_TEXT);
             }

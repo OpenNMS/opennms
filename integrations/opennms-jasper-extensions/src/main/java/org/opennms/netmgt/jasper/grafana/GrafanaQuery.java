@@ -45,6 +45,7 @@ public class GrafanaQuery {
 
     private final Date from;
     private final Date to;
+    private String timezone;
 
     private final Map<String, String> variables;
 
@@ -57,6 +58,9 @@ public class GrafanaQuery {
         JsonObject time = jo.getAsJsonObject("time");
         from = new Date(time.getAsJsonPrimitive("from").getAsLong());
         to = new Date(time.getAsJsonPrimitive("to").getAsLong());
+        if (time.has("tz")) {
+            timezone = time.getAsJsonPrimitive("tz").getAsString();
+        }
 
         JsonObject render = jo.getAsJsonObject("render");
         width = render.getAsJsonPrimitive("width").getAsInt();
@@ -90,6 +94,10 @@ public class GrafanaQuery {
 
     public Date getFrom() {
         return from;
+    }
+
+    public String getTimezone() {
+        return timezone;
     }
 
     public Date getTo() {

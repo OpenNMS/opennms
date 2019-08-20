@@ -26,13 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.api.reporting.parameter;
+package org.opennms.netmgt.jasper.helper;
 
-public interface ReportParmVisitor {
-    void visit(ReportStringParm parm);
-    void visit(ReportIntParm parm);
-    void visit(ReportFloatParm parm);
-    void visit(ReportDoubleParm parm);
-    void visit(ReportDateParm parm);
-    void visit(ReportTimezoneParm parm);
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Date;
+
+public class TimezoneHelper {
+
+    public static String getUtcOffset(ZoneId zoneId, Date referenceDate) {
+        if (zoneId == null || referenceDate == null) {
+            return "";
+        }
+        final ZoneOffset zoneOffset = referenceDate.toInstant().atZone(zoneId).getOffset();
+        final String zoneOffsetString = zoneOffset.toString();
+        final String utcOffset = String.format("UTC%s", zoneOffsetString.equals("Z") ? "+00:00" : zoneOffsetString);
+        return utcOffset;
+    }
 }
