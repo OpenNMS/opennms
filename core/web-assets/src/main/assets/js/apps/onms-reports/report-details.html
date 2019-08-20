@@ -254,6 +254,10 @@
 
             <div class="form-group" ng-if="report.deliveryOptions.sendMail">
                 <label for="mailRecipient">Recipient</label>
+                <button class="btn btn-link text-secondary px-0"
+                        popover-trigger="'mouseenter'"
+                        uib-popover="Allows multiple recipients by separating them via comma: test@opennms.org,ulf@opennms.org"><i class="fa fa-info-circle"/>
+                </button>
                 <input id="mailRecipient"
                        name="mailRecipient"
                        ng-model="report.deliveryOptions.mailTo"
@@ -264,8 +268,9 @@
                        data-toggle="tooltip"
                        data-placement="right"
                        title="The recipient of the generated report if 'Email report' is enabled."
+                       multi-emails
                        required
-                        />
+                />
                 <div ng-show="reportForm.mailRecipient.$invalid" class="invalid-feedback">Please provide a valid email.</div>
                 <div ng-show="report.errors.mailTo" class="invalid-feedback">{{report.errors.mailTo}}</div>
             </div>

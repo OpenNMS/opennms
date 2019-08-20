@@ -263,6 +263,28 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                 }
             }
         }])
+        .directive('multiEmails', function() {
+            const EMAIL_REGEXP = /^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
+            return {
+                restrict: 'A',
+                require: 'ngModel',
+                link: function (scope, element, attrs, ctrl) {
+                    if (ctrl && ctrl.$validators.email) {
+                        ctrl.$validators.email = function(modelValue) {
+                            if (angular.isDefined(modelValue)) {
+                                const isValidEmails = ctrl.$isEmpty(modelValue) || modelValue.split(',').every(
+                                    function (email) {
+                                        return EMAIL_REGEXP.test(email.trim());
+                                    }
+                                );
+                                return isValidEmails;
+                            }
+                            return false;
+                        };
+                    }
+                }
+            };
+        })
         .controller('ReportsController', ['$scope', '$rootScope', '$http', 'UserService', function($scope, $rootScope, $http, UserService) {
             $scope.fetchUserInfo = function() {
                 UserService.whoami(function(user) {
