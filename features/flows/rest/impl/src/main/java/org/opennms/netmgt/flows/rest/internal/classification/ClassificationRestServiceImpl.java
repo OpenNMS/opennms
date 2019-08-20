@@ -269,13 +269,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response saveGroup(GroupDTO groupDTO) {
         final Group group = convert(groupDTO);
         group.setId(null);
-        if(classificationService.countMatchingGroups(new CriteriaBuilder(Group.class)
-                .eq("name", group.getName()).toCriteria()) > 0){
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(String.format("{ context: 'name', message: 'A group with name \"%s\" already exists' }", group.getName()))
-                            .build();
-        }
+        group.setReadOnly(false); // user defined groups must be editable - otherwise they make no sense to have them
         final int groupId = classificationService.saveGroup(group);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
         final URI uri = builder.path(ClassificationRestService.class, "getGroup").build(groupId);
@@ -294,6 +288,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
 
         // At the moment only toggling the enabled state is supported
         group.setEnabled(newValue.isEnabled());
+        group.setReadOnly(false); // user defined groups must be editable - otherwise they make no sense to have them
 
         classificationService.updateGroup(group);
         return Response.ok(convert(group)).build();

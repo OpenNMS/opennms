@@ -40,6 +40,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
 import org.opennms.netmgt.flows.rest.classification.GroupDTO;
@@ -190,13 +191,26 @@ public class ClassificationRestIT {
         // Move rule to another group
         rule.setGroup(group4);
         updateAndRetrieveRule(rule);
+
+        // Create similar rule in group3 and try to move the rule back to group3 => should not work since a similar rule exists there already
+        saveAndRetrieveRule(builder().withName("myrule").withDstPort("80").withGroup(group3).build());
+        rule.setGroup(group3);
+        given().contentType(ContentType.JSON)
+                .body(rule)
+                .log().all()
+                .put(Integer.toString(rule.getId()))
+                .then().assertThat()
+                .log().all()
+                .statusCode(400)
+                .body("message", equalTo(Errors.GROUP_DUPLICATE_RULE.getMessage()));
+
     }
 
     @Test
     public void verifyCRUDforGroup() {
         // POST (create) group
         final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
-                .withEnabled(true).withReadOnly(false).withPriority(30).build());
+                .withEnabled(true).withReadOnly(true).withPriority(30).build());
 
         //  POST (create) group with same name => shouldn't be allowed
         given().contentType(ContentType.JSON)
@@ -206,7 +220,8 @@ public class ClassificationRestIT {
                 .body(is(String.format("{ context: 'name', message: 'A group with name \"%s\" already exists' }", group3.getName())));
 
         // Update
-        // TODO: Patrick add when update is implemented
+        // TODO: Patrick add when update is implemented:
+        // - check that group can not be set to read only
 
         // DELETE group
         given().param("groupId", group3.getId()).delete()
@@ -237,6 +252,8 @@ public class ClassificationRestIT {
         assertThat(receivedGroup.getName(), is(groupDTO.getName()));
         assertThat(receivedGroup.getPriority(), is(groupDTO.getPriority()));
         assertThat(receivedGroup.getRuleCount(), is(0)); // we just created group => must be empty
+        assertThat(receivedGroup.isReadOnly(), is(false)); // must always be false no matter what we tried to save
+        assertThat(receivedGroup.isEnabled(), is(groupDTO.isEnabled()));
         return receivedGroup;
     }
 
