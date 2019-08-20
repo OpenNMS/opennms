@@ -245,6 +245,7 @@ public class DefaultClassificationService implements ClassificationService {
 
     @Override
     public Integer saveGroup(Group group) {
+        checkForDuplicateName(group);
         return runInTransaction((status) -> classificationGroupDao.save(group));
     }
 
@@ -257,6 +258,7 @@ public class DefaultClassificationService implements ClassificationService {
             } else if(group.isReadOnly()) {
                 throw new ClassificationException(ErrorContext.Entity, Errors.GROUP_READ_ONLY);
             }
+
             classificationGroupDao.delete(group);
             classificationEngine.reload();
             return null;
@@ -266,7 +268,7 @@ public class DefaultClassificationService implements ClassificationService {
     @Override
     public void updateGroup(Group group) {
         if (group.getId() == null) throw new NoSuchElementException();
-
+        checkForDuplicateName(group);
         runInTransaction(status -> {
             classificationGroupDao.saveOrUpdate(group);
             updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(group.getRules()));
@@ -289,5 +291,13 @@ public class DefaultClassificationService implements ClassificationService {
 
         // Reload engine
         classificationEngine.reload();
+    }
+
+    private void checkForDuplicateName (Group group) {
+        // check for duplicate name:
+        if(countMatchingGroups(new CriteriaBuilder(Group.class)
+                .eq("name", group.getName()).toCriteria()) > 0) {
+            throw new ClassificationException(ErrorContext.Entity, Errors.GROUP_NAME_NOT_UNIQUE, group.getName());
+        }
     }
 }

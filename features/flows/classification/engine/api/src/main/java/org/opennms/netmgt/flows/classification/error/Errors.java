@@ -35,6 +35,7 @@ public interface Errors {
 
     ErrorTemplate GROUP_READ_ONLY = new ErrorTemplate("group.readonly", "The group is read only.");
     ErrorTemplate GROUP_DUPLICATE_RULE = new ErrorTemplate("rule.duplicate", "A rule with the same definition already exists");
+    ErrorTemplate GROUP_NAME_NOT_UNIQUE = new ErrorTemplate("group.name.duplicate", "A group with name ''{0}'' already exists");
 
     ErrorTemplate RULE_NAME_IS_REQUIRED = new ErrorTemplate("rule.name.required", "No name provided. Please provide a name.");
     ErrorTemplate RULE_NO_DEFINITIONS = new ErrorTemplate("rule.nodefinitions", "You must provide at least one definition for src/dst port, src/dst address, protocol or exporter filter");
