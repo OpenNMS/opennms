@@ -6,6 +6,7 @@ require('angular-bootstrap-confirm');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css');
 require('angular-ui-router');
+require('angular-ui-sortable');
 
 const indexTemplate  = require('./views/index.html');
 const configTemplate = require('./views/config.html');
@@ -29,6 +30,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             'ui.bootstrap',
             'ui.checkbox',
             'ui.toggle',
+            'ui.sortable',
             'onms.http',
             'onms.elementList',
             'mwl.confirm',
@@ -225,6 +227,13 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
 
             $scope.refresh = function() {
                 var parameters = $scope.query || {};
+                var editPositionOfRuleEnabled = !($scope.group.readOnly) && ($scope.query.orderBy === 'position' && $scope.query.order === 'asc');
+                var sortable =  angular.element( '.ui-sortable' );
+                if(editPositionOfRuleEnabled === true) {
+                    sortable.sortable('enable');
+                } else {
+                    sortable.sortable('disable');
+                }
                 return ClassificationRuleService.query( {
                     limit: parameters.limit || 20,
                     offset: (parameters.page -1) * parameters.limit || 0,
@@ -281,7 +290,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                 });
             };
 
-            var openModal = function(classification) {
+            var openModal = function(classification, group) {
                 return $uibModal.open({
                     backdrop: false,
                     controller: 'ClassificationModalController',
@@ -290,13 +299,16 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                     resolve: {
                         classification: function() {
                             return classification;
+                        },
+                        group: function() {
+                            return group;
                         }
                     }
                 });
             };
 
             $scope.editRule = function(rule) {
-                var modalInstance = openModal(rule);
+                var modalInstance = openModal(rule, rule.group);
                 modalInstance.closed.then(function () {
                     $scope.refreshAll();
                 }, function() {
@@ -305,11 +317,58 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                 });
             };
 
-            $scope.addRule = function() {
-                var modalInstance = openModal();
+            $scope.addRule = function(group) {
+                var modalInstance = openModal(null, group);
                 modalInstance.closed.then(function () {
                     $scope.refreshAll();
                 });
+            };
+
+            // for drag and drop of rules (redefining position)
+            $scope.sortableRules = {
+
+                start: function(e, ui) {
+                    // remember old index before moving
+                    angular.element(ui.item).data('oldIndex', ui.item.index());
+                },
+                stop: function(e, ui) {
+
+                    // Check Precondition: item was actually moved
+                    var oldIndex =  angular.element(ui.item).data().oldIndex;
+                    var newIndex =  ui.item.index();
+                    if(oldIndex === newIndex) {
+                        ui.item.parent().sortable('cancel');
+                        return; // nothing to do
+                    }
+
+                    // Calculate and set new position (index + offset)
+                    var parameters = $scope.query || {};
+                    var offset =  (parameters.page -1) * parameters.limit || 0;
+                    var rule = $scope.rules[newIndex];
+                    var position;
+                    if(newIndex -1 < 0) {
+                        // we are already at the beginning of the visible paged list
+                        position = offset;
+                    } else {
+                        var previousRule = $scope.rules[newIndex -1];
+                        position = (newIndex > oldIndex) ? previousRule.position : previousRule.position + 1;
+                    }
+                    rule.position = position;
+
+                    // Update backend
+                    var refreshCallback = function() {
+                        $scope.refreshAll();
+                    };
+
+                    var handleErrorResponse = function(response) {
+                        if (response && response.data) {
+                            var error = response.data;
+                            $scope.error = {};
+                            $scope.error[error.context] = error.message;
+                        }
+                    };
+                    ClassificationRuleService.update(rule, refreshCallback, handleErrorResponse);
+                }
             };
 
             $scope.importRules = function() {
@@ -426,12 +485,13 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             };
 
         }])
-        .controller('ClassificationModalController', ['$scope', '$uibModalInstance', 'ProtocolService', 'ClassificationRuleService', 'classification', function($scope, $uibModalInstance, ProtocolService, ClassificationRuleService, classification) {
+        .controller('ClassificationModalController', ['$scope', '$uibModalInstance', 'ProtocolService', 'ClassificationRuleService', 'classification', 'group', function($scope, $uibModalInstance, ProtocolService, ClassificationRuleService, classification, group) {
             $scope.classification = classification || {};
             $scope.protocols = [];
             $scope.currentSelection = undefined;
             $scope.selectedProtocols = [];
             $scope.buttonName = $scope.classification.id ? 'Update' : 'Create';
+            $scope.group = group;
 
             var convertStringArrayToProtocolsArray = function(string) {
                 return string.map(function(protocol) {

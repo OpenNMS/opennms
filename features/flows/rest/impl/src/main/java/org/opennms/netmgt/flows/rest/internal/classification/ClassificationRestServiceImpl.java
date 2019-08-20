@@ -133,7 +133,6 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response saveRule(RuleDTO ruleDTO) {
         final Rule rule = convert(ruleDTO);
         rule.setId(null);
-
         final int ruleId = classificationService.saveRule(rule);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
         final URI uri = builder.path(ClassificationRestService.class, "getRule").build(ruleId);
@@ -177,6 +176,14 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setName(newRule.getName());
         rule.setOmnidirectional(newRule.isOmnidirectional());
         rule.setExporterFilter(newValue.getExporterFilter());
+
+        // adjust position
+        Integer newPosition = newValue.getPosition();
+        if(newPosition != null) {
+            int oldPosition = rule.getPosition();
+            int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
+            rule.setPosition(newComputedPosition);
+        }
 
         // Persist
         classificationService.updateRule(rule);
@@ -257,7 +264,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response updateGroup(int id, GroupDTO newValue) {
         final Group group = classificationService.getGroup(id);
 
-        // At the moment only togging the enabled state is supported
+        // At the moment only toggling the enabled state is supported
         group.setEnabled(newValue.isEnabled());
 
         classificationService.updateGroup(group);
@@ -272,6 +279,8 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     private static Rule convert(RuleDTO ruleDTO) {
         if (ruleDTO == null) return null;
         final Rule rule = new Rule();
+        // if no position is set for the new rule we put it at the end of the list:
+        rule.setPosition(ruleDTO.getPosition() == null ? Integer.MAX_VALUE : ruleDTO.getPosition());
         if (!Strings.isNullOrEmpty(ruleDTO.getName())) {
             rule.setName(ruleDTO.getName());
         }

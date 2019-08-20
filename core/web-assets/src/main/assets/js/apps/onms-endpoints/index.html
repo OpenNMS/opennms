@@ -1,0 +1,18 @@
+<div class="alert alert-danger" ng-if="globalError">
+    <span>{{globalError}}</span>
+    <pre ng-show="globalErrorDetails">{{globalErrorDetails}}</pre>
+</div>
+
+<div class="w-100" ng-if="!globalError">
+    <ul id="tabs" class="nav nav-tabs">
+        <li role="presentation" ng-repeat="endpointType in types" class="nav-item">
+            <a ui-sref-active="active" ui-sref="endpoints.{{endpointType.id}}" title="{{endpointType.label}}" data-name={{endpointType.label}} class="nav-link">
+                {{endpointType.label}} Endpoints
+            </a>
+        </li>
+    </ul>
+    <div class="card border-top-0" ui-view>
+
+    </div>
+</div>
+

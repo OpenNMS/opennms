@@ -82,6 +82,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Manage Minions", "//div[contains(@class,'card')]/table//th/a[text()='Location']" },
 
         // Additional Tools
+        new String[] { "Configure Grafana Endpoints (Reports only)", "//div/ul/li/a[contains(text(),'Grafana Endpoints')]" },
         new String[] { "Instrumentation Log Reader", "//span[text()='Filtering']" },
         new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe" },
         new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },

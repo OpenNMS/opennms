@@ -137,6 +137,7 @@
 
     <!-- Other projects -->
     <module>distributed</module>
+    <module>endpoints</module>
     <module>geocoder</module>
     <module>geolocation</module>
     <module>instrumentationLogReader</module>

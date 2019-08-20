@@ -475,8 +475,15 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.container</groupId>
-      <artifactId>scv</artifactId>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.shell</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

@@ -518,7 +518,6 @@
                 <feature>postgresql</feature>
                 <feature>smack</feature>
                 <feature>spring-security32</feature>
-                <feature>spring-webflow</feature>
                 <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>dashlet-alarms</feature>
@@ -575,6 +574,8 @@
                 <feature>opennms-alarm-history-elastic</feature>
                 <feature>org.opennms.features.topologies.service.api</feature>
                 <feature>opennms-identity</feature>
+                <feature>opennms-endpoints-grafana</feature>
+                <feature>opennms-reporting</feature>
                 <feature>opennms-send-event-command</feature>
                 <feature>opennms-dnsresolver-shell</feature>
                 <feature>opennms-dnsresolver-netty</feature>
