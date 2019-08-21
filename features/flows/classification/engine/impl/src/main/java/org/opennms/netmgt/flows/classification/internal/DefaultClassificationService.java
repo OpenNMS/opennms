@@ -29,7 +29,9 @@
 package org.opennms.netmgt.flows.classification.internal;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -135,20 +137,30 @@ public class DefaultClassificationService implements ClassificationService {
                 throw new CSVImportException(result);
             }
 
+            final Map<String, Group> allGroups = new HashMap<>();
+            final Criteria criteria = new CriteriaBuilder(Group.class)
+                    .ne("name", Groups.SYSTEM_DEFINED)
+                    .toCriteria();
+            final List<Group> groupsList = classificationGroupDao.findMatching(criteria);
 
-            final Group group = classificationGroupDao.findByName(Groups.USER_DEFINED); // Automatically add all rules to the USER_DEFINED space
-
-            // Remove existing rules and afterwards add new rules
-            if (deleteExistingRules) {
-                for (Rule eachRule : group.getRules()) {
-                    eachRule.setGroup(null);
+            for (Group group : groupsList) {
+                allGroups.put(group.getName(), group);
+                // Remove existing rules and afterwards add new rules
+                if (deleteExistingRules) {
+                    for (Rule eachRule : group.getRules()) {
+                        classificationRuleDao.delete(eachRule);
+                    }
+                    group.getRules().clear();
                 }
-                group.getRules().clear();
             }
             final List<Rule> rules = result.getRules();
             for (int i=0; i<rules.size(); i++) {
                 final Rule rule = rules.get(i);
                 try {
+                    Group group = allGroups.get(rule.getGroup().getName());
+                    if(group == null) {
+                        throw new ClassificationException(ErrorContext.Name, Errors.GROUP_NOT_FOUND, rule.getGroup().getName());
+                    }
                     groupValidator.validate(group, rule);
                     group.addRule(rule);
                 } catch (ClassificationException ex) {
@@ -161,9 +173,11 @@ public class DefaultClassificationService implements ClassificationService {
                 throw new CSVImportException(result);
             }
 
-            // Reload engine
-            updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(group.getRules()));
-            classificationGroupDao.saveOrUpdate(group);
+            // Reload engine for all groups
+            for(Group group : allGroups.values()) {
+                updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(group.getRules()));
+                classificationGroupDao.saveOrUpdate(group);
+            }
             return null;
         });
     }
