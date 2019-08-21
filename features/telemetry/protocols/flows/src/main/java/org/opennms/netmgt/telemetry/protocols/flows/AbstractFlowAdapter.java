@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.netmgt.flows.api.DetailedFlowException;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
@@ -108,8 +109,13 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             LOG.debug("Persisting {} packets, {} flows.", flowPackets.size(), flows.size());
             final FlowSource source = new FlowSource(messageLog.getLocation(), messageLog.getSourceAddress());
             flowRepository.persist(flows, source);
+        } catch (DetailedFlowException ex) {
+            LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
+            for (final String logMessage: ex.getDetailedLogMessages()) {
+                LOG.error(logMessage);
+            }
         } catch (FlowException ex) {
-            LOG.error("Failed to persist one or more packets: {}", ex.getMessage());
+            LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
         }
 
         LOG.debug("Completed processing {} telemetry messages.",

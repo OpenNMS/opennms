@@ -109,6 +109,21 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.config-dao.poll-outages.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.config-dao.thresholding.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.noop</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.jmx</groupId>
       <artifactId>org.opennms.core.jmx.api</artifactId>
       <version>${project.version}</version>

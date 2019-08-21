@@ -778,7 +778,7 @@ final class PollerEventProcessor implements EventListener {
     private void scheduledOutagesChangeHandler() {
         try {
             getPollerConfig().update();
-            getPoller().getPollOutagesConfig().update();
+            getPoller().getPollOutagesDao().reload();
         } catch (Throwable e) {
             LOG.error("Failed to reload PollerConfigFactory", e);
         }

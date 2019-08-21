@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>org.opennms.features.endpoints</artifactId>
+    <version>25.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.endpoints</groupId>
+  <artifactId>org.opennms.features.endpoints.grafana</artifactId>
+  <name>OpenNMS :: Features :: Endpoints :: Grafana (Parent)</name>
+  <packaging>pom</packaging>
+  <modules>
+    <module>api</module>
+    <module>client</module>
+    <module>persistence</module>
+    <module>rest</module>
+    <module>service</module>
+  </modules>
+</project>

@@ -44,20 +44,6 @@ import org.opennms.api.reporting.parameter.ReportParameters;
 public interface ReportService {
 
     /**
-     * This method validates that the map of report parameters matches the
-     * report parameters accepted by the report. Used by the web interface.
-     *
-     * @param reportParms
-     *            hashmap of parameters to be provided at runtime
-     * @param reportId
-     *            reportId as defined in database-reports.xml
-     * @return true if the reportParms supplied match those in the report
-     *         definition.
-     */
-    boolean validate(Map<String, Object> reportParms,
-            String reportId);
-
-    /**
      * This method runs the report
      *
      * @param reportParms

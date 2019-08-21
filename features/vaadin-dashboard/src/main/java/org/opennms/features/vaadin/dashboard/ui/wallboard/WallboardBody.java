@@ -34,12 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
 
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
@@ -92,11 +94,12 @@ public class WallboardBody extends VerticalLayout {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                final Lock sessionLock = getUI().getSession().getLockInstance();
                 try {
-                    getUI().getSession().lock();
+                    sessionLock.lock();
                     advanceTimer();
                 } finally {
-                    getUI().getSession().unlock();
+                    sessionLock.unlock();
                 }
             }
         }, 250, 250);

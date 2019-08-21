@@ -112,6 +112,13 @@ commands:
           command: |
             .circleci/scripts/smoke.sh << parameters.minimal >>
       - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/test-results/system-logs
+            dmesg > ~/test-results/system-logs/dmesg
+            ps auxf > ~/test-results/system-logs/ps
+      - run:
           name: Gather test artifacts
           when: always
           command: |
@@ -414,7 +421,7 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=3
+            export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
             ./makerpm.sh -a -d -S tools/packages/minion/minion.spec
       - setup_remote_docker:
@@ -446,7 +453,7 @@ jobs:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=3
+            export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
             ./makerpm.sh -a -d -S tools/packages/sentinel/sentinel.spec
       - setup_remote_docker:

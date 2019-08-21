@@ -131,5 +131,19 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!--  Expose the test context for thresholding DAOs  -->
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.thresholding.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!--  Expose the test context for poller DAOs  -->
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

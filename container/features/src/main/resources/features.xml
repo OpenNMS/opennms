@@ -250,13 +250,6 @@
         <bundle>mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
         <bundle>mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
     </feature>
-    <feature name="spring-webflow" version="${springWebFlowVersion}" description="Spring :: Web Flow">
-        <bundle>wrap:mvn:opensymphony/ognl/2.6.11</bundle>
-        <bundle>wrap:mvn:org.springframework.webflow/spring-binding/${springWebFlowVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.webflow/spring-js/${springWebFlowVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.webflow/spring-js-resources/${springWebFlowVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
-    </feature>
     <feature name="jicmp" version="2.0.1" description="jicmp">
         <feature>guava</feature>
         <bundle>mvn:org.opennms/jicmp-api/2.0.1</bundle>
@@ -1073,7 +1066,6 @@
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
-        <bundle>blueprint:mvn:org.opennms.container/scv/${project.version}/xml/blueprint-scv</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-osgi-core-rest" version="${project.version}" description="OpenNMS :: Features :: OSGI :: Core :: Rest">
@@ -1451,6 +1443,19 @@
         <bundle>wrap:mvn:net.sf.jung/jung-api/${jungVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
     </feature>
+    <feature name="opennms-endpoints-grafana" version="${project.version}" description="OpenNMS :: Features :: Endpoints :: Grafana">
+        <bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.client/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.service/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.rest/${project.version}</bundle>
+        <!-- These are pulled in via lib directory -->
+        <!--<bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.api/${project.version}</bundle>-->
+        <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.api/${project.version}</bundle>-->
+        <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.impl/${project.version}</bundle>-->
+    </feature>
+    <feature name="opennms-reporting" version="${project.version}" description="OpenNMS :: Features :: Reporting">
+        <!-- All other dependencies are wired in through custom.properties -->
+        <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.rest/${project.version}</bundle>
+    </feature>
 
     <feature name="opennms-dnsresolver-api" version="${project.version}" description="OpenNMS :: Features :: DNS Resolver :: API">
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.api/${project.version}</bundle>
@@ -1473,6 +1478,8 @@
         <feature>opennms-events-api</feature>
         <feature>opennms-model</feature>
 
+        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:com.github.ben-manes.caffeine/caffeine/${caffeineVersion}</bundle>
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.netty/${project.version}</bundle>
     </feature>
 
@@ -1482,6 +1489,8 @@
         <bundle>mvn:io.vavr/vavr-match/0.10.0</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-core/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-circuitbreaker/${resilience4jVersion}</bundle>
+        <bundle>mvn:io.github.resilience4j/resilience4j-bulkhead/${resilience4jVersion}</bundle>
+        <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>        
     </feature>
 
     <feature name="netty4" version="${netty4Version}" description="Netty">
@@ -1502,7 +1511,7 @@
     <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.shell/${project.version}</bundle>
     </feature>
-    
+
     <feature name="opennms-blobstore-noop"
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: No-Op" version="${project.version}">
         <feature>opennms-blobstore-shell</feature>

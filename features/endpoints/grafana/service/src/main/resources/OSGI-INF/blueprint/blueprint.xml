@@ -1,0 +1,25 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="
+                http://www.osgi.org/xmlns/blueprint/v1.0.0
+                https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+                http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+">
+
+    <reference id="grafanaEndpointDao" interface="org.opennms.netmgt.endpoints.grafana.persistence.api.GrafanaEndpointDao" availability="mandatory" />
+    <reference id="grafanaClientFactory" interface="org.opennms.netmgt.endpoints.grafana.api.GrafanaClientFactory" availability="mandatory" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
+
+    <bean id="grafanaEndpointRestService" class="org.opennms.netmgt.endpoints.grafana.service.GrafanaEndpointServiceImpl">
+        <argument ref="grafanaEndpointDao" />
+        <argument ref="grafanaClientFactory" />
+        <argument ref="sessionUtils" />
+    </bean>
+    <service interface="org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpointService" ref="grafanaEndpointRestService" >
+        <service-properties>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+</blueprint>

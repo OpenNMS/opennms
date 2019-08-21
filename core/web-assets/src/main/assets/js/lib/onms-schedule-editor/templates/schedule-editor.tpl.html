@@ -1,0 +1,170 @@
+<form class="form" novalidate>
+    <div class="">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="{{id}}TypeSelect" id="{{id}}TypeDaily" ng-model="options.type" value="daily">
+            <label class="form-check-label" for="{{id}}TypeDaily">
+                Daily
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="{{id}}TypeSelect" id="{{id}}TypeDaysPerWeek" ng-model="options.type" value="daysPerWeek">
+            <label class="form-check-label" for="{{id}}TypeDaysPerWeek">
+                Days per week
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="{{id}}TypeSelect" id="{{id}}TypeDaysPerMonth" ng-model="options.type" value="daysPerMonth">
+            <label class="form-check-label" for="{{id}}TypeDaysPerMonth">
+                Days per month
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="{{id}}TypeSelect" id="{{id}}TypeCustom" ng-model="options.type" value="custom">
+            <label class="form-check-label" for="{{id}}TypeCustom">
+                Cron Expression
+            </label>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Days per Week -->
+    <div class="" ng-if="options.type === 'daysPerWeek'">
+        <label>Weekdays</label>
+        <div class="form-check ml-1" ng-repeat="weekday in weekdays">
+            <input class="form-check-input" ng-class="{'is-invalid': errors.dayOfWeek}" type="checkbox" name="{{id}}{{weekday.id}}" id="{{id}}{{weekday.id}}" ng-model="options.daysOfWeek[weekday.label]" value="custom">
+            <label class="form-check-label" for="{{id}}{{weekday.id}}">
+                {{weekday.label}}
+            </label>
+        </div>
+        <p class="text-danger small mb-0" ng-if="errors.dayOfWeek">{{errors.dayOfWeek}}</p>
+    </div>
+
+    <!-- Daily Options -->
+    <div class="mt-2" ng-if="options.type === 'daily' || options.type === 'daysPerWeek'">
+        <div class="form-group">
+            <label>Interval</label>
+            <onms-schedule-interval ng-model="options.interval"></onms-schedule-interval>
+        </div>
+        <!-- Once per Day -->
+        <div class="form-group" ng-if="options.interval === '0'">
+            <label>At</label>
+            <onms-time-input
+                    ng-model="options.at"
+                    options="options.at"
+            />
+        </div>
+
+        <!-- Other options -->
+        <div class="form-group" ng-if="options.interval !== '0'">
+            <label>From</label>
+            <onms-time-input
+                    ng-model="options.from"
+                    options="options.from"
+            />
+        </div>
+        <div class="form-group" ng-if="options.interval !== '0'">
+            <label>To</label>
+            <onms-time-input
+                    ng-model="options.to"
+                    options="options.to"
+            />
+        </div>
+    </div>
+
+    <!-- Days per Month -->
+    <div class="" ng-if="options.type === 'daysPerMonth'">
+        <!-- Other options -->
+        <div class="form-group">
+            <label>At</label>
+            <onms-time-input
+                    ng-model="options.at"
+                    options="options.at"
+            />
+        </div>
+
+        <div class="">
+            <label>On</label>
+
+            <div class="form-inline my-1 ml-1">
+                <input class="" type="radio" ng-model="options.dayOfMonthToggle" value="dayOfMonth">
+                <span class="mx-1">the</span>
+                <select class="form-control custom-select" ng-model="options.dayOfMonth">
+                    <option value="1">1st</option>
+                    <option value="2">2nd</option>
+                    <option value="3">3rd</option>
+                    <option value="4">4th</option>
+                    <option value="5">5th</option>
+                    <option value="6">6th</option>
+                    <option value="7">7th</option>
+                    <option value="8">8th</option>
+                    <option value="9">9th</option>
+                    <option value="10">10th</option>
+                    <option value="11">11th</option>
+                    <option value="12">12th</option>
+                    <option value="13">13th</option>
+                    <option value="14">14th</option>
+                    <option value="15">15th</option>
+                    <option value="16">16th</option>
+                    <option value="17">17th</option>
+                    <option value="18">18th</option>
+                    <option value="19">19th</option>
+                    <option value="20">20th</option>
+                    <option value="21">21st</option>
+                    <option value="22">22nd</option>
+                    <option value="23">23rd</option>
+                    <option value="24">24th</option>
+                    <option value="25">25th</option>
+                    <option value="26">26th</option>
+                    <option value="27">27th</option>
+                    <option value="28">28th</option>
+                    <option value="29">29th</option>
+                    <option value="30">30th</option>
+                    <option value="31">31st</option>
+                    <option value="L">Last</option>
+                </select>
+
+                <span class="ml-1">day of every month</span>
+            </div>
+
+            <!-- Short selection -->
+            <div class="form-inline my-1 ml-1">
+                <input class="" type="radio" ng-model="options.dayOfMonthToggle" value="dayOfWeek">
+                <span class="mx-1">the</span>
+                <select class="form-control custom-select" ng-model="options.weekOfMonth">
+                    <option value="1">first</option>
+                    <option value="2">second</option>
+                    <option value="3">third</option>
+                    <option value="4">fourth</option>
+                    <option value="L">last</option>
+                </select>
+
+                <select class="form-control custom-select mx-1" ng-model="options.dayOfWeek">
+                    <option ng-repeat="weekday in weekdays track by weekday.id" value="{{weekday.id}}">{{weekday.label}}</option>
+                </select>
+
+                <span>of every month</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Custom Cron Expression -->
+    <div class="" ng-if="options.type === 'custom'">
+        <div class="form-inline">
+            <input id="customCronExpressionInput" type="text" class="form-control" ng-class="{'is-invalid': errors.cronExpression}" ng-model="options.cronExpression "/>
+            <a href="http://www.quartz-scheduler.org/documentation/quartz-2.2.2/tutorials/crontrigger.html" class="ml-2" target="_blank" title="Help me">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </a>
+            <p class="invalid-feedback" ng-if="errors.cronExpression">{{errors.cronExpression}}</p>
+        </div>
+    </div>
+
+    <div class="text-muted mt-2" ng-if="options.showDebugOptions">
+        <hr />
+        <label>Generated Cron Expression</label>
+        <pre class="bg-light px-2 py-2 text-muted">{{options.getCronExpression()}}</pre>
+        <label>Schedule Options</label>
+        <pre class="bg-light px-2 py-2 text-muted">{{options | json}}</pre>
+    </div>
+</form>

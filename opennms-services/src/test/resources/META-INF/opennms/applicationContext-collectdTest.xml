@@ -31,14 +31,7 @@
 		<constructor-arg ref="collectdConfigStream"/>
 	</bean>
 
-	<!-- Initialize the PollOutagesConfigFactory -->
-	<bean id="init-pollOutagesConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
-	</bean>
-
-	<!-- <bean id="pollOutagesConfig" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="init-pollOutagesConfig-factory" factory-method="getInstance"/> -->
-
-	<bean id="daemon" class="org.opennms.netmgt.collectd.Collectd" depends-on="init-pollOutagesConfig-factory">
+	<bean id="daemon" class="org.opennms.netmgt.collectd.Collectd">
 		<!-- Override Eventd with the mock version -->
 		<property name="eventIpcManager" ref="mockEventIpcManager"/>
 	</bean>

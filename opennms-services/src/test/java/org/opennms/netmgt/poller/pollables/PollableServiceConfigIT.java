@@ -51,9 +51,9 @@ import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.dao.outages.api.OverrideablePollOutagesDao;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -69,8 +69,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.common.collect.Lists;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -78,7 +76,8 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
@@ -87,6 +86,9 @@ public class PollableServiceConfigIT {
 
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
+    
+    @Autowired
+    private OverrideablePollOutagesDao m_pollOutagesDao;
 
     @Test
     public void testPollableServiceConfig() throws Exception {
@@ -105,13 +107,12 @@ public class PollableServiceConfigIT {
         final PollableNode node = network.createNodeIfNecessary(1, "foo", null);
         final PollableInterface iface = new PollableInterface(node, InetAddressUtils.addr("127.0.0.1"));
         final PollableService svc = new PollableService(iface, "MQ_API_DirectRte_v2");
-        final PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
         final Package pkg = factory.getPackage("MapQuest");
         final Timer timer = mock(Timer.class);
         final ThresholdingService thresholdingService = mock(ThresholdingService.class);
-        final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
+        final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pkg, timer,
                                                                     persisterFactory, thresholdingService,
-                                                                    m_locationAwarePollerClient);
+                                                                    m_locationAwarePollerClient, m_pollOutagesDao);
         PollStatus pollStatus = psc.poll();
         assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
     }
@@ -132,7 +133,6 @@ public class PollableServiceConfigIT {
         final PollableNetwork network = new PollableNetwork(context);
         final PollableNode node = network.createNodeIfNecessary(1, "foo", null);
         final PollableInterface iface = new PollableInterface(node, InetAddressUtils.addr("127.0.0.1"));
-        final PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
         final Package pkg = factory.getPackage("Default");
         final ThresholdingService thresholdingService = mock(ThresholdingService.class);
 
@@ -148,8 +148,8 @@ public class PollableServiceConfigIT {
         when(locationAwarePollerClient.poll()).thenReturn(pollerRequestBuilder);
 
         final PollableService svc = new PollableService(iface, "HTTP-www.example.com");
-        final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
-                persisterFactory, thresholdingService, locationAwarePollerClient);
+        final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pkg, timer,
+                persisterFactory, thresholdingService, locationAwarePollerClient, m_pollOutagesDao);
         psc.poll();
 
         verify(pollerRequestBuilder).withMonitor(factory.getServiceMonitor("HTTP"));
@@ -193,13 +193,12 @@ public class PollableServiceConfigIT {
         when(pkg.findService("SVC")).thenReturn(Optional.of(new Package.ServiceMatch(configuredSvc)));
 
         PollerConfig pollerConfig = mock(PollerConfig.class);
-        PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
         Timer timer = mock(Timer.class);
         PersisterFactory persisterFactory = mock(PersisterFactory.class);
         ThresholdingService thresholdingService = mock(ThresholdingService.class);
 
         final PollableServiceConfig psc = new PollableServiceConfig(pollableSvc, pollerConfig,
-                pollOutagesConfig, pkg, timer, persisterFactory, thresholdingService, client);
+                pkg, timer, persisterFactory, thresholdingService, client, m_pollOutagesDao);
 
         // Trigger the poll
         PollStatus pollStatus = psc.poll();

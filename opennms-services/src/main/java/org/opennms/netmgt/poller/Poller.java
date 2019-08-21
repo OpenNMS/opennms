@@ -32,21 +32,20 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -71,6 +70,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * <p>Poller class.</p>
@@ -97,8 +98,6 @@ public class Poller extends AbstractServiceDaemon {
 
     private PollerConfig m_pollerConfig;
 
-    private PollOutagesConfig m_pollOutagesConfig;
-
     private EventIpcManager m_eventMgr;
 
     @Autowired
@@ -118,6 +117,9 @@ public class Poller extends AbstractServiceDaemon {
 
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
+    
+    @Autowired
+    private ReadablePollOutagesDao m_pollOutagesDao;
 
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
@@ -244,21 +246,15 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     /**
-     * <p>getPollOutagesConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
+     * <p>getPollOutagesDao</p>
      */
-    public PollOutagesConfig getPollOutagesConfig() {
-        return m_pollOutagesConfig;
+    ReadablePollOutagesDao getPollOutagesDao() {
+        return m_pollOutagesDao;
     }
-
-    /**
-     * <p>setPollOutagesConfig</p>
-     *
-     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
-     */
-    public void setPollOutagesConfig(PollOutagesConfig pollOutagesConfig) {
-        m_pollOutagesConfig = pollOutagesConfig;
+    
+    @VisibleForTesting
+    void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
+        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
     }
 
     /**
@@ -517,9 +513,9 @@ public class Poller extends AbstractServiceDaemon {
         }
 
         PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
-        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, pkg,
                                                                      getScheduler(), m_persisterFactory, m_thresholdingService,
-                                                                     m_locationAwarePollerClient);
+                                                                     m_locationAwarePollerClient, m_pollOutagesDao);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

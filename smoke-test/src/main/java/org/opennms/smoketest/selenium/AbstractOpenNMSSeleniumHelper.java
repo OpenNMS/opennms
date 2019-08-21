@@ -326,20 +326,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected ExpectedCondition<Boolean> pageContainsText(final String text) {
-        LOG.debug("pageContainsText: {}", text);
-        final String escapedText = text.replace("\'", "\\\'");
-        return new ExpectedCondition<Boolean>() {
-            @Override public Boolean apply(final WebDriver driver) {
-                final String xpathExpression = "//*[contains(., '" + escapedText + "')]";
-                LOG.debug("XPath expression: {}", xpathExpression);
-                try {
-                    final WebElement element = driver.findElement(By.xpath(xpathExpression));
-                    return element != null;
-                } catch (final NoSuchElementException e) {
-                    return false;
-                }
-            }
-        };
+        return org.opennms.smoketest.selenium.ExpectedConditions.pageContainsText(text);
     }
 
     public void focusElement(final By by) {

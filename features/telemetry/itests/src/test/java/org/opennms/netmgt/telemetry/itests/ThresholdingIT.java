@@ -59,8 +59,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -109,7 +109,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
         "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
-        "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
+        "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
@@ -148,6 +150,12 @@ public class ThresholdingIT {
 
     private int port = 50001;
 
+    @Autowired
+    private OverrideableThreshdDao threshdDao;
+    
+    @Autowired
+    private OverrideableThresholdingDao thresholdingDao;
+    
     @Before
     public void setUp() throws IOException {
         rrdBaseDir = tempFolder.newFolder("rrd");
@@ -180,7 +188,7 @@ public class ThresholdingIT {
 
         // Load custom threshd configuration
         initThreshdFactories("/threshd-configuration.xml", "/thresholds.xml");
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        threshdDao.rebuildPackageIpListMap();
         mockEventIpcManager.addEventListener((EventListener) thresholdingService, ThresholdingServiceImpl.UEI_LIST);
 
         // Compute the path to the RRD file
@@ -354,9 +362,9 @@ public class ThresholdingIT {
         return telemetrydConfig;
     }
 
-    private void initThreshdFactories(String threshd, String thresholds) throws Exception {
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
+    private void initThreshdFactories(String threshd, String thresholds) {
+        thresholdingDao.overrideConfig(getClass().getResourceAsStream(thresholds));
+        threshdDao.overrideConfig(getClass().getResourceAsStream(threshd));
     }
 
 }

@@ -79,6 +79,8 @@
         <feature>sentinel-core</feature>
         <feature>opennms-persistence</feature>
         <feature>sentinel-distpoller-dao</feature>
+        <feature>sentinel-config-dao-thresholding</feature>
+        <feature>sentinel-config-dao-poll-outages</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-healthcheck/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-shell/${project.version}</bundle>
     </feature>
@@ -212,6 +214,7 @@
     <feature name="sentinel-kvstore-api"
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: API"
              version="${project.version}">
+        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
     </feature>
 
@@ -252,5 +255,27 @@
         <feature>sentinel-kvstore-api</feature>
         <bundle dependency="true">mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.postgres-shared/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.postgres/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-config-dao-common" version="${project.version}" description="OpenNMS :: Config DAO :: Common">
+        <bundle>mvn:org.opennms/org.opennms.config-dao.common-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.common-impl/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
+        <feature>resilience4j</feature>
+        <feature>sentinel-kvstore-api</feature>
+    </feature>
+
+    <feature name="sentinel-config-dao-thresholding" version="${project.version}" description="OpenNMS :: Config DAO :: Thresholding">
+        <feature>sentinel-config-dao-common</feature>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.thresholding.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.thresholding.impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-config-dao-poll-outages" version="${project.version}" description="OpenNMS :: Config DAO :: Poll Outages">
+        <feature>sentinel-config-dao-common</feature>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.impl/${project.version}</bundle>
     </feature>
 </features>

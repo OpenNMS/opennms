@@ -297,6 +297,11 @@ public class SFlow implements Flow {
     }
 
     @Override
+    public Long getDeltaSwitched() {
+        return this.getFirstSwitched();
+    }
+
+    @Override
     public Integer getTos() {
         return first(get(document, "flows", "0:3", "tos"),
                 get(document, "flows", "0:4", "tos"),
