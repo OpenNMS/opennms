@@ -40,8 +40,8 @@ import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -87,6 +87,12 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     private EventIpcManager eventIpcManager;
     
     private final AtomicReference<BlobStore> kvStore = new AtomicReference<>();
+    
+    @Autowired
+    private ReadableThreshdDao threshdDao;
+
+    @Autowired
+    private ReadableThresholdingDao thresholdingDao;
 
     private static final ServiceLookup<Class<?>, String> SERVICE_LOOKUP = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
             .blocking()
@@ -94,13 +100,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     @PostConstruct
     private void init() {
-        try {
-            ThreshdConfigFactory.init();
-            ThresholdingConfigFactory.init();
-            eventIpcManager.addEventListener(this, UEI_LIST);
-        } catch (final Exception e) {
-            throw new RuntimeException("Unable to initialize thresholding.", e);
-        }
+        eventIpcManager.addEventListener(this, UEI_LIST);
     }
 
     @Override
@@ -132,14 +132,14 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     public void nodeGainedService(Event event) {
         LOG.debug(event.toString());
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        threshdDao.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);
     }
 
     public void handleNodeCategoryChanged(Event event) {
         LOG.debug(event.toString());
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        threshdDao.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);
     }
 
@@ -207,8 +207,8 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         }
         if (isThresholds) {
             try {
-                ThreshdConfigFactory.reload();
-                ThresholdingConfigFactory.reload();
+                threshdDao.reload();
+                thresholdingDao.reload();
                 thresholdingSetPersister.reinitializeThresholdingSets();
             } catch (final Exception e) {
                 throw new RuntimeException("Unable to reload thresholding.", e);

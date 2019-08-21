@@ -40,11 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -56,9 +54,9 @@ import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
-import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
@@ -83,6 +81,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -97,7 +96,6 @@ public final class BroadcastEventProcessor implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
 
     private volatile Map<String, NoticeQueue> m_noticeQueues;
-    private volatile PollOutagesConfigManager m_pollOutagesConfigManager;
     private volatile NotificationManager m_notificationManager;
     private volatile NotifdConfigManager m_notifdConfigManager;
     private volatile DestinationPathManager m_destinationPathManager;
@@ -112,6 +110,9 @@ public final class BroadcastEventProcessor implements EventListener {
 
     @Autowired
     private volatile EventUtil m_eventUtil;
+    
+    @Autowired
+    private ReadablePollOutagesDao m_pollOutagesDao;
 
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
@@ -163,9 +164,6 @@ public final class BroadcastEventProcessor implements EventListener {
         }
         if (m_eventManager == null) {
             throw new IllegalStateException("property eventManager not set");
-        }
-        if (m_pollOutagesConfigManager == null) {
-            throw new IllegalStateException("property pollOutagesConfigManager not set");
         }
         if (m_notificationManager == null) {
             throw new IllegalStateException("property notificationManager not set");
@@ -629,7 +627,7 @@ public final class BroadcastEventProcessor implements EventListener {
                                 // if the auto ack catches the other event
                                 // before then,
                                 // then the page will not be sent
-                                Calendar endOfOutage = getPollOutagesConfigManager().getEndOfOutage(scheduledOutageName);
+                                Calendar endOfOutage = m_pollOutagesDao.getEndOfOutage(scheduledOutageName);
                                 startTime = endOfOutage.getTime().getTime();
                             } else {
                                 // No auto-ack exists - there's no point
@@ -1049,8 +1047,6 @@ public final class BroadcastEventProcessor implements EventListener {
     public String scheduledOutage(long nodeId, String theInterface) {
         try {
 
-            PollOutagesConfigManager outageFactory = getPollOutagesConfigManager();
-
             // Iterate over the outage names
             // For each outage...if the outage contains a calendar entry which
             // applies to the current time and the outage applies to this
@@ -1061,10 +1057,10 @@ public final class BroadcastEventProcessor implements EventListener {
             for (String outageName : outageCalendarNames) {
 
                 // Does the outage apply to the current time?
-                if (outageFactory.isCurTimeInOutage(outageName)) {
+                if (m_pollOutagesDao.isCurTimeInOutage(outageName)) {
                     // Does the outage apply to this interface or node?
 
-                    if ((outageFactory.isNodeIdInOutage(nodeId, outageName)) || (outageFactory.isInterfaceInOutage(theInterface, outageName)) || (outageFactory.isInterfaceInOutage("match-any", outageName))) {
+                    if ((m_pollOutagesDao.isNodeIdInOutage(nodeId, outageName)) || (m_pollOutagesDao.isInterfaceInOutage(theInterface, outageName)) || (m_pollOutagesDao.isInterfaceInOutage("match-any", outageName))) {
                         LOG.debug("scheduledOutage: configured outage '{}' applies, notification for interface {} on node {} will not be sent", outageName, theInterface, nodeId);
                         return outageName;
                     }
@@ -1211,25 +1207,11 @@ public final class BroadcastEventProcessor implements EventListener {
         m_notificationManager = notificationManager;
     }
 
-    /**
-     * <p>getPollOutagesConfigManager</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.PollOutagesConfigManager} object.
-     */
-    public PollOutagesConfigManager getPollOutagesConfigManager() {
-        return m_pollOutagesConfigManager;
+    @VisibleForTesting
+    void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
+        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
     }
-
-    /**
-     * <p>setPollOutagesConfigManager</p>
-     *
-     * @param pollOutagesConfigManager a {@link org.opennms.netmgt.config.PollOutagesConfigManager} object.
-     */
-    public void setPollOutagesConfigManager(
-            PollOutagesConfigManager pollOutagesConfigManager) {
-        m_pollOutagesConfigManager = pollOutagesConfigManager;
-    }
-
+    
     /**
      * <p>getUserManager</p>
      *

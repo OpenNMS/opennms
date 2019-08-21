@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 
 /**
@@ -56,10 +55,4 @@ public interface ThresholdsDao {
      * @return a {@link org.opennms.netmgt.threshd.ThresholdGroup} object.
      */
     ThresholdGroup merge(ThresholdGroup group, ThresholdingSession thresholdingSession);
-    /**
-     * <p>getThresholdingConfigFactory</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
-     */
-    ThresholdingConfigFactory getThresholdingConfigFactory();
 }

@@ -39,7 +39,6 @@
     <bean name="daemon" class="org.opennms.netmgt.poller.Poller">
       <property name="network" ref="pollableNetwork" />
       <property name="pollerConfig" ref="pollerConfig" />
-      <property name="pollOutagesConfig" ref="pollOutagesConfig" />
       <property name="eventIpcManager" ref="eventIpcManager"/>
       <property name="thresholdingService" ref="thresholdingService"/>
     </bean>

@@ -149,6 +149,7 @@
     <module>opennms-webapp-rest</module>
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
+    <module>opennms-config-dao</module>
   </modules>
   <build>
   <extensions>
