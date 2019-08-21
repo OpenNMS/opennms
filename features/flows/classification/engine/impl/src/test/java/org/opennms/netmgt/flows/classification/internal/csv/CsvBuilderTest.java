@@ -26,7 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.netmgt.flows.classification.internal.csv;
 
 import static org.junit.Assert.assertEquals;
