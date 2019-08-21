@@ -45,7 +45,6 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.util.Strings;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -78,13 +77,12 @@ public class DatabaseReportPageIT extends UiPageTest {
     public void before() {
         page = new DatabaseReportPage(getDriver(), getBaseUrlInternal());
         page.open();
-        cleanUp();
-    }
 
-    @After
-    public void cleanUp() {
+        LOG.debug("Delete all previously existing report schedules");
         new ScheduledReportsTab(getDriver()).open().deleteAll();
+        LOG.debug("Delete all previously existing persisted reports");
         new PersistedReportsTab(getDriver()).open().deleteAll();
+        LOG.debug("Cleanup done. Running test now...");
     }
 
     @Test
@@ -97,7 +95,10 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         // Verify Creation
         final File downloadedFile = new File(getDownloadsFolder(), EarlyMorningReport.filename(Formats.PDF));
-        await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> downloadedFile.exists());
+        await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> {
+            LOG.debug("Expecting file '{}' to exist: {}", downloadedFile, downloadedFile.exists());
+            return downloadedFile.exists();
+        });
     }
 
     @Test
@@ -149,12 +150,13 @@ public class DatabaseReportPageIT extends UiPageTest {
                 .scheduleReport(DeliveryOptions.DEFAULTS, cronExpression);
 
         // Verify Schedule
+        LOG.debug("Checking if schedule was persisted...");
         final Optional<ReportScheduleElement> any = new ScheduledReportsTab(getDriver())
                 .open()
                 .getScheduledReports().stream()
                 .filter((input) -> input.templateName.equals(EarlyMorningReport.id) && input.cronExpression.equals(cronExpression))
                 .findAny();
-        LOG.debug("Expecting one schedule matching the schedule: {}", any.isPresent());
+        LOG.debug("One schedule matching the schedule: {}", any.isPresent());
         assertThat(any.isPresent(), is(true));
 
         // Edit Schedule
@@ -166,6 +168,7 @@ public class DatabaseReportPageIT extends UiPageTest {
                       updatedCronExpression);
 
         // Verify it actually was persisted and the UI reloaded
+        LOG.debug("Checking if schedule was updated...");
         final Optional<ReportScheduleElement> findMe = new ScheduledReportsTab(getDriver())
                 .open()
                 .getScheduledReports().stream()
@@ -198,6 +201,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public DatabaseReportPage open() {
+            LOG.debug("Opening page '{}'", url);
             driver.get(url);
             pageContainsText("Early morning report");
             return this;
@@ -211,9 +215,10 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportTemplateTab select(String reportName) {
-            LOG.debug("Selecting report {} from list", reportName);
+            LOG.debug("Selecting report '{}' from list", reportName);
             final WebElement element = findElementByXpath(String.format("//a/h5[text() = '%s']", reportName));
             element.click();
+            await().atMost(15, SECONDS).pollInterval(2, SECONDS).until(() -> findElementById("execute") != null);
             return this;
         }
 
@@ -338,7 +343,7 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportDetailsForm applyCronExpression(String cronExpression) {
-            LOG.debug("Apply corn expression {}", cronExpression);
+            LOG.debug("Applying cron expression '{}'", cronExpression);
             if (!this.editMode) {
                 new CheckBox(driver, "createSchedule").setSelected(true);
             }
@@ -533,15 +538,19 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public void edit(DeliveryOptions deliveryOptions, String cronExpression) {
+            LOG.debug("Try updating report schedule for trigger '{}' with delivery options {} and cron expression '{}'", triggerName, deliveryOptions, cronExpression);
             final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 5, 1000);
             execute(() -> findElementById("action.edit." + triggerName)).click();
             webDriverWait.until(org.opennms.smoketest.selenium.ExpectedConditions.pageContainsText("Edit Schedule"));
+            webDriverWait.until((driver) -> findElementById("persistToggle").isDisplayed());
+            webDriverWait.until((driver) -> findElementById("sendMailToggle").isDisplayed());
             new ReportDetailsForm(getDriver())
                     .editMode(true)
                     .applyDeliveryOptions(deliveryOptions)
                     .applyCronExpression(cronExpression);
             execute(() -> findElementById("action.update." + triggerName)).click();
             execute(() -> webDriverWait.until(ExpectedConditions.not(org.opennms.smoketest.selenium.ExpectedConditions.pageContainsText("Edit Schedule"))));
+            LOG.debug("Report schedule for trigger '{}' was updated!", triggerName);
         }
     }
 

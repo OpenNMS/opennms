@@ -33,14 +33,23 @@ import java.util.function.Supplier;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.LoggerFactory;
 
 public class UiPageTest extends OpenNMSSeleniumIT {
+
+    @Rule
+    public TestRule loggingRule = (base, description) -> {
+        LoggerFactory.getLogger(UiPageTest.this.getClass()).debug("Executing test: {}.{}()", description.getClassName(), description.getMethodName());
+        return base;
+    };
 
     @Before
     public void before() {
