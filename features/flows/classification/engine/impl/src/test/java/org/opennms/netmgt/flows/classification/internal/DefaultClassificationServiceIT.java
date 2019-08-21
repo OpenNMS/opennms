@@ -86,6 +86,9 @@ public class DefaultClassificationServiceIT {
 
     private ClassificationService classificationService;
 
+    private Group userGroupDb; // the user group that is attached to hibernate
+    private Group userGroupCsv; // the user group that is not attached to hibernate
+
     @Before
     public void setUp() {
         FilterService filterService = new DefaultFilterService(filterDao);
@@ -96,8 +99,10 @@ public class DefaultClassificationServiceIT {
                         new DaoClassificationRuleProvider(ruleDao), filterService),
                 filterService,
                 transactionOperations);
-        groupDao.save(new GroupBuilder().withName(Groups.USER_DEFINED).build());
+        userGroupDb = new GroupBuilder().withName(Groups.USER_DEFINED).build();
+        groupDao.save(userGroupDb);
         assertThat(ruleDao.countAll(), is(0));
+        userGroupCsv = new GroupBuilder().withName(Groups.USER_DEFINED).build();
     }
 
     @After
@@ -108,10 +113,11 @@ public class DefaultClassificationServiceIT {
     @Test
     public void verifyCsvImport() {
         // Rules
-        final Rule http2Rule = new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1").build();
-        final Rule googleRule = new RuleBuilder().withName("google").withDstAddress("8.8.8.8").build();
+        final Rule http2Rule = new RuleBuilder().withGroup(userGroupCsv).withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1").build();
+        final Rule googleRule = new RuleBuilder().withGroup(userGroupCsv).withName("google").withDstAddress("8.8.8.8").build();
         final Rule opennmsMonitorRule = new RuleBuilder()
                 .withName("opennms-monitor")
+                .withGroup(userGroupCsv)
                 .withProtocol("TCP")
                 .withSrcAddress("10.0.0.1").withSrcPort(1000)
                 .withDstAddress("10.0.0.2").withDstPort(8980)
@@ -131,6 +137,7 @@ public class DefaultClassificationServiceIT {
         // Verify
         assertThat(ruleDao.countAll(), is(3));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
+                .withGroup(userGroupCsv)
                 .withName("http") // name differs
                 .withProtocol("tcp,udp")
                 .withDstAddress("127.0.0.1").build()), hasSize(1));
@@ -143,8 +150,8 @@ public class DefaultClassificationServiceIT {
         // Dummy input
         final String csv = new CsvBuilder()
                 .withHeader(false)
-                .withRule(new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1"))
-                .withRule(new RuleBuilder().withName("google").withDstAddress("8.8.8.8"))
+                .withRule(new RuleBuilder().withGroup(userGroupCsv).withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1"))
+                .withRule(new RuleBuilder().withGroup(userGroupCsv).withName("google").withDstAddress("8.8.8.8"))
                 .build();
 
         // Import
@@ -154,10 +161,12 @@ public class DefaultClassificationServiceIT {
         // Verify
         assertThat(ruleDao.countAll(), is(2));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
+                .withGroup(userGroupCsv)
                 .withName("http")
                 .withProtocol("tcp,udp")
                 .withDstAddress("127.0.0.1").build()), hasSize(1));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
+                .withGroup(userGroupCsv)
                 .withName("google")
                 .withDstAddress("8.8.8.8").build()), hasSize(1));
     }
@@ -165,9 +174,8 @@ public class DefaultClassificationServiceIT {
     @Test
     public void verifyCsvImportWithDeletingEverythingBefore() {
         // Save a rule
-        final Group userGroup = groupDao.findByName(Groups.USER_DEFINED);
         Rule rule = new RuleBuilder()
-                .withGroup(userGroup)
+                .withGroup(userGroupDb)
                 .withName("http")
                 .withProtocol("tcp,udp")
                 .build();
@@ -178,7 +186,11 @@ public class DefaultClassificationServiceIT {
 
         // define csv and import
         final String csv = new CsvBuilder()
-                .withRule(new RuleBuilder().withName("http2").withDstAddress("127.0.0.1").withProtocol("TCP,UDP"))
+                .withRule(new RuleBuilder()
+                        .withGroup(this.userGroupCsv)
+                        .withName("http2")
+                        .withDstAddress("127.0.0.1")
+                        .withProtocol("TCP,UDP"))
                 .build();
         classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), true, true);
 
@@ -190,9 +202,8 @@ public class DefaultClassificationServiceIT {
     @Test
     public void verifyCsvImportWithoutDeletingExistingRules() {
         // Save a rule
-        final Group userGroup = groupDao.findByName(Groups.USER_DEFINED);
         Rule rule1 = new RuleBuilder()
-                .withGroup(userGroup)
+                .withGroup(userGroupDb)
                 .withName("rule1")
                 .withProtocol("tcp,udp")
                 .withDstPort(111)
@@ -204,6 +215,7 @@ public class DefaultClassificationServiceIT {
 
         // Define another rule, to import
         Rule rule2 = new RuleBuilder()
+                .withGroup(userGroupCsv)
                 .withName("rule2")
                 .withDstAddress("127.0.0.1")
                 .withDstPort(222)
