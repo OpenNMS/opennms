@@ -96,7 +96,7 @@ commands:
           command: |
             wget https://9397-9377198-gh.circle-artifacts.com/0/horizon.oci -O opennms-container/horizon/container.oci
             cd opennms-container/horizon
-            docker image load -i images/container.oci
+            docker image load -i opennms-container/horizon/container.oci
       - run:
           name: Load Minion OCI image
           command: |
