@@ -177,7 +177,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="waitForJobsToCompleteOnShutdown">
       <value>true</value>
     </property>
-    <property name="autoStartup" value="${opennms.report.scheduler.enabled}" />
+    <property name="autoStartup" value="${opennms.report.scheduler.enabled:true}" />
     <property name="quartzProperties">
       <props>
         <!-- Configure Main Scheduler Properties -->
