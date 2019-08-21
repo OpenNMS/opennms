@@ -46,7 +46,6 @@ import java.util.Optional;
 import org.apache.logging.log4j.util.Strings;
 import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.smoketest.ui.framework.Button;
 import org.opennms.smoketest.ui.framework.CheckBox;
@@ -218,6 +217,7 @@ public class DatabaseReportPageIT extends UiPageTest {
             LOG.debug("Selecting report '{}' from list", reportName);
             final WebElement element = findElementByXpath(String.format("//a/h5[text() = '%s']", reportName));
             element.click();
+            await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> execute(() -> getDriver().findElements(By.id("loading-bar-spinner")).isEmpty()));
             await().atMost(15, SECONDS).pollInterval(2, SECONDS).until(() -> findElementById("execute") != null);
             return this;
         }
@@ -539,11 +539,13 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         public void edit(DeliveryOptions deliveryOptions, String cronExpression) {
             LOG.debug("Try updating report schedule for trigger '{}' with delivery options {} and cron expression '{}'", triggerName, deliveryOptions, cronExpression);
-            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 5, 1000);
+            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 30, 1000);
             execute(() -> findElementById("action.edit." + triggerName)).click();
-            webDriverWait.until(org.opennms.smoketest.selenium.ExpectedConditions.pageContainsText("Edit Schedule"));
-            webDriverWait.until((driver) -> findElementById("persistToggle").isDisplayed());
-            webDriverWait.until((driver) -> findElementById("sendMailToggle").isDisplayed());
+            webDriverWait.until((driver) -> execute(() -> driver.findElements(By.id("loading-bar-spinner")).isEmpty())
+                    && findElementById("action.update." + triggerName) != null
+                    && findElementById("persistToggle").isDisplayed()
+                    && findElementById("sendMailToggle").isDisplayed()
+                    && org.opennms.smoketest.selenium.ExpectedConditions.pageContainsText("Edit Schedule").apply(driver));
             new ReportDetailsForm(getDriver())
                     .editMode(true)
                     .applyDeliveryOptions(deliveryOptions)
