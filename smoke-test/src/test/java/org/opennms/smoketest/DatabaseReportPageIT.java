@@ -68,7 +68,6 @@ import org.testcontainers.shaded.com.google.common.collect.Lists;
 
 import com.google.common.base.MoreObjects;
 
-@Ignore("TODO MVR fix me flapping :(")
 public class DatabaseReportPageIT extends UiPageTest {
 
     private static Logger LOG = LoggerFactory.getLogger(DatabaseReportPageIT.class);
