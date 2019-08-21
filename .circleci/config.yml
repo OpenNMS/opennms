@@ -100,11 +100,15 @@ commands:
       - run:
           name: Load Minion OCI image
           command: |
-            echo "NOOP"
+            wget https://9396-9377198-gh.circle-artifacts.com/0/minion.oci -O opennms-container/minion.oci
+            cd opennms-container
+            docker image load -i minion.oci
       - run:
           name: Load Sentinel OCI image
           command: |
-            echo "NOOP"
+            wget https://9394-9377198-gh.circle-artifacts.com/0/sentinel.oci -O opennms-container/sentinel.oci
+            cd opennms-container
+            docker image load -i sentinel.oci
       - run:
           name: Smoke Tests
           no_output_timeout: 30m
@@ -128,6 +132,11 @@ commands:
             cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
             cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
+      - run:
+          name: Always fail
+          command: |
+            echo "I am going to fail, so you can just rerun me without compiling, very sneaky :)"
+            exit 1
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
@@ -253,33 +262,6 @@ commands:
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
             echo "NOOP"
-      - run:
-          name: Gather test results
-          when: always
-          command: |
-            mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/surefire-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/failsafe-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-      - run:
-          name: Gather tests
-          when: always
-          command: |
-            mkdir -p ~/generated-tests
-            cp ./surefire_classname* ~/generated-tests/
-            cp ./failsafe_classname* ~/generated-tests/
-            cp ./projects_with_path ~/generated-tests/
-            cp /tmp/this_node* ~/generated-tests/
-      - store_test_results:
-          path: ~/test-results
-      - store_artifacts:
-          when: always
-          path: ~/test-results
-          destination: test-results
-      - store_artifacts:
-          when: always
-          path: ~/generated-tests
-          destination: generated-tests
-
 workflows:
   nightly-coverage:
     triggers:
