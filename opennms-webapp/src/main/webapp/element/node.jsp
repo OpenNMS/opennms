@@ -254,7 +254,7 @@
             }
             if (inOutage) {
                 final String name = outage.getName();
-                final String link = "<a href=\"admin/sched-outages/editoutage.jsp?name=" + name + "\">" + name + "</a>";
+                final String link = "<a href=\"admin/sched-outages/editoutage.jsp?name=" + URLEncoder.encode(name, "UTF-8") + "\">" + WebSecurityUtils.sanitizeString(name) + "</a>";
                 schedOutages.add(request.isUserInRole(Authentication.ROLE_ADMIN) ? link : name);
             }
         }
