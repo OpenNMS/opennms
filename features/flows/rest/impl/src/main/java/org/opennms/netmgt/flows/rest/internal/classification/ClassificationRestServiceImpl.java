@@ -180,9 +180,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         boolean groupChanged = newRule!=null && !oldGroup.getId().equals(newRule.getGroup().getId());
         if(groupChanged) {
             final Group group = classificationService.getGroup(newRule.getGroup().getId());
-            if(!group.isReadOnly()) {
-                rule.setGroup(group);
-            }
+            rule.setGroup(group);
         }
 
         // adjust position

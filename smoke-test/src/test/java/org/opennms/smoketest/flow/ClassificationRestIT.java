@@ -239,14 +239,50 @@ public class ClassificationRestIT {
                 .then().statusCode(400);
     }
 
+
+    @Test
+    public void verifyImmutabilityOfPredefinedGroup() {
+        // The predefined group and its rules should not be able to be altered.
+        GroupDTO predefinedGroup = getGroup(1);
+        GroupDTO userDefinedGroup = getGroup(2);
+        assertThat(predefinedGroup.getName(), is(Groups.SYSTEM_DEFINED));
+        assertThat(userDefinedGroup.getName(), is(Groups.USER_DEFINED));
+
+        // try to modify group
+        // TODO: Patrick add check once we have added editing of groups
+
+        // try to add new rule to group
+        final RuleDTO httpRule = builder().withName("http").withDstPort("80").withProtocol("tcp").build();
+        given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(httpRule)
+                .post().then().assertThat().statusCode(400);
+
+        // try to add existing rule to predefined group
+        RuleDTO rule = saveAndRetrieveRule(builder().withName("http").withGroup(userDefinedGroup).withDstPort("80")
+                .withProtocol("tcp").build());
+        rule.setGroup(predefinedGroup);
+        given().contentType(ContentType.JSON)
+                .body(rule)
+                .log().all()
+                .put(Integer.toString(rule.getId()))
+                .then().assertThat()
+                .log().all()
+                .statusCode(400);
+
+        // try to delete a rule in predefined group
+        rule = given()
+                .param("groupFilter", predefinedGroup.getId())
+                .param("limit", 1)
+                .get()
+                .then()
+                .extract().response().as(RuleDTO.class);
+        given().delete(Integer.toString(rule.getId())).then().statusCode(400);
+    }
+
     private GroupDTO saveAndRetrieveGroup(GroupDTO groupDTO) {
         int groupId = saveGroup(groupDTO);
-        final GroupDTO receivedGroup = given().get("groups/" + groupId)
-                .then().log().body(true)
-                .assertThat()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .extract().response().as(GroupDTO.class);
+        final GroupDTO receivedGroup = getGroup(groupId);
         assertThat(receivedGroup.getId(), is(groupId));
         assertThat(receivedGroup.getDescription(), is(groupDTO.getDescription()));
         assertThat(receivedGroup.getName(), is(groupDTO.getName()));
@@ -266,6 +302,15 @@ public class ClassificationRestIT {
         final String[] split = header.split("/");
         int groupId = Integer.parseInt(split[split.length - 1]);
         return groupId;
+    }
+
+    private GroupDTO getGroup(int groupId) {
+        return given().get("groups/" + groupId)
+                .then().log().body(true)
+                .assertThat()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response().as(GroupDTO.class);
     }
 
     private RuleDTO saveAndRetrieveRule(RuleDTO ruleDTO) {
