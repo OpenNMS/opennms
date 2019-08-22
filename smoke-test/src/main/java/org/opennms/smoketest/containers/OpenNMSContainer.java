@@ -429,7 +429,8 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 "web.log",
                 "alarmd.log",
                 "poller.log",
-                "collectd.log");
+                "collectd.log",
+                "trapd.log");
         DevDebugUtils.copyLogs(container,
                 // dest
                 Paths.get("target", "logs", prefix, "opennms"),
