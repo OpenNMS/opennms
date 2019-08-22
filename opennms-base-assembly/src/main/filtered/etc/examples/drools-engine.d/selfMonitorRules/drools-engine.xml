@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<engine-configuration xmlns="http://xmlns.opennms.org/xsd/drools-engine">
+  <rule-set name="selfMonitorRules" event-processing-mode="stream">
+    <rule-file>SelfMonitorRules.drl</rule-file>
+    <app-context>selfMonitorRules-context.xml</app-context>
+    <global name="LOG" ref="slf4jLogger"/>
+    <global name="MAX_ACTIVEMQ_MEMORY_USAGE_PERCENT" type="java.lang.Integer" value="70" />
+  </rule-set>
+</engine-configuration>

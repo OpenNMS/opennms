@@ -245,4 +245,15 @@
       <alarm-data reduction-key="%uei%:%parm[monitoringSystemLocation]%:%interface%" alarm-type="3" auto-clean="true" />
       <severity>Warning</severity>
    </event>
+   <event>
+        <uei>uei.opennms.org/selfMonitor/systemHealthSummary</uei>
+        <event-label>System Health Summary</event-label>
+        <logmsg dest="logndisplay">%parm[summary]%</logmsg>
+        <descr>%parm[description]%</descr>
+        <alarm-data reduction-key="%uei%" alarm-type="3" auto-clean="true">
+            <update-field field-name="severity"/>
+            <update-field field-name="descr"/>
+        </alarm-data>
+        <severity>Normal</severity>
+    </event>
 </events>

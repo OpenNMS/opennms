@@ -53,7 +53,6 @@ public class DroolsReloadFactsTest {
 
     @Test
     public void verifySaveFacts() throws Exception {
-
         DroolsCorrelationEngine droolsCorrelationEngine = new DroolsCorrelationEngine("droolsFusion", new MetricRegistry(), new FileSystemResource(DROOLS_SRC), null);
         List<Resource> resources = new ArrayList<>();
         resources.add(new FileSystemResource(DROOLS_SRC));

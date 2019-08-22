@@ -1,0 +1,182 @@
+/*
+This ruleset is used to monitor help monitor the current system
+and ensure that particular components are healthy and operational.
+
+The rules are structured so that each component may expose a single
+ComponentHealth fact, and these can then be assembled to derived a
+severity for a single alarm that represents the system health.
+
+Events for this alarm will be sent on an interval, even if there is
+no state change, to work as a heartbeat and help validate that this
+ruleset is also operational.
+
+Components that are monitored are:
+ * ActiveMQ (memory usage limits)
+*/
+package org.opennms.netmgt.correlation.drools;
+
+import java.lang.management.ManagementFactory;
+import java.util.Arrays;
+
+import javax.management.MBeanServerInvocationHandler;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import org.apache.activemq.broker.jmx.BrokerViewMBean;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.OnmsSeverity;
+
+global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+global org.slf4j.Logger LOG;
+global java.lang.Integer MAX_ACTIVEMQ_MEMORY_USAGE_PERCENT;
+
+declare ComponentHealth
+    @role ( fact )
+    healthy : boolean
+    unknown : boolean
+    name : String
+    description : String
+end
+
+declare Hold
+    @role( event )
+    @expires( 60s ) // Some time greater than max window interval, recommended to be 2x
+    name : String
+end
+
+rule "Create ActiveMQHealth"
+  when
+    not ( ComponentHealth( name == "ActiveMQ" ) )
+  then
+  new ComponentHealth();
+    ComponentHealth health = new ComponentHealth();
+    health.setName("ActiveMQ");
+    health.setUnknown(true);
+    health.setDescription("Waiting for broker to initialize.");
+    insert(health);
+end
+
+rule "Verify ActiveMQ"
+  when
+    $health : ComponentHealth( name == "ActiveMQ" )
+    $brokerView : BrokerViewMBean()
+    not( Hold( name == "ActiveMQ" ) over window:time( 30s ) )
+  then
+    LOG.info("Verifying ActiveMQ health");
+    // Gather the details
+    int memoryPercentUsage = -1;
+    Exception ex = null;
+    try {
+        memoryPercentUsage = $brokerView.getMemoryPercentUsage();
+    } catch (Exception e) {
+        ex = e;
+    }
+
+    // Determine whether or not we're healthy
+    boolean healthy = true;
+    if (ex != null) {
+        healthy = false;
+    }
+    if (memoryPercentUsage > MAX_ACTIVEMQ_MEMORY_USAGE_PERCENT) {
+      healthy = false;
+    }
+
+    // Compute the description
+    StringBuilder descr = new StringBuilder();
+    descr.append("ActiveMQ is ");
+    if (healthy) {
+        descr.append("HEALTHY");
+    } else {
+        descr.append("DEGRADED");
+    }
+    descr.append(".");
+    descr.append(String.format(" Memory usage is at %s%% (threshold=%s%%).",
+        memoryPercentUsage, MAX_ACTIVEMQ_MEMORY_USAGE_PERCENT));
+    if (ex != null) {
+        descr.append("Error querying broker: ");
+        descr.append(ex.toString());
+    }
+
+    // Update the fact in working memory
+    LOG.info("Result of ActiveMQ check: {}", descr);
+    modify($health) { setHealthy(healthy), setDescription(descr.toString()), setUnknown(false) }
+
+    // Re-insert our hold, which will prevent us from being called again until the time window passes
+    insert( new Hold("ActiveMQ") );
+end
+
+rule "Update system health summary alarm"
+  when
+    $amqHealth : ComponentHealth( name == "ActiveMQ" )
+    not( Hold( name == "HealthSummaryAlarm" ) over window:time( 60s ) )
+  then
+    // Compute the effective severity based on the health of all the components
+    OnmsSeverity severity = OnmsSeverity.NORMAL;
+    if (!$amqHealth.isUnknown() && !$amqHealth.isHealthy()) {
+        severity = OnmsSeverity.CRITICAL;
+    }
+
+    // Compute the summary
+    String summary = String.format("System is %s", severity == OnmsSeverity.NORMAL ? "HEALTHY" : "DEGRADED" );
+
+    // Compute the description
+    StringBuilder descr = new StringBuilder();
+    descr.append("<table style=\"width:100%\">\n" +
+                  "  <tr>\n" +
+                  "    <th>Component</th>\n" +
+                  "    <th>Healthy?</th> \n" +
+                  "    <th>Description</th>\n" +
+                  "  </tr>\n");
+    for (ComponentHealth comp : Arrays.asList($amqHealth)) {
+        descr.append(String.format(" <tr>\n" +
+                                    "    <td>%s</td>\n" +
+                                    "    <td>%s</td> \n" +
+                                    "    <td>%s</td>\n" +
+                                    "  </tr>", comp.getName(), comp.isHealthy(), comp.getDescription()));
+    }
+    descr.append("</table>");
+
+    // Send the event
+    LOG.info("Sending system health summary every with severity {}:\n{}", severity, descr);
+    sendSystemHealthSummaryEvent(engine, severity, summary, descr.toString());
+
+    // Re-insert our hold, which will prevent us from being called again until the time window passes
+    insert( new Hold("HealthSummaryAlarm") );
+end
+
+/*
+  This rule is used to create the BrokerViewMBean instance
+  This bean proxies the interface to local ActiveMQ broker via the platform mbean server
+*/
+rule "Create BrokerViewMBean proxy"
+  when
+    not( BrokerViewMBean() )
+    not( Hold( name == "ActiveMQ MBeans" ) over window:time( 30s ) )
+  then
+    try {
+        BrokerViewMBean brokerView = getBrokerViewMBean();
+        // Wait until we can successfully query the broker id before exposing the view
+        brokerView.getBrokerId();
+        insert( brokerView );
+    } catch (Exception e) {
+        LOG.info("ActiveMQ broker is not ready yet: {}", e.getMessage());
+    }
+    insert( new Hold("ActiveMQ MBeans") );
+end
+
+function BrokerViewMBean getBrokerViewMBean() {
+  try {
+    ObjectName brokerObjectName = new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost");
+    return (BrokerViewMBean) MBeanServerInvocationHandler.newProxyInstance( ManagementFactory.getPlatformMBeanServer(), brokerObjectName, BrokerViewMBean.class, true);
+  } catch (MalformedObjectNameException e) {
+    throw new RuntimeException(e);
+  }
+}
+
+function void sendSystemHealthSummaryEvent(DroolsCorrelationEngine engine, OnmsSeverity severity, String summary, String descr) {
+  EventBuilder bldr = new EventBuilder("uei.opennms.org/selfMonitor/systemHealthSummary", "SelfMonitor-Drools")
+    .addParam("summary", summary)
+    .addParam("description", descr)
+    .setSeverity(severity.getLabel());
+  engine.sendEvent(bldr.getEvent());
+}
