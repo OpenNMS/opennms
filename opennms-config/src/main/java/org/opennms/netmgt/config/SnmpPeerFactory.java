@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.config;
 
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,6 +41,8 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
@@ -51,6 +56,7 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.AddressSnmpConfigVisitor;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.slf4j.Logger;
@@ -251,6 +257,21 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return getAgentConfig(agentAddress, location, VERSION_UNSPECIFIED);
     }
 
+    @Override
+    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address) {
+        final SnmpAgentConfig agentConfig = new SnmpAgentConfig(address);
+        AddressSnmpConfigVisitor visitor = new AddressSnmpConfigVisitor(address);
+        // Need to populate default snmp config.
+        visitor.visitSnmpConfig(getSnmpConfig());
+        snmpProfile.visit(visitor);
+        Definition definition = visitor.getDefinition();
+        setSnmpAgentConfig(agentConfig, definition, VERSION_UNSPECIFIED);
+        // config is derived from profile
+        agentConfig.setDefault(false);
+        agentConfig.setProfileLabel(snmpProfile.getLabel());
+        return agentConfig;
+    }
+
     public SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, final int requestedSnmpVersion) {
 
         return getAgentConfig(agentInetAddress, null, requestedSnmpVersion);
@@ -279,6 +300,10 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             final AddressSnmpConfigVisitor visitor = new AddressSnmpConfigVisitor(agentInetAddress, location);
             getSnmpConfig().visit(visitor);
             final Definition matchingDef = visitor.getDefinition();
+            // Is agent config matching specific definition or coming from default config
+            if(!visitor.isMatchingDefaultConfig()) {
+               agentConfig.setDefault(false);
+            }
             if (matchingDef != null) {
                 setSnmpAgentConfig(agentConfig, matchingDef, requestedSnmpVersion);
             }
@@ -321,6 +346,40 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             agentConfig.setProxyFor(agentConfig.getAddress());
             agentConfig.setAddress(proxyHost);
         }
+    }
+
+    private void setDefinitionFromAgentConfig(Definition definition, SnmpAgentConfig snmpAgentConfig) {
+
+        definition.setVersion(SnmpConfiguration.versionToString(snmpAgentConfig.getVersion()));
+        definition.setPort(snmpAgentConfig.getPort());
+        definition.setRetry(snmpAgentConfig.getRetries());
+        definition.setTimeout(snmpAgentConfig.getTimeout());
+        definition.setMaxRequestSize(snmpAgentConfig.getMaxRequestSize());
+        definition.setMaxVarsPerPdu(snmpAgentConfig.getMaxVarsPerPdu());
+        definition.setMaxRepetitions(snmpAgentConfig.getMaxRepetitions());
+        definition.setTTL(snmpAgentConfig.getTTL());
+        if (snmpAgentConfig.getProxyFor() != null) {
+            definition.addSpecific(snmpAgentConfig.getProxyFor().getHostAddress());
+            definition.setProxyHost(snmpAgentConfig.getAddress().getHostAddress());
+        } else {
+            definition.addSpecific(snmpAgentConfig.getAddress().getHostAddress());
+        }
+        if (DEFAULT_SECURITY_LEVEL != snmpAgentConfig.getSecurityLevel()) {
+            definition.setSecurityLevel(snmpAgentConfig.getSecurityLevel());
+        }
+        if (!DEFAULT_SECURITY_NAME.equals(snmpAgentConfig.getSecurityName())) {
+            definition.setSecurityName(snmpAgentConfig.getSecurityName());
+        }
+        definition.setAuthProtocol(snmpAgentConfig.getAuthProtocol());
+        definition.setAuthPassphrase(snmpAgentConfig.getAuthPassPhrase());
+        definition.setPrivacyPassphrase(snmpAgentConfig.getPrivPassPhrase());
+        definition.setPrivacyProtocol(snmpAgentConfig.getPrivProtocol());
+        definition.setReadCommunity(snmpAgentConfig.getReadCommunity());
+        definition.setWriteCommunity(snmpAgentConfig.getWriteCommunity());
+        definition.setContextName(snmpAgentConfig.getContextName());
+        definition.setEngineId(snmpAgentConfig.getEngineId());
+        definition.setContextEngineId(snmpAgentConfig.getContextEngineId());
+        definition.setEnterpriseId(snmpAgentConfig.getEnterpriseId());
     }
 
     public int getVersionCode(final Definition def, final SnmpConfig config, final int requestedSnmpVersion) {
@@ -369,13 +428,71 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @param info a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
      */
     public void define(final SnmpEventInfo info) {
+        saveDefinition(info.createDef());
+    }
+
+    @Override
+    public void saveDefinition(final Definition definition) {
         getWriteLock().lock();
         try {
             final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
-            mgr.mergeIntoConfig(info.createDef());
+            mgr.mergeIntoConfig(definition);
         } finally {
             getWriteLock().unlock();
         }
+    }
+
+    @Override
+    public boolean removeFromDefinition(InetAddress inetAddress, String location, String module) {
+        boolean succeeded = false;
+        getWriteLock().lock();
+        try {
+            Definition definition = new Definition();
+            definition.setLocation(location);
+            SnmpAgentConfig agentConfig = getAgentConfig(inetAddress, location);
+            setDefinitionFromAgentConfig(definition, agentConfig);
+            final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
+            succeeded = mgr.removeDefinition(definition);
+        } finally {
+            getWriteLock().unlock();
+        }
+        if(succeeded) {
+            try {
+                saveCurrent();
+                LOG.info("Removed {} at location {} from definitions by module {}", inetAddress.getHostAddress(), location, module);
+            } catch (IOException e) {
+                // This never should happen, we currently don't support rollback of configuration.
+                LOG.error("Exception while saving current config", e);
+            }
+        }
+        return succeeded;
+    }
+
+    @Override
+    public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
+        Definition definition = new Definition();
+        //agent config always have one ip-address.
+        String ipAddress = snmpAgentConfig.getAddress().getHostAddress();
+        definition.setLocation(location);
+        setDefinitionFromAgentConfig(definition, snmpAgentConfig);
+        saveDefinition(definition);
+        LOG.info("Definition saved for {} by module {}", ipAddress, module);
+        try {
+            saveCurrent();
+        } catch (IOException e) {
+            // This never should happen, we currently don't support rollback of configuration.
+            LOG.error("Exception while saving current config", e);
+        }
+    }
+
+
+    @Override
+    public List<SnmpProfile> getProfiles() {
+        SnmpConfig snmpConfig = getSnmpConfig();
+        if (snmpConfig != null && snmpConfig.getSnmpProfiles() != null) {
+            return snmpConfig.getSnmpProfiles().getSnmpProfiles();
+        }
+        return new ArrayList<>();
     }
 
     /**
