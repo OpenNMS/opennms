@@ -94,7 +94,8 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-thresholdingService.xml",
+        "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
+        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
 })
