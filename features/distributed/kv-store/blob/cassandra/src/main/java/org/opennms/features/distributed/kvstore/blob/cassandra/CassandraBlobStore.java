@@ -127,8 +127,16 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         try {
             Statement statement = getStatementForInsert(key, context, ByteBuffer.wrap(value), timestamp, ttlInSeconds);
             // Cassandra will throw a runtime exception here if the execution fails
-            session.executeAsync(statement)
-                    .addListener(() -> putFuture.complete(timestamp), MoreExecutors.directExecutor());
+            ResultSetFuture resultSetFuture = session.executeAsync(statement);
+            resultSetFuture
+                    .addListener(() -> {
+                        try {
+                            resultSetFuture.getUninterruptibly();
+                            putFuture.complete(timestamp);
+                        } catch (Exception e) {
+                            putFuture.completeExceptionally(e);
+                        }
+                    }, MoreExecutors.directExecutor());
         } catch (Exception e) {
             putFuture.completeExceptionally(e);
         }
@@ -143,7 +151,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         try {
             // Cassandra will throw a runtime exception here if the execution fails
             ResultSetFuture resultSetFuture = session.executeAsync(selectStmt.bind(key, context));
-            resultSetFuture.addListener(() -> processGetFutureResult(getFuture, resultSetFuture.getUninterruptibly()),
+            resultSetFuture.addListener(() -> processGetFutureResult(getFuture, resultSetFuture),
                     MoreExecutors.directExecutor());
         } catch (Exception e) {
             getFuture.completeExceptionally(e);
@@ -232,7 +240,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
                 }
 
                 // The value was removed between checking last updated and now
-                if(!val.isPresent()) {
+                if (!val.isPresent()) {
                     getIfStaleFuture.complete(Optional.empty());
                 }
 
@@ -253,8 +261,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         try {
             // Cassandra will throw a runtime exception here if the execution fails
             ResultSetFuture resultSetFuture = session.executeAsync(timestampStmt.bind(key, context));
-            resultSetFuture.addListener(() -> processLastUpdatedFutureResult(tsFuture,
-                    resultSetFuture.getUninterruptibly()),
+            resultSetFuture.addListener(() -> processLastUpdatedFutureResult(tsFuture, resultSetFuture),
                     MoreExecutors.directExecutor());
         } catch (Exception e) {
             tsFuture.completeExceptionally(e);
@@ -281,7 +288,16 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
     }
 
     private static void processGetFutureResult(CompletableFuture<Optional<byte[]>> future,
-                                               ResultSet resultSet) {
+                                               ResultSetFuture resultSetFuture) {
+        ResultSet resultSet;
+
+        try {
+            resultSet = resultSetFuture.getUninterruptibly();
+        } catch (Exception e) {
+            future.completeExceptionally(e);
+            return;
+        }
+
         Row row = resultSet.one();
 
         // Could not find the key
@@ -293,7 +309,17 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         future.complete(Optional.of(row.getBytes(VALUE_COLUMN).array()));
     }
 
-    private static void processLastUpdatedFutureResult(CompletableFuture<OptionalLong> future, ResultSet resultSet) {
+    private static void processLastUpdatedFutureResult(CompletableFuture<OptionalLong> future,
+                                                       ResultSetFuture resultSetFuture) {
+        ResultSet resultSet;
+
+        try {
+            resultSet = resultSetFuture.getUninterruptibly();
+        } catch (Exception e) {
+            future.completeExceptionally(e);
+            return;
+        }
+
         Row row = resultSet.one();
 
         // Could not find the key
