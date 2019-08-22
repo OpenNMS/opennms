@@ -65,7 +65,7 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
 
     private static final String SYS_OBJECTID_INSTANCE = ".1.3.6.1.2.1.1.2.0";
 
-    private SnmpObjId snmpObjId = SnmpObjId.get(SYS_OBJECTID_INSTANCE);
+    private final SnmpObjId snmpObjId = SnmpObjId.get(SYS_OBJECTID_INSTANCE);
 
     public SnmpProfileMapperImpl() {
     }
@@ -91,12 +91,12 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
                 .collect(Collectors.toList());
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
         //Join all the results.
-        CompletableFuture<List<Optional<SnmpAgentConfig>>> results = allFutures.thenApply( agentConfig -> {
+        CompletableFuture<List<Optional<SnmpAgentConfig>>> results = allFutures.thenApply(agentConfig -> {
             return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
         });
         //Complete the future with first non-empty agent config.
-        results.whenComplete((configList, t) -> {
-            if(t == null) {
+        results.whenComplete((configList, throwable) -> {
+            if (throwable == null) {
                 Optional<Optional<SnmpAgentConfig>> configOptional = configList.stream().filter(Optional::isPresent).findFirst();
                 future.complete(configOptional.orElse(Optional.empty()));
             } else {
@@ -108,29 +108,29 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
 
     private CompletableFuture<Optional<SnmpAgentConfig>> fitProfile(SnmpProfile snmpProfile, InetAddress inetAddress, String location, String oid) {
 
+        SnmpObjId snmpObjectId = this.snmpObjId;
         //Get agent config from profile.
         final SnmpAgentConfig agentConfig = agentConfigFactory.getAgentConfigFromProfile(snmpProfile, inetAddress);
+        //If OID is specified, get snmp object for that OID.
         if (!Strings.isNullOrEmpty(oid)) {
-            snmpObjId = SnmpObjId.get(oid);
-        }
-        if (Strings.isNullOrEmpty(location)) {
-            location = "Default";
+            snmpObjectId = SnmpObjId.get(oid);
         }
         CompletableFuture<Optional<SnmpAgentConfig>> future = new CompletableFuture<>();
-
-        CompletableFuture<SnmpValue> snmpResult = locationAwareSnmpClient.get(agentConfig, snmpObjId)
+        CompletableFuture<SnmpValue> snmpResult = locationAwareSnmpClient.get(agentConfig, snmpObjectId)
                 .withLocation(location)
                 .withDescription("Snmp-Profile:" + snmpProfile.getLabel())
                 .execute();
+        //Logging purposes
+        final String objectId = Strings.isNullOrEmpty(oid) ? SYS_OBJECTID_INSTANCE : oid;
         snmpResult.whenComplete(((snmpValue, throwable) -> {
-            if(throwable == null) {
+            if (throwable == null) {
                 if (snmpValue != null && !snmpValue.isError()) {
                     future.complete(Optional.of(agentConfig));
                 } else {
                     future.complete(Optional.empty());
                 }
             } else {
-                LOG.warn("Exception while doing SNMP get on OID '{}' with profile '{}'", snmpObjId, snmpProfile.getLabel(), throwable);
+                LOG.info("Exception while doing SNMP get on OID '{}' with profile '{}'", objectId, snmpProfile.getLabel());
                 future.complete(Optional.empty());
             }
         }));
@@ -149,18 +149,16 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
         Optional<SnmpAgentConfig> agentConfig = Optional.empty();
         if (Strings.isNullOrEmpty(profileLabel)) {
             return getAgentConfigFromProfiles(inetAddress, location, oid);
-        } else {
-            List<SnmpProfile> profiles = agentConfigFactory.getProfiles();
-            Optional<SnmpProfile> matchingProfile = profiles.stream()
-                    .filter(profile -> profile.getLabel().equals(profileLabel))
-                    .findFirst();
-            if (matchingProfile.isPresent()) {
-                return fitProfile(matchingProfile.get(), inetAddress, location, oid);
-            }
         }
-        CompletableFuture<Optional<SnmpAgentConfig>> future = new CompletableFuture<>();
-        future.complete(agentConfig);
-        return future;
+        List<SnmpProfile> profiles = agentConfigFactory.getProfiles();
+        Optional<SnmpProfile> matchingProfile = profiles.stream()
+                .filter(profile -> profile.getLabel().equals(profileLabel))
+                .findFirst();
+        if (matchingProfile.isPresent()) {
+            return fitProfile(matchingProfile.get(), inetAddress, location, oid);
+        } else {
+            return CompletableFuture.completedFuture(Optional.empty());
+        }
     }
 
     private boolean isFilterExpressionValid(InetAddress inetAddress, String filterExpression) {

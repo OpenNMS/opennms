@@ -45,7 +45,7 @@ import com.google.common.base.Strings;
 public class RemoveFromDefinitionsCommand implements Action {
 
     @Reference
-    public SnmpAgentConfigFactory snmpAgentConfigFactory;
+    private SnmpAgentConfigFactory snmpAgentConfigFactory;
 
     @Option(name = "-l", aliases = "--location", description = "Location")
     String location;
