@@ -116,6 +116,7 @@ public class DefaultClassificationService implements ClassificationService {
             if(group == null) {
                 throw new NoSuchElementException(String.format("Unknown group with id=%s", rule.getGroup().getId()));
             }
+            assertRuleIsNotInReadOnlyGroup(group);
 
             groupValidator.validate(group, rule);
 
@@ -195,6 +196,11 @@ public class DefaultClassificationService implements ClassificationService {
         CriteriaBuilder criteriaBuilder = new CriteriaBuilder(Rule.class).alias("group", "group");
         criteriaBuilder.eq("group.id", groupId);
         runInTransaction(status -> {
+            Group group = classificationGroupDao.get(groupId);
+            if (group == null) throw new NoSuchElementException();
+            if(group.isReadOnly()) {
+                throw new ClassificationException(ErrorContext.Entity, Errors.GROUP_READ_ONLY);
+            }
             final Criteria criteria = criteriaBuilder.toCriteria();
             classificationRuleDao.findMatching(criteria).forEach(r -> classificationRuleDao.delete(r));
             classificationEngine.reload();
@@ -207,6 +213,7 @@ public class DefaultClassificationService implements ClassificationService {
         runInTransaction(status -> {
             final Rule rule = classificationRuleDao.get(ruleId);
             if (rule == null) throw new NoSuchElementException();
+            assertRuleIsNotInReadOnlyGroup(rule);
             return runInTransaction(transactionStatus -> {
                 // Remove from group, as it would be saved later otherwise
                 final Group group = rule.getGroup();
@@ -221,6 +228,7 @@ public class DefaultClassificationService implements ClassificationService {
     @Override
     public void updateRule(final Rule rule) {
         if (rule.getId() == null) throw new NoSuchElementException();
+        assertRuleIsNotInReadOnlyGroup(rule);
 
         // Persist
         runInTransaction(status -> {
@@ -232,6 +240,16 @@ public class DefaultClassificationService implements ClassificationService {
             updateRulePositionsAndReloadEngine(RulePositionUtil.sortRulePositions(reloaded));
             return null;
         });
+    }
+
+    private void assertRuleIsNotInReadOnlyGroup(Rule rule) {
+        assertRuleIsNotInReadOnlyGroup(rule.getGroup());
+    }
+
+    private void assertRuleIsNotInReadOnlyGroup(Group group) {
+        if(group.isReadOnly()) {
+            throw new ClassificationException(ErrorContext.Entity, Errors.GROUP_READ_ONLY);
+        }
     }
 
     @Override
@@ -310,7 +328,9 @@ public class DefaultClassificationService implements ClassificationService {
     private void checkForDuplicateName (Group group) {
         // check for duplicate name:
         if(countMatchingGroups(new CriteriaBuilder(Group.class)
-                .eq("name", group.getName()).toCriteria()) > 0) {
+                .eq("name", group.getName())
+                .ne("id", group.getId())
+                .toCriteria()) > 0) {
             throw new ClassificationException(ErrorContext.Entity, Errors.GROUP_NAME_NOT_UNIQUE, group.getName());
         }
     }

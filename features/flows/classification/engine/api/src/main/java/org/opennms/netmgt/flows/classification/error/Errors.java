@@ -33,7 +33,7 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 // Pre-defined ErrorTemplate messages.
 public interface Errors {
 
-    ErrorTemplate GROUP_READ_ONLY = new ErrorTemplate("group.readonly", "The group is read only.");
+    ErrorTemplate GROUP_READ_ONLY = new ErrorTemplate("group.readonly", "The group is read only. It cannot be altered.");
     ErrorTemplate GROUP_DUPLICATE_RULE = new ErrorTemplate("rule.duplicate", "A rule with the same definition already exists");
     ErrorTemplate GROUP_NAME_NOT_UNIQUE = new ErrorTemplate("group.name.duplicate", "A group with name ''{0}'' already exists");
     ErrorTemplate GROUP_NOT_FOUND = new ErrorTemplate("group.not found", "A group with name ''{0}'' does not exist");

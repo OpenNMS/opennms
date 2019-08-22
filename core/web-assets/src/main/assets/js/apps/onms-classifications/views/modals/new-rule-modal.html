@@ -13,7 +13,7 @@
         <select class="form-control"
                 ng-options="group as group.name for group in selectableGroups track by group.id"
                 ng-model="classification.group"
-                ng-readonly="classification.id === undefined"
+                ng-disabled="classification.id === undefined"
                 id="rule.group" ></select>
       </div>
       <div class="form-group form-row">
