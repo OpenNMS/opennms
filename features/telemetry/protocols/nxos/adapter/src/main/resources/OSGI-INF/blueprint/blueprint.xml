@@ -16,7 +16,7 @@
 	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
 	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
-    <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
+	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
 
 	<bean id="nxosAdapterFactory" class="org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosAdapterFactory">
 		<argument ref="blueprintBundleContext" />

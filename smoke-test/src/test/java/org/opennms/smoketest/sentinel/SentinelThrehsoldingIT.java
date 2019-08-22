@@ -80,7 +80,7 @@ public class SentinelThrehsoldingIT {
             .withTelemetryProcessing()
             .withBlobStoreStrategy(BlobStoreStrategy.NEWTS_CASSANDRA)
             .withJsonStoreStrategy(JsonStoreStrategy.POSTGRES)
-            .withIpcStrategy(IpcStrategy.KAFKA)
+            .withIpcStrategy(IpcStrategy.JMS)
             .build());
 
     @Test
@@ -142,7 +142,7 @@ public class SentinelThrehsoldingIT {
     private void sendTriggerHighThresholdMessages(InetSocketAddress minionListenerAddress) throws InterruptedException, IOException {
         new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 1, 1, 0).toByteArray(),
                 minionListenerAddress).send();
-        Thread.sleep(30000);
+        sleepToEnsureSeparateDelivery();
         // We need the delta sum of in+out to exceed 100,000/s keeping in mind we slept for 30 seconds
         new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 10000000, 10000000, 1).toByteArray(),
                 minionListenerAddress).send();
@@ -152,9 +152,16 @@ public class SentinelThrehsoldingIT {
             IOException {
         new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 1, 1, 3).toByteArray(),
                 minionListenerAddress).send();
-        Thread.sleep(30000);
+        sleepToEnsureSeparateDelivery();
         new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 1, 1, 4).toByteArray(),
                 minionListenerAddress).send();
+    }
+    
+    private void sleepToEnsureSeparateDelivery() throws InterruptedException {
+        // We sleep here due to current limitations in how received packets are timestamped. The timestamp is derived
+        // from the received time so we need to ensure they arrive separately at the Sentinel in spite of any collating
+        // that may be attempted on the path from Minion to Sentinel which may require a significant time delay
+        Thread.sleep(30000);
     }
 
     public static TelemetryTop.TelemetryStream buildJtiMessage(String ipAddress, String interfaceName,
