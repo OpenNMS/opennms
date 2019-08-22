@@ -117,7 +117,6 @@ public class DefaultClassificationService implements ClassificationService {
                 throw new NoSuchElementException(String.format("Unknown group with id=%s", rule.getGroup().getId()));
             }
             assertRuleIsNotInReadOnlyGroup(group);
-
             groupValidator.validate(group, rule);
 
             // persist
