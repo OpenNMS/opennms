@@ -422,15 +422,16 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     private static void copyLogs(OpenNMSContainer container, String prefix) {
         // List of known log files we expect to find in the container
-        final List<String> logFiles = Arrays.asList("eventd.log",
+        final List<String> logFiles = Arrays.asList("alarmd.log",
+                "collectd.log",
+                "eventd.log",
                 "jetty-server.log",
                 "karaf.log",
                 "manager.log",
-                "web.log",
-                "alarmd.log",
                 "poller.log",
-                "collectd.log",
-                "trapd.log");
+                "provisiond.log",
+                "trapd.log",
+                "web.log");
         DevDebugUtils.copyLogs(container,
                 // dest
                 Paths.get("target", "logs", prefix, "opennms"),
