@@ -114,7 +114,12 @@ public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
                         "0:4".equals(sampleDocument.get("format").asString().getValue())) {
                         // Handle only (expanded) counter samples
                         try {
-                            final CollectionSet collectionSet = builder.build(agent, sampleDocument.get("data").asDocument());
+                            Long timestamp = null;
+                            if (sampleDocument.containsKey("time")) {
+                                timestamp = sampleDocument.getInt64("time").getValue();
+                            }
+                            final CollectionSet collectionSet = builder.build(agent,
+                                    sampleDocument.get("data").asDocument(), timestamp);
                             return Stream.of(new CollectionSetWithAgent(agent, collectionSet));
                         } catch (final ScriptException e) {
                             LOG.error("Error while running script: {}", e.getMessage());
