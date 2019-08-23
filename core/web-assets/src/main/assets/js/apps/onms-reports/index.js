@@ -10,6 +10,8 @@ require('../../lib/onms-datetimepicker');
 require('../../lib/onms-schedule-editor');
 require('angular-ui-router');
 require('angular-bootstrap-confirm');
+require('ui-select-bs4');
+require('ui-select-bs4/dist/select.css');
 
 const elementList = require('../onms-elementList/lib/elementList');
 const indexTemplate  = require('./index.html');
@@ -57,7 +59,9 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
     angular.module(MODULE_NAME, [
             'angular-loading-bar',
             'ngResource',
+            'ngSanitize',
             'ui.router',
+            'ui.select',
             'mwl.confirm',
             'onms.http',
             'onms.datetimepicker',

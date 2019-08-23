@@ -1,3 +1,19 @@
+<style type="text/css">
+    .ui-select-bootstrap.is-invalid > .ui-select-match > .btn {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23dc3545' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
+        background-repeat: no-repeat;
+        background-position: 100% calc(.375em + .1875rem);
+        background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+    }
+
+    .ui-select-bootstrap > .ui-select-match > .btn {
+        border-color: #ced4da;
+        background-color: #fff;
+        background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23{$custom-select-indicator-color}' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px;
+    }
+</style>
+
 <form name="reportForm" class="form mx-4 mt-2" role="form" novalidate>
     <div class="" ng-if="report.parameters && report.parameters.length > 0">
         <h3 class="">Report Parameters</h3>
@@ -7,22 +23,27 @@
             <label>Grafana Endpoint</label>
             <a href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
             <a href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>
-            <select class="form-control custom-select"
+            <ui-select
                     ng-model="selected.endpoint"
                     ng-show="endpoints.length > 0"
                     ng-class="{ 'is-invalid': report.errors.GRAFANA_ENDPOINT_UID || report.errors.GRAFANA_DASHBOARD_UID }"
                     ng-change="endpointChanged()"
-                    ng-options="endpoint as endpoint.label for endpoint in endpoints"
-            >
-            </select>
+                    theme="bootstrap" >
+                <ui-select-match placeholder="Select Grafana Endpoint">
+                    <span>{{$select.selected.label}}</span>
+                </ui-select-match>
+                <ui-select-choices repeat="endpoint in (endpoints | filter: $select.search)">
+                    {{endpoint.label}}
+                </ui-select-choices>
+            </ui-select>
             <p class="alert alert-warning" ng-if="endpoints.length == 0">
                 There is no Grafana Endpoint defined.
                 Please <a href="/opennms/admin/endpoint/index.jsp">add a Grafana Endpoint</a>.
             </p>
-            <div class="invalid-feedback" ng-if="report.errors.GRAFANA_ENDPOINT_UID">
+            <div class="text-danger mt-1" style="font-size: 80%" ng-if="report.errors.GRAFANA_ENDPOINT_UID">
                 {{report.errors.GRAFANA_ENDPOINT_UID}}: <a href="/opennms/admin/endpoint/index.jsp#!/endpoints/grafana">Configure Grafana Endpoints</a>
             </div>
-            <div class="invalid-feedback" ng-if="report.errors.GRAFANA_DASHBOARD_UID">
+            <div class="text-danger mt-1" style="font-size: 80%" ng-if="report.errors.GRAFANA_DASHBOARD_UID">
                 {{report.errors.GRAFANA_DASHBOARD_UID}}
             </div>
         </div>
@@ -30,11 +51,17 @@
             <label>Grafana Dashboard</label>
             <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dasbhoard" target="_blank"> <i class="fa fa-dashboard"></i></a>
             <a href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
-            <select class="form-control custom-select"
+            <ui-select
                     ng-model="selected.dashboard"
                     ng-show="dashboards.length > 0"
-                    ng-options="dashboard as dashboard.title for dashboard in dashboards">
-            </select>
+                    theme="bootstrap" >
+                <ui-select-match placeholder="Select Grafana Dashboard">
+                    <span>{{$select.selected.title}}</span>
+                </ui-select-match>
+                <ui-select-choices repeat="dashboard in (dashboards | filter: $select.search)">
+                    {{dashboard.title}}
+                </ui-select-choices>
+            </ui-select>
             <p class="alert alert-warning" ng-if="dashboards.length == 0">
                 There is no Grafana Dashboard defined.
                 Please <a href="{{selected.endpoint.url}}/dashboards" target="_blank">add a Dashboard</a>.
@@ -161,14 +188,20 @@
         <!-- TimeZone -->
         <div ng-if="parameter.type === 'timezone'" class="form-group" ng-repeat-end>
             <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
-            <select id="{{parameter.name}}"
+            <ui-select
+                    id="{{parameter.name}}"
                     name="{{parameter.name}}"
-                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
-                    class="form-control custom-select"
                     ng-model="parameter.value"
-                    ng-options="tz as tz for tz in report.supportedTimezones">
-            </select>
-            <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
+                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
+                    theme="bootstrap" >
+                <ui-select-match placeholder="Select Timezone">
+                    <span>{{$select.selected}}</span>
+                </ui-select-match>
+                <ui-select-choices repeat="timezone in (report.supportedTimezones | filter: $select.search)">
+                    {{timezone}}
+                </ui-select-choices>
+            </ui-select>
+            <div ng-show="report.errors[parameter.name]" class="text-danger mt-1" style="font-size: 80%">{{report.errors[parameter.name]}}</div>
         </div>
         <hr class="mb-4"/>
     </div>

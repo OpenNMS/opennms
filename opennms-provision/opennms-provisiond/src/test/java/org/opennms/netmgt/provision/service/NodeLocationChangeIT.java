@@ -73,6 +73,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
+        "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/mockForeignSourceContext.xml",
@@ -121,7 +122,6 @@ public class NodeLocationChangeIT {
 
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
 
-        //((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).setEventForwarder(m_mockEventIpcManager);
         m_provisioner.start();
 
         m_foreignSource = new ForeignSource();

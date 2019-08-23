@@ -55,6 +55,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     private InetAddress m_address;
     private InetAddress m_proxyFor;
+    private String profileLabel;
+    private boolean isDefault = true;
 
     public SnmpAgentConfig() {
         this(null);
@@ -162,6 +164,24 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     public InetAddress getEffectiveAddress() {
         if (m_proxyFor == null) return m_address;
         return m_proxyFor;
+    }
+
+    @XmlTransient
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    @XmlTransient
+    public String getProfileLabel() {
+        return profileLabel;
+    }
+
+    public void setProfileLabel(String profileLabel) {
+        this.profileLabel = profileLabel;
     }
 
     @Override

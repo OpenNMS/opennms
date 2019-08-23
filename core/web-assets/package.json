@@ -117,6 +117,7 @@
         "regenerator-runtime": "^0.13.2",
         "tempusdominus-bootstrap-4": "^5.1.2",
         "ui-bootstrap4": "^3.0.6",
+        "ui-select-bs4": "https://github.com/bmontgomery/ui-select#300af1b2b5c8aa94faa3c6d3bb1df4e543d097ae",
         "underscore": "^1.9.1"
     },
     "resolutions": {
