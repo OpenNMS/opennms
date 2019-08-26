@@ -30,6 +30,9 @@ package org.opennms.netmgt.threshd;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
@@ -44,6 +47,7 @@ import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -74,11 +78,9 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
                                EventConstants.RELOAD_DAEMON_CONFIG_UEI,
                                EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
 
-    @Autowired
-    private ThresholdingEventProxy eventProxy;
-
-    @Autowired
     private ThresholdingSetPersister thresholdingSetPersister;
+
+    private ThresholdingEventProxy eventProxy;
 
     @Autowired
     private ResourceStorageDao resourceStorageDao;
@@ -98,9 +100,29 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
             .blocking()
             .build();
 
+    private final Timer reInitializeTimer = new Timer();
+    
+    // Spring init entry point
     @PostConstruct
     private void init() {
+        // When we are on OpenNMS we will have been wired an event manager and can listen for events
         eventIpcManager.addEventListener(this, UEI_LIST);
+    }
+
+    // OSGi init entry point
+    public void initOsgi() {
+        reInitializeTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                // On Sentinel we won't have access to an event manager so we will have to manage config updates via
+                // timer
+                reinitializeOnTimer();
+            }
+        }, 0, TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES));
+    }
+    
+    private void reinitializeOnTimer() {
+        thresholdingSetPersister.reinitializeThresholdingSets();
     }
 
     @Override
@@ -176,12 +198,10 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         this.eventIpcManager = eventIpcManager;
     }
 
-    public ThresholdingEventProxy getEventProxy() {
-        return eventProxy;
-    }
-
-    public void setEventProxy(ThresholdingEventProxy eventProxy) {
-        this.eventProxy = eventProxy;
+    @Autowired
+    public void setEventProxy(EventForwarder eventForwarder) {
+        Objects.requireNonNull(eventForwarder);
+        eventProxy = new ThresholdingEventProxyImpl(eventForwarder);
     }
 
     public ThresholdingSetPersister getThresholdingSetPersister() {
@@ -227,6 +247,16 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
             throw new RuntimeException("Timed out waiting for a key value store");
         } else {
             kvStore.set(osgiKvStore);
+        }
+    }
+
+    public void setKvStore(BlobStore keyValueStore) {
+        Objects.requireNonNull(keyValueStore);
+
+        synchronized (kvStore) {
+            if (kvStore.get() == null) {
+                kvStore.set(keyValueStore);
+            }
         }
     }
 }

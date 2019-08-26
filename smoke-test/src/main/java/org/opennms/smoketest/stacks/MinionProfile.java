@@ -50,12 +50,14 @@ public class MinionProfile {
 
     private final String location;
     private final String id;
+    private final boolean jvmDebuggingEnabled;
     private final boolean icmpSupportEnabled;
     private final List<OverlayFile> files;
 
     private MinionProfile(Builder builder) {
         location = builder.location;
         id = builder.id;
+        jvmDebuggingEnabled = builder.jvmDebuggingEnabled;
         icmpSupportEnabled = builder.icmpSupportEnabled;
         files = Collections.unmodifiableList(builder.files);
     }
@@ -67,6 +69,7 @@ public class MinionProfile {
     public static final class Builder {
         private String location = DEFAULT_LOCATION;
         private String id = UUID.randomUUID().toString();
+        private boolean jvmDebuggingEnabled = false;
         private boolean icmpSupportEnabled = false;
         private List<OverlayFile> files = new LinkedList<>();
 
@@ -77,6 +80,11 @@ public class MinionProfile {
 
         public Builder withId(String id) {
             this.id = Objects.requireNonNull(id);
+            return this;
+        }
+
+        public Builder withJvmDebuggingEnabled(boolean enabled) {
+            jvmDebuggingEnabled = enabled;
             return this;
         }
 
@@ -106,6 +114,10 @@ public class MinionProfile {
 
     public String getId() {
         return id;
+    }
+
+    public boolean isJvmDebuggingEnabled() {
+        return jvmDebuggingEnabled;
     }
 
     public boolean isIcmpSupportEnabled() {

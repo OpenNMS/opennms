@@ -184,7 +184,7 @@ public abstract class AbstractAdapterIT {
     protected abstract RequisitionCreateInfo getRequisitionToCreate();
 
     // Creates the requisition
-    private OnmsNode createRequisition(RequisitionCreateInfo createInfo, InetSocketAddress opennmsHttp, HibernateDaoFactory daoFactory) {
+    static OnmsNode createRequisition(RequisitionCreateInfo createInfo, InetSocketAddress opennmsHttp, HibernateDaoFactory daoFactory) {
         Objects.requireNonNull(createInfo);
         Objects.requireNonNull(opennmsHttp);
         Objects.requireNonNull(daoFactory);

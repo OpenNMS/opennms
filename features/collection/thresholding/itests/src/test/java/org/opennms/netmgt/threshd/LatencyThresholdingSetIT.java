@@ -83,7 +83,6 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -146,9 +145,10 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
 
     private Map<String, String> mockIfInfo;
 
+    // Depend on the impl being wired in here since we call test methods not exposed in the interface below
     @Autowired
-    private ThresholdingService m_thresholdingService;
-    
+    private ThresholdingServiceImpl m_thresholdingService;
+
     @Autowired
     private OverrideablePollOutagesDao m_pollOutagesDao;
 
@@ -286,6 +286,8 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         m_pollOutagesDao.overrideConfig(new FileSystemResource(file).getInputStream());
         initFactories("/threshd-configuration.xml","/test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<>();
+        // Update the thresholding service to use the mock event manager
+        m_thresholdingService.setEventProxy(m_eventIpcManager);
     };
     
     private void initFactories(String threshd, String thresholds) throws Exception {
