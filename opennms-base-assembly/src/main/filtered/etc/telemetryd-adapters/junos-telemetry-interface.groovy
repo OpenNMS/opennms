@@ -47,6 +47,9 @@ class CollectionSetGenerator {
         TelemetryTop.JuniperNetworksSensors jnprSensors = entSensors.getExtension(TelemetryTop.juniperNetworks);
         Port.GPort port = jnprSensors.getExtension(Port.jnprInterfaceExt);
 
+        // Record the sequence number
+        builder.withSequenceNumber(jtiMsg.getSequenceNumber())
+
         for (Port.InterfaceInfos interfaceInfos : port.getInterfaceStatsList()) {
             // Use the given ifName for the label (we don't have the ifDescr of the physAddr in this context)
             String interfaceLabel = RrdLabelUtils.computeLabelForRRD(interfaceInfos.getIfName(), null, null);

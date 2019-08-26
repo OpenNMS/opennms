@@ -84,7 +84,11 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
     protected final ThresholdingSession thresholdingSession;
     
     private static final String THRESHOLDING_KV_CONTEXT = "thresholding";
+    
     private final int stateTTL;
+    
+    private Long sequenceNumber;
+
     private boolean firstEvaluation = true;
 
     /**
@@ -145,6 +149,15 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
 
     @SuppressWarnings("unchecked")
     private void fetchState() {
+        // Fetch the state to make sure we have the latest if we are thresholding in a distributed environment or if
+        // this is the first time we are evaluating this evaluator
+        //
+        // If both of those conditions are false, then we must be on a standalone instance of OpenNMS and have the state
+        // already in memory so there is no need to fetch it
+        if (!isDistributed() && !firstEvaluation) {
+            fetchState();
+        }
+
         try {
             Long lastKnownUpdate = lastUpdatedCache.get(key);
 
@@ -173,15 +186,19 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
     }
 
     @Override
-    public Status evaluate(double dsValue) {
-        // Fetch the state to make sure we have the latest if we are thresholding in a distributed environment or if
-        // this is the first time we are evaluating this evaluator
-        //
-        // If both of those conditions are false, then we must be on a standalone instance of OpenNMS and have the state
-        // already in memory so there is no need to fetch it
-        if (isDistributed() || firstEvaluation) {
+    public Status evaluate(double dsValue, Long sequenceNumber) {
+        if (sequenceNumber != null) {
+            // If a sequence number was provided, only fetch the state if this is the first sequence number we have seen
+            // or if this was not the next sequence number (indicating someone else processed the last one)
+            if (this.sequenceNumber == null || sequenceNumber != this.sequenceNumber + 1) {
+                fetchState();
+            }
+            this.sequenceNumber = sequenceNumber;
+        } else {
+            // Always fetch the state to make sure we have the latest if we don't know the sequence number
             fetchState();
         }
+
         Status status = evaluateAfterFetch(dsValue);
         // Persist the state if it has changed and is now dirty
         persistStateIfNeeded();
@@ -211,7 +228,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
      */
     protected Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource, Map<String,String> additionalParams) {
         if (resource == null) { // Still works, mimic old code when instance value is null.
-            resource = new CollectionResourceWrapper(date, 0, null, null, null, null, null, null, null);
+            resource = new CollectionResourceWrapper(date, 0, null, null, null, null, null, null, null, null);
         }
         String dsLabelValue = resource.getFieldValue(resource.getDsLabel());
         if (dsLabelValue == null) dsLabelValue = UNKNOWN;
