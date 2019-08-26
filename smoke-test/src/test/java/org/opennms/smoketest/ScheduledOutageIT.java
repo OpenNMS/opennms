@@ -43,7 +43,7 @@ import org.openqa.selenium.support.ui.Select;
 /**
  * Verifies that the scheduled outage text is correctly displayed. See LTS-233.
  */
-public class ScheduledOutageIT extends OpenNMSSeleniumTestCase {
+public class ScheduledOutageIT extends OpenNMSSeleniumIT {
     @Before
     public void beforeClass() throws Exception {
         final String node = "<node type=\"A\" label=\"TestMachine\" foreignSource=\"" + REQUISITION_NAME + "\" foreignId=\"TestMachine\">" +
@@ -87,7 +87,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumTestCase {
 
     public void testOption(final String option, final String text) throws Exception {
         // Visit the scheduled outage page.
-        getDriver().get(getBaseUrl() + "opennms/admin/sched-outages/index.jsp");
+        getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
         // Enter the name...
         enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), "My-Scheduled-Outage");
         // ...and hit the button.
