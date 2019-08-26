@@ -332,4 +332,9 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
 
         future.complete(OptionalLong.of(lastUpdated.getTime()));
     }
+
+    @Override
+    public String getBackingImplName() {
+        return "Cassandra";
+    }
 }

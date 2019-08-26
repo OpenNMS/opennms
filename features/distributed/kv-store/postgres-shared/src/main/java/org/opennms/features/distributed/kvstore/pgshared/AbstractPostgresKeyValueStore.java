@@ -248,4 +248,9 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
      * @return the name of the primary key constraint for the table this store persists to
      */
     protected abstract String getPkConstraintName();
+
+    @Override
+    public String getBackingImplName() {
+        return "Postgres";
+    }
 }

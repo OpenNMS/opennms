@@ -123,4 +123,9 @@ public interface KeyValueStore<T> {
      * key did not exist
      */
     CompletableFuture<OptionalLong> getLastUpdatedAsync(String key, String context);
+
+    /**
+     * @return the name of the backing implementation
+     */
+    String getBackingImplName();
 }

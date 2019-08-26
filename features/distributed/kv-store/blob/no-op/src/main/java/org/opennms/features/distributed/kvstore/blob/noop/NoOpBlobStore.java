@@ -65,4 +65,9 @@ public class NoOpBlobStore extends AbstractAsyncKeyValueStore<byte[]> implements
     public OptionalLong getLastUpdated(String key, String context) {
         return OptionalLong.empty();
     }
+
+    @Override
+    public String getBackingImplName() {
+        return "NoOp";
+    }
 }

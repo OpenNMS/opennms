@@ -54,4 +54,9 @@ public class NoOpJsonStore extends AbstractAsyncKeyValueStore<String> implements
     public OptionalLong getLastUpdated(String key, String context) {
         return OptionalLong.empty();
     }
+
+    @Override
+    public String getBackingImplName() {
+        return "NoOp";
+    }
 }
