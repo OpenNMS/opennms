@@ -918,10 +918,10 @@ function updateOutageTypeDisplay(selectElement) {
 							if (thisTime.getDay().isPresent()) {
 								if (thisTime.getDay().get().contains("day")) {
 									// weekly
-									outputBuffer.append("Every&nbsp;").append(shortDayNames.get(thisTime.getDay())).append(",&nbsp;");
+									outputBuffer.append("Every&nbsp;").append(shortDayNames.get(thisTime.getDay().get())).append(",&nbsp;");
 								} else {
 									// monthly
-									outputBuffer.append("The&nbsp;").append(shortDayNames.get(thisTime.getDay())).append("&nbsp;of&nbsp;Each&nbsp;Month,&nbsp;");
+									outputBuffer.append("The&nbsp;").append(shortDayNames.get(thisTime.getDay().get())).append("&nbsp;of&nbsp;Each&nbsp;Month,&nbsp;");
 								}
 							} else {
 								if (thisTime.getBegins().contains("-")) {
