@@ -1,0 +1,22 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao"/>
+    <reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao"/>
+    <reference id="pollOutagesDao" interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
+    <reference id="ifLabelDao" interface="org.opennms.netmgt.dao.api.IfLabel"/>
+    <bean id="thresholdingSetPersister" class="org.opennms.netmgt.threshd.DefaultThresholdingSetPersister">
+        <property name="threshdDao" ref="threshdDao"/>
+        <property name="thresholdingDao" ref="thresholdingDao"/>
+        <property name="pollOutagesDao" ref="pollOutagesDao"/>
+        <property name="ifLabelDao" ref="ifLabelDao"/>
+    </bean>
+    
+    <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
+    <reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore"/>
+    <service interface="org.opennms.netmgt.threshd.api.ThresholdingService">
+        <bean class="org.opennms.netmgt.threshd.ThresholdingServiceImpl" init-method="initOsgi">
+            <property name="eventProxy" ref="eventForwarder"/>
+            <property name="thresholdingSetPersister" ref="thresholdingSetPersister"/>
+            <property name="kvStore" ref="blobStore"/>
+        </bean>
+    </service>
+</blueprint>

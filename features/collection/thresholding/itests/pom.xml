@@ -83,5 +83,10 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.collection</groupId>
+            <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

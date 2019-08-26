@@ -568,6 +568,7 @@
         <feature>opennms-measurements-api</feature>
         <feature>opennms-xml-collector</feature>
         <feature>opennms-core-web</feature>
+        <feature>opennms-config-dao-api</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-impl/${project.version}</bundle>
     </feature>
     <feature name="opennms-events-api" version="${project.version}" description="OpenNMS :: Events :: API">
@@ -1522,4 +1523,10 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.shell/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-config-dao-api" description="OpenNMS :: Config DAO :: API" version="${project.version}">
+        <bundle>mvn:org.opennms/org.opennms.config-dao.common-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.thresholding.api/${project.version}</bundle>
+    </feature>
+    
 </features>

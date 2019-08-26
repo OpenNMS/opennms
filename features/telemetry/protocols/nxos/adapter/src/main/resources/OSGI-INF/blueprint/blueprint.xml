@@ -9,6 +9,15 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
+    <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" />
+	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
+	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
+	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
+	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
+	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
+
 	<bean id="nxosAdapterFactory" class="org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosAdapterFactory">
 		<argument ref="blueprintBundleContext" />
 		<property name="telemetryRegistry" ref="telemetryRegistry" />
@@ -18,6 +27,7 @@
 		<property name="transactionTemplate" ref="transactionTemplate" />
 		<property name="filterDao" ref="filterDao" />
 		<property name="persisterFactory" ref="persisterFactory" />
+		<property name="thresholdingService" ref="thresholdingService" />
 	</bean>
 
 	<service id="nxosFactoryService" ref="nxosAdapterFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
@@ -26,15 +36,4 @@
 		</service-properties>
 	</service>
 
-	<reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" />
-	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
-	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
-	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
-	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
-	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
-	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
-	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="optional" >
-	    <reference-listener ref="nxosAdapterFactory" bind-method="bind" unbind-method="unbind" />
-	</reference>
-	
 </blueprint>

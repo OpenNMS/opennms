@@ -47,10 +47,6 @@
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.api</artifactId>
       <version>${project.version}</version>

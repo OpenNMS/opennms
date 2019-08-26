@@ -471,6 +471,12 @@
       <artifactId>org.opennms.features.flows.elastic</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.jti.adapter</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>

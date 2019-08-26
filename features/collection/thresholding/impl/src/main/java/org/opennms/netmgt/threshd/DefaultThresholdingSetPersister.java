@@ -30,10 +30,12 @@ package org.opennms.netmgt.threshd;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -58,6 +60,9 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
     
     @Autowired
     private ReadablePollOutagesDao pollOutagesDao;
+    
+    @Autowired
+    private IfLabel ifLabelDao;
 
     @Override
     public void persistSet(ThresholdingSession session, ThresholdingSet set) {
@@ -73,7 +78,7 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
                     ((ThresholdingSessionImpl) session).getRrdRepository(),
                     ((ThresholdingSessionImpl) session).getServiceParameters(),
                     ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy, session, threshdDao,
-                    thresholdingDao, pollOutagesDao);
+                    thresholdingDao, pollOutagesDao, ifLabelDao);
             thresholdingSets.put(key, tSet);
         }
         return tSet;
@@ -90,4 +95,19 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
         thresholdingSets.remove(key);
     }
 
+    public void setThreshdDao(ReadableThreshdDao threshdDao) {
+        this.threshdDao = Objects.requireNonNull(threshdDao);
+    }
+
+    public void setThresholdingDao(ReadableThresholdingDao thresholdingDao) {
+        this.thresholdingDao = Objects.requireNonNull(thresholdingDao);
+    }
+
+    public void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
+        this.pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+    }
+
+    public void setIfLabelDao(IfLabel ifLabelDao) {
+        this.ifLabelDao = Objects.requireNonNull(ifLabelDao);
+    }
 }

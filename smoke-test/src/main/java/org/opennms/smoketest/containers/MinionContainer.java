@@ -74,6 +74,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
+    private static final int MINION_DEBUG_PORT = 5005;
     private static final int MINION_SYSLOG_PORT = 1514;
     private static final int MINION_SSH_PORT = 8201;
     private static final int MINION_SNMP_TRAP_PORT = 1162;
@@ -93,7 +94,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();
-        withExposedPorts(MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT)
+        withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
@@ -118,6 +119,11 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .waitingFor(new WaitForMinion(this))
                 .addFileSystemBind(overlay.toString(),
                         "/opt/minion-etc-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+
+        if (profile.isJvmDebuggingEnabled()) {
+            withEnv("KARAF_DEBUG", "true");
+            withEnv("JAVA_DEBUG_PORT", "*:" + MINION_DEBUG_PORT);
+        }
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");

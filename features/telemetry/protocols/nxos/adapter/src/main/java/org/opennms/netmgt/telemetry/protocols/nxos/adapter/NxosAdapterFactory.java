@@ -29,9 +29,8 @@
 package org.opennms.netmgt.telemetry.protocols.nxos.adapter;
 
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
-import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -63,14 +62,6 @@ public class NxosAdapterFactory extends AbstractCollectionAdapterFactory {
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
         wrapper.setPropertyValues(adapterConfig.getParameterMap());
         return adapter;
-    }
-
-    public void bind(ThresholdingService thresholdingService) {
-        super.bind(thresholdingService);
-    }
-
-    public void unbind(ThresholdingService thresholdingService) {
-        super.unbind(thresholdingService);
     }
 
 }

@@ -49,10 +49,12 @@ public class OpenNMSProfile {
 
     public static OpenNMSProfile DEFAULT = OpenNMSProfile.newBuilder().build();
 
+    private final boolean jvmDebuggingEnabled;
     private final boolean kafkaProducerEnabled;
     private final List<OverlayFile> files;
 
     private OpenNMSProfile(Builder builder) {
+        jvmDebuggingEnabled = builder.jvmDebuggingEnabled;
         kafkaProducerEnabled = builder.kafkaProducerEnabled;
         files = Collections.unmodifiableList(builder.files);
     }
@@ -62,8 +64,20 @@ public class OpenNMSProfile {
     }
 
     public static final class Builder {
+        private boolean jvmDebuggingEnabled = false;
         private boolean kafkaProducerEnabled = false;
         private List<OverlayFile> files = new LinkedList<>();
+
+        /**
+         * Enable/disable JVM debugging.
+         *
+         * @param enabled true if enabled, false otherwise
+         * @return this builder
+         */
+        public Builder withJvmDebuggingEnabled(boolean enabled) {
+            jvmDebuggingEnabled = enabled;
+            return this;
+        }
 
         /**
          * Enable/disable the Kafka producer feature.
@@ -153,6 +167,10 @@ public class OpenNMSProfile {
             return new OpenNMSProfile(this);
         }
 
+    }
+
+    public boolean isJvmDebuggingEnabled() {
+        return jvmDebuggingEnabled;
     }
 
     public boolean isKafkaProducerEnabled() {

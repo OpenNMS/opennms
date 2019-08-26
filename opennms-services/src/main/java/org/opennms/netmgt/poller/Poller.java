@@ -279,14 +279,6 @@ public class Poller extends AbstractServiceDaemon {
         m_locationAwarePollerClient = locationAwarePollerClient;
     }
 
-    public ThresholdingService getThresholdingService() {
-        return m_thresholdingService;
-    }
-
-    public void setThresholdingService(ThresholdingService thresholdingService) {
-        m_thresholdingService = thresholdingService;
-    }
-
     /**
      * <p>onInit</p>
      */
