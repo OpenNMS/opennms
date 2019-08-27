@@ -98,7 +98,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
-        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-collector.xml",
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",

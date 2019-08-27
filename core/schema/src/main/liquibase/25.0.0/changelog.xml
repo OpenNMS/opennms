@@ -70,5 +70,29 @@
         </createTable>
         <addPrimaryKey tableName="kvstore_jsonb" constraintName="pk_kvstore_jsonb" columnNames="key,context"/>
     </changeSet>
-
+    <changeSet author="mbrooks" id="25.0.0-kvstore_bytea">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kvstore_bytea"/>
+            </not>
+        </preConditions>
+        <createTable tableName="kvstore_bytea">
+            <column name="key" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="context" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="value" type="bytea">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="kvstore_bytea" constraintName="pk_kvstore_bytea" columnNames="key,context"/>
+    </changeSet>
 </databaseChangeLog>

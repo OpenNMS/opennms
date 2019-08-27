@@ -580,6 +580,8 @@
                 <feature>opennms-dnsresolver-shell</feature>
                 <feature>opennms-dnsresolver-netty</feature>
                 <feature>opennms-blobstore-noop</feature>
+                <feature>opennms-blobstore-postgres</feature>
+                <feature>opennms-blobstore-shell</feature>
                 <feature>opennms-jsonstore-shell</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
@@ -975,6 +977,26 @@
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>minion</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.postgres</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.no-op</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.shell</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- Test dependencies -->

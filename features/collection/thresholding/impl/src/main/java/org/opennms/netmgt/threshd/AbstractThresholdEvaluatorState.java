@@ -85,6 +85,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
     
     private static final String THRESHOLDING_KV_CONTEXT = "thresholding";
     private final int stateTTL;
+    private boolean firstEvaluation = true;
 
     /**
      * A last updated cache to track when the last time we know we persisted a given key was. This is for performance
@@ -173,11 +174,18 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
 
     @Override
     public Status evaluate(double dsValue) {
-        // Always fetch the state to make sure we have the latest
-        fetchState();
+        // Fetch the state to make sure we have the latest if we are thresholding in a distributed environment or if
+        // this is the first time we are evaluating this evaluator
+        //
+        // If both of those conditions are false, then we must be on a standalone instance of OpenNMS and have the state
+        // already in memory so there is no need to fetch it
+        if (isDistributed() || firstEvaluation) {
+            fetchState();
+        }
         Status status = evaluateAfterFetch(dsValue);
         // Persist the state if it has changed and is now dirty
         persistStateIfNeeded();
+        firstEvaluation = false;
         return status;
     }
 
@@ -293,5 +301,9 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
     @Override
     public ThresholdingSession getThresholdingSession() {
         return thresholdingSession;
+    }
+
+    private boolean isDistributed() {
+        return thresholdingSession.isDistributed();
     }
 }

@@ -88,5 +88,11 @@
             <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.blob.postgres</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

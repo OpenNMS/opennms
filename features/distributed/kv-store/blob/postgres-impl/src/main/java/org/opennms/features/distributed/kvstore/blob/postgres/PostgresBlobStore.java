@@ -26,30 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd.api;
+package org.opennms.features.distributed.kvstore.blob.postgres;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
 
 import org.opennms.features.distributed.kvstore.api.BlobStore;
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.features.distributed.kvstore.pgshared.AbstractPostgresKeyValueStore;
 
-public interface ThresholdingSession extends AutoCloseable {
+public class PostgresBlobStore extends AbstractPostgresKeyValueStore<byte[], byte[]> implements BlobStore {
+    public PostgresBlobStore(DataSource dataSource) {
+        super(dataSource);
+    }
 
-    /**
-     * Accepts a {@link CollectionSet} for threshold evaluation. The service will send {@link Event}s if Thresholds are triggered or re-armed.
-     * 
-     * @param collectionSet
-     * @throws ThresholdInitializationException
-     *             if the Thresholding Configuration has not yet been initialized ot there is an error initializing it. 
-     *             I.E. reading as parsing the configuration files.
-     */
-    void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
+    @Override
+    protected byte[] getValueTypeFromSQLType(ResultSet resultSet, String columnName) throws SQLException {
+        return resultSet.getBytes(columnName);
+    }
 
-    ThresholdingSessionKey getKey();
-    
-    BlobStore getBlobStore();
+    @Override
+    protected String getTableName() {
+        return "kvstore_bytea";
+    }
 
-    /**
-     * @return true if we are thresholding in a distributed environment (i.e. Sentinel) false otherwise (i.e. OpenNMS)
-     */
-    boolean isDistributed();
+    @Override
+    protected String getPkConstraintName() {
+        return "pk_kvstore_bytea";
+    }
 }

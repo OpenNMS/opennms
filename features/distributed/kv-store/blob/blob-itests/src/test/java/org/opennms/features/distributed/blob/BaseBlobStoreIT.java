@@ -26,104 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.kvstore.blob.cassandra;
+package org.opennms.features.distributed.blob;
 
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.cassandraunit.CassandraCQLUnit;
-import org.cassandraunit.dataset.CQLDataSet;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.opennms.features.distributed.cassandra.api.CassandraSession;
-import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.features.distributed.kvstore.api.SerializingBlobStore;
-import org.opennms.newts.cassandra.SchemaManager;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.RegularStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.Statement;
-import com.datastax.driver.core.exceptions.DriverException;
-
-public class CassandraBlobStoreIT {
-    private static final String KEYSPACE = "opennms";
-
-    private final CQLDataSet testSet = new CQLDataSet() {
-        @Override
-        public List<String> getCQLStatements() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public String getKeyspaceName() {
-            return null;
-        }
-
-        @Override
-        public boolean isKeyspaceCreation() {
-            return false;
-        }
-
-        @Override
-        public boolean isKeyspaceDeletion() {
-            return false;
-        }
-    };
-
-    @Rule
-    public CassandraCQLUnit cassandraUnit = new CassandraCQLUnit(testSet);
-
-    private BlobStore kvStore;
-
-    private SerializingBlobStore<String> serializingBlobStore;
-
-    private CassandraSession cassandraSession;
-
+public abstract class BaseBlobStoreIT {
+    protected SerializingBlobStore<String> serializingBlobStore;
+    
     @Before
-    public void initStore() throws IOException {
-        if (cassandraUnit.getSession().isClosed()) {
-            cassandraSession = getSession(cassandraUnit.getCluster().connect());
-        } else if (cassandraSession == null) {
-            cassandraSession = getSession(cassandraUnit.getSession());
-        }
-
-        kvStore = new CassandraBlobStore(() -> {
-            cassandraSession.execute(String.format("USE %s;", KEYSPACE));
-            return cassandraSession;
-        }, () -> schema -> {
-            InetSocketAddress cassandraAddress = cassandraUnit.getSession()
-                    .getCluster()
-                    .getMetadata()
-                    .getAllHosts()
-                    .iterator()
-                    .next()
-                    .getSocketAddress();
-            SchemaManager sm = new SchemaManager(KEYSPACE, cassandraAddress.getHostName(),
-                    cassandraAddress.getPort(), "cassandra", "cassandra", false);
-            sm.create(schema::getInputStream);
-        });
-        
-        serializingBlobStore = new SerializingBlobStore<>(kvStore, String::getBytes, String::new);
+    public void setup() throws Exception {
+        init();
     }
-
+    
+    protected abstract void init() throws Exception;
+    
     @Test
     public void canPersistAndRetrieve() {
         String key = "test";
@@ -139,55 +70,6 @@ public class CassandraBlobStoreIT {
     public void emptyWhenKeyDoesNotExist() {
         // If Cassandra is available, but the key does not exist we should get an empty optional back
         assertThat(serializingBlobStore.get("test", "emptyWhenKeyDoesNotExist"), equalTo(Optional.empty()));
-    }
-
-    @Test
-    public void completesExceptionallyWithCassandraError() throws InterruptedException, IOException {
-        BlobStore exceptionalKvStore = new CassandraBlobStore(() -> new CassandraSession() {
-            @Override
-            public PreparedStatement prepare(String statement) {
-                return null;
-            }
-
-            @Override
-            public PreparedStatement prepare(RegularStatement statement) {
-                return null;
-            }
-
-            @Override
-            public ResultSetFuture executeAsync(Statement statement) {
-                throw new DriverException("test");
-            }
-
-            @Override
-            public ResultSet execute(Statement statement) {
-                throw new DriverException("test");
-            }
-
-            @Override
-            public ResultSet execute(String statement) {
-                throw new DriverException("test");
-            }
-
-            @Override
-            public Future<Void> shutdown() {
-                return null;
-            }
-        }, () -> (schema) -> {});
-        serializingBlobStore = new SerializingBlobStore<>(exceptionalKvStore, String::getBytes, String::new);
-        cassandraUnit.getSession().close();
-
-        try {
-            serializingBlobStore.putAsync("test", "test", "completesExceptionallyWithCassandraError").get();
-            fail("Should have triggered an ExecutionException");
-        } catch (ExecutionException e) {
-        }
-
-        try {
-            serializingBlobStore.getAsync("test", "completesExceptionallyWithCassandraError").get();
-            fail("Should have triggered an ExecutionException");
-        } catch (ExecutionException e) {
-        }
     }
 
     @Test
@@ -270,9 +152,9 @@ public class CassandraBlobStoreIT {
         String key = "key";
         String context = "canGetIfStale";
         String value = "test";
-        
+
         long timestamp = serializingBlobStore.put(key, value, context);
-        
+
         Optional<Optional<String>> currentValue = serializingBlobStore.getIfStale(key, context, timestamp);
         // Should find the key but should already have the latest
         assertThat(currentValue.get(), equalTo(Optional.empty()));
@@ -280,39 +162,5 @@ public class CassandraBlobStoreIT {
         currentValue = serializingBlobStore.getIfStale(key, context, timestamp - 1);
         // Should find the key and should see its stale
         assertThat(currentValue.get().get(), equalTo(value));
-    }
-    
-    private CassandraSession getSession(Session session) {
-        return new CassandraSession() {
-            @Override
-            public PreparedStatement prepare(String statement) {
-                return session.prepare(statement);
-            }
-
-            @Override
-            public PreparedStatement prepare(RegularStatement statement) {
-                return session.prepare(statement);
-            }
-
-            @Override
-            public ResultSetFuture executeAsync(Statement statement) {
-                return session.executeAsync(statement);
-            }
-
-            @Override
-            public ResultSet execute(Statement statement) {
-                return session.execute(statement);
-            }
-
-            @Override
-            public ResultSet execute(String statement) {
-                return session.execute(statement);
-            }
-
-            @Override
-            public Future<Void> shutdown() {
-                return CompletableFuture.completedFuture(null);
-            }
-        };
     }
 }

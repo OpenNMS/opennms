@@ -8,9 +8,9 @@
         <version>26.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.opennms.features.distributed.kv-store.blob.cassandra</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Cassandra</name>
+    <artifactId>org.opennms.features.distributed.kv-store.blob.postgres</artifactId>
+    <name>OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Postgres</name>
     <build>
         <plugins>
             <plugin>
@@ -30,12 +30,7 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.cassandra.api</artifactId>
+            <artifactId>org.opennms.features.distributed.kv-store.postgres-shared</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -471,13 +471,13 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.kv-store.blob.no-op</artifactId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.postgres</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
