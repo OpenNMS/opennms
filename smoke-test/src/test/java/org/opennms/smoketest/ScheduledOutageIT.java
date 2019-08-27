@@ -41,11 +41,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.Select;
 
 /**
- * Verifies that the scheduled outage text is correctly displayed. See LTS-233.
+ * 1. Verifies that the scheduled outage text is correctly displayed. See LTS-233.
+ * 2. Verifies that special characters can be used in scheduled outage names. See LTS-234.
  */
 public class ScheduledOutageIT extends OpenNMSSeleniumTestCase {
     @Before
-    public void beforeClass() throws Exception {
+    public void before() throws Exception {
         final String node = "<node type=\"A\" label=\"TestMachine\" foreignSource=\"" + REQUISITION_NAME + "\" foreignId=\"TestMachine\">" +
                 "<labelSource>H</labelSource>" +
                 "<sysContact>The Owner</sysContact>" +
@@ -57,6 +58,13 @@ public class ScheduledOutageIT extends OpenNMSSeleniumTestCase {
                 "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
                 "</node>";
         sendPost("/rest/nodes", node, 201);
+
+        String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
+                "<ipAddress>10.10.10.10</ipAddress>" +
+                "<hostName>test-machine1.local</hostName>" +
+                "</ipInterface>";
+
+        sendPost("rest/nodes/"+REQUISITION_NAME+":TestMachine/ipinterfaces", ipInterface, 201);
     }
 
     @After
@@ -85,7 +93,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumTestCase {
         testOption("Specific", "One-Time, From " + dateString + " 00:00:00 Through " + dateString + " 23:59:59");
     }
 
-    public void testOption(final String option, final String text) throws Exception {
+    private void testOption(final String option, final String text) throws Exception {
         // Visit the scheduled outage page.
         getDriver().get(getBaseUrl() + "opennms/admin/sched-outages/index.jsp");
         // Enter the name...
@@ -109,5 +117,37 @@ public class ScheduledOutageIT extends OpenNMSSeleniumTestCase {
 
         // check whether the outage text appears correctly...
         with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText(text));
+    }
+
+    private void testCharactersInName(String name) throws Exception {
+        try {
+            getDriver().get(getBaseUrl() + "opennms/admin/sched-outages/index.jsp");
+            enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), name);
+            findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newOutage']").click();
+            with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name));
+            findElementByXpath("//form[@id='matchAnyForm']//input[@name='matchAny']").click();
+            getDriver().switchTo().alert().accept();
+            new Select(findElementByXpath("//select[@id='outageTypeSelector']")).selectByVisibleText("Daily");
+            findElementByXpath("//input[@name='setOutageType']").click();
+            findElementByXpath("//input[@name='addOutage']").click();
+            findElementByXpath("//input[@name='saveButton']").click();
+            getDriver().get(getBaseUrl() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":TestMachine");
+            findElementByXpath("//a[text()='"+name+"']").click();
+            with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name));
+        } finally {
+            getDriver().get(getBaseUrl() + "opennms/admin/sched-outages/index.jsp");
+            findElementByXpath("//a[@id='" + name + ".delete']").click();
+            getDriver().switchTo().alert().accept();
+        }
+    }
+
+    @Test
+    public void testNormalOutageName() throws Exception {
+        testCharactersInName("My-Outage-123");
+    }
+
+    @Test
+    public void testWeirdOutageName() throws Exception {
+        testCharactersInName("M?y#O;u.t-a&amp;g&e 1 2 3*");
     }
 }
