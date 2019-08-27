@@ -35,6 +35,12 @@
     DELETE from kvstore_jsonb
     WHERE expires_at &lt; now()
   </statement>
+
+  <statement>
+    <!-- this deletes values from the BLOB key value store that have expired due to TTL -->
+    DELETE from kvstore_bytea
+    WHERE expires_at &lt; now()
+  </statement>
     
   <automations>
     <automation name="purgeStatisticsReports" active="true"

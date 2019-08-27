@@ -66,7 +66,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
-        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
         "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })

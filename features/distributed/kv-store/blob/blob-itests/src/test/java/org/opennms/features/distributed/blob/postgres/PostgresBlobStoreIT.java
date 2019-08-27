@@ -26,30 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd.api;
+package org.opennms.features.distributed.blob.postgres;
 
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.features.distributed.blob.BaseBlobStoreIT;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.features.distributed.kvstore.api.SerializingBlobStore;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
-public interface ThresholdingSession extends AutoCloseable {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+public class PostgresBlobStoreIT extends BaseBlobStoreIT {
+    @Autowired
+    private BlobStore postgresBlobStore;
 
-    /**
-     * Accepts a {@link CollectionSet} for threshold evaluation. The service will send {@link Event}s if Thresholds are triggered or re-armed.
-     * 
-     * @param collectionSet
-     * @throws ThresholdInitializationException
-     *             if the Thresholding Configuration has not yet been initialized ot there is an error initializing it. 
-     *             I.E. reading as parsing the configuration files.
-     */
-    void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
-
-    ThresholdingSessionKey getKey();
-    
-    BlobStore getBlobStore();
-
-    /**
-     * @return true if we are thresholding in a distributed environment (i.e. Sentinel) false otherwise (i.e. OpenNMS)
-     */
-    boolean isDistributed();
+    protected void init() {
+        serializingBlobStore = new SerializingBlobStore<>(postgresBlobStore, String::getBytes, String::new);
+    }
 }

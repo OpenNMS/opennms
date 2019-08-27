@@ -101,6 +101,8 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
             .build();
 
     private final Timer reInitializeTimer = new Timer();
+
+    private boolean isDistributed = false;
     
     // Spring init entry point
     @PostConstruct
@@ -111,6 +113,10 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     // OSGi init entry point
     public void initOsgi() {
+        // If we were started viag OSGi then we are on Sentinel therefore we will mark ourselves as being distributed
+        // for thresholding
+        isDistributed = true;
+        
         reInitializeTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -182,7 +188,8 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
             resource = repository.getRrdBaseDir().getPath();
         }
         ThresholdingSessionKey sessionKey = new ThresholdingSessionKeyImpl(nodeId, hostAddress, serviceName, resource);
-        return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams, kvStore.get());
+        return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams,
+                kvStore.get(), isDistributed);
     }
 
     public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session) throws ThresholdInitializationException {

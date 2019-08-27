@@ -93,7 +93,7 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
-        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-collectdTest.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-collector.xml",
