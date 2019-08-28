@@ -127,5 +127,5 @@ public interface KeyValueStore<T> {
     /**
      * @return the name of the backing implementation
      */
-    String getBackingImplName();
+    String getName();
 }

@@ -250,7 +250,7 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
     protected abstract String getPkConstraintName();
 
     @Override
-    public String getBackingImplName() {
+    public String getName() {
         return "Postgres";
     }
 }

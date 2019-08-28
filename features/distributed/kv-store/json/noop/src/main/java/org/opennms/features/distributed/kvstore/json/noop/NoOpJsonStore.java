@@ -56,7 +56,7 @@ public class NoOpJsonStore extends AbstractAsyncKeyValueStore<String> implements
     }
 
     @Override
-    public String getBackingImplName() {
+    public String getName() {
         return "NoOp";
     }
 }

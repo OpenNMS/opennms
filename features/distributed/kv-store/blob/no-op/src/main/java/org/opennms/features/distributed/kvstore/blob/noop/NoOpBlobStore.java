@@ -67,7 +67,7 @@ public class NoOpBlobStore extends AbstractAsyncKeyValueStore<byte[]> implements
     }
 
     @Override
-    public String getBackingImplName() {
+    public String getName() {
         return "NoOp";
     }
 }

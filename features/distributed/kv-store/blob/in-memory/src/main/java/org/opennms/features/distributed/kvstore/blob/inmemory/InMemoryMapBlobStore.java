@@ -97,7 +97,7 @@ public class InMemoryMapBlobStore extends AbstractAsyncKeyValueStore<byte[]> imp
     }
 
     @Override
-    public String getBackingImplName() {
+    public String getName() {
         return "In-Memory";
     }
 }

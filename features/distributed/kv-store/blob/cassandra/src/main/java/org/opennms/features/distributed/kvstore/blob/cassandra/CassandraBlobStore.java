@@ -334,7 +334,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
     }
 
     @Override
-    public String getBackingImplName() {
+    public String getName() {
         return "Cassandra";
     }
 }

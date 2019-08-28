@@ -45,6 +45,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 
+import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 
@@ -76,15 +77,22 @@ public class BlobStoreBenchmark implements Action {
 
     @Override
     public Object execute() throws InterruptedException {
-        System.out.println(String.format("BlobStore implementation in use: %s", blobStore.getBackingImplName()));
-        StringBuilder resultsBuilder = new StringBuilder();
+        System.out.println(String.format("BlobStore implementation in use: %s", blobStore.getName()));
         writePayload = new byte[payloadSize];
-        resultsBuilder.append('\n');
-        resultsBuilder.append(benchmark("write", this::writeAsync, this::write,
-                this::generateWriteResults));
-        resultsBuilder.append(benchmark("read", this::readAsync, this::read,
-                this::generateReadResults));
-        System.out.println(resultsBuilder.toString());
+        StringBuilder throughputResultsBuilder = new StringBuilder();
+        throughputResultsBuilder.append(benchmark("write", this::writeAsync, this::write));
+        String readThroughput = benchmark("read", this::readAsync, this::read);
+
+        // The read throughput is only really meaningful if we are doing a full fetch of the value
+        if (!readJustTimestamp) {
+            throughputResultsBuilder.append('\n').append(readThroughput);
+        }
+
+        ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics).build();
+        reporter.report();
+        reporter.close();
+
+        System.out.println(throughputResultsBuilder.toString());
         return null;
     }
 
@@ -120,42 +128,9 @@ public class BlobStoreBenchmark implements Action {
                 () -> blobStore.get(key, CONTEXT));
     }
 
-    private String generateWriteResults(AtomicLong totalTime, Histogram results) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("Wrote %d records in %d milliseconds\n", numberOfRecords, totalTime.get()));
-        stringBuilder.append(String.format("Mean write latency: %.2f milliseconds\n",
-                results.getSnapshot().getMean()));
-        stringBuilder.append(String.format("Best write latency: %d milliseconds\n",
-                results.getSnapshot().getMin()));
-        stringBuilder.append(String.format("Worst write latency: %d milliseconds\n",
-                results.getSnapshot().getMax()));
-        double throughPut = ((payloadSize * numberOfRecords) / 1024.0) / (totalTime.get() / 1000.0);
-        stringBuilder.append(String.format("Write throughput: %.2f KB/s\n\n", throughPut));
-        return stringBuilder.toString();
-    }
-
-    private String generateReadResults(AtomicLong totalTime, Histogram results) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("Read %d records in %d milliseconds\n", numberOfRecords, totalTime.get()));
-        stringBuilder.append(String.format("Mean read latency: %.2f milliseconds\n",
-                results.getSnapshot().getMean()));
-        stringBuilder.append(String.format("Best read latency: %d milliseconds\n",
-                results.getSnapshot().getMin()));
-        stringBuilder.append(String.format("Worst read latency: %d milliseconds\n",
-                results.getSnapshot().getMax()));
-
-        if (!readJustTimestamp) {
-            double throughPut = ((payloadSize * numberOfRecords) / 1024.0) / (totalTime.get() / 1000.0);
-            stringBuilder.append(String.format("Read throughput: %.2f KB/s\n", throughPut));
-        }
-
-        return stringBuilder.toString();
-    }
-
     private String benchmark(String methodType,
                              BiFunction<String, Histogram, CompletableFuture<?>> asyncFunction,
-                             BiConsumer<String, Histogram> syncFunction,
-                             BiFunction<AtomicLong, Histogram, String> resultsFunction) throws InterruptedException {
+                             BiConsumer<String, Histogram> syncFunction) throws InterruptedException {
         System.out.print(String.format("Benchmarking %s performance...", methodType));
 
         Histogram results = metrics.histogram(String.format("%s times", methodType));
@@ -197,6 +172,7 @@ public class BlobStoreBenchmark implements Action {
 
         System.out.println("done");
 
-        return resultsFunction.apply(totalTime, results);
+        double throughPut = ((payloadSize * numberOfRecords) / 1024.0) / (totalTime.get() / 1000.0);
+        return String.format("%s throughput: %.2f KB/s", methodType, throughPut);
     }
 }
