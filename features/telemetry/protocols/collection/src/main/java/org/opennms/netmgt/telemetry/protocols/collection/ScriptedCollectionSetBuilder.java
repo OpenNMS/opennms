@@ -102,7 +102,7 @@ public class ScriptedCollectionSetBuilder {
      */
     public CollectionSet build(CollectionAgent agent, Object message, Long timestamp) throws ScriptException {
         final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
-        if (timestamp != null) {
+        if (timestamp != null && timestamp > 0) {
             builder.withTimestamp(new Date(timestamp));
         }
         final SimpleBindings globals = new SimpleBindings();
