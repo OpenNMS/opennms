@@ -28,17 +28,21 @@
 
 package org.opennms.core.utils;
 
+import java.io.BufferedReader;
+import java.io.Writer;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-
+import java.util.regex.Pattern;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,4 +85,26 @@ public abstract class SocketUtils {
         return wrappedSocket;
     }
 
+    public static boolean validResponse(String request, String responsePattern, BufferedReader r, Writer wr) throws IOException {
+        boolean validResponse = true;
+        if (!Strings.isNullOrEmpty(request) && !Strings.isNullOrEmpty(responsePattern)) {
+            String l = null;
+            validResponse = false;
+            LOG.debug("writing {}, hoping response matches /{}/", request, responsePattern);
+            wr.write(request);
+            wr.flush();
+            Pattern p = Pattern.compile(responsePattern);
+            String str = "";
+            int i;
+            try {
+                while((i = r.read()) != -1) {
+                    str += (char)i;
+                }
+            } catch (InterruptedIOException e) {
+                LOG.debug("response was: {}", str);
+            }
+            validResponse = p.matcher(str).matches();
+        }
+        return validResponse;
+    }
 }

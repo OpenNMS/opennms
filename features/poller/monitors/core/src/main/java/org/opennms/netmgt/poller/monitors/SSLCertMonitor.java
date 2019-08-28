@@ -34,7 +34,6 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -45,7 +44,6 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
-import java.util.regex.Pattern;
 import javax.net.ssl.SNIHostName;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
@@ -201,8 +199,8 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
 
                 // xmpp (and probably others) make you find out if the server supports STARTTLS
                 // at the protocol level before actually trying to start it
-                boolean stlsSupported = attemptStartTLS(stlsInitiate, stlsInitExpectedResp, r, wr) &&
-                    attemptStartTLS(tlsStart, tlsStartResp, r, wr);
+                boolean stlsSupported = SocketUtils.validResponse(stlsInitiate, stlsInitExpectedResp, r, wr) &&
+                    SocketUtils.validResponse(tlsStart, tlsStartResp, r, wr);
                 if (!stlsSupported) {
                     serviceStatus = PollStatus.unavailable("STARTTLS requested, but server does not support STARTTLS.");
                     return serviceStatus;
@@ -288,29 +286,6 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
         }
 
         return serviceStatus;
-    }
-
-    private boolean attemptStartTLS(String request, String responsePattern, BufferedReader r, Writer wr) throws IOException {
-        boolean stlsSupported = true;
-        if (!Strings.isNullOrEmpty(request) && !Strings.isNullOrEmpty(responsePattern)) {
-            String l = null;
-            stlsSupported = false;
-            LOG.debug("writing {} to attempt to upgrade socket to TLS", request);
-            wr.write(request);
-            wr.flush();
-            Pattern p = Pattern.compile(responsePattern);
-            String str = "";
-            int i;
-            try {
-                while((i = r.read()) != -1) {
-                    str += (char)i;
-                }
-            } catch (InterruptedIOException e) {
-                LOG.debug("response from server during STLS attempt: {}", str);
-            }
-            stlsSupported = p.matcher(str).matches();
-        }
-        return stlsSupported;
     }
 
     protected Calendar getCalendarInstance() {

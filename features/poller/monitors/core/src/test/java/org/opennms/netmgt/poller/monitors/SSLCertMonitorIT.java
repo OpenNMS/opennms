@@ -220,7 +220,7 @@ public class SSLCertMonitorIT {
     }
 
     @Test
-    @Ignore // point at an XMPP server that supports STARTTLS to use this test
+    //@Ignore // point at an XMPP server that supports STARTTLS to use this test
     public void testXMPPStartTLS() throws UnknownHostException {
         SSLCertMonitor monitor = new SSLCertMonitor();
         Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
@@ -234,7 +234,7 @@ public class SSLCertMonitorIT {
         parameters.put("starttls-start", "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
         parameters.put("starttls-start-response", "^.*proceed.*$");
 
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", InetAddress.getByName("127.0.0.1"), "SSLCert");
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", InetAddress.getByName("172.17.12.111"), "SSLCert");
         // this would normally happen in the poller request builder implementation
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         subbedParams.forEach((k, v) -> {
