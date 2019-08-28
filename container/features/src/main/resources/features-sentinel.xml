@@ -212,7 +212,7 @@
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
         <bundle dependency="true">mvn:org.javassist/javassist/3.19.0-GA</bundle>
         <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
-        <bundle dependency="true">mvn:de.ruedigermoeller/fst/2.47</bundle>
+        <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
     </feature>
 
     <feature name="sentinel-kvstore-api"
@@ -293,5 +293,11 @@
         <feature>fst</feature>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.snmp-collector/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-threshold-states-shell" description="OpenNMS :: Features :: Collection :: Thresholding :: Shell" version="${project.version}">
+        <feature>fst</feature>
+        <bundle dependency="true">mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.shell/${project.version}</bundle>
     </feature>
 </features>

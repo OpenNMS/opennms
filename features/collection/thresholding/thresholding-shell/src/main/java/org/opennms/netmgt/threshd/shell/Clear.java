@@ -26,48 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.kvstore.json.noop;
+package org.opennms.netmgt.threshd.shell;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
-import org.opennms.features.distributed.kvstore.api.AbstractAsyncKeyValueStore;
-import org.opennms.features.distributed.kvstore.api.JsonStore;
-
-public class NoOpJsonStore extends AbstractAsyncKeyValueStore<String> implements JsonStore {
+@Command(scope = "opennms-threshold-states", name = "clear", description = "Clears a specific threshold state")
+@Service
+public class Clear extends AbstractKeyOrIndexCommand {
     @Override
-    public long put(String key, String value, String context, Integer ttlInSeconds) {
-        return 0;
-    }
-
-    @Override
-    public Optional<String> get(String key, String context) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Optional<String>> getIfStale(String key, String context, long timestamp) {
-        return Optional.empty();
-    }
-
-    @Override
-    public OptionalLong getLastUpdated(String key, String context) {
-        return OptionalLong.empty();
-    }
-
-    @Override
-    public String getName() {
-        return "NoOp";
-    }
-
-    @Override
-    public Map<String, String> enumerateContext(String context) {
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public void delete(String key, String context) {
+    public Object execute() {
+        blobStore.delete(getKey(), THRESHOLDING_KV_CONTEXT);
+        return null;
     }
 }

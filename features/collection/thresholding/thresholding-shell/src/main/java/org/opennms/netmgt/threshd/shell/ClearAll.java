@@ -26,48 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.kvstore.json.noop;
+package org.opennms.netmgt.threshd.shell;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
+import java.util.concurrent.CompletableFuture;
 
-import org.opennms.features.distributed.kvstore.api.AbstractAsyncKeyValueStore;
-import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
-public class NoOpJsonStore extends AbstractAsyncKeyValueStore<String> implements JsonStore {
+@Command(scope = "opennms-threshold-states", name = "clear-all", description = "Clears all threshold states")
+@Service
+public class ClearAll extends AbstractThresholdStateCommand {
     @Override
-    public long put(String key, String value, String context, Integer ttlInSeconds) {
-        return 0;
-    }
+    public Object execute() throws InterruptedException {
+        System.out.print("Clearing all thresholding states...");
+        CompletableFuture<Void> clearFuture = blobStore.truncateContextAsync(THRESHOLDING_KV_CONTEXT);
 
-    @Override
-    public Optional<String> get(String key, String context) {
-        return Optional.empty();
-    }
+        while (!clearFuture.isDone()) {
+            Thread.sleep(1000);
+            System.out.print('.');
+        }
 
-    @Override
-    public Optional<Optional<String>> getIfStale(String key, String context, long timestamp) {
-        return Optional.empty();
-    }
+        System.out.println("done");
 
-    @Override
-    public OptionalLong getLastUpdated(String key, String context) {
-        return OptionalLong.empty();
-    }
-
-    @Override
-    public String getName() {
-        return "NoOp";
-    }
-
-    @Override
-    public Map<String, String> enumerateContext(String context) {
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public void delete(String key, String context) {
+        return null;
     }
 }

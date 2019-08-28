@@ -85,8 +85,6 @@ public class CassandraBlobStoreIT extends BaseBlobStoreIT {
     @Rule
     public CassandraCQLUnit cassandraUnit = new CassandraCQLUnit(testSet);
 
-    private BlobStore kvStore;
-
     private CassandraSession cassandraSession;
 
     public void init() throws IOException {
@@ -96,7 +94,7 @@ public class CassandraBlobStoreIT extends BaseBlobStoreIT {
             cassandraSession = getSession(cassandraUnit.getSession());
         }
 
-        kvStore = new CassandraBlobStore(() -> {
+        blobStore = new CassandraBlobStore(() -> {
             cassandraSession.execute(String.format("USE %s;", KEYSPACE));
             return cassandraSession;
         }, () -> schema -> {
@@ -112,7 +110,7 @@ public class CassandraBlobStoreIT extends BaseBlobStoreIT {
             sm.create(schema::getInputStream);
         });
 
-        serializingBlobStore = new SerializingBlobStore<>(kvStore, String::getBytes, String::new);
+        serializingBlobStore = new SerializingBlobStore<>(blobStore, String::getBytes, String::new);
     }
 
     @Test

@@ -75,6 +75,7 @@
                                 <feature>sentinel-blobstore-cassandra</feature>
                                 <feature>sentinel-jsonstore-postgres</feature>
                                 <feature>sentinel-thresholding-service</feature>
+                                <feature>sentinel-threshold-states-shell</feature>
 
 
                                 <!-- Other features -->
@@ -495,6 +496,11 @@
         <dependency>
             <groupId>org.opennms.features.collection</groupId>
             <artifactId>org.opennms.features.collection.thresholding.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.collection</groupId>
+            <artifactId>org.opennms.features.collection.thresholding.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

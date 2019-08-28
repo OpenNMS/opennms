@@ -28,13 +28,17 @@
 
 package org.opennms.features.distributed.blob;
 
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -43,9 +47,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.features.distributed.kvstore.api.SerializingBlobStore;
 
 public abstract class BaseBlobStoreIT {
+    protected BlobStore blobStore;
     protected SerializingBlobStore<String> serializingBlobStore;
     
     @Before
@@ -129,7 +135,7 @@ public abstract class BaseBlobStoreIT {
 
         Thread.sleep(10);
 
-        assertThat(originalTimestamp, equalTo(serializingBlobStore.getLastUpdated(key, context).getAsLong()));
+        assertThat(originalTimestamp, equalTo(blobStore.getLastUpdated(key, context).getAsLong()));
         assertThat(serializingBlobStore.get(key, context).get(), equalTo(originalState));
 
         String updatedState = "updated";
@@ -143,7 +149,7 @@ public abstract class BaseBlobStoreIT {
         String key = "test";
         String context = "canGetLastUpdatedAsync";
         long timestamp = serializingBlobStore.putAsync(key, "test", context).get(5, TimeUnit.SECONDS);
-        long lastUpdated = serializingBlobStore.getLastUpdatedAsync(key, context).get(5, TimeUnit.SECONDS).getAsLong();
+        long lastUpdated = blobStore.getLastUpdatedAsync(key, context).get(5, TimeUnit.SECONDS).getAsLong();
         assertThat(timestamp, equalTo(lastUpdated));
     }
 
@@ -162,5 +168,94 @@ public abstract class BaseBlobStoreIT {
         currentValue = serializingBlobStore.getIfStale(key, context, timestamp - 1);
         // Should find the key and should see its stale
         assertThat(currentValue.get().get(), equalTo(value));
+    }
+    
+    @Test
+    public void canEnumerate() {
+        String key1 = "key1";
+        String context = "canEnumerate";
+        String value1 = "test1";
+        String key2 = "key2";
+        String value2 = "test2";
+
+        serializingBlobStore.put(key1, value1, context);
+        serializingBlobStore.put(key2, value2, context);
+        
+        Map<String, String> resultMap = serializingBlobStore.enumerateContext(context);
+        
+        assertThat(resultMap.entrySet(), hasItems(new AbstractMap.SimpleImmutableEntry<>(key1, value1),
+                new AbstractMap.SimpleImmutableEntry<>(key1, value1)));
+    }
+
+    @Test
+    public void canEnumerateAsync() throws InterruptedException, ExecutionException, TimeoutException {
+        String key1 = "key1";
+        String context = "canEnumerateAsync";
+        String value1 = "test1";
+        String key2 = "key2";
+        String value2 = "test2";
+
+        serializingBlobStore.put(key1, value1, context);
+        serializingBlobStore.put(key2, value2, context);
+
+        Map<String, String> resultMap = serializingBlobStore.enumerateContextAsync(context)
+                .get(5, TimeUnit.SECONDS);
+
+        assertThat(resultMap.entrySet(), hasItems(new AbstractMap.SimpleImmutableEntry<>(key1, value1),
+                new AbstractMap.SimpleImmutableEntry<>(key1, value1)));
+    }
+
+    @Test
+    public void canDelete() {
+        String key = "key";
+        String context = "canDelete";
+        String value = "test";
+        
+        serializingBlobStore.put(key, value, context);
+        blobStore.delete(key, context);
+        serializingBlobStore.get(key, context).ifPresent(v -> fail("Failed to delete"));
+    }
+
+    @Test
+    public void canDeleteAsync() throws InterruptedException, ExecutionException, TimeoutException {
+        String key = "key";
+        String context = "canDeleteAsync";
+        String value = "test";
+
+        serializingBlobStore.put(key, value, context);
+        blobStore.deleteAsync(key, context).get(5, TimeUnit.SECONDS);
+        serializingBlobStore.get(key, context).ifPresent(v -> fail("Failed to delete"));
+    }
+    
+    @Test
+    public void canTruncateContext() {
+        String key1 = "key1";
+        String context = "canTruncateContext";
+        String value1 = "test1";
+        String key2 = "key2";
+        String value2 = "test2";
+
+        serializingBlobStore.put(key1, value1, context);
+        serializingBlobStore.put(key2, value2, context);
+
+        blobStore.truncateContext(context);
+
+        assertThat(serializingBlobStore.enumerateContext(context).keySet(), hasSize(0));
+    }
+
+    @Test
+    public void canTruncateContextAsync() throws InterruptedException, ExecutionException, TimeoutException {
+        String key1 = "key1";
+        String context = "canTruncateContextAsync";
+        String value1 = "test1";
+        String key2 = "key2";
+        String value2 = "test2";
+
+        serializingBlobStore.put(key1, value1, context);
+        serializingBlobStore.put(key2, value2, context);
+
+        blobStore.truncateContextAsync(context).get(5, TimeUnit.SECONDS);
+
+        assertThat(serializingBlobStore.enumerateContext(context).keySet(), hasSize(0));
     }
 }

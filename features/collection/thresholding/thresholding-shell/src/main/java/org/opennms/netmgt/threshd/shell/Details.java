@@ -26,48 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.kvstore.json.noop;
+package org.opennms.netmgt.threshd.shell;
 
-import java.util.Collections;
-import java.util.Map;
+import static org.opennms.netmgt.threshd.AbstractThresholdEvaluatorState.fst;
+
 import java.util.Optional;
-import java.util.OptionalLong;
 
-import org.opennms.features.distributed.kvstore.api.AbstractAsyncKeyValueStore;
-import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
-public class NoOpJsonStore extends AbstractAsyncKeyValueStore<String> implements JsonStore {
+@Command(scope = "opennms-threshold-states", name = "details", description = "Prints the details of a specific " +
+        "threshold state")
+@Service
+public class Details extends AbstractKeyOrIndexCommand {
     @Override
-    public long put(String key, String value, String context, Integer ttlInSeconds) {
-        return 0;
-    }
+    public Object execute() {
+        String key = getKey();
+        Optional<byte[]> value = blobStore.get(key, THRESHOLDING_KV_CONTEXT);
 
-    @Override
-    public Optional<String> get(String key, String context) {
-        return Optional.empty();
-    }
+        if (value.isPresent()) {
+            System.out.println(fst.asObject(value.get()).toString());
+        } else {
+            System.out.println(String.format("Could not find a state for key '%s'", key));
+        }
 
-    @Override
-    public Optional<Optional<String>> getIfStale(String key, String context, long timestamp) {
-        return Optional.empty();
-    }
-
-    @Override
-    public OptionalLong getLastUpdated(String key, String context) {
-        return OptionalLong.empty();
-    }
-
-    @Override
-    public String getName() {
-        return "NoOp";
-    }
-
-    @Override
-    public Map<String, String> enumerateContext(String context) {
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public void delete(String key, String context) {
+        return null;
     }
 }

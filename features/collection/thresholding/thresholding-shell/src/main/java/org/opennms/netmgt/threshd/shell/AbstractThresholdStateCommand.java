@@ -26,33 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.blob.postgres;
+package org.opennms.netmgt.threshd.shell;
 
-import org.junit.runner.RunWith;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.distributed.blob.BaseBlobStoreIT;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.console.Session;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
-import org.opennms.features.distributed.kvstore.api.SerializingBlobStore;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml"
-})
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-public class PostgresBlobStoreIT extends BaseBlobStoreIT {
-    @Autowired
-    private BlobStore postgresBlobStore;
+public abstract class AbstractThresholdStateCommand implements Action {
+    protected static final String THRESHOLDING_KV_CONTEXT = "thresholding";
+    protected static final String STATE_INDEXES_SESSION_KEY = "opennms_threhsold_states_stateKeyIndexes";
 
-    protected void init() {
-        blobStore = postgresBlobStore;
-        serializingBlobStore = new SerializingBlobStore<>(postgresBlobStore, String::getBytes, String::new);
-    }
+    @Reference
+    protected BlobStore blobStore;
+
+    @Reference
+    protected Session session;
 }
