@@ -1,6 +1,12 @@
 [[releasenotes-25]]
 == What's New in OpenNMS Horizon 25
 
+=== System Requirements
+
+* *Java 8 through 11*: OpenNMS Horizon 25 requires at least Java 8 as the runtime environment, as well as JDK 11.
+  To run Horizon 25, we recommend the most recent version of OpenJDK 11.
+* *PostgreSQL 10 or higher*: Horizon 25 requires Any supported version of PostgreSQL 10 or higher.
+
 === Breaking Changes
 
 ==== Elasticsearch 7.x support
