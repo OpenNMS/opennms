@@ -83,6 +83,7 @@ angular.module('onms-resources', [
   $scope.url = 'graph/results.htm';
   $scope.reports = 'all';
   $scope.loaded = false;
+  $scope.generatedId = '';
 
   $scope.init = function(nodeCriteria, reports, endUrl) {
     if (!nodeCriteria) {
@@ -105,7 +106,7 @@ angular.module('onms-resources', [
       $scope.loaded = true;
       $scope.hasResources = data.children.resource.length > 0;
       var reduced = _.map(data.children.resource, function(obj) {
-	var resource = {
+	    var resource = {
           id: obj.id,
           label: obj.label,
           typeLabel: obj.typeLabel,
@@ -190,7 +191,17 @@ angular.module('onms-resources', [
 
   $scope.doGraph = function(selected) {
     if (selected.length > 0) {
-      $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
+      $http.post('rest/resources/generateId', selected)
+      .success(function(response) {
+        $scope.generatedId = response;
+        if($scope.generatedId) {
+            $window.location.href = getBaseHref() + $scope.url + '?generatedId=' + $scope.generatedId + ($scope.reports ? '&reports=' + $scope.reports : '');
+        } else {
+            $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
+        }
+      }).error(function(error, status) {
+        $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
+      });
     } else {
       growl.error('Please select at least one resource.');
     }

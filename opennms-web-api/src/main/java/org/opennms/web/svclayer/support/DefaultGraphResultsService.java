@@ -36,7 +36,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
+import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -62,6 +64,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 
 /**
  * <p>DefaultGraphResultsService class.</p>
@@ -83,6 +86,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
     private EventProxy m_eventProxy;
 
+    private JsonStore m_jsonStore;
+
     private RelativeTimePeriod[] m_periods;
 
     /**
@@ -94,7 +99,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     }
 
     @Override
-    public GraphResults findResults(ResourceId[] resourceIds, String[] reports, String nodeCriteria, long start, long end, String relativeTime) {
+    public GraphResults findResults(ResourceId[] resourceIds, String[] reports, String generatedId, String nodeCriteria, long start, long end, String relativeTime) {
         if (reports == null) {
             throw new IllegalArgumentException("reports argument cannot be null");
         }
@@ -138,11 +143,11 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             }
         }
 
-        if(!Strings.isNullOrEmpty(nodeCriteria)) {
+        if (!Strings.isNullOrEmpty(nodeCriteria)) {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if(node != null) {
+            if (node != null) {
                 OnmsResource nodeResource = m_resourceDao.getResourceForNode(node);
-                if(nodeResource != null) {
+                if (nodeResource != null) {
                     List<OnmsResource> childResources = nodeResource.getChildResources();
                     for (OnmsResource resource : childResources) {
                         try {
@@ -151,6 +156,29 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
                             LOG.warn(e.getMessage(), e);
                         }
                     }
+                }
+            }
+        }
+
+        if (!Strings.isNullOrEmpty(generatedId) && m_jsonStore != null) {
+            Optional<String> result = m_jsonStore.get(generatedId, "resourceIds");
+            if (result.isPresent()) {
+                try {
+                    String[] resourceArray = new Gson().fromJson(result.get(), String[].class);
+                    for (String resourceId : resourceArray) {
+                        try {
+                            //Resources are saved as keyValue resourceId=node[12312].
+                            String[] keyValue = resourceId.split("=");
+                            if (keyValue.length == 2) {
+                                OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(keyValue[1]));
+                                graphResults.addGraphResultSet(createGraphResultSet(null, resource, reports, graphResults));
+                            }
+                        } catch (IllegalArgumentException e) {
+                            LOG.warn(e.getMessage(), e);
+                        }
+                    }
+                } catch (Exception e) {
+                    LOG.warn("Exception while parsing json string {}", result.get());
                 }
             }
         }
@@ -266,6 +294,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         Assert.state(m_resourceDao != null, "resourceDao property has not been set");
         Assert.state(m_graphDao != null, "graphDao property has not been set");
         Assert.state(m_rrdDao != null, "rrdDao property has not been set");
+        Assert.state(m_jsonStore != null, "jsonStore property has not been set");
     }
 
     /**
@@ -349,5 +378,12 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }
-    
+
+    /**
+     *
+     * @param jsonStore Set Json store.
+     */
+    public void setJsonStore(JsonStore jsonStore) {
+        m_jsonStore = jsonStore;
+    }
 }

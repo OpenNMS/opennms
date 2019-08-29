@@ -7,10 +7,10 @@
         http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
     ">
     <bean name="threshdDao" class="org.opennms.netmgt.config.dao.thresholding.impl.OnmsThreshdDao">
-        <constructor-arg ref="jsonStore"/>
+        <constructor-arg ref="postgresJsonStore"/>
     </bean>
     <bean name="thresholdingDao" class="org.opennms.netmgt.config.dao.thresholding.impl.OnmsThresholdingDao">
-        <constructor-arg ref="jsonStore"/>
+        <constructor-arg ref="postgresJsonStore"/>
     </bean>
     <onmsgi:service ref="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" />
     <onmsgi:service ref="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao" />
