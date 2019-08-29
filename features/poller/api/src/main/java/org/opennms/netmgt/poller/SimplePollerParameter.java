@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.poller;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
 import com.google.common.base.MoreObjects;
 
-public class SimplePollerParameter implements PollerParameter {
+public class SimplePollerParameter implements PollerParameter, Serializable {
     private final String value;
 
     public SimplePollerParameter(final String value) {

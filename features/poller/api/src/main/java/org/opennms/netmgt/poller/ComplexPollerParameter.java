@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ import org.w3c.dom.Element;
 
 import com.google.common.base.MoreObjects;
 
-public class ComplexPollerParameter implements PollerParameter {
+public class ComplexPollerParameter implements PollerParameter, Serializable {
     private final Element element;
 
     public ComplexPollerParameter(final Element element) {
