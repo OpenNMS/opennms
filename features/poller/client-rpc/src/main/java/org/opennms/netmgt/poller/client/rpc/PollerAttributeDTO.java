@@ -49,26 +49,26 @@ public class PollerAttributeDTO {
     @XmlAttribute(name="value")
     private String value;
 
-    @XmlAnyElement(lax=false)
+    @XmlAnyElement()
     private Element contents;
 
     public PollerAttributeDTO() {
         // no-arg constructor for JAXB
     }
 
-    public PollerAttributeDTO(String key, String value) {
+    public PollerAttributeDTO(final String key, final String value) {
         this.key = key;
         this.value = value;
     }
 
-    public PollerAttributeDTO(String key, PollerParameter contents) {
+    public PollerAttributeDTO(final String key, final PollerParameter contents) {
         this.key = key;
         contents.asSimple().ifPresent(simple -> this.value = simple.getValue());
         contents.asComplex().ifPresent(complex -> this.contents = complex.getElement());
     }
 
     public String getKey() {
-        return key;
+        return this.key;
     }
 
     public void setKey(String key) {
@@ -76,7 +76,7 @@ public class PollerAttributeDTO {
     }
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(String value) {
@@ -84,7 +84,7 @@ public class PollerAttributeDTO {
     }
 
     public Element getContents() {
-        return contents;
+        return this.contents;
     }
 
     public PollerParameter asPollerParameter() {
@@ -117,7 +117,7 @@ public class PollerAttributeDTO {
         final PollerAttributeDTO other = (PollerAttributeDTO) obj;
         return Objects.equals(this.key, other.key)
                 && Objects.equals(this.value, other.value)
-                && Objects.equals(this.contents, other.contents);
+                && (this.contents == other.contents || (this.contents != null && other.contents != null && this.contents.isEqualNode(other.contents)));
     }
 
     @Override

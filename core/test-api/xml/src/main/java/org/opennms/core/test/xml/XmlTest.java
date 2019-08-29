@@ -257,7 +257,7 @@ abstract public class XmlTest<T> {
         LOG.debug("Reference Object: {}", sampleObject);
 
         final StringWriter writer = new StringWriter();
-        JaxbUtils.marshal(sampleObject, writer);
+        JaxbUtils.marshal(sampleObject, writer, false);
         final String xml = writer.toString();
         LOG.debug("JAXB XML: {}", xml);
         return xml;

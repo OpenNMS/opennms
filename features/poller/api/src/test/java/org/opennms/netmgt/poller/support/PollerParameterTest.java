@@ -61,6 +61,13 @@ public class PollerParameterTest {
     }
 
     @Test
+    public void testComplexEquals() throws Exception {
+        final PollerParameter pp1 = PollerParameter.marshall(new TestData("test", 42));
+        final PollerParameter pp2 = PollerParameter.marshall(new TestData("test", 42));
+        assertEquals(pp1, pp2);
+    }
+
+    @Test
     public void testMarshall() throws Exception {
         final PollerParameter pp = PollerParameter.marshall(new TestData("test", 42));
         assertFalse(pp.asSimple().isPresent());

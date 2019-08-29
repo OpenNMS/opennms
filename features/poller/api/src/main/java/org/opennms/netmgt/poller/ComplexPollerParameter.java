@@ -37,6 +37,8 @@ import javax.xml.bind.Unmarshaller;
 import org.opennms.core.xml.JaxbUtils;
 import org.w3c.dom.Element;
 
+import com.google.common.base.MoreObjects;
+
 public class ComplexPollerParameter implements PollerParameter {
     private final Element element;
 
@@ -61,5 +63,26 @@ public class ComplexPollerParameter implements PollerParameter {
     @Override
     public Optional<ComplexPollerParameter> asComplex() {
         return Optional.of(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ComplexPollerParameter)) return false;
+
+        final ComplexPollerParameter that = (ComplexPollerParameter) o;
+        return this.element == that.element || (this.element != null && that.element != null && this.element.isEqualNode(that.element));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.element);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("element", this.element)
+                .toString();
     }
 }

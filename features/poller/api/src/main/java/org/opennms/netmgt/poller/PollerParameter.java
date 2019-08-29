@@ -32,10 +32,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMResult;
 
+import org.opennms.core.xml.JaxbUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -65,7 +68,14 @@ public interface PollerParameter {
             throw new RuntimeException(e);
         }
 
-        JAXB.marshal(value, new DOMResult(document));
+        final Marshaller marshaller = JaxbUtils.getMarshallerFor(value, null);
+
+        try {
+            marshaller.marshal(value, new DOMResult(document));
+        } catch (final JAXBException e) {
+            throw new RuntimeException(e);
+        }
+
         return complex(document.getDocumentElement());
     }
 }

@@ -31,6 +31,8 @@ package org.opennms.netmgt.poller;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.common.base.MoreObjects;
+
 public class SimplePollerParameter implements PollerParameter {
     private final String value;
 
@@ -50,5 +52,26 @@ public class SimplePollerParameter implements PollerParameter {
     @Override
     public Optional<ComplexPollerParameter> asComplex() {
         return Optional.empty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SimplePollerParameter)) return false;
+
+        final SimplePollerParameter that = (SimplePollerParameter) o;
+        return Objects.equals(this.value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.value);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("value", this.value)
+                .toString();
     }
 }
