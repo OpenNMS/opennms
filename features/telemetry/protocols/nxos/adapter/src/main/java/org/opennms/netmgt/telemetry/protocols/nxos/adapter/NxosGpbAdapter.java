@@ -142,7 +142,7 @@ public class NxosGpbAdapter extends AbstractPersistingAdapter {
         }
 
         try {
-            final CollectionSet collectionSet = builder.build(agent, msg);
+            final CollectionSet collectionSet = builder.build(agent, msg, msg.getMsgTimestamp());
             return Stream.of(new CollectionSetWithAgent(agent, collectionSet));
 
         } catch (final ScriptException e) {
