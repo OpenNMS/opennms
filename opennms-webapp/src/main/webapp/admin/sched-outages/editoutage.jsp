@@ -314,7 +314,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 		}
 	}
 
-	if (request.getParameter("deleteOutageType") != null) {
+	if (request.getParameter("deleteOutageType") != null && "true".equals(request.getParameter("deleteOutageType"))) {
 		theOutage.setType(null);
 		theOutage.clearTimes();
 	} else {
@@ -877,8 +877,9 @@ function updateOutageTypeDisplay(selectElement) {
 			<table class="table table-condensed table-borderless">
 				<tr>
 					<td>
+						<input type="hidden" name="deleteOutageType" id="deleteOutageType" value="false"/>
 						<% if (theOutage.getType() != null) { %>
-							<input type="image" src="images/modify.gif" name="deleteOutageType" value="true" /> <%= theOutage.getType() %>
+						<input type="image" src="images/modify.gif" id="deleteOutageTypeBtn" onclick="document.getElementById('deleteOutageType').value=true; document.getElementById('editOutage').submit();" /> <%= theOutage.getType() %>
 						<% } %>
 						<span style="<%= theOutage.getType() == null? "" : "display: none" %>">
 							<select id="outageTypeSelector" name="outageType" onChange="updateOutageTypeDisplay(this);">
