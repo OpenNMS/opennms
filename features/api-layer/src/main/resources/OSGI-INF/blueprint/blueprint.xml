@@ -30,6 +30,8 @@
   <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
   <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" availability="optional"/>
   <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" availability="mandatory"/>
+  <reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao" availability="mandatory"/>
+  <reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" availability="mandatory"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -298,6 +300,33 @@
       <argument ref="onmsTopologyDao"/>
       <argument ref="edgeMapper"/>
     </bean>
+  </service>
+  
+  <!-- Thresholding -->
+  <bean id="threhsoldingConfigExtensionManager" class="org.opennms.features.apilayer.config.ThresholdingConfigExtensionManager">
+    <argument ref="thresholdingDao"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.config.thresholding.ThresholdingConfigExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="threhsoldingConfigExtensionManager" />
+  </reference-list>
+
+  <service ref="threhsoldingConfigExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+  
+  <bean id="threshdConfigurationExtensionManager" class="org.opennms.features.apilayer.config.ThreshdConfigurationExtensionManager">
+    <argument ref="threshdDao"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.config.thresholding.ThreshdConfigurationExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="threshdConfigurationExtensionManager" />
+  </reference-list>
+
+  <service ref="threshdConfigurationExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
   </service>
 
 </blueprint>

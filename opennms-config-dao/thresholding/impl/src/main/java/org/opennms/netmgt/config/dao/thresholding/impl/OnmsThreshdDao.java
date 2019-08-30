@@ -30,30 +30,57 @@ package org.opennms.netmgt.config.dao.thresholding.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JacksonUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.common.api.SaveableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.FileSystemSaveableConfigContainer;
-import org.opennms.netmgt.config.dao.common.impl.JaxbToJsonStore;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
+import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
+import org.opennms.netmgt.config.threshd.Thresholder;
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThreshdDao, JaxbToJsonStore<ThreshdConfiguration> {
+public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThreshdDao {
     private final SaveableConfigContainer<ThreshdConfiguration> saveableConfigContainer;
+    private final ConfigReloadContainer<ThreshdConfiguration> extContainer;
+    private final ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
 
     @VisibleForTesting
     OnmsThreshdDao(JsonStore jsonStore, File configFile) {
         super(jsonStore);
         Objects.requireNonNull(configFile);
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class,
-                "threshd-configuration", Collections.singleton(getJsonWriterCallbackFunction(jsonStore, JSON_STORE_KEY,
-                ConfigDaoConstants.JSON_KEY_STORE_CONTEXT)), configFile);
+                "threshd-configuration", Collections.singleton(config -> onConfigChanged()), configFile);
+        extContainer = new ConfigReloadContainer.Builder<>(ThreshdConfiguration.class)
+                .withMerger((source, target) -> {
+                    if (source == null && target == null) {
+                        return new ThreshdConfiguration();
+                    } else if (source == null) {
+                        return target;
+                    } else if (target == null) {
+                        return source;
+                    }
+                    target.getPackages().addAll(source.getPackages());
+                    target.getThresholders().addAll(source.getThresholders());
+                    // Use the larger of the threads values
+                    getLargestThreads(source.getThreads(), target.getThreads())
+                            .ifPresent(target::setThreads);
+                    return target;
+                })
+                .build();
+
         reload();
     }
 
@@ -61,19 +88,83 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
         this(jsonStore, ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME));
     }
 
+    /**
+     * @return the merged configuration consisting of the filesystem configuration and any configuration provided by
+     * extensions
+     */
     @Override
-    public ThreshdConfiguration getConfig() {
+    public ThreshdConfiguration getReadOnlyConfig() {
+        return getMergedConfig();
+    }
+
+    /**
+     * @return just the configuration from the filesystem since configuration provided by extensions is read only
+     */
+    @Override
+    public ThreshdConfiguration getWriteableConfig() {
         return saveableConfigContainer.getConfig();
     }
 
     @Override
     public void reload() {
         saveableConfigContainer.reload();
-        super.reload();
     }
 
     @Override
     public void saveConfig() {
         saveableConfigContainer.saveConfig();
+    }
+
+    private ThreshdConfiguration getMergedConfig() {
+        ThreshdConfiguration filesystemConfig = saveableConfigContainer.getConfig();
+        ThreshdConfiguration externalConfig = extContainer.getObject();
+
+        if (filesystemConfig == null && externalConfig == null) {
+            return null;
+        } else if (externalConfig == null) {
+            return filesystemConfig;
+        } else if (filesystemConfig == null) {
+            return externalConfig;
+        }
+
+        // Create a merged config by combining the config from filesystem and the external config provided by extensions
+        ThreshdConfiguration mergedConfig = new ThreshdConfiguration();
+
+        // Use the larger of the threads values
+        getLargestThreads(filesystemConfig.getThreads(), externalConfig.getThreads())
+                .ifPresent(mergedConfig::setThreads);
+
+        List<Package> mergedPackages = new ArrayList<>();
+        mergedPackages.addAll(filesystemConfig.getPackages());
+        mergedPackages.addAll(externalConfig.getPackages());
+        mergedConfig.setPackages(Collections.unmodifiableList(mergedPackages));
+
+        List<Thresholder> mergedThresholders = new ArrayList<>();
+        mergedThresholders.addAll(filesystemConfig.getThresholders());
+        mergedThresholders.addAll(externalConfig.getThresholders());
+        mergedConfig.setThresholders(Collections.unmodifiableList(mergedThresholders));
+
+        return mergedConfig;
+    }
+
+    private synchronized void publishMergedConfig() {
+        try {
+            jsonStore.put(JSON_STORE_KEY, objectMapper.writeValueAsString(getMergedConfig()),
+                    ConfigDaoConstants.JSON_KEY_STORE_CONTEXT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onConfigChanged() {
+        super.reload();
+        publishMergedConfig();
+    }
+
+    private static Optional<Integer> getLargestThreads(Integer... threads) {
+        return Stream.of(threads)
+                .filter(Objects::nonNull)
+                .max(Integer::compareTo);
     }
 }

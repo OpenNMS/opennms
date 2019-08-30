@@ -64,7 +64,7 @@ public class SentinelThresholdingDaoTest {
                 .thenReturn(Optional.of(configToJson(configToServe)));
 
         ReadableThresholdingDao thresholdingDao = new SentinelThresholdingDao(mockJsonStore);
-        assertThat(thresholdingDao.getConfig(), equalTo(configToServe));
+        assertThat(thresholdingDao.getReadOnlyConfig(), equalTo(configToServe));
         
         groupToServe.setName("new name");
         when(mockJsonStore.getLastUpdated(AbstractThresholdingDao.JSON_STORE_KEY,
@@ -73,7 +73,7 @@ public class SentinelThresholdingDaoTest {
         when(mockJsonStore.get(AbstractThresholdingDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(Optional.of(configToJson(configToServe)));
         thresholdingDao.reload();
-        assertThat(thresholdingDao.getConfig(), equalTo(configToServe));
+        assertThat(thresholdingDao.getReadOnlyConfig(), equalTo(configToServe));
     }
 
     private String configToJson(ThresholdingConfig thresholdingConfig) throws IOException {

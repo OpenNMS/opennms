@@ -33,11 +33,25 @@ package org.opennms.netmgt.config.dao.common.api;
  */
 public interface WriteableDao<T> extends ReadableDao<T> {
     /**
+     * This method returns the mutable configuration object for which any changes made to it will be persisted and
+     * reflected after a call to {@link #saveConfig()}.
+     */
+    T getWriteableConfig();
+
+    /**
      * Save the current configuration held by the DAO.
      * <p>
      * The configuration held by the DAO may not necessarily be the same configuration reference as returned by
-     * {@link #getConfig()} if the config has been reloaded in between calls. This implies any changes to the reference
-     * returned by {@link #getConfig()} will not be reflected when saved in this case.
+     * {@link #getWriteableConfig()} if the config has been reloaded in between calls. This implies any changes to the
+     * reference
+     * returned by {@link #getWriteableConfig()} will not be reflected when saved in this case.
      */
     void saveConfig();
+
+    /**
+     * Notify the DAO that the configuration it tracks has changed.
+     * <p>
+     * Call this method after updating the filesystem configuration directly or after providing a config extension.
+     */
+    void onConfigChanged();
 }

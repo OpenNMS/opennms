@@ -113,7 +113,7 @@ public class OverrideablePollOutagesDaoImplTest {
         w.write(sb.toString());
         w.close();
         m_pollOutagesDao.overrideConfig(new FileSystemResource(m_configFile).getInputStream());
-        assertEquals(10003, m_pollOutagesDao.getConfig().getOutages().size());
+        assertEquals(10003, m_pollOutagesDao.getReadOnlyConfig().getOutages().size());
     }
 
     @After
@@ -156,7 +156,7 @@ public class OverrideablePollOutagesDaoImplTest {
         long start = System.currentTimeMillis();
         for (int i = 1; i <= 200; i++) {
             String outageName = "o" + Integer.toString(i);
-            Outage outage = m_pollOutagesDao.getConfig().getOutage(outageName);
+            Outage outage = m_pollOutagesDao.getReadOnlyConfig().getOutage(outageName);
             assertTrue(outage != null);
             assertTrue(m_pollOutagesDao.isNodeIdInOutage(i, outageName));
         }

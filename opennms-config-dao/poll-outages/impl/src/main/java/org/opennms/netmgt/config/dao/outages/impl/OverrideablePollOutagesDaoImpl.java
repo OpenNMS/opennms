@@ -81,7 +81,7 @@ public class OverrideablePollOutagesDaoImpl extends AbstractPollOutagesDao imple
         getWriteLock().lock();
 
         try {
-            consumerWithLock.accept(getConfig());
+            consumerWithLock.accept(getReadOnlyConfig());
         } finally {
             getWriteLock().unlock();
         }
@@ -93,7 +93,12 @@ public class OverrideablePollOutagesDaoImpl extends AbstractPollOutagesDao imple
     }
 
     @Override
-    public synchronized Outages getConfig() {
+    public void onConfigChanged() {
+        // no-op
+    }
+
+    @Override
+    public synchronized Outages getReadOnlyConfig() {
         return outagesConfig;
     }
 

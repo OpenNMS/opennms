@@ -74,9 +74,9 @@
 	if (deleteName != null) {
 		pollOutagesDao.getWriteLock().lock();
 		try {
-			pollOutagesDao.getConfig().removeOutage(deleteName);
+			pollOutagesDao.getWriteableConfig().removeOutage(deleteName);
 			//Remove from all the package configurations as well
-			for (final org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getConfig().getPackages()) {
+			for (final org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getWriteableConfig().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 
@@ -156,7 +156,7 @@
 
 				pollOutagesDao.getReadLock().lock();
 				try {
-					List<Outage> outages = pollOutagesDao.getConfig().getOutages();
+					List<Outage> outages = pollOutagesDao.getWriteableConfig().getOutages();
 			
 					Collection<String> notificationOutages = NotifdConfigFactory.getInstance().getConfiguration().getOutageCalendars();
 			
@@ -168,7 +168,7 @@
 					}
 
 					List<String> thresholdingOutages = new ArrayList<>();
-					for (final org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getConfig().getPackages()) {
+					for (final org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getWriteableConfig().getPackages()) {
 						thresholdingOutages.addAll(thisPackage.getOutageCalendars());
 					}
 			

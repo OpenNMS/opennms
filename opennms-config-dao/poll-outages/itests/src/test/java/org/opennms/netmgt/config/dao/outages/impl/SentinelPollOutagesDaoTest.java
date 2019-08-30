@@ -67,7 +67,7 @@ public class SentinelPollOutagesDaoTest {
                 .thenReturn(Optional.of(configToJson(configToServe)));
 
         ReadablePollOutagesDao threshdDao = new SentinelPollOutagesDao(mockJsonStore);
-        assertThat(threshdDao.getConfig(), CoreMatchers.equalTo(configToServe));
+        assertThat(threshdDao.getReadOnlyConfig(), CoreMatchers.equalTo(configToServe));
 
         configToServe.removeOutage(outageToAdd);
         when(mockJsonStore.getLastUpdated(AbstractPollOutagesDao.JSON_STORE_KEY,
@@ -76,7 +76,7 @@ public class SentinelPollOutagesDaoTest {
         when(mockJsonStore.get(AbstractPollOutagesDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(Optional.of(configToJson(configToServe)));
         threshdDao.reload();
-        assertThat(threshdDao.getConfig(), CoreMatchers.equalTo(configToServe));
+        assertThat(threshdDao.getReadOnlyConfig(), CoreMatchers.equalTo(configToServe));
     }
 
     private String configToJson(Outages outageConfig) throws IOException {

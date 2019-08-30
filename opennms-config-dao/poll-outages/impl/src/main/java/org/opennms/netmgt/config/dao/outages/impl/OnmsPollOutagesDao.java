@@ -35,27 +35,28 @@ import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JacksonUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.common.api.SaveableConfigContainer;
 import org.opennms.netmgt.config.dao.common.impl.FileSystemSaveableConfigContainer;
-import org.opennms.netmgt.config.dao.common.impl.JaxbToJsonStore;
 import org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao;
 import org.opennms.netmgt.config.poller.outages.Outages;
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements WriteablePollOutagesDao, JaxbToJsonStore<Outages> {
+public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements WriteablePollOutagesDao {
     private final SaveableConfigContainer<Outages> saveableConfigContainer;
+    private final ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
 
     @VisibleForTesting
     OnmsPollOutagesDao(JsonStore jsonStore, File configFile) {
         super(jsonStore);
         Objects.requireNonNull(configFile);
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(Outages.class, "poll-outages",
-                Collections.singleton(getJsonWriterCallbackFunction(jsonStore, JSON_STORE_KEY,
-                        ConfigDaoConstants.JSON_KEY_STORE_CONTEXT)), configFile);
+                Collections.singleton(config -> onConfigChanged()), configFile);
         reload();
     }
 
@@ -78,7 +79,7 @@ public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements Writea
         getWriteLock().lock();
 
         try {
-            consumerWithLock.accept(getConfig());
+            consumerWithLock.accept(getWriteableConfig());
         } finally {
             getWriteLock().unlock();
         }
@@ -90,12 +91,30 @@ public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements Writea
     }
 
     @Override
-    public Outages getConfig() {
+    public Outages getReadOnlyConfig() {
         return saveableConfigContainer.getConfig();
+    }
+
+    /**
+     * This DAO doesn't currently merge any configuration so we can serve the read only configuration directly.
+     */
+    @Override
+    public Outages getWriteableConfig() {
+        return getReadOnlyConfig();
     }
 
     @Override
     public void reload() {
         saveableConfigContainer.reload();
+    }
+
+    @Override
+    public void onConfigChanged() {
+        try {
+            jsonStore.put(JSON_STORE_KEY, objectMapper.writeValueAsString(saveableConfigContainer.getConfig()),
+                    ConfigDaoConstants.JSON_KEY_STORE_CONTEXT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

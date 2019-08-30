@@ -69,8 +69,6 @@ public interface ReadableThreshdDao extends ReadableDao<ThreshdConfiguration> {
      */
     boolean interfaceInPackage(String iface, org.opennms.netmgt.config.threshd.Package pkg);
 
-    Optional<Package> getPackage(String name);
-
     /**
      * Returns true if the service is part of the package and the status of the
      * service is set to "on". Returns false if the service is not in the

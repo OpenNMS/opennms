@@ -44,7 +44,7 @@ public class SentinelPollOutagesDao extends AbstractPollOutagesDao {
     }
 
     @Override
-    public Outages getConfig() {
+    public Outages getReadOnlyConfig() {
         return outagesReloadableConfigContainer.getConfig();
     }
 

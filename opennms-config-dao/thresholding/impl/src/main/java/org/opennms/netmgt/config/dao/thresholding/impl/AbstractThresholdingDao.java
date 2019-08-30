@@ -28,21 +28,12 @@
 
 package org.opennms.netmgt.config.dao.thresholding.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
-import org.opennms.netmgt.config.threshd.Basethresholddef;
-import org.opennms.netmgt.config.threshd.Group;
-import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
 public abstract class AbstractThresholdingDao implements ReadableThresholdingDao {
-    private final Map<String, Group> groupMap = new HashMap<>();
     final JsonStore jsonStore;
     public static final String JSON_STORE_KEY = "thresholds";
 
@@ -53,51 +44,5 @@ public abstract class AbstractThresholdingDao implements ReadableThresholdingDao
 
     AbstractThresholdingDao(JsonStore jsonStore) {
         this.jsonStore = Objects.requireNonNull(jsonStore);
-    }
-
-    /**
-     * Subclasses should call this reload after they have performed their reload logic.
-     */
-    @Override
-    public void reload() {
-        initGroupMap();
-    }
-
-    @Override
-    public String getRrdRepository(String groupName) {
-        return getGroup(groupName).getRrdRepository();
-    }
-
-    @Override
-    public synchronized Group getGroup(String groupName) {
-        Group group = groupMap.get(groupName);
-        if (group == null) {
-            throw new IllegalArgumentException("Thresholding group " + groupName + " does not exist.");
-        }
-        return group;
-    }
-
-    @Override
-    public Collection<Basethresholddef> getThresholds(String groupName) {
-        Group group = getGroup(groupName);
-        Collection<Basethresholddef> result = new ArrayList<>();
-        result.addAll(group.getThresholds());
-        result.addAll(group.getExpressions());
-        return result;
-    }
-
-    @Override
-    public synchronized Collection<String> getGroupNames() {
-        return Collections.unmodifiableCollection(groupMap.keySet());
-    }
-
-    synchronized void initGroupMap() {
-        ThresholdingConfig thresholdingConfig = getConfig();
-
-        if (thresholdingConfig != null) {
-            for (Group g : getConfig().getGroups()) {
-                groupMap.put(g.getName(), g);
-            }
-        }
     }
 }

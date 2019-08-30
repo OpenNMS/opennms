@@ -213,7 +213,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         writer.write(sb.toString());
         writer.close();
         
-        Outages oldConfig = m_pollOutagesDao.getConfig();
+        Outages oldConfig = m_pollOutagesDao.getReadOnlyConfig();
         m_pollOutagesDao.overrideConfig(new FileSystemResource(file).getInputStream());
 
         executeThresholdTest(new Double[] { 100.0 });
