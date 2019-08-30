@@ -36,6 +36,7 @@ import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.Select;
@@ -85,6 +86,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         testOption("Specific", "One-Time, From " + dateString + " 00:00:00 Through " + dateString + " 23:59:59");
     }
 
+    @Ignore
     public void testOption(final String option, final String text) throws Exception {
         // Visit the scheduled outage page.
         getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
