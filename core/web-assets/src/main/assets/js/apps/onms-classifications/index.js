@@ -13,6 +13,7 @@ const configTemplate = require('./views/config.html');
 const groupTemplate  = require('./views/group.html');
 
 const newRuleModalTemplate = require('./views/modals/new-rule-modal.html');
+const newGroupModalTemplate = require('./views/modals/new-group-modal.html');
 const importModalTemplate  = require('./views/modals/import-modal.html');
 const exportModalTemplate  = require('./views/modals/export-modal.html');
 
@@ -83,7 +84,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                     'get': {method: 'GET'},
                     'update': {method: 'PUT'},
                     'query': {method: 'GET', isArray: true},
-                    'delete': {method: 'DELETE', params: {id: -1 /*force to -1 to prevent accidentally deleting all groups*/}}
+                    'delete': {method: 'DELETE'},
                 }
             );
         })
@@ -125,14 +126,17 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             };
 
             $scope.refreshTabs = function(navigateToFirstGroup) {
-                return ClassificationGroupService.query({}, function(response) {
+                return ClassificationGroupService.query({
+                    limit: 20,
+                    orderBy: 'position',
+                }, function(response) {
                     // Remove disabled groups
                     $scope.groups = response.filter(function(group) {
                         return group.enabled === true
                     });
-                    // Sort by priority (highest first)
+                    // Sort by position (lowest first)
                     $scope.groups = $scope.groups.sort(function(l, r) {
-                        return l.priority - r.priority;
+                        return r.position - l.position;
                     });
                     $scope.groups = $scope.groups.reverse();
 
@@ -166,26 +170,122 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             $scope.refreshTabs(true);
 
         }])
-        .controller('ClassificationConfigController', ['$scope', '$rootScope', '$location', '$log', 'ClassificationGroupService', function($scope, $rootScope, $location, $log, ClassificationGroupService) {
+        .controller('ClassificationConfigController', ['$scope', '$rootScope', '$uibModal', '$location', '$log', 'ClassificationGroupService', function($scope, $rootScope, $uibModal, $location, $log, ClassificationGroupService) {
             $scope.groups = [];
             $scope.query = {
                 page: 1,
                 limit: 20,
                 totalItems: 0,
-                orderBy: 'priority',
-                order: 'desc'
             };
             $scope.updateGroup = function(group) {
                 group.$update({}, function() {
                     $scope.refreshTabs();
+                    $scope.refresh();
+                });
+            };
+            $scope.deleteGroup = function(group) {
+                group.$delete().then(function() {
+                    $scope.refreshTabs();
+                    $scope.refresh();
+                });
+            };
+            var openModal = function(group) {
+                return $uibModal.open({
+                    backdrop: false,
+                    controller: 'GroupModalController',
+                    templateUrl: newGroupModalTemplate,
+                    size: 'lg',
+                    resolve: {
+                        group: function() {
+                            return group;
+                        },
+                        groups: function () {
+                            return $scope.groups;
+                        },
+                        groupsTotalAmount: function () {
+                            return $scope.query.totalItems;
+                        }
+                    }
+                });
+            };
+            $scope.editGroup = function(group) {
+                var modalInstance = openModal(group);
+                modalInstance.closed.then(function () {
+                    $scope.refreshTabs();
+                    $scope.refresh();
+                }, function() {
+                    // modal was dismissed
+                    $scope.refresh();
+                });
+            };
+            $scope.addGroup = function(group) {
+                var modalInstance = openModal(group);
+                modalInstance.closed.then(function () {
+                    $scope.refreshTabs();
+                    $scope.refresh();
                 });
             };
             $scope.refresh = function() {
-                ClassificationGroupService.query({}, function(result, headers) {
+                var parameters = $scope.query || {};
+                ClassificationGroupService.query({
+                    limit: 20,
+                    offset: (parameters.page -1) * parameters.limit || 0,
+                    orderBy: 'position',
+                    order: 'asc'
+                }, function(result, headers) {
                     $scope.groups = result;
                     var contentRange = elementList.parseContentRange(headers('Content-Range'));
                     $scope.query.totalItems = contentRange.total;
                 });
+            };
+            // for drag and drop of groups (redefining position)
+            $scope.sortableGroups = {
+
+                start: function(e, ui) {
+                    // remember old index before moving
+                    angular.element(ui.item).data('oldIndex', ui.item.index());
+                },
+                stop: function(e, ui) {
+
+                    // Check Precondition:  item was actually moved
+                    var oldIndex =  angular.element(ui.item).data().oldIndex;
+                    var newIndex =  ui.item.index();
+                    if(oldIndex === newIndex) {
+                        ui.item.parent().sortable('cancel');
+                        return; // nothing to do
+                    }
+
+                    // Calculate and set new position (index + offset)
+                    var parameters = $scope.query || {};
+                    var offset =  (parameters.page -1) * parameters.limit || 0;
+                    var group = $scope.groups[newIndex];
+                    var position;
+                    if(newIndex -1 < 0) {
+                        // we are already at the beginning of the visible paged list
+                        position = offset;
+                    } else {
+                        var previousGroup = $scope.groups[newIndex -1];
+                        position = (newIndex > oldIndex) ? previousGroup.position : previousGroup.position + 1;
+                    }
+                    group.position = position;
+
+                    // Update backend
+                    var refreshCallback = function() {
+                        $scope.refreshTabs();
+                        $scope.refresh();
+                    };
+
+                    var handleErrorResponse = function(response) {
+                        if (response && response.data) {
+                            var error = response.data;
+                            $scope.error = {};
+                            $scope.error[error.context] = error.message;
+                        }
+                    };
+                    ClassificationGroupService.update(group, refreshCallback, handleErrorResponse);
+                },
+                cancel: ".unsortable",
+                items: "tr:not(.unsortable)"
             };
             $scope.refresh();
         }])
@@ -560,6 +660,37 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
 
             $scope.loadProtocols();
 
+        }])
+        .controller('GroupModalController', ['$scope', '$uibModalInstance', 'ClassificationGroupService', 'group', 'groups', 'groupsTotalAmount', function($scope, $uibModalInstance, ClassificationGroupService, group, groups, groupsTotalAmount) {
+            $scope.group = group || {enabled:true};
+            $scope.currentSelection = undefined;
+            $scope.buttonName = $scope.group.id ? 'Update' : 'Create';
+            $scope.groups = groups;
+            $scope.groupsTotalAmount = groupsTotalAmount;
+
+            var handleErrorResponse = function(response) {
+                if (response && response.data) {
+                    var error = response.data;
+                    $scope.error = {};
+                    $scope.error[error.context] = error.message;
+                }
+            };
+
+            $scope.save = function() {
+                // Close modal afterwards
+                var closeCallback = function() {
+                    $uibModalInstance.close();
+                };
+                if ($scope.group.id) {
+                    ClassificationGroupService.update($scope.group, closeCallback, handleErrorResponse);
+                } else {
+                    ClassificationGroupService.save($scope.group, closeCallback, handleErrorResponse);
+                }
+            };
+
+            $scope.cancel = function() {
+                $uibModalInstance.dismiss('Cancelled by User');
+            };
         }])
     ;
 }());

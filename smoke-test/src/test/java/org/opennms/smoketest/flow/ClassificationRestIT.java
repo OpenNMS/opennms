@@ -34,6 +34,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import org.junit.After;
@@ -180,9 +182,9 @@ public class ClassificationRestIT {
 
         // POST (create) two groups
         final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
-                .withEnabled(true).withReadOnly(false).withPriority(30).build());
+                .withEnabled(true).withReadOnly(false).withPosition(30).build());
         final GroupDTO group4 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group4").withDescription("another user defined group with name group4")
-                .withEnabled(true).withReadOnly(false).withPriority(30).build());
+                .withEnabled(true).withReadOnly(false).withPosition(30).build());
 
         // Create rule with group3
         RuleDTO rule = builder().withName("myrule").withDstPort("80").withGroup(group3).build();
@@ -210,7 +212,7 @@ public class ClassificationRestIT {
     public void verifyCRUDforGroup() {
         // POST (create) group
         final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
-                .withEnabled(true).withReadOnly(true).withPriority(30).build());
+                .withEnabled(true).withReadOnly(true).withPosition(30).build());
 
         //  POST (create) group with same name => shouldn't be allowed
         given().contentType(ContentType.JSON)
@@ -219,9 +221,13 @@ public class ClassificationRestIT {
                 .post("/groups").then().assertThat().statusCode(400) // bad request
                 .body(is(String.format("{ context: 'name', message: 'A group with name \"%s\" already exists' }", group3.getName())));
 
-        // Update
-        // TODO: Patrick add when update is implemented:
-        // - check that group can not be set to read only
+        // UPDATE
+        group3.setName("newNameOfGroup3");
+        group3.setReadOnly(true);
+        updateGroup(group3);
+        GroupDTO updatedGroup3 = getGroup(group3.getId());
+        assertEquals("newNameOfGroup3", updatedGroup3.getName());
+        assertFalse(updatedGroup3.isReadOnly()); // readonly cannot be changed
 
         // DELETE group
         given().param("groupId", group3.getId()).delete()
@@ -247,9 +253,6 @@ public class ClassificationRestIT {
         GroupDTO userDefinedGroup = getGroup(2);
         assertThat(predefinedGroup.getName(), is(Groups.SYSTEM_DEFINED));
         assertThat(userDefinedGroup.getName(), is(Groups.USER_DEFINED));
-
-        // try to modify group
-        // TODO: Patrick add check once we have added editing of groups
 
         // try to add new rule to group
         final RuleDTO httpRule = builder().withName("http").withDstPort("80").withProtocol("tcp").build();
@@ -278,6 +281,15 @@ public class ClassificationRestIT {
                 .then()
                 .extract().response().as(RuleDTO.class);
         given().delete(Integer.toString(rule.getId())).then().statusCode(400);
+
+        // try to modify group parameters
+        predefinedGroup.setName("new name");
+        predefinedGroup.setDescription("new description");
+        given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(predefinedGroup)
+                .put("/groups/"+predefinedGroup.getId()).then().assertThat().statusCode(400);
+
     }
 
     private GroupDTO saveAndRetrieveGroup(GroupDTO groupDTO) {
@@ -286,7 +298,7 @@ public class ClassificationRestIT {
         assertThat(receivedGroup.getId(), is(groupId));
         assertThat(receivedGroup.getDescription(), is(groupDTO.getDescription()));
         assertThat(receivedGroup.getName(), is(groupDTO.getName()));
-        assertThat(receivedGroup.getPriority(), is(groupDTO.getPriority()));
+        assertThat(receivedGroup.getPosition(), is(groupDTO.getPosition()));
         assertThat(receivedGroup.getRuleCount(), is(0)); // we just created group => must be empty
         assertThat(receivedGroup.isReadOnly(), is(false)); // must always be false no matter what we tried to save
         assertThat(receivedGroup.isEnabled(), is(groupDTO.isEnabled()));
@@ -302,6 +314,14 @@ public class ClassificationRestIT {
         final String[] split = header.split("/");
         int groupId = Integer.parseInt(split[split.length - 1]);
         return groupId;
+    }
+
+    private void updateGroup(GroupDTO groupDTO) {
+        given().put("groups/" + groupDTO.getId())
+                .then().log().body(true)
+                .assertThat()
+                .statusCode(201)
+                .contentType(ContentType.JSON);
     }
 
     private GroupDTO getGroup(int groupId) {

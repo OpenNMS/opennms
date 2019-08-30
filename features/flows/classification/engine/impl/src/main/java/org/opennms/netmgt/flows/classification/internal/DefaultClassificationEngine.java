@@ -78,7 +78,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         result.setSrcPort(rule.getDstPort());
         result.setProtocol(rule.getProtocol());
         result.setExporterFilter(rule.getExporterFilter());
-        result.setGroupPriority(rule.getGroupPriority());
+        result.setGroupPriority(rule.getGroupPosition());
         return result;
     }
 
@@ -157,7 +157,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
                 portRule.setSrcAddress(rule.getSrcAddress());
                 portRule.setDstAddress(rule.getDstAddress());
                 portRule.setExporterFilter(rule.getExporterFilter());
-                portRule.setGroupPriority(rule.getGroupPriority());
+                portRule.setGroupPriority(rule.getGroupPosition());
                 portRule.setPosition(rule.getPosition());
 
                 // Check weather to apply rule for src or dst port (both may be very unlikely, but possible)

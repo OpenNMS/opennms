@@ -40,10 +40,10 @@ public class RulePriorityComparator implements Comparator<RuleDefinition> {
         Objects.requireNonNull(r1);
         Objects.requireNonNull(r2);
 
-        // Sort by group priority (highest priority first)
-        int groupPriority1 = r1.getGroupPriority();
-        int groupPriority2 = r2.getGroupPriority();
-        int result = -1 * Integer.compare(groupPriority1, groupPriority2);
+        // Sort by group priority (lowest position first)
+        int groupPosition1 = r1.getGroupPosition();
+        int groupPosition2 = r2.getGroupPosition();
+        int result = Integer.compare(groupPosition1, groupPosition2);
 
         // If group priority is identical, sort by rule position (lowest position first)
         if (result == 0) {

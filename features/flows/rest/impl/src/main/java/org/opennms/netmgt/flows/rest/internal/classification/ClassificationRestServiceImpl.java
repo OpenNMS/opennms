@@ -111,7 +111,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         final QueryParameters.Order order = queryParameters.getOrder();
         if (order != null && order.getColumn() != null && order.getColumn().equalsIgnoreCase("position")) {
             criteriaBuilder.clearOrder();
-            criteriaBuilder.orderBy("group.priority", false);
+            criteriaBuilder.orderBy("group.position", true);
             criteriaBuilder.orderBy(order.getColumn(), queryParameters.getOrder().isAsc());
         }
 
@@ -177,7 +177,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setOmnidirectional(newRule.isOmnidirectional());
         rule.setExporterFilter(newValue.getExporterFilter());
         final Group oldGroup = rule.getGroup();
-        boolean groupChanged = newRule!=null && !oldGroup.getId().equals(newRule.getGroup().getId());
+        boolean groupChanged = !oldGroup.getId().equals(newRule.getGroup().getId());
         if(groupChanged) {
             final Group group = classificationService.getGroup(newRule.getGroup().getId());
             rule.setGroup(group);
@@ -267,7 +267,6 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response saveGroup(GroupDTO groupDTO) {
         final Group group = convert(groupDTO);
         group.setId(null);
-        group.setReadOnly(false); // user defined groups must be editable - otherwise they make no sense to have them
         final int groupId = classificationService.saveGroup(group);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
         final URI uri = builder.path(ClassificationRestService.class, "getGroup").build(groupId);
@@ -281,12 +280,20 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     }
 
     @Override
-    public Response updateGroup(int id, GroupDTO newValue) {
+    public Response updateGroup(int id, GroupDTO groupDTO) {
+        final Group newGroup = convert(groupDTO);
         final Group group = classificationService.getGroup(id);
+        group.setEnabled(newGroup.isEnabled());
+        group.setName(newGroup.getName());
+        group.setDescription(newGroup.getDescription());
 
-        // At the moment only toggling the enabled state is supported
-        group.setEnabled(newValue.isEnabled());
-        group.setReadOnly(false); // user defined groups must be editable - otherwise they make no sense to have them
+        // adjust position
+        Integer newPosition = groupDTO.getPosition();
+        if(newPosition != null) {
+            int oldPosition = group.getPosition();
+            int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
+            group.setPosition(newComputedPosition);
+        }
 
         classificationService.updateGroup(group);
         return Response.ok(convert(group)).build();
@@ -349,7 +356,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         groupDTO.setId(group.getId());
         groupDTO.setName(group.getName());
         groupDTO.setDescription(group.getDescription());
-        groupDTO.setPriority(group.getPriority());
+        groupDTO.setPosition(group.getPosition());
         groupDTO.setEnabled(group.isEnabled());
         groupDTO.setReadOnly(group.isReadOnly());
         groupDTO.setRuleCount(group.getRules().size());
@@ -359,12 +366,19 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     private static Group convert(GroupDTO groupDTO) {
         if (groupDTO == null) return null;
         Group group = new Group();
+        // if no position is set for the new rule we put it at the end of the list:
+        group.setPosition(groupDTO.getPosition() == null ? Integer.MAX_VALUE : groupDTO.getPosition());
         group.setId(groupDTO.getId());
-        group.setName(groupDTO.getName());
-        group.setDescription(groupDTO.getDescription());
-        group.setPriority(groupDTO.getPriority());
-        group.setEnabled(groupDTO.isEnabled());
-        group.setReadOnly(groupDTO.isReadOnly());
+        if (!Strings.isNullOrEmpty(groupDTO.getName())) {
+            group.setName(groupDTO.getName());
+        }
+        if (!Strings.isNullOrEmpty(groupDTO.getDescription())) {
+            group.setDescription(groupDTO.getDescription());
+        }
+        if (groupDTO.isEnabled() != null) {
+            group.setEnabled(groupDTO.isEnabled());
+        }
+        group.setReadOnly(false); // user defined groups must be editable - otherwise it makes no sense to have them
         return group;
     }
 

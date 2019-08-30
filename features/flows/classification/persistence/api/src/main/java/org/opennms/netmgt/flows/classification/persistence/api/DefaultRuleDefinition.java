@@ -78,7 +78,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
     }
 
     @Override
-    public int getGroupPriority() {
+    public int getGroupPosition() {
         return groupPriority;
     }
 

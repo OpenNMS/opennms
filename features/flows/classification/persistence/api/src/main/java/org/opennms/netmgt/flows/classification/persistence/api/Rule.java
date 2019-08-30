@@ -221,8 +221,8 @@ public class Rule implements RuleDefinition {
     }
 
     @Override
-    public int getGroupPriority() {
-        return group == null ? 0 : group.getPriority();
+    public int getGroupPosition() {
+        return group == null ? 0 : group.getPosition();
     }
 
     public void setGroup(Group group) {
