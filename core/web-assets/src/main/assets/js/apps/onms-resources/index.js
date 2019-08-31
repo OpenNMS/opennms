@@ -79,18 +79,22 @@ angular.module('onms-resources', [
   $scope.isCollapsed = {};
   $scope.nodeLink = undefined;
   $scope.nodeLabel = undefined;
+  $scope.nodeCriteria = undefined;
   $scope.url = 'graph/results.htm';
   $scope.reports = 'all';
   $scope.loaded = false;
 
   $scope.init = function(nodeCriteria, reports, endUrl) {
-    if (nodeCriteria === null || nodeCriteria === '') {
+    if (!nodeCriteria) {
       return;
     }
-    if (reports !== null && reports !== '') {
+    // Update node criteria in scope.
+    $scope.nodeCriteria = nodeCriteria;
+    
+    if (reports) {
       $scope.reports = reports;
     }
-    if (endUrl !== null && endUrl !== '') {
+    if (endUrl) {
       $scope.url = endUrl;
     }
 
@@ -176,15 +180,12 @@ angular.module('onms-resources', [
   };
 
   $scope.graphAll = function() {
-    var selected = [];
-    for (var key in $scope.filteredResources) {
-      if ($scope.filteredResources.hasOwnProperty(key)) {
-        _.each($scope.filteredResources[key], function(r) {
-          selected.push('resourceId=' + r.id);
-        });
-      }
+    // Graph All will render all graphs for specific node. Controller will fetch specific resources.
+    if ($scope.nodeCriteria) {
+      $window.location.href = getBaseHref() + $scope.url + '?nodeCriteria=' + $scope.nodeCriteria + ($scope.reports ? '&reports=' + $scope.reports : '');
+    } else {
+      growl.error('Invalid node.');
     }
-    $scope.doGraph(selected);
   };
 
   $scope.doGraph = function(selected) {

@@ -39,5 +39,11 @@
             <artifactId>org.apache.karaf.shell.core</artifactId>
             <version>${karafVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>${dropwizardMetricsVersion}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

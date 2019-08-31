@@ -45,6 +45,7 @@ import javax.script.SimpleBindings;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Uses an external script, executed via JSR-223, to generate a
@@ -99,8 +100,11 @@ public class ScriptedCollectionSetBuilder {
      * @return a collection set
      * @throws ScriptException
      */
-    public CollectionSet build(CollectionAgent agent, Object message) throws ScriptException {
+    public CollectionSet build(CollectionAgent agent, Object message, Long timestamp) throws ScriptException {
         final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
+        if (timestamp != null && timestamp > 0) {
+            builder.withTimestamp(new Date(timestamp));
+        }
         final SimpleBindings globals = new SimpleBindings();
         globals.put("agent", agent);
         globals.put("builder", builder);

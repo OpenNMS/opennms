@@ -152,7 +152,7 @@ public class JtiGpbAdapter extends AbstractPersistingAdapter {
         }
 
         try {
-            final CollectionSet collectionSet = builder.build(agent, jtiMsg);
+            final CollectionSet collectionSet = builder.build(agent, jtiMsg, jtiMsg.getTimestamp());
             return Stream.of(new CollectionSetWithAgent(agent, collectionSet));
 
         } catch (final ScriptException e) {

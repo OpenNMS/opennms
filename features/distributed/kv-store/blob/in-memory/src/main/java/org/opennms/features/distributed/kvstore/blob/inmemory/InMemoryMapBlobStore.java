@@ -95,4 +95,9 @@ public class InMemoryMapBlobStore extends AbstractAsyncKeyValueStore<byte[]> imp
 
         return OptionalLong.of(valueEntry.getValue());
     }
+
+    @Override
+    public String getName() {
+        return "In-Memory";
+    }
 }
