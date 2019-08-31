@@ -65,28 +65,31 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         deleteTestRequisition();
     }
 
+    @Ignore
     @Test
     public void testWeekly() throws Exception {
         testOption("Weekly", "Every Sunday, From 00:00:00 Through 23:59:59");
     }
 
+    @Ignore
     @Test
     public void testMonthly() throws Exception {
         testOption("Monthly", "Every Sunday, From 00:00:00 Through 23:59:59");
     }
 
+    @Ignore
     @Test
     public void testDaily() throws Exception {
         testOption("Daily", "Daily, From 00:00:00 Through 23:59:59");
     }
 
+    @Ignore
     @Test
     public void testSpecific() throws Exception {
         final String dateString = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
         testOption("Specific", "One-Time, From " + dateString + " 00:00:00 Through " + dateString + " 23:59:59");
     }
 
-    @Ignore
     public void testOption(final String option, final String text) throws Exception {
         // Visit the scheduled outage page.
         getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
