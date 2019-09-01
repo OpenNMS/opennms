@@ -281,20 +281,24 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
 
     @Override
     public Response updateGroup(int id, GroupDTO groupDTO) {
-        final Group newGroup = convert(groupDTO);
         final Group group = classificationService.getGroup(id);
-        group.setEnabled(newGroup.isEnabled());
-        group.setName(newGroup.getName());
-        group.setDescription(newGroup.getDescription());
-
-        // adjust position
-        Integer newPosition = groupDTO.getPosition();
-        if(newPosition != null) {
-            int oldPosition = group.getPosition();
-            int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
-            group.setPosition(newComputedPosition);
+        if (groupDTO.isEnabled() != null) {
+            group.setEnabled(groupDTO.isEnabled());
         }
-
+        if(!group.isReadOnly()) {
+            if (!Strings.isNullOrEmpty(groupDTO.getName())) {
+                group.setName(groupDTO.getName());
+            }
+            if (!Strings.isNullOrEmpty(groupDTO.getDescription())) {
+                group.setDescription(groupDTO.getDescription());
+            }
+            Integer newPosition = groupDTO.getPosition();
+            if(newPosition != null) {
+                int oldPosition = group.getPosition();
+                int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
+                group.setPosition(newComputedPosition);
+            }
+        }
         classificationService.updateGroup(group);
         return Response.ok(convert(group)).build();
     }
