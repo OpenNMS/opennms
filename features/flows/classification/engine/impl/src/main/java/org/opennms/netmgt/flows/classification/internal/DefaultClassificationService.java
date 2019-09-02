@@ -318,7 +318,7 @@ public class DefaultClassificationService implements ClassificationService {
 
     private void updateRulePositionsAndReloadEngine(final List<Rule> rules) {
 
-        // Update priority field
+        // Update position field
         for (int i=0; i<rules.size(); i++) {
             Rule rule = rules.get(i);
             rule.setPosition(i);
@@ -331,7 +331,7 @@ public class DefaultClassificationService implements ClassificationService {
 
     private void updateGroupPositionsAndReloadEngine(final List<Group> groups) {
 
-        // Update priority field
+        // Update position field
         for (int i=0; i<groups.size(); i++) {
             Group group = groups.get(i);
             group.setPosition(i);

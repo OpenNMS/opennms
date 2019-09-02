@@ -36,8 +36,8 @@ public class GroupDTOBuilder {
         return this;
     }
 
-    public GroupDTOBuilder withPosition(Integer priority){
-        this.groupDTO.setPosition(priority);
+    public GroupDTOBuilder withPosition(Integer position){
+        this.groupDTO.setPosition(position);
         return this;
     }
 

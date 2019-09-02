@@ -36,10 +36,10 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-public class RulePriorityComparatorTest {
+public class RulePositionComparatorTest {
 
     @Test
-    public void verifyRulePriorityComparator() {
+    public void verifyRulePositionComparator() {
 
         final Group group1 = new GroupBuilder().withName("group1").withPosition(1).build();
         final Rule rule1_1 = createAndAddRule(group1, 1);
@@ -53,7 +53,7 @@ public class RulePriorityComparatorTest {
 
         final List<Rule> expectedList = Lists.newArrayList(rule1_1, rule1_2, rule1_3, rule2_1, rule2_2, rule2_3);
         final List<Rule> actualRules = Lists.newArrayList(rule2_2, rule1_3, rule2_1, rule2_3, rule1_2, rule1_1);
-        actualRules.sort(new RulePriorityComparator());
+        actualRules.sort(new RulePositionComparator());
 
         assertEquals(expectedList, actualRules);
     }

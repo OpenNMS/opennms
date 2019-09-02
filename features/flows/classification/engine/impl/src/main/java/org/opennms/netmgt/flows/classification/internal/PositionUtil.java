@@ -39,7 +39,7 @@ class PositionUtil {
     /** Sorts the rules by its position. The given rule gets the lower position as another rule with the same position
      * => the given rule will be evaluated before another rule with the same position. */
     static List<Rule> sortRulePositions(Rule rule) {
-        // Load all rules of group and sort by priority (highest first) in that group
+        // Load all rules of group and sort by position (lowest first) in that group
         final List<Rule> rules = rule.getGroup().getRules();
         rules.sort(Comparator
                 .comparing(Rule::getPosition)

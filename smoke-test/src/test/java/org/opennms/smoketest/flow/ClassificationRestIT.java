@@ -38,6 +38,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -60,6 +63,8 @@ public class ClassificationRestIT {
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
+    private List<Integer> groupIsToDelete;
+
     @Before
     public void setUp() {
         RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
@@ -68,11 +73,15 @@ public class ClassificationRestIT {
         RestAssured.authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
         setEnabled(1, true);
         setEnabled(2, true);
+        groupIsToDelete = new ArrayList<>();
+        groupIsToDelete.add(2);
     }
 
     @After
     public void tearDown() {
-        given().param("groupId", "2").delete();
+        for(Integer groupId : groupIsToDelete) {
+            given().param("groupId", groupId).delete();
+        }
         RestAssured.reset();
     }
 
@@ -212,7 +221,7 @@ public class ClassificationRestIT {
     public void verifyCRUDforGroup() {
         // POST (create) group
         final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
-                .withEnabled(true).withReadOnly(true).withPosition(30).build());
+                .withEnabled(true).withReadOnly(true).withPosition(0).build());
 
         //  POST (create) group with same name => shouldn't be allowed
         given().contentType(ContentType.JSON)

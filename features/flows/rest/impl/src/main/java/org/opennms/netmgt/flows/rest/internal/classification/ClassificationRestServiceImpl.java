@@ -107,7 +107,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
                     Restrictions.ilike("protocol", query)).toCriteria();
         }
 
-        // Apply group priority sorting as well, if ordering is position
+        // Apply group position sorting as well, if ordering is position
         final QueryParameters.Order order = queryParameters.getOrder();
         if (order != null && order.getColumn() != null && order.getColumn().equalsIgnoreCase("position")) {
             criteriaBuilder.clearOrder();

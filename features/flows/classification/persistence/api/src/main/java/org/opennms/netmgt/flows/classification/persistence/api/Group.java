@@ -29,7 +29,6 @@
 package org.opennms.netmgt.flows.classification.persistence.api;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,7 +84,7 @@ public class Group {
     }
 
     public List<Rule> getRules() {
-        Collections.sort(rules, new RulePositionComparator());
+        rules.sort(new RulePositionComparator());
         return rules;
     }
 

@@ -106,8 +106,8 @@ public class Rule implements RuleDefinition {
 
     /**
      * The position of the rule within it's group.
-     * Global order must consider group.priority as well.
-     * See {@link RulePriorityComparator}.
+     * Global order must consider group.position as well.
+     * See {@link RulePositionComparator}.
      */
     @Column(name="position", nullable = false)
     private int position;
