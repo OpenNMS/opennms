@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.opennms.web.svclayer.support.DefaultGraphResultsService.RESOURCE_IDS_CONTEXT;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -148,7 +150,7 @@ public class ResourceRestService extends OnmsRestService {
         }
         String resourcesInJson = new Gson().toJson(resources);
         String key = UUID.nameUUIDFromBytes(resourcesInJson.getBytes()).toString();
-        m_jsonStore.put(key, resourcesInJson, "resourceIds");
+        m_jsonStore.put(key, resourcesInJson, RESOURCE_IDS_CONTEXT);
         String jsonKey = new Gson().toJson(key);
         return Response.ok(jsonKey).build();
     }

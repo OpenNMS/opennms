@@ -76,6 +76,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultGraphResultsService.class);
 
+	public static final String RESOURCE_IDS_CONTEXT = "resourceIds";
+
     private ResourceDao m_resourceDao;
 
     private GraphDao m_graphDao;
@@ -113,8 +115,9 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         graphResults.setRelativeTime(relativeTime);
         graphResults.setRelativeTimePeriods(m_periods);
         graphResults.setReports(reports);
+        graphResults.setNodeCriteria(nodeCriteria);
+        graphResults.setGeneratedId(generatedId);
 
-        // ResourceIds can be empty in case of GraphAll where resources are pulled from node.
         HashMap<ResourceId, List<OnmsResource>> resourcesMap = new HashMap<>();
         for (ResourceId resourceId : resourceIds) {
             LOG.debug("findResults: parent, childType, childName = {}, {}, {}", resourceId.parent, resourceId.type, resourceId.name);
@@ -143,6 +146,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             }
         }
 
+        // GraphAll case where all resources are fetched from node.
         if (!Strings.isNullOrEmpty(nodeCriteria)) {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node != null) {
@@ -159,9 +163,9 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
                 }
             }
         }
-
+        // GraphSelected case where all resources are fetched from generatedId
         if (!Strings.isNullOrEmpty(generatedId) && m_jsonStore != null) {
-            Optional<String> result = m_jsonStore.get(generatedId, "resourceIds");
+            Optional<String> result = m_jsonStore.get(generatedId, RESOURCE_IDS_CONTEXT);
             if (result.isPresent()) {
                 try {
                     String[] resourceArray = new Gson().fromJson(result.get(), String[].class);
