@@ -322,6 +322,7 @@ public class ClassificationRestIT {
                 .extract().header("Location");
         final String[] split = header.split("/");
         int groupId = Integer.parseInt(split[split.length - 1]);
+        this.groupIsToDelete.add(groupId);
         return groupId;
     }
 
@@ -506,7 +507,7 @@ public class ClassificationRestIT {
     @Test
     public void verifyImport() {
         // IMPORT
-        final String importCsv = "name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter;omnidirectional\nmagic-ulf;tcp;;;;1337;;";
+        final String importCsv = "group;name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter;omnidirectional\nuser-defined;magic-ulf;tcp;;;;1337;;";
         given().contentType("text/comma-separated-values")
                 .body(importCsv)
                 .post()

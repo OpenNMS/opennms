@@ -343,11 +343,12 @@ public class DefaultClassificationService implements ClassificationService {
     }
 
     private void checkForDuplicateName (Group group) {
-        // check for duplicate name:
-        if(countMatchingGroups(new CriteriaBuilder(Group.class)
-                .eq("name", group.getName())
-                .ne("id", group.getId())
-                .toCriteria()) > 0) {
+        CriteriaBuilder builder = new CriteriaBuilder(Group.class)
+                .eq("name", group.getName());
+        if(group.getId() !=null) {
+            builder.ne("id", group.getId());
+        }
+        if(countMatchingGroups(builder.toCriteria()) > 0) {
             throw new ClassificationException(ErrorContext.Entity, Errors.GROUP_NAME_NOT_UNIQUE, group.getName());
         }
     }
