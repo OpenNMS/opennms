@@ -51,7 +51,7 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class CsvServiceImpl implements CsvService {
 
-    public static final String[] HEADERS = {"group", "name","protocol","srcAddress","srcPort", "dstAddress", "dstPort", "exporterFilter", "omnidirectional"};
+    public static final String[] HEADERS = {"name","protocol","srcAddress","srcPort", "dstAddress", "dstPort", "exporterFilter", "omnidirectional"};
 
     public static final String HEADERS_STRING = String.join(";", HEADERS) + "\n";
 
@@ -64,7 +64,7 @@ public class CsvServiceImpl implements CsvService {
     }
 
     @Override
-    public CsvImportResult parseCSV(InputStream inputStream, boolean hasHeader) throws CSVImportException {
+    public CsvImportResult parseCSV(Group group, InputStream inputStream, boolean hasHeader) throws CSVImportException {
         Objects.requireNonNull(inputStream);
         final CsvImportResult result = new CsvImportResult();
         try {
@@ -77,20 +77,17 @@ public class CsvServiceImpl implements CsvService {
                     continue;
                 }
                 // Read Values
-                final String groupName = record.get(0);
-                final String name = record.get(1);
-                final String protocol = record.get(2);
-                final String srcAddress = record.get(3);
-                final String srcPort = record.get(4);
-                final String dstAddress = record.get(5);
-                final String dstPort = record.get(6);
-                final String exportFilter = record.get(7);
-                final String omnidirectional = record.get(8);
+                final String name = record.get(0);
+                final String protocol = record.get(1);
+                final String srcAddress = record.get(2);
+                final String srcPort = record.get(3);
+                final String dstAddress = record.get(4);
+                final String dstPort = record.get(5);
+                final String exportFilter = record.get(6);
+                final String omnidirectional = record.get(7);
 
                 // Set values
-                final Group group = new Group();
                 final Rule rule = new Rule();
-                group.setName(groupName);
                 rule.setGroup(group);
                 rule.setName("".equals(name) ? null : name);
                 rule.setDstPort("".equals(dstPort) ? null : dstPort);

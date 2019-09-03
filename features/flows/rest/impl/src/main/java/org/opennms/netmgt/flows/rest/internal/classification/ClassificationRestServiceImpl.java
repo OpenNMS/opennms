@@ -140,10 +140,10 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     }
 
     @Override
-    public Response importRules(UriInfo uriInfo, InputStream inputStream) {
+    public Response importRules(int groupId, UriInfo uriInfo, InputStream inputStream) {
         boolean skipHeader = Boolean.valueOf(UriInfoUtils.getValue(uriInfo, "hasHeader", "true"));
         boolean deleteExistingRules = Boolean.valueOf(UriInfoUtils.getValue(uriInfo, "deleteExistingRules", "true"));
-        classificationService.importRules(inputStream, skipHeader, deleteExistingRules);
+        classificationService.importRules(groupId, inputStream, skipHeader, deleteExistingRules);
         return Response.noContent().build();
     }
 

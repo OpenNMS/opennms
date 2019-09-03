@@ -537,7 +537,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                     $scope.errors = [];
                     $scope.failedRows = [];
                     $http({
-                        url: 'rest/classifications',
+                        url: 'rest/classifications/groups/'+group.id,
                         method: 'POST',
                         data: reader.result,
                         params: {'hasHeader': $scope.containsHeader, 'deleteExistingRules' : $scope.deleteExistingRules},

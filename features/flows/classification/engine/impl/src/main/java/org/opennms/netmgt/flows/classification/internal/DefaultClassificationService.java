@@ -29,9 +29,7 @@
 package org.opennms.netmgt.flows.classification.internal;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -54,7 +52,6 @@ import org.opennms.netmgt.flows.classification.internal.validation.RuleValidator
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
-import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
@@ -129,38 +126,37 @@ public class DefaultClassificationService implements ClassificationService {
     }
 
     @Override
-    public void importRules(InputStream inputStream, boolean hasHeader, boolean deleteExistingRules) throws CSVImportException {
+    public void importRules(int groupId, InputStream inputStream, boolean hasHeader, boolean deleteExistingRules) throws CSVImportException {
         runInTransaction(status -> {
+
+            // Get and check group
+            Group group = classificationGroupDao.get(groupId);
+            if(group == null) {
+                throw new ClassificationException(ErrorContext.Name, Errors.GROUP_NOT_FOUND, groupId);
+            }
+            if(group.isReadOnly()) {
+                throw new ClassificationException(ErrorContext.Name, Errors.GROUP_READ_ONLY, groupId);
+            }
+
             // Parse and validate the rules
-            final CsvImportResult result = csvService.parseCSV(inputStream, hasHeader);
+            final CsvImportResult result = csvService.parseCSV(group, inputStream, hasHeader);
             if (!result.isSuccess()) {
                 throw new CSVImportException(result);
             }
 
-            final Map<String, Group> allGroups = new HashMap<>();
-            final Criteria criteria = new CriteriaBuilder(Group.class)
-                    .ne("name", Groups.SYSTEM_DEFINED)
-                    .toCriteria();
-            final List<Group> groupsList = classificationGroupDao.findMatching(criteria);
-
-            for (Group group : groupsList) {
-                allGroups.put(group.getName(), group);
-                // Remove existing rules and afterwards add new rules
-                if (deleteExistingRules) {
-                    for (Rule eachRule : group.getRules()) {
-                        classificationRuleDao.delete(eachRule);
-                    }
-                    group.getRules().clear();
+            // Remove existing rules and afterwards add new rules
+            if (deleteExistingRules) {
+                for (Rule eachRule : group.getRules()) {
+                    classificationRuleDao.delete(eachRule);
                 }
+                group.getRules().clear();
             }
+
+            // Add new rules
             final List<Rule> rules = result.getRules();
             for (int i=0; i<rules.size(); i++) {
                 final Rule rule = rules.get(i);
                 try {
-                    Group group = allGroups.get(rule.getGroup().getName());
-                    if(group == null) {
-                        throw new ClassificationException(ErrorContext.Name, Errors.GROUP_NOT_FOUND, rule.getGroup().getName());
-                    }
                     groupValidator.validate(group, rule);
                     group.addRule(rule);
                 } catch (ClassificationException ex) {
@@ -173,11 +169,9 @@ public class DefaultClassificationService implements ClassificationService {
                 throw new CSVImportException(result);
             }
 
-            // Reload engine for all groups
-            for(Group group : allGroups.values()) {
-                updateRulePositionsAndReloadEngine(PositionUtil.sortRulePositions(group.getRules()));
-                classificationGroupDao.saveOrUpdate(group);
-            }
+            updateRulePositionsAndReloadEngine(PositionUtil.sortRulePositions(group.getRules()));
+            classificationGroupDao.saveOrUpdate(group);
+
             return null;
         });
     }

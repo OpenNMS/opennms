@@ -507,10 +507,10 @@ public class ClassificationRestIT {
     @Test
     public void verifyImport() {
         // IMPORT
-        final String importCsv = "group;name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter;omnidirectional\nuser-defined;magic-ulf;tcp;;;;1337;;";
+        final String importCsv = "name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter;omnidirectional\nmagic-ulf;tcp;;;;1337;;";
         given().contentType("text/comma-separated-values")
                 .body(importCsv)
-                .post()
+                .post("groups/1")
                 .then()
                 .assertThat().statusCode(204);
 

@@ -69,7 +69,7 @@ public class CsvServiceTest {
 
         // Verify output
         assertThat(rows.length, is(2));
-        assertThat(rows[1], is(Groups.USER_DEFINED + ";dummy;;;;;;;false"));
+        assertThat(rows[1], is("dummy;;;;;;;false"));
     }
 
     @Test
@@ -90,20 +90,19 @@ public class CsvServiceTest {
 
         // Verify output
         assertThat(rows.length, is(2));
-        assertThat(rows[1], is(Groups.USER_DEFINED + ";dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases';true"));
+        assertThat(rows[1], is("dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases';true"));
     }
 
     @Test
     public void verifyParsingFullyDefined() {
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
-        final List<Rule> rules = csvService.parseCSV(
+        final List<Rule> rules = csvService.parseCSV(group,
                 new ByteArrayInputStream(
-                        (Groups.USER_DEFINED + ";dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases';true").getBytes()),
+                        ("dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases';true").getBytes()),
                 false
                 ).getRules();
         assertThat(rules, hasSize(1));
         final Rule rule = rules.get(0);
-        assertThat(rule.getGroup().getName(), is(Groups.USER_DEFINED));
         assertThat(rule.getId(), is(nullValue()));
         assertThat(rule.getName(), is("dummy"));
         assertThat(rule.getProtocol(), is("tcp,udp,icmp"));
@@ -119,10 +118,9 @@ public class CsvServiceTest {
     public void verifyParsingEmpty() {
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
 
-        final List<Rule> rules = csvService.parseCSV(new ByteArrayInputStream(";;;;;;;;".getBytes()), false).getRules();
+        final List<Rule> rules = csvService.parseCSV(group, new ByteArrayInputStream(";;;;;;;".getBytes()), false).getRules();
         assertThat(rules, hasSize(1));
         final Rule rule = rules.get(0);
-        assertThat(rule.getGroup().getName(), is(""));
         assertThat(rule.getId(), is(nullValue()));
         assertThat(rule.getDstPort(), is(nullValue()));
         assertThat(rule.getName(), is(nullValue()));
@@ -134,7 +132,7 @@ public class CsvServiceTest {
     @Test
     public void verifyParsingWithErrors() {
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
-        final CsvImportResult csvImportResult = csvService.parseCSV(new ByteArrayInputStream("\n\n".getBytes()), false);
+        final CsvImportResult csvImportResult = csvService.parseCSV(group, new ByteArrayInputStream("\n\n".getBytes()), false);
         assertThat(csvImportResult.getErrorMap().size(), is(2));
     }
 }

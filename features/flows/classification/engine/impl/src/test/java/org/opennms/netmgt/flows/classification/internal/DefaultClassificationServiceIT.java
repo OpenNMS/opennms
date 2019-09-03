@@ -132,7 +132,7 @@ public class DefaultClassificationServiceIT {
 
         // Import
         final InputStream inputStream = new ByteArrayInputStream(csv.getBytes());
-        classificationService.importRules(inputStream, true, true);
+        classificationService.importRules(userGroupDb.getId(), inputStream, true, true);
 
         // Verify
         assertThat(ruleDao.countAll(), is(3));
@@ -156,7 +156,7 @@ public class DefaultClassificationServiceIT {
 
         // Import
         final InputStream inputStream = new ByteArrayInputStream(csv.getBytes());
-        classificationService.importRules(inputStream, false, true);
+        classificationService.importRules(userGroupDb.getId(), inputStream, false, true);
 
         // Verify
         assertThat(ruleDao.countAll(), is(2));
@@ -192,7 +192,7 @@ public class DefaultClassificationServiceIT {
                         .withDstAddress("127.0.0.1")
                         .withProtocol("TCP,UDP"))
                 .build();
-        classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), true, true);
+        classificationService.importRules(userGroupDb.getId(), new ByteArrayInputStream(csv.getBytes()), true, true);
 
         // Verify original one is deleted, but count is still 1
         assertThat(ruleDao.findByDefinition(rule), hasSize(0));
@@ -226,7 +226,7 @@ public class DefaultClassificationServiceIT {
         boolean hasHeader = false;
         boolean deleteExistingRules = false;
         final String csv = new CsvBuilder().withRule(rule2).withHeader(hasHeader).build();
-        classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), hasHeader, deleteExistingRules);
+        classificationService.importRules(userGroupDb.getId(), new ByteArrayInputStream(csv.getBytes()), hasHeader, deleteExistingRules);
         assertThat(ruleDao.countAll(), is(2));
 
         // Verify original one is retained, and new one was added

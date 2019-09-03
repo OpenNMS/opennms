@@ -76,7 +76,6 @@ public class CsvBuilder {
                 rules.stream()
                         .map(rule ->
                                 String.format(rowFormat,
-                                        rule.getGroup() == null ? "" : rule.getGroup().getName(),
                                         rule.getName() == null ? "" : rule.getName(),
                                         rule.getProtocol() == null ? "" : rule.getProtocol(),
                                         rule.getSrcAddress() == null ? "" : rule.getSrcAddress(),

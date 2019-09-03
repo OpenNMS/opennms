@@ -101,8 +101,9 @@ public interface ClassificationRestService {
     Response updateGroup(@PathParam("id") int id, GroupDTO newValue);
 
     @POST
+    @Path("groups/{id}")
     @Consumes("text/comma-separated-values")
-    Response importRules(@Context UriInfo uriInfo, InputStream inputStream);
+    Response importRules(@PathParam("id") int id, @Context UriInfo uriInfo, InputStream inputStream);
 
     @GET
     @Path("protocols")
