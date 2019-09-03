@@ -1,7 +1,7 @@
 <div id="groupModal">
   <div class="modal-header">
-    <h5 class="modal-title" ng-show="classification.id === undefined">Create Classification Group</h5>
-    <h5 class="modal-title" ng-show="classification.id !== undefined">Edit Classification Group</h5>
+    <h5 class="modal-title" ng-show="group.id === undefined">Create Classification Group</h5>
+    <h5 class="modal-title" ng-show="group.id !== undefined">Edit Classification Group</h5>
   </div>
   <div class="modal-body">
     <form name="groupForm" novalidate>
@@ -13,9 +13,9 @@
         <button class="btn btn-link"
                 uib-popover-html="'<div>Groups on low positions will be evaluated first:<br>position 0 -&gt; position 1 -&gt; position 2 -&gt; ...</div>'"
                 popover-trigger="'outsideClick'"><i class="fa fa-question-circle"/></button>
-        <input class="form-control" id="group.position" name="position" placeholder="9999" type="number" ng-min="0" ng-max="{{groupsTotalAmount-1}}" step="1" pattern="[0-9]*" ng-model="group.position"
+        <input class="form-control" id="group.position" name="position" placeholder="{{maxPosition}}" type="number" min="0" max="{{maxPosition}}" step="1" pattern="[0-9]*" ng-model="group.position"
                ng-class="{ 'is-invalid' : groupForm.position.$invalid || error.position }" />
-        <div ng-show="groupForm.position.$invalid" class="invalid-feedback">Position must be between 0 and {{groupsTotalAmount-1}}.</div>
+        <div ng-show="groupForm.position.$invalid" class="invalid-feedback">Position must be between 0 and {{maxPosition}}.</div>
       </div>
       <div class="form-group form-row">
         <label class="col-form-label" for="group.name">Group Name</label>

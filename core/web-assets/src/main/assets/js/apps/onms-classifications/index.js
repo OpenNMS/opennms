@@ -579,7 +579,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             function($scope, $http, $uibModalInstance, group, $window) {
                 $scope.group = group;
                 $scope.export = {};
-                $scope.export.requestedFileName = group.id + '_rules.csv';
+                $scope.export.requestedFileName = group.name + '_rules.csv';
                 $scope.exportGroup = function() {
                     var requestedFileName = $scope.export.requestedFileName.trim();
                     $window.location = 'rest/classifications/groups/' + $scope.group.id +'?filename='
@@ -595,6 +595,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             $scope.selectedProtocols = [];
             $scope.buttonName = $scope.classification.id ? 'Update' : 'Create';
             $scope.group = group;
+            $scope.maxPosition = (classification === null) ? group.ruleCount : group.ruleCount-1;
             $scope.selectableGroups = groups.filter((group) => group.readOnly === false);
 
             var convertStringArrayToProtocolsArray = function(string) {
@@ -667,6 +668,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             $scope.buttonName = $scope.group.id ? 'Update' : 'Create';
             $scope.groups = groups;
             $scope.groupsTotalAmount = groupsTotalAmount;
+            $scope.maxPosition = (group === undefined) ? groupsTotalAmount-1 : groupsTotalAmount-2; // pre-defined group has always the last position
 
             var handleErrorResponse = function(response) {
                 if (response && response.data) {
