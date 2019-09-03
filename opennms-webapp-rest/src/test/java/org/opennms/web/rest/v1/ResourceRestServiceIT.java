@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -56,6 +57,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdStrategyFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.svclayer.support.DefaultGraphResultsService;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -178,14 +180,14 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 "node[homeNetwork:1550956829009].interfaceSnmp[docker0-0242ddee5bdc]"};
         String jsonString = new Gson().toJson(resources);
         MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_JSON, url, jsonString, 200);
-        String generatedId = response.getContentAsString();
-        Optional<String> resourceIds = jsonStore.get(generatedId, "resourceIds");
+        String generatedId = new Gson().fromJson(response.getContentAsString(), String.class);
+        Optional<String> resourceIds = jsonStore.get(generatedId, DefaultGraphResultsService.RESOURCE_IDS_CONTEXT);
         assertTrue(resourceIds.isPresent());
         String[] savedResources = new Gson().fromJson(resourceIds.get(), String[].class);
-        assertEquals(resources, savedResources);
+        assertArrayEquals(resources, savedResources);
         //Do another post with same resources, it should generate same Id.
         response = sendData(POST, MediaType.APPLICATION_JSON, url, jsonString, 200);
-        String  regeneratedId = response.getContentAsString();
+        String  regeneratedId = new Gson().fromJson(response.getContentAsString(), String.class);
         assertEquals(generatedId, regeneratedId);
 
     }
