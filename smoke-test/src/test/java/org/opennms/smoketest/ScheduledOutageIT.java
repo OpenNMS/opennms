@@ -36,7 +36,6 @@ import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.Select;
@@ -45,6 +44,7 @@ import org.openqa.selenium.support.ui.Select;
  * Verifies that the scheduled outage text is correctly displayed. See LTS-233.
  */
 public class ScheduledOutageIT extends OpenNMSSeleniumIT {
+
     @Before
     public void beforeClass() throws Exception {
         final String node = "<node type=\"A\" label=\"TestMachine\" foreignSource=\"" + REQUISITION_NAME + "\" foreignId=\"TestMachine\">" +
@@ -65,25 +65,21 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         deleteTestRequisition();
     }
 
-    @Ignore
     @Test
     public void testWeekly() throws Exception {
         testOption("Weekly", "Every Sunday, From 00:00:00 Through 23:59:59");
     }
 
-    @Ignore
     @Test
     public void testMonthly() throws Exception {
         testOption("Monthly", "Every Sunday, From 00:00:00 Through 23:59:59");
     }
 
-    @Ignore
     @Test
     public void testDaily() throws Exception {
         testOption("Daily", "Daily, From 00:00:00 Through 23:59:59");
     }
 
-    @Ignore
     @Test
     public void testSpecific() throws Exception {
         final String dateString = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
@@ -96,7 +92,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         // Enter the name...
         enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), "My-Scheduled-Outage");
         // ...and hit the button.
-        findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newOutage']").click();
+        findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//button[@name='newOutage']").click();
 
         // Wait till the editor page appears.
         with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: My-Scheduled-Outage"));
@@ -104,6 +100,8 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         findElementByXpath("//form[@id='matchAnyForm']//input[@name='matchAny']").click();
         // ...and confirm the alert box.
         getDriver().switchTo().alert().accept();
+
+        getDriver().switchTo().defaultContent();
 
         // Set the specified outage type...
         new Select(findElementByXpath("//select[@id='outageTypeSelector']")).selectByVisibleText(option);
