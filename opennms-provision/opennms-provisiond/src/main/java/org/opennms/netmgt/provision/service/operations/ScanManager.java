@@ -193,11 +193,11 @@ public class ScanManager {
             }
 
             for(final SnmpInstId ipAddr : ipAddrs) {   
-                m_ipAddrTable.updateIpInterfaceData(node, ipAddr.toString());
+                m_ipAddrTable.updateIpInterfaceData(node, InetAddressUtils.addr(ipAddr.toString()));
             }
 
             for (final InetAddress addr : ipAddresses) {
-            	m_ipAddressTable.updateIpInterfaceData(node, InetAddressUtils.str(addr));
+            	m_ipAddressTable.updateIpInterfaceData(node, addr);
             }
         } catch (final InterruptedException e) {
             LOG.info("thread interrupted while updating SNMP data", e);

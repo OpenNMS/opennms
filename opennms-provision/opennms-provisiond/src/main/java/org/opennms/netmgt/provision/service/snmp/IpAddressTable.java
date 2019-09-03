@@ -195,7 +195,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
      */
     public void updateIpInterfaceData(final OnmsNode node) {
         for(final IpAddressTableEntry entry : getEntries()) {
-            updateIpInterfaceData(node, InetAddressUtils.str(entry.getIpAddress()));
+            updateIpInterfaceData(node, entry.getIpAddress());
         }
     }
 
@@ -205,7 +205,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      * @param ipAddr a {@link java.lang.String} object.
      */
-    public void updateIpInterfaceData(final OnmsNode node, final String ipAddr) {
+    public void updateIpInterfaceData(final OnmsNode node, final InetAddress ipAddr) {
     	OnmsIpInterface ipIf = node.getIpInterfaceByIpAddress(ipAddr);
         if (ipIf == null) {
             ipIf = new OnmsIpInterface(ipAddr, node);
@@ -236,7 +236,6 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
 
         }
 
-        ipIf.setIpHostName(ipAddr);
     }
 
     /**
