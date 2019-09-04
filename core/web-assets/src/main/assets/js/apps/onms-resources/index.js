@@ -105,8 +105,8 @@ angular.module('onms-resources', [
       $scope.nodeLabel = data.label;
       $scope.loaded = true;
       $scope.hasResources = data.children.resource.length > 0;
-      var reduced = _.map(data.children.resource, function(obj) {
-	    var resource = {
+      var reduced = _.map(data.children.resource, function (obj) {
+        var resource = {
           id: obj.id,
           label: obj.label,
           typeLabel: obj.typeLabel,
@@ -190,18 +190,19 @@ angular.module('onms-resources', [
   };
 
   $scope.doGraph = function(selected) {
+    // Save resources with an ID and form url with generatedId.
     if (selected.length > 0) {
       $http.post('rest/resources/generateId', selected)
-      .success(function(response) {
-        $scope.generatedId = response;
-        if($scope.generatedId) {
+        .success(function (response) {
+          $scope.generatedId = response;
+          if ($scope.generatedId) {
             $window.location.href = getBaseHref() + $scope.url + '?generatedId=' + $scope.generatedId + ($scope.reports ? '&reports=' + $scope.reports : '');
-        } else {
+          } else {
             $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
-        }
-      }).error(function(error, status) {
-        $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
-      });
+          }
+        }).error(function (error, status) {
+          $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
+        });
     } else {
       growl.error('Please select at least one resource.');
     }

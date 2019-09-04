@@ -90,6 +90,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
     private JsonStore m_jsonStore;
 
+    private Gson m_gson = new Gson();
+
     private RelativeTimePeriod[] m_periods;
 
     /**
@@ -168,7 +170,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             Optional<String> result = m_jsonStore.get(generatedId, RESOURCE_IDS_CONTEXT);
             if (result.isPresent()) {
                 try {
-                    String[] resourceArray = new Gson().fromJson(result.get(), String[].class);
+                    String[] resourceArray = m_gson.fromJson(result.get(), String[].class);
                     for (String resourceId : resourceArray) {
                         try {
                             //Resources are saved as keyValue resourceId=node[12312].
@@ -383,9 +385,11 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         m_eventProxy = eventProxy;
     }
 
+
     /**
+     * <p>setJsonStore</p>
      *
-     * @param jsonStore Set Json store.
+     * @param jsonStore a @{@link JsonStore} object.
      */
     public void setJsonStore(JsonStore jsonStore) {
         m_jsonStore = jsonStore;

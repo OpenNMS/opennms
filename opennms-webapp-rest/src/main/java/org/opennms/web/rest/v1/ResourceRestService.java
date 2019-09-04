@@ -57,6 +57,7 @@ import org.opennms.netmgt.model.resource.ResourceDTOCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,7 +82,10 @@ public class ResourceRestService extends OnmsRestService {
     private ResourceDao m_resourceDao;
 
     @Autowired
+    @Qualifier("postgresJsonStore")
     private JsonStore m_jsonStore;
+
+    private Gson m_gson = new Gson();
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
@@ -145,14 +149,14 @@ public class ResourceRestService extends OnmsRestService {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response saveResourcesWithId(String[] resources) {
-        if (m_jsonStore == null) {
-            throw getException(Status.NOT_FOUND, "No JsonStore registered.");
-        }
-        String resourcesInJson = new Gson().toJson(resources);
+
+        String resourcesInJson = m_gson.toJson(resources);
+        // The generated key will be same for a given input.
         String key = UUID.nameUUIDFromBytes(resourcesInJson.getBytes()).toString();
         m_jsonStore.put(key, resourcesInJson, RESOURCE_IDS_CONTEXT);
-        String jsonKey = new Gson().toJson(key);
+        String jsonKey = m_gson.toJson(key);
         return Response.ok(jsonKey).build();
+
     }
 
 }
