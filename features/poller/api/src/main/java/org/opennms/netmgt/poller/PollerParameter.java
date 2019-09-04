@@ -28,19 +28,23 @@
 
 package org.opennms.netmgt.poller;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.validation.SchemaFactory;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public interface PollerParameter {
     Optional<SimplePollerParameter> asSimple();
@@ -63,7 +67,8 @@ public interface PollerParameter {
 
         final Document document;
         try {
-            document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            document = factory.newDocumentBuilder().newDocument();
         } catch (final ParserConfigurationException e) {
             throw new RuntimeException(e);
         }

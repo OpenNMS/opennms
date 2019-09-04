@@ -175,11 +175,7 @@ public abstract class JaxbUtils {
     }
 
     public static void marshal(final Object obj, final Writer writer) {
-        marshal(obj, writer, true);
-    }
-
-    public static void marshal(final Object obj, final Writer writer, boolean formatted) {
-        final Marshaller jaxbMarshaller = getMarshallerFor(obj, null, formatted);
+        final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
         try {
             jaxbMarshaller.marshal(obj, writer);
         } catch (final JAXBException e) {
@@ -310,10 +306,6 @@ public abstract class JaxbUtils {
     }
 
     public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext) {
-        return getMarshallerFor(obj, jaxbContext, true);
-    }
-
-    public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext, final boolean formatted) {
         final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 
         Map<Class<?>, Marshaller> marshallers = m_marshallers.get();
@@ -338,7 +330,7 @@ public abstract class JaxbUtils {
             }
             final Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formatted);
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             if (context.getClass().getName().startsWith("org.eclipse.persistence.jaxb")) {
                 marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new EmptyNamespacePrefixMapper());

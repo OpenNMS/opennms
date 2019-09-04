@@ -140,7 +140,7 @@ public class Parameter implements Serializable {
             if (other.m_contents != null) {
                 return false;
             }
-        } else if (!m_contents.equals(other.m_contents)) {
+        } else if (!m_contents.isEqualNode(other.m_contents)) {
             return false;
         }
         if (m_key == null) {
