@@ -38,7 +38,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Verifies that the scheduled outage text is correctly displayed. See LTS-233.
@@ -101,10 +104,17 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         // ...and confirm the alert box.
         getDriver().switchTo().alert().accept();
 
-        getDriver().switchTo().defaultContent();
+        final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 10);
+        final String outageTypeSelectorXPath = "//select[@id='outageTypeSelector']";
+
+        try {
+            webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(outageTypeSelectorXPath)));
+        } catch (final StaleElementReferenceException e) {
+            webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(outageTypeSelectorXPath)));
+        }
 
         // Set the specified outage type...
-        new Select(findElementByXpath("//select[@id='outageTypeSelector']")).selectByVisibleText(option);
+        new Select(findElementByXpath(outageTypeSelectorXPath)).selectByVisibleText(option);
         // ...and apply.
         findElementByXpath("//input[@name='setOutageType']").click();
         // now add the outage
