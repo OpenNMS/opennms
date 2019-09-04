@@ -155,7 +155,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
         // If both of those conditions are false, then we must be on a standalone instance of OpenNMS and have the state
         // already in memory so there is no need to fetch it
         if (!isDistributed() && !firstEvaluation) {
-            fetchState();
+            return;
         }
 
         try {
