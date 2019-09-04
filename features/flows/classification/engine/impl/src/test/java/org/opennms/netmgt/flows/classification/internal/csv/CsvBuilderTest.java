@@ -41,7 +41,7 @@ public class CsvBuilderTest {
     @Test
     public void verifyBuilder() {
         final Group group = new GroupBuilder().withName(Groups.USER_DEFINED).build();
-        final String expectedCsv = new CsvBuilder()
+        final String actualCsv = new CsvBuilder()
                 .withRule(new RuleBuilder().withGroup(group).withName("http2").withProtocol("TCP,UDP")
                         .withDstAddress("127.0.0.1"))
                 .withRule(new RuleBuilder().withGroup(group).withName("google").withDstAddress("8.8.8.8"))
@@ -65,14 +65,14 @@ public class CsvBuilderTest {
 
         final StringBuilder builder = new StringBuilder();
         builder.append(CsvServiceImpl.HEADERS_STRING);
-        builder.append(group.getName()).append(";http2;TCP,UDP;;;127.0.0.1;;;false\n");
-        builder.append(group.getName()).append(";google;;;;8.8.8.8;;;false\n");
-        builder.append(group.getName()).append(";opennms;;;;;8980;;false\n");
-        builder.append(group.getName()).append(";opennms-monitor;;10.0.0.1;10000;10.0.0.2;8980;;false\n");
-        builder.append(group.getName()).append(";http;TCP;;;;;;true\n");
-        builder.append(group.getName()).append(";xxx;tcp,udp;10.0.0.1;10000;10.0.0.2;8980;some-filter-value;false");
+        builder.append("http2;TCP,UDP;;;127.0.0.1;;;false\n");
+        builder.append("google;;;;8.8.8.8;;;false\n");
+        builder.append("opennms;;;;;8980;;false\n");
+        builder.append("opennms-monitor;;10.0.0.1;10000;10.0.0.2;8980;;false\n");
+        builder.append("http;TCP;;;;;;true\n");
+        builder.append("xxx;tcp,udp;10.0.0.1;10000;10.0.0.2;8980;some-filter-value;false");
 
-        final String actualCsv = builder.toString();
+        final String expectedCsv = builder.toString();
         assertEquals(expectedCsv, actualCsv);
     }
 }

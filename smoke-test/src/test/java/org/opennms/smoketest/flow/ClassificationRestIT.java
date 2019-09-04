@@ -80,7 +80,7 @@ public class ClassificationRestIT {
     @After
     public void tearDown() {
         for(Integer groupId : groupIsToDelete) {
-            given().param("groupId", groupId).delete();
+            given().delete("groups/" + groupId);
         }
         RestAssured.reset();
     }
@@ -228,7 +228,7 @@ public class ClassificationRestIT {
                 .accept(ContentType.JSON)
                 .body(group3)
                 .post("/groups").then().assertThat().statusCode(400) // bad request
-                .body(is(String.format("{ context: 'name', message: 'A group with name \"%s\" already exists' }", group3.getName())));
+                .body(is(String.format("{\"message\":\"A group with name '%s' already exists\",\"context\":\"entity\",\"key\":\"group.name.duplicate\"}", group3.getName())));
 
         // UPDATE
         group3.setName("newNameOfGroup3");
@@ -239,7 +239,7 @@ public class ClassificationRestIT {
         assertFalse(updatedGroup3.isReadOnly()); // readonly cannot be changed
 
         // DELETE group
-        given().param("groupId", group3.getId()).delete()
+        given().delete("groups/" + group3.getId())
                 .then().statusCode(204);
         given().get("groups/" + group3.getId())
                 .then()
@@ -288,7 +288,7 @@ public class ClassificationRestIT {
                 .param("limit", 1)
                 .get()
                 .then()
-                .extract().response().as(RuleDTO.class);
+                .extract().response().body().jsonPath().getList(".", RuleDTO.class).get(0);
         given().delete(Integer.toString(rule.getId())).then().statusCode(400);
 
         // try to modify group parameters
