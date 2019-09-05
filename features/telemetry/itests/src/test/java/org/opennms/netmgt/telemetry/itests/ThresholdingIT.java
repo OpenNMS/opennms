@@ -280,6 +280,11 @@ public class ThresholdingIT {
                 fetchCounter.incrementAndGet();
                 return null;
             }
+
+            @Override
+            public String getName() {
+                return "test";
+            }
         });
 
         // Use our custom configuration
