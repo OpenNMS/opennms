@@ -90,7 +90,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
     private JsonStore m_jsonStore;
 
-    private Gson m_gson = new Gson();
+    private final Gson m_gson = new Gson();
 
     private RelativeTimePeriod[] m_periods;
 

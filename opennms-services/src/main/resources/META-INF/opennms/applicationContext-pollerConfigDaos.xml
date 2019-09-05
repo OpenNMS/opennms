@@ -7,7 +7,7 @@
         http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
     ">
     <bean name="pollOutagesDao" class="org.opennms.netmgt.config.dao.outages.impl.OnmsPollOutagesDao">
-        <constructor-arg ref="postgresJsonStore"/>
+        <constructor-arg ref="jsonStore"/>
     </bean>
     <onmsgi:service ref="pollOutagesDao" interface="org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao" />
 </beans>

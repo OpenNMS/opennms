@@ -57,7 +57,6 @@ import org.opennms.netmgt.model.resource.ResourceDTOCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,10 +81,9 @@ public class ResourceRestService extends OnmsRestService {
     private ResourceDao m_resourceDao;
 
     @Autowired
-    @Qualifier("postgresJsonStore")
     private JsonStore m_jsonStore;
 
-    private Gson m_gson = new Gson();
+    private final Gson m_gson = new Gson();
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
