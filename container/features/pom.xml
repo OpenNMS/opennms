@@ -31,6 +31,10 @@
             <value>cxf-${cxfVersion}</value>
             <value>activemq-${activemqVersion}</value>
             <value>camel-${camelVersion}</value>
+
+            <!-- Pax JDBC -->
+            <value>org.ops4j.pax.jdbc-1.0.1</value>
+
           </importRepositoryExclusions>
           <repositories>
 
