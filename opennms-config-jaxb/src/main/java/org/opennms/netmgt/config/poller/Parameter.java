@@ -110,7 +110,7 @@ public class Parameter implements Serializable {
         } else if (this.m_contents != null) {
             return PollerParameter.complex(this.m_contents);
         } else {
-            return PollerParameter.empty();
+            return null;
         }
     }
 

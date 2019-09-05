@@ -53,7 +53,7 @@ public class Interpolator {
 
     public static PollerParameter interpolate(final PollerParameter value, final Scope scope) {
         if (value == null) {
-            return PollerParameter.empty();
+            return null;
         }
 
         Objects.requireNonNull(scope);

@@ -63,8 +63,11 @@ public class PollerAttributeDTO {
 
     public PollerAttributeDTO(final String key, final PollerParameter contents) {
         this.key = key;
-        contents.asSimple().ifPresent(simple -> this.value = simple.getValue());
-        contents.asComplex().ifPresent(complex -> this.contents = complex.getElement());
+
+        if (contents != null) {
+            contents.asSimple().ifPresent(simple -> this.value = simple.getValue());
+            contents.asComplex().ifPresent(complex -> this.contents = complex.getElement());
+        }
     }
 
     public String getKey() {
@@ -93,7 +96,7 @@ public class PollerAttributeDTO {
         } else if (this.contents != null) {
             return PollerParameter.complex(this.contents);
         } else {
-            return PollerParameter.empty();
+            return null;
         }
     }
 

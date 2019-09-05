@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.poller;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
@@ -38,32 +35,35 @@ import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.validation.SchemaFactory;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public interface PollerParameter {
     Optional<SimplePollerParameter> asSimple();
     Optional<ComplexPollerParameter> asComplex();
 
     static PollerParameter simple(final String value) {
+        if (value == null) {
+            return null;
+        }
+
         return new SimplePollerParameter(value);
     }
 
     static PollerParameter complex(final Element element) {
+        if (element == null) {
+            return null;
+        }
+
         return new ComplexPollerParameter(element);
     }
 
-    static PollerParameter empty() {
-        return new SimplePollerParameter("");
-    }
-
     static PollerParameter marshall(final Object value) {
-        Objects.requireNonNull(value);
+        if (value == null) {
+            return null;
+        }
 
         final Document document;
         try {
