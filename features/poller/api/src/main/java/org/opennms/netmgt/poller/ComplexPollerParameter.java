@@ -52,8 +52,8 @@ public class ComplexPollerParameter implements PollerParameter, Serializable {
     }
 
     public <T> T getInstance(final Class<T> clazz) throws JAXBException {
-        final Unmarshaller um = JaxbUtils.getUnmarshallerFor(clazz, null, true);
-        return (T) um.unmarshal(element);
+        final Unmarshaller um = JaxbUtils.getUnmarshallerFor(clazz, null, false);
+        return clazz.cast(um.unmarshal(element));
     }
 
     @Override

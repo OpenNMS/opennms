@@ -37,12 +37,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
+import org.opennms.netmgt.config.pagesequence.Parameter;
 import org.opennms.netmgt.poller.PollerParameter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -51,6 +53,7 @@ import javax.xml.bind.JAXB;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 public class RpcMetaDataUtilsTest {
@@ -93,17 +96,47 @@ public class RpcMetaDataUtilsTest {
 
     @Test
     public void testComplexPollerParameterInterpolation() throws Exception {
-        // TODO fooker: This is not working right now...
-        final Element element = JAXB.unmarshal("" +
-                "<page-sequence>" +
-                "</page-sequence>" +
-                "", Element.class);
-
-        final PollerParameter interpolated = Interpolator.interpolate(PollerParameter.complex(element), new MapScope(this.metaData));
+        final PollerParameter interpolated = Interpolator.interpolate(PollerParameter.complex(createPageSequence()), new MapScope(this.metaData));
         final PageSequence pageSequence = interpolated.asComplex().get().getInstance(PageSequence.class);
 
         assertThat(pageSequence.getPages(), hasSize(1));
         assertThat(pageSequence.getPages().get(0).getVirtualHost(), is("chaos.val1.example.com"));
         assertThat(pageSequence.getPages().get(0).getPort(), is(12345));
+        assertThat(pageSequence.getPages().get(0).getParameters(), hasSize(2));
+        assertThat(pageSequence.getPages().get(0).getParameters().get(0).getKey(), is("interpolated val4"));
+        assertThat(pageSequence.getPages().get(0).getParameters().get(0).getValue(), is("interpolated into val3"));
+        assertThat(pageSequence.getPages().get(0).getParameters().get(1).getKey(), is("with default"));
+        assertThat(pageSequence.getPages().get(0).getParameters().get(1).getValue(), is("default is default"));
+    }
+
+
+    private static Element createPageSequence() throws Exception {
+        final DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        final Document document = documentBuilder.newDocument();
+
+        final Element rootElement = document.createElementNS("http://xmlns.opennms.org/xsd/page-sequence", "page-sequence");
+        document.appendChild(rootElement);
+
+        final Element page1 = document.createElementNS("http://xmlns.opennms.org/xsd/page-sequence", "page");
+        page1.setAttribute("method", "GET");
+        page1.setAttribute("scheme", "http");
+        page1.setAttribute("host", "example.com");
+        page1.setAttribute("virtual-host", "chaos.${ctx1:key1}.example.com");
+        page1.setAttribute("port", "${ctx3:key5}");
+        page1.setAttribute("path", "/");
+        page1.setAttribute("response-range", "100-399");
+        rootElement.appendChild(page1);
+
+        final Element parameter1 = document.createElementNS("http://xmlns.opennms.org/xsd/page-sequence", "parameter");
+        parameter1.setAttribute("key", "interpolated ${ctx2:key4}");
+        parameter1.setAttribute("value", "interpolated into ${ctx2:key3}");
+        page1.appendChild(parameter1);
+
+        final Element parameter2 = document.createElementNS("http://xmlns.opennms.org/xsd/page-sequence", "parameter");
+        parameter2.setAttribute("key", "with default");
+        parameter2.setAttribute("value", "default is ${ctx0:key0|default}");
+        page1.appendChild(parameter2);
+
+        return document.getDocumentElement();
     }
 }

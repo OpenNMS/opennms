@@ -301,8 +301,8 @@ public class JCifsMonitorTest {
         m.put("path", PollerParameter.simple("/validPath"));
 
         Map<String, PollerParameter> subbedParams = jCifsMonitor.getRuntimeAttributes(svc, m);
-        assertTrue(subbedParams.get("subbed-username").equals("10.123.123.123"));
-        assertTrue(subbedParams.get("subbed-password").equals("10.123.123.123"));
-        assertTrue(subbedParams.get("subbed-domain").equals("99"));
+        assertTrue(subbedParams.get("subbed-username").equals(PollerParameter.simple("10.123.123.123")));
+        assertTrue(subbedParams.get("subbed-password").equals(PollerParameter.simple("10.123.123.123")));
+        assertTrue(subbedParams.get("subbed-domain").equals(PollerParameter.simple("99")));
     }
 }

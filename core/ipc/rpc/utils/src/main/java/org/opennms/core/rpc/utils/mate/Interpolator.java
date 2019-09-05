@@ -28,6 +28,7 @@
 
 package org.opennms.core.rpc.utils.mate;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -54,6 +55,8 @@ public class Interpolator {
         if (value == null) {
             return PollerParameter.empty();
         }
+
+        Objects.requireNonNull(scope);
 
         final Optional<SimplePollerParameter> simple = value.asSimple();
         if (simple.isPresent()) {
@@ -96,7 +99,14 @@ public class Interpolator {
     }
 
     public static String interpolate(final String raw, final Scope scope) {
+        if (raw == null) {
+            return null;
+        }
+
+        Objects.requireNonNull(scope);
+
         final StringBuffer stringBuffer = new StringBuffer();
+
         final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
         while (outerMatcher.find()) {
             final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));
