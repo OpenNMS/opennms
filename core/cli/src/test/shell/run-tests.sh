@@ -1,18 +1,24 @@
 #!/bin/bash
 
-MYDIR="$(dirname "$0")"
-MYDIR="$(cd "$MYDIR" || exit 1; pwd)"
+SHUNITDIR="$(dirname "$0")"
+SHUNITDIR="$(cd "$SHUNITDIR" || exit 1; pwd)"
 
-cd "$MYDIR" || exit 1
+WORKDIR="$1"; shift
+if [ -z "$WORKDIR" ]; then
+  WORKDIR="$SHUNITDIR"
+fi
+
+cd "$WORKDIR" || exit 1
 
 SHELLCHECK="$(command -v shellcheck 2>/dev/null)"
-export SHELLCHECK
+
+export SHUNITDIR WORKDIR SHELLCHECK
 
 FAILED=false
 
 if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
   # shellcheck disable=SC2035,SC2044
-  for FILE in $(find * -name \*.sh); do
+  for FILE in $(find "$WORKDIR" -name \*.sh); do
     echo "=== shellcheck $FILE ==="
     # shellcheck disable=SC2046
     if ! "$SHELLCHECK" "$FILE"; then
@@ -22,8 +28,8 @@ if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
 fi
 
 # shellcheck disable=SC2044
-for FILE in $(find "$MYDIR" -name \*.spec.sh); do
-  if ! "$MYDIR/execute-test.sh" "$FILE"; then
+for FILE in $(find "$WORKDIR" "$SHUNITDIR" -name \*.spec.sh | sort -u); do
+  if ! "$SHUNITDIR/execute-test.sh" "$FILE"; then
     FAILED=true
   fi
 done

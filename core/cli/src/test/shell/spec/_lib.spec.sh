@@ -3,10 +3,11 @@
 # shellcheck disable=SC2034
 OVERRIDEABLE_ARRAYS=(TEST_FOO TEST_BAR TEST_BAZ TEST_ADDITIONAL_OPTIONS)
 
-# shellcheck disable=SC1091
-. ../init.sh
+# shellcheck disable=SC1090,SC1091
+. "$SHUNITDIR/init.sh"
 
 TESTDIR="$(get_testdir _lib)"
+find "$TESTDIR" -type f \( -name \*.sh -o -name runjava\* \) -exec chmod a+x {} \;
 
 makeTestPath() {
   # shellcheck disable=SC2154
@@ -60,7 +61,7 @@ assertArrayLengthEquals() {
 
 setUp() {
   # shellcheck disable=SC1090
-  . "$PROJECTDIR/src/main/resources/bin/_lib.sh"
+  . "$PROJECTDIR/target/classes/bin/_lib.sh"
 
   unset TEST_FOO
   unset TEST_BAR
@@ -71,7 +72,7 @@ setUp() {
 
 testShellcheck() {
   if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
-    "$SHELLCHECK" "$PROJECTDIR/src/main/resources/bin/_lib.sh"
+    "$SHELLCHECK" "$PROJECTDIR/target/classes/bin/_lib.sh"
     assertTrue "shellcheck on bin/_lib.sh should pass" $?
   fi
 }
@@ -455,5 +456,5 @@ testGetRealPathOnAbsoluteDoubleLinkNoRealpathExe() {
 }
 
 
-# shellcheck disable=SC1091
-. ../shunit2
+# shellcheck disable=SC1090,SC1091
+. "$SHUNITDIR/shunit2"
