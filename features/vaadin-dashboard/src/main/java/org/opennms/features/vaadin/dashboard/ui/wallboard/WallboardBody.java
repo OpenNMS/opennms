@@ -81,11 +81,14 @@ public class WallboardBody extends VerticalLayout {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                VaadinSession.getCurrent().lock();
-                try {
-                    advanceTimer();
-                } finally {
-                    VaadinSession.getCurrent().unlock();
+                final UI ui = getUI();
+                if (ui != null) {
+                    ui.accessSynchronously(new Runnable() {
+                        @Override
+                        public void run() {
+                            advanceTimer();
+                        }
+                    });
                 }
             }
         }, 250, 250);
