@@ -18,6 +18,20 @@
         <filtering>true</filtering>
         <directory>src/main/filtered</directory>
       </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>${project.build.directory}/cli</directory>
+        <excludes>
+          <exclude>bin/_lib.sh</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <filtering>false</filtering>
+        <directory>${project.build.directory}/cli</directory>
+        <includes>
+          <include>bin/_lib.sh</include>
+        </includes>
+      </resource>
     </resources>
     <plugins>
       <plugin>
@@ -30,6 +44,43 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+          <execution>
+            <id>unpack-cli-tools</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/cli</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.core</groupId>
+                  <artifactId>org.opennms.core.cli</artifactId>
+                  <version>${project.version}</version>
+                  <excludes>META-INF,META-INF/**/*</excludes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-cli-tests</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/shunit</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.core</groupId>
+                  <artifactId>org.opennms.core.cli</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>shunit</classifier>
+                  <type>tar.gz</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
           <execution>
             <id>unpack-remote-poller</id>
             <phase>process-resources</phase>
@@ -178,7 +229,10 @@
                 <phase>test</phase>
                 <goals><goal>exec</goal></goals>
                 <configuration>
-                  <executable>${project.basedir}/src/test/shell/run-tests.sh</executable>
+                  <executable>${project.build.directory}/shunit/run-tests.sh</executable>
+                  <arguments>
+                    <argument>${project.basedir}/src/test/shell</argument>
+                  </arguments>
                 </configuration>
               </execution>
             </executions>
@@ -295,6 +349,13 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-reportd</artifactId>
+    </dependency>
+    <!-- just here to be able to unpack it into the assembly tarball -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.cli</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
