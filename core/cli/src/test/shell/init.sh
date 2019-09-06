@@ -18,6 +18,20 @@ get_testdir() {
 	echo "$TARGETDIR/shunit/$1"
 }
 
+makeFakeJava() {
+  if [ -z "$4" ]; then
+    echo "usage: makeFakeJava <java_home> <is_openjdk> <version> <build>"
+    exit 1
+  fi
+  mkdir -p "$1"/{bin,include,jre/bin,jre/lib,lib}
+  sed -e "s,@fake_java_version@,$3,g" \
+    -e "s,@fake_java_build@,$4,g" \
+    -e "s,@fake_openjdk@,$2,g" \
+    "$SHUNITDIR/fakejava" > "$1/bin/java"
+    cp "$1/bin/java" "$1/jre/bin/java"
+    chmod 755 "$1/bin/java" "$1/jre/bin/java"
+}
+
 # runCommand <project> @cmd
 runCommand() {
 	__project="$1"; shift

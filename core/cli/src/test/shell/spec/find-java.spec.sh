@@ -1,23 +1,10 @@
 #!/bin/bash
 
-# shellcheck disable=SC1091
-. ../init.sh
+# shellcheck disable=SC1090,SC1091
+. "$SHUNITDIR/init.sh"
 
 TESTDIR="$(get_testdir find-java)"
-
-makeFakeJava() {
-  if [ -z "$4" ]; then
-    echo "usage: makeFakeJava <java_home> <is_openjdk> <version> <build>"
-    exit 1
-  fi
-  mkdir -p "$1"/{bin,include,jre/bin,jre/lib,lib}
-  sed -e "s,@fake_java_version@,$3,g" \
-    -e "s,@fake_java_build@,$4,g" \
-    -e "s,@fake_openjdk@,$2,g" \
-    "./runjava-fakejava" > "$1/bin/java"
-    cp "$1/bin/java" "$1/jre/bin/java"
-    chmod 755 "$1/bin/java" "$1/jre/bin/java"
-}
+find "$TESTDIR" -type f \( -name \*.sh -o -name runjava\* \) -exec chmod a+x {} \;
 
 oneTimeSetUp() {
   rm -rf "$TESTDIR"
@@ -25,8 +12,8 @@ oneTimeSetUp() {
   export JAVA_SEARCH_DIRS="$TESTDIR"
 
   mkdir -p "${TESTDIR}/opennms_home/bin"
-  cp "${PROJECTDIR}/src/main/filtered/bin/find-java.sh" \
-    "${PROJECTDIR}/src/main/resources/bin/_lib.sh" \
+  install -m 755 "${PROJECTDIR}/target/classes/bin/find-java.sh" \
+    "${PROJECTDIR}/target/classes/bin/_lib.sh" \
     "${TESTDIR}/opennms_home/bin/"
   FIND_JAVA="${TESTDIR}/opennms_home/bin/find-java.sh"
 
@@ -103,4 +90,4 @@ testMatchingJavaSpecifiedIsNotInRange() {
   assertEquals "No match found!" "$output"
 }
 
-. ../shunit2
+. "$SHUNITDIR/shunit2"
