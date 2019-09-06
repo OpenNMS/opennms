@@ -36,15 +36,18 @@ import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Verifies that the scheduled outage text is correctly displayed. See LTS-233.
  */
 public class ScheduledOutageIT extends OpenNMSSeleniumIT {
+
     @Before
     public void beforeClass() throws Exception {
         final String node = "<node type=\"A\" label=\"TestMachine\" foreignSource=\"" + REQUISITION_NAME + "\" foreignId=\"TestMachine\">" +
@@ -86,14 +89,13 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         testOption("Specific", "One-Time, From " + dateString + " 00:00:00 Through " + dateString + " 23:59:59");
     }
 
-    @Ignore
     public void testOption(final String option, final String text) throws Exception {
         // Visit the scheduled outage page.
         getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
         // Enter the name...
         enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), "My-Scheduled-Outage");
         // ...and hit the button.
-        findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newOutage']").click();
+        findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//button[@name='newOutage']").click();
 
         // Wait till the editor page appears.
         with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: My-Scheduled-Outage"));
@@ -102,8 +104,17 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         // ...and confirm the alert box.
         getDriver().switchTo().alert().accept();
 
+        final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 10);
+        final String outageTypeSelectorXPath = "//select[@id='outageTypeSelector']";
+
+        try {
+            webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(outageTypeSelectorXPath)));
+        } catch (final StaleElementReferenceException e) {
+            webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(outageTypeSelectorXPath)));
+        }
+
         // Set the specified outage type...
-        new Select(findElementByXpath("//select[@id='outageTypeSelector']")).selectByVisibleText(option);
+        new Select(findElementByXpath(outageTypeSelectorXPath)).selectByVisibleText(option);
         // ...and apply.
         findElementByXpath("//input[@name='setOutageType']").click();
         // now add the outage
