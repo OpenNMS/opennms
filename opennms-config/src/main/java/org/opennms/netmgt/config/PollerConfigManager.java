@@ -133,7 +133,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws java.io.IOException if any.
      */
     @Override
-    public abstract void update() throws IOException;
+    public void update() throws IOException {
+        setUpInternalData();
+    }
 
     /**
      * <p>saveXml</p>
@@ -952,10 +954,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
-    /**
-     * @param poller
-     * @return
-     */
+
     private void initializeServiceMonitors() {
         // Load up an instance of each monitor from the config
         // so that the event processor will have them for
