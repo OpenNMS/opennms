@@ -63,6 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 
 /**
@@ -265,5 +266,10 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
                 kvStore.set(keyValueStore);
             }
         }
+    }
+
+    @VisibleForTesting
+    public void setDistributed(boolean distributed) {
+        isDistributed = distributed;
     }
 }

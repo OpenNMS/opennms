@@ -109,7 +109,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
-        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-server.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
@@ -287,6 +287,9 @@ public class ThresholdingIT {
             }
         });
 
+        // Need to act as in distributed mode to test the fetch behavior
+        ((ThresholdingServiceImpl) thresholdingService).setDistributed(true);
+        
         // Use our custom configuration
         updateDaoWithConfig(getConfig(port));
 
@@ -324,7 +327,7 @@ public class ThresholdingIT {
         sendTelemetryMessage("192.0.2.1", "ge_0_0_3", 1, 1, 20, 3);
 
         // We should have fetched again since the sequence number changed by more than one
-        await().atMost(5, TimeUnit.SECONDS).until(() -> fetchCounter.get() != 1);
+        await().atMost(5, TimeUnit.SECONDS).until(() -> fetchCounter.get() == 2);
     }
 
     private void sendTelemetryMessage(String ipAddress, String ifName, long ifInOctets, long ifOutOctets, long ifIn1SecPkts, int sequenceNum) throws IOException {
