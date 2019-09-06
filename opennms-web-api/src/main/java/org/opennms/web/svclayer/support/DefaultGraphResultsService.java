@@ -166,17 +166,15 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             }
         }
         // GraphSelected case where all resources are fetched from generatedId
-        if (!Strings.isNullOrEmpty(generatedId) && m_jsonStore != null) {
+        if (!Strings.isNullOrEmpty(generatedId)) {
             Optional<String> result = m_jsonStore.get(generatedId, RESOURCE_IDS_CONTEXT);
             if (result.isPresent()) {
                 try {
                     String[] resourceArray = m_gson.fromJson(result.get(), String[].class);
                     for (String resourceId : resourceArray) {
                         try {
-                            //Resources are saved as keyValue resourceId=node[12312].
-                            String[] keyValue = resourceId.split("=");
-                            if (keyValue.length == 2) {
-                                OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(keyValue[1]));
+                            OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(resourceId));
+                            if(resource != null) {
                                 graphResults.addGraphResultSet(createGraphResultSet(null, resource, reports, graphResults));
                             }
                         } catch (IllegalArgumentException e) {

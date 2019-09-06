@@ -172,7 +172,7 @@ angular.module('onms-resources', [
       if ($scope.resources.hasOwnProperty(key)) {
         _.each($scope.filteredResources[key], function(r) {
           if (r.selected) {
-            selected.push('resourceId=' + r.id);
+            selected.push(r.id);
           }
         });
       }
@@ -189,7 +189,7 @@ angular.module('onms-resources', [
     }
   };
 
-  $scope.doGraph = function(selected) {
+  $scope.doGraph = function (selected) {
     // Save resources with an ID and form url with generatedId.
     if (selected.length > 0) {
       $http.post('rest/resources/generateId', selected)
@@ -198,14 +198,21 @@ angular.module('onms-resources', [
           if ($scope.generatedId) {
             $window.location.href = getBaseHref() + $scope.url + '?generatedId=' + $scope.generatedId + ($scope.reports ? '&reports=' + $scope.reports : '');
           } else {
-            $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
+            $scope.setResourceIds(selected);
           }
         }).error(function (error, status) {
-          $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
+          $scope.setResourceIds(selected);
         });
     } else {
       growl.error('Please select at least one resource.');
     }
+  };
+
+  $scope.setResourceIds = function (selected) {
+    for (var i = 0; i < selected.length; i++) {
+      selected[i] = 'resourceId=' + selected[i];
+    }
+    $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
   };
 
   $scope.$watch('searchQuery', function() {
