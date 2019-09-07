@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+    <jmx-collection name="opennms">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+      <mbeans>
+         <mbean name="OpenNMS Queued" objectname="OpenNMS:Name=Queued">
+            <attrib name="CreatesCompleted" alias="ONMSQueCreates" type="counter"/>
+            <attrib name="DequeuedItems" alias="ONMSQueItemDeque" type="counter"/>
+            <attrib name="DequeuedOperations" alias="ONMSQueDequeOps" type="counter"/>
+            <attrib name="EnqueuedOperations" alias="ONMSQueEnqueOps" type="counter"/>
+            <attrib name="Errors" alias="ONMSQueErrors" type="counter"/>
+            <attrib name="PromotionCount" alias="ONMSQuePromo" type="counter"/>
+            <attrib name="SignificantOpsCompleted" alias="ONMSQueSigOpsCompl" type="counter"/>
+            <attrib name="SignificantOpsDequeued" alias="ONMSQueSigOpsDeque" type="counter"/>
+            <attrib name="SignificantOpsEnqueued" alias="ONMSQueSigOpsEnque" type="counter"/>
+            <attrib name="TotalOperationsPending" alias="ONMSQueOpsPend" type="gauge"/>
+            <attrib name="UpdatesCompleted" alias="ONMSQueUpdates" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
+            <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
+            <attrib name="NumPoolThreads" alias="ONMSPollerPoolThrd" type="gauge"/>
+            <attrib name="CorePoolThreads" alias="ONMSPollerPoolCore" type="gauge"/>
+            <attrib name="MaxPoolThreads" alias="ONMSPollerPoolMax" type="gauge"/>
+            <attrib name="PeakPoolThreads" alias="ONMSPollerPoolPeak" type="gauge"/>
+            <attrib name="ActiveThreads" alias="ONMSPollerThreadAct" type="gauge"/>
+            <attrib name="TasksTotal" alias="ONMSPollerTasksTot" type="counter"/>
+            <attrib name="TasksCompleted" alias="ONMSPollerTasksCpt" type="counter"/>
+            <attrib name="TaskQueuePendingCount" alias="ONMSPollerTskQPCnt" type="gauge"/>
+            <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
+         </mbean>
+         <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
+            <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS Collectd" objectname="OpenNMS:Name=Collectd">
+            <attrib name="ActiveThreads" alias="ONMSCollectThrdAct" type="gauge"/>
+            <attrib name="NumPoolThreads" alias="ONMSCollectPoolThrd" type="gauge"/>
+            <attrib name="CorePoolThreads" alias="ONMSCollectPoolCore" type="gauge"/>
+            <attrib name="MaxPoolThreads" alias="ONMSCollectPoolMax" type="gauge"/>
+            <attrib name="PeakPoolThreads" alias="ONMSCollectPoolPeak" type="gauge"/>
+            <attrib name="TasksTotal" alias="ONMSCollectTasksTot" type="counter"/>
+            <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt" type="counter"/>
+            <attrib name="CollectableServiceCount" alias="ONMSCollectSvcCount" type="gauge"/>
+            <attrib name="TaskQueuePendingCount" alias="ONMSCollectTskQPCnt" type="gauge"/>
+            <attrib name="TaskQueueRemainingCapacity" alias="ONMSCollectTskQRCap" type="gauge"/>
+         </mbean>
+         <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
+            <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
+            <attrib name="HttpsConnectionsOpen" alias="HttpsConnOpen" type="gauge"/>
+            <attrib name="HttpsConnectionsOpenMax" alias="HttpsConnOpenMax" type="gauge"/>
+            <attrib name="HttpConnectionsTotal" alias="HttpConnTotal" type="counter"/>
+            <attrib name="HttpConnectionsOpen" alias="HttpConnOpen" type="gauge"/>
+            <attrib name="HttpConnectionsOpenMax" alias="HttpConnOpenMax" type="gauge"/>
+         </mbean>
+         <mbean name="OpenNMS.Statsd" objectname="OpenNMS:Name=Statsd">
+            <attrib name="ReportsStarted" alias="StaReportsStarted" type="counter"/>
+            <attrib name="ReportsCompleted" alias="StaReportsCompleted" type="counter"/>
+            <attrib name="ReportsPersisted" alias="StaReportsPersisted" type="counter"/>
+            <attrib name="ReportRunTime" alias="StaReportRunTime" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS.Trapd" objectname="OpenNMS:Name=Trapd">
+            <attrib name="TrapsDiscarded" alias="TrapsDiscarded" type="counter"/>
+            <attrib name="TrapsErrored" alias="TrapsErrored" type="counter"/>
+            <attrib name="V1TrapsReceived" alias="V1TrapsReceived" type="counter"/>
+            <attrib name="V2cTrapsReceived" alias="V2cTrapsReceived" type="counter"/>
+            <attrib name="V3TrapsReceived" alias="V3TrapsReceived" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS.Notifd" objectname="OpenNMS:Name=Notifd">
+            <attrib name="NotificationTasksQueued" alias="NotificTasksQueued" type="counter"/>
+            <attrib name="BinaryNoticesAttempted" alias="BinaryNoticeAttemp" type="counter"/>
+            <attrib name="JavaNoticesAttempted" alias="JavaNoticesAttempt" type="counter"/>
+            <attrib name="BinaryNoticesSucceeded" alias="BinaryNoticeSuccee" type="counter"/>
+            <attrib name="JavaNoticesSucceeded" alias="JavaNoticesSucceed" type="counter"/>
+            <attrib name="BinaryNoticesFailed" alias="BinaryNoticeFailed" type="counter"/>
+            <attrib name="JavaNoticesFailed" alias="JavaNoticesFailed" type="counter"/>
+            <attrib name="BinaryNoticesInterrupted" alias="BinaryNoticeInterr" type="counter"/>
+            <attrib name="JavaNoticesInterrupted" alias="JavaNoticesInterru" type="counter"/>
+            <attrib name="UnknownNoticesInterrupted" alias="UnknowNoticeInterr" type="counter"/>
+         </mbean>
+         <mbean name="OpenNMS.Manager" objectname="OpenNMS:Name=Manager">
+            <attrib name="onmsUptime" alias="Uptime" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" resource-type="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=*.Lag">
+            <attrib name="Value" alias="Lag" type="gauge"/>
+         </mbean>
+      </mbeans>
+    </jmx-collection>
+</jmx-datacollection-config>

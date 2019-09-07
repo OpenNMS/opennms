@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+    <jmx-collection name="opennms-telemetryd">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+      <mbeans>
+         <mbean name="org.opennms.netmgt.telemetry.adapters.packetsPerLog" resource-type="telemetryAdapters" objectname="org.opennms.netmgt.telemetry:name=adapters.*packetsPerLog">
+            <attrib name="50thPercentile" alias="TlmPktsPerLog50" type="gauge"/>
+            <attrib name="75thPercentile" alias="TlmPktsPerLog75" type="gauge"/>
+            <attrib name="95thPercentile" alias="TlmPktsPerLog95" type="gauge"/>
+            <attrib name="98thPercentile" alias="TlmPktsPerLog98" type="gauge"/>
+            <attrib name="99thPercentile" alias="TlmPktsPerLog99" type="gauge"/>
+            <attrib name="999thPercentile" alias="TlmPktsPerLog999" type="gauge"/>
+            <attrib name="Count" alias="TlmPktsPerLogCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.netmgt.telemetry.adapters.logParsing" resource-type="telemetryAdapters" objectname="org.opennms.netmgt.telemetry:name=adapters.*logParsing">
+            <attrib name="50thPercentile" alias="TlmLogParse50" type="gauge"/>
+            <attrib name="75thPercentile" alias="TlmLogParse75" type="gauge"/>
+            <attrib name="95thPercentile" alias="TlmLogParse95" type="gauge"/>
+            <attrib name="98thPercentile" alias="TlmLogParse98" type="gauge"/>
+            <attrib name="99thPercentile" alias="TlmLogParse99" type="gauge"/>
+            <attrib name="999thPercentile" alias="TlmLogParse999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="TlmLogParse1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="TlmLogParse5m" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.netmgt.telemetry.listeners.packetsReceived" resource-type="telemetryListeners" objectname="org.opennms.netmgt.telemetry:name=listeners.*packetsReceived">
+            <attrib name="Count" alias="TlmPacketsRcvd" type="counter"/>
+            <attrib name="OneMinuteRate" alias="TlmPacketsRcvd1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="TlmPacketsRcvd5m" type="gauge"/>
+         </mbean>
+      </mbeans>
+    </jmx-collection>
+</jmx-datacollection-config>
