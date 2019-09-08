@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
 
 import java.net.InetAddress;
 import java.util.Date;
@@ -141,7 +142,8 @@ public class NodeScan implements Scan {
     }
 
     private String getLocationName() {
-        return m_location == null ? "Default" : m_location.getLocationName();
+        return m_location == null ?
+                DEFAULT_LOCATION_NAME: m_location.getLocationName();
     }
 
     /**
