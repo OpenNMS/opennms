@@ -529,14 +529,15 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         return hasThresholds(resource.getResourceTypeName(), attribute.getName());
     }
 
-    public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap, Date collectionTimestamp) {
+    public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap,
+                                       Date collectionTimestamp, Long sequenceNumber) {
         if (!isCollectionEnabled(resource)) {
             LOG.debug("applyThresholds: Ignoring resource {} because data collection is disabled for this resource.", resource);
             return new LinkedList<>();
         }
         CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(collectionTimestamp, m_nodeId,
                 m_hostAddress, m_serviceName, m_repository, resource, attributesMap, m_resourceStorageDao,
-                m_ifLabelDao);
+                m_ifLabelDao, sequenceNumber);
         resourceWrapper.setCounterReset(m_counterReset);
         return Collections.unmodifiableList(applyThresholds(resourceWrapper, attributesMap));
     }
