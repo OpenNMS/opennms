@@ -51,8 +51,8 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.dao.mock.MockFilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 
 public class PollerConfigReloadIT {
 
@@ -69,7 +69,7 @@ public class PollerConfigReloadIT {
         includeUrlFile = tempFolder.newFile("poller-config-include-url.txt");
         fillInitialData(includeUrlFile);
         InputStream configStream = setIncludeUrlFileInConfig(PollerConfigReloadIT.class.getResource("/poller-configuration.xml"));;
-        MockFilterDao mockFilterDao = Mockito.mock(MockFilterDao.class);
+        FilterDao mockFilterDao = Mockito.mock(FilterDao.class);
         List<InetAddress> inetAddressList = new ArrayList<>();
         inetAddressList.add(InetAddressUtils.addr("127.0.0.5"));
         inetAddressList.add(InetAddressUtils.addr("128.0.1.10"));
