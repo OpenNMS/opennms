@@ -229,5 +229,6 @@ public final class PollerConfigFactory extends PollerConfigManager {
         } finally {
             getWriteLock().unlock();
         }
+        super.update();
     }
 }
