@@ -74,11 +74,11 @@ public class ClassificationRestIT {
         setEnabled(1, true);
         setEnabled(2, true);
         groupIsToDelete = new ArrayList<>();
-        groupIsToDelete.add(2);
     }
 
     @After
     public void tearDown() {
+        given().param("groupId", 2).delete(); // delete all rules in 'user-defined' group
         for(Integer groupId : groupIsToDelete) {
             given().delete("groups/" + groupId);
         }
