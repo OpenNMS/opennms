@@ -43,6 +43,16 @@
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gsonVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.remote</artifactId>
     </dependency>
