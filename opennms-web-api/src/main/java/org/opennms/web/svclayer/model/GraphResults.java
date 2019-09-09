@@ -68,6 +68,7 @@ public class GraphResults {
     private static final Map<Integer, String> s_hourMap;
 
     private String[] m_reports;
+    private String m_nodeCriteria;
     
     private Date m_start;
     private Date m_end;
@@ -300,6 +301,15 @@ public class GraphResults {
     public void setReports(String[] reports) {
         m_reports = reports;
     }
+
+    public String getNodeCriteria() {
+        return m_nodeCriteria;
+    }
+
+    public void setNodeCriteria(String nodeCriteria) {
+        m_nodeCriteria = nodeCriteria;
+    }
+
 
     public class GraphResultSet {
         private List<Graph> m_graphs = null;

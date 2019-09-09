@@ -108,8 +108,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         graphResults.setRelativeTime(relativeTime);
         graphResults.setRelativeTimePeriods(m_periods);
         graphResults.setReports(reports);
+        graphResults.setNodeCriteria(nodeCriteria);
 
-        // ResourceIds can be empty in case of GraphAll where resources are pulled from node.
         HashMap<ResourceId, List<OnmsResource>> resourcesMap = new HashMap<>();
         for (ResourceId resourceId : resourceIds) {
             LOG.debug("findResults: parent, childType, childName = {}, {}, {}", resourceId.parent, resourceId.type, resourceId.name);
@@ -138,7 +138,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             }
         }
 
-        if(!Strings.isNullOrEmpty(nodeCriteria)) {
+        // GraphAll case where all resources are fetched from node.
+        if (!Strings.isNullOrEmpty(nodeCriteria)) {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if(node != null) {
                 OnmsResource nodeResource = m_resourceDao.getResourceForNode(node);
@@ -154,8 +155,6 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
                 }
             }
         }
-
-
 
         graphResults.setGraphTopOffsetWithText(m_rrdDao.getGraphTopOffsetWithText());
         graphResults.setGraphLeftOffset(m_rrdDao.getGraphLeftOffset());
