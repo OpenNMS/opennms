@@ -127,7 +127,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
 
             $scope.refreshTabs = function(navigateToFirstGroup) {
                 return ClassificationGroupService.query({
-                    limit: 20,
+                    limit: 1000, // override default limit (we want to show as many groups as possible)
                     orderBy: 'position',
                 }, function(response) {
                     // Remove disabled groups
