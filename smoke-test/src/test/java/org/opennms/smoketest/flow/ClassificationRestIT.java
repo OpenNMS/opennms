@@ -303,6 +303,7 @@ public class ClassificationRestIT {
                         .withName("new name")
                         .withDescription("new description")
                         .withEnabled(false)
+                        .withReadOnly(false)
                         .build())
                 .put("/groups/"+predefinedGroup.getId())
                 .then().assertThat().statusCode(200)
@@ -339,10 +340,13 @@ public class ClassificationRestIT {
     }
 
     private void updateGroup(GroupDTO groupDTO) {
-        given().put("groups/" + groupDTO.getId())
+        given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(groupDTO)
+                .put("groups/" + groupDTO.getId())
                 .then().log().body(true)
                 .assertThat()
-                .statusCode(201)
+                .statusCode(200)
                 .contentType(ContentType.JSON);
     }
 

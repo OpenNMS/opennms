@@ -280,7 +280,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     }
 
     @Override
-    public Response updateGroup(int id, GroupDTO groupDTO) {
+    public Response updateGroup(int id, final GroupDTO groupDTO) {
         final Group group = classificationService.getGroup(id);
         if (groupDTO.isEnabled() != null) {
             group.setEnabled(groupDTO.isEnabled());
