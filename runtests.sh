@@ -2,7 +2,7 @@
 
 # Ensure the plugin is available
 # We swap to another directory so that we don't need to spend time parsing our current pom
-(cd /tmp && mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
+(cd /tmp && mvn -llr org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
       -DremoteRepositories=http://maven.opennms.org/content/groups/opennms.org-release/ \
       -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0)
 
