@@ -11,7 +11,7 @@ def get_parent_branch(repo_path):
     parent_branch = None
     with open(os.path.join(repo_path, ".nightly"), "r") as nightly:
         for line in nightly.readlines():
-            match = re.match(r'branch: (.*)$', line, re.M | re.I)
+            match = re.match(r'parent_branch: (.*)$', line, re.M | re.I)
             if match:
                 parent_branch = match.group(1)
     return parent_branch.strip()
