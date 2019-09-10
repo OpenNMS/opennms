@@ -65,6 +65,8 @@ public class ClassificationRestIT {
 
     private List<Integer> groupIsToDelete;
 
+    private GroupDTO userDefinedGroup;
+
     @Before
     public void setUp() {
         RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
@@ -73,6 +75,7 @@ public class ClassificationRestIT {
         RestAssured.authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
         setEnabled(1, true);
         setEnabled(2, true);
+        userDefinedGroup = getGroup(2);
         groupIsToDelete = new ArrayList<>();
     }
 
@@ -98,7 +101,8 @@ public class ClassificationRestIT {
         given().get().then().assertThat().statusCode(204); // 204 because "system-defined" rules are disabled
 
         // POST (create) a rule
-        final RuleDTO httpRule = builder().withName("http").withDstPort("80,8080").withProtocol("tcp,udp").build();
+        final RuleDTO httpRule = builder().withName("http").withGroup(userDefinedGroup).withDstPort("80,8080")
+                .withProtocol("tcp,udp").build();
         String header = given().contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(httpRule)
@@ -123,7 +127,7 @@ public class ClassificationRestIT {
         // Post another rule
         given().contentType(ContentType.JSON)
             .accept(ContentType.JSON)
-            .body(builder().withName("https").withDstPort("443").withProtocol("tcp").build())
+            .body(builder().withName("https").withGroup(userDefinedGroup).withDstPort("443").withProtocol("tcp").build())
             .post().then().assertThat().statusCode(201); // created
 
         // Verify creation worked
@@ -191,9 +195,9 @@ public class ClassificationRestIT {
 
         // POST (create) two groups
         final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
-                .withEnabled(true).withReadOnly(false).withPosition(30).build());
+                .withEnabled(true).withReadOnly(false).build());
         final GroupDTO group4 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group4").withDescription("another user defined group with name group4")
-                .withEnabled(true).withReadOnly(false).withPosition(30).build());
+                .withEnabled(true).withReadOnly(false).build());
 
         // Create rule with group3
         RuleDTO rule = builder().withName("myrule").withDstPort("80").withGroup(group3).build();
@@ -259,12 +263,12 @@ public class ClassificationRestIT {
     public void verifyImmutabilityOfPredefinedGroup() {
         // The predefined group and its rules should not be able to be altered.
         GroupDTO predefinedGroup = getGroup(1);
-        GroupDTO userDefinedGroup = getGroup(2);
         assertThat(predefinedGroup.getName(), is(Groups.SYSTEM_DEFINED));
         assertThat(userDefinedGroup.getName(), is(Groups.USER_DEFINED));
 
         // try to add new rule to group
-        final RuleDTO httpRule = builder().withName("http").withDstPort("80").withProtocol("tcp").build();
+        final RuleDTO httpRule = builder().withName("http").withGroup(predefinedGroup).withDstPort("80")
+                .withProtocol("tcp").build();
         given().contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(httpRule)
@@ -294,10 +298,16 @@ public class ClassificationRestIT {
         // try to modify group parameters
         predefinedGroup.setName("new name");
         predefinedGroup.setDescription("new description");
-        given().contentType(ContentType.JSON)
+        predefinedGroup.setEnabled(false);
+        GroupDTO updatedGroup = given().contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(predefinedGroup)
-                .put("/groups/"+predefinedGroup.getId()).then().assertThat().statusCode(400);
+                .put("/groups/"+predefinedGroup.getId())
+                .then().assertThat().statusCode(200)
+                .extract().response().as(GroupDTO.class);
+        assertThat(updatedGroup.getName(), is(predefinedGroup.getName()));
+        assertThat(updatedGroup.getDescription(), is(predefinedGroup.getDescription()));
+        assertThat(updatedGroup.isEnabled(), is(false));
 
     }
 
@@ -307,7 +317,6 @@ public class ClassificationRestIT {
         assertThat(receivedGroup.getId(), is(groupId));
         assertThat(receivedGroup.getDescription(), is(groupDTO.getDescription()));
         assertThat(receivedGroup.getName(), is(groupDTO.getName()));
-        assertThat(receivedGroup.getPosition(), is(groupDTO.getPosition()));
         assertThat(receivedGroup.getRuleCount(), is(0)); // we just created group => must be empty
         assertThat(receivedGroup.isReadOnly(), is(false)); // must always be false no matter what we tried to save
         assertThat(receivedGroup.isEnabled(), is(groupDTO.isEnabled()));
@@ -510,7 +519,7 @@ public class ClassificationRestIT {
         final String importCsv = "name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter;omnidirectional\nmagic-ulf;tcp;;;;1337;;";
         given().contentType("text/comma-separated-values")
                 .body(importCsv)
-                .post("groups/1")
+                .post("groups/2")
                 .then()
                 .assertThat().statusCode(204);
 
