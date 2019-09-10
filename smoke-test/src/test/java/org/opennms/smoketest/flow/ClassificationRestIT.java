@@ -200,7 +200,7 @@ public class ClassificationRestIT {
                 .withEnabled(true).withReadOnly(false).build());
 
         // Create rule with group3
-        RuleDTO rule = builder().withName("myrule").withDstPort("80").withGroup(group3).build();
+        RuleDTO rule = builder().withName("myrule").withDstPort("80").withProtocol("TCP").withGroup(group3).build();
         rule = saveAndRetrieveRule(rule);
 
         // Move rule to another group
@@ -208,7 +208,7 @@ public class ClassificationRestIT {
         updateAndRetrieveRule(rule);
 
         // Create similar rule in group3 and try to move the rule back to group3 => should not work since a similar rule exists there already
-        saveAndRetrieveRule(builder().withName("myrule").withDstPort("80").withGroup(group3).build());
+        saveAndRetrieveRule(builder().withName("myrule").withDstPort("80").withProtocol("TCP").withGroup(group3).build());
         rule.setGroup(group3);
         given().contentType(ContentType.JSON)
                 .body(rule)
@@ -296,15 +296,18 @@ public class ClassificationRestIT {
         given().delete(Integer.toString(rule.getId())).then().statusCode(400);
 
         // try to modify group parameters
-        predefinedGroup.setName("new name");
-        predefinedGroup.setDescription("new description");
-        predefinedGroup.setEnabled(false);
         GroupDTO updatedGroup = given().contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body(predefinedGroup)
+                .body(new GroupDTOBuilder()
+                        .withId(predefinedGroup.getId())
+                        .withName("new name")
+                        .withDescription("new description")
+                        .withEnabled(false)
+                        .build())
                 .put("/groups/"+predefinedGroup.getId())
                 .then().assertThat().statusCode(200)
                 .extract().response().as(GroupDTO.class);
+        assertThat(updatedGroup.getId(), is(predefinedGroup.getId()));
         assertThat(updatedGroup.getName(), is(predefinedGroup.getName()));
         assertThat(updatedGroup.getDescription(), is(predefinedGroup.getDescription()));
         assertThat(updatedGroup.isEnabled(), is(false));
