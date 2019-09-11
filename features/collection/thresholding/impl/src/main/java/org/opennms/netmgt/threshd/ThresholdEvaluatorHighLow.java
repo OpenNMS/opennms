@@ -99,7 +99,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             @Override
             public String toString() {
                 return "exceededCount=" + m_exceededCount +
-                        "\nm_armed=" + m_armed;
+                        "\narmed=" + m_armed;
             }
         }
         
