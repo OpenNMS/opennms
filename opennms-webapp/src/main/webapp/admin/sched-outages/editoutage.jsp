@@ -225,7 +225,7 @@
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
-		nameParam = request.getParameter("newName");
+		nameParam = WebSecurityUtils.sanitizeString(request.getParameter("newName"));
 		Outage tempOutage = pollOutagesDao.getConfig().getOutage(nameParam);
 		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
 			CharArrayWriter writer = new CharArrayWriter();
@@ -318,7 +318,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 		}
 	}
 
-	if (request.getParameter("deleteOutageType") != null) {
+	if (request.getParameter("deleteOutageType") != null && "true".equals(request.getParameter("deleteOutageType"))) {
 		theOutage.setType(null);
 		theOutage.clearTimes();
 	} else {
@@ -888,8 +888,9 @@ function updateOutageTypeDisplay(selectElement) {
 			<table class="table table-sm table-borderless">
 				<tr>
 					<td>
+						<input type="hidden" name="deleteOutageType" id="deleteOutageType" value="false"/>
 						<% if (theOutage.getType() != null) { %>
-							<input type="image" src="images/modify.gif" name="deleteOutageType" value="true" /> <%= theOutage.getType() %>
+						<input type="image" src="images/modify.gif" id="deleteOutageTypeBtn" onclick="document.getElementById('deleteOutageType').value=true; document.getElementById('editOutage').submit();" /> <%= theOutage.getType() %>
 						<% } %>
 						<span style="<%= theOutage.getType() == null? "" : "display: none" %>">
 							<select id="outageTypeSelector" name="outageType" onChange="updateOutageTypeDisplay(this);">
