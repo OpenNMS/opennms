@@ -76,6 +76,7 @@ public class CollectionResourceWrapper {
     private final CollectionResource m_resource;
     private final Map<String, CollectionAttribute> m_attributes;
     private final ResourceStorageDao m_resourceStorageDao;
+    private final Long m_sequenceNumber;
 
     /**
      * Keeps track of both the Double value, and when it was collected, for the static cache of attributes
@@ -146,7 +147,7 @@ public class CollectionResourceWrapper {
      */
     public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName,
             RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes,
-            ResourceStorageDao resourceStorageDao, IfLabel ifLabelDao) {
+            ResourceStorageDao resourceStorageDao, IfLabel ifLabelDao, Long sequenceNumber) {
 
         if (collectionTimestamp == null) {
             throw new IllegalArgumentException(String.format("%s: Null collection timestamp when thresholding service %s on node %d (%s)", this.getClass().getSimpleName(), serviceName, nodeId, hostAddress));
@@ -160,6 +161,7 @@ public class CollectionResourceWrapper {
         m_resource = resource;
         m_attributes = attributes;
         m_resourceStorageDao = resourceStorageDao;
+        m_sequenceNumber = sequenceNumber;
 
         if (isAnInterfaceResource()) {
             if (resource instanceof AliasedResource) { // TODO What about AliasedResource's custom attributes?
@@ -520,7 +522,11 @@ public class CollectionResourceWrapper {
 
         return null;
     }
-    
+
+    public Long getSequenceNumber() {
+        return m_sequenceNumber;
+    }
+
     /** {@inheritDoc} */
     @Override
     public String toString() {

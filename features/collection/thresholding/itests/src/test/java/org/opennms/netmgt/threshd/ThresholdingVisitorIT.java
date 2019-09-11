@@ -1688,7 +1688,7 @@ public class ThresholdingVisitorIT {
         ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(),
                 svcParams, m_resourceStorageDao, eventProxy, MockSession.getSession(), m_threshdDao, m_thresholdingDao,
                 m_pollOutagesDao, m_ifLabelDao);
-        ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, m_resourceStorageDao, eventProxy);
+        ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, m_resourceStorageDao, eventProxy, null);
         assertNotNull(visitor);
         return visitor;
     }

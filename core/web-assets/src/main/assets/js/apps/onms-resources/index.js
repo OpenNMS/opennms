@@ -83,6 +83,7 @@ angular.module('onms-resources', [
   $scope.url = 'graph/results.htm';
   $scope.reports = 'all';
   $scope.loaded = false;
+  $scope.generatedId = '';
 
   $scope.init = function(nodeCriteria, reports, endUrl) {
     if (!nodeCriteria) {
@@ -104,8 +105,8 @@ angular.module('onms-resources', [
       $scope.nodeLabel = data.label;
       $scope.loaded = true;
       $scope.hasResources = data.children.resource.length > 0;
-      var reduced = _.map(data.children.resource, function(obj) {
-	var resource = {
+      var reduced = _.map(data.children.resource, function (obj) {
+        var resource = {
           id: obj.id,
           label: obj.label,
           typeLabel: obj.typeLabel,
@@ -171,7 +172,7 @@ angular.module('onms-resources', [
       if ($scope.resources.hasOwnProperty(key)) {
         _.each($scope.filteredResources[key], function(r) {
           if (r.selected) {
-            selected.push('resourceId=' + r.id);
+            selected.push(r.id);
           }
         });
       }
@@ -188,12 +189,30 @@ angular.module('onms-resources', [
     }
   };
 
-  $scope.doGraph = function(selected) {
+  $scope.doGraph = function (selected) {
+    // Save resources with an ID and form url with generatedId.
     if (selected.length > 0) {
-      $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
+      $http.post('rest/resources/generateId', selected)
+        .success(function (response) {
+          $scope.generatedId = response;
+          if ($scope.generatedId) {
+            $window.location.href = getBaseHref() + $scope.url + '?generatedId=' + $scope.generatedId + ($scope.reports ? '&reports=' + $scope.reports : '');
+          } else {
+            $scope.setResourceIds(selected);
+          }
+        }).error(function (error, status) {
+          $scope.setResourceIds(selected);
+        });
     } else {
       growl.error('Please select at least one resource.');
     }
+  };
+
+  $scope.setResourceIds = function (selected) {
+    for (var i = 0; i < selected.length; i++) {
+      selected[i] = 'resourceId=' + selected[i];
+    }
+    $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
   };
 
   $scope.$watch('searchQuery', function() {

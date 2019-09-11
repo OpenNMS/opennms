@@ -56,7 +56,11 @@ public interface ThresholdEvaluatorState {
      * @param dsValue a double.
      * @return a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status} object.
      */
-    public Status evaluate(double dsValue);
+    default Status evaluate(double dsValue) {
+        return evaluate(dsValue, null);
+    }
+    
+    Status evaluate(double dsValue, Long sequenceNumber);
 
     /**
      * <p>getEventForState</p>

@@ -63,6 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 
 /**
@@ -192,9 +193,9 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
                 kvStore.get(), isDistributed);
     }
 
-    public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session) throws ThresholdInitializationException {
+    public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session, Long sequenceNumber) throws ThresholdInitializationException {
         ThresholdingSetImpl thresholdingSet = (ThresholdingSetImpl) thresholdingSetPersister.getThresholdingSet(session, eventProxy);
-        return new ThresholdingVisitorImpl(thresholdingSet, ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy);
+        return new ThresholdingVisitorImpl(thresholdingSet, ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy, sequenceNumber);
     }
 
     public EventIpcManager getEventIpcManager() {
@@ -265,5 +266,10 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
                 kvStore.set(keyValueStore);
             }
         }
+    }
+
+    @VisibleForTesting
+    public void setDistributed(boolean distributed) {
+        isDistributed = distributed;
     }
 }

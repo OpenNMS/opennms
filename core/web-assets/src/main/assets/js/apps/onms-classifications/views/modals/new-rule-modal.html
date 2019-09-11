@@ -9,13 +9,21 @@
         <div ng-show="error.entity" class="form-text text-danger">{{error.entity}}</div>
       </div>
       <div class="form-group form-row">
+        <label class="col-form-label" for="rule.group">Group</label>
+        <select class="form-control"
+                ng-options="group as group.name for group in selectableGroups track by group.id"
+                ng-model="classification.group"
+                ng-disabled="classification.id === undefined"
+                id="rule.group" ></select>
+      </div>
+      <div class="form-group form-row">
         <label class="col-form-label" for="rule.position">Position</label>
         <button class="btn btn-link"
-                uib-popover-html="'<div>Rules on low positions will be evaluated first:<br>Position 0 -&gt; Position 1 -&gt; Position 2 -&gt; ...</div>'"
+                uib-popover-html="'<div>Rules on low positions will be evaluated first:<br>position 0 -&gt; position 1 -&gt; position 2 -&gt; ...</div>'"
                 popover-trigger="'outsideClick'"><i class="fa fa-question-circle"/></button>
-        <input class="form-control" id="rule.position" name="position" placeholder="9999" type="number" ng-min="0" ng-max="{{group.ruleCount-1}}" step="1" pattern="[0-9]*" ng-model="classification.position"
+        <input class="form-control" id="rule.position" name="position" placeholder="{{maxPosition}}" type="number" min="0" max="{{maxPosition}}" step="1" pattern="[0-9]*" ng-model="classification.position"
                ng-class="{ 'is-invalid' : ruleForm.position.$invalid || error.position }" />
-        <div ng-show="ruleForm.position.$invalid" class="invalid-feedback">Position must be between 0 and {{group.ruleCount-1}}.</div>
+        <div ng-show="ruleForm.position.$invalid" class="invalid-feedback">Position must be between 0 and {{maxPosition}}.</div>
       </div>
       <div class="form-group form-row">
         <label class="col-form-label" for="rule.name">Application Name</label>

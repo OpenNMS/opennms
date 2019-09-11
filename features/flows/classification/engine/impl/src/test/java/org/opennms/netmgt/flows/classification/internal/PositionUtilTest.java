@@ -36,13 +36,15 @@ import java.util.List;
 
 import org.junit.Test;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
+import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
-public class RulePositionUtilTest {
+public class PositionUtilTest {
 
     private List<Rule> rules = new ArrayList<>();
     private Group group = new Group();
+    private List<Group> groups = new ArrayList<>();
     private int idCounter;
 
     @Test
@@ -53,7 +55,19 @@ public class RulePositionUtilTest {
         Rule rule4 = createAndAddRule("rule4", 4);
         Rule ourRule = createAndAddRule("ourRule", 3); // should be moved to position 3
         group.setRules(rules);
-        assertEquals(Arrays.asList(rule1, rule2, ourRule, rule3, rule4), RulePositionUtil.sortRulePositions(ourRule));
+        assertEquals(Arrays.asList(rule1, rule2, ourRule, rule3, rule4), PositionUtil.sortRulePositions(ourRule));
+    }
+
+    @Test
+    public void groupsShouldBeSortedByTheirPosition () {
+        Group group2 = createAndAddGroup(2);
+        Group group1 = createAndAddGroup(1);
+        Group predefinedGroup = new GroupBuilder().withPosition(0).withName("pre-defined").withReadOnly(true).build(); // should always go last
+        groups.add(predefinedGroup);
+        Group group3 = createAndAddGroup(3);
+        Group group4 = createAndAddGroup(4);
+        Group ourGroup = createAndAddGroup(3, "ourGroup"); // should be moved to position 3
+        assertEquals(Arrays.asList(group1, group2, ourGroup, group3, group4, predefinedGroup), PositionUtil.sortGroupPositions(ourGroup, groups));
     }
 
     private Rule createAndAddRule(String name, int position) {
@@ -67,4 +81,17 @@ public class RulePositionUtilTest {
         return rule;
     }
 
+    private Group createAndAddGroup(int position, String name) {
+        Group group = new GroupBuilder()
+                .withName(name)
+                .withPosition(position)
+                .build();
+        group.setId(idCounter++);
+        groups.add(group);
+        return group;
+    }
+
+    private Group createAndAddGroup(int position) {
+        return createAndAddGroup(position, "group"+position);
+    }
 }

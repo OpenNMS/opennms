@@ -101,7 +101,9 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     }
 
     private void acceptCollection(CollectionSet collectionSet) throws ThresholdInitializationException {
-        ThresholdingVisitorImpl thresholdingVisitor = service.getThresholdingVistor(this);
+        Long sequenceNumber = collectionSet.getSequenceNumber().isPresent() ?
+                collectionSet.getSequenceNumber().getAsLong() : null;
+        ThresholdingVisitorImpl thresholdingVisitor = service.getThresholdingVistor(this, sequenceNumber);
 
         if (thresholdingVisitor == null) {
             LOG.error("No thresholdingVisitor for ThresholdingSession {}", sessionKey);

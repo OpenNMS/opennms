@@ -128,6 +128,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="nodeDao" ref="nodeDao"/>
     <property name="rrdDao" ref="rrdDao"/>
     <property name="eventProxy" ref="eventProxy"/>
+    <property name="jsonStore" ref="jsonStore"/>
   </bean>
   <bean id="rrdGraphService" class="org.opennms.web.svclayer.support.DefaultRrdGraphService">
     <property name="resourceDao" ref="resourceDao"/>
