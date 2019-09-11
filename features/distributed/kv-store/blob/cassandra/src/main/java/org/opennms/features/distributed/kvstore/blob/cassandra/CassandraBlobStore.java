@@ -41,11 +41,6 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.opennms.features.distributed.cassandra.api.CassandraSchemaManagerFactory;
 import org.opennms.features.distributed.cassandra.api.CassandraSession;
@@ -85,12 +80,6 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
     private final PreparedStatement timestampStmt;
     private final PreparedStatement enumerateStatement;
     private final PreparedStatement deleteStatement;
-
-    /**
-     * A thread pool used exclusively for waiting for the results of multiple async calls for the purpose of completing
-     * a single async request.
-     */
-    private final Executor waitingThreadPool = Executors.newCachedThreadPool();
 
     public CassandraBlobStore(CassandraSessionFactory sessionFactory,
                               CassandraSchemaManagerFactory cassandraSchemaManagerFactory) throws IOException {
@@ -367,27 +356,33 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
     public CompletableFuture<Void> truncateContextAsync(String context) {
         Objects.requireNonNull(context);
 
-        return enumerateContextAsync(context)
-                .thenApply(resultMap -> {
-                    Set<String> keys = resultMap.keySet();
-                    Iterator<String> keysIterator = keys.iterator();
-                    CompletableFuture<?>[] deleteFutures = new CompletableFuture[keys.size()];
+        CompletableFuture<Void> truncateFuture = new CompletableFuture<>();
 
-                    for (int i = 0; i < keys.size(); i++) {
-                        deleteFutures[i] = deleteAsync(keysIterator.next(), context);
-                    }
+        enumerateContextAsync(context).whenComplete((enumerateResult, enumerateThrowable) -> {
+            if (enumerateThrowable != null) {
+                truncateFuture.completeExceptionally(enumerateThrowable);
+                return;
+            }
 
-                    return CompletableFuture.allOf(deleteFutures);
-                })
-                .thenAcceptAsync(deleteFutures -> {
-                    try {
-                        // Since we are blocking here on deleteFutures.get() we need to do that on a separate thread
-                        // otherwise the deletes may time out hence thenAcceptAsync instead of thenAccept
-                        deleteFutures.get(10, TimeUnit.MINUTES);
-                    } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, waitingThreadPool);
+            Set<String> keys = enumerateResult.keySet();
+            Iterator<String> keysIterator = keys.iterator();
+            CompletableFuture<?>[] deleteFutures = new CompletableFuture[keys.size()];
+
+            for (int i = 0; i < keys.size(); i++) {
+                deleteFutures[i] = deleteAsync(keysIterator.next(), context);
+            }
+
+            CompletableFuture.allOf(deleteFutures).whenComplete((deleteResult, deleteThrowable) -> {
+                if (deleteThrowable != null) {
+                    truncateFuture.completeExceptionally(deleteThrowable);
+                    return;
+                }
+
+                truncateFuture.complete(deleteResult);
+            });
+        });
+
+        return truncateFuture;
     }
 
     private Statement getStatementForInsert(String key, String context, ByteBuffer serializedValue, long timestamp,
