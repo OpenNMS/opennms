@@ -47,7 +47,7 @@ public class Details extends AbstractKeyOrIndexCommand {
         if (value.isPresent()) {
             System.out.println(fst.asObject(value.get()).toString());
         } else {
-            System.out.println(String.format("Could not find a state for key '%s'", key));
+            System.out.printf("Could not find a state for key '%s'\n", key);
         }
 
         return null;
