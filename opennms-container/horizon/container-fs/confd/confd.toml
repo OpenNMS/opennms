@@ -1,0 +1,2 @@
+confdir = "/etc/confd"
+backend = "env"
