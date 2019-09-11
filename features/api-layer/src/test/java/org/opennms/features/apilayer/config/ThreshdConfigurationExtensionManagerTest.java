@@ -49,11 +49,9 @@ import org.opennms.integration.api.v1.config.thresholding.Parameter;
 import org.opennms.integration.api.v1.config.thresholding.Service;
 import org.opennms.integration.api.v1.config.thresholding.ServiceStatus;
 import org.opennms.integration.api.v1.config.thresholding.ThreshdConfigurationExtension;
-import org.opennms.integration.api.v1.config.thresholding.ThresholderDefinition;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
-import org.opennms.netmgt.config.threshd.Thresholder;
 
 public class ThreshdConfigurationExtensionManagerTest {
     /**
@@ -68,11 +66,9 @@ public class ThreshdConfigurationExtensionManagerTest {
         // Shouldn't have config yet
         ThreshdConfiguration threshdConfiguration = manager.getObject();
         assertThat(threshdConfiguration.getPackages(), hasSize(0));
-        assertThat(threshdConfiguration.getThresholders(), hasSize(0));
 
         // Expose an extension
         ThreshdConfigurationExtension ext1 = mock(ThreshdConfigurationExtension.class);
-        when(ext1.getThreads()).thenReturn(5);
 
         PackageDefinition packageDefinition1 = mock(PackageDefinition.class);
 
@@ -128,19 +124,11 @@ public class ThreshdConfigurationExtensionManagerTest {
 
         when(ext1.getPackages()).thenReturn(Collections.singletonList(packageDefinition1));
 
-        ThresholderDefinition thresholdDefinition1 = mock(ThresholderDefinition.class);
-        String className = "class name";
-        when(thresholdDefinition1.getClassName()).thenReturn(className);
-        when(thresholdDefinition1.getParameters()).thenReturn(Collections.singletonList(parameter));
-        when(thresholdDefinition1.getService()).thenReturn(serviceName);
-
-        when(ext1.getThresholders()).thenReturn(Collections.singletonList(thresholdDefinition1));
         manager.onBind(ext1, Collections.emptyMap());
 
         // Should be configuration now
         threshdConfiguration = manager.getObject();
         assertThat(threshdConfiguration.getPackages(), hasSize(1));
-        assertThat(threshdConfiguration.getThreads(), equalTo(5));
         Package extPackage = threshdConfiguration.getPackages().get(0);
 
         assertThat(extPackage.getName(), equalTo(package1Name));
@@ -159,17 +147,10 @@ public class ThreshdConfigurationExtensionManagerTest {
         assertThat(extPackage.getServices().get(0).getUserDefined(), equalTo(true));
         assertThat(extPackage.getSpecifics().get(0), equalTo(specific));
 
-        Thresholder extThresholder = threshdConfiguration.getThresholders().get(0);
-        assertThat(extThresholder.getClassName(), equalTo(className));
-        assertThat(extThresholder.getParameters().get(0).getKey(), equalTo(paramKey));
-        assertThat(extThresholder.getParameters().get(0).getValue(), equalTo(paramVal));
-        assertThat(extThresholder.getService(), equalTo(serviceName));
-
         assertThat(extPackage.getIncludeUrls().get(0), equalTo(includeUrl));
 
         // Expose another extension
         ThreshdConfigurationExtension ext2 = mock(ThreshdConfigurationExtension.class);
-        when(ext2.getThreads()).thenReturn(10);
 
         PackageDefinition packageDefinition2 = mock(PackageDefinition.class);
         when(packageDefinition2.getExcludeRanges()).thenReturn(Collections.emptyList());
@@ -185,7 +166,6 @@ public class ThreshdConfigurationExtensionManagerTest {
         when(packageDefinition2.getSpecifics()).thenReturn(Collections.emptyList());
 
         when(ext2.getPackages()).thenReturn(Collections.singletonList(packageDefinition2));
-        when(ext2.getThresholders()).thenReturn(Collections.emptyList());
         manager.onBind(ext2, Collections.emptyMap());
 
         // Should see the merged results now
@@ -195,7 +175,6 @@ public class ThreshdConfigurationExtensionManagerTest {
                 .map(Package::getName)
                 .collect(Collectors.toList());
         assertThat(packageNames, hasItems(package1Name, package2Name));
-        assertThat(threshdConfiguration.getThreads(), equalTo(10));
 
         // Unbind ext2
         manager.onUnbind(ext2, Collections.emptyMap());

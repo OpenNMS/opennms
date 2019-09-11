@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import org.opennms.integration.api.v1.config.thresholding.PackageDefinition;
 import org.opennms.integration.api.v1.config.thresholding.ThreshdConfigurationExtension;
-import org.opennms.integration.api.v1.config.thresholding.ThresholderDefinition;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.threshd.ExcludeRange;
 import org.opennms.netmgt.config.threshd.Filter;
@@ -44,7 +43,6 @@ import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.config.threshd.ServiceStatus;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
-import org.opennms.netmgt.config.threshd.Thresholder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,20 +62,9 @@ public class ThreshdConfigurationExtensionManager extends ConfigExtensionManager
     protected ThreshdConfiguration getConfigForExtensions(Set<ThreshdConfigurationExtension> extensions) {
         ThreshdConfiguration mergedConfig = new ThreshdConfiguration();
 
-        extensions.stream()
-                .map(ThreshdConfigurationExtension::getThreads)
-                .filter(Objects::nonNull)
-                .max(Integer::compareTo)
-                .ifPresent(mergedConfig::setThreads);
-
         mergedConfig.setPackages(extensions.stream()
                 .flatMap(e -> e.getPackages().stream())
                 .map(ThreshdConfigurationExtensionManager::toPackage)
-                .collect(Collectors.toList()));
-
-        mergedConfig.setThresholders(extensions.stream()
-                .flatMap(e -> e.getThresholders().stream())
-                .map(ThreshdConfigurationExtensionManager::toThresholder)
                 .collect(Collectors.toList()));
 
         return mergedConfig;
@@ -111,19 +98,6 @@ public class ThreshdConfigurationExtensionManager extends ConfigExtensionManager
         newPackage.setSpecifics(packageDefinition.getSpecifics());
 
         return newPackage;
-    }
-
-    private static Thresholder toThresholder(ThresholderDefinition thresholderDefinition) {
-        Thresholder thresholder = new Thresholder();
-
-        thresholder.setClassName(thresholderDefinition.getClassName());
-        thresholder.setParameters(thresholderDefinition.getParameters()
-                .stream()
-                .map(ThreshdConfigurationExtensionManager::toParameter)
-                .collect(Collectors.toList()));
-        thresholder.setService(thresholderDefinition.getService());
-
-        return thresholder;
     }
 
     private static ExcludeRange toExcludeRange(org.opennms.integration.api.v1.config.thresholding.ExcludeRange excludeRange) {
