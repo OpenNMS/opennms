@@ -42,3 +42,6 @@ opennms-container/horizon/tarball/*.tar.gz
 opennms-container/minion/rpms/*.rpm
 opennms-container/sentinel/rpms/*.rpm
 
+# Python
+*.pyc
+__pycache__
