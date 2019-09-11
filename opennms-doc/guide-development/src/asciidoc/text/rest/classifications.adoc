@@ -78,7 +78,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/rest/classifications
             "enabled": true,
             "id": 2,
             "name": "user-defined",
-            "priority": 10,
+            "position": 10,
             "readOnly": false,
             "ruleCount": 1
         },
@@ -250,7 +250,7 @@ HTTP/1.1 204 No Content
 .Import rules from CSV
 [source,bash]
 ----
-curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'name;ipAddress;port;protocol\nOpenNMS;;8980;tcp,udp\n' http://localhost:8980/opennms/rest/classifications\?hasHeader\=true
+curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'name;ipAddress;port;protocol\nOpenNMS;;8980;tcp,udp\n' http://localhost:8980/opennms/rest/classifications/groups/{id}\?hasHeader\=true
 ----
 
 .Response
