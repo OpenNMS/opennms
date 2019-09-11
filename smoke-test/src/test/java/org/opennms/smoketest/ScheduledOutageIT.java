@@ -110,4 +110,43 @@ public class ScheduledOutageIT extends OpenNMSSeleniumTestCase {
         // check whether the outage text appears correctly...
         with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText(text));
     }
+    
+    @Test
+    public void testOutageTypeChange() throws Exception {
+        // Visit the scheduled outage page.
+        getDriver().get(getBaseUrl() + "opennms/admin/sched-outages/index.jsp");
+        // Enter the name...
+        enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), "My-Scheduled-Outage");
+        // ...and hit the button.
+        findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newOutage']").click();
+
+        // Wait till the editor page appears.
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: My-Scheduled-Outage"));
+        // Now add all nodes and interfaces...
+        findElementByXpath("//form[@id='matchAnyForm']//input[@name='matchAny']").click();
+        // ...and confirm the alert box.
+        getDriver().switchTo().alert().accept();
+
+        // Set the specified outage type...
+        new Select(findElementByXpath("//select[@id='outageTypeSelector']")).selectByVisibleText("Daily");
+
+        // ...and apply.
+        findElementByXpath("//input[@name='setOutageType']").click();
+
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("daily"));
+
+        // This is not working since it's an <input type='image'>
+        findElementByXpath("//input[@id='deleteOutageTypeBtn']").click();
+
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> findElementByXpath("//select[@id='outageTypeSelector']").isDisplayed());
+
+        // Set another outage type...
+        new Select(findElementByXpath("//select[@id='outageTypeSelector']")).selectByVisibleText("Weekly");
+
+        // ...and apply.
+        findElementByXpath("//input[@name='setOutageType']").click();
+
+        // check whether the outage type text appears correctly...
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("weekly"));
+    }
 }

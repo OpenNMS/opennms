@@ -85,7 +85,11 @@ public class BasicSchedule implements java.io.Serializable {
     }
 
     public void setType(final String type) {
-        m_type = ConfigUtils.assertOnlyContains(ConfigUtils.assertNotEmpty(type, "type"), VALID_TYPES, "type");
+        if (type == null) {
+            m_type = null;
+        } else {
+            m_type = ConfigUtils.assertOnlyContains(ConfigUtils.assertNotEmpty(type, "type"), VALID_TYPES, "type");
+        }
     }
 
     public List<Time> getTimes() {
