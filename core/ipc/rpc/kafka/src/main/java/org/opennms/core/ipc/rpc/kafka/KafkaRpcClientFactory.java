@@ -93,6 +93,7 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
 import com.google.common.math.IntMath;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
@@ -202,10 +203,13 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     addTracingInfoToRpcMessage(span, builder);
                     //Add custom tags to Rpc Message
                     request.getTracingInfo().forEach((key, value) -> {
-                        RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
-                                .setKey(key)
-                                .setValue(value).build();
-                        builder.addTracingInfo(tracingInfo);
+                        //Protobuf doesn't like null values.
+                        if (!Strings.isNullOrEmpty(key) && !Strings.isNullOrEmpty(value)) {
+                            RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
+                                    .setKey(key)
+                                    .setValue(value).build();
+                            builder.addTracingInfo(tracingInfo);
+                        }
                     });
                     // Build message.
                     RpcMessageProtos.RpcMessage rpcMessage =  builder.setRpcContent(byteString)
@@ -252,10 +256,13 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
                 if(tracingInfoCarrier.getTracingInfoMap().size() > 0) {
                     tracingInfoCarrier.getTracingInfoMap().forEach( (key, value) -> {
-                        RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
-                                .setKey(key)
-                                .setValue(value).build();
-                        builder.addTracingInfo(tracingInfo);
+                        //Protobuf doesn't like null values.
+                        if (!Strings.isNullOrEmpty(key) && !Strings.isNullOrEmpty(value)) {
+                            RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
+                                    .setKey(key)
+                                    .setValue(value).build();
+                            builder.addTracingInfo(tracingInfo);
+                        }
                     });
                 }
             }
