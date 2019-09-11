@@ -83,7 +83,7 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             public String toString() {
                 return "multiplier=" + m_multiplier +
                         "\nlastSample=" + m_lastSample +
-                        "\nm_previousTriggeringSample=" + m_previousTriggeringSample;
+                        "\npreviousTriggeringSample=" + m_previousTriggeringSample;
             }
         }
 
