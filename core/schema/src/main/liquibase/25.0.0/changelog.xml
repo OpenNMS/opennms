@@ -95,4 +95,17 @@
         </createTable>
         <addPrimaryKey tableName="kvstore_bytea" constraintName="pk_kvstore_bytea" columnNames="key,context"/>
     </changeSet>
+    <changeSet author="patrick-schweizer" id="25.0.0-classification-rename-column-priority">
+        <renameColumn
+                newColumnName="position"
+                oldColumnName="priority"
+                tableName="classification_groups"/>
+        <rollback>
+            <renameColumn
+                    newColumnName="priority"
+                    oldColumnName="position"
+                    tableName="classification_groups"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

@@ -31,14 +31,15 @@ package org.opennms.netmgt.flows.classification.internal;
 import java.util.Comparator;
 import java.util.List;
 
+import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
-class RulePositionUtil {
+class PositionUtil {
 
     /** Sorts the rules by its position. The given rule gets the lower position as another rule with the same position
-     * => the given rule will be evaluated before another rule wit the same position. */
+     * => the given rule will be evaluated before another rule with the same position. */
     static List<Rule> sortRulePositions(Rule rule) {
-        // Load all rules of group and sort by priority (highest first) in that group
+        // Load all rules of group and sort by position (lowest first) in that group
         final List<Rule> rules = rule.getGroup().getRules();
         rules.sort(Comparator
                 .comparing(Rule::getPosition)
@@ -52,5 +53,23 @@ class RulePositionUtil {
         rules.sort(Comparator
             .comparing(Rule::getPosition));
         return rules;
+    }
+
+    /** Sorts the groups by its position. The given group gets the lower position as another group with the same position
+     * => the given group will be evaluated before another group with the same position. */
+    static List<Group> sortGroupPositions(Group group, List<Group> groups) {
+        groups.sort(Comparator
+                .comparing(Group::isReadOnly)
+                .thenComparing(Group::getPosition)
+                .thenComparing(g -> !g.getId().equals(group.getId()))); // "our group" will have the lower position move other groups away
+        return groups;
+    }
+
+    /** Sorts the rules by its position.*/
+    static List<Group> sortGroupPositions(List<Group> groups ) {
+        groups.sort(Comparator
+                .comparing(Group::isReadOnly)
+                .thenComparing(Group::getPosition));
+        return groups;
     }
 }

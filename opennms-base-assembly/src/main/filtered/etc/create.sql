@@ -2684,7 +2684,7 @@ CREATE TABLE classification_groups (
   name text not null,
   readonly boolean,
   enabled boolean,
-  priority integer not null,
+  position integer not null,
   description text,
   CONSTRAINT classification_groups_pkey PRIMARY KEY (id)
 );

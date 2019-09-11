@@ -46,7 +46,7 @@ public interface RuleDefinition {
 
     String getExporterFilter();
 
-    int getGroupPriority();
+    int getGroupPosition();
 
     /** Defines the order in which the rules are evaluated. Lower positions go first */
     int getPosition();
