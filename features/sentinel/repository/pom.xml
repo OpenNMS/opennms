@@ -75,7 +75,6 @@
                                 <feature>sentinel-blobstore-cassandra</feature>
                                 <feature>sentinel-jsonstore-postgres</feature>
                                 <feature>sentinel-thresholding-service</feature>
-                                <feature>sentinel-threshold-states-shell</feature>
 
 
                                 <!-- Other features -->
