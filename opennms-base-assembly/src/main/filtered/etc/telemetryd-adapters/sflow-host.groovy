@@ -36,7 +36,7 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getI
 NodeLevelResource nodeLevelResource = new NodeLevelResource(agent.getNodeId())
 
 // Set a sequence number if we can find one
-getInt64(msg, "sequence_number").ifPresent(sn -> builder.withSequenceNumber(sn))
+getInt64(msg, "sequence_number").ifPresent { sn -> builder.withSequenceNumber(sn) }
 
 get(msg, "counters", "0:2003").ifPresent { doc ->
     builder.withGauge(nodeLevelResource, "host-cpu", "load_avg_1min", getDouble(doc, "load_one").get())
