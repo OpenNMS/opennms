@@ -72,6 +72,11 @@
   <filter>
     <filter-name>jSessionIdNoCacheFilter</filter-name>
     <filter-class>org.opennms.web.security.JSessionIdNoCacheFilter</filter-class>
+    <!-- optional, defaults to JSESSIONID
+    <init-param>
+      <param-name>sessionIdName</param-name>
+      <param-value>JSESSIONID</param-value>
+    </init-param> -->
   </filter>
 
   <filter>

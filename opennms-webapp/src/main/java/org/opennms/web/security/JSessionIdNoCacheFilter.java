@@ -39,6 +39,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
+
 /** Sets the header "cache-control: no-cache" if the response contains the jsessionid. This is done for security reasons;
  * Web servers use session cookies to identify the active user sessions.  Disclosing these session cookies to an
  * attacker can result in a session hijacking attack. With this in mind, session cookies should be treated as sensitive
@@ -55,7 +57,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class JSessionIdNoCacheFilter implements Filter {
 
+    private final static String PARAM_SESSION_ID_NAME = "sessionIdName";
     private final static String DEFAULT_SESSION_ID_NAME = "JSESSIONID";
+
+    private String sessionIdName = DEFAULT_SESSION_ID_NAME;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
@@ -67,12 +72,25 @@ public class JSessionIdNoCacheFilter implements Filter {
     }
 
     private void addHeaderIfRequired(HttpServletResponse response) {
+        boolean cacheControlHeaderNeeded = false;
         Collection<String> cookies = response.getHeaders("Set-Cookie");
+
+        // check for session id in cookies
         for( String cookie : cookies) {
-            if(cookie.contains(DEFAULT_SESSION_ID_NAME)){
-                response.addHeader("Cache-Control", "no-cache");
-                return;
+            if(cookie.contains(sessionIdName)){
+                cacheControlHeaderNeeded = true;
+                break;
             }
+        }
+
+        // check for session id in location url
+        String location = response.getHeader("Location");
+        if(location != null && location.contains(sessionIdName.toLowerCase())) {
+            cacheControlHeaderNeeded = true;
+        }
+
+        if(cacheControlHeaderNeeded) {
+            response.addHeader("Cache-Control", "no-cache");
         }
     }
 
@@ -83,6 +101,9 @@ public class JSessionIdNoCacheFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-        // no initialization needed
+        String value = filterConfig.getInitParameter(PARAM_SESSION_ID_NAME);
+        if(!Strings.isNullOrEmpty(value)) {
+            this.sessionIdName = value;
+        }
     }
 }
