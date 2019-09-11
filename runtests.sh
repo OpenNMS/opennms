@@ -27,6 +27,13 @@ cat target/*_classnames | python3 .circleci/scripts/find-tests/find-tests.py gen
       --output=target/test_projects \
       .
 
+# Bail if there are no tests to run
+if [ ! -s target/test_projects ]; then
+  echo "No tests to run."
+  exit 0
+fi
+
+
 # Run the tests
 mvn verify -P'!checkstyle' \
            -DupdatePolicy=never \
