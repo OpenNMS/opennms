@@ -134,7 +134,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
 
     private void testCharactersInName(String name) throws Exception {
         try {
-            getDriver().get(getBaseUrl() + "opennms/admin/sched-outages/index.jsp");
+            getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
             enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), name);
             findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newOutage']").click();
             with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name));
@@ -144,11 +144,11 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
             findElementByXpath("//input[@name='setOutageType']").click();
             findElementByXpath("//input[@name='addOutage']").click();
             findElementByXpath("//input[@name='saveButton']").click();
-            getDriver().get(getBaseUrl() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":TestMachine");
+            getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":TestMachine");
             findElementByXpath("//a[text()='"+name+"']").click();
             with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name));
         } finally {
-            getDriver().get(getBaseUrl() + "opennms/admin/sched-outages/index.jsp");
+            getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
             findElementByXpath("//a[@id='" + name + ".delete']").click();
             getDriver().switchTo().alert().accept();
         }
@@ -167,7 +167,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
     @Test
     public void testOutageTypeChange() throws Exception {
         // Visit the scheduled outage page.
-        getDriver().get(getBaseUrl() + "opennms/admin/sched-outages/index.jsp");
+        getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
         // Enter the name...
         enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), "My-Scheduled-Outage");
         // ...and hit the button.
