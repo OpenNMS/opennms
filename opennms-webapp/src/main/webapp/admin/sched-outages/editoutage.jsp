@@ -222,7 +222,7 @@
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
-		nameParam = request.getParameter("newName");
+		nameParam = WebSecurityUtils.sanitizeString(request.getParameter("newName"));
 		Outage tempOutage = pollFactory.getOutage(nameParam);
 		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
 			CharArrayWriter writer = new CharArrayWriter();
