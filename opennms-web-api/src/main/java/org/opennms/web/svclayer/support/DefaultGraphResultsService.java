@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourceId;
@@ -59,6 +60,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+
+import com.google.common.base.Strings;
 
 /**
  * <p>DefaultGraphResultsService class.</p>
@@ -91,10 +94,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     }
 
     @Override
-    public GraphResults findResults(ResourceId[] resourceIds, String[] reports, long start, long end, String relativeTime) {
-        if (resourceIds == null) {
-            throw new IllegalArgumentException("resourceIds argument cannot be null");
-        }
+    public GraphResults findResults(ResourceId[] resourceIds, String[] reports, String nodeCriteria, long start, long end, String relativeTime) {
         if (reports == null) {
             throw new IllegalArgumentException("reports argument cannot be null");
         }
@@ -108,9 +108,9 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         graphResults.setRelativeTime(relativeTime);
         graphResults.setRelativeTimePeriods(m_periods);
         graphResults.setReports(reports);
+        graphResults.setNodeCriteria(nodeCriteria);
 
         HashMap<ResourceId, List<OnmsResource>> resourcesMap = new HashMap<>();
-
         for (ResourceId resourceId : resourceIds) {
             LOG.debug("findResults: parent, childType, childName = {}, {}, {}", resourceId.parent, resourceId.type, resourceId.name);
             OnmsResource resource = null;
@@ -135,7 +135,24 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
                 graphResults.addGraphResultSet(createGraphResultSet(resourceId, resource, reports, graphResults));
             } catch (IllegalArgumentException e) {
                 LOG.warn(e.getMessage(), e);
-                continue;
+            }
+        }
+
+        // GraphAll case where all resources are fetched from node.
+        if (!Strings.isNullOrEmpty(nodeCriteria)) {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if(node != null) {
+                OnmsResource nodeResource = m_resourceDao.getResourceForNode(node);
+                if(nodeResource != null) {
+                    List<OnmsResource> childResources = nodeResource.getChildResources();
+                    for (OnmsResource resource : childResources) {
+                        try {
+                            graphResults.addGraphResultSet(createGraphResultSet(null, resource, reports, graphResults));
+                        } catch (IllegalArgumentException e) {
+                            LOG.warn(e.getMessage(), e);
+                        }
+                    }
+                }
             }
         }
 
@@ -145,6 +162,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
         return graphResults;
     }
+
+
 
     @Override
     public PrefabGraph[] getAllPrefabGraphs(ResourceId resourceId) {

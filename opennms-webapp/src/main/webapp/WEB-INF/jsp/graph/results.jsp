@@ -68,9 +68,14 @@
     </c:if>
     <div id="customTimeForm" name="customTimeForm" ${showCustom}>
         <form role="form" class="form-inline top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
-            <c:forEach var="resultSet" items="${results.graphResultSets}">
-                <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
-            </c:forEach>
+            <c:if test="${empty results.nodeCriteria}">
+                <c:forEach var="resultSet" items="${results.graphResultSets}">
+                    <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
+                </c:forEach>
+            </c:if>
+            <c:if test="${not empty results.nodeCriteria}">
+                <input type="hidden" name="nodeCriteria" value="${results.nodeCriteria}"/>
+            </c:if>
             <c:forEach var="report" items="${results.reports}">
                 <input type="hidden" name="reports" value="${report}"/>
             </c:forEach>
@@ -281,9 +286,14 @@
 </div> <!-- graph-results -->
 
 <c:url var="relativeTimeReloadUrl" value="${requestScope.relativeRequestPath}">
-    <c:forEach var="resultSet" items="${results.graphResultSets}">
-        <c:param name="resourceId" value="${resultSet.resource.id}"/>
-    </c:forEach>
+    <c:if test="${empty results.nodeCriteria}">
+        <c:forEach var="resultSet" items="${results.graphResultSets}">
+            <c:param name="resourceId" value="${resultSet.resource.id}"/>
+        </c:forEach>
+   </c:if>
+   <c:if test="${not empty results.nodeCriteria}">
+        <c:param name="nodeCriteria" value="${results.nodeCriteria}"/>
+   </c:if>
     <c:forEach var="report" items="${results.reports}">
         <c:param name="reports" value="${report}"/>
     </c:forEach>
