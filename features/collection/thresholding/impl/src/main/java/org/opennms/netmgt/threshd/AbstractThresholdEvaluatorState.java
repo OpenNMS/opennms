@@ -71,7 +71,17 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
 
     public static final String FORMATED_NAN = "NaN (the threshold definition has been changed)";
 
-    private static FSTConfiguration fst = FSTConfiguration.createDefaultConfiguration();
+    public static final FSTConfiguration fst = FSTConfiguration.createDefaultConfiguration();
+
+    // Pre-register the classes we know we will be serializing as this increases performance
+    static {
+        fst.registerClass(
+                ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow.State.class,
+                ThresholdEvaluatorRelativeChange.ThresholdEvaluatorStateRelativeChange.State.class,
+                ThresholdEvaluatorRearmingAbsoluteChange.ThresholdEvaluatorStateRearmingAbsoluteChange.State.class,
+                ThresholdEvaluatorAbsoluteChange.ThresholdEvaluatorStateAbsoluteChange.State.class
+        );
+    }
 
     private boolean isStateDirty;
 
@@ -118,8 +128,8 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
                 fst::asByteArray,
                 bytes -> (T) fst.asObject(bytes));
         key = String.format("%d-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
-                thresholdingSession.getKey().getLocation(), thresholdingSession.getKey().getResource(),
-                threshold.getDatasourceExpression(), threshold.getDsType(), threshold.getType());
+                thresholdingSession.getKey().getLocation(), threshold.getDsType(),
+                threshold.getDatasourceExpression(), thresholdingSession.getKey().getResource(), threshold.getType());
 
         stateTTL = SystemProperties.getInteger("org.opennms.netmgt.threshd.state_ttl",
                 (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS));

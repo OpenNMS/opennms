@@ -31,10 +31,15 @@ package org.opennms.features.distributed.kvstore.blob.cassandra;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.features.distributed.cassandra.api.CassandraSchemaManagerFactory;
@@ -73,6 +78,8 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
     private final PreparedStatement insertWithTtlStmt;
     private final PreparedStatement selectStmt;
     private final PreparedStatement timestampStmt;
+    private final PreparedStatement enumerateStatement;
+    private final PreparedStatement deleteStatement;
 
     public CassandraBlobStore(CassandraSessionFactory sessionFactory,
                               CassandraSchemaManagerFactory cassandraSchemaManagerFactory) throws IOException {
@@ -90,6 +97,10 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
                 TABLE_NAME, KEY_COLUMN, CONTEXT_COLUMN));
         timestampStmt = session.prepare(String.format("SELECT %s FROM %s WHERE %s = ? AND %s = ?", TIMESTAMP_COLUMN,
                 TABLE_NAME, KEY_COLUMN, CONTEXT_COLUMN));
+        enumerateStatement = session.prepare(String.format("SELECT %s, %s FROM %s WHERE %s = ?", KEY_COLUMN,
+                VALUE_COLUMN, TABLE_NAME, CONTEXT_COLUMN));
+        deleteStatement = session.prepare(String.format("DELETE FROM %s WHERE %s = ? and %s = ?", TABLE_NAME,
+                KEY_COLUMN, CONTEXT_COLUMN));
     }
 
     @Override
@@ -268,6 +279,110 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         }
 
         return tsFuture;
+    }
+
+    @Override
+    public Map<String, byte[]> enumerateContext(String context) {
+        Objects.requireNonNull(context);
+
+        Map<String, byte[]> resultMap = new HashMap<>();
+        
+        session.execute(enumerateStatement.bind(context))
+                .forEach(row -> resultMap.put(row.getString(KEY_COLUMN), row.getBytes(VALUE_COLUMN).array()));
+        
+        return Collections.unmodifiableMap(resultMap);
+    }
+
+    @Override
+    public void delete(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
+        session.execute(deleteStatement.bind(key, context));
+    }
+
+    @Override
+    public CompletableFuture<Map<String, byte[]>> enumerateContextAsync(String context) {
+        Objects.requireNonNull(context);
+
+        CompletableFuture<Map<String, byte[]>> enumerateFuture = new CompletableFuture<>();
+
+        try {
+            ResultSetFuture enumerateResult = session.executeAsync(enumerateStatement.bind(context));
+            enumerateResult.addListener(() -> {
+                Map<String, byte[]> resultMap = new HashMap<>();
+
+                try {
+                    enumerateResult.getUninterruptibly()
+                            .forEach(row -> resultMap.put(row.getString(KEY_COLUMN),
+                                    row.getBytes(VALUE_COLUMN).array()));
+                    enumerateFuture.complete(Collections.unmodifiableMap(resultMap));
+                } catch (Exception e) {
+                    enumerateFuture.completeExceptionally(e);
+                }
+            }, MoreExecutors.directExecutor());
+        } catch (Exception e) {
+            enumerateFuture.completeExceptionally(e);
+        }
+
+        return enumerateFuture;
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteAsync(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
+        CompletableFuture<Void> deleteFuture = new CompletableFuture<>();
+
+        try {
+            ResultSetFuture deleteResult = session.executeAsync(deleteStatement.bind(key, context));
+            deleteResult.addListener(() -> {
+                try {
+                    deleteResult.getUninterruptibly();
+                    deleteFuture.complete(null);
+                } catch (Exception e) {
+                    deleteFuture.completeExceptionally(e);
+                }
+            }, MoreExecutors.directExecutor());
+        } catch (Exception e) {
+            deleteFuture.completeExceptionally(e);
+        }
+
+        return deleteFuture;
+    }
+
+    @Override
+    public CompletableFuture<Void> truncateContextAsync(String context) {
+        Objects.requireNonNull(context);
+
+        CompletableFuture<Void> truncateFuture = new CompletableFuture<>();
+
+        enumerateContextAsync(context).whenComplete((enumerateResult, enumerateThrowable) -> {
+            if (enumerateThrowable != null) {
+                truncateFuture.completeExceptionally(enumerateThrowable);
+                return;
+            }
+
+            Set<String> keys = enumerateResult.keySet();
+            Iterator<String> keysIterator = keys.iterator();
+            CompletableFuture<?>[] deleteFutures = new CompletableFuture[keys.size()];
+
+            for (int i = 0; i < keys.size(); i++) {
+                deleteFutures[i] = deleteAsync(keysIterator.next(), context);
+            }
+
+            CompletableFuture.allOf(deleteFutures).whenComplete((deleteResult, deleteThrowable) -> {
+                if (deleteThrowable != null) {
+                    truncateFuture.completeExceptionally(deleteThrowable);
+                    return;
+                }
+
+                truncateFuture.complete(deleteResult);
+            });
+        });
+
+        return truncateFuture;
     }
 
     private Statement getStatementForInsert(String key, String context, ByteBuffer serializedValue, long timestamp,

@@ -583,6 +583,7 @@
                 <feature>opennms-blobstore-postgres</feature>
                 <feature>opennms-blobstore-shell</feature>
                 <feature>opennms-jsonstore-shell</feature>
+                <feature>opennms-threshold-states-shell</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
@@ -996,6 +997,11 @@
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>
       <artifactId>org.opennms.features.distributed.kv-store.json.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.thresholding.shell</artifactId>
       <version>${project.version}</version>
     </dependency>
 

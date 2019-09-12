@@ -46,7 +46,9 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
@@ -284,6 +286,15 @@ public class ThresholdingIT {
             @Override
             public String getName() {
                 return "test";
+            }
+
+            @Override
+            public Map<String, byte[]> enumerateContext(String context) {
+                return Collections.emptyMap();
+            }
+
+            @Override
+            public void delete(String key, String context) {
             }
         });
 

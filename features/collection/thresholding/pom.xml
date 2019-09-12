@@ -14,5 +14,6 @@
     <module>api</module>
     <module>impl</module>
     <module>itests</module>
+    <module>thresholding-shell</module>
   </modules>
 </project>

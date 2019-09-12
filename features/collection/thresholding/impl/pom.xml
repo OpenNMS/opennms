@@ -95,7 +95,7 @@
     <dependency>
       <groupId>de.ruedigermoeller</groupId>
       <artifactId>fst</artifactId>
-      <version>2.47</version>
+      <version>${fstVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>
