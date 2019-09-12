@@ -227,6 +227,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                 }
             } catch (SearchParseException | ArrayIndexOutOfBoundsException e) {
                 LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage(), e);
+                throw new IllegalArgumentException("Error parsing FIQL search");
             }
         }
 
