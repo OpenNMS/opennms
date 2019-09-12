@@ -136,11 +136,21 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         try {
             getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
             enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), name);
-            findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newOutage']").click();
+            findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//button[@name='newOutage']").click();
             with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name));
             findElementByXpath("//form[@id='matchAnyForm']//input[@name='matchAny']").click();
             getDriver().switchTo().alert().accept();
-            new Select(findElementByXpath("//select[@id='outageTypeSelector']")).selectByVisibleText("Daily");
+
+            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 10);
+            final String outageTypeSelectorXPath = "//select[@id='outageTypeSelector']";
+
+            try {
+                webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(outageTypeSelectorXPath)));
+            } catch (final StaleElementReferenceException e) {
+                webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(outageTypeSelectorXPath)));
+            }
+
+            new Select(findElementByXpath(outageTypeSelectorXPath)).selectByVisibleText("Daily");
             findElementByXpath("//input[@name='setOutageType']").click();
             findElementByXpath("//input[@name='addOutage']").click();
             findElementByXpath("//input[@name='saveButton']").click();
@@ -149,7 +159,17 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
             with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name));
         } finally {
             getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
-            findElementByXpath("//a[@id='" + name + ".delete']").click();
+
+            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 10);
+            final String deleteLink = "//a[@id='" + name + ".delete']";
+
+            try {
+                webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(deleteLink)));
+            } catch (final StaleElementReferenceException e) {
+                webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(deleteLink)));
+            }
+
+            findElementByXpath(deleteLink).click();
             getDriver().switchTo().alert().accept();
         }
     }
@@ -171,7 +191,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         // Enter the name...
         enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), "My-Scheduled-Outage");
         // ...and hit the button.
-        findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newOutage']").click();
+        findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//button[@name='newOutage']").click();
 
         // Wait till the editor page appears.
         with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: My-Scheduled-Outage"));
@@ -180,8 +200,17 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         // ...and confirm the alert box.
         getDriver().switchTo().alert().accept();
 
+        final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 10);
+        final String outageTypeSelectorXPath = "//select[@id='outageTypeSelector']";
+
+        try {
+            webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(outageTypeSelectorXPath)));
+        } catch (final StaleElementReferenceException e) {
+            webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(outageTypeSelectorXPath)));
+        }
+
         // Set the specified outage type...
-        new Select(findElementByXpath("//select[@id='outageTypeSelector']")).selectByVisibleText("Daily");
+        new Select(findElementByXpath(outageTypeSelectorXPath)).selectByVisibleText("Daily");
 
         // ...and apply.
         findElementByXpath("//input[@name='setOutageType']").click();
