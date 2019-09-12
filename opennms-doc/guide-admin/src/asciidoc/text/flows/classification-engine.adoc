@@ -70,12 +70,13 @@ Rules can be marked as omnidirectional which additionally evaluates the rules wi
 This is helpful if traffic related to a matching classification should be classified the same way.
 
 ==== Rule Groups
-Rules live within a rule group. New groups can be added, edited and deleted via the _Classification UI_.
+Rules live within a rule group.
+New groups can be added, edited and deleted via the _Classification UI_.
 The `pre-defined` group is read only. It (and it's rules) can not be altered.
 
 ==== Order of evaluation
-Rules and groups have a position. Lower positions are evaluated first. The position of a rules group is more important
-than the rules position within its group. The system defined group is always evaluated last.
+Rules and groups have a position. Lower positions are evaluated first.
+The position of a rules group is more important than the rules position within its group. The system defined group is always evaluated last.
 
 An example of an evaluation:
 
