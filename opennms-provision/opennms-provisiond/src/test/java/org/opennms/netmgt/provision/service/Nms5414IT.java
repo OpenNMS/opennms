@@ -30,6 +30,8 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
 
+import java.net.InetAddress;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
@@ -102,6 +104,12 @@ public class Nms5414IT extends ProvisioningITCase {
         fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
         mfsr.putDefaultForeignSource(fs);
         m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
+        m_provisioner.getProvisionService().setHostnameResolver(new HostnameResolver() {
+            @Override
+            public String getHostname(InetAddress addr, String location) {
+                return "opennms-com";
+            }
+        });
     }
 
     @Test
@@ -132,6 +140,12 @@ public class Nms5414IT extends ProvisioningITCase {
 
         //Verify ipinterface count
         assertEquals(4, getInterfaceDao().countAll());
+        // Verify that all interfaces have resolved hostname set.
+        List<OnmsIpInterface> ipInterfaces = getInterfaceDao().findAll();
+        ipInterfaces.forEach(onmsIpInterface -> {
+                    assertEquals("opennms-com", onmsIpInterface.getIpHostName());
+                }
+        );
         //Verify snmpinterface count
         assertEquals(79,getSnmpInterfaceDao().countAll());
         
