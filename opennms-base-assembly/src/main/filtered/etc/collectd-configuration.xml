@@ -109,10 +109,30 @@
          <parameter key="retry" value="2"/>
          <parameter key="timeout" value="3000"/>
          <parameter key="rrd-base-name" value="java"/>
-         <parameter key="collection" value="jsr160"/>
+         <parameter key="collection" value="opennms"/>
          <parameter key="thresholding-enabled" value="true"/>
          <parameter key="ds-name" value="opennms-jvm"/>
          <parameter key="friendly-name" value="opennms-jvm"/>
+      </service>
+      <service name="JMX-Java-Virtual-Machine" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="18980"/>
+         <parameter key="retry" value="2"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="rrd-base-name" value="java"/>
+         <parameter key="collection" value="jmx-java-virtual-machine"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="ds-name" value="jmx-java-virtual-machine"/>
+         <parameter key="friendly-name" value="jmx-java-virtual-machine"/>
+      </service>
+      <service name="JMX-Newts" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="18980"/>
+         <parameter key="retry" value="2"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="rrd-base-name" value="java"/>
+         <parameter key="collection" value="jmx-newts"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="ds-name" value="jmx-newts"/>
+         <parameter key="friendly-name" value="jmx-newts"/>
       </service>
       <service name="JMX-Minion" interval="300000" user-defined="false" status="on">
          <parameter key="port" value="18980"/>
@@ -157,6 +177,8 @@
    <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
    <collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector"/>
    <collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+   <collector service="JMX-Java-Virtual-Machine" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+   <collector service="JMX-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Minion" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>

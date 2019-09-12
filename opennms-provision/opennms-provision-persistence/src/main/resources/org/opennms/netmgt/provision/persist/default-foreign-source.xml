@@ -26,6 +26,31 @@
 			<parameter key="type" value="default"/>
 			<parameter key="ipMatch" value="127.0.0.1"/>
 		</detector>
+		<detector name="JMX-Newts" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+			<parameter key="factory" value="PASSWORD-CLEAR"/>
+			<parameter key="username" value="admin"/>
+			<parameter key="ipMatch" value="127.0.0.1"/>
+			<parameter key="port" value="18980"/>
+			<parameter key="password" value="admin"/>
+			<parameter key="urlPath" value="/jmxrmi"/>
+			<parameter key="retries" value="2"/>
+			<parameter key="type" value="default"/>
+			<parameter key="protocol" value="rmi"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="object" value="org.opennms.newts:name=ring-buffer.size"/>
+		</detector>
+		<detector name="JMX-Java-Virtual-Machine" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+			<parameter key="factory" value="PASSWORD-CLEAR"/>
+			<parameter key="username" value="admin"/>
+			<parameter key="ipMatch" value="127.0.0.1"/>
+			<parameter key="port" value="18980"/>
+			<parameter key="password" value="admin"/>
+			<parameter key="urlPath" value="/jmxrmi"/>
+			<parameter key="retries" value="2"/>
+			<parameter key="type" value="default"/>
+			<parameter key="protocol" value="rmi"/>
+			<parameter key="timeout" value="3000"/>
+		</detector>
 		<detector name="JMX-Minion" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
 			<parameter key="port" value="1299"/>
 			<parameter key="factory" value="PASSWORD-CLEAR"/>
