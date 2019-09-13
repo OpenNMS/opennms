@@ -156,6 +156,8 @@
 
   <bean id="cassandraSampleRepository" class="org.opennms.newts.persistence.cassandra.CassandraSampleRepository" depends-on="samples.cassandra.time-to-live" />
 
+  <onmsgi:service interface="org.opennms.newts.api.SampleRepository" ref="cassandraSampleRepository" />
+
   <bean id="newtsWriter" class="org.opennms.netmgt.newts.NewtsWriter" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.NewtsResourceStorageDao" />

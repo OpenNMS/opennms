@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.resourcemgnt.commands;
+package org.opennms.netmgt.measurements.shell;
 
-import org.kohsuke.args4j.Argument;
-import org.opennms.features.resourcemgnt.ResourceCli;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.model.ResourceId;
 
-public class DeleteCommand extends AbstractCommand {
+@Command(scope = "opennms-measurements", name = "delete-resource", description = "Delete the measurements and meta-data for a given resource ID")
+@Service
+public class DeleteResource implements Action {
 
-    @Argument(required = true,
-              metaVar = "resource",
-              usage = "the resource to delete")
-    private String resource = "";
+    @Reference
+    ResourceDao resourceDao;
+
+    @Argument(description = "Resource ID")
+    String resourceId;
 
     @Override
-    public void execute(final ResourceCli resourceCli) throws Exception {
-        // Delete the data
-        connect(resourceCli, this.resource)
-                .delete();
+    public Object execute() {
+        System.out.printf("Deleting measurements and meta-data associated with resource ID '%s'...\n", resourceId);
+        resourceDao.deleteResourceById(ResourceId.fromString(resourceId));
+        System.out.printf("Done.\n");
+        return null;
     }
+
 }
