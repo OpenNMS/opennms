@@ -32,10 +32,13 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.joda.time.Duration;
 import org.nustaq.serialization.FSTConfiguration;
@@ -52,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
@@ -60,7 +64,7 @@ import com.swrve.ratelimitedlogger.RateLimitedLog;
  * @author ranger
  * @version $Id: $
  */
-public abstract class AbstractThresholdEvaluatorState<T extends Serializable> implements ThresholdEvaluatorState {
+public abstract class AbstractThresholdEvaluatorState<T extends AbstractThresholdEvaluatorState.AbstractState> implements ThresholdEvaluatorState {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractThresholdEvaluatorState.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
@@ -116,6 +120,23 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
             })
             .asMap();
 
+    static abstract class AbstractState implements Serializable {
+        String interpolatedExpression = null;
+
+        Optional<String> getInterpolatedExpression() {
+            return Optional.ofNullable(interpolatedExpression);
+        }
+        
+        void setInterpolatedExpression(String expression) {
+            interpolatedExpression = Objects.requireNonNull(expression);
+        }
+
+        @Override
+        public String toString() {
+            return "interpolatedExpression='" + interpolatedExpression + "'";
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     public AbstractThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold,
                                            ThresholdingSession thresholdingSession) {
@@ -217,6 +238,27 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
     }
 
     @Override
+    public ValueStatus evaluate(ExpressionThresholdValue valueSupplier, Long sequenceNumber)
+            throws ThresholdExpressionException {
+        double dsValue = getValueForExpressionThreshold(valueSupplier);
+        Status status = evaluate(dsValue, sequenceNumber);
+
+        return new ValueStatus(dsValue, status);
+    }
+
+    private double getValueForExpressionThreshold(ExpressionThresholdValue valueSupplier)
+            throws ThresholdExpressionException {
+        if (!state.getInterpolatedExpression().isPresent()) {
+            LOG.debug("Interpolating the expression for state {} for the first time", state);
+            return valueSupplier.get(expr -> state.setInterpolatedExpression(expr));
+        } else {
+            String interpolatedExpression = state.getInterpolatedExpression().get();
+            LOG.debug("Using already interpolated expression {}", interpolatedExpression);
+            return valueSupplier.get(interpolatedExpression);
+        }
+    }
+
+    @Override
     public void clearState() {
         clearStateBeforePersist();
         persistStateIfNeeded();
@@ -280,8 +322,13 @@ public abstract class AbstractThresholdEvaluatorState<T extends Serializable> im
         // Add datasource name
         bldr.addParam("ds", getThresholdConfig().getDatasourceExpression());
 
-        // Add threshold description
-        final String descr = getThresholdConfig().getBasethresholddef().getDescription().orElse(getThresholdConfig().getDatasourceExpression());
+        // Add threshold description using the interpolated expression if available
+        final String descr = getThresholdConfig()
+                .getBasethresholddef()
+                .getDescription()
+                .orElseGet(() -> state.getInterpolatedExpression()
+                        .orElse(getThresholdConfig().getDatasourceExpression()));
+
         bldr.addParam("description", descr);
 
         // Add last known value of the datasource fetched from its RRD file
