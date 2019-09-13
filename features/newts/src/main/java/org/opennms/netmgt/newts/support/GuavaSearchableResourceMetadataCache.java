@@ -82,7 +82,7 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
     private final Meter m_attributeMisses;
 
     @Inject
-    public GuavaSearchableResourceMetadataCache(@Named("search.resourceMetadata.maxCacheEntries") long maxSize, MetricRegistry registry) {
+    public GuavaSearchableResourceMetadataCache(@Named("search.resourceMetadata.maxCacheEntries") long maxSize, @Named("newtsMetricRegistry") MetricRegistry registry) {
         m_radixTree = new ConcurrentRadixTree<>(new DefaultCharArrayNodeFactory());
 
         LOG.info("Initializing resource metadata cache ({} max entries)", maxSize);

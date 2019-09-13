@@ -40,6 +40,6 @@ import org.opennms.newts.cassandra.search.ResourceMetadataCache;
  */
 public interface SearchableResourceMetadataCache extends ResourceMetadataCache {
 
-    public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix);
+    List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix);
 
 }
