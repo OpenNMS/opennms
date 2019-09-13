@@ -438,15 +438,15 @@ doStart(){
 		echo "end ulimit settings" >> "$REDIRECT"
 		echo "Executing command:" "${CMD[@]}" >> "$REDIRECT"
 
-		# NMS-12226 runCmd & spawns a subshell process for the function runCmd which is not the PID of the java process.
-		# To avoid this spawn the command directly so the $! is the PID of java.
-		if [[ "$NOEXECUTE" == "0" ]]; then
+      # NMS-12226 runCmd & spawns a subshell process for the function runCmd which is not the PID of the java process.
+      # To avoid this spawn the command directly so the $! is the PID of java.
+      if [[ "$NOEXECUTE" == "0" ]]; then
          "${CMD[@]}" >>"$REDIRECT" 2>&1 &
       else
-         echo "Skipping execution: ${CMD[@]}"
+         echo "Skipping execution: ${CMD[*]}"
       fi
 		OPENNMS_PID=$!
-		echo $OPENNMS_PID > "$OPENNMS_PIDFILE"
+      echo $OPENNMS_PID > "$OPENNMS_PIDFILE"
 	else
 		echo "running ulimit -a"
 		ulimit -a
