@@ -93,6 +93,7 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
 import com.google.common.math.IntMath;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
@@ -167,17 +168,13 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                         KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME, module.getId(), request.getLocation());
                 String requestTopic = topicNameFactory.getName();
                 String marshalRequest = module.marshalRequest(request);
-                request.getTracingInfo().forEach(span::setTag);
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
-                span.setTag(TAG_LOCATION, request.getLocation());
-                if(request.getSystemId() != null) {
-                    span.setTag(TAG_SYSTEM_ID, request.getSystemId());
-                }
                 // Calculate timeout based on ttl and default timeout.
                 Long ttl = request.getTimeToLiveMs();
                 ttl = (ttl != null && ttl > 0) ? ttl : DEFAULT_TTL;
                 long expirationTime = System.currentTimeMillis() + ttl;
+
                 // Create a future and add it to response handler which will complete the future when it receives callback.
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 final Map<String, String> loggingContext = Logging.getCopyOfContextMap();
@@ -188,6 +185,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 kafkaConsumerRunner.startConsumingForModule(module.getId());
                 byte[] messageInBytes = marshalRequest.getBytes();
                 int totalChunks = IntMath.divide(messageInBytes.length, MAX_BUFFER_SIZE, RoundingMode.UP);
+
                 RpcMessageProtos.RpcMessage.Builder builder = RpcMessageProtos.RpcMessage.newBuilder()
                         .setRpcId(rpcId)
                         .setSystemId(request.getSystemId() == null ? "" : request.getSystemId())
@@ -199,14 +197,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     ByteString byteString = ByteString.copyFrom(messageInBytes, chunk * MAX_BUFFER_SIZE, bufferSize);
                     int chunkNum = chunk;
                     // Add tracing info to message builder.
-                    addTracingInfoToRpcMessage(span, builder);
-                    //Add custom tags to Rpc Message
-                    request.getTracingInfo().forEach((key, value) -> {
-                        RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
-                                .setKey(key)
-                                .setValue(value).build();
-                        builder.addTracingInfo(tracingInfo);
-                    });
+                    addTracingInfo(request, span, builder);
                     // Build message.
                     RpcMessageProtos.RpcMessage rpcMessage =  builder.setRpcContent(byteString)
                             .setCurrentChunkNumber(chunk)
@@ -240,23 +231,43 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                         producer.send(record, sendCallback);
                     }
                 }
-                final Meter requestSentMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
-                requestSentMeter.mark();
-                final Histogram rpcRequestSize = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SIZE));
-                rpcRequestSize.update(messageInBytes.length);
+                addMetrics(request, messageInBytes.length);
                 return future;
             }
 
-            private void addTracingInfoToRpcMessage(Span span, RpcMessageProtos.RpcMessage.Builder builder) {
+            private void addMetrics(RpcRequest request, int messageLen) {
+                final Meter requestSentMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+                requestSentMeter.mark();
+                final Histogram rpcRequestSize = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SIZE));
+                rpcRequestSize.update(messageLen);
+            }
+
+            private void addTracingInfo(RpcRequest request, Span span, RpcMessageProtos.RpcMessage.Builder builder) {
+                //Add tags to span.
+                span.setTag(TAG_LOCATION, request.getLocation());
+                if(request.getSystemId() != null) {
+                    span.setTag(TAG_SYSTEM_ID, request.getSystemId());
+                }
+                request.getTracingInfo().forEach(span::setTag);
                 TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
                 tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
-                if(tracingInfoCarrier.getTracingInfoMap().size() > 0) {
-                    tracingInfoCarrier.getTracingInfoMap().forEach( (key, value) -> {
-                        RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
-                                .setKey(key)
-                                .setValue(value).build();
-                        builder.addTracingInfo(tracingInfo);
-                    });
+                // Tracer adds it's own metadata.
+                tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
+                    buildTracingInfo(builder, key, value);
+                });
+                //Add custom tags from RpcRequest.
+                request.getTracingInfo().forEach((key, value) -> {
+                    buildTracingInfo(builder, key, value);
+                });
+            }
+
+            private void buildTracingInfo(RpcMessageProtos.RpcMessage.Builder builder, String key, String value) {
+                //Protobuf doesn't like null values.
+                if (!Strings.isNullOrEmpty(key) && !Strings.isNullOrEmpty(value)) {
+                    RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
+                            .setKey(key)
+                            .setValue(value).build();
+                    builder.addTracingInfo(tracingInfo);
                 }
             }
         };
