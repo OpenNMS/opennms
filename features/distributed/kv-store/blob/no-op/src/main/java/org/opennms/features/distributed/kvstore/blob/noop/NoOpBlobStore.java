@@ -29,6 +29,8 @@
 package org.opennms.features.distributed.kvstore.blob.noop;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -84,5 +86,14 @@ public class NoOpBlobStore extends AbstractAsyncKeyValueStore<byte[]> implements
     @Override
     public String getName() {
         return "NoOp";
+    }
+
+    @Override
+    public Map<String, byte[]> enumerateContext(String context) {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public void delete(String key, String context) {
     }
 }

@@ -29,11 +29,13 @@
 package org.opennms.features.distributed.kvstore.blob.inmemory;
 
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
+import java.util.stream.Collectors;
 
 import org.opennms.features.distributed.kvstore.api.AbstractAsyncKeyValueStore;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
@@ -99,5 +101,18 @@ public class InMemoryMapBlobStore extends AbstractAsyncKeyValueStore<byte[]> imp
     @Override
     public String getName() {
         return "In-Memory";
+    }
+
+    @Override
+    public Map<String, byte[]> enumerateContext(String context) {
+        return Collections.unmodifiableMap(inMemoryStore.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().getValue().equals(context))
+                .collect(Collectors.toMap(entry -> entry.getKey().getKey(), entry -> entry.getValue().getKey())));
+    }
+
+    @Override
+    public void delete(String key, String context) {
+        inMemoryStore.remove(new AbstractMap.SimpleImmutableEntry<>(key, context));
     }
 }

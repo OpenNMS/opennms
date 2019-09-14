@@ -28,6 +28,8 @@
 
 package org.opennms.features.distributed.kvstore.json.noop;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 
@@ -58,5 +60,14 @@ public class NoOpJsonStore extends AbstractAsyncKeyValueStore<String> implements
     @Override
     public String getName() {
         return "NoOp";
+    }
+
+    @Override
+    public Map<String, String> enumerateContext(String context) {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public void delete(String key, String context) {
     }
 }

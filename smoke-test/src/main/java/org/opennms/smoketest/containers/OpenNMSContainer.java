@@ -134,7 +134,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         String containerCommand = "-s";
         if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
-            containerCommand = "-c";
+            this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
         }
 
         final Integer[] exposedPorts = new ArrayList<>(networkProtocolMap.values())
@@ -165,7 +165,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .withEnv("OPENNMS_DBUSER", "opennms")
                 .withEnv("OPENNMS_DBPASS", "opennms")
                 // These are expected to be set when using Newts
-                // We also set the corresponding roperties explicitly in our overlay
+                // We also set the corresponding properties explicitly in our overlay
                 .withEnv("OPENNMS_CASSANDRA_HOSTNAMES", CASSANDRA_ALIAS)
                 .withEnv("OPENNMS_CASSANDRA_KEYSPACE", "newts")
                 .withEnv("OPENNMS_CASSANDRA_PORT", Integer.toString(CassandraContainer.CQL_PORT))
