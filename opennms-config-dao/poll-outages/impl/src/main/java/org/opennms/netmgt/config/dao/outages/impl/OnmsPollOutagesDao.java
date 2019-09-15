@@ -50,13 +50,14 @@ import com.google.common.annotations.VisibleForTesting;
 public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements WriteablePollOutagesDao {
     private final SaveableConfigContainer<Outages> saveableConfigContainer;
     private final ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
+    private volatile Outages filesystemConfig;
 
     @VisibleForTesting
     OnmsPollOutagesDao(JsonStore jsonStore, File configFile) {
         super(jsonStore);
         Objects.requireNonNull(configFile);
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(Outages.class, "poll-outages",
-                Collections.singleton(config -> onConfigChanged()), configFile);
+                Collections.singleton(this::fileSystemConfigUpdated), configFile);
         reload();
     }
 
@@ -92,7 +93,7 @@ public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements Writea
 
     @Override
     public Outages getReadOnlyConfig() {
-        return saveableConfigContainer.getConfig();
+        return filesystemConfig;
     }
 
     /**
@@ -111,10 +112,15 @@ public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements Writea
     @Override
     public void onConfigChanged() {
         try {
-            jsonStore.put(JSON_STORE_KEY, objectMapper.writeValueAsString(saveableConfigContainer.getConfig()),
+            jsonStore.put(JSON_STORE_KEY, objectMapper.writeValueAsString(filesystemConfig),
                     ConfigDaoConstants.JSON_KEY_STORE_CONTEXT);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private synchronized void fileSystemConfigUpdated(Outages updatedConfig) {
+        filesystemConfig = updatedConfig;
+        onConfigChanged();
     }
 }

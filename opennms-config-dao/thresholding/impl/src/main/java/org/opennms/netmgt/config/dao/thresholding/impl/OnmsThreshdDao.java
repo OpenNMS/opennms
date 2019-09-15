@@ -56,13 +56,12 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
     private final SaveableConfigContainer<ThreshdConfiguration> saveableConfigContainer;
     private final ConfigReloadContainer<ThreshdConfiguration> extContainer;
     private final ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
+    private volatile ThreshdConfiguration filesystemConfig;
 
     @VisibleForTesting
     OnmsThreshdDao(JsonStore jsonStore, File configFile) {
         super(jsonStore);
         Objects.requireNonNull(configFile);
-        saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class,
-                "threshd-configuration", Collections.singleton(config -> onConfigChanged()), configFile);
         extContainer = new ConfigReloadContainer.Builder<>(ThreshdConfiguration.class)
                 .withMerger((source, target) -> {
                     if (source == null && target == null) {
@@ -80,6 +79,9 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
                     return target;
                 })
                 .build();
+        saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class,
+                "threshd-configuration", Collections.singleton(this::fileSystemConfigUpdated), configFile);
+
 
         reload();
     }
@@ -102,7 +104,7 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
      */
     @Override
     public ThreshdConfiguration getWriteableConfig() {
-        return saveableConfigContainer.getConfig();
+        return filesystemConfig;
     }
 
     @Override
@@ -115,8 +117,7 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
         saveableConfigContainer.saveConfig();
     }
 
-    private ThreshdConfiguration getMergedConfig() {
-        ThreshdConfiguration filesystemConfig = saveableConfigContainer.getConfig();
+    private synchronized ThreshdConfiguration getMergedConfig() {
         ThreshdConfiguration externalConfig = extContainer.getObject();
 
         if (filesystemConfig == null && externalConfig == null) {
@@ -166,5 +167,10 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
         return Stream.of(threads)
                 .filter(Objects::nonNull)
                 .max(Integer::compareTo);
+    }
+
+    private synchronized void fileSystemConfigUpdated(ThreshdConfiguration updatedConfig) {
+        filesystemConfig = updatedConfig;
+        onConfigChanged();
     }
 }

@@ -53,13 +53,12 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
     private final SaveableConfigContainer<ThresholdingConfig> saveableConfigContainer;
     private final ConfigReloadContainer<ThresholdingConfig> extContainer;
     private final ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
+    private volatile ThresholdingConfig filesystemConfig;
 
     @VisibleForTesting
     OnmsThresholdingDao(JsonStore jsonStore, File configFile) {
         super(jsonStore);
         Objects.requireNonNull(configFile);
-        saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThresholdingConfig.class, "thresholds",
-                Collections.singleton(config -> onConfigChanged()), configFile);
         extContainer = new ConfigReloadContainer.Builder<>(ThresholdingConfig.class)
                 .withMerger((source, target) -> {
                     if (source == null && target == null) {
@@ -73,6 +72,9 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
                     return target;
                 })
                 .build();
+        saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThresholdingConfig.class, "thresholds",
+                Collections.singleton(this::fileSystemConfigUpdated), configFile);
+
         reload();
     }
 
@@ -99,11 +101,10 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
      */
     @Override
     public ThresholdingConfig getWriteableConfig() {
-        return saveableConfigContainer.getConfig();
+        return filesystemConfig;
     }
 
-    private ThresholdingConfig getMergedConfig() {
-        ThresholdingConfig filesystemConfig = saveableConfigContainer.getConfig();
+    private synchronized ThresholdingConfig getMergedConfig() {
         ThresholdingConfig externalConfig = extContainer.getObject();
 
         if (filesystemConfig == null && externalConfig == null) {
@@ -142,5 +143,10 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
     @Override
     public void onConfigChanged() {
         publishMergedConfig();
+    }
+
+    private synchronized void fileSystemConfigUpdated(ThresholdingConfig updatedConfig) {
+        filesystemConfig = updatedConfig;
+        onConfigChanged();
     }
 }
