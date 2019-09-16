@@ -104,7 +104,7 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
      */
     @Override
     public ThreshdConfiguration getWriteableConfig() {
-        return filesystemConfig;
+        return saveableConfigContainer.getConfig();
     }
 
     @Override

@@ -93,7 +93,7 @@ public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements Writea
 
     @Override
     public Outages getReadOnlyConfig() {
-        return filesystemConfig;
+        return saveableConfigContainer.getConfig();
     }
 
     /**

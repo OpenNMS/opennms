@@ -101,7 +101,7 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
      */
     @Override
     public ThresholdingConfig getWriteableConfig() {
-        return filesystemConfig;
+        return saveableConfigContainer.getConfig();
     }
 
     private synchronized ThresholdingConfig getMergedConfig() {
