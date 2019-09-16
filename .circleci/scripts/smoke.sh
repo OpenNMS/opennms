@@ -26,8 +26,7 @@ cd ~/project/smoke-test
 if [ $MINIMAL -eq 1 ]; then
   echo "#### Executing minimal set smoke/system tests"
   # Run a set of known tests
-  # TODO: Revert 'ScheduledOutageIT' from the list below before merge  
-  for TEST_CLASS in "MenuHeaderIT" "SinglePortFlowsIT" "ScheduledOutageIT"
+  for TEST_CLASS in "MenuHeaderIT" "SinglePortFlowsIT"
   do
     echo "###### Testing: ${TEST_CLASS}"
     mvn -N -DskipTests=false -DskipITs=false -Dit.test=$TEST_CLASS install verify
