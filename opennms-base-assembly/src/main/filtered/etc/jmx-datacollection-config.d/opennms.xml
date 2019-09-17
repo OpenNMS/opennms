@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
-    <jmx-collection name="opennms">
+    <jmx-collection name="jmx-opennms">
         <rrd step="300">
             <rra>RRA:AVERAGE:0.5:1:2016</rra>
             <rra>RRA:AVERAGE:0.5:12:1488</rra>
