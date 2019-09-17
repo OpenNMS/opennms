@@ -76,7 +76,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
          */
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
 
-        private static class State implements Serializable {
+        static class State implements Serializable {
             private static final long serialVersionUID = 1L;
 
             /**
@@ -95,6 +95,12 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
              * the rearm value.
              */
             private boolean m_armed;
+
+            @Override
+            public String toString() {
+                return "exceededCount=" + m_exceededCount +
+                        "\narmed=" + m_armed;
+            }
         }
         
         private CollectionResourceWrapper m_lastCollectionResourceUsed;

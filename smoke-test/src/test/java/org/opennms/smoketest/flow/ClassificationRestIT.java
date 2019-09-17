@@ -34,26 +34,38 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
+import org.opennms.netmgt.flows.rest.classification.GroupDTO;
+import org.opennms.netmgt.flows.rest.classification.GroupDTOBuilder;
 import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.opennms.smoketest.containers.OpenNMSContainer;
-import org.opennms.smoketest.stacks.OpenNMSStack;
 
 public class ClassificationRestIT {
 
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+
+    private List<Integer> groupIsToDelete;
+
+    private GroupDTO userDefinedGroup;
 
     @Before
     public void setUp() {
@@ -63,16 +75,21 @@ public class ClassificationRestIT {
         RestAssured.authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
         setEnabled(1, true);
         setEnabled(2, true);
+        userDefinedGroup = getGroup(2);
+        groupIsToDelete = new ArrayList<>();
     }
 
     @After
     public void tearDown() {
-        given().param("groupId", "2").delete();
+        given().param("groupId", 2).delete(); // delete all rules in 'user-defined' group
+        for(Integer groupId : groupIsToDelete) {
+            given().delete("groups/" + groupId);
+        }
         RestAssured.reset();
     }
 
     @Test
-    public void verifyCRUD() {
+    public void verifyCRUDforRule() {
         // Verify GET Rules
         given().get().then().assertThat().statusCode(200); // 200 because "system defined" rules are enabled
 
@@ -84,7 +101,8 @@ public class ClassificationRestIT {
         given().get().then().assertThat().statusCode(204); // 204 because "system-defined" rules are disabled
 
         // POST (create) a rule
-        final RuleDTO httpRule = builder().withName("http").withDstPort("80,8080").withProtocol("tcp,udp").build();
+        final RuleDTO httpRule = builder().withName("http").withGroup(userDefinedGroup).withDstPort("80,8080")
+                .withProtocol("tcp,udp").build();
         String header = given().contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(httpRule)
@@ -109,7 +127,7 @@ public class ClassificationRestIT {
         // Post another rule
         given().contentType(ContentType.JSON)
             .accept(ContentType.JSON)
-            .body(builder().withName("https").withDstPort("443").withProtocol("tcp").build())
+            .body(builder().withName("https").withGroup(userDefinedGroup).withDstPort("443").withProtocol("tcp").build())
             .post().then().assertThat().statusCode(201); // created
 
         // Verify creation worked
@@ -170,6 +188,224 @@ public class ClassificationRestIT {
 
         // Verify DELETE ALL is not allowed
         given().delete().then().assertThat().statusCode(400);
+    }
+
+    @Test
+    public void verifyChangeGroupOfRule() {
+
+        // POST (create) two groups
+        final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
+                .withEnabled(true).withReadOnly(false).build());
+        final GroupDTO group4 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group4").withDescription("another user defined group with name group4")
+                .withEnabled(true).withReadOnly(false).build());
+
+        // Create rule with group3
+        RuleDTO rule = builder().withName("myrule").withDstPort("80").withProtocol("TCP").withGroup(group3).build();
+        rule = saveAndRetrieveRule(rule);
+
+        // Move rule to another group
+        rule.setGroup(group4);
+        updateAndRetrieveRule(rule);
+
+        // Create similar rule in group3 and try to move the rule back to group3 => should not work since a similar rule exists there already
+        saveAndRetrieveRule(builder().withName("myrule").withDstPort("80").withProtocol("TCP").withGroup(group3).build());
+        rule.setGroup(group3);
+        given().contentType(ContentType.JSON)
+                .body(rule)
+                .log().all()
+                .put(Integer.toString(rule.getId()))
+                .then().assertThat()
+                .log().all()
+                .statusCode(400)
+                .body("message", equalTo(Errors.GROUP_DUPLICATE_RULE.getMessage()));
+
+    }
+
+    @Test
+    public void verifyCRUDforGroup() {
+        // POST (create) group
+        final GroupDTO group3 = saveAndRetrieveGroup(new GroupDTOBuilder().withName("group3").withDescription("another user defined group with name group3")
+                .withEnabled(true).withReadOnly(true).withPosition(0).build());
+
+        //  POST (create) group with same name => shouldn't be allowed
+        given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(group3)
+                .post("/groups").then().assertThat().statusCode(400) // bad request
+                .body(is(String.format("{\"message\":\"A group with name '%s' already exists\",\"context\":\"entity\",\"key\":\"group.name.duplicate\"}", group3.getName())));
+
+        // UPDATE
+        group3.setName("newNameOfGroup3");
+        group3.setReadOnly(true);
+        updateGroup(group3);
+        GroupDTO updatedGroup3 = getGroup(group3.getId());
+        assertEquals("newNameOfGroup3", updatedGroup3.getName());
+        assertFalse(updatedGroup3.isReadOnly()); // readonly cannot be changed
+
+        // DELETE group
+        given().delete("groups/" + group3.getId())
+                .then().statusCode(204);
+        given().get("groups/" + group3.getId())
+                .then()
+                .assertThat()
+                .statusCode(404); // not found => group is really gone
+        // Saving the same group should work again...
+        saveAndRetrieveGroup(group3);
+
+        // try to delete predefined group => should not work
+        int predefinedGroupId = 1;
+        given().param("groupId", predefinedGroupId).delete()
+                .then().statusCode(400);
+    }
+
+
+    @Test
+    public void verifyImmutabilityOfPredefinedGroup() {
+        // The predefined group and its rules should not be able to be altered.
+        GroupDTO predefinedGroup = getGroup(1);
+        assertThat(predefinedGroup.getName(), is(Groups.SYSTEM_DEFINED));
+        assertThat(userDefinedGroup.getName(), is(Groups.USER_DEFINED));
+
+        // try to add new rule to group
+        final RuleDTO httpRule = builder().withName("http").withGroup(predefinedGroup).withDstPort("80")
+                .withProtocol("tcp").build();
+        given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(httpRule)
+                .post().then().assertThat().statusCode(400);
+
+        // try to add existing rule to predefined group
+        RuleDTO rule = saveAndRetrieveRule(builder().withName("http").withGroup(userDefinedGroup).withDstPort("80")
+                .withProtocol("tcp").build());
+        rule.setGroup(predefinedGroup);
+        given().contentType(ContentType.JSON)
+                .body(rule)
+                .log().all()
+                .put(Integer.toString(rule.getId()))
+                .then().assertThat()
+                .log().all()
+                .statusCode(400);
+
+        // try to delete a rule in predefined group
+        rule = given()
+                .param("groupFilter", predefinedGroup.getId())
+                .param("limit", 1)
+                .get()
+                .then()
+                .extract().response().body().jsonPath().getList(".", RuleDTO.class).get(0);
+        given().delete(Integer.toString(rule.getId())).then().statusCode(400);
+
+        // try to modify group parameters
+        GroupDTO updatedGroup = given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(new GroupDTOBuilder()
+                        .withId(predefinedGroup.getId())
+                        .withName("new name")
+                        .withDescription("new description")
+                        .withEnabled(false)
+                        .withReadOnly(false)
+                        .build())
+                .put("/groups/"+predefinedGroup.getId())
+                .then().assertThat().statusCode(200)
+                .extract().response().as(GroupDTO.class);
+        assertThat(updatedGroup.getId(), is(predefinedGroup.getId()));
+        assertThat(updatedGroup.getName(), is(predefinedGroup.getName()));
+        assertThat(updatedGroup.getDescription(), is(predefinedGroup.getDescription()));
+        assertThat(updatedGroup.isEnabled(), is(false));
+
+    }
+
+    private GroupDTO saveAndRetrieveGroup(GroupDTO groupDTO) {
+        int groupId = saveGroup(groupDTO);
+        final GroupDTO receivedGroup = getGroup(groupId);
+        assertThat(receivedGroup.getId(), is(groupId));
+        assertThat(receivedGroup.getDescription(), is(groupDTO.getDescription()));
+        assertThat(receivedGroup.getName(), is(groupDTO.getName()));
+        assertThat(receivedGroup.getRuleCount(), is(0)); // we just created group => must be empty
+        assertThat(receivedGroup.isReadOnly(), is(false)); // must always be false no matter what we tried to save
+        assertThat(receivedGroup.isEnabled(), is(groupDTO.isEnabled()));
+        return receivedGroup;
+    }
+
+    private int saveGroup(GroupDTO groupDTO) {
+        final String header = given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(groupDTO)
+                .post("/groups").then().assertThat().statusCode(201) // created
+                .extract().header("Location");
+        final String[] split = header.split("/");
+        int groupId = Integer.parseInt(split[split.length - 1]);
+        this.groupIsToDelete.add(groupId);
+        return groupId;
+    }
+
+    private void updateGroup(GroupDTO groupDTO) {
+        given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(groupDTO)
+                .put("groups/" + groupDTO.getId())
+                .then().log().body(true)
+                .assertThat()
+                .statusCode(200)
+                .contentType(ContentType.JSON);
+    }
+
+    private GroupDTO getGroup(int groupId) {
+        return given().get("groups/" + groupId)
+                .then().log().body(true)
+                .assertThat()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response().as(GroupDTO.class);
+    }
+
+    private RuleDTO saveAndRetrieveRule(RuleDTO ruleDTO) {
+        String header = given().contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(ruleDTO)
+                .post().then().assertThat().statusCode(201) // created
+                .extract().header("Location");
+        final String[] split = header.split("/");
+        int classificationId = Integer.parseInt(split[split.length - 1]);
+
+        // Verify Creation of rule
+        final RuleDTO receivedHttpRule = given().get("" + classificationId)
+                .then().log().body(true)
+                .assertThat()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response().as(RuleDTO.class);
+        assertThat(receivedHttpRule.getId(), is(classificationId));
+        assertThat(receivedHttpRule.getName(), is(ruleDTO.getName()));
+        assertThat(receivedHttpRule.getDstAddress(), is(ruleDTO.getDstAddress()));
+        assertThat(receivedHttpRule.getProtocols(), is(ruleDTO.getProtocols()));
+        assertThat(receivedHttpRule.getGroup().getName(), is(ruleDTO.getGroup().getName()));
+        return receivedHttpRule;
+    }
+
+    private RuleDTO updateAndRetrieveRule(RuleDTO ruleDTO) {
+        given().contentType(ContentType.JSON)
+                .body(ruleDTO)
+                .log().all()
+                .put(Integer.toString(ruleDTO.getId()))
+                .then().assertThat()
+                .log().all()
+                .statusCode(200);
+
+        // Verify update worked
+        final RuleDTO updatedRule = given().get(Integer.toString(ruleDTO.getId()))
+                .then()
+                .log().body(true)
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .statusCode(200)
+                .extract().response().as(RuleDTO.class);
+        assertThat(updatedRule.getId(), is(ruleDTO.getId()));
+        assertThat(updatedRule.getName(), is(ruleDTO.getName()));
+        assertThat(updatedRule.getDstAddress(), is(ruleDTO.getDstAddress()));
+        assertThat(updatedRule.getProtocols(), is(ruleDTO.getProtocols()));
+        assertThat(updatedRule.getGroup().getName(), is(ruleDTO.getGroup().getName()));
+        return updatedRule;
     }
 
     @Test
@@ -290,7 +526,7 @@ public class ClassificationRestIT {
         final String importCsv = "name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter;omnidirectional\nmagic-ulf;tcp;;;;1337;;";
         given().contentType("text/comma-separated-values")
                 .body(importCsv)
-                .post()
+                .post("groups/2")
                 .then()
                 .assertThat().statusCode(204);
 

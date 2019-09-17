@@ -384,12 +384,12 @@ public class JasperReportService implements ReportService {
                             try {
                                 final Connection connection = DataSourceFactory.getInstance().getConnection();
                                 db.watch(connection);
-                                JasperFillManager.fillReportToFile(jasperReport, outputFileName, reportParms, connection);
+                                JasperFillManager.fillReportToFile(jasperReport, outputFileName, jrReportParms, connection);
                             } finally {
                                 db.cleanUp();
                             }
                         } else if (m_globalReportRepository.getEngine(reportId).equals("null")) {
-                            JasperFillManager.fillReportToFile(jasperReport, outputFileName, reportParms, new JREmptyDataSource());
+                            JasperFillManager.fillReportToFile(jasperReport, outputFileName, jrReportParms, new JREmptyDataSource());
                         } else {
                             throw new ReportException("No suitable datasource configured for report " + reportId);
                         }

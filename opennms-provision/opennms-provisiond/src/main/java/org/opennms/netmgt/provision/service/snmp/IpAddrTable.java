@@ -187,7 +187,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      */
     public void updateIpInterfaceData(OnmsNode node) {
         for(IpAddrTableEntry entry : getEntries()) {
-            updateIpInterfaceData(node, InetAddressUtils.str(entry.getIpAdEntAddr()));
+            updateIpInterfaceData(node, entry.getIpAdEntAddr());
         }
     }
 
@@ -195,12 +195,14 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * <p>updateIpInterfaceData</p>
      *
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
-     * @param ipAddr a {@link java.lang.String} object.
+     * @param ipAddr a {@link InetAddress} object.
      */
-    public void updateIpInterfaceData(OnmsNode node, String ipAddr) {
+    public boolean updateIpInterfaceData(OnmsNode node, InetAddress ipAddr) {
+        boolean newIpInterfaceCrated = false;
         OnmsIpInterface ipIf = node.getIpInterfaceByIpAddress(ipAddr);
         if (ipIf == null) {
             ipIf = new OnmsIpInterface(ipAddr, node);
+            newIpInterfaceCrated = true;
         }
 
         InetAddress inetAddr = ipIf.getIpAddress();
@@ -227,8 +229,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
             ipIf.setSnmpInterface(snmpIf);
 
         }
-
-        ipIf.setIpHostName(ipAddr);
+        return newIpInterfaceCrated;
     }
 
     /**

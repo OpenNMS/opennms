@@ -142,7 +142,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      */
     protected void updateSnmpData() {
         if (m_scanManager != null) {
-            m_scanManager.updateSnmpData(m_node);
+            m_scanManager.updateSnmpData(m_node, getProvisionService().getHostnameResolver());
         }
 	}
 

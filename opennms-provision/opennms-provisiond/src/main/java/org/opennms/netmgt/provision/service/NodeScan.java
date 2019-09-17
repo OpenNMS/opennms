@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
 
 import java.net.InetAddress;
 import java.util.Date;
@@ -90,7 +91,7 @@ public class NodeScan implements Scan {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param foreignSource a {@link java.lang.String} object.
      * @param foreignId a {@link java.lang.String} object.
-     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
@@ -141,7 +142,8 @@ public class NodeScan implements Scan {
     }
 
     private String getLocationName() {
-        return m_location == null ? null : m_location.getLocationName();
+        return m_location == null ?
+                DEFAULT_LOCATION_NAME: m_location.getLocationName();
     }
 
     /**
@@ -450,6 +452,8 @@ public class NodeScan implements Scan {
                     if (iface != null) {
                         iface.setIpLastCapsdPoll(getScanStamp());
                         iface.setIsManaged("M");
+                        String hostName = getProvisionService().getHostnameResolver().getHostname(address, getLocationName());
+                        iface.setIpHostName(hostName);
 
                         final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
                         for(final IpInterfacePolicy policy : policies) {
@@ -518,6 +522,8 @@ public class NodeScan implements Scan {
 
                         // add call to the ip interface is managed policies
                         iface.setIsManaged("M");
+                        String hostName = getProvisionService().getHostnameResolver().getHostname(address, getLocationName());
+                        iface.setIpHostName(hostName);
 
                         final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
                         for(final IpInterfacePolicy policy : policies) {

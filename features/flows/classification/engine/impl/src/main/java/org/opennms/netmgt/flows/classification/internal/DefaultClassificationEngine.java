@@ -48,12 +48,12 @@ import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.persistence.api.DefaultRuleDefinition;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
-import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
+import org.opennms.netmgt.flows.classification.persistence.api.RulePositionComparator;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
     private final List<List<Classifier>> classifierPortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
-    private final Comparator<RuleDefinition> ruleComparator = new RulePriorityComparator();
+    private final Comparator<RuleDefinition> ruleComparator = new RulePositionComparator();
     private final ClassificationRuleProvider ruleProvider;
     private final FilterService filterService;
 
@@ -78,7 +78,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         result.setSrcPort(rule.getDstPort());
         result.setProtocol(rule.getProtocol());
         result.setExporterFilter(rule.getExporterFilter());
-        result.setGroupPriority(rule.getGroupPriority());
+        result.setGroupPosition(rule.getGroupPosition());
         return result;
     }
 
@@ -138,10 +138,10 @@ public class DefaultClassificationEngine implements ClassificationEngine {
             theRules.addAll(anyPortRules);
         }
 
-        // Sort rules by priority
+        // Sort rules by position
         for (int i=0; i<rulePortList.size(); i++) {
             final List<RuleDefinition> portRules = rulePortList.get(i);
-            Collections.sort(portRules, ruleComparator);
+            portRules.sort(ruleComparator);
         }
 
         // Finally create classifiers
@@ -157,7 +157,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
                 portRule.setSrcAddress(rule.getSrcAddress());
                 portRule.setDstAddress(rule.getDstAddress());
                 portRule.setExporterFilter(rule.getExporterFilter());
-                portRule.setGroupPriority(rule.getGroupPriority());
+                portRule.setGroupPosition(rule.getGroupPosition());
                 portRule.setPosition(rule.getPosition());
 
                 // Check weather to apply rule for src or dst port (both may be very unlikely, but possible)

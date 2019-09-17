@@ -88,17 +88,22 @@ public interface ClassificationRestService {
                       @QueryParam("filename") String requestedFilename,
                       @HeaderParam("Accept") String acceptHeader);
 
+    @POST
+    @Path("groups")
+    Response saveGroup(GroupDTO groupDTO);
+
     @DELETE
     @Path("groups/{id}")
-    Response deleteGroup(int groupId);
+    Response deleteGroup(@PathParam("id") int groupId);
 
     @PUT
     @Path("groups/{id}")
     Response updateGroup(@PathParam("id") int id, GroupDTO newValue);
 
     @POST
+    @Path("groups/{id}")
     @Consumes("text/comma-separated-values")
-    Response importRules(@Context UriInfo uriInfo, InputStream inputStream);
+    Response importRules(@PathParam("id") int id, @Context UriInfo uriInfo, InputStream inputStream);
 
     @GET
     @Path("protocols")

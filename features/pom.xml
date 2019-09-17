@@ -72,9 +72,6 @@
     <module>ticketing</module>
     <module>request-tracker</module>
 
-    <!-- OpenNMS Resource CLI tool -->
-    <module>resource-cli</module>
-
     <!-- OpenNMS REST -->
     <module>rest</module>
 

@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.util.List;
 
 import org.joda.time.Duration;
@@ -143,6 +144,12 @@ public class NodeLocationChangeIT {
         m_foreignSourceRepository.flush();
 
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
+        m_provisionService.setHostnameResolver(new HostnameResolver() {
+            @Override
+            public String getHostname(InetAddress addr, String location) {
+                return "opennms-com";
+            }
+        });
 
         m_scheduledExecutor.pause();
     }
@@ -161,6 +168,9 @@ public class NodeLocationChangeIT {
         OnmsNode node = nodes.get(0);
         assertEquals("Hyderabad", node.getLocation().getLocationName());
         assertEquals(1, node.getIpInterfaces().size());
+        assertEquals(1, node.getSnmpInterfaces().size());
+        // Verify that persisted Ip interface will have resolved hostname.
+        assertEquals("opennms-com", node.getIpInterfaces().iterator().next().getIpHostName());
         m_eventAnticipator.reset();
         // Anticipate node location change and node updated events
         anticipateNodeLocationChangeEvent();
