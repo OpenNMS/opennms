@@ -33,11 +33,17 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
+import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.junit.After;
 import org.junit.Before;
@@ -51,14 +57,20 @@ import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.PollerConfigManager;
+import org.opennms.netmgt.config.pagesequence.PageSequence;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerParameter;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -71,7 +83,7 @@ import org.w3c.dom.Element;
 @JUnitHttpServer(port=10342)
 public class PageSequenceMonitorIT {
 
-    AbstractServiceMonitor m_monitor;
+    PageSequenceMonitor m_monitor;
     Map<String, PollerParameter> m_params;
 
     @Before
@@ -120,7 +132,7 @@ public class PageSequenceMonitorIT {
         assertTrue("Expected a DS called 'response-time' but did not find one", notLikely.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
-    private void setPageSequenceParam(String virtualHost) {
+    private void setPageSequenceParam(String virtualHost) throws Exception {
         String virtualHostParam;
         if (virtualHost == null) {
             virtualHostParam = "http-version=\"1.0\"";
@@ -128,7 +140,7 @@ public class PageSequenceMonitorIT {
             virtualHostParam = "virtual-host=\"" + virtualHost + "\"";
         }
 
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/index.html\" port=\"10342\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"It was written by monkeys.\" " + virtualHostParam + "/>\n" + 
@@ -138,7 +150,7 @@ public class PageSequenceMonitorIT {
     @Test
     @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
     public void testHttps() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page scheme=\"https\" host=\"scgi.ebay.com\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\"/>\n" + 
@@ -156,7 +168,7 @@ public class PageSequenceMonitorIT {
     @Test
     @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
     public void testHttpsWithHostValidation() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-ssl-verification=\"false\"/>\n" + 
@@ -173,7 +185,7 @@ public class PageSequenceMonitorIT {
     @Test
     @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
     public void testHttpsWithoutHostValidation() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\"/>\n" + 
@@ -187,7 +199,7 @@ public class PageSequenceMonitorIT {
             // Print some debug output if necessary
         }
 
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-host-verification=\"true\"/>\n" + 
@@ -206,7 +218,7 @@ public class PageSequenceMonitorIT {
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testLogin() throws Exception {
 
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" successMatch=\"Password\" />\n" + 
@@ -226,7 +238,7 @@ public class PageSequenceMonitorIT {
     @Test
     @Ignore("Don't depend on external services for ITs")
     public void testVirtualHost() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page user-agent=\"Donald\" path=\"/\" scheme=\"https\" port=\"443\" successMatch=\"OpenNMS monitors millions of devices from a single instance\" virtual-host=\"www.opennms.com\"/>\n" +
@@ -240,7 +252,7 @@ public class PageSequenceMonitorIT {
     @Test
     @Ignore("This test doesn't work against the new version of the website")
     public void testVirtualHostBadBehaviorForWordpressPlugin() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/\" port=\"80\" successMatch=\"OpenNMS monitors millions of devices from a single instance\" user-agent=\"Jakarta Commons-HttpClient/3.0.1\" virtual-host=\"www.opennms.com\"/>\n" + 
@@ -254,7 +266,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testLoginDynamicCredentials() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
@@ -279,7 +291,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testLoginDynamicCredentialsTwice() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&gt;Login (.)(.)(.)(.) Username and Password&lt;\">\n" +
@@ -321,7 +333,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testLoginDynamicCredentialsRedirectPost() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
@@ -355,7 +367,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRedirectLocationMatch() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
@@ -378,7 +390,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRedirectLocationDoesNotMatch() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
@@ -402,7 +414,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testDsNamePerPage() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page path=\"/opennms/\" ds-name=\"test1\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"&lt;title&gt;(.*?)&lt;/title&gt;\" />\n" +
@@ -421,7 +433,7 @@ public class PageSequenceMonitorIT {
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRequireIPv6() throws Exception {
         assumeTrue(!Boolean.getBoolean("skipIpv6Tests"));
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv6=\"true\"/>\n" +
@@ -435,7 +447,7 @@ public class PageSequenceMonitorIT {
     @Test
     @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testRequireIPv4() throws Exception {
-        m_params.put("page-sequence", PollerParameter.complex(JaxbUtils.unmarshal(Element.class, "" +
+        m_params.put("page-sequence", PollerParameter.complex(parseXml("" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
             "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n" +
@@ -444,5 +456,55 @@ public class PageSequenceMonitorIT {
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
         assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
+    }
+
+    @Test
+    public void testPollerParameterFromConfig() throws Exception {
+        final PollerConfiguration pollerConfiguration = JaxbUtils.unmarshal(PollerConfiguration.class, "" +
+                "<?xml version=\"1.0\"?>\n" +
+                "<poller-configuration threads=\"30\" nextOutageId=\"SELECT nextval('outageNxtId')\" serviceUnresponsiveEnabled=\"false\" pathOutageEnabled=\"false\">\n" +
+                "   <node-outage status=\"on\" pollAllIfNoCriticalServiceDefined=\"true\"/>\n" +
+                "  <package name=\"default\">\n" +
+                "    <filter>IPADDR != '0.0.0.0'</filter>\n" +
+                "    <rrd step=\"3\"><rra>RRA:AVERAGE:0.5:1:2016</rra></rrd>\n" +
+                "    <service name=\"PSM\" interval=\"300000\" user-defined=\"false\" status=\"on\">\n" +
+                "      <parameter key=\"retry\" value=\"1\" />\n" +
+                "      <parameter key=\"timeout\" value=\"3000\" />\n" +
+                "      <parameter key=\"rrd-repository\" value=\"/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response\" />\n" +
+                "      <parameter key=\"rrd-base-name\" value=\"hyperic-hq\" />\n" +
+                "      <parameter key=\"ds-name\" value=\"hyperic-hq\" />\n" +
+                "      <parameter key=\"page-sequence\">\n" +
+                "            <page-sequence>\n" +
+                "               <page method=\"GET\" http-version=\"1.1\" scheme=\"http\" host=\"${ipaddr}\" disable-ssl-verification=\"true\" port=\"7080\" path=\"/Login.do\" successMatch=\"(HQ Login)|(Sign in to Hyperic HQ)\" response-range=\"100-399\" />\n" +
+                "               <page method=\"POST\" http-version=\"1.1\" scheme=\"http\" host=\"${ipaddr}\" disable-ssl-verification=\"true\" port=\"7080\" path=\"/j_security_check.do\" failureMatch=\"(?s)(The username or password provided does not match our records)|(You are not signed in)\" failureMessage=\"HQ Login in Failed\" successMatch=\"HQ Dashboard\" response-range=\"100-399\">\n" +
+                "                  <parameter key=\"j_username\" value=\"hqadmin\" />\n" +
+                "                  <parameter key=\"j_password\" value=\"hqadmin\" />\n" +
+                "               </page>\n" +
+                "               <page method=\"GET\" http-version=\"1.1\" scheme=\"http\" host=\"${ipaddr}\" disable-ssl-verification=\"true\" port=\"7080\" path=\"/Logout.do\" successMatch=\"HQ Login\" response-range=\"100-399\"/>\n" +
+                "            </page-sequence>\n" +
+                "      </parameter>\n" +
+                "    </service>\n" +
+                "    <downtime begin=\"0\" delete=\"true\"/>\n" +
+                "  </package>\n" +
+                "  <monitor service=\"PSM\" class-name=\"org.opennms.netmgt.poller.monitors.PageSequenceMonitor\" />\n" +
+                "</poller-configuration>\n");
+
+        final Service service = pollerConfiguration.getPackage("default").getService("PSM");
+        final PollerParameter pollerParameter = service.getParameter("page-sequence").asPollerParameter();
+
+        final PageSequence pageSequence = pollerParameter.asComplex().get().getInstance(PageSequence.class);
+    }
+
+    private static Element parseXml(final String xml) throws Exception {
+        final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        final Schema schema = schemaFactory.newSchema(PageSequence.class.getResource("/xsds/page-sequence.xsd"));
+
+        final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setNamespaceAware(false);
+        documentBuilderFactory.setValidating(false);
+        documentBuilderFactory.setSchema(schema);
+
+        final Document document = documentBuilderFactory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+        return document.getDocumentElement();
     }
 }

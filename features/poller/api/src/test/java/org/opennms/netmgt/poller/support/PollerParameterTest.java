@@ -39,8 +39,6 @@ import org.junit.Test;
 import org.opennms.netmgt.poller.PollerParameter;
 import org.w3c.dom.Element;
 
-import com.sun.org.apache.xerces.internal.dom.ElementImpl;
-
 public class PollerParameterTest {
 
     @Test
@@ -54,7 +52,7 @@ public class PollerParameterTest {
 
     @Test
     public void testComplex() throws Exception {
-        final PollerParameter pp = PollerParameter.complex(new ElementImpl(){});
+        final PollerParameter pp = PollerParameter.marshall(new TestData("test", 42));
         assertFalse(pp.asSimple().isPresent());
         assertTrue(pp.asComplex().isPresent());
     }

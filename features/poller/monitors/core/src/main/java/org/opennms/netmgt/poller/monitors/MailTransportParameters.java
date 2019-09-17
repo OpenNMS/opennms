@@ -60,7 +60,7 @@ public class MailTransportParameters {
 
     MailTransportParameters(Map<String, PollerParameter> parameterMap) {
         m_parameterMap = parameterMap;
-        m_transportTest = AbstractServiceMonitor.getKeyedInstance(m_parameterMap, "mail-transport-test", MailTransportTest.class, null);
+        m_transportTest = AbstractServiceMonitor.getKeyedInstance(m_parameterMap, "mail-transport-test", MailTransportTest.class, () -> null);
     }
     
     Map<String, PollerParameter> getParameterMap() {

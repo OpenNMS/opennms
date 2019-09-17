@@ -82,7 +82,6 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         return value.asSimple().map(SimplePollerParameter::getValue);
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T getKeyedInstance(final Map<String, PollerParameter> parameterMap, final String key, Class<T> clazz, final Supplier<T> defaultValue) {
         if (key == null) return defaultValue.get();
 

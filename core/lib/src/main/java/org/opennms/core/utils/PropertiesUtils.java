@@ -32,7 +32,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.function.Function;
 
 /**
  * <p>PropertiesUtils class.</p>
@@ -70,7 +72,7 @@ public abstract class PropertiesUtils {
             return m_map.get(symbol);
         }
     }
-    
+
     /**
      * This recursively substitutes occurrences ${property.name} in initialString with the value of
      * the property property.name taken from the supplied properties object. If

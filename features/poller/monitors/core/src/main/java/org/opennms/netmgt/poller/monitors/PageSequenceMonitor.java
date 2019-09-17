@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,6 +75,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.web.HttpClientWrapperConfigHelper;
+import org.opennms.netmgt.poller.SimplePollerParameter;
 import org.opennms.netmgt.poller.support.TimeoutTracker;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
@@ -582,22 +584,13 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     public static class PageSequenceMonitorParameters {
         public static final String KEY = PageSequenceMonitorParameters.class.getName();
 
-//        static synchronized PageSequenceMonitorParameters get(final Map<String, PollerParameter> parameterMap) {
-//            PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters) parameterMap.get(KEY);
-//            if (parms == null) {
-//                parms = new PageSequenceMonitorParameters(parameterMap);
-//                parameterMap.put(KEY, parms);
-//            }
-//            return parms;
-//        }
-
         private final Map<String, PollerParameter> m_parameterMap;
         private final HttpPageSequence m_pageSequence;
 
         PageSequenceMonitorParameters(final Map<String, PollerParameter> parameterMap) {
             m_parameterMap = parameterMap;
 
-            PageSequence pageSequence = getKeyedInstance(parameterMap, "page-sequence", PageSequence.class, null);
+            PageSequence pageSequence = getKeyedInstance(parameterMap, "page-sequence", PageSequence.class, () -> null);
 
             if (pageSequence == null) {
                 throw new IllegalArgumentException("page-sequence must be set in monitor parameters");
@@ -607,13 +600,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
              * to do substitution on it first, so turn it back into
              * a string temporarily.
              */
-//            String pageSequenceString = JaxbUtils.marshal(pageSequence);
-//
-//            // Perform parameter expansion on the page-sequence string
-//            pageSequenceString = PropertiesUtils.substitute(pageSequenceString, m_parameterMap);
-//            PageSequence sequence = parsePageSequence(pageSequenceString);
-//            m_pageSequence = new HttpPageSequence(sequence);
-            m_pageSequence = new HttpPageSequence(pageSequence);
+            final String pageSequenceString = PropertiesUtils.substitute(JaxbUtils.marshal(pageSequence), new PollerParameterMapSymbolTable(m_parameterMap));
+
+            m_pageSequence = new HttpPageSequence(parsePageSequence(pageSequenceString));
             m_pageSequence.setParameters(m_parameterMap);
         }
 
@@ -691,5 +680,21 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         return serviceStatus;
+    }
+
+    private static class PollerParameterMapSymbolTable implements PropertiesUtils.SymbolTable {
+        private final Map<String, PollerParameter> map;
+
+        public PollerParameterMapSymbolTable(final Map<String, PollerParameter> map) {
+            this.map = Objects.requireNonNull(map);
+        }
+
+        @Override
+        public String getSymbolValue(final String symbol) {
+            final PollerParameter parameter = this.map.get(symbol);
+            return parameter.asSimple()
+                    .map(SimplePollerParameter::getValue)
+                    .orElse(null);
+        }
     }
 }

@@ -628,7 +628,7 @@ public class HttpMonitorIT {
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         svc.setNodeLabel("localhost.localdomain");
         Map<String, PollerParameter> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-user-agent").asSimple().get().toString().equals("Hello from 127.0.0.1 127.0.0.1 3 localhost.localdomain"));
+        assertTrue(subbedParams.get("subbed-user-agent").asSimple().get().getValue().equals("Hello from 127.0.0.1 127.0.0.1 3 localhost.localdomain"));
     }
 
     @Test
