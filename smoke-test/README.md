@@ -221,8 +221,8 @@ Breakdown of the heap sizes for the various containers currently is:
 * Sentinel: 512M
 * Cassandra: 512M
 * Elasticsearch: 512M
-* Kafka: 1GB
+* Kafka: 256M
 * ZooKeeper: 512MB
-* Total: **6.75B**
+* Total: **6.25B**
 
 We limit the CPU used by each container to 2 cores in order to help maintain more reliable timing between systems and test runs.
