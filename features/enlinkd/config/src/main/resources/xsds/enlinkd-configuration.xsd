@@ -136,7 +136,7 @@
 					   use="optional" default="false">
 				<annotation>
 					<documentation>
-						Set to true to avoid errors as described in https://issues.opennms.org/browse/NMS-10582.
+						Set to true to skip VLAN enumeration and scanning during bridge discovery.
 					</documentation>
 				</annotation>
 			</attribute>
