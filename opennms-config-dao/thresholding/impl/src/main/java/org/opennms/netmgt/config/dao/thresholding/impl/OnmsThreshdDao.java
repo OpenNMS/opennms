@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.config.api.ConfigReloadContainer;
@@ -48,7 +46,6 @@ import org.opennms.netmgt.config.dao.common.impl.FileSystemSaveableConfigContain
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
-import org.opennms.netmgt.config.threshd.Thresholder;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -72,16 +69,11 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
                         return source;
                     }
                     target.getPackages().addAll(source.getPackages());
-                    target.getThresholders().addAll(source.getThresholders());
-                    // Use the larger of the threads values
-                    getLargestThreads(source.getThreads(), target.getThreads())
-                            .ifPresent(target::setThreads);
                     return target;
                 })
                 .build();
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class,
                 "threshd-configuration", Collections.singleton(this::fileSystemConfigUpdated), configFile);
-
 
         reload();
     }
@@ -131,19 +123,10 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
         // Create a merged config by combining the config from filesystem and the external config provided by extensions
         ThreshdConfiguration mergedConfig = new ThreshdConfiguration();
 
-        // Use the larger of the threads values
-        getLargestThreads(filesystemConfig.getThreads(), externalConfig.getThreads())
-                .ifPresent(mergedConfig::setThreads);
-
         List<Package> mergedPackages = new ArrayList<>();
         mergedPackages.addAll(filesystemConfig.getPackages());
         mergedPackages.addAll(externalConfig.getPackages());
         mergedConfig.setPackages(Collections.unmodifiableList(mergedPackages));
-
-        List<Thresholder> mergedThresholders = new ArrayList<>();
-        mergedThresholders.addAll(filesystemConfig.getThresholders());
-        mergedThresholders.addAll(externalConfig.getThresholders());
-        mergedConfig.setThresholders(Collections.unmodifiableList(mergedThresholders));
 
         return mergedConfig;
     }
@@ -161,12 +144,6 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
     public void onConfigChanged() {
         super.reload();
         publishMergedConfig();
-    }
-
-    private static Optional<Integer> getLargestThreads(Integer... threads) {
-        return Stream.of(threads)
-                .filter(Objects::nonNull)
-                .max(Integer::compareTo);
     }
 
     private synchronized void fileSystemConfigUpdated(ThreshdConfiguration updatedConfig) {
