@@ -68,7 +68,11 @@ public interface PollerParameter {
         final Document document;
         try {
             final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setValidating(false);
+            factory.setNamespaceAware(false);
+
             document = factory.newDocumentBuilder().newDocument();
+
         } catch (final ParserConfigurationException e) {
             throw new RuntimeException(e);
         }

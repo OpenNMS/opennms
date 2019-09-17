@@ -89,13 +89,7 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         if (value == null) return defaultValue.get();
 
         return value.asComplex()
-                .map(complex -> {
-                    try {
-                        return complex.getInstance(clazz);
-                    } catch (final JAXBException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .map(complex -> complex.getInstance(clazz))
                 .orElseGet(defaultValue);
     }
 

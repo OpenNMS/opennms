@@ -29,11 +29,15 @@
 package org.opennms.netmgt.poller;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.w3c.dom.Element;
@@ -45,15 +49,31 @@ public class ComplexPollerParameter implements PollerParameter, Serializable {
 
     public ComplexPollerParameter(final Element element) {
         this.element = Objects.requireNonNull(element);
+        this.element.normalize();
     }
 
     public Element getElement() {
         return this.element;
     }
 
-    public <T> T getInstance(final Class<T> clazz) throws JAXBException {
-        final Unmarshaller um = JaxbUtils.getUnmarshallerFor(clazz, null, false);
-        return clazz.cast(um.unmarshal(element));
+    public <T> T getInstance(final Class<T> clazz) {
+        // We can not unmarshal the element directly into the required class because the elements do not have the right
+        // namespaces attached. Therefore the element is transformed into XML first and then it's read back into the expected
+        // bean.
+
+        final StringWriter writer = new StringWriter();
+        try {
+            final Transformer transformer = TransformerFactory.newInstance()
+                    .newTransformer();
+            transformer.transform(
+                    new DOMSource(this.element),
+                    new StreamResult(writer));
+
+        } catch (final TransformerException e) {
+            throw new RuntimeException(e);
+        }
+
+        return JaxbUtils.unmarshal(clazz, writer.getBuffer().toString());
     }
 
     @Override
