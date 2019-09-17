@@ -650,6 +650,10 @@
         <feature>guava</feature>
         <bundle>mvn:org.opennms.features.measurements/org.opennms.features.measurements.api/${project.version}</bundle>
     </feature>
+    <feature name="opennms-measurements-shell" version="${project.version}" description="OpenNMS :: Measurements :: Shell">
+        <!-- Dependencies pulled from root classloader -->
+        <bundle>mvn:org.opennms.features.measurements/org.opennms.features.measurements.shell/${project.version}</bundle>
+    </feature>
     <feature name="opennms-osgi-jsr223" version="${project.version}" description="OpenNMS :: OSGi JSR-223">
         <bundle>mvn:org.opennms.features/org.opennms.features.osgi-jsr223/${project.version}</bundle>
     </feature>

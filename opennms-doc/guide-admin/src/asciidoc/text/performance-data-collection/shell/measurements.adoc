@@ -1,0 +1,65 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-performance-mgmt-measurements-shell]]
+==== Measurements & Resources
+
+The following _Karaf Shell_ commands are made available to help enumerate, view and manage measurement related resources.
+
+
+The `opennms-measurements:show-resources` command can be used to enumerate or lookup resources:
+
+[source]
+----
+admin@opennms> opennms-measurements:show-resources --node NODES:node --no-children
+
+ID:         node[NODES:node]
+Name:       NODES:node
+Label:      node
+Type:       Node
+Link:       element/node.jsp?node=NODES:node
+Children:
+  node[NODES:node].nodeSnmp[]
+  node[NODES:node].interfaceSnmp[lo]
+  node[NODES:node].interfaceSnmp[opennms-jvm]
+  node[NODES:node].responseTime[192.168.238.140]
+  node[NODES:node].responseTime[192.168.39.1]
+  node[NODES:node].responseTime[172.17.0.1]
+  node[NODES:node].responseTime[127.0.0.1]
+...
+----
+
+The `opennms-measurements:delete-resource` command can be used to delete resources, and all of the associated metrics:
+
+[source]
+----
+admin@opennms> opennms-measurements:delete-resource "node[NODES:node].responseTime[127.0.0.1]"
+Deleting measurements and meta-data associated with resource ID 'node[NODES:node].responseTime[127.0.0.1]'...
+Done.
+----
+
+The `opennms-measurements:show-measurements` command can be used to render the values of the attributes (measurements) associated with a particular resource:
+
+[source]
+----
+admin@opennms> opennms-measurements:show-measurements -a ifHCInOctets "node[NODES:node].interfaceSnmp[lo]"
+Resource with ID 'node[NODES:node].interfaceSnmp[lo]' has attributes: [ifHCOutUcastPkts, ifInDiscards, ifHCInBroadcastPkts, ifHCInOctets, ifHCOutOctets, ifOutErrors, ifHCOutMulticastPkt, ifHCInUcastPkts, ifInErrors, ifHCInMulticastPkts, ifHCOutBroadcastPkt, ifOutDiscards]
+Limiting attributes to: [ifHCInOctets]
+
+timestamp,ifHCInOctets
+Fri Sep 13 13:30:00 EDT 2019,NaN
+Fri Sep 13 13:35:00 EDT 2019,NaN
+Fri Sep 13 13:40:00 EDT 2019,NaN
+----
+
+The `opennms-measurements:show-newts-samples` command can be used to view the raw samples (collected values)  associated with a particular resource.
+
+[source]
+----
+admin@opennms> opennms-measurements:show-newts-samples -a ifHCInOctets "node[NODES:node].interfaceSnmp[lo]"
+Resource with ID 'node[NODES:node].interfaceSnmp[lo]' has attributes: [ifHCOutUcastPkts, ifInDiscards, ifHCInBroadcastPkts, ifOutErrors, ifHCInOctets, ifHCOutMulticastPkt, ifHCOutOctets, ifHCInUcastPkts, ifInErrors, ifHCInMulticastPkts, ifOutDiscards, ifHCOutBroadcastPkt]
+Limiting attributes to: [ifHCInOctets]
+Fetching samples for Newts resource ID 'snmp:2:lo:mib2-X-interfaces'...
+Fri Sep 13 14:31:05 EDT 2019,ifHCInOctets,1271178704.0000
+----

@@ -97,7 +97,7 @@ public class DroolsAlarmContextIT {
     private MockTicketer ticketer = new MockTicketer();
 
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         dac = new DroolsAlarmContext();
         dac.setUsePseudoClock(true);
         dac.setUseManualTick(true);
@@ -128,11 +128,8 @@ public class DroolsAlarmContextIT {
 
         dac.start();
 
-        // Wait until the seed thread has completed - it will hold the session lock
-        // after start returns, so it is sufficient to wait until we can acquire
-        // that same lock ourselves
-        dac.getLock().lock();
-        dac.getLock().unlock();
+        // Wait
+        dac.waitForInitialSeedToBeSubmitted();
     }
 
     @After
@@ -597,11 +594,13 @@ public class DroolsAlarmContextIT {
         OnmsAlarm alarm2 = generateAlarm(2);
         dac.handleAlarmSnapshot(Arrays.asList(alarm1, alarm2));
         verify(acknowledgmentDao, times(1)).findLatestAcks(any(Date.class));
+        dac.tick();
         assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
         assertThat(dac.getAckByAlarmId(alarm2.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
 
         dac.handleNewOrUpdatedAlarm(alarm1);
         verify(acknowledgmentDao, times(1)).findLatestAckForRefId(alarm1.getId());
+        dac.tick();
         assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
     }
 
@@ -622,12 +621,14 @@ public class DroolsAlarmContextIT {
         when(acknowledgmentDao.findLatestAcks(any(Date.class))).thenReturn(Arrays.asList(ack1, ack2));
         dac.handleAlarmSnapshot(Arrays.asList(alarm1, alarm2));
         verify(acknowledgmentDao, times(1)).findLatestAcks(any(Date.class));
+        dac.tick();
         assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(ack1.getAckAction()));
         assertThat(dac.getAckByAlarmId(alarm2.getId()).getAckAction(), equalTo(ack2.getAckAction()));
 
         when(acknowledgmentDao.findLatestAckForRefId(alarm1.getId())).thenReturn(Optional.of(ack1));
         dac.handleNewOrUpdatedAlarm(alarm1);
         verify(acknowledgmentDao, times(1)).findLatestAckForRefId(alarm1.getId());
+        dac.tick();
         assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(ack1.getAckAction()));
     }
 

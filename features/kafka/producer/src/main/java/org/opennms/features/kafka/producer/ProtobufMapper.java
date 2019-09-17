@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
+import org.hibernate.ObjectNotFoundException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
@@ -240,41 +241,45 @@ public class ProtobufMapper {
         if (event == null) {
             return null;
         }
-        final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder()
-                .setId(event.getId())
-                .setUei(event.getEventUei())
-                .setSource(event.getEventSource())
-                .setSeverity(toSeverity(OnmsSeverity.get(event.getEventSeverity())))
-                .setLog("Y".equalsIgnoreCase(event.getEventLog()))
-                .setDisplay("Y".equalsIgnoreCase(event.getEventDisplay()));
+        try {
+            final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder()
+                    .setId(event.getId())
+                    .setUei(event.getEventUei())
+                    .setSource(event.getEventSource())
+                    .setSeverity(toSeverity(OnmsSeverity.get(event.getEventSeverity())))
+                    .setLog("Y".equalsIgnoreCase(event.getEventLog()))
+                    .setDisplay("Y".equalsIgnoreCase(event.getEventDisplay()));
 
-        final String eventLabel = eventConfDao.getEventLabel(event.getEventUei());
-        if (eventLabel != null) {
-            builder.setLabel(eventLabel);
-        }
-        if (event.getEventDescr() != null) {
-            builder.setDescription(event.getEventDescr());
-        }
-        if (event.getEventLogMsg() != null) {
-            builder.setLogMessage(event.getEventLogMsg());
-        }
-        if (event.getNodeId() != null) {
-            builder.setNodeCriteria(toNodeCriteria(event.getNode()));
-        }
-
-        for (OnmsEventParameter param : event.getEventParameters()) {
-            if (param.getName() == null || param.getValue() == null) {
-                continue;
+            final String eventLabel = eventConfDao.getEventLabel(event.getEventUei());
+            if (eventLabel != null) {
+                builder.setLabel(eventLabel);
             }
-            builder.addParameter(OpennmsModelProtos.EventParameter.newBuilder()
-                    .setName(param.getName())
-                    .setValue(param.getValue()));
+            if (event.getEventDescr() != null) {
+                builder.setDescription(event.getEventDescr());
+            }
+            if (event.getEventLogMsg() != null) {
+                builder.setLogMessage(event.getEventLogMsg());
+            }
+            if (event.getNodeId() != null) {
+                builder.setNodeCriteria(toNodeCriteria(event.getNode()));
+            }
+
+            for (OnmsEventParameter param : event.getEventParameters()) {
+                if (param.getName() == null || param.getValue() == null) {
+                    continue;
+                }
+                builder.addParameter(OpennmsModelProtos.EventParameter.newBuilder()
+                        .setName(param.getName())
+                        .setValue(param.getValue()));
+            }
+
+            setTimeIfNotNull(event.getEventTime(), builder::setTime);
+            setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
+            return builder;
+        } catch (ObjectNotFoundException e) {
+            LOG.debug("Event was deleted before we could perform the mapping.");
+            return null;
         }
-
-        setTimeIfNotNull(event.getEventTime(), builder::setTime);
-        setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
-
-        return builder;
     }
 
     public OpennmsModelProtos.Alarm.Builder toAlarm(OnmsAlarm alarm) {
@@ -287,8 +292,9 @@ public class ProtobufMapper {
         if (alarm.getReductionKey() != null) {
             builder.setReductionKey(alarm.getReductionKey());
         }
-        if (toEvent(alarm.getLastEvent()) != null) {
-            builder.setLastEvent(toEvent(alarm.getLastEvent()));
+        final OpennmsModelProtos.Event.Builder event = toEvent(alarm.getLastEvent());
+        if (event != null) {
+            builder.setLastEvent(event);
         }
         if (alarm.getLogMsg() != null) {
             builder.setLogMessage(alarm.getLogMsg());

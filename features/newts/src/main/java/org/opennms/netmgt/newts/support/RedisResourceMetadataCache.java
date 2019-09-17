@@ -81,7 +81,7 @@ public class RedisResourceMetadataCache implements SearchableResourceMetadataCac
     private final JedisPool m_pool;
 
     @Inject
-    public RedisResourceMetadataCache(@Named("redis.hostname") String hostname, @Named("redis.port") Integer port, @Named("newts.writer_threads") Integer numWriterThreads, MetricRegistry registry, ResourceIdSplitter resourceIdSplitter) {
+    public RedisResourceMetadataCache(@Named("redis.hostname") String hostname, @Named("redis.port") Integer port, @Named("newts.writer_threads") Integer numWriterThreads, @Named("newtsMetricRegistry") MetricRegistry registry, ResourceIdSplitter resourceIdSplitter) {
         Preconditions.checkNotNull(hostname, " hostname argument");
         Preconditions.checkNotNull(port, "port argument");
 
