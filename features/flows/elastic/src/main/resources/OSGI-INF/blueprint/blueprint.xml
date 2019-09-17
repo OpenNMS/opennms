@@ -105,6 +105,7 @@
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
     <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
+    <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
     <bean id="documentEnricher" class="org.opennms.netmgt.flows.elastic.DocumentEnricher">
         <argument ref="flowRepositoryMetricRegistry" />
         <argument ref="classificationEngine" />
@@ -158,9 +159,11 @@
 
     <!-- Health Check -->
     <service interface="org.opennms.core.health.api.HealthCheck">
-        <bean class="org.opennms.plugins.elasticsearch.rest.ElasticHealthCheck" >
+        <bean class="org.opennms.plugins.elasticsearch.rest.RequireConfigurationElasticHealthCheck" >
             <argument ref="jestClient"/>
             <argument value="Flows"/>
+            <argument ref="configurationAdmin"/>
+            <argument value="org.opennms.features.flows.persistence.elastic" />
         </bean>
     </service>
 
