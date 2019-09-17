@@ -11,5 +11,4 @@
                      bridge_topology_interval="300000"
                      max_bft="100"
                      discovery-bridge-threads="1"
-                     disable-bridge-vlan-discovery="false"
                      />
