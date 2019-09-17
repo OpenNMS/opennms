@@ -242,7 +242,7 @@
          <parameter key="timeout" value="3000"/>
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
       </service>
-      <service name="JMX-Java-Virtual-Machine" interval="300000" user-defined="false" status="on">
+      <service name="JMX-Java-8" interval="300000" user-defined="false" status="on">
          <parameter key="port" value="18980"/>
          <parameter key="retry" value="2"/>
          <parameter key="timeout" value="3000"/>
@@ -382,7 +382,7 @@
    <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
    <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor"/>
    <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
-   <monitor service="JMX-Java-Virtual-Machine" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
+   <monitor service="JMX-Java-8" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
    <monitor service="JMX-Newts" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
    <monitor service="JMX-Minion" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
    <monitor service="JMX-Kafka" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
