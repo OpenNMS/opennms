@@ -54,6 +54,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
@@ -66,7 +67,6 @@ import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -96,7 +96,7 @@ public class MarkerCacheIT {
     private DatabasePopulator databasePopulator;
 
     @Autowired
-    private TransactionOperations transactionOperations;
+    private SessionUtils sessionUtils;
 
     @Autowired
     private NodeDao nodeDao;
@@ -153,7 +153,7 @@ public class MarkerCacheIT {
         ), FilterService.NOOP);
 
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionOperations, classificationEngine,
+                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)
@@ -167,7 +167,7 @@ public class MarkerCacheIT {
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
-                    transactionOperations, nodeDao, snmpInterfaceDao,
+                    sessionUtils, nodeDao, snmpInterfaceDao,
                     new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),
                     3, 12000);
 
