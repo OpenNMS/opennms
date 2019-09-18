@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.health.api;
+package org.opennms.core.health.rest;
 
-/**
- * A Context object to store all parameters required by the {@link HealthCheckService}
- * to calculate the overall {@link Health}.
- *
- * @author mvrueden
- */
-public class Context {
-    private long timeout; // ms
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
 
-    public void setTimeout(long timeoutInMs) {
-        this.timeout = timeoutInMs;
-    }
+@Path("/health")
+public interface HealthCheckRestService {
 
-    public long getTimeout() {
-        return timeout;
-    }
+    @GET
+    @Path("status")
+    @Produces(MediaType.TEXT_PLAIN)
+    Response verifyHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
 }
