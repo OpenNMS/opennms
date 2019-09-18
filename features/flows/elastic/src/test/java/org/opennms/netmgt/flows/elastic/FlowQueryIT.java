@@ -34,7 +34,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
-import static org.opennms.core.test.elastic.ElasticSearchServerConfig.ES_HTTP_PORT;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -60,10 +59,10 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
-import org.opennms.netmgt.dao.mock.MockTransactionManager;
-import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
@@ -103,10 +102,8 @@ public class FlowQueryIT {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final JestClient client = restClientFactory.createClient();
-        final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
-        mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
-                classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
+                classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                 new MockIdentity(), new MockTracerRegistry(), new IndexSettings(), 3, 12000);
         final IndexSettings settings = new IndexSettings();
         final ElasticFlowRepositoryInitializer initializer = new ElasticFlowRepositoryInitializer(client, settings);

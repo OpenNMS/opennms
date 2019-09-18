@@ -44,7 +44,7 @@ import org.opennms.netmgt.dao.mock.MockAssetRecordDao;
 import org.opennms.netmgt.dao.mock.MockCategoryDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
-import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
@@ -57,7 +57,6 @@ public class MockDocumentEnricherFactory {
 
     private final NodeDao nodeDao;
     private final InterfaceToNodeCache interfaceToNodeCache;
-    private final MockTransactionTemplate transactionTemplate;
     private final MockAssetRecordDao assetRecordDao;
     private final MockCategoryDao categoryDao;
     private final DocumentEnricher enricher;
@@ -68,8 +67,6 @@ public class MockDocumentEnricherFactory {
     public MockDocumentEnricherFactory() {
         nodeDao = createNodeDao();
         interfaceToNodeCache = new MockInterfaceToNodeCache();
-        transactionTemplate = new MockTransactionTemplate();
-        transactionTemplate.afterPropertiesSet();
         assetRecordDao = new MockAssetRecordDao();
         categoryDao = new MockCategoryDao();
 
@@ -80,7 +77,7 @@ public class MockDocumentEnricherFactory {
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()
         ), FilterService.NOOP);
         enricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine,
+                new MetricRegistry(), nodeDao, interfaceToNodeCache, new MockSessionUtils(), classificationEngine,
                 new CacheConfigBuilder()
                     .withName("flows.node")
                     .withMaximumSize(1000)
@@ -102,10 +99,6 @@ public class MockDocumentEnricherFactory {
 
     public InterfaceToNodeCache getInterfaceToNodeCache() {
         return interfaceToNodeCache;
-    }
-
-    public MockTransactionTemplate getTransactionTemplate() {
-        return transactionTemplate;
     }
 
     public DocumentEnricher getEnricher() {

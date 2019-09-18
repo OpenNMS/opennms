@@ -49,6 +49,7 @@ import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
@@ -73,7 +74,6 @@ import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
@@ -156,7 +156,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final IndexSelector indexSelector;
 
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
 
     private final NodeDao nodeDao;
     private final SnmpInterfaceDao snmpInterfaceDao;
@@ -176,14 +176,14 @@ public class ElasticFlowRepository implements FlowRepository {
 
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
-                                 TransactionOperations transactionOperations, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
+                                 SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, IndexSettings indexSettings,
                                  int bulkRetryCount, long maxFlowDurationMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.bulkRetryCount = bulkRetryCount;
@@ -200,7 +200,7 @@ public class ElasticFlowRepository implements FlowRepository {
         flowsPerLog = metricRegistry.histogram("flowsPerLog");
 
         // Pre-populate marker cache with values from DB
-        this.transactionOperations.execute(cb -> {
+        this.sessionUtils.withTransaction(() -> {
             for (final OnmsNode node : this.nodeDao.findAllHavingFlows()) {
                 this.markerCache.put(node.getId(),
                         this.snmpInterfaceDao.findAllHavingFlows(node.getId()).stream()
@@ -299,7 +299,7 @@ public class ElasticFlowRepository implements FlowRepository {
             }
 
             if (!nodesToUpdate.isEmpty() || !interfacesToUpdate.isEmpty()) {
-                this.transactionOperations.execute(cb -> {
+                sessionUtils.withTransaction(() -> {
                     if (!nodesToUpdate.isEmpty()) {
                         this.nodeDao.markHavingFlows(nodesToUpdate);
                     }

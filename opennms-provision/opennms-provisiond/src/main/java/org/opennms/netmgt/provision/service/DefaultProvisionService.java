@@ -973,8 +973,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     // this is a newSuspect-scanned node, so there are no requisitioned categories
                 } else {
                     final OnmsNodeRequisition req = m_foreignSourceRepository.getNodeRequisition(foreignSource, dbNode.getForeignId());
-                    for (final RequisitionCategory cat : req.getNode().getCategories()) {
-                        categories.add(cat.getName());
+                    if(req != null && req.getNode() != null) {
+                        for (final RequisitionCategory cat : req.getNode().getCategories()) {
+                            categories.add(cat.getName());
+                        }
                     }
                 }
 
@@ -1369,6 +1371,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getIpInterfaces());
         m_nodeDao.initialize(node.getLocation());
+        m_nodeDao.initialize(node.getSnmpInterfaces());
+        m_nodeDao.initialize(node.getMetaData());
+        m_nodeDao.initialize(node.getAssetRecord());
         return node;
     }
 
