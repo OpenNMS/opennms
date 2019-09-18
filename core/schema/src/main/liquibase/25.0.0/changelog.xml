@@ -107,5 +107,21 @@
                     tableName="classification_groups"/>
         </rollback>
     </changeSet>
+    <!--
+        Originally the position was a priority and therefore the logic inverted.
+        When the priority column was renamed to position it should also have changed the priority values
+        to match the new behaviour.
+        This change fixes that.
+        Can be invoked multiple times as it does not change the position if it is already set correctly.
+    -->
+    <changeSet author="mvrueden" id="25.0.0-classification-group-position-fix">
+        <sql>
+            UPDATE classification_groups SET position = t2.newPosition - 1
+            FROM (
+                SELECT id, position, name, ROW_NUMBER() OVER (ORDER BY position DESC) AS newPosition FROM classification_groups
+            ) t2
+            WHERE classification_groups.id = t2.id
+        </sql>
+    </changeSet>
 
 </databaseChangeLog>
