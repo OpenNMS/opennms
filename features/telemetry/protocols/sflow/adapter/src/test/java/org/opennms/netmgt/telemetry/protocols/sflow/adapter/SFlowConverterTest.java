@@ -61,10 +61,11 @@ public class SFlowConverterTest {
         assertThat(bsonDocument.getInt64("time"), notNullValue());
         assertThat(bsonDocument.getInt64("time").getValue(), is(1521618510235L));
         assertThat(bsonDocument.getDocument("data").getArray("samples"), notNullValue());
-        assertThat(bsonDocument.getDocument("data").getArray("samples").size(), is(5));
+        assertThat(bsonDocument.getDocument("data").getArray("samples").size(), is(6));
 
         final List<Flow> flows = new SFlowConverter().convert(bsonDocument);
 
+        // There are six flows int the document, but one is skipped, because it's ethernet only
         assertThat(flows.size(), is(5));
     }
 
@@ -83,7 +84,7 @@ public class SFlowConverterTest {
         assertThat(bsonDocument.getInt64("time"), notNullValue());
         assertThat(bsonDocument.getInt64("time").getValue(), is(1521618510235L));
         assertThat(bsonDocument.getDocument("data").getArray("samples"), notNullValue());
-        assertThat(bsonDocument.getDocument("data").getArray("samples").size(), is(5));
+        assertThat(bsonDocument.getDocument("data").getArray("samples").size(), is(6));
 
         final List<Flow> flows = new SFlowConverter().convert(bsonDocument);
 
