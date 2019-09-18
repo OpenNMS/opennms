@@ -32,6 +32,10 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -1099,6 +1103,19 @@ public abstract class EventConstants {
         }
     };
 
+    /**
+     * This {@link DateFormat} is used to parse timestamps as formatted by the "default" event
+     * serializer used in older OpenNMS when running on JDK8.
+     */
+    public static final ThreadLocal<DateFormat> FORMATTER_JDK8_LONG = new ThreadLocal<DateFormat>() {
+        @Override
+        protected synchronized DateFormat initialValue() {
+            final DateFormat formatter = new SimpleDateFormat("EEEEE, MMMMM d, yyyy h:mm:ss aa z", Locale.ENGLISH);
+            formatter.setLenient(true);
+            return formatter;
+        }
+    };
+
     public static final ThreadLocal<DateFormat> FORMATTER_DEFAULT = new ThreadLocal<DateFormat>() {
         @Override
         protected synchronized DateFormat initialValue() {
@@ -1111,7 +1128,7 @@ public abstract class EventConstants {
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the
      * string should be in the locale-specific DateFormat.LONG style for both
-     * the date and time, althought DateFormat.FULL will be accepted as well.
+     * the date and time, although DateFormat.FULL will be accepted as well.
      *
      * @see java.text.DateFormat
      * @param timeString a {@link java.lang.String} object.
@@ -1119,17 +1136,18 @@ public abstract class EventConstants {
      * @throws java.text.ParseException if any.
      */
     public static final Date parseToDate(final String timeString) throws ParseException {
-        if (timeString == null) {
-            throw new ParseException("time was null!", -1);
-        }
         try {
-            return FORMATTER_LONG.get().parse(timeString);
-        } catch (final ParseException parseException) {
-            try {
-                return FORMATTER_CUSTOM.get().parse(timeString);
-            } catch (final ParseException pe) {
-                return FORMATTER_FULL.get().parse(timeString);
+            return Date.from(ZonedDateTime.parse(timeString).toInstant());
+        } catch (final DateTimeParseException e) {
+            ParseException lastEx = null;
+            for (final ThreadLocal<DateFormat> df : Arrays.asList(FORMATTER_DEFAULT, FORMATTER_JDK8_LONG, FORMATTER_LONG, FORMATTER_CUSTOM, FORMATTER_FULL)) {
+                try {
+                    return df.get().parse(timeString);
+                } catch (final ParseException pe) {
+                    lastEx = pe;
+                }
             }
+            throw lastEx;
         }
     }
 
@@ -1142,7 +1160,7 @@ public abstract class EventConstants {
      * @return a {@link java.lang.String} object.
      */
     public static final String formatToString(final Date date) {
-    	return FORMATTER_LONG_GMT.get().format(date);
+        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date.toInstant());
     }
 
 	/**

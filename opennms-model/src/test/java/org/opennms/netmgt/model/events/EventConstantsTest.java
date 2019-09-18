@@ -139,6 +139,12 @@ public class EventConstantsTest {
     }
 
     @Test
+    public void testNms12261() throws Exception {
+        final Date date = EventConstants.parseToDate("2019-08-27T07:13:53+00:00");
+        assertEquals(1566890033000l, date.getTime());
+    }
+
+    @Test
     public void testEventDateParse() throws Exception {
         final Date date = EventConstants.parseToDate(m_zoneText);
         assertEquals(m_testLocale + ": time should equal " + m_timestamp, m_timestamp.longValue(), date.getTime());

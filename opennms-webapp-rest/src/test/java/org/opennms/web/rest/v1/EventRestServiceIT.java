@@ -30,6 +30,10 @@ package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
@@ -43,6 +47,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -107,6 +112,36 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // POST the event to the REST API
         sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), Status.ACCEPTED.getStatusCode());
+
+        // Verify
+        m_eventMgr.finishProcessingEvents();
+        anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void testNms12261() throws Exception {
+        System.err.println(System.getProperty("java.version"));
+        final Date d = EventConstants.parseToDate("Tuesday, August 27, 2019 6:47:22 AM UTC");
+
+        final Event e = new Event();
+        e.setUei("some.uei");
+        e.setHost("from-some-host");
+        e.setCreationTime(d);
+        e.setTime(d);
+
+        final String eventString = "<event xmlns=\"http://xmlns.opennms.org/xsd/event\">\n" +
+                "   <uei>some.uei</uei>\n" +
+                "   <host>from-some-host</host>\n" +
+                "   <creation-time>Tuesday, August 27, 2019 6:47:22 AM UTC</creation-time>\n" +
+                "   <time>Tuesday, August 27, 2019 6:47:22 AM UTC</time>\n" +
+                "</event>\n";
+
+        // Setup the anticipator
+        EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
+        anticipator.anticipateEvent(e);
+
+        // POST the event to the REST API
+        sendData(POST, MediaType.APPLICATION_XML, "/events", eventString, Status.ACCEPTED.getStatusCode());
 
         // Verify
         m_eventMgr.finishProcessingEvents();
