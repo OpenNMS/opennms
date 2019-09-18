@@ -32,26 +32,32 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
+import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.hibernate.AssetRecordDaoHibernate;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-public abstract class AbstractNodeRestServiceTest extends OpenNMSSeleniumTestCase {
+public abstract class AbstractNodeRestServiceTest {
 
     private final String endpoint;
 
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+
     @Before
     public void setUp() {
-        RestAssured.baseURI = getBaseUrl();
-        RestAssured.port = getServerHttpPort();
+        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+        RestAssured.port = stack.opennms().getWebPort();
         RestAssured.basePath = this.endpoint;
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
     }
@@ -90,7 +96,7 @@ public abstract class AbstractNodeRestServiceTest extends OpenNMSSeleniumTestCas
                 .statusCode(201);
 
         // Verify that only one asset record has been created
-        final HibernateDaoFactory daoFactory = new HibernateDaoFactory(getPostgresService());
+        final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         final AssetRecordDao dao = daoFactory.getDao(AssetRecordDaoHibernate.class);
         assertThat(dao.countAll(), is(1));
 

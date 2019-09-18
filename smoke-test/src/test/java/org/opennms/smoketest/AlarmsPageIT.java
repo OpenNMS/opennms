@@ -42,14 +42,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
+public class AlarmsPageIT extends OpenNMSSeleniumIT {
     @Before
     public void createAlarm() throws Exception {
         final EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "AlarmsPageTest");
         builder.setParam("importResource", "foo");
         final Event ev = builder.getEvent();
 
-        final RestClient restClient = new RestClient(getServerAddress(), getServerHttpPort());
+        final RestClient restClient = stack.opennms().getRestClient();
         restClient.sendEvent(ev);
     }
 
@@ -59,7 +59,7 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
     }
 
     protected void alarmsPage() {
-        m_driver.get(getBaseUrl() + "opennms/alarm/index.htm");
+        driver.get(getBaseUrlInternal() + "opennms/alarm/index.htm");
     }
 
     @Test
@@ -102,7 +102,7 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAlarmIdNotFoundPage() throws InterruptedException {
-        m_driver.get(getBaseUrl() + "opennms/alarm/detail.htm?id=999999999");
+        driver.get(getBaseUrlInternal() + "opennms/alarm/detail.htm?id=999999999");
         findElementByXpath("//h1[text()='Alarm ID Not Found']");
     }
 }

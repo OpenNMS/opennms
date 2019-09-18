@@ -34,13 +34,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -78,7 +80,7 @@ public class ManagedDroolsContext {
     private final String kbaseName;
     private final String kSessionName;
 
-    private boolean started = false;
+    private final AtomicBoolean started = new AtomicBoolean(false);
 
     private boolean usePseudoClock = false;
 
@@ -90,7 +92,7 @@ public class ManagedDroolsContext {
 
     private KieSession kieSession;
 
-    private Timer timer;
+    private Thread thread;
 
     private SessionPseudoClock clock;
 
@@ -108,7 +110,7 @@ public class ManagedDroolsContext {
     }
 
     public synchronized void start() {
-        if (started) {
+        if (started.get()) {
             LOG.warn("The context for session {} is already started. Ignoring start request.", kSessionName);
             return;
         }
@@ -145,32 +147,41 @@ public class ManagedDroolsContext {
         releaseIdForContainerUsedByKieSession = releaseId;
 
         // We're started!
-        started = true;
+        started.set(true);
 
         // Allow the base classes to seed the context before we start ticking
         onStart();
 
         if (!useManualTick) {
-            timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    lock.lock();
+            thread = new Thread(() -> {
+                while (started.get()) {
                     try {
-                        LOG.debug("Firing rules.");
-                        kieSession.fireAllRules();
+                        LOG.debug("Firing until halt.");
+                        kieSession.fireUntilHalt();
                     } catch (Exception e) {
-                        LOG.error("Error occurred while firing rules.", e);
-                    } finally {
-                        lock.unlock();
+                        // If we're supposed to be stopped, ignore the exception
+                        if (!started.get()) {
+                            LOG.error("Error occurred while firing rules. Waiting 30 seconds before starting to fire again.", e);
+                            try {
+                                Thread.sleep(TimeUnit.SECONDS.toMillis(30));
+                            } catch (InterruptedException ex) {
+                                LOG.warn("Interrupted while waiting to start firing rules again. Exiting thread.");
+                                return;
+                            }
+                        } else {
+                            LOG.info("Encountered exception while firing rules, but the engine is stopped. Exiting thread.");
+                            return;
+                        }
                     }
                 }
-            }, TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1));
+            });
+            thread.setName("DroolsSession-" + kSessionName);
+            thread.start();
         }
     }
 
     public synchronized void reload() {
-        if (!started) {
+        if (!started.get()) {
             LOG.warn("The context for session {} is not yet started. Treating reload as a start request", kSessionName);
             start();
             return;
@@ -181,20 +192,33 @@ public class ManagedDroolsContext {
         final ReleaseId releaseId = buildKieModule();
 
         // The rules we're successfully built and deployed
-        // Let's lock the current engine, grab the facts, and stop it
-        final List<Object> factObjects;
-        lock.lock();
-        try {
-            // Capture the current set of facts
-            factObjects  = kieSession.getFactHandles().stream()
-                    .map(fact -> kieSession.getObject(fact))
-                    .collect(Collectors.toList());
 
-            // Stop the engine
-            stop();
-        } finally {
-            lock.unlock();
+        // Let's halt the current engine
+        started.set(false);
+        if (!useManualTick) {
+            kieSession.halt();
+            try {
+                thread.join(TimeUnit.MINUTES.toMillis(2));
+            } catch (InterruptedException e) {
+                LOG.warn("Interrupted while waiting for session to halt. Aborting reload request.");
+                return;
+            }
+
+            // The thread should be stopped, but we don't know for sure
+            // Let's me a best effort to stop it before we proceed and start another one
+            if (thread.isAlive()) {
+                LOG.warn("Thread is still alive! Interrupting.");
+                thread.interrupt();
+            }
         }
+
+        // Grab the facts
+        final List<Object> factObjects = kieSession.getFactHandles().stream()
+                .map(kieSession::getObject)
+                .collect(Collectors.toList());
+
+        // Dispose the session
+        kieSession.dispose();
 
         // Remove the previous module
         if (releaseIdForContainerUsedByKieSession != null) {
@@ -272,22 +296,11 @@ public class ManagedDroolsContext {
     }
 
     public void tick() {
-        lock.lock();
-        try {
-            kieSession.fireAllRules();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    ReentrantLock getLock() {
-        return lock;
+        kieSession.fireAllRules();
     }
 
     public synchronized void stop() {
-        if (timer != null) {
-            timer.cancel();
-        }
+        started.set(false);
         if (kieSession != null) {
             kieSession.halt();
             kieSession = null;
@@ -296,11 +309,14 @@ public class ManagedDroolsContext {
             kieContainer.dispose();
             kieContainer = null;
         }
-        started = false;
+        if (thread != null) {
+            thread.interrupt();
+            thread = null;
+        }
     }
 
     public boolean isStarted() {
-        return started;
+        return started.get();
     }
 
     public SessionPseudoClock getClock() {

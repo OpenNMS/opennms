@@ -28,22 +28,14 @@
 
 package org.opennms.smoketest.sentinel;
 
-import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.smoketest.stacks.IpcStrategy;
 
 // Verifies that flows can be processed by a sentinel and are persisted to Elastic communicating via activemq (jms)
 public class FlowStackJmsIT extends AbstractFlowIT {
 
     @Override
-    protected void customizeTestEnvironment(TestEnvironmentBuilder builder) {
-            builder
-                    .opennms()
-                    .minion()
-                    .es6()
-                    .sentinel();
-
-            // Enable Netflow 5 Adapter
-            builder.withSentinelEnvironment()
-                    .addFile(getClass().getResource("/sentinel/features-jms.xml"), "deploy/features.xml");
+    protected IpcStrategy getIpcStrategy() {
+        return IpcStrategy.JMS;
     }
 
     @Override

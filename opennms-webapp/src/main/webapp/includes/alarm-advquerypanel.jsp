@@ -48,6 +48,7 @@
     //get the service names, in alpha order
     Map<String,Integer> serviceNameMap = new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
     Set<String> serviceNameSet = serviceNameMap.keySet();
+    final List<String> categories = NetworkElementFactory.getInstance(getServletContext()).getCategories();
 %>
 
 <jsp:useBean id="now" class="java.util.Date" />
@@ -146,6 +147,16 @@
 			<option value="any">All Alarms and Situations</option>
 			<option value="false">Only Alarms</option>
 			<option value="true">Only Situations</option>
+		</select>
+	</div>
+
+	<div class="form-group col-sm-6">
+		<label for="category">Category</label>
+		<select class="form-control custom-select" name="category">
+			<option value="">Do not filter by category</option>
+			<% for (final String category: categories) { %>
+			<option value="<%=category%>"><%=category%></option>
+			<% } %>
 		</select>
 	</div>
 

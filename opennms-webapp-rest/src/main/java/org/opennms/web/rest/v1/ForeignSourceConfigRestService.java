@@ -290,7 +290,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Path("services/{groupName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ElementList getServices(@PathParam("groupName") String groupName) {
-        ElementList elements = new ElementList(m_pollerConfig.getServiceMonitors().keySet());
+        ElementList elements = new ElementList(m_pollerConfig.getServiceMonitorNames());
         m_collectdConfigFactory.getCollectdConfig().getCollectors().forEach(c -> {
             if (!elements.contains(c.getService())) {
                 elements.add(c.getService());
@@ -306,8 +306,8 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
             }
 
             // Include all of the service names defined in the poller configuration
-            if (m_pollerConfig != null && m_pollerConfig.getServiceMonitors() != null && ! m_pollerConfig.getServiceMonitors().isEmpty()) {
-                serviceNames.addAll(m_pollerConfig.getServiceMonitors().keySet());
+            if (m_pollerConfig != null && m_pollerConfig.getServiceMonitorNames() != null && ! m_pollerConfig.getServiceMonitorNames().isEmpty()) {
+                serviceNames.addAll(m_pollerConfig.getServiceMonitorNames());
             }
             serviceNames.forEach(s -> {
                 if (!elements.contains(s)) {

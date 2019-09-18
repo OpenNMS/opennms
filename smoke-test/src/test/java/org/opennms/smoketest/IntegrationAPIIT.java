@@ -35,15 +35,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.minion.CommandTestUtils;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.utils.CommandTestUtils;
+import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,32 +47,12 @@ public class IntegrationAPIIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationAPIIT.class);
 
-    private static TestEnvironment testEnvironment;
-
     @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder()
-                    .opennms();
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            testEnvironment = builder.build();
-            return testEnvironment;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
+    public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     @Test
     public void canLoadSampleProject() throws Exception {
-        final InetSocketAddress karafSsh = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101);
+        final InetSocketAddress karafSsh = stack.opennms().getSshAddress();
         // Install the sample project
         try (final SshClient sshClient = new SshClient(karafSsh, "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();

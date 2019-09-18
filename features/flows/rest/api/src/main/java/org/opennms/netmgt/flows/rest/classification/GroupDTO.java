@@ -30,11 +30,11 @@ package org.opennms.netmgt.flows.rest.classification;
 
 public class GroupDTO {
     private Integer id;
-    private int priority;
+    private Integer position;
     private String name;
     private String description;
-    private boolean enabled;
-    private boolean readOnly;
+    private Boolean enabled;
+    private Boolean readOnly;
     private int ruleCount;
 
     public void setId(Integer id) {
@@ -53,11 +53,11 @@ public class GroupDTO {
         return name;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
@@ -69,12 +69,12 @@ public class GroupDTO {
         return readOnly;
     }
 
-    public int getPriority() {
-        return priority;
+    public Integer getPosition() {
+        return position;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
     public String getDescription() {

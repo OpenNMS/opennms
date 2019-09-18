@@ -126,11 +126,18 @@
                     </a>
                 </li>
             </#if>
-            <li class="nav-item">
-                <#if isAdmin >
+            <#if isFlow >
+                <li class="nav-item">
+                    <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-flow" href="${baseHref}admin/classification/index.jsp" title="Flow Management">
+                        <i class="fa fa-minus-circle"></i>
+                    </a>
+                </li>
+            </#if>
+            <#if isAdmin >
+                <li class="nav-item">
                     <a class="nav-link" style="font-size: 1.25rem" title="Configure OpenNMS" href="${baseHref}admin/index.jsp"><i class="fa fa-cogs"></i></a>
-                </#if>
-            </li>
+                </li>
+            </#if>
         </#if>
         </ul>
     </div>

@@ -37,12 +37,18 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 
-public abstract class UdpParserBase extends ParserBase {
+import com.codahale.metrics.MetricRegistry;
+
+public abstract class UdpParserBase extends ParserBase implements UdpParser {
     public final static long HOUSEKEEPING_INTERVAL = 60000;
 
     private UdpSessionManager sessionManager;
@@ -50,26 +56,37 @@ public abstract class UdpParserBase extends ParserBase {
     private ScheduledFuture<?> housekeepingFuture;
     private Duration templateTimeout = Duration.ofMinutes(30);
 
-    public UdpParserBase(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher) {
-        super(protocol, name, dispatcher);
+    public UdpParserBase(final Protocol protocol,
+                         final String name,
+                         final AsyncDispatcher<TelemetryMessage> dispatcher,
+                         final EventForwarder eventForwarder,
+                         final Identity identity,
+                         final DnsResolver dnsResolver,
+                         final MetricRegistry metricRegistry) {
+        super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
     }
 
     protected abstract RecordProvider parse(final Session session, final ByteBuffer buffer) throws Exception;
 
+    protected abstract UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress);
+
     public final CompletableFuture<?> parse(final ByteBuffer buffer,
                                             final InetSocketAddress remoteAddress,
                                             final InetSocketAddress localAddress) throws Exception {
-        final Session session = this.sessionManager.getSession(remoteAddress, localAddress);
+        final UdpSessionManager.SessionKey sessionKey = this.buildSessionKey(remoteAddress, localAddress);
+        final Session session = this.sessionManager.getSession(sessionKey);
 
         try {
             return this.transmit(this.parse(session, buffer), remoteAddress);
         } catch (Exception e) {
-            this.sessionManager.drop(remoteAddress, localAddress);
+            this.sessionManager.drop(sessionKey);
             throw e;
         }
     }
 
+    @Override
     public void start(final ScheduledExecutorService executorService) {
+        super.start(executorService);
         this.sessionManager = new UdpSessionManager(this.templateTimeout);
         this.housekeepingFuture = executorService.scheduleAtFixedRate(this.sessionManager::doHousekeeping,
                 HOUSEKEEPING_INTERVAL,
@@ -77,8 +94,10 @@ public abstract class UdpParserBase extends ParserBase {
                 TimeUnit.MILLISECONDS);
     }
 
+    @Override
     public void stop() {
         this.housekeepingFuture.cancel(false);
+        super.stop();
     }
 
     public Duration getTemplateTimeout() {

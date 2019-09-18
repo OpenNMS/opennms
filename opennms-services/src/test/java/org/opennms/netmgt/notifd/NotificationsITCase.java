@@ -45,7 +45,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
-import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.mock.MockDestinationPathManager;
@@ -80,6 +79,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
         // Notifd
         "classpath:/META-INF/opennms/applicationContext-notifdTest.xml"
 })
@@ -109,7 +109,6 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
     protected MockDatabase m_db;
     protected MockNetwork m_network;
     protected NotificationAnticipator m_anticipator;
-    private PollOutagesConfigManager m_pollOutagesConfigManager;
 
     protected void setUp() throws Exception {
         MockUtil.println("################# Running Test ################");
@@ -137,7 +136,6 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         m_destinationPathManager = new MockDestinationPathManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "destination-paths.xml"));        
         m_notificationCommandManger = new MockNotificationCommandManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notification-commands.xml"));
         m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifications.xml"));
-        m_pollOutagesConfigManager = new MockPollerConfig(m_network);
         
         m_anticipator = new NotificationAnticipator();
         MockNotificationStrategy.setAnticipator(m_anticipator);
@@ -151,7 +149,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         m_eventProcessor.setDestinationPathManager(m_destinationPathManager);
         m_eventProcessor.setNotificationCommandManager(m_notificationCommandManger);
         m_eventProcessor.setNotificationManager(m_notificationManager);
-        m_eventProcessor.setPollOutagesConfigManager(m_pollOutagesConfigManager);
+        m_eventProcessor.setPollOutagesDao(new MockPollerConfig(m_network));
 
         m_notifd.init();
         m_notifd.start();

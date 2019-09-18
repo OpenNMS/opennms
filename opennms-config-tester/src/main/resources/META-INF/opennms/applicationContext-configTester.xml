@@ -64,7 +64,7 @@
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
         <entry key="opennms.properties" value="unknown"/>
         <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
-        <entry key="poll-outages.xml" value="pollOutagesConfigFactory"/>
+        <entry key="poll-outages.xml" value="pollOutagesDao"/>
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
         <entry key="provisiond-configuration.xml" value="provisiondConfigurationDao"/>
         <!-- <entry key="rancid-configuration.xml" value="rancidAdapterConfigFactory"/> --><!-- Not part of standard build -->
@@ -89,8 +89,8 @@
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
         <entry key="telemetryd-configuration.xml" value="telemetrydConfigDao"/>
-        <entry key="threshd-configuration.xml" value="threshdConfigFactory"/>
-        <entry key="thresholds.xml" value="thresholdingConfigFactory"/>
+        <entry key="threshd-configuration.xml" value="threshdDao"/>
+        <entry key="thresholds.xml" value="thresholdingDao"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
         <entry key="trapd-configuration.xml" value="trapdConfigFactory"/>
@@ -313,11 +313,11 @@
     <property name="targetMethod"><value>getEndpoint</value></property>
   </bean>
 
-  <bean id="pollOutagesConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="pollOutagesConfigFactory" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="pollOutagesConfigFactory-init" factory-method="getInstance"/>
+  <bean name="noOpJsonStore" class="org.opennms.features.distributed.kvstore.json.noop.NoOpJsonStore" />
+  <bean name="pollOutagesDao" class="org.opennms.netmgt.config.dao.outages.impl.OnmsPollOutagesDao">
+    <constructor-arg ref="noOpJsonStore"/>
+  </bean>
 
   <!-- 
   <bean id="pollerConfigFactory" class="org.opennms.netmgt.config.PollerConfigFactory">
@@ -466,18 +466,13 @@
     <property name="configResource" value="file:${opennms.home}/etc/telemetryd-configuration.xml" />
   </bean>
 
-  <bean id="threshdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ThreshdConfigFactory.init</value></property>
+  <bean name="threshdDao" class="org.opennms.netmgt.config.dao.thresholding.impl.OnmsThreshdDao">
+    <constructor-arg ref="noOpJsonStore"/>
   </bean>
-
-  <bean id="threshdConfigFactory" class="org.opennms.netmgt.config.ThreshdConfigFactory" depends-on="threshdConfigFactory-init" factory-method="getInstance"/>
+  <bean name="thresholdingDao" class="org.opennms.netmgt.config.dao.thresholding.impl.OnmsThresholdingDao">
+    <constructor-arg ref="noOpJsonStore"/>
+  </bean>
   
-  <bean id="thresholdingConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ThresholdingConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="thresholdingConfigFactory" class="org.opennms.netmgt.config.ThresholdingConfigFactory" depends-on="thresholdingConfigFactory-init" factory-method="getInstance"/>
-
   <bean id="tl1ConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultTl1ConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml"/>
   </bean>

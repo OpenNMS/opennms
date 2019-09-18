@@ -40,18 +40,23 @@ import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.smoketest.utils.RestClient;
+import org.opennms.smoketest.ui.framework.TextInput;
+import org.opennms.smoketest.ui.framework.Toggle;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
+@Ignore("Flapping. See NMS-12114")
 public class GeocoderServiceConfigurationPageIT extends UiPageTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GeocoderServiceConfigurationPageIT.class);
 
     private static class Geocoder {
         private final String id;
@@ -76,7 +81,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
     @Before
     public void setUp() {
         resetConfiguration();
-        uiPage = new Page(getBaseUrl());
+        uiPage = new Page(getBaseUrlInternal());
         expectedTabs = Lists.newArrayList(
                 new TabData("settings", "Settings", true),
                 new TabData(Geocoders.GOOGLE.id, Geocoders.GOOGLE.label, false),
@@ -88,11 +93,15 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
     @After
     public void tearDown() {
-        resetConfiguration();
+        try {
+            resetConfiguration();
+        } catch (Exception e) {
+            LOG.warn("Resetting configuration failed in tear down.", e);
+        }
     }
 
     private void resetConfiguration() {
-        new RestClient(getServerAddress(), getServerHttpPort()).resetGeocoderConfiguration();
+        stack.opennms().getRestClient().resetGeocoderConfiguration();
     }
 
     @Test
@@ -220,8 +229,8 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         }
 
         public Page open() {
-            m_driver.get(url);
-            new WebDriverWait(m_driver, 5).until((Predicate<WebDriver>) (driver) -> getTabs().size() == expectedTabs.size());
+            driver.get(url);
+            new WebDriverWait(driver, 5).until(driver -> getTabs().size() == expectedTabs.size());
             return this;
         }
 
@@ -241,10 +250,10 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
         public List<Tab> getTabs() {
             return execute(() -> {
-                final List<WebElement> tabElements = m_driver.findElements(By.xpath("//ul[@id='tabs']//li/a[@data-name]"));
+                final List<WebElement> tabElements = driver.findElements(By.xpath("//ul[@id='tabs']//li/a[@data-name]"));
                 return tabElements.stream().map(eachTab -> {
                     final String name = eachTab.getAttribute("data-name");
-                    final List<WebElement> spanElements = m_driver.findElements(By.xpath("//ul[@id='tabs']//li/a[@data-name='" + name + "']/span"));
+                    final List<WebElement> spanElements = driver.findElements(By.xpath("//ul[@id='tabs']//li/a[@data-name='" + name + "']/span"));
                     final String label = spanElements.isEmpty() ? eachTab.getText() : eachTab.getText().replace(spanElements.get(0).getText(), "");
                     return new Tab(this, name.trim(), label.trim());
                 }).collect(Collectors.toList());
@@ -281,11 +290,11 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         public void click() {
             getElement().click();
             sleep(2000);
-            new WebDriverWait(m_driver, 5).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
+            new WebDriverWait(driver, 5).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
         }
 
         public WebElement getElement() {
-            return execute(() -> m_driver.findElement(By.xpath(String.format(TAB_XPATH, name))));
+            return execute(() -> driver.findElement(By.xpath(String.format(TAB_XPATH, name))));
         }
 
         public boolean isActive() {
@@ -312,9 +321,9 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
             // Click if value has changed or should be disabled
             if (newGeocoder == null && activeGeocoder != null) {
-                new Toggle(getToggleId(activeGeocoder)).toggle();
+                new Toggle(getDriver(), getToggleId(activeGeocoder)).toggle();
             } else if (!Objects.equals(newGeocoder, activeGeocoder)){
-                new Toggle(getToggleId(newGeocoder)).toggle();
+                new Toggle(getDriver(), getToggleId(newGeocoder)).toggle();
             }
         }
 
@@ -324,7 +333,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
         public String getActiveGeocoder() {
             return execute(() -> {
-                final List<WebElement> elements = m_driver.findElements(By.xpath("//div[contains(@class, 'toggle') and not(contains(@class,'off')) and not (contains(@class, 'toggle-group'))]/./.."));
+                final List<WebElement> elements = driver.findElements(By.xpath("//div[contains(@class, 'toggle') and not(contains(@class,'off')) and not (contains(@class, 'toggle-group'))]/./.."));
                 if (elements.isEmpty()) {
                     return null;
                 }
@@ -341,21 +350,21 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         }
 
         public boolean isConfiguredProperly() {
-            return execute(() -> m_driver.findElements(By.xpath(String.format(TAB_XPATH, getName()) + "//i[@class='fa fa-exclamation-triangle']")).isEmpty());
+            return execute(() -> driver.findElements(By.xpath(String.format(TAB_XPATH, getName()) + "//i[@class='fa fa-exclamation-triangle']")).isEmpty());
         }
 
         public boolean isDirty() {
-            boolean hasChanges = execute(() -> m_driver.findElements(By.xpath("//p[text() = 'You have unsaved changes' and contains(@class, 'text-warning')]"))).isEmpty() == false;
+            boolean hasChanges = execute(() -> driver.findElements(By.xpath("//p[text() = 'You have unsaved changes' and contains(@class, 'text-warning')]"))).isEmpty() == false;
             return hasChanges;
         }
 
         public void update() {
            getSaveButtonElement().click();
-           new WebDriverWait(m_driver, 5, 500).until((Predicate<WebDriver>) webDriver -> !isDirty());
+           new WebDriverWait(driver, 5, 500).until(webDriver -> !isDirty());
         }
 
         WebElement getSaveButtonElement() {
-            return execute(() -> m_driver.findElement(By.id("saveButton")));
+            return execute(() -> driver.findElement(By.id("saveButton")));
         }
     }
 
@@ -366,20 +375,20 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         }
 
         public void setAcceptUsageTerms(boolean acceptUsageTerms) {
-            final Toggle acceptUsageTermsToggle = new Toggle("nominatimAcceptUsageTerms");
+            final Toggle acceptUsageTermsToggle = new Toggle(getDriver(), "nominatimAcceptUsageTerms");
             acceptUsageTermsToggle.setValue(acceptUsageTerms);
         }
 
         public void setEmail(String email) {
-            new TextInput("nominatimEmail").setInput(email);
+            new TextInput(getDriver(), "nominatimEmail").setInput(email);
         }
 
         public void setReferer(String referer) {
-            new TextInput("nominatimReferer").setInput(referer);
+            new TextInput(getDriver(), "nominatimReferer").setInput(referer);
         }
 
         public void setUserAgent(String userAgent) {
-            new TextInput("nominatimUserAgent").setInput(userAgent);
+            new TextInput(getDriver(), "nominatimUserAgent").setInput(userAgent);
         }
     }
 
@@ -390,7 +399,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         }
 
         public void setApiKey(final String apiKey) {
-            new TextInput("mapquestApiKey").setInput(apiKey);
+            new TextInput(getDriver(), "mapquestApiKey").setInput(apiKey);
         }
     }
 
@@ -407,21 +416,21 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
         public void setApiKey(final String apiKey) {
             setAuthMode(GoogleAuthMode.API_KEY);
-            new TextInput("googleApiKey").setInput(apiKey);
+            new TextInput(getDriver(), "googleApiKey").setInput(apiKey);
         }
 
         public void setClientId(final String clientId) {
             setAuthMode(GoogleAuthMode.LEGACY);
-            new TextInput("googleClientId").setInput(clientId);
+            new TextInput(getDriver(), "googleClientId").setInput(clientId);
         }
 
         public void setSignature(final String signature) {
             setAuthMode(GoogleAuthMode.LEGACY);
-            new TextInput("googleClientKey").setInput(signature);
+            new TextInput(getDriver(), "googleClientKey").setInput(signature);
         }
 
         public GoogleAuthMode getAuthMode() {
-            if (execute(() -> m_driver.findElement(By.id("googleClientIdAuthentication"))).isSelected()) {
+            if (execute(() -> driver.findElement(By.id("googleClientIdAuthentication"))).isSelected()) {
                 return GoogleAuthMode.LEGACY;
             }
             return GoogleAuthMode.API_KEY;
@@ -429,7 +438,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
         public void setAuthMode(GoogleAuthMode authMode) {
             if (authMode != getAuthMode()) {
-                execute(() -> m_driver.findElement(By.id("googleClientIdAuthentication"))).click();
+                execute(() -> driver.findElement(By.id("googleClientIdAuthentication"))).click();
             }
         }
     }

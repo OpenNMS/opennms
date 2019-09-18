@@ -32,7 +32,9 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
 
@@ -72,15 +74,20 @@ public class ExtendedSocketIpv6 implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt64("protocol", this.protocol);
         bsonWriter.writeName("local_ip");
-        this.local_ip.writeBson(bsonWriter);
+        this.local_ip.writeBson(bsonWriter, enr);
         bsonWriter.writeName("remote_ip");
-        this.remote_ip.writeBson(bsonWriter);
+        this.remote_ip.writeBson(bsonWriter, enr);
         bsonWriter.writeInt64("local_port", this.local_port);
         bsonWriter.writeInt64("remote_port", this.remote_port);
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(final SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

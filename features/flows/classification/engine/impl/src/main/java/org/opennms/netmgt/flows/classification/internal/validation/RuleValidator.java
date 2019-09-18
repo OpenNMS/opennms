@@ -56,6 +56,11 @@ public class RuleValidator {
     }
 
     public void validate(Rule rule) throws InvalidRuleException {
+
+        // Ensure that rule is associated to a group
+        if (rule.getGroup() == null) {
+            throw new InvalidRuleException(ErrorContext.Entity, Errors.RULE_GROUP_IS_REQUIRED);
+        }
         // Name is required
         validateName(rule.getName());
 

@@ -63,7 +63,7 @@ import org.springframework.test.context.TestExecutionListeners;
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "importer.adapter.dns.server=127.0.0.1:9153",
-        "importer.adapter.dns.privatekey=hmac-md5/test.example.com./QBMBi+8THN8iyAuGIhniB+fiURwQjrrpwFuq1L6NmHcya7QdKqjwp6kLIczPjsAUDcqiLAdQJnQUhCPThA4XtQ=="
+        "importer.adapter.dns.privatekey=HmacMD5/test.example.com./QBMBi+8THN8iyAuGIhniB+fiURwQjrrpwFuq1L6NmHcya7QdKqjwp6kLIczPjsAUDcqiLAdQJnQUhCPThA4XtQ=="
 })
 public class DnsProvisioningAdapterTest implements InitializingBean {
     @Autowired

@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -57,7 +57,7 @@ public class ParserTest {
         execute("/flows/ipfix.dat", buffer -> {
             try {
 
-                final Session session = new TcpSession();
+                final Session session = new TcpSession(InetAddress.getLoopbackAddress());
 
                 final Header h1 = new Header(slice(buffer, Header.SIZE));
                 final Packet p1 = new Packet(session, h1, slice(buffer, h1.length - Header.SIZE));

@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
 
+# Use version number from pom except from develop and features branches
+case "${CIRCLE_BRANCH}" in
+  master)
+    VERSION="$(../pom2version.py ../../pom.xml)"
+    ;;
+  develop)
+    VERSION="bleeding"
+    ;;
+  *)
+    # Replace / in branch names which is not allowed in OCI tags
+    VERSION="${CIRCLE_BRANCH//\//-}"
+    ;;
+esac
+
 # shellcheck disable=SC2034
-
-# Use version number from pom except from develop
-if [[ "${CIRCLE_BRANCH}" == "develop" ]]; then
-  VERSION="bleeding"
-else
-  VERSION="$(../pom2version.py ../../pom.xml)"
-fi
-
 # Array of tags for the OCI image used in the specific projects
 OCI_TAGS=("${VERSION}")

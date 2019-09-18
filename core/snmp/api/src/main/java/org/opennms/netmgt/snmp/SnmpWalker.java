@@ -170,7 +170,7 @@ public abstract class SnmpWalker implements AutoCloseable {
                 t = getErrorThrowable();
                 if (t == null) {
                     // Not all of the failures provide an exception, so we generate one if necessary
-                    t = new Exception(getErrorMessage());
+                    t = new SnmpException(getErrorMessage());
                 }
             }
             m_callback.complete(this, t);

@@ -2,6 +2,58 @@
 
 === Changelog
 
+[releasenotes-changelog-24.1.2]
+
+==== Release 24.1.2
+
+Release 24.1.2 is the latest stable release of OpenNMS.
+It contains bug fixes for flow processing, Debian package startup, the minion UI, and more.
+
+For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.2/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
+
+The codename for 24.1.2 is _link:https://en.wikipedia.org/wiki/$$Watson_(computer)$$[Watson]_.
+
+===== Bug
+
+* HasFlows is not set when node was provisioned after first flow was received (Issue http://issues.opennms.org/browse/NMS-12106[NMS-12106])
+* Wrong Wording for Empty Requisition (Issue http://issues.opennms.org/browse/NMS-12156[NMS-12156])
+* Init script on Debian/Ubuntu does not start (Issue http://issues.opennms.org/browse/NMS-12161[NMS-12161])
+* Minion not showing label correctly and label cannot be edited (Issue http://issues.opennms.org/browse/NMS-12164[NMS-12164])
+
+===== Enhancement
+
+* Add a command to show configuration diffs (Issue http://issues.opennms.org/browse/NMS-12129[NMS-12129])
+
+[releasenotes-changelog-24.1.1]
+
+==== Release 24.1.1
+
+Release 24.1.1 is the latest stable release of OpenNMS.
+It contains bug fixes to WS-Man, the web UI, flows, and more as well as a few small enhancements.
+
+For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.1/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
+
+The codename for 24.1.1 is _link:https://en.wikipedia.org/wiki/GLaDOS[GLaDOS]_.
+
+===== Bug
+
+* WsMan Asset Adapter config contains an invalid resourceUri (Issue http://issues.opennms.org/browse/NMS-10682[NMS-10682])
+* WsMan Asset Adapter should handle WQL filters returning more than one result (Issue http://issues.opennms.org/browse/NMS-10683[NMS-10683])
+* WS-Man datacollection fail with OpenJDK11 (Issue http://issues.opennms.org/browse/NMS-10713[NMS-10713])
+* Angular requests do not handle 401 responses from the OpenNMS backend (Issue http://issues.opennms.org/browse/NMS-10719[NMS-10719])
+* sFlow: Type mismatch of VLAN value (Issue http://issues.opennms.org/browse/NMS-10775[NMS-10775])
+* Timeline missing for service names including slashes (Issue http://issues.opennms.org/browse/NMS-12097[NMS-12097])
+* CME in ProxyFilter (Karaf Web Bridge) (Issue http://issues.opennms.org/browse/NMS-12116[NMS-12116])
+* Remove hack from opennms-spring-extender to expose ServiceRegistry (Issue http://issues.opennms.org/browse/NMS-12122[NMS-12122])
+* Installing Minion on Debian with OpenJDK 11 installed tries to install Oracle JDK 8 (Issue http://issues.opennms.org/browse/NMS-12119[NMS-12119])
+* Opennms 24.1.0 on Ubuntu 19.04 won’t install because of PostgresSQL 11 (Issue http://issues.opennms.org/browse/NMS-12121[NMS-12121])
+
+===== Enhancement
+
+* Increase logging clarity for flow processing (Issue http://issues.opennms.org/browse/NMS-10723[NMS-10723])
+* Remove circleci build number as tags from container images (Issue http://issues.opennms.org/browse/NMS-12098[NMS-12098])
+* Provide a mechanism to collect the count of objects collected by a wsman enumeration (Issue http://issues.opennms.org/browse/NMS-12115[NMS-12115])
+
 [releasenotes-changelog-24.1.0]
 
 ==== Release 24.1.0

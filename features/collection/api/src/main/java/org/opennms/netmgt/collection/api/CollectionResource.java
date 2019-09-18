@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,7 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
 
     public static final String RESOURCE_TYPE_NODE = "node";
     public static final String RESOURCE_TYPE_IF = "if";
+    public static final String RESOURCE_TYPE_LATENCY = "latency";
 
     /**
      * <p>rescanNeeded</p>
@@ -77,6 +78,13 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
      * @return a {@link java.lang.String} object.
      */
     String getInstance();
+
+    /**
+     * Returns the unmodified instance string this {@link CollectionResource} represents.
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getUnmodifiedInstance();
 
     /**
      * Returns a unique label for each resource depending on resource type.

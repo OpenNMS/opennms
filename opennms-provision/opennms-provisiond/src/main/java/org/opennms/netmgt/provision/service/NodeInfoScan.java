@@ -33,6 +33,7 @@ package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.tasks.BatchTask;
@@ -43,6 +44,8 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpAgentTimeoutException;
+import org.opennms.netmgt.snmp.SnmpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -151,7 +154,16 @@ final class NodeInfoScan implements RunInBatch {
                     .get();
                 systemGroup.updateSnmpDataForNode(getNode());
             } catch (ExecutionException e) {
-                abort("Aborting node scan : Agent failed while scanning the system table: " + e.getMessage());
+                boolean succeeded = false;
+                // If agent config is derived from definitions, we don't need to do process any profiles.
+                if (agentConfig.isDefault() &&
+                        (e.getCause() instanceof SnmpAgentTimeoutException ||
+                         e.getCause() instanceof SnmpException)) {
+                    succeeded = peformScanWithMatchingProfile(primaryAddress);
+                }
+                if(!succeeded) {
+                    abort("Aborting node scan : Agent failed while scanning the system table: " + e.getMessage());
+                }
             }
 
             List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getEffectiveForeignSource());
@@ -188,6 +200,38 @@ final class NodeInfoScan implements RunInBatch {
             Thread.currentThread().interrupt();
         }
     }
+
+    private boolean peformScanWithMatchingProfile(InetAddress primaryAddress) throws InterruptedException {
+
+        try {
+            Optional<SnmpAgentConfig> validConfig = m_provisionService.getSnmpProfileMapper()
+                                                        .getAgentConfigFromProfiles(primaryAddress, getLocationName())
+                                                        .get();
+            if (validConfig.isPresent()) {
+                SnmpAgentConfig agentConfig = validConfig.get();
+                getAgentConfigFactory().saveAgentConfigAsDefinition(agentConfig, getLocationName(), "Provisiond");
+                LOG.info("IP address {} is fitted with profile {}", primaryAddress.getHostAddress(), agentConfig.getProfileLabel());
+                SystemGroup systemGroup = new SystemGroup(primaryAddress);
+                try {
+                    m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, systemGroup)
+                            .withDescription("systemGroup")
+                            .withLocation(getLocationName())
+                            .execute()
+                            .get();
+                    systemGroup.updateSnmpDataForNode(getNode());
+                    return true;
+                } catch (ExecutionException e) {
+                    LOG.error("Exception while doing SNMP walk with config from SNMP profile {}.", agentConfig.getProfileLabel(), e);
+                }
+            }
+        } catch (ExecutionException e) {
+            LOG.error("Exception while trying to get SNMP profiles.", e);
+        }
+
+
+        return false;
+    }
+
 
     private String getEffectiveForeignSource() {
         return getForeignSource()  == null ? "default" : getForeignSource();

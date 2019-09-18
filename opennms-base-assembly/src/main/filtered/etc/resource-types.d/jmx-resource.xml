@@ -17,14 +17,22 @@
       </storageStrategy>
     </resourceType>
 
-    <!-- Netflow -->
-    <resourceType name="netflow" label="Flow Protocol" resourceLabel="${index}">
+    <!-- Telemetry -->
+    <resourceType name="telemetryAdapters" label="Telemetry Adapters" resourceLabel="${index}">
         <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-            <parameter key="sibling-column-name" value="domain"/>
-            <parameter key="replace-all" value="s/\s//"/>
-            <parameter key="replace-all" value="s/:.*//"/>
-            <parameter key="replace-all" value="s/.*\.//"/>
+            <parameter key="sibling-column-name" value="name"/>
+            <parameter key="replace-first" value="s/.*?\.//"/>
+            <parameter key="replace-all" value="s/\..*//"/>
+        </storageStrategy>
+    </resourceType>
+
+    <resourceType name="telemetryListeners" label="Telemetry Listeners" resourceLabel="${index}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+            <parameter key="sibling-column-name" value="name"/>
+            <parameter key="replace-first" value="s/.*?\.//"/>
+            <parameter key="replace-all" value="s/\..*//"/>
         </storageStrategy>
     </resourceType>
 

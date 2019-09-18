@@ -115,6 +115,12 @@ public abstract class EventConstants {
      * The node updated event UEI (added for the ProvisioningAdapter integration).
      */
     public static final String NODE_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeUpdated";
+
+
+    /**
+     * The node location changed event UEI.
+     */
+    public static final String NODE_LOCATION_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLocationChanged";
     
 	/**
 	 * The node category membership changed UEI.
@@ -615,6 +621,16 @@ public abstract class EventConstants {
      * The nodeLabel from the node table when sent as an event parm.
      */
     public static final String PARM_NODE_LABEL = "nodelabel";
+
+    /**
+     * The prev location for the node when sent as an event parm.
+     */
+    public static final String PARM_NODE_PREV_LOCATION = "nodePrevLocation";
+
+    /**
+     * The current location for the node table when sent as an event parm.
+     */
+    public static final String PARM_NODE_CURRENT_LOCATION = "nodeCurrentLocation";
 
     /**
      * The nodeLabelSource from the node table when sent as an event parm.

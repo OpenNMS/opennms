@@ -173,7 +173,40 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
         return nodeLocation;
     }
 
-	@Override
+    @Override
+    public String getPrimaryInterface(final long nodeId) throws SQLException {
+        String ipAddress = null;
+        java.sql.Connection dbConn = null;
+        try {
+            Statement stmt = null;
+            try {
+                dbConn = DataSourceFactory.getInstance().getConnection();
+
+                stmt = dbConn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT ipaddr FROM ipinterface WHERE issnmpprimary='P' AND nodeid=" + String.valueOf(nodeId));
+                if (rs.next()) {
+                    ipAddress = rs.getString("ipaddr");
+                }
+            } finally {
+                if (stmt != null) {
+                    try {
+                        stmt.close();
+                    } catch (Throwable e) {
+                    }
+                }
+            }
+        } finally {
+            if (dbConn != null) {
+                try {
+                    dbConn.close();
+                } catch (Throwable t) {
+                }
+            }
+        }
+        return ipAddress;
+    }
+
+    @Override
     public String getIfAlias(long nodeId, String ipaddr) throws SQLException {
 		
 		String ifAlias = null;

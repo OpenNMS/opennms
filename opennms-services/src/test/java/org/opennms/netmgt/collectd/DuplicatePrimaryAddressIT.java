@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,20 +41,22 @@ import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.Level;
 import org.opennms.core.test.LoggingEvent;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.config.dao.outages.api.OverrideablePollOutagesDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -65,16 +67,21 @@ import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
+import org.opennms.netmgt.mock.MockThresholdingService;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Test class for <a href="http://issues.opennms.org/browse/NMS-6226">NMS-6226</a>
@@ -82,6 +89,11 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  *
  */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
+})
+@JUnitConfigurationEnvironment
 public class DuplicatePrimaryAddressIT {
     private static final Logger LOG = LoggerFactory.getLogger(DuplicatePrimaryAddressIT.class);
 
@@ -108,6 +120,11 @@ public class DuplicatePrimaryAddressIT {
 
     /** The Filter DAO instance. */
     private FilterDao m_filterDao;
+
+    private ThresholdingService m_thresholdingService;
+
+    @Autowired
+    private OverrideablePollOutagesDao m_pollOutagesDao;
 
     @Before
     public void setUp() {
@@ -179,9 +196,7 @@ public class DuplicatePrimaryAddressIT {
         FilterDaoFactory.setInstance(m_filterDao);
 
         Resource resource = new ClassPathResource("etc/poll-outages.xml");
-        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(resource);
-        factory.afterPropertiesSet();
-        PollOutagesConfigFactory.setInstance(factory);
+        m_pollOutagesDao.overrideConfig(resource.getInputStream());
 
         File homeDir = resource.getFile().getParentFile().getParentFile();
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
@@ -198,6 +213,7 @@ public class DuplicatePrimaryAddressIT {
 
         m_ifaceDao = m_mockUtils.createMock(IpInterfaceDao.class);
         m_nodeDao = m_mockUtils.createMock(NodeDao.class);
+        m_thresholdingService = new MockThresholdingService();
 
         m_collectd = new Collectd() {
             @Override
@@ -248,9 +264,11 @@ public class DuplicatePrimaryAddressIT {
         m_collectd.setIpInterfaceDao(m_ifaceDao);
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setFilterDao(m_filterDao);
+        m_collectd.setThresholdingService(m_thresholdingService);
         m_collectd.setPersisterFactory(new MockPersisterFactory());
         m_collectd.setServiceCollectorRegistry(new DefaultServiceCollectorRegistry());
         m_collectd.setLocationAwareCollectorClient(CollectorTestUtils.createLocationAwareCollectorClient());
+        m_collectd.setPollOutagesDao(m_pollOutagesDao);
 
         m_collectd.afterPropertiesSet();
         m_collectd.start();

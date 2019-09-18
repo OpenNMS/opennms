@@ -29,6 +29,7 @@
 package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <p>ReportFloatParm class.</p>
@@ -39,49 +40,29 @@ import java.io.Serializable;
 public class ReportDoubleParm extends ReportParm implements Serializable {
     
     private static final long serialVersionUID = 5242917854258286117L;
+
     Double m_value;
     String m_type;
     
-    /**
-     * <p>Constructor for ReportFloatParm.</p>
-     */
-    public ReportDoubleParm() {
-      super();
-    }
-    
-    /**
-     * <p>getValue</p>
-     *
-     * @return {@link java.lang.Float} object.
-     */
     public Double getValue() {
         return m_value;
     }
     
-    /**
-     * <p>setValue</p>
-     *
-     * @param value a {@link java.lang.Float} object.
-     */
     public void setValue(Double value) {
         m_value = value;
     }
     
-    /**
-     * <p>getInputType</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getInputType() {
         return m_type;
     }
-    /**
-     * <p>setInputType</p>
-     *
-     * @param type a {@link java.lang.String} object.
-     */
+
     public void setInputType(String type) {
         m_type = type;
+    }
+
+    @Override
+    void accept(ReportParmVisitor visitor) {
+        Objects.requireNonNull(visitor).visit(this);
     }
 
 }

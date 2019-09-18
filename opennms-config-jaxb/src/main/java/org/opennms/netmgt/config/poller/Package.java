@@ -32,12 +32,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.utils.RegexUtils;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 /**
  * Package encapsulating addresses, services to be polled
@@ -460,5 +470,48 @@ public class Package implements Serializable {
                 ",outageCalendars=" + m_outageCalendars +
                 ",downtimes=" + m_downtimes +
                 "]";
+    }
+
+    public static class ServiceMatch {
+        public final Service service;
+        public final Map<String, String> patternVariables;
+
+        public ServiceMatch(final Service service,
+                            final Map<String, String> patternVariables) {
+            this.service = Objects.requireNonNull(service);
+            this.patternVariables = Objects.requireNonNull(patternVariables);
+        }
+
+        public ServiceMatch(final Service service) {
+            this(service, Collections.emptyMap());
+        }
+    }
+
+    public Optional<ServiceMatch> findService(final String svcName) {
+        for (final Service service : this.getServices()) {
+            if (service.getName().equalsIgnoreCase(svcName)) {
+                return Optional.of(new ServiceMatch(service));
+            }
+        }
+
+        // If not found above, search by pattern
+        for (final Service service : this.getServices()) {
+            final String status = service.getStatus();
+            if ((status != null && !status.equals("on")) || Strings.isNullOrEmpty(service.getPattern())) {
+                continue;
+            }
+
+            final Pattern pattern = Pattern.compile(service.getPattern());
+            final Matcher matcher = pattern.matcher(svcName);
+            if (matcher.matches()) {
+                final Map<String, String> patternVariables = Maps.filterValues(
+                        Maps.asMap(RegexUtils.getNamedCaptureGroupsFromPattern(service.getPattern()), matcher::group),
+                        Objects::nonNull
+                );
+                return Optional.of(new ServiceMatch(service, patternVariables));
+            }
+        }
+
+        return Optional.empty();
     }
 }

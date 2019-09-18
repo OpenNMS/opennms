@@ -31,7 +31,9 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
 
@@ -53,8 +55,12 @@ public class SampleDatagram {
                 .toString();
     }
 
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
+        this.version.writeBson(bsonWriter, enr);
+    }
 
-    public void writeBson(final BsonWriter bsonWriter) {
-        this.version.writeBson(bsonWriter);
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
+        version.visit(visitor);
     }
 }

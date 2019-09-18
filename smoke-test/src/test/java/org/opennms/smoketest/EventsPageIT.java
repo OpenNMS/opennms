@@ -35,10 +35,10 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class EventsPageIT extends OpenNMSSeleniumTestCase {
+public class EventsPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
-        m_driver.get(getBaseUrl() + "opennms/event/list");
+        driver.get(getBaseUrlInternal() + "opennms/event/list");
     }
 
     @Test
@@ -67,8 +67,8 @@ public class EventsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testNodeIdNotFoundPage() throws InterruptedException {
-        m_driver.get(getBaseUrl() + "opennms/event/detail.jsp?id=999999999");
-        m_driver.findElement(By.xpath("//p[text()='Event not found in database.']"));
+        driver.get(getBaseUrlInternal() + "opennms/event/detail.jsp?id=999999999");
+        driver.findElement(By.xpath("//p[text()='Event not found in database.']"));
     }
 
 }

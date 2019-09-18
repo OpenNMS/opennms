@@ -32,7 +32,9 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
@@ -56,13 +58,18 @@ public class Extended80211Aggregation implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartArray();
 
         for (final Pdu pdu : this.pdus) {
-            pdu.writeBson(bsonWriter);
+            pdu.writeBson(bsonWriter, enr);
         }
 
         bsonWriter.writeEndArray();
+    }
+
+    @Override
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

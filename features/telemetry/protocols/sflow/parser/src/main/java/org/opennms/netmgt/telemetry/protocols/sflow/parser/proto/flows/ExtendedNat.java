@@ -31,7 +31,9 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
 
@@ -58,12 +60,19 @@ public class ExtendedNat implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("src_address");
-        this.src_address.writeBson(bsonWriter);
+        this.src_address.writeBson(bsonWriter, enr);
         bsonWriter.writeName("dst_address");
-        this.dst_address.writeBson(bsonWriter);
+        this.dst_address.writeBson(bsonWriter, enr);
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
+        src_address.visit(visitor);
+        dst_address.visit(visitor);
     }
 }

@@ -43,6 +43,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.ProgressIndicator;
@@ -92,11 +93,14 @@ public class WallboardBody extends VerticalLayout {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                try {
-                    getUI().getSession().lock();
-                    advanceTimer();
-                } finally {
-                    getUI().getSession().unlock();
+                final UI ui = getUI();
+                if (ui != null) {
+                    ui.accessSynchronously(new Runnable() {
+                        @Override
+                        public void run() {
+                            advanceTimer();
+                        }
+                    });
                 }
             }
         }, 250, 250);

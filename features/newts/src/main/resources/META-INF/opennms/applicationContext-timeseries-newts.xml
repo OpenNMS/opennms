@@ -116,18 +116,18 @@
     <property name="staticMethod" value="org.opennms.netmgt.newts.support.ContextConfigurationFactory.getContextConfigurations"/>
   </bean>
 
-  <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" primary="true" />
+  <bean id="newtsMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
-  <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-      <constructor-arg ref="metricRegistry"/>
+  <bean id="newtsMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="newtsMetricRegistry"/>
   </bean>
 
-  <bean id="metricRegistryDomainedJmxReporterBuilder" factory-bean="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+  <bean id="newtsMetricRegistryDomainedJmxReporterBuilder" factory-bean="newtsMetricRegistryJmxReporterBuilder" factory-method="inDomain">
       <constructor-arg value="org.opennms.newts"/>
   </bean>
 
-  <bean id="metricRegistryJmxReporter"
-        factory-bean="metricRegistryDomainedJmxReporterBuilder"
+  <bean id="newtsMetricRegistryJmxReporter"
+        factory-bean="newtsMetricRegistryDomainedJmxReporterBuilder"
         factory-method="build"
         init-method="start"
         destroy-method="stop" />
@@ -155,6 +155,8 @@
   </bean>
 
   <bean id="cassandraSampleRepository" class="org.opennms.newts.persistence.cassandra.CassandraSampleRepository" depends-on="samples.cassandra.time-to-live" />
+
+  <onmsgi:service interface="org.opennms.newts.api.SampleRepository" ref="cassandraSampleRepository" />
 
   <bean id="newtsWriter" class="org.opennms.netmgt.newts.NewtsWriter" />
 

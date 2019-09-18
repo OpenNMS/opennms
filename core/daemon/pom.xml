@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -48,6 +48,8 @@
               org.apache.activemq.command;resolution:=optional,
               org.apache.activemq.jaas;resolution:=optional,
               org.apache.activemq.security;resolution:=optional,
+              org.opennms.features.activemq.broker.api;resolution:=optional,
+              org.opennms.features.activemq.broker.impl;resolution:=optional,
               *
             </Import-Package>
             <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
@@ -81,6 +83,11 @@
     <dependency>
       <groupId>org.opennms.features.activemq</groupId>
       <artifactId>org.opennms.features.activemq.component</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.broker-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

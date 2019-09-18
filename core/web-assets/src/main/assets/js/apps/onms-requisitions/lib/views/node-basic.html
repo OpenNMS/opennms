@@ -23,7 +23,7 @@
 <div class="form-group">
   <label class="col-form-label" for="nodeLabel">Minion Location</label>
   <input class="form-control" type="text" id="location" name="location" placeholder="Location [optional]" ng-model="node.location" ng-disabled="availableLocations.length == 0"
-         typeahead-min-length="0" typeahead-editable="false" uib-typeahead="location for location in availableLocations">
+         typeahead-min-length="0" typeahead-editable="false" uib-typeahead="location for location in availableLocations" typeahead-on-select="nodeForm.$setDirty();">
   <p ng-show="availableLocations.length == 0" class="form-text text-muted">There are no locations available. (Set to Location "Default")</p>
 </div>
 <div class="form-group">

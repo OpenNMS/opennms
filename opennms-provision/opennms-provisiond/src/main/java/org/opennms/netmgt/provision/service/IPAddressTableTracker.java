@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.getInetAddress;
-import static org.opennms.core.utils.InetAddressUtils.normalize;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
@@ -223,12 +222,6 @@ public class IPAddressTableTracker extends TableTracker {
                 iface.setSnmpInterface(snmpIface);
                 iface.setIfIndex(ifIndex);
             }
-
-            String hostName = null;
-            if (inetAddress != null) hostName = inetAddress.getHostName();
-            if (hostName == null) hostName = normalize(ipAddr);
-            LOG.debug("setIpHostName: {}", hostName);
-            iface.setIpHostName(hostName == null? ipAddr : hostName);
 
             return iface;
         }

@@ -1,0 +1,36 @@
+
+<div class="alert alert-danger mx-2 my-2" ng-if="errorMessage">
+    <span>{{errorMessage}}</span>
+</div>
+
+<div class="alert alert-warning mx-2 my-2" ng-if="!meta.online && !(userInfo.isAdmin() || userInfo.isReportDesigner())">
+    <span>This report cannot be executed adhoc and you do not have permissions to deliver/schedule this report.</span>
+</div>
+
+<div ng-if="meta.online || userInfo.isAdmin() || userInfo.isReportDesigner()">
+    <onms-report-details ng-model="report" options="options" on-invalid-change="onReportFormInvalidStateChange(invalidState)" on-global-error="setGlobalError(response)"></onms-report-details>
+
+    <div class="alert alert-success mx-4" ng-if="scheduleSuccess">
+        The report was scheduled. <br/>
+        <a ui-sref-active="active" ui-sref="report.schedules">Show Schedules</a>
+    </div>
+    <div class="alert alert-success mx-4" ng-if="deliverySuccess">
+        The report was scheduled for delivery.
+        It may take some time until it is delivered. <br/>
+        <a ui-sref-active="active" ui-sref="report.schedules">Show scheduled Reports</a> <br/>
+        <a ui-sref-active="active" ui-sref="report.persisted">Show persisted Reports</a>
+    </div>
+    <div class="form-group mx-4">
+        <button class="btn btn-danger" name="cancel" id="cancel" ui-sref="report.templates">
+            <i class="fa fa-times"></i> Cancel
+        </button>
+
+        <button class="btn btn-primary" name="run" id="execute" ng-click="execute()" ng-disabled="reportForm.$invalid || !report.scheduleOptions.isValid() || (report.isGrafanaReport() && !report.isGrafanaEndpointSelected())">
+            <span ng-if="meta.online && !options.deliverReport && !options.scheduleReport"><i class="fa fa-play"></i> Create</span>
+            <span ng-if="options.deliverReport && !options.scheduleReport"><i class="fa fa-share"></i> Deliver</span>
+            <span ng-if="options.deliverReport && options.scheduleReport"><i class="fa fa-clock-o"></i> Schedule</span>
+
+            Report
+        </button>
+    </div>
+</div>

@@ -44,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+import com.google.common.base.Strings;
+
 /**
  * The Class JavaMailDeliveryService.
  * 
@@ -83,6 +85,9 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
 
                 MimeMessageHelper helper = new MimeMessageHelper(msg, true, sendmailProtocol.getCharSet());
                 helper.setFrom(sendmailMessage.getFrom());
+                if (!Strings.isNullOrEmpty(sendmailMessage.getReplyTo())) {
+                    helper.setReplyTo(sendmailMessage.getReplyTo());
+                }
                 helper.setTo(report.getRecipients().toArray(new String[0]));
                 helper.setSubject("OpenNMS Report: " + report.getReportName());
                 if ("text/html".equals(sendmailProtocol.getMessageContentType().toLowerCase())) {

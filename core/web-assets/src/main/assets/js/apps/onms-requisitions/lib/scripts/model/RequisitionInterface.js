@@ -4,7 +4,6 @@
 */
 
 const RequisitionService = require('./RequisitionService');
-const RequisitionMetaData = require('./RequisitionMetaData');
 
 /**
 * @ngdoc object
@@ -57,7 +56,6 @@ const RequisitionInterface = function RequisitionInterface(intf) {
     self.status = intf['status'] === '1' ? 'managed' : 'unmanaged';
   }
 
-
   /**
    * @description The array of services. Each service is an object with a name property, for example: { name: 'ICMP' }
    * @ngdoc property
@@ -70,15 +68,6 @@ const RequisitionInterface = function RequisitionInterface(intf) {
   angular.forEach(intf['monitored-service'], function(svc) {
     self.services.push(new RequisitionService(svc));
   });
-
-  /**
-   * @description The meta-data entries
-   * @ngdoc property
-   * @name RequisitionInterface#metaData
-   * @propertyOf RequisitionInterface
-   * @returns {object} The meta-data entries
-   */
-  self.metaData = new RequisitionMetaData(intf['meta-data']);
 
   self.className = 'RequisitionInterface';
 

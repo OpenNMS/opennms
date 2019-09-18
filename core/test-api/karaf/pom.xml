@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.test-api</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.test-api</groupId>
@@ -106,7 +106,7 @@
                 <feature>eventadmin</feature>
                 <feature>feature</feature>
                 <feature>framework-security</feature>
-                <feature>httplite</feature>
+                <feature>felix-httplite</feature>
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
                 <feature>instance</feature>

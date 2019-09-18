@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
@@ -42,16 +43,16 @@ import com.google.common.base.MoreObjects;
 public class UndeclaredValue extends Value<byte[]> {
     public final byte[] value;
 
-    public UndeclaredValue(final int informationElementId,
-                           final byte[] value) {
-        this(Optional.empty(), informationElementId, value);
-    }
-
     public UndeclaredValue(final Optional<Long> enterpriseNumber,
                            final int informationElementId,
                            final byte[] value) {
         super(nameFor(enterpriseNumber, informationElementId), Optional.empty());
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
+    }
+
+    public UndeclaredValue(final int informationElementId,
+                           final byte[] value) {
+        this(Optional.empty(), informationElementId, value);
     }
 
     @Override

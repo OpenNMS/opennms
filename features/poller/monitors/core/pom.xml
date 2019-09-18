@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.poller</groupId>
     <artifactId>org.opennms.features.poller.monitors</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.poller.monitors</groupId>
@@ -201,6 +201,11 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-security-dependencies</artifactId>
       <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.activemq</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

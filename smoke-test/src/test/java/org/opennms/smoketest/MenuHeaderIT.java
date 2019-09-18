@@ -1,4 +1,4 @@
- /*******************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
@@ -40,8 +40,9 @@ import org.junit.runners.MethodSorters;
  import org.openqa.selenium.interactions.Actions;
  import org.openqa.selenium.support.ui.ExpectedConditions;
 
- @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class MenuHeaderIT extends OpenNMSSeleniumIT {
+
     @Test
     public void testMenuEntries() throws Exception {
         clickMenuItem("Search", null, "element/index.jsp");
@@ -73,10 +74,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
 
         clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
         // switchTo() by xpath is much faster than by ID
-        //m_driver.switchTo().frame("surveillance-view-ui");
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        //driver.switchTo().frame("surveillance-view-ui");
+        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        m_driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
         frontPage();
 
         final String reportsMenuName = "name=nav-Reports-top";
@@ -95,10 +96,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         final String dashboardsMenuName = "name=nav-Dashboards-top";
         clickMenuItem(dashboardsMenuName, "Dashboard", "dashboard.jsp");
         // switchTo() by xpath is much faster than by ID
-        //m_driver.switchTo().frame("surveillance-view-ui");
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        //driver.switchTo().frame("surveillance-view-ui");
+        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        m_driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
         frontPage();
 
         clickMenuItem(dashboardsMenuName, "Ops Board", "vaadin-wallboard");
@@ -143,7 +144,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
     private void clickMenuItemWithIcon(String menuEntryName, String submenuText, String submenuHref) {
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
-            final Actions action = new Actions(m_driver);
+            final Actions action = new Actions(getDriver());
             final WebElement headerElement = findElementByXpath(String.format("//li/a[@name='%s']", menuEntryName));
 
             // Move to element to make sub menu visible
@@ -158,5 +159,40 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         } finally {
             setImplicitWait();
         }
+    }
+
+    @Test
+    public void verifyReportsPage() {
+        // testAllTextIsPresent
+        reportsPage();
+        findElementByXpath("//div[@class='card-header']/span[text()='Reports']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
+
+        // testAllFormsArePresent()
+        reportsPage();
+        findElementByName("resourceGraphs");
+        findElementByName("kscReports");
+
+
+        // testAllLinks
+        reportsPage();
+        findElementByLink("Resource Graphs").click();
+        findElementByXpath("//label[contains(text()[normalize-space()], 'Standard Resource')]");
+        findElementByXpath("//div[@class='card-header']/span[text()='Network Performance Data']");
+
+        reportsPage();
+        findElementByLink("KSC Performance, Nodes, Domains").click();
+        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
+
+        reportsPage();
+        findElementByLink("Database Reports").click();
+        pageContainsText("Report Templates");
+        pageContainsText("Report Schedules");
+        pageContainsText("Persisted Reports");
+
+        reportsPage();
+        findElementByLink("Statistics Reports").click();
+        findElementByXpath("//div[@class='card-header']/span[text()='Statistics Report List']");
     }
 }
