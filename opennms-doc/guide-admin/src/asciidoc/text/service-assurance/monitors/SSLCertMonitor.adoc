@@ -19,11 +19,7 @@ The output shows you the time range a certificate is valid:
 
 You can configure a threshold in days applied on the `notAfter` date.
 
-While the monitor is mainly useful for plain SSL sockets, the monitor does provide limited support for
-STARTTLS protocols by providing the user with the ability to specify a STARTTLS message to be sent prior
-to the SSL negotiation and a regular expression to match to the response received from the server.
-An additional preliminary message and response regular expression pair is available for protocols that
-require it (such as XMPP).
+While the monitor is mainly useful for plain SSL sockets, the monitor does provide limited support for STARTTLS protocols by providing the user with the ability to specify a STARTTLS message to be sent prior to the SSL negotiation and a regular expression to match to the response received from the server. An additional preliminary message and response regular expression pair is available for protocols that require it (such as XMPP).
 
 This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
