@@ -32,6 +32,7 @@
   <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" availability="mandatory"/>
   <reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao" availability="mandatory"/>
   <reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" availability="mandatory"/>
+  <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="mandatory"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -305,6 +306,7 @@
   <!-- Thresholding -->
   <bean id="threhsoldingConfigExtensionManager" class="org.opennms.features.apilayer.config.ThresholdingConfigExtensionManager">
     <argument ref="thresholdingDao"/>
+    <argument ref="thresholdingService"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.config.thresholding.ThresholdingConfigExtension" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="threhsoldingConfigExtensionManager" />
@@ -318,6 +320,7 @@
   
   <bean id="threshdConfigurationExtensionManager" class="org.opennms.features.apilayer.config.ThreshdConfigurationExtensionManager">
     <argument ref="threshdDao"/>
+    <argument ref="thresholdingService"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.config.thresholding.ThreshdConfigurationExtension" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="threshdConfigurationExtensionManager" />

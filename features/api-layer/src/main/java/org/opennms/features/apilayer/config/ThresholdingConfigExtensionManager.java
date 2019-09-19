@@ -43,6 +43,8 @@ import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,10 +53,16 @@ public class ThresholdingConfigExtensionManager extends ConfigExtensionManager<T
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdingConfigExtensionManager.class);
 
     private final WriteableThresholdingDao thresholdingDao;
+    private final ThresholdingSetPersister thresholdingSetPersister;
 
-    public ThresholdingConfigExtensionManager(WriteableThresholdingDao thresholdingDao) {
+    public ThresholdingConfigExtensionManager(WriteableThresholdingDao thresholdingDao,
+                                              ThresholdingService thresholdingService) {
         super(ThresholdingConfig.class, new ThresholdingConfig());
-        this.thresholdingDao = Objects.requireNonNull(thresholdingDao);
+        Objects.requireNonNull(thresholdingDao);
+        Objects.requireNonNull(thresholdingService);
+        Objects.requireNonNull(thresholdingService.getThresholdingSetPersister());
+        this.thresholdingDao = thresholdingDao;
+        thresholdingSetPersister = thresholdingService.getThresholdingSetPersister();
         LOG.debug("ThreshdConfigurationExtensionManager initialized.");
     }
 
@@ -74,6 +82,7 @@ public class ThresholdingConfigExtensionManager extends ConfigExtensionManager<T
     protected void triggerReload() {
         LOG.debug("Thresholding configuration changed. Triggering a reload.");
         thresholdingDao.onConfigChanged();
+        thresholdingSetPersister.reinitializeThresholdingSets();
     }
 
     private static Group toGroup(GroupDefinition groupDefinition) {

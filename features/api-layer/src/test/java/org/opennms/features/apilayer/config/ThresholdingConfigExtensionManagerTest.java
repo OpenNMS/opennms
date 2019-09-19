@@ -52,6 +52,8 @@ import org.opennms.integration.api.v1.config.thresholding.ThresholdingConfigExte
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
 import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 
 public class ThresholdingConfigExtensionManagerTest {
     private static final String description = "description";
@@ -76,7 +78,10 @@ public class ThresholdingConfigExtensionManagerTest {
     @Test
     public void canProvideMergedConfiguration() {
         WriteableThresholdingDao thresholdingDao = mock(WriteableThresholdingDao.class);
-        ThresholdingConfigExtensionManager manager = new ThresholdingConfigExtensionManager(thresholdingDao);
+        ThresholdingService thresholdingService = mock(ThresholdingService.class);
+        when(thresholdingService.getThresholdingSetPersister()).thenReturn(mock(ThresholdingSetPersister.class));
+        ThresholdingConfigExtensionManager manager = new ThresholdingConfigExtensionManager(thresholdingDao,
+                thresholdingService);
 
         // Shouldn't have config yet
         ThresholdingConfig thresholdingConfig = manager.getObject();

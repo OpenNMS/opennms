@@ -52,6 +52,8 @@ import org.opennms.integration.api.v1.config.thresholding.ThreshdConfigurationEx
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 
 public class ThreshdConfigurationExtensionManagerTest {
     /**
@@ -61,7 +63,10 @@ public class ThreshdConfigurationExtensionManagerTest {
     @Test
     public void canProvideMergedConfiguration() {
         WriteableThreshdDao threshdDao = mock(WriteableThreshdDao.class);
-        ThreshdConfigurationExtensionManager manager = new ThreshdConfigurationExtensionManager(threshdDao);
+        ThresholdingService thresholdingService = mock(ThresholdingService.class);
+        when(thresholdingService.getThresholdingSetPersister()).thenReturn(mock(ThresholdingSetPersister.class));
+        ThreshdConfigurationExtensionManager manager = new ThreshdConfigurationExtensionManager(threshdDao,
+                thresholdingService);
 
         // Shouldn't have config yet
         ThreshdConfiguration threshdConfiguration = manager.getObject();
