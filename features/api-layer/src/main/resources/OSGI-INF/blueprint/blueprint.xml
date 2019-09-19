@@ -28,7 +28,8 @@
   <reference id="userDefinedLinkDao" interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" availability="mandatory"/>
   <reference id="userDefinedLinkTopologyService" interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" availability="mandatory"/>
   <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
-  <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" availability="optional"/>
+  <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"  timeout="30000" availability="optional"/>
+  <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"  timeout="30000" availability="optional"/>
   <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" availability="mandatory"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
@@ -253,6 +254,7 @@
     <bean class="org.opennms.features.apilayer.collectors.CollectionSetPersistenceServiceImpl">
       <argument ref="collectionAgentFactory"/>
       <argument ref="persisterFactory"/>
+      <argument ref="thresholdingService"/>
     </bean>
   </service>
 

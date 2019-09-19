@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.integration.api.v1.collectors.CollectionSet;
 import org.opennms.integration.api.v1.collectors.CollectionSetPersistenceService;
@@ -44,8 +45,18 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class CollectionSetPersistenceServiceImpl implements CollectionSetPersistenceService {
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionSetPersistenceServiceImpl.class);
+    private static final String SERVICE_NAME = "OIA-Push";
     private static final ServiceParameters EMPTY_SERVICE_PARAMETERS = new ServiceParameters(Collections.emptyMap());
     private static final RrdRepository DEFAULT_RRD_REPOSITORY;
 
@@ -66,10 +77,15 @@ public class CollectionSetPersistenceServiceImpl implements CollectionSetPersist
 
     private final CollectionAgentFactory collectionAgentFactory;
     private final PersisterFactory persisterFactory;
+    private final ThresholdingService thresholdingService;
+    private Cache<String, ThresholdingSession> thresholdingSessions = CacheBuilder.newBuilder()
+            .expireAfterAccess(1, TimeUnit.DAYS)
+            .build();
 
-    public CollectionSetPersistenceServiceImpl(CollectionAgentFactory collectionAgentFactory, PersisterFactory persisterFactory) {
+    public CollectionSetPersistenceServiceImpl(CollectionAgentFactory collectionAgentFactory, PersisterFactory persisterFactory, ThresholdingService thresholdingService) {
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
+        this.thresholdingService = Objects.requireNonNull(thresholdingService);
     }
 
     @Override
@@ -95,6 +111,29 @@ public class CollectionSetPersistenceServiceImpl implements CollectionSetPersist
 
         // Persist
         internalCollectionSet.visit(persister);
+
+        // Threshold
+        try {
+            final ThresholdingSession session = getSessionForAgent(agent, repository);
+            session.accept(internalCollectionSet);
+        } catch (ThresholdInitializationException e) {
+            LOG.warn("Failed to retrieve thresholding session for agent: {}. " +
+                    "No thresholding will be performed for the given collection set.", agent, e);
+        }
+    }
+
+    private ThresholdingSession getSessionForAgent(CollectionAgent agent, RrdRepository repository) throws ThresholdInitializationException {
+        // Sessions keyed by agent
+        int nodeId = agent.getNodeId();
+        String hostAddress = agent.getHostAddress();
+        String sessionKey = nodeId + hostAddress;
+
+        ThresholdingSession session = thresholdingSessions.getIfPresent(sessionKey);
+        if (session == null) {
+            session = thresholdingService.createSession(nodeId, hostAddress, SERVICE_NAME, repository, EMPTY_SERVICE_PARAMETERS);
+            thresholdingSessions.put(sessionKey, session);
+        }
+        return session;
     }
 
     private static RrdRepository toRepository(org.opennms.integration.api.v1.collectors.RrdRepository repository) {

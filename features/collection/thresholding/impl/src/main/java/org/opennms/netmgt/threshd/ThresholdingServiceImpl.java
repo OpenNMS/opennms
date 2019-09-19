@@ -45,6 +45,7 @@ import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -225,23 +226,15 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     }
 
     private void daemonReload(Event event) {
-        final String thresholdsDaemonName = "Threshd";
-        boolean isThresholds = false;
-        for (Parm parm : event.getParmCollection()) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && thresholdsDaemonName.equalsIgnoreCase(parm.getValue().getContent())) {
-                isThresholds = true;
-                break;
-            }
-        }
-        if (isThresholds) {
+        DaemonTools.handleReloadEvent(event, "threshd", e -> {
             try {
                 threshdDao.reload();
                 thresholdingDao.reload();
                 thresholdingSetPersister.reinitializeThresholdingSets();
-            } catch (final Exception e) {
-                throw new RuntimeException("Unable to reload thresholding.", e);
+            } catch (final Exception ex) {
+                throw new RuntimeException("Unable to reload thresholding.", ex);
             }
-        }
+        });
     }
 
     private void reinitializeThresholdingSets(Event e) {

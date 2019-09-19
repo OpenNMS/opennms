@@ -147,6 +147,10 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.collection</groupId>
+            <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
+        </dependency>
     </dependencies>
 
     <repositories>
