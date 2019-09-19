@@ -10,6 +10,7 @@ export REPO_PREFIX=$(MINION_PREFIX)/repositories
 export LOGDIR=/var/log/minion
 export SYSCONFDIR=/etc/default
 export ETCDIR=/etc/minion
+export PIDFILE="${LOGDIR}/minion.pid"
 
 %:
 	dh $@
@@ -32,10 +33,18 @@ override_dh_auto_install:
 	# translate Minion prefix and etc directories in the init script, and put it in place
 	sed -e "s,/opt/minion/etc,$(SYSCONFDIR),g" \
 			-e "s,RUNAS=root,RUNAS=minion,g" \
+			-e "s,/opt/minion/log/minion.pid,$(PIDFILE),g" \
 			-e "s,/opt/minion,$(MINION_PREFIX),g" \
 			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 			$$(pwd)/etc/minion.init > $$(pwd)/debian/$(PACKAGE_NAME).minion.init \
-		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(MINION_PREFIX)/etc/minion.init
+		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(MINION_PREFIX)/etc/minion.init \
+		&& sed -e "s,/opt/minion/etc,$(SYSCONFDIR),g" \
+			-e "s,RUNAS=root,RUNAS=minion,g" \
+			-e "s,/opt/minion/log/minion.pid,$(PIDFILE),g" \
+			-e "s,/opt/minion,$(MINION_PREFIX),g" \
+			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
+			$$(pwd)/etc/minion.service > $$(pwd)/debian/$(PACKAGE_NAME).minion.service \
+		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(MINION_PREFIX)/etc/minion.service
 	
 	# move etc / data / deploy directories to where they will live
 	mv $$(pwd)/debian/$(PACKAGE_NAME)$(MINION_PREFIX)/etc $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR) \
@@ -63,5 +72,7 @@ override_dh_auto_install:
 	echo "location = MINION" > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.opennms.minion.controller.cfg \
 		&& echo "id = 00000000-0000-0000-0000-000000ddba11" >> $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.opennms.minion.controller.cfg
 	
-	# install the init script
+	# install the startup scripts
+	dh_systemd_enable --name=minion --no-enable debian/$(PACKAGE_NAME).minion.service
 	dh_installinit --package=$(PACKAGE_NAME) --name=minion --no-start -u"defaults 21 19"
+	dh_systemd_start --name=minion --no-restart-after-upgrade

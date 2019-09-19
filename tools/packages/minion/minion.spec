@@ -10,6 +10,8 @@
 %{!?minioninstprefix:%define minioninstprefix /opt/minion}
 # The path where the repositories will live
 %{!?minionrepoprefix:%define minionrepoprefix /opt/minion/repositories}
+# Where Systemd files live
+%{!?_unitdir:%define _unitdir /lib/systemd/system}
 
 # Description
 %{!?_name:%define _name opennms}
@@ -128,6 +130,9 @@ sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" \
 chmod 755 "%{buildroot}%{_initrddir}"/minion
 rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
 
+mkdir -p "%{buildroot}%{_unitdir}"
+install -c -m 644 "%{buildroot}%{minioninstprefix}/etc/minion.service" "%{buildroot}%{_unitdir}/minion.service"
+
 # move minion.conf to the sysconfig dir
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
 mv "%{buildroot}%{minioninstprefix}/etc/minion.conf" "%{buildroot}%{_sysconfdir}/sysconfig/minion"
@@ -176,6 +181,7 @@ rm -rf %{buildroot}
 %files -f %{_tmppath}/files.minion
 %defattr(664 minion minion 775)
 %attr(755,minion,minion) %{_initrddir}/minion
+%attr(755,minion,minion) %{_unitdir}/minion.service
 %attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
 

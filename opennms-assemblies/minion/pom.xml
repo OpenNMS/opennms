@@ -16,7 +16,9 @@
     <NAME_LC>minion</NAME_LC>
     <INSTPREFIX>/opt/minion</INSTPREFIX>
     <RUNAS>root</RUNAS>
+    <INITDIR>/etc/init.d</INITDIR>
     <SYSCONFDIR>/opt/minion/etc</SYSCONFDIR>
+    <PIDFILE>/opt/minion/log/minion.pid</PIDFILE>
   </properties>
   <build>
     <resources>

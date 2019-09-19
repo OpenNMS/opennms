@@ -25,6 +25,7 @@ RUNAS="@RUNAS@"
 STOP_RETRIES=10
 STOP_WAIT=5
 PING_REQUIRED=FALSE
+PIDFILE="@PIDFILE@"
 
 export NAME DESC PATH
 
@@ -182,7 +183,10 @@ case "$COMMAND" in
 			chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data"
 		fi
 		run_as "$CONTAINER_HOME"/bin/start
-		exit $?
+		sleep 5
+		RET="$?"
+		get_root_pid > "$PIDFILE"
+		exit "$RET"
 		;;
 
 	stop)

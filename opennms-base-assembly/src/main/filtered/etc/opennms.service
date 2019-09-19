@@ -6,13 +6,13 @@ After=${install.postgresql.service}.service network.target network-online.target
 
 [Service]
 User=root
+Environment="OPENNMS_HOME=${install.dir}"
 
-Type=forking
+Type=simple
 PIDFile=${install.pid.file}
 
-ExecStart=${install.init.dir}/opennms -Q start
+ExecStart=${install.init.dir}/opennms -f start
 ExecStop=${install.init.dir}/opennms stop
-
 
 [Install]
 WantedBy=multi-user.target
