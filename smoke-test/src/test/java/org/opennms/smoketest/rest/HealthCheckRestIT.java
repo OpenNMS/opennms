@@ -28,5 +28,56 @@
 
 package org.opennms.smoketest.rest;
 
+import static io.restassured.RestAssured.preemptive;
+import static org.junit.Assert.assertThat;
+import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
+import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
+
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+
 public class HealthCheckRestIT {
+
+//    @ClassRule
+//    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+
+    @Before
+    public void before() {
+//        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+//        RestAssured.port = stack.opennms().getWebPort();
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = 8980;
+        RestAssured.basePath = "/opennms/rest/health";
+    }
+
+    @Test
+    public void verifyStatusWithoutAuthentication() {
+        final String response = RestAssured.get("overview")
+                .then().assertThat()
+                    .statusCode(200)
+                    .contentType(ContentType.TEXT)
+                    .header("Health", "Everything is awesome")
+                .extract().response().asString();
+        assertThat(response, Matchers.is("Everything is awesome"));
+    }
+
+    @Test
+    public void verifyHealth() {
+        RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+        RestAssured.get()
+                .then().assertThat()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .header("Health", "Everything is awesome")
+                .body("healthy", Matchers.is(true))
+                .body("responses[0].status", Matchers.is("Success"))
+                .body("responses[0].description", Matchers.is("Verifying installed bundles"))
+                .body("responses[1].status", Matchers.is("Success"))
+                .body("responses[1].description", Matchers.is("Connecting to ElasticSearch ReST API (Flows)"))
+                .body("responses[1].message", Matchers.is("Not configured"));
+    }
 }
