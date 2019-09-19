@@ -26,25 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.health.rest;
+package org.opennms.smoketest.rest;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.MediaType;
-
-@Path("/health")
-public interface HealthCheckRestService {
-
-    @GET
-    @Path("overview")
-    @Produces(MediaType.TEXT_PLAIN)
-    Response verifyHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
+public class HealthCheckRestIT {
 }

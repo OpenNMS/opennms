@@ -998,7 +998,9 @@
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>
-        <!-- TODO MVR we cannot do this here :-/ as this would be started on sentinel/minion as well and fail :/ -->
+    </feature>
+    <feature name="opennms-health-rest" version="${project.version}" description="OpenNMS :: Health :: Rest">
+        <feature>opennms-health</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.rest/${project.version}</bundle>
     </feature>
     <feature name="opennms-persistence" version="${project.version}" description="OpenNMS :: Persistence">
