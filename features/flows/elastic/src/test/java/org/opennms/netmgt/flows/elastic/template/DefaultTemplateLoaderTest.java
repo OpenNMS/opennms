@@ -36,8 +36,8 @@ import java.io.IOException;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer;
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
-import org.opennms.plugins.elasticsearch.rest.template.Version;
+import org.opennms.features.jest.client.template.DefaultTemplateLoader;
+import org.opennms.features.jest.client.template.Version;
 
 public class DefaultTemplateLoaderTest {
 

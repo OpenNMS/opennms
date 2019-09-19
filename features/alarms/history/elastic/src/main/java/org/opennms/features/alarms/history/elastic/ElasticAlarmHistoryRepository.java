@@ -40,9 +40,9 @@ import java.util.stream.Collectors;
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
 import org.opennms.features.alarms.history.api.AlarmState;
 import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
-import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.features.jest.client.index.IndexSelector;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

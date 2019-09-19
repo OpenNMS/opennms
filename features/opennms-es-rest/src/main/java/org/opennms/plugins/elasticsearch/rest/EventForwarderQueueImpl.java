@@ -38,7 +38,7 @@ import org.opennms.core.ipc.sink.aggregation.ArrayListAggregationPolicy;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.plugins.elasticsearch.rest.template.TemplateInitializer;
+import org.opennms.features.jest.client.template.TemplateInitializer;
 
 /**
  * Queues events received from OpenNMS for forwarding to Elasticsearch.

@@ -47,6 +47,7 @@ import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;

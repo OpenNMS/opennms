@@ -55,11 +55,11 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.features.jest.client.bulk.BulkException;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

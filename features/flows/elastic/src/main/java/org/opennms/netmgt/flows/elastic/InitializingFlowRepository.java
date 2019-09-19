@@ -43,7 +43,7 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.collect.Table;
