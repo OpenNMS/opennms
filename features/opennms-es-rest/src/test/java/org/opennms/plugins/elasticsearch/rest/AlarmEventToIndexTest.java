@@ -33,29 +33,18 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.junit.Rule;
 import org.junit.Test;
-import org.opennms.core.test.elastic.ElasticSearchRule;
-import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

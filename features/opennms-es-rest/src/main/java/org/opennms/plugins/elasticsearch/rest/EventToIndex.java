@@ -32,16 +32,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
@@ -50,7 +47,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
@@ -72,7 +68,6 @@ import io.searchbox.core.BulkResult;
 import io.searchbox.core.BulkResult.BulkResultItem;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Index;
-import io.searchbox.core.Update;
 
 public class EventToIndex implements AutoCloseable {
 
