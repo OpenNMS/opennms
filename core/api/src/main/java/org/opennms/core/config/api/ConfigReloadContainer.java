@@ -170,11 +170,17 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
 
     @Override
     public void reload() {
-        object = providers.stream()
-                .map(ConfigurationProviderState::load)
-                .filter(Objects::nonNull)
-                .reduce(folder)
-                .orElse(null);
+        if (providers.isEmpty()) {
+            object = null;
+        } else if (providers.size() == 1) {
+            object = providers.iterator().next().load();
+        } else {
+            object = providers.stream()
+                    .map(ConfigurationProviderState::load)
+                    .filter(Objects::nonNull)
+                    .reduce(folder)
+                    .orElse(null);
+        }
     }
 
     @Override
