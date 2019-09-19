@@ -83,7 +83,7 @@
 
   <bean id="nodeDataCache" class="org.opennms.plugins.elasticsearch.rest.NodeCacheImpl">
     <argument ref="nodeDao" />
-    <argument ref="transactionOperations" />
+    <argument ref="sessionUtils" />
     <argument ref="cacheConfig" />
     <argument value="${archiveAssetData}" />
   </bean>
