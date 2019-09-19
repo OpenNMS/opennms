@@ -4,9 +4,8 @@
 
 ==== SSLCertMonitor
 
-This monitor is used to test if a SSL certificate presented by a remote network server are
-valid. A certificate is invalid if its initial time is prior to the current time, or if the current time
-is prior to 7 days (configurable) before the expiration time.
+This monitor is used to test if a SSL certificate presented by a remote network server are valid.
+A certificate is invalid if its initial time is prior to the current time, or if the current time is prior to 7 days (configurable) before the expiration time.
 
 You can simulate the behavior by running a command like this:
 
@@ -19,7 +18,8 @@ The output shows you the time range a certificate is valid:
 
 You can configure a threshold in days applied on the `notAfter` date.
 
-While the monitor is mainly useful for plain SSL sockets, the monitor does provide limited support for STARTTLS protocols by providing the user with the ability to specify a STARTTLS message to be sent prior to the SSL negotiation and a regular expression to match to the response received from the server. An additional preliminary message and response regular expression pair is available for protocols that require it (such as XMPP).
+While the monitor is mainly useful for plain SSL sockets, the monitor does provide limited support for STARTTLS protocols by providing the user with the ability to specify a STARTTLS message to be sent prior to the SSL negotiation and a regular expression to match to the response received from the server.
+An additional preliminary message and response regular expression pair is available for protocols that require it (such as XMPP).
 
 This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
@@ -62,10 +62,9 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 | `${svcname}`    | The service name
 |===
 
-WARNING: The monitor has limited support for communicating on other protocol layers above the SSL session layer. The
-STARTTLS support has only been tested with a single XMPP server. It is not known if the same approach will prove
-useful for other use cases, like sending a Host header for HTTPS, or issue a STARTTLS command for IMAP, POP3, SMTP, FTP, LDAP,
-or NNTP.
+WARNING: The monitor has limited support for communicating on other protocol layers above the SSL session layer.
+The STARTTLS support has only been tested with a single XMPP server.
+It is not known if the same approach will prove useful for other use cases, like sending a Host header for HTTPS, or issue a STARTTLS command for IMAP, POP3, SMTP, FTP, LDAP, or NNTP.
 
 ===== Examples
 
