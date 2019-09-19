@@ -135,7 +135,7 @@
 
   <bean id="elasticSearchInitializer" class="org.opennms.features.jest.client.template.DefaultTemplateInitializer">
     <argument ref="blueprintBundleContext" />
-    <argument ref="restClientFactory" />
+    <argument ref="restClient" />
     <argument value="/eventsIndexTemplate" />
     <argument value="eventsindextemplate" />
     <argument ref="indexSettings" />
