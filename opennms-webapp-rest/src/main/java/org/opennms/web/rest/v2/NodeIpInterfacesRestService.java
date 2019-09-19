@@ -177,7 +177,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     @GET
     @Path("{ipAddress}/metadata")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress) {
+    public OnmsMetaDataList getMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress) {
         final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
 
         if (intf == null) {
@@ -190,7 +190,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     @GET
     @Path("{ipAddress}/metadata/{context}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, @PathParam("context") String context) {
+    public OnmsMetaDataList getMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, @PathParam("context") String context) {
         final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
 
         if (intf == null) {
@@ -205,7 +205,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     @GET
     @Path("{ipAddress}/metadata/{context}/{key}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, @PathParam("context") String context, @PathParam("key") String key) {
+    public OnmsMetaDataList getMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, @PathParam("context") String context, @PathParam("key") String key) {
         final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
 
         if (intf == null) {
@@ -226,7 +226,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
 
             if (intf == null) {
-                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find interface " + ipAddress);
             }
             intf.removeMetaData(context);
             getDao().update(intf);
@@ -245,7 +245,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
 
             if (intf == null) {
-                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find interface " + ipAddress);
             }
             intf.removeMetaData(context, key);
             getDao().update(intf);
@@ -264,7 +264,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
 
             if (intf == null) {
-                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+                throw getException(Status.BAD_REQUEST, "postMetaData: Can't find interface " + ipAddress);
             }
             intf.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
             getDao().update(intf);
@@ -283,7 +283,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
 
             if (intf == null) {
-                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+                throw getException(Status.BAD_REQUEST, "putMetaData: Can't find interface " + ipAddress);
             }
             intf.addMetaData(context, key, value);
             getDao().update(intf);

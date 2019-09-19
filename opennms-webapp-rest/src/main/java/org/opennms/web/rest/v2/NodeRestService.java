@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -58,10 +57,10 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
@@ -273,8 +272,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @GET
     @Path("{nodeCriteria}/metadata")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public JaxbListWrapper<OnmsMetaData> getMetaData(@PathParam("nodeCriteria") String nodeCriteria) {
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria) {
         final OnmsNode node = getDao().get(nodeCriteria);
 
         if (node == null) {
@@ -286,8 +285,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @GET
     @Path("{nodeCriteria}/metadata/{context}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public JaxbListWrapper<OnmsMetaData> getMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context) {
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context) {
         final OnmsNode node = getDao().get(nodeCriteria);
 
         if (node == null) {
@@ -301,8 +300,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @GET
     @Path("{nodeCriteria}/metadata/{context}/{key}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public JaxbListWrapper<OnmsMetaData> getMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key) {
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key) {
         final OnmsNode node = getDao().get(nodeCriteria);
 
         if (node == null) {
@@ -316,7 +315,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @DELETE
     @Path("{nodeCriteria}/metadata/{context}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public Response deleteMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context) {
         writeLock();
         try {
@@ -334,7 +333,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @DELETE
     @Path("{nodeCriteria}/metadata/{context}/{key}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public Response deleteMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key) {
         writeLock();
         try {
@@ -352,13 +351,13 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @POST
     @Path("{nodeCriteria}/metadata")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public Response postMetaData(@PathParam("nodeCriteria") String nodeCriteria, OnmsMetaData entity) {
         writeLock();
         try {
             final OnmsNode node = getDao().get(nodeCriteria);
             if (node == null) {
-                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find node " + nodeCriteria);
+                throw getException(Status.BAD_REQUEST, "postMetaData: Can't find node " + nodeCriteria);
             }
             node.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
             getDao().update(node);
@@ -370,13 +369,13 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @PUT
     @Path("{nodeCriteria}/metadata/{context}/{key}/{value}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public Response putMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key, @PathParam("value") String value) {
         writeLock();
         try {
             final OnmsNode node = getDao().get(nodeCriteria);
             if (node == null) {
-                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find node " + nodeCriteria);
+                throw getException(Status.BAD_REQUEST, "putMetaData: Can't find node " + nodeCriteria);
             }
             node.addMetaData(context, key, value);
             getDao().update(node);

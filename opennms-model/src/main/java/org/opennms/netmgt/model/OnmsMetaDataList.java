@@ -31,8 +31,6 @@ package org.opennms.netmgt.model;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -41,8 +39,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name = "meta-data-list")
-@XmlAccessorType(XmlAccessType.NONE)
-@JsonRootName("meta-data-list")
+@JsonRootName("metaDataList")
 public class OnmsMetaDataList extends JaxbListWrapper<OnmsMetaData> {
     private static final long serialVersionUID = 1L;
 
@@ -52,12 +49,8 @@ public class OnmsMetaDataList extends JaxbListWrapper<OnmsMetaData> {
     }
 
     @XmlElement(name="meta-data")
-    @JsonProperty(" meta-data")
+    @JsonProperty("metaData")
     public List<OnmsMetaData> getObjects() {
         return super.getObjects();
-    }
-
-    public List<OnmsMetaData> getMetaDataList() {
-        return getObjects();
     }
 }

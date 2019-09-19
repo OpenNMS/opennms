@@ -226,7 +226,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @GET
     @Path("{serviceName}/metadata")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName) {
+    public OnmsMetaDataList getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName) {
         final OnmsMonitoredService service = getService(uriInfo, serviceName);
 
         if (serviceName == null) {
@@ -239,7 +239,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @GET
     @Path("{serviceName}/metadata/{context}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context) {
+    public OnmsMetaDataList getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context) {
         final OnmsMonitoredService service = getService(uriInfo, serviceName);
 
         if (serviceName == null) {
@@ -254,7 +254,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @GET
     @Path("{serviceName}/metadata/{context}/{key}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context, @PathParam("key") String key) {
+    public OnmsMetaDataList getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context, @PathParam("key") String key) {
         final OnmsMonitoredService service = getService(uriInfo, serviceName);
 
         if (serviceName == null) {
@@ -275,7 +275,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             final OnmsMonitoredService service = getService(uriInfo, serviceName);
 
             if (serviceName == null) {
-                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find service " + serviceName);
             }
             service.removeMetaData(context);
             getDao().update(service);
@@ -294,7 +294,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             final OnmsMonitoredService service = getService(uriInfo, serviceName);
 
             if (serviceName == null) {
-                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find service " + serviceName);
             }
             service.removeMetaData(context, key);
             getDao().update(service);
@@ -313,7 +313,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             final OnmsMonitoredService service = getService(uriInfo, serviceName);
 
             if (serviceName == null) {
-                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+                throw getException(Status.BAD_REQUEST, "postMetaData: Can't find service " + serviceName);
             }
             service.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
             getDao().update(service);
@@ -332,7 +332,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             final OnmsMonitoredService service = getService(uriInfo, serviceName);
 
             if (serviceName == null) {
-                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+                throw getException(Status.BAD_REQUEST, "putMetaData: Can't find service " + serviceName);
             }
             service.addMetaData(context, key, value);
             getDao().update(service);
