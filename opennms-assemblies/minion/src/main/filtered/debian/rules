@@ -61,7 +61,7 @@ override_dh_auto_install:
 		&& rm -rf $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/minion.conf
 	
 	# change the logging directory to /var/log/minion
-	sed -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,karaf.log,minion.log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
+	sed -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,/karaf.log,/minion.log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
 	
 	# set the default location
 	echo "location = MINION" > $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/org.opennms.minion.controller.cfg \
