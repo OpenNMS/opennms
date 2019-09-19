@@ -35,6 +35,7 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -64,6 +65,9 @@ public class ScriptdConfiguration implements Serializable {
 
     @XmlElement(name = "event-script")
     private List<EventScript> m_eventScripts = new ArrayList<>();
+
+    @XmlAttribute(name = "transactional")
+    private Boolean m_transactional;
 
     public List<Engine> getEngines() {
         return m_engines;
@@ -155,13 +159,22 @@ public class ScriptdConfiguration implements Serializable {
         return m_eventScripts.remove(eventScript);
     }
 
+    public Boolean  getTransactional() {
+        return m_transactional != null ? m_transactional : Boolean.TRUE;
+    }
+
+    public void setTransactional(Boolean transactional) {
+        m_transactional = transactional;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(m_engines, 
             m_startScripts, 
             m_stopScripts, 
             m_reloadScripts, 
-            m_eventScripts);
+            m_eventScripts,
+            m_transactional);
     }
 
     @Override
@@ -176,7 +189,8 @@ public class ScriptdConfiguration implements Serializable {
                 && Objects.equals(this.m_startScripts, that.m_startScripts)
                 && Objects.equals(this.m_stopScripts, that.m_stopScripts)
                 && Objects.equals(this.m_reloadScripts, that.m_reloadScripts)
-                && Objects.equals(this.m_eventScripts, that.m_eventScripts);
+                && Objects.equals(this.m_eventScripts, that.m_eventScripts)
+                && Objects.equals(this.m_transactional, that.m_transactional);
         }
         return false;
     }
