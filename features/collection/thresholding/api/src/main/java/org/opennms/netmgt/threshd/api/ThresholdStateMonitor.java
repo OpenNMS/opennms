@@ -28,30 +28,28 @@
 
 package org.opennms.netmgt.threshd.api;
 
-import org.opennms.features.distributed.kvstore.api.BlobStore;
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.xml.event.Event;
-
-public interface ThresholdingSession extends AutoCloseable {
+/**
+ * An interface for tracking and reinitializing the in-memory values of thresholding states.
+ */
+public interface ThresholdStateMonitor {
+    /**
+     * Track the given state identified by the given key.
+     */
+    void trackState(String key, ReinitializableState state);
 
     /**
-     * Accepts a {@link CollectionSet} for threshold evaluation. The service will send {@link Event}s if Thresholds are triggered or re-armed.
-     * 
-     * @param collectionSet
-     * @throws ThresholdInitializationException
-     *             if the Thresholding Configuration has not yet been initialized ot there is an error initializing it. 
-     *             I.E. reading as parsing the configuration files.
+     * Run some arbitrary code while holding the lock to the state monitor. This is used to block reinitialization while
+     * the given {@link Runnable code} is running.
      */
-    void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
-
-    ThresholdingSessionKey getKey();
-    
-    BlobStore getBlobStore();
+    void withReadLock(Runnable r);
 
     /**
-     * @return true if we are thresholding in a distributed environment (i.e. Sentinel) false otherwise (i.e. OpenNMS)
+     * Reinitialize a single state identified by the given key.
      */
-    boolean isDistributed();
-    
-    ThresholdStateMonitor getThresholdStateMonitor();
+    void reinitializeState(String stateKey);
+
+    /**
+     * Reinitialize all states currently tracked by this monitor.
+     */
+    void reinitializeStates();
 }

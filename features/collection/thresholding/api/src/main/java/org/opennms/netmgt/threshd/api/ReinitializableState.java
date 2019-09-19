@@ -28,30 +28,6 @@
 
 package org.opennms.netmgt.threshd.api;
 
-import org.opennms.features.distributed.kvstore.api.BlobStore;
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.xml.event.Event;
-
-public interface ThresholdingSession extends AutoCloseable {
-
-    /**
-     * Accepts a {@link CollectionSet} for threshold evaluation. The service will send {@link Event}s if Thresholds are triggered or re-armed.
-     * 
-     * @param collectionSet
-     * @throws ThresholdInitializationException
-     *             if the Thresholding Configuration has not yet been initialized ot there is an error initializing it. 
-     *             I.E. reading as parsing the configuration files.
-     */
-    void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
-
-    ThresholdingSessionKey getKey();
-    
-    BlobStore getBlobStore();
-
-    /**
-     * @return true if we are thresholding in a distributed environment (i.e. Sentinel) false otherwise (i.e. OpenNMS)
-     */
-    boolean isDistributed();
-    
-    ThresholdStateMonitor getThresholdStateMonitor();
+public interface ReinitializableState {
+    void reinitialize();
 }

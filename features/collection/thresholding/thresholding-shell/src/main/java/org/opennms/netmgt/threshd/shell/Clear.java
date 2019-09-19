@@ -29,14 +29,33 @@
 package org.opennms.netmgt.threshd.shell;
 
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 
 @Command(scope = "opennms-threshold-states", name = "clear", description = "Clears a specific threshold state")
 @Service
 public class Clear extends AbstractKeyOrIndexCommand {
+    @Reference
+    ThresholdStateMonitor thresholdStateMonitor;
+
+    @Option(name = "-m", aliases = "--memory", description = "When set, clears the in-memory state in addition to the" +
+            " persisted state")
+    private boolean clearMemory;
+
     @Override
     public Object execute() {
-        blobStore.delete(getKey(), THRESHOLDING_KV_CONTEXT);
+        String key = getKey();
+
+        if (clearMemory) {
+            thresholdStateMonitor.reinitializeState(key);
+
+            return null;
+        }
+
+        blobStore.delete(key, THRESHOLDING_KV_CONTEXT);
+
         return null;
     }
 }
