@@ -32,6 +32,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -485,7 +486,7 @@ public class Poller extends AbstractServiceDaemon {
 
         closeOutageIfSvcLostEventIsMissing(outage);
 
-        final Package pkg = m_pollerConfig.findPackageForService(ipAddr, serviceName);
+        final Package pkg = this.findPackageForService(ipAddr, serviceName);
         if (pkg == null) {
             if(active){
                 LOG.warn("Active service {} on {} not configured for any package. Marking as Not Polled.", serviceName, ipAddr);
@@ -535,6 +536,36 @@ public class Poller extends AbstractServiceDaemon {
 
         return true;
 
+    }
+
+    private Package findPackageForService(String ipAddr, String serviceName) {
+        Enumeration<Package> en = this.m_pollerConfig.enumeratePackage();
+        Package lastPkg = null;
+
+        while (en.hasMoreElements()) {
+            Package pkg = en.nextElement();
+            if (this.pollableServiceInPackage(ipAddr, serviceName, pkg))
+                lastPkg = pkg;
+        }
+        return lastPkg;
+    }
+
+    public boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
+        if (pkg.getRemote()) {
+            return false;
+        }
+
+        if (!this.m_pollerConfig.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
+
+        boolean inPkg = this.m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
+        if (inPkg) return true;
+
+        if (this.m_initialized) {
+            this.m_pollerConfig.rebuildPackageIpListMap();
+            return this.m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
+        } else {
+            return false;
+        }
     }
 
     private void updateServiceStatus(OnmsMonitoredService service, String status) {
