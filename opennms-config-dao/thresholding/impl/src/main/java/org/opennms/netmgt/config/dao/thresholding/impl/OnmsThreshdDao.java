@@ -60,17 +60,7 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
         super(jsonStore);
         Objects.requireNonNull(configFile);
         extContainer = new ConfigReloadContainer.Builder<>(ThreshdConfiguration.class)
-                .withMerger((source, target) -> {
-                    if (source == null && target == null) {
-                        return new ThreshdConfiguration();
-                    } else if (source == null) {
-                        return target;
-                    } else if (target == null) {
-                        return source;
-                    }
-                    target.getPackages().addAll(source.getPackages());
-                    return target;
-                })
+                .withFolder((accumulator, next) -> accumulator.getPackages().addAll(next.getPackages()))
                 .build();
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class,
                 "threshd-configuration", Collections.singleton(this::fileSystemConfigUpdated), configFile);

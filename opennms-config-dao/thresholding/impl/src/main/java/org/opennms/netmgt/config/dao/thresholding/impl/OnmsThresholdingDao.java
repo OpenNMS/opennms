@@ -60,17 +60,7 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
         super(jsonStore);
         Objects.requireNonNull(configFile);
         extContainer = new ConfigReloadContainer.Builder<>(ThresholdingConfig.class)
-                .withMerger((source, target) -> {
-                    if (source == null && target == null) {
-                        return new ThresholdingConfig();
-                    } else if (source == null) {
-                        return target;
-                    } else if (target == null) {
-                        return source;
-                    }
-                    source.getGroups().forEach(target::addGroup);
-                    return target;
-                })
+                .withFolder((accumulator, next) -> accumulator.getGroups().addAll(next.getGroups()))
                 .build();
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThresholdingConfig.class, "thresholds",
                 Collections.singleton(this::fileSystemConfigUpdated), configFile);
