@@ -180,9 +180,6 @@ final class NodeInfoScan implements RunInBatch {
             }
             for(NodePolicy policy : nodePolicies) {
                 if (node != null) {
-                    if(node.getId() > 0) {
-                        node = m_provisionService.getNode(node.getId());
-                    }
                     LOG.info("Applying NodePolicy {}({}) to {}", policy.getClass(), policy, node.getLabel());
                     node = policy.apply(node);
                 }
