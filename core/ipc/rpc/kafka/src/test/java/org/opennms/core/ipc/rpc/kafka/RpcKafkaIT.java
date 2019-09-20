@@ -40,8 +40,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL_PROPERTY;
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE_PROPERTY;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.DEFAULT_TTL_PROPERTY;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE_PROPERTY;
 
 import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
@@ -63,6 +63,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
 import org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider;
 import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
