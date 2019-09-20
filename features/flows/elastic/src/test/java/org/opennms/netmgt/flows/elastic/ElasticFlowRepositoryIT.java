@@ -37,9 +37,8 @@ import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
-import org.opennms.netmgt.dao.mock.MockTransactionManager;
-import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
@@ -78,12 +77,9 @@ public class ElasticFlowRepositoryIT {
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
         try (JestClient client = factory.getObject()) {
-            final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
-            mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
-
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
-                    mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
+                    new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                     new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),
                     3, 12000);
 

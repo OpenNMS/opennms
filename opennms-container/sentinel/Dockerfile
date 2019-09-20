@@ -21,6 +21,11 @@ RUN rpm --import "${REPO_KEY_URL}" && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
+# Allow to send ICMP messages as non-root user
+RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
+    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
+    ldconfig
+
 ##
 # Install and setup OpenNMS Sentinel RPMS
 ##

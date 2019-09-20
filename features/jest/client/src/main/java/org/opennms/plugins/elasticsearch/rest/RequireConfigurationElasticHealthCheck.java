@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,59 +25,51 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.plugins.elasticsearch.rest;
 
 import java.io.IOException;
 import java.util.Objects;
 
 import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
-
-import com.google.common.base.Strings;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 import io.searchbox.client.JestClient;
-import io.searchbox.client.JestResult;
-import io.searchbox.core.Ping;
 
 /**
- * Verifies the connection to ElasticSearch.
- * The health check may be located in an odd place for now.
- * The reason for this is, that multiple Modules create their own clients.
- * In order to not configure the client for the health check module as well, this {@link HealthCheck} is
- * only validating if the connection to ElasticSearch from the view of the flows/elastic bundle is working.
+ * {@link ElasticHealthCheck} that requires configuration to be present in order to actually verify the connection.
+ * This is required as some features may be installed but the connection to Elasticsearch may not be configured yet,
+ * meaning the <code>health:check</code> would always fail, which may not be the desired behaviour.
  *
  * @author mvrueden
  */
-public class ElasticHealthCheck implements HealthCheck {
+public class RequireConfigurationElasticHealthCheck extends ElasticHealthCheck {
 
-    private final JestClient client;
+    private final ConfigurationAdmin configAdmin;
+    private final String pid;
 
-    private final String featureName;
-
-    public ElasticHealthCheck(JestClient jestClient, String featureName) {
-        this.client = Objects.requireNonNull(jestClient);
-        this.featureName = Objects.requireNonNull(featureName);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Connecting to ElasticSearch ReST API (" + featureName + ")";
+    public RequireConfigurationElasticHealthCheck(final JestClient jestClient, final String featureName, final ConfigurationAdmin configAdmin, final String pid) {
+        super(jestClient, featureName);
+        this.configAdmin = Objects.requireNonNull(configAdmin);
+        this.pid = Objects.requireNonNull(pid);
     }
 
     @Override
     public Response perform(Context context) {
-        final Ping ping = new Ping.Builder().build();
+        // If not configured, make it unknown
         try {
-            final JestResult result = client.execute(ping);
-            if (result.isSucceeded() && Strings.isNullOrEmpty(result.getErrorMessage())) {
-                return new Response(Status.Success);
-            } else {
-                return new Response(Status.Failure, Strings.isNullOrEmpty(result.getErrorMessage()) ? null : result.getErrorMessage());
+            final Configuration configuration = configAdmin.getConfiguration(pid);
+            if(configuration.getProperties() == null) {
+                return new Response(Status.Success, "Not configured");
             }
         } catch (IOException e) {
             return new Response(e);
         }
+
+        // Connection to Elastic is configured, now perform the check
+        return super.perform(context);
     }
 }
