@@ -44,7 +44,7 @@ import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.config.threshd.ServiceStatus;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
-import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
+import org.osgi.framework.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,15 +53,13 @@ public class ThreshdConfigurationExtensionManager extends ConfigExtensionManager
     private static final Logger LOG = LoggerFactory.getLogger(ThreshdConfigurationExtensionManager.class);
 
     private final WriteableThreshdDao threshdDao;
-    private final ThresholdingSetPersister thresholdingSetPersister;
+    private final ThresholdingService thresholdingService;
 
-    public ThreshdConfigurationExtensionManager(WriteableThreshdDao threshdDao, ThresholdingService thresholdingService) {
+    public ThreshdConfigurationExtensionManager(WriteableThreshdDao threshdDao,
+                                                ThresholdingService thresholdingService) {
         super(ThreshdConfiguration.class, new ThreshdConfiguration());
-        Objects.requireNonNull(threshdDao);
-        Objects.requireNonNull(thresholdingService);
-        Objects.requireNonNull(thresholdingService.getThresholdingSetPersister());
         this.threshdDao = Objects.requireNonNull(threshdDao);
-        thresholdingSetPersister = thresholdingService.getThresholdingSetPersister();
+        this.thresholdingService = Objects.requireNonNull(thresholdingService);
         LOG.debug("ThreshdConfigurationExtensionManager initialized.");
     }
 
@@ -81,7 +79,12 @@ public class ThreshdConfigurationExtensionManager extends ConfigExtensionManager
     protected void triggerReload() {
         LOG.debug("Threshd configuration changed. Triggering a reload.");
         threshdDao.onConfigChanged();
-        thresholdingSetPersister.reinitializeThresholdingSets();
+        try {
+            thresholdingService.getThresholdingSetPersister().reinitializeThresholdingSets();
+            LOG.debug("Requested a reinitialize of the thresholding set persister");
+        } catch (ServiceException e) {
+            LOG.debug("Failed to reinitialize the thresholding set persister", e);
+        }
     }
 
     private static Package toPackage(PackageDefinition packageDefinition) {

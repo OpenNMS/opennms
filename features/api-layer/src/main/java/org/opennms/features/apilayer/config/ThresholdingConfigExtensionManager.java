@@ -44,7 +44,7 @@ import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
-import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
+import org.osgi.framework.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,16 +53,13 @@ public class ThresholdingConfigExtensionManager extends ConfigExtensionManager<T
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdingConfigExtensionManager.class);
 
     private final WriteableThresholdingDao thresholdingDao;
-    private final ThresholdingSetPersister thresholdingSetPersister;
+    private final ThresholdingService thresholdingService;
 
     public ThresholdingConfigExtensionManager(WriteableThresholdingDao thresholdingDao,
                                               ThresholdingService thresholdingService) {
         super(ThresholdingConfig.class, new ThresholdingConfig());
-        Objects.requireNonNull(thresholdingDao);
-        Objects.requireNonNull(thresholdingService);
-        Objects.requireNonNull(thresholdingService.getThresholdingSetPersister());
-        this.thresholdingDao = thresholdingDao;
-        thresholdingSetPersister = thresholdingService.getThresholdingSetPersister();
+        this.thresholdingDao = Objects.requireNonNull(thresholdingDao);
+        this.thresholdingService = Objects.requireNonNull(thresholdingService);
         LOG.debug("ThreshdConfigurationExtensionManager initialized.");
     }
 
@@ -82,7 +79,12 @@ public class ThresholdingConfigExtensionManager extends ConfigExtensionManager<T
     protected void triggerReload() {
         LOG.debug("Thresholding configuration changed. Triggering a reload.");
         thresholdingDao.onConfigChanged();
-        thresholdingSetPersister.reinitializeThresholdingSets();
+        try  {
+            thresholdingService.getThresholdingSetPersister().reinitializeThresholdingSets();
+            LOG.debug("Requested a reinitialize of the thresholding set persister");
+        } catch (ServiceException e) {
+            LOG.debug("Failed to reinitialize the thresholding set persister", e);
+        }
     }
 
     private static Group toGroup(GroupDefinition groupDefinition) {
