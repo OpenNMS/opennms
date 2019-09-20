@@ -267,7 +267,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                                                   m_locationAwareSnmpClient, 
                                                   m_linkdConfig.getRescanInterval(),
                                                   m_linkdConfig.getInitialSleepTime(),
-                                                  node));
+                                                  node,
+                                                  m_linkdConfig.disableBridgeVlanDiscovery()));
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
