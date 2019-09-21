@@ -50,7 +50,7 @@ override_dh_auto_install:
 		&& rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/sentinel.conf
 	
 	# change the logging directory to /var/log/sentinel
-	sed -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,karaf.log,sentinel.log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
+	sed -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,/karaf.log,/sentinel.log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
 	
 	# install the init script
 	dh_installinit --package=$(PACKAGE_NAME) --name=sentinel --no-start -u"defaults 21 19"
