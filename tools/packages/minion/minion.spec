@@ -8,7 +8,7 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $MINION_HOME in the finished package
 %{!?minioninstprefix:%define minioninstprefix /opt/minion}
-# The path where the repositories will live 
+# The path where the repositories will live
 %{!?minionrepoprefix:%define minionrepoprefix /opt/minion/repositories}
 
 # Description
@@ -51,45 +51,16 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 BuildRequires:	%{_java}
 BuildRequires:	libxslt
 
-Requires(pre): %{name}-features-default = %{version}-%{release}
-Requires:      %{name}-features-default = %{version}-%{release}
-Requires(pre): %{_java}
-Requires:      %{_java}
-
-Prefix:        %{minioninstprefix}
-
-%description
-OpenNMS Minion is a container infrastructure for distributed, scalable network
-management and monitoring.
-
-http://www.opennms.org/wiki/Minion
-
-%{extrainfo}
-%{extrainfo2}
-
-%package container
-Summary:       Minion Container
-Group:         Applications/System
-Requires:      openssh
-Requires(pre): /usr/bin/getent
-Requires(pre): /usr/sbin/groupadd
-Requires(pre): /usr/sbin/useradd
-Requires(pre): /sbin/nologin
-Requires:      /sbin/nologin
-Requires:      /usr/bin/id
-Requires:      /usr/bin/sudo
-
-%description container
-Minion Container
-
-%{extrainfo}
-%{extrainfo2}
-
-%package features-core
-Summary:        Minion Core Features
-Group:          Applications/System
-Requires(pre):  %{name}-container = %{version}-%{release}
-Requires:       %{name}-container = %{version}-%{release}
+Requires(pre):  %{_java}
+Requires:       %{_java}
+Requires:       openssh
+Requires(pre):  /usr/bin/getent
+Requires(pre):  /usr/sbin/groupadd
+Requires(pre):  /usr/sbin/useradd
+Requires(pre):  /sbin/nologin
+Requires:       /sbin/nologin
+Requires:       /usr/bin/id
+Requires:       /usr/bin/sudo
 Requires(post): util-linux
 Requires:       util-linux
 Requires:       jicmp >= 2.0.0
@@ -97,20 +68,17 @@ Requires(pre):  jicmp >= 2.0.0
 Requires:       jicmp6 >= 2.0.0
 Requires(pre):  jicmp6 >= 2.0.0
 
-%description features-core
-Minion Core Features
+Obsoletes:      %{name}-container        < 25.0.0
+Obsoletes:      %{name}-features-core    < 25.0.0
+Obsoletes:      %{name}-features-default < 25.0.0
 
-%{extrainfo}
-%{extrainfo2}
+Prefix:         %{minioninstprefix}
 
-%package features-default
-Summary:       Minion Default Features
-Group:         Applications/System
-Requires(pre): %{name}-features-core = %{version}-%{release}
-Requires:      %{name}-features-core = %{version}-%{release}
+%description
+OpenNMS Minion is a container infrastructure for distributed, scalable network
+management and monitoring.
 
-%description features-default
-Minion Default Features
+http://www.opennms.org/wiki/Minion
 
 %{extrainfo}
 %{extrainfo2}
@@ -164,20 +132,24 @@ rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
 mv "%{buildroot}%{minioninstprefix}/etc/minion.conf" "%{buildroot}%{_sysconfdir}/sysconfig/minion"
 
-# container package files
+# delete the debian files
+rm -rf "%{buildroot}%{minioninstprefix}/debian"
+
+### FILE LISTS FOR %files ###
+
+# minion package files
 find %{buildroot}%{minioninstprefix} ! -type d | \
     grep -v %{minioninstprefix}/bin | \
     grep -v %{minioninstprefix}/etc | \
-    grep -v %{minionrepoprefix} | \
     sed -e "s|^%{buildroot}|%attr(644,minion,minion) |" | \
-    sort > %{_tmppath}/files.container
+    sort > %{_tmppath}/files.minion
 
-# org.apache.karaf.features.cfg and org.ops4j.pax.logging.cfg should
+# org.opennms.*, org.apache.karaf.features.cfg, and org.ops4j.pax.logging.cfg should
 # be special-cased to not be replaced by default (and create .rpmnew files)
 find %{buildroot}%{minioninstprefix}/etc ! -type d | \
-    grep -E 'etc/(org.apache.karaf.features.cfg|org.ops4j.pax.logging.cfg)$' | \
+    grep -E 'etc/(org.opennms.*|org.apache.karaf.features.cfg|org.ops4j.pax.logging.cfg)$' | \
     sed -e "s|^%{buildroot}|%attr(644,minion,minion) %config(noreplace) |" | \
-    sort >> %{_tmppath}/files.container
+    sort >> %{_tmppath}/files.minion
 
 # all other etc files should replace by default (and create .rpmsave files)
 find %{buildroot}%{minioninstprefix}/etc ! -type d | \
@@ -186,30 +158,31 @@ find %{buildroot}%{minioninstprefix}/etc ! -type d | \
     grep -v etc/org.ops4j.pax.logging.cfg | \
     grep -v etc/featuresBoot.d | \
     sed -e "s|^%{buildroot}|%attr(644,minion,minion) %config |" | \
-    sort >> %{_tmppath}/files.container
+    sort >> %{_tmppath}/files.minion
 
+# binary files
 find %{buildroot}%{minioninstprefix}/bin ! -type d | \
     sed -e "s|^%{buildroot}|%attr(755,minion,minion) |" | \
-    sort >> %{_tmppath}/files.container
-# Exclude subdirs of the repository directory
+    sort >> %{_tmppath}/files.minion
+
+# directories
 find %{buildroot}%{minioninstprefix} -type d | \
-    grep -v %{minionrepoprefix}/ | \
     sed -e "s,^%{buildroot},%dir ," | \
-    sort >> %{_tmppath}/files.container
+    sort >> %{_tmppath}/files.minion
 
 %clean
 rm -rf %{buildroot}
 
-%files
-%defattr(664 minion minion 775)
-
-%files container -f %{_tmppath}/files.container
+%files -f %{_tmppath}/files.minion
 %defattr(664 minion minion 775)
 %attr(755,minion,minion) %{_initrddir}/minion
 %attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
 
-%pre container
+
+### PREINSTALL ###
+
+%pre
 ROOT_INST="${RPM_INSTALL_PREFIX0}"
 [ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
 
@@ -219,7 +192,10 @@ getent passwd minion >/dev/null || \
 	-c "OpenNMS Minion" minion
 exit 0
 
-%post container
+
+### POSTINSTALL ###
+
+%post
 ROOT_INST="${RPM_INSTALL_PREFIX0}"
 [ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
 
@@ -245,30 +221,17 @@ fi
 # Set up ICMP for non-root users
 "${ROOT_INST}/bin/ensure-user-ping.sh" "minion" >/dev/null 2>&1 || echo "WARNING: Unable to enable ping by the 'minion' user. Try running ${ROOT_INST}/bin/ensure-user-ping.sh manually or run the minion as root."
 
-%files features-core
-%defattr(644 minion minion 755)
-%{minionrepoprefix}/core
-%config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
-
-%post features-core
-ROOT_INST="${RPM_INSTALL_PREFIX0}"
-[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
-
 # Generate a new UUID to replace the default UUID if it is still present
 UUID=$(/usr/bin/uuidgen -t)
 sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ROOT_INST}/etc/org.opennms.minion.controller.cfg"
+
 # Remove the directory used as the local Maven repo cache
 rm -rf "${ROOT_INST}/repositories/.local"
 
-%files features-default
-%defattr(644 minion minion 755)
-%{minionrepoprefix}/default
 
-%post features-default
-# Remove the directory used as the local Maven repo cache
-rm -rf %{minionrepoprefix}/.local
+### PRE-UN-INSTALLATION ###
 
-%preun -p /bin/bash container
+%preun -p /bin/bash
 ROOT_INST="${RPM_INSTALL_PREFIX0}"
 [ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
 
@@ -276,7 +239,9 @@ if [ "$1" = 0 ] && [ -x "%{_initrddir}/minion" ]; then
 	%{_initrddir}/minion stop || :
 fi
 
-%postun -p /bin/bash container
+### POST-UN-INSTALLATION ###
+
+%postun -p /bin/bash
 ROOT_INST="${RPM_INSTALL_PREFIX0}"
 [ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
 
