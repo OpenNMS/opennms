@@ -1022,7 +1022,7 @@ public class ThresholdingVisitorIT {
         initFactories("/threshd-configuration-bug3390.xml","/test-thresholds-bug3390.xml");
         
         // Validating threshd-configuration.xml
-        final List<Package> packages = m_threshdDao.getConfig().getPackages();
+        final List<Package> packages = m_threshdDao.getReadOnlyConfig().getPackages();
         assertEquals(1, packages.size());
         org.opennms.netmgt.config.threshd.Package pkg = packages.get(0);
         final List<Service> services = pkg.getServices();
@@ -1102,7 +1102,7 @@ public class ThresholdingVisitorIT {
         
         // Validate FavoriteFilterDao Calls
         HashSet<String> filters = new HashSet<>();
-        for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getConfig().getPackages()) {
+        for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getReadOnlyConfig().getPackages()) {
             filters.add(pkg.getFilter().getContent().orElse(null));
         }
 

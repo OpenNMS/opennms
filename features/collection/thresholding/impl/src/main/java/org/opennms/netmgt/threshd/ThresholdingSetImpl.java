@@ -425,7 +425,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     private final List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) {
         List<String> groupNameList = new LinkedList<>();
 
-        for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getConfig().getPackages()) {
+        for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getReadOnlyConfig().getPackages()) {
 
             // Make certain the the current service is in the package and enabled!
             if (!ReadableThreshdDao.serviceInPackageAndEnabled(serviceName, pkg)) {
@@ -464,11 +464,11 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         synchronized (m_scheduledOutages) {
             m_scheduledOutages.clear();
 
-            for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getConfig().getPackages()) {
+            for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getReadOnlyConfig().getPackages()) {
                 for (String outageCal : pkg.getOutageCalendars()) {
                     LOG.info("updateScheduledOutages[node={}]: checking scheduled outage '{}'", m_nodeId, outageCal);
                     try {
-                        Outage outage = m_pollOutagesDao.getConfig().getOutage(outageCal);
+                        Outage outage = m_pollOutagesDao.getReadOnlyConfig().getOutage(outageCal);
                         if (outage == null) {
                             LOG.info("updateScheduledOutages[node={}]: scheduled outage '{}' is not defined.", m_nodeId, outageCal);
                         } else {

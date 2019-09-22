@@ -82,11 +82,6 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
         return ipMap.interfaceInPackage(iface, pkg);
     }
 
-    @Override
-    public final Optional<Package> getPackage(String name) {
-        return getConfig().getPackage(name);
-    }
-
     private class IPMap {
         /**
          * A mapping of the configured URLs to a list of the specific IPs configured
@@ -111,7 +106,7 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
          * repeated file reads can be avoided
          */
         private synchronized void createUrlIpMap() {
-            for (Package pkg : getConfig().getPackages()) {
+            for (Package pkg : getReadOnlyConfig().getPackages()) {
                 for (String urlname : pkg.getIncludeUrls()) {
                     java.util.List<String> iplist = IpListFromUrl.fetch(urlname);
                     if (iplist.size() > 0) {
@@ -127,7 +122,7 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
          * rules from the database.
          */
         private synchronized void createPackageIpListMap() {
-            for (final org.opennms.netmgt.config.threshd.Package pkg : getConfig().getPackages()) {
+            for (final org.opennms.netmgt.config.threshd.Package pkg : getReadOnlyConfig().getPackages()) {
                 //
                 // Get a list of ipaddress per package agaist the filter rules from
                 // database and populate the package, IP list map.

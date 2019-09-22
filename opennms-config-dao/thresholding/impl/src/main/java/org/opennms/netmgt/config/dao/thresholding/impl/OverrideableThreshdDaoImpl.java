@@ -68,7 +68,12 @@ public class OverrideableThreshdDaoImpl extends AbstractThreshdDao implements Ov
     }
 
     @Override
-    public synchronized ThreshdConfiguration getConfig() {
+    public void onConfigChanged() {
+        // no-op
+    }
+
+    @Override
+    public synchronized ThreshdConfiguration getReadOnlyConfig() {
         return threshdConfiguration;
     }
 

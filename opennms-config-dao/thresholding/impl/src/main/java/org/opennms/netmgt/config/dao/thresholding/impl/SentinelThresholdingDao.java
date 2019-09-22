@@ -44,13 +44,12 @@ public class SentinelThresholdingDao extends AbstractThresholdingDao {
     }
 
     @Override
-    public ThresholdingConfig getConfig() {
+    public ThresholdingConfig getReadOnlyConfig() {
         return thresholdingReloadableConfigContainer.getConfig();
     }
 
     @Override
     public void reload() {
         thresholdingReloadableConfigContainer.reload();
-        super.reload();
     }
 }

@@ -218,7 +218,7 @@
 	if (nameParam != null) {
 		//first time in - name is passed as a param.  Find the outage, copy it, and shove it in the session
 		//Also keep a copy of the name, for later saving (replacing the original with the edited copy)
-		Outage tempOutage = pollOutagesDao.getConfig().getOutage(nameParam);
+		Outage tempOutage = pollOutagesDao.getWriteableConfig().getOutage(nameParam);
 		CharArrayWriter writer = new CharArrayWriter();
 		tempOutage.marshal(writer);
 		theOutage = (Outage) Outage.unmarshal(new CharArrayReader(writer.toCharArray()));
@@ -226,7 +226,7 @@
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
 		nameParam = WebSecurityUtils.sanitizeString(request.getParameter("newName"));
-		Outage tempOutage = pollOutagesDao.getConfig().getOutage(nameParam);
+		Outage tempOutage = pollOutagesDao.getWriteableConfig().getOutage(nameParam);
 		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
 			CharArrayWriter writer = new CharArrayWriter();
 			tempOutage.marshal(writer);
@@ -291,7 +291,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	
 	// ******* Threshd outages config *********
 	Map<org.opennms.netmgt.config.threshd.Package, List<String>> thresholdOutages = new HashMap<org.opennms.netmgt.config.threshd.Package, List<String>>();
-	for (org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getConfig().getPackages()) {
+	for (org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getWriteableConfig().getPackages()) {
 		thresholdOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("threshold-" + thisPackage.getName());
@@ -387,10 +387,10 @@ Could not find an outage to edit because no outage name parameter was specified 
 				String origname = (String) request.getSession().getAttribute("opennms.editoutage.origname");
 				if (origname == null) {
 					//A new outage - just plonk it in place
-					pollOutagesDao.getConfig().addOutage(theOutage);
+					pollOutagesDao.getWriteableConfig().addOutage(theOutage);
 				} else {
 					//An edited outage - replace the old one
-					pollOutagesDao.getConfig().replaceOutage(pollOutagesDao.getConfig().getOutage(origname), theOutage);
+					pollOutagesDao.getWriteableConfig().replaceOutage(pollOutagesDao.getWriteableConfig().getOutage(origname), theOutage);
 				}
 				//Push the enabledOutages into the actual configuration of the various packages
 				//Don't do until after we've successfully put the outage into the polloutages configuration (for coherency)

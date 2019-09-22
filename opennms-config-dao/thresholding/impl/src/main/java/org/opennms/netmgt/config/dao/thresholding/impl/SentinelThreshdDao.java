@@ -44,7 +44,7 @@ public class SentinelThreshdDao extends AbstractThreshdDao {
     }
 
     @Override
-    public ThreshdConfiguration getConfig() {
+    public ThreshdConfiguration getReadOnlyConfig() {
         return threshdReloadableConfigContainer.getConfig();
     }
 
