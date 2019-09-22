@@ -37,4 +37,8 @@ public interface OverrideableDao<T> extends WriteableDao<T> {
     void overrideConfig(InputStream config);
 
     void overrideConfig(T config);
+    
+    default T getWriteableConfig() {
+        return getReadOnlyConfig();
+    }
 }

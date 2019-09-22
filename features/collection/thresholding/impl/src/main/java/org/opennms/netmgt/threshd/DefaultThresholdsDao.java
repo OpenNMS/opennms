@@ -76,7 +76,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         boolean merge = group != null;
         ThresholdGroup newGroup = new ThresholdGroup(name);
 
-        File rrdRepository = new File(m_thresholdingDao.getRrdRepository(name));
+        File rrdRepository = new File(m_thresholdingDao.getReadOnlyConfig().getGroup(name).getRrdRepository());
         newGroup.setRrdRepository(rrdRepository);
 
         ThresholdResourceType nodeType = getThresholdResourceType(name, "node", merge ? group.getNodeResourceType() : null, thresholdingSession);
@@ -85,7 +85,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         ThresholdResourceType ifType = getThresholdResourceType(name, "if", merge ? group.getIfResourceType() : null, thresholdingSession);
         newGroup.setIfResourceType(ifType);
 
-        for (Basethresholddef thresh : m_thresholdingDao.getThresholds(name)) {
+        for (Basethresholddef thresh : m_thresholdingDao.getReadOnlyConfig().getGroup(name).getThresholdsAndExpressions()) {
             final String id = thresh.getDsType();
             if (!(id.equals("if") || id.equals("node") || newGroup.getGenericResourceTypeMap().containsKey(id))) {
                 ThresholdResourceType genericType = getThresholdResourceType(name, id, merge ? group.getGenericResourceTypeMap().get(id) : null, thresholdingSession);
@@ -116,7 +116,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
 
     private void fillThresholdStateMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap, ThresholdingSession thresholdingSession) {
         boolean merge = !thresholdMap.isEmpty();
-        for (Basethresholddef thresh : m_thresholdingDao.getThresholds(groupName)) {
+        for (Basethresholddef thresh : m_thresholdingDao.getReadOnlyConfig().getGroup(groupName).getThresholdsAndExpressions()) {
             // See if map entry already exists for this datasource; if not, create a new one.
             if (thresh.getDsType().equals(typeName)) {
                 try {
@@ -162,7 +162,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                 for (final Iterator<ThresholdEntity> thresholdIterator = value.iterator(); thresholdIterator.hasNext();) {
                     final ThresholdEntity entity = thresholdIterator.next();
                     boolean found = false;
-                    for (final Basethresholddef thresh : m_thresholdingDao.getThresholds(groupName)) {
+                    for (final Basethresholddef thresh : m_thresholdingDao.getReadOnlyConfig().getGroup(groupName).getThresholdsAndExpressions()) {
                         BaseThresholdDefConfigWrapper newConfig = null;
                         try {
                             newConfig = BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);

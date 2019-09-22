@@ -48,7 +48,6 @@ public class OverrideableThresholdingDaoImpl extends AbstractThresholdingDao imp
     @Override
     public synchronized void overrideConfig(ThresholdingConfig config) {
         thresholdingConfig = Objects.requireNonNull(config);
-        initGroupMap();
     }
 
     @Override
@@ -68,7 +67,12 @@ public class OverrideableThresholdingDaoImpl extends AbstractThresholdingDao imp
     }
 
     @Override
-    public synchronized ThresholdingConfig getConfig() {
+    public void onConfigChanged() {
+        // no-op
+    }
+
+    @Override
+    public synchronized ThresholdingConfig getReadOnlyConfig() {
         return thresholdingConfig;
     }
 
@@ -77,6 +81,5 @@ public class OverrideableThresholdingDaoImpl extends AbstractThresholdingDao imp
         if (thresholdingConfig == null) {
             thresholdingConfig = new ThresholdingConfig();
         }
-        super.reload();
     }
 }

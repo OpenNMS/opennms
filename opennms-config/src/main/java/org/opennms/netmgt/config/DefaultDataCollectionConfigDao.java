@@ -724,16 +724,8 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     private void initExtensions() {
         m_extContainer = new ConfigReloadContainer.Builder<>(DataCollectionGroups.class)
-                .withMerger((source, target) -> {
-                    if (target == null) {
-                        target = new DataCollectionGroups();
-                    }
-                    if (source == null) {
-                        source = new DataCollectionGroups();
-                    }
-                    target.getDataCollectionGroupByName().putAll(source.getDataCollectionGroupByName());
-                    return target;
-                })
+                .withFolder((accumulator, next) -> accumulator.getDataCollectionGroupByName()
+                        .putAll(next.getDataCollectionGroupByName()))
                 .build();
     }
 }

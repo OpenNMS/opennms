@@ -57,14 +57,14 @@ public abstract class AbstractPollOutagesDao implements ReadablePollOutagesDao {
 
     @Override
     public boolean isNodeIdInOutage(long lnodeid, String outName) {
-        final Outage out = getConfig().getOutage(outName);
+        final Outage out = getReadOnlyConfig().getOutage(outName);
         if (out == null) return false;
         return isNodeIdInOutage(lnodeid, out);
     }
 
     @Override
     public boolean isInterfaceInOutage(String linterface, String outName) {
-        final Outage out = getConfig().getOutage(outName);
+        final Outage out = getReadOnlyConfig().getOutage(outName);
         if (out == null) return false;
         return isInterfaceInOutage(linterface, out);
     }
@@ -76,7 +76,7 @@ public abstract class AbstractPollOutagesDao implements ReadablePollOutagesDao {
 
     @Override
     public boolean isTimeInOutage(long time, String outName) {
-        final Outage out = getConfig().getOutage(outName);
+        final Outage out = getReadOnlyConfig().getOutage(outName);
         if (out == null) return false;
 
         final Calendar cal = Calendar.getInstance();
@@ -86,28 +86,28 @@ public abstract class AbstractPollOutagesDao implements ReadablePollOutagesDao {
 
     @Override
     public String getOutageType(String name) {
-        final Outage out = getConfig().getOutage(name);
+        final Outage out = getReadOnlyConfig().getOutage(name);
         if (out == null) return null;
         return out.getType();
     }
 
     @Override
     public List<Time> getOutageTimes(String name) {
-        final Outage out = getConfig().getOutage(name);
+        final Outage out = getReadOnlyConfig().getOutage(name);
         if (out == null) return null;
         return out.getTimes();
     }
 
     @Override
     public List<Interface> getInterfaces(String name) {
-        final Outage out = getConfig().getOutage(name);
+        final Outage out = getReadOnlyConfig().getOutage(name);
         if (out == null) return null;
         return out.getInterfaces();
     }
 
     @Override
     public boolean isTimeInOutage(Calendar cal, String outName) {
-        final Outage out = getConfig().getOutage(outName);
+        final Outage out = getReadOnlyConfig().getOutage(outName);
         if (out == null) return false;
 
         return isTimeInOutage(cal, out);
@@ -115,14 +115,14 @@ public abstract class AbstractPollOutagesDao implements ReadablePollOutagesDao {
 
     @Override
     public List<Node> getNodeIds(String name) {
-        final Outage out = getConfig().getOutage(name);
+        final Outage out = getReadOnlyConfig().getOutage(name);
         if (out == null) return null;
         return out.getNodes();
     }
 
     @Override
     public Calendar getEndOfOutage(String outName) {
-        final Outage out = getConfig().getOutage(outName);
+        final Outage out = getReadOnlyConfig().getOutage(outName);
         if (out == null) return null;
         return getEndOfOutage(out);
     }
