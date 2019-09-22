@@ -122,6 +122,9 @@ public class OnmsEventParameter implements Serializable {
     @XmlAttribute(name="type")
     private String type;
 
+    @XmlAttribute(name="position")
+    private int position;
+
     /**
      * Instantiates a new OpenNMS event parameter.
      */
@@ -132,21 +135,31 @@ public class OnmsEventParameter implements Serializable {
      *
      * @param parm the Event parameter object
      */
-    public OnmsEventParameter(OnmsEvent event, Parm parm) {
+    public OnmsEventParameter(OnmsEvent event, Parm parm, int position) {
         this.event = event;
         name = parm.getParmName();
         value = EventDatabaseConstants.escape(parm.getValue().getContent() == null ? "" : parm.getValue().getContent(), EventDatabaseConstants.NAME_VAL_DELIM);
         type = parm.getValue().getType();
+        this.position = position;
     }
 
     public OnmsEventParameter(final OnmsEvent event,
                               final String name,
                               final String value,
                               final String type) {
+        this(event, name, value, type, 0);
+    }
+
+    public OnmsEventParameter(final OnmsEvent event,
+                              final String name,
+                              final String value,
+                              final String type,
+                              final int position) {
         this.event = event;
         this.name = name;
         this.value = EventDatabaseConstants.escape(value == null ? "" : value, EventDatabaseConstants.NAME_VAL_DELIM);
         this.type = type;
+        this.position = position;
     }
 
     public OnmsEvent getEvent() {
@@ -209,6 +222,14 @@ public class OnmsEventParameter implements Serializable {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
 }

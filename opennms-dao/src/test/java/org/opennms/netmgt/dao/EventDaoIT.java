@@ -124,16 +124,16 @@ public class EventDaoIT implements InitializingBean {
 	    event.setAlarm(alarm);
         event.setIpAddr(iface.getIpAddress());
         event.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter(event, "label", "node", "string"),
-                new OnmsEventParameter(event, "ds", "(memAvailReal + memCached) / memTotalReal * 100.0", "string"),
-                new OnmsEventParameter(event, "description", "(memAvailReal + memCached) / memTotalReal * 100.0", "string"),
-                new OnmsEventParameter(event, "value", "4.7", "string"),
-                new OnmsEventParameter(event, "instance", "node", "string"),
-                new OnmsEventParameter(event, "instanceLabel", "node", "string"),
-                new OnmsEventParameter(event, "resourceId", "node[70].nodeSnmp[]", "string"),
-                new OnmsEventParameter(event, "threshold", "5.0", "string"),
-                new OnmsEventParameter(event, "trigger", "2", "string"),
-                new OnmsEventParameter(event, "rearm", "10.0", "string")));
+                new OnmsEventParameter(event, "label", "node", "string", 0),
+                new OnmsEventParameter(event, "ds", "(memAvailReal + memCached) / memTotalReal * 100.0", "string", 1),
+                new OnmsEventParameter(event, "description", "(memAvailReal + memCached) / memTotalReal * 100.0", "string", 2),
+                new OnmsEventParameter(event, "value", "4.7", "string", 3),
+                new OnmsEventParameter(event, "instance", "node", "string", 4),
+                new OnmsEventParameter(event, "instanceLabel", "node", "string", 5),
+                new OnmsEventParameter(event, "resourceId", "node[70].nodeSnmp[]", "string", 6),
+                new OnmsEventParameter(event, "threshold", "5.0", "string", 7),
+                new OnmsEventParameter(event, "trigger", "2", "string", 8),
+                new OnmsEventParameter(event, "rearm", "10.0", "string", 9)));
         m_eventDao.save(event);
        
         OnmsEvent newEvent = m_eventDao.load(event.getId());
