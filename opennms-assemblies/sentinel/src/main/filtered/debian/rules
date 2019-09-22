@@ -14,9 +14,6 @@ export ETCDIR=/etc/sentinel
 %:
 	dh $@
 
-# disable these
-override_dh_update_autotools_config override_dh_strip_nondeterminism:
-
 override_dh_auto_install:
 	# make all the target directories
 	mkdir -p \

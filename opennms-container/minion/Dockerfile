@@ -34,7 +34,7 @@ FROM minion-base
 ARG USER="minion"
 
 # A default which installs the minimum required Minion packages
-ARG MINION_PACKAGES="opennms-minion"
+ARG MINION_PACKAGES="opennms-minion opennms-minion-container opennms-minion-features-core opennms-minion-features-default"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES

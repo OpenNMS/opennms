@@ -7,10 +7,38 @@ Build-Depends: debhelper (>= 9), oracle-java8-installer | openjdk-8-jdk-headless
 
 Package: opennms-minion
 Architecture: all
-Depends: adduser, openssh-client, uuid-runtime, sudo
-Recommends: jicmp (>= 2.0.0), jicmp6 (>= 2.0.0), openjdk-11-jre-headless | openjdk-11-jre | oracle-java8-installer | openjdk-8-jre-headless | openjdk-8-jre | java8-runtime-headless | java8-runtime
-Conflicts: opennms-minion-container (<< 25.0.0), opennms-minion-features-core (<<25.0.0), opennms-minion-features-default (<<25.0.0)
+Depends: opennms-minion-features-default (=${binary:Version})
+Recommends: openjdk-11-jre-headless | openjdk-11-jre | oracle-java8-installer | openjdk-8-jre-headless | openjdk-8-jre | java8-runtime-headless | java8-runtime
 Description: distributed OpenNMS monitoring client
+ OpenNMS Minion is a container infrastructure for distributed, scalable network
+ management and monitoring.
+ .
+ http://www.opennms.org/wiki/Minion
+
+Package: opennms-minion-container
+Architecture: all
+Depends: adduser, openssh-client, uuid-runtime, sudo
+Recommends: jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Suggests: openjdk-11-jre-headless | openjdk-11-jre | oracle-java8-installer | openjdk-8-jre-headless | openjdk-8-jre | java8-runtime-headless | java8-runtime
+Description: distributed OpenNMS monitoring client (main container)
+ OpenNMS Minion is a container infrastructure for distributed, scalable network
+ management and monitoring.
+ .
+ http://www.opennms.org/wiki/Minion
+
+Package: opennms-minion-features-core
+Architecture: all
+Depends: opennms-minion-container (=${binary:Version})
+Description: distributed OpenNMS monitoring client (core features)
+ OpenNMS Minion is a container infrastructure for distributed, scalable network
+ management and monitoring.
+ .
+ http://www.opennms.org/wiki/Minion
+
+Package: opennms-minion-features-default
+Architecture: all
+Depends: opennms-minion-features-core (=${binary:Version})
+Description: distributed OpenNMS monitoring client (default features)
  OpenNMS Minion is a container infrastructure for distributed, scalable network
  management and monitoring.
  .
