@@ -128,6 +128,9 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     @XmlAttribute(name = "use-isis-discovery")
     private Boolean m_useIsisDiscovery;
 
+    @XmlAttribute(name = "disable-bridge-vlan-discovery")
+    private Boolean m_disableBridgeVlanDiscovery;
+
     public EnlinkdConfiguration() {
     }
 
@@ -227,6 +230,14 @@ public class EnlinkdConfiguration implements java.io.Serializable {
         m_useIsisDiscovery = useIsisDiscovery;
     }
 
+    public Boolean getDisableBridgeVlanDiscovery() {
+        return m_disableBridgeVlanDiscovery;
+    }
+
+    public void setDisableBridgeVlanDiscovery(Boolean disableBridgeVlanDiscovery) {
+        this.m_disableBridgeVlanDiscovery = disableBridgeVlanDiscovery;
+    }
+
     @Override
     public int hashCode() {
         int hash = Objects.hash(
@@ -241,7 +252,8 @@ public class EnlinkdConfiguration implements java.io.Serializable {
             m_useBridgeDiscovery, 
             m_useLldpDiscovery, 
             m_useOspfDiscovery, 
-            m_useIsisDiscovery);
+            m_useIsisDiscovery,
+            m_disableBridgeVlanDiscovery);
         return hash;
     }
 
@@ -264,7 +276,8 @@ public class EnlinkdConfiguration implements java.io.Serializable {
                 && Objects.equals(this.m_useBridgeDiscovery, that.m_useBridgeDiscovery)
                 && Objects.equals(this.m_useLldpDiscovery, that.m_useLldpDiscovery)
                 && Objects.equals(this.m_useOspfDiscovery, that.m_useOspfDiscovery)
-                && Objects.equals(this.m_useIsisDiscovery, that.m_useIsisDiscovery);
+                && Objects.equals(this.m_useIsisDiscovery, that.m_useIsisDiscovery)
+                && Objects.equals(this.m_disableBridgeVlanDiscovery, that.m_disableBridgeVlanDiscovery);
         }
         return false;
     }

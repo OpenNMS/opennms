@@ -89,19 +89,16 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>
     </dependency>
-    <!-- TODO MVR rework dependencies -->
     <dependency>
       <groupId>org.opennms.features.endpoints.grafana</groupId>
       <artifactId>org.opennms.features.endpoints.grafana.api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- TODO MVR rework dependencies -->
     <dependency>
       <groupId>org.opennms.features.endpoints.grafana</groupId>
       <artifactId>org.opennms.features.endpoints.grafana.client</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- TODO MVR rework dependencies -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
