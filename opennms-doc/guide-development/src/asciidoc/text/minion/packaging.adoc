@@ -1,0 +1,23 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+=== Packaging
+
+This sections describes packages for _Minion_ features and helps developers add new features to these packages.
+
+We currently provide two different feature packages for _Minion_:
+
+openns-minion-features-core::
+Core utilities and services required for connectivity with the _OpenNMS_ controller
+
+openns-minion-features-default::
+Minion-specific service extensions
+
+Every package bundles all of the Karaf Feature Files and Maven Dependencies into a Maven Repository with additional meta-data used by the `KarafExtender`.
+
+==== Adding a new feature to the default feature package
+
+. Add the feature definition to `container/features/src/main/resources/features-minion.xml`.
+. Add the feature name in the `features` list configuration for the `features-maven-plugin` in `features/minion/repository/pom.xml`.
+. Optionally add the feature name to `features/minion/repository/src/main/resources/features.boot` if the feature should be automatically installed when the container is started.
