@@ -726,6 +726,8 @@ else
 	ADD_MODULES="--add-modules=${JAVA_MODULES[*]}"
 	IFS="$OIFS"
 	JAVA_CMD=("${JAVA_CMD[@]}" "$ADD_MODULES")
+	# see NMS-12261 -- use backwards-compatible locale provider by default
+	JAVA_CMD+=("-Djava.locale.providers=COMPAT,CLDR")
 fi
 
 if [ -n "$USE_INCGC" ] && [ "$USE_INCGC" = true ] ; then
