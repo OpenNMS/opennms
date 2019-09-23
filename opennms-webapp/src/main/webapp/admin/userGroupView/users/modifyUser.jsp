@@ -368,13 +368,6 @@
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="tuiPin" class="col-sm-2 control-label">Telephone PIN:</label>
-          <div class="col-sm-10">
-            <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
-          </div>
-        </div>
-
         <h3>Notification Information</h3>
 
 	<div class="form-group">
@@ -453,6 +446,14 @@
             <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
           </div>
         </div>
+
+    <div class="form-group">
+        <label for="tuiPin" class="col-sm-2 control-label">Telephone PIN:</label>
+        <div class="col-sm-10">
+            <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
+        </div>
+    </div>
+
     <h3>Date/Time Preferences</h3>
     <div class="form-group">
           <label for="timeZoneId" class="col-sm-2 control-label">Time Zone:</label>
