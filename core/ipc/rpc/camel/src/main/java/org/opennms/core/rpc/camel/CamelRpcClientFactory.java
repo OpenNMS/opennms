@@ -110,7 +110,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
 
     private Tracer tracer;
 
-    private MetricRegistry metrics = new MetricRegistry();
+    private MetricRegistry metrics;
 
     private JmxReporter metricsReporter = null;
 
@@ -137,9 +137,9 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                 //Add custom tags to tracing info.
                 request.getTracingInfo().forEach(tracingInfoCarrier::put);
                 // Build or retrieve rpc metrics.
-                final Histogram rpcDuration = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_DURATION));
-                final Histogram responseSize = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_RESPONSE_SIZE));
-                final Meter failedMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_FAILED));
+                final Histogram rpcDuration = getMetrics().histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_DURATION));
+                final Histogram responseSize = getMetrics().histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_RESPONSE_SIZE));
+                final Meter failedMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_FAILED));
                 long requestCreationTime = System.currentTimeMillis();
                 // Wrap the request in a CamelRpcRequest and forward it to the Camel route
                 final CompletableFuture<T> future = new CompletableFuture<>();
@@ -222,7 +222,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                     // Ensure that future log statements on this thread are routed properly
                     Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                 }
-                final Meter requestSentMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
                 requestSentMeter.mark();
                 return future;
             }
@@ -237,6 +237,14 @@ public class CamelRpcClientFactory implements RpcClientFactory {
         this.tracerRegistry = tracerRegistry;
     }
 
+    public MetricRegistry getMetrics() {
+        return metrics != null ? metrics : new MetricRegistry();
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
+    }
+
     public void setLocation(String location) {
         this.location = location;
     }
@@ -248,7 +256,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
         tracerRegistry.init(SystemInfoUtils.getInstanceId());
         tracer = tracerRegistry.getTracer();
         // Initialize metrics reporter.
-        metricsReporter = JmxReporter.forRegistry(metrics).
+        metricsReporter = JmxReporter.forRegistry(getMetrics()).
                 inDomain(JMX_DOMAIN_RPC).build();
         metricsReporter.start();
     }

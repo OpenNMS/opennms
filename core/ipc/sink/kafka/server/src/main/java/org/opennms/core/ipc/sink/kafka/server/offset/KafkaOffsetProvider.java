@@ -112,7 +112,7 @@ public class KafkaOffsetProvider {
 
     private Map<String, Long> consumerLagMap = new ConcurrentHashMap<>();
 
-    private MetricRegistry  kafkaOffsetMetrics = new MetricRegistry();
+    private MetricRegistry metrics;
 
     private JmxReporter reporter = null;
 
@@ -175,7 +175,7 @@ public class KafkaOffsetProvider {
                                     if (map == null) {
                                         map = new ConcurrentHashMap<>();
                                         consumerOffsetMap.put(topic, map);
-                                        kafkaOffsetMetrics.register(MetricRegistry.name(topic, "Lag"), new Gauge<Long>() {
+                                        getMetrics().register(MetricRegistry.name(topic, "Lag"), new Gauge<Long>() {
                                             @Override
                                             public Long getValue() {
                                                 return consumerLagMap.get(topic);
@@ -222,6 +222,14 @@ public class KafkaOffsetProvider {
 
     public KafkaOffsetProvider(KafkaConfigProvider configProvider) {
         this.configProvider = Objects.requireNonNull(configProvider);
+    }
+
+    public MetricRegistry getMetrics() {
+        return metrics != null ? metrics : new MetricRegistry();
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
     }
 
     private long readOffsetMessageValue(ByteBuffer buffer) {
@@ -311,7 +319,7 @@ public class KafkaOffsetProvider {
         kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.putAll(configProvider.getProperties());
         consumerRunner = Utils.runWithGivenClassLoader(() -> new KafkaOffsetConsumerRunner(), KafkaConsumer.class.getClassLoader());
-        reporter = JmxReporter.forRegistry(kafkaOffsetMetrics).inDomain("org.opennms.core.ipc.sink.kafka").build();
+        reporter = JmxReporter.forRegistry(getMetrics()).inDomain("org.opennms.core.ipc.sink.kafka").build();
 
         reporter.start();
         executor.execute(consumerRunner);

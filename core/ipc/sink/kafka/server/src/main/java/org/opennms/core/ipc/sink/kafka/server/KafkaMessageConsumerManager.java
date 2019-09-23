@@ -105,6 +105,9 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     // Cache that stores chunks in large message.
     private Cache<String, ByteString> largeMessageCache;
 
+    private MetricRegistry metricRegistry;
+    private JmxReporter jmxReporter;
+
     @Autowired
     private TracerRegistry tracerRegistry;
 
@@ -116,10 +119,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
     }
 
-    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider, Identity identity, TracerRegistry tracerRegistry) {
+    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider, Identity identity,
+                                       TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this.configProvider = Objects.requireNonNull(configProvider);
         this.identity = identity;
         this.tracerRegistry = tracerRegistry;
+        this.metricRegistry = metricRegistry;
     }
     public KafkaMessageConsumerManager(KafkaConfigProvider configProvider) {
         this.configProvider = Objects.requireNonNull(configProvider);
@@ -132,8 +137,6 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         private final KafkaConsumer<String, byte[]> consumer;
         private final String topic;
 
-        private final MetricRegistry metricRegistry = new MetricRegistry();
-        private JmxReporter jmxReporter = null;
         private Histogram messageSize;
         private Timer dispatchTime;
 
@@ -144,11 +147,8 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             topic = topicNameFactory.getName();
 
             consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaConsumer.class.getClassLoader());
-            jmxReporter = JmxReporter.forRegistry(metricRegistry).
-                    inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
-            jmxReporter.start();
-            messageSize = metricRegistry.histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
-            dispatchTime = metricRegistry.timer(MetricRegistry.name(module.getId(), METRIC_DISPATCH_TIME));
+            messageSize = getMetricRegistry().histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
+            dispatchTime = getMetricRegistry().timer(MetricRegistry.name(module.getId(), METRIC_DISPATCH_TIME));
 
         }
 
@@ -242,7 +242,6 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         }
     }
 
-
     @Override
     protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (!consumerRunnersByModule.containsKey(module)) {
@@ -286,6 +285,9 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         if (identity != null && tracerRegistry != null) {
             tracerRegistry.init(identity.getId());
         }
+        jmxReporter = JmxReporter.forRegistry(metricRegistry).
+                inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
+        jmxReporter.start();
     }
 
     public Identity getIdentity() {
@@ -309,5 +311,13 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             return tracerRegistry.getTracer();
         }
         return GlobalTracer.get();
+    }
+
+    public MetricRegistry getMetricRegistry() {
+        return metricRegistry != null ? metricRegistry : new MetricRegistry();
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
     }
 }

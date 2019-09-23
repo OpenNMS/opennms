@@ -26,6 +26,14 @@
         <argument value="org.opennms.core.ipc.sink.kafka.consumer"/>
         <argument ref="configurationAdmin" />
     </bean>
+    <bean id="kafkaSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="kafkaSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+        <service-properties>
+            <entry key="name" value="Kafka Sink"/>
+            <entry key="name" value="Metrics related to Sink messages between OpenNMS and Minion"/>
+        </service-properties>
+    </service>
+
 
     <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
 
@@ -36,12 +44,14 @@
         <argument ref="kafkaConfigProvider" />
         <argument ref="identity"/>
         <argument ref="tracerRegistry"/>
+        <argument ref="metricRegistry"/>
     </bean>
     <service ref="kafkaMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
 
     <!-- Offset Provider (Consumer) -->
     <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider" init-method="start" destroy-method="stop" >
         <argument ref="kafkaConfigProvider"/>
+        <property name="metrics" value="kafkaSinkMetricRegistry"/>
     </bean>
 
     <!-- Kafka HealthCheck for Sink (Sentinel) -->
