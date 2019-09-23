@@ -66,8 +66,10 @@ public class KafkaRpcTopics implements Action {
     public Object execute() throws Exception {
 
         Properties kafkaConfig = Utils.getKafkaConfig(identity, configAdmin, KafkaRpcConstants.RPC_TOPIC_PREFIX);
-        if (kafkaConfig.isEmpty()) {
-            System.out.printf("Kafka server not configured for RPC \n");
+        // Pre-check for bootstrap.servers.
+        if (kafkaConfig.isEmpty() || (kafkaConfig.getProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG) == null)) {
+            System.out.println("Kafka not configured for RPC");
+            return null;
         }
         if (timeout <= 0) {
             timeout = DEFAULT_TIMEOUT;
@@ -87,18 +89,14 @@ public class KafkaRpcTopics implements Action {
                         .filter(topic -> topic.contains(RPC_REQUEST_TOPIC_NAME)).collect(Collectors.toSet());
                 if (!rpcRequestTopics.isEmpty()) {
                     System.out.println("\nRPC Request Topics:");
-                    for (String topic : rpcRequestTopics) {
-                        System.out.println(topic);
-                    }
+                    rpcRequestTopics.forEach(System.out::println);
                 }
                 Set<String> rpcResponseTopics = topics.stream()
                         .filter(topic -> topic.contains(opennmsInstance))
                         .filter(topic -> topic.contains(RPC_RESPONSE_TOPIC_NAME)).collect(Collectors.toSet());
                 if (!rpcRequestTopics.isEmpty()) {
                     System.out.println("\nRPC Response Topics:");
-                    for (String topic : rpcResponseTopics) {
-                        System.out.println(topic);
-                    }
+                    rpcResponseTopics.forEach(System.out::println);
                 }
                 return null;
             }

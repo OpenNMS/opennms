@@ -64,8 +64,10 @@ public class KafkaSinkTopics implements Action {
     @Override
     public Object execute() throws Exception {
         Properties kafkaConfig = Utils.getKafkaConfig(identity, configAdmin, KafkaSinkConstants.KAFKA_TOPIC_PREFIX);
-        if (kafkaConfig.isEmpty()) {
-            System.out.printf("Kafka server not configured for Sink \n");
+        // Pre-check for bootstrap.servers.
+        if (kafkaConfig.isEmpty() || (kafkaConfig.getProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG) == null)) {
+            System.out.println("Kafka not configured for Sink");
+            return null;
         }
         if (timeout <= 0) {
             timeout = DEFAULT_TIMEOUT;
@@ -79,11 +81,9 @@ public class KafkaSinkTopics implements Action {
                 Set<String> sinkTopics = topics.stream()
                         .filter(topic -> topic.contains(opennmsInstance))
                         .filter(topic -> topic.contains(KAFKA_TOPIC_PREFIX)).collect(Collectors.toSet());
-                System.out.println("\nSink topics:");
                 if (!sinkTopics.isEmpty()) {
-                    for (String topic : sinkTopics) {
-                        System.out.println(topic);
-                    }
+                    System.out.println("\nSink topics:");
+                    sinkTopics.forEach(System.out::println);
                     return null;
                 }
             }
