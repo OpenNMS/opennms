@@ -49,9 +49,17 @@
     <service ref="kafkaMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
 
     <!-- Offset Provider (Consumer) -->
+    <bean id="kafkaLagMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="kafkaLagMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+        <service-properties>
+            <entry key="name" value="Kafka Lag"/>
+            <entry key="name" value="Metrics related to Kafka Lag"/>
+        </service-properties>
+    </service>
+
     <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider" init-method="start" destroy-method="stop" >
         <argument ref="kafkaConfigProvider"/>
-        <property name="metrics" value="kafkaSinkMetricRegistry"/>
+        <property name="metrics" value="kafkaLagMetricRegistry"/>
     </bean>
 
     <!-- Kafka HealthCheck for Sink (Sentinel) -->

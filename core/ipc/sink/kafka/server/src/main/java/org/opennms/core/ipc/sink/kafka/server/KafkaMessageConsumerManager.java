@@ -285,7 +285,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         if (identity != null && tracerRegistry != null) {
             tracerRegistry.init(identity.getId());
         }
-        jmxReporter = JmxReporter.forRegistry(metricRegistry).
+        jmxReporter = JmxReporter.forRegistry(getMetricRegistry()).
                 inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
         jmxReporter.start();
     }
