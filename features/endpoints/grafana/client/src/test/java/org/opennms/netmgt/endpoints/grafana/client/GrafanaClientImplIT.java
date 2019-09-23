@@ -87,7 +87,7 @@ public class GrafanaClientImplIT {
         assertThat(panel.getDatasource(), equalTo("minion-dev (Flow)"));
         assertThat(panel.getDescription(), equalTo("igb0"));
 
-        stubFor(get(urlEqualTo("/render/d-solo/eWsVEL6zz/flows?panelId=3&from=0&to=1&width=128&height=128&theme=light"))
+        stubFor(get(urlEqualTo("/render/d-solo/eWsVEL6zz/flows?panelId=3&from=0&to=1&width=128&height=128&timeout=5&theme=light"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "image/png")
                         .withBodyFile("panel.png")));

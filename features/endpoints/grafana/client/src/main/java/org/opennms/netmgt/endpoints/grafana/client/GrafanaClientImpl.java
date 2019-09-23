@@ -142,6 +142,8 @@ public class GrafanaClientImpl implements GrafanaClient {
                 .addQueryParameter("to", Long.toString(to))
                 .addQueryParameter("width", Integer.toString(width))
                 .addQueryParameter("height", Integer.toString(height))
+                // Set a render timeout equal to the client's read timeout
+                .addQueryParameter("timeout", Integer.toString(config.getReadTimeoutSeconds()))
                 .addQueryParameter("theme", "light"); // Use the light theme
         if (!Strings.isNullOrEmpty(utcOffset)) {
             builder.addQueryParameter("tz", utcOffset);
