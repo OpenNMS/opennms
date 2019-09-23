@@ -35,34 +35,45 @@ import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 public class HealthCheckRestIT {
 
-//    @ClassRule
-//    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     @Before
     public void before() {
-//        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
-//        RestAssured.port = stack.opennms().getWebPort();
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = 8980;
+        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+        RestAssured.port = stack.opennms().getWebPort();
         RestAssured.basePath = "/opennms/rest/health";
     }
 
     @Test
-    public void verifyStatusWithoutAuthentication() {
-        final String response = RestAssured.get("overview")
+    public void verifyProbeHealthWithoutAuthenticationOK() {
+        final String response = RestAssured.get("probe")
                 .then().assertThat()
                     .statusCode(200)
                     .contentType(ContentType.TEXT)
                     .header("Health", "Everything is awesome")
                 .extract().response().asString();
         assertThat(response, Matchers.is("Everything is awesome"));
+    }
+
+    @Test
+    public void verifyProbeHealthWithoutAuthenticationError() {
+        final String response = RestAssured.get("probe?t=0")
+                .then().assertThat()
+                .statusCode(500)
+                .contentType(ContentType.TEXT)
+                .header("Health", "Oh no, something is wrong")
+                .extract().response().asString();
+        assertThat(response, Matchers.is("Oh no, something is wrong"));
     }
 
     @Test
