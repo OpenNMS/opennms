@@ -97,7 +97,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         // Reduce the default snapshot interval so that the tests can finish in a reasonable time
         AlarmLifecycleListenerManager.ALARM_SNAPSHOT_INTERVAL_MS_SYS_PROP+"=5000"
 })
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class,reuseDatabase=false)
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<MockDatabase>, AlarmLifecycleListener {
 
     @Autowired
@@ -160,6 +160,10 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
     @After
     public void tearDown() {
+        // Unregister!
+        m_alarmLifecycleListenerManager.onListenerUnregistered(this, Collections.emptyMap());
+
+        // Destroy!
         m_alarmd.destroy();
     }
 
