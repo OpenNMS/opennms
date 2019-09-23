@@ -59,10 +59,16 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     public Response verifyHealth(int timeoutInMs) {
         final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs);
         final Health health = healthWrapper.health;
-        return Response.ok()
-               .header("Health", SUCCESS_MESSAGE)
-               .entity(health.isSuccess() ? SUCCESS_MESSAGE : ERROR_MESSAGE)
-               .build();
+        if (health.isSuccess()) {
+            return Response.ok()
+                    .header("Health", SUCCESS_MESSAGE)
+                    .entity(SUCCESS_MESSAGE)
+                    .build();
+        }
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .header("Health", ERROR_MESSAGE)
+                .entity(ERROR_MESSAGE)
+                .build();
     }
 
     @Override
