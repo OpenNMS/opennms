@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -294,11 +295,11 @@ public class Event implements Message,Serializable {
 	public Event() {
 		super();
 
-		_autoactionList = new ArrayList<>();
-		_operactionList = new ArrayList<>();
-		_loggroupList = new ArrayList<>();
-		_forwardList = new ArrayList<>();
-		_scriptList = new ArrayList<>();
+		_autoactionList = new CopyOnWriteArrayList<>();
+		_operactionList = new CopyOnWriteArrayList<>();
+		_loggroupList = new CopyOnWriteArrayList<>();
+		_forwardList = new CopyOnWriteArrayList<>();
+		_scriptList = new CopyOnWriteArrayList<>();
 	}
 
 	// -----------/
@@ -388,7 +389,7 @@ public class Event implements Message,Serializable {
 
 	public void addParm(final Parm parm) {
 	    if (_parms == null) {
-	        _parms = new ArrayList<>();
+	        _parms = new CopyOnWriteArrayList<>();
 	    }
 	    _parms.add(parm);
 	}
@@ -1884,8 +1885,7 @@ public class Event implements Message,Serializable {
 		if (_dbid   != null) builder.append("dbid", _dbid);
 		if (_source != null) builder.append("source", _source);
 		if (_nodeid != null) builder.append("nodeid", _nodeid);
-		// Copy the _parms array instead of referencing it, to avoid Concurrent Modification Exceptions
-		if (_parms  != null) builder.append("parms",  new ArrayList<>(_parms));
+		if (_parms  != null) builder.append("parms",  _parms);
 		return builder.toString();
 	}
 
