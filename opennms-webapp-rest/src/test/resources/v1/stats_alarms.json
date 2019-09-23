@@ -24,7 +24,7 @@
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
                 "parameters": [
-                    {"name": "test", "value": "parm", "type":"string" }
+                    {"name": "test", "value": "parm", "type":"string", "position": 0}
                 ],
                 "serviceType": {
                     "id": 1, 
@@ -43,7 +43,7 @@
             "nodeLabel": "node1", 
             "ossPrimaryKey": null, 
             "parameters": [
-                {"name": "test", "value": "parm", "type":"string" }
+                {"name": "test", "value": "parm", "type":"string", "position": 0}
             ],
             "qosAlarmState": null, 
             "serviceType": {
@@ -79,7 +79,7 @@
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
                 "parameters": [
-                    {"name": "test", "value": "parm", "type":"string" }
+                    {"name": "test", "value": "parm", "type":"string", "position": 0}
                 ],
                 "serviceType": {
                     "id": 1, 
@@ -98,7 +98,7 @@
             "nodeLabel": "node1", 
             "ossPrimaryKey": null, 
             "parameters": [
-                {"name": "test", "value": "parm", "type":"string" }
+                {"name": "test", "value": "parm", "type":"string", "position": 0}
             ],
             "qosAlarmState": null, 
             "serviceType": {
@@ -136,7 +136,7 @@
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
                 "parameters": [
-                    {"name": "test", "value": "parm", "type":"string" }
+                    {"name": "test", "value": "parm", "type":"string", "position": 0}
                 ],
                 "serviceType": {
                     "id": 1, 
@@ -155,7 +155,7 @@
             "nodeLabel": "node1", 
             "ossPrimaryKey": null, 
             "parameters": [
-                {"name": "test", "value": "parm", "type":"string" }
+                {"name": "test", "value": "parm", "type":"string", "position": 0}
             ],
             "qosAlarmState": null, 
             "serviceType": {
@@ -191,7 +191,7 @@
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
                 "parameters": [
-                    {"name": "test", "value": "parm", "type":"string" }
+                    {"name": "test", "value": "parm", "type":"string", "position": 0}
                 ],
                 "serviceType": {
                     "id": 1, 
@@ -210,7 +210,7 @@
             "nodeLabel": "node1", 
             "ossPrimaryKey": null, 
             "parameters": [
-                {"name": "test", "value": "parm", "type":"string" }
+                {"name": "test", "value": "parm", "type":"string", "position": 0}
             ],
             "qosAlarmState": null, 
             "serviceType": {
