@@ -56,7 +56,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response verifyHealth(int timeoutInMs) {
+    public Response probeHealth(int timeoutInMs) {
         final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs);
         final Health health = healthWrapper.health;
         if (health.isSuccess()) {

@@ -40,9 +40,9 @@ import javax.ws.rs.core.MediaType;
 public interface HealthCheckRestService {
 
     @GET
-    @Path("overview")
+    @Path("probe")
     @Produces(MediaType.TEXT_PLAIN)
-    Response verifyHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
+    Response probeHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
