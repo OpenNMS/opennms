@@ -9,10 +9,10 @@
       <expression description="Trigger an alert if outgoing usage of an interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)" type="high" ds-type="if" value="90.0" rearm="75.0" trigger="3" ds-label="ifName" filterOperator="OR" expression="ifHCOutOctets * 8 / 1000000 / ifHighSpeed * 100">
          <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
       </expression>
-      <expression description="Trigger an alert if incoming usage of any interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)" type="high" ds-type="if" value="90.0" rearm="75.0" trigger="3" ds-label="ifName" filterOperator="OR" expression="ifInOctets * 8 / 1000000 / ifSpeed * 100">
+      <expression description="Trigger an alert if incoming usage of any interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)" type="high" ds-type="if" value="90.0" rearm="75.0" trigger="3" ds-label="ifName" filterOperator="OR" expression="ifInOctets * 8 / ifSpeed * 100">
          <resource-filter field="ifSpeed">^[1-9]+[0-9]*$</resource-filter>
       </expression>
-      <expression description="Trigger an alert if outgoing usage of an interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)" type="high" ds-type="if" value="90.0" rearm="75.0" trigger="3" ds-label="ifName" filterOperator="OR" expression="ifOutOctets * 8 / 1000000 / ifSpeed * 100">
+      <expression description="Trigger an alert if outgoing usage of an interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)" type="high" ds-type="if" value="90.0" rearm="75.0" trigger="3" ds-label="ifName" filterOperator="OR" expression="ifOutOctets * 8 / ifSpeed * 100">
          <resource-filter field="ifSpeed">^[1-9]+[0-9]*$</resource-filter>
       </expression>
    </group>
