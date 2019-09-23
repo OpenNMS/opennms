@@ -73,7 +73,7 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
     public static class ThresholdEvaluatorStateRelativeChange extends AbstractThresholdEvaluatorState<ThresholdEvaluatorStateRelativeChange.State> {
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
 
-        static class State implements Serializable {
+        static class State extends AbstractThresholdEvaluatorState.AbstractState {
             private static final long serialVersionUID = 1L;
             private double m_multiplier;
             private double m_lastSample = 0.0;
@@ -83,7 +83,8 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             public String toString() {
                 return "multiplier=" + m_multiplier +
                         "\nlastSample=" + m_lastSample +
-                        "\npreviousTriggeringSample=" + m_previousTriggeringSample;
+                        "\npreviousTriggeringSample=" + m_previousTriggeringSample +
+                        "\n" + super.toString();
             }
         }
 

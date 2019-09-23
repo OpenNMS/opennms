@@ -59,6 +59,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.test.Level;
 import org.opennms.core.test.LoggingEvent;
 import org.opennms.core.test.MockLogAppender;
@@ -145,6 +146,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml",
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -172,6 +174,9 @@ public class ThresholdingVisitorIT {
     
     @Autowired
     private IfLabel m_ifLabelDao;
+    
+    @Autowired
+    private EntityScopeProvider m_entityScopeProvider;
 
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
@@ -1687,7 +1692,7 @@ public class ThresholdingVisitorIT {
         ThresholdingEventProxyImpl eventProxy = new ThresholdingEventProxyImpl(eventMgr);
         ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(),
                 svcParams, m_resourceStorageDao, eventProxy, MockSession.getSession(), m_threshdDao, m_thresholdingDao,
-                m_pollOutagesDao, m_ifLabelDao);
+                m_pollOutagesDao, m_ifLabelDao, m_entityScopeProvider);
         ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, m_resourceStorageDao, eventProxy, null);
         assertNotNull(visitor);
         return visitor;
