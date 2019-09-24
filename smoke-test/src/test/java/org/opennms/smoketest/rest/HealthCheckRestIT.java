@@ -69,7 +69,8 @@ public class HealthCheckRestIT {
     public void verifyProbeHealthWithoutAuthenticationError() {
         final String response = RestAssured.get("probe?t=0")
                 .then().assertThat()
-                .statusCode(500)
+                .statusCode(599)
+                .statusLine("Unhealthy")
                 .contentType(ContentType.TEXT)
                 .header("Health", "Oh no, something is wrong")
                 .extract().response().asString();

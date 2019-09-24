@@ -65,7 +65,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                     .entity(SUCCESS_MESSAGE)
                     .build();
         }
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+        return Response.status(599, "Unhealthy")
                 .header("Health", ERROR_MESSAGE)
                 .entity(ERROR_MESSAGE)
                 .build();
