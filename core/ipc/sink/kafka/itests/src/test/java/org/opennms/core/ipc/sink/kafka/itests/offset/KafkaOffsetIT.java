@@ -89,8 +89,12 @@ public class KafkaOffsetIT {
     }
 
     @After
-    public void destroy() throws InterruptedException {
-        offsetProvider.stop();
+    public void destroy() { 
+        try {
+            offsetProvider.stop();
+        } catch (Throwable e) {
+            //Ignore
+        }
     }
 
     public static Callable<Boolean> matchGroupName(KafkaOffsetProvider offsetProvider) {

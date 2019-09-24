@@ -112,7 +112,7 @@ public class KafkaOffsetProvider {
 
     private Map<String, Long> consumerLagMap = new ConcurrentHashMap<>();
 
-    private MetricRegistry metrics;
+    private MetricRegistry metricRegistry;
 
     private JmxReporter reporter = null;
 
@@ -175,7 +175,7 @@ public class KafkaOffsetProvider {
                                     if (map == null) {
                                         map = new ConcurrentHashMap<>();
                                         consumerOffsetMap.put(topic, map);
-                                        getMetrics().register(MetricRegistry.name(topic, "Lag"), new Gauge<Long>() {
+                                        getMetricRegistry().register(MetricRegistry.name(topic, "Lag"), new Gauge<Long>() {
                                             @Override
                                             public Long getValue() {
                                                 return consumerLagMap.get(topic);
@@ -217,19 +217,20 @@ public class KafkaOffsetProvider {
     }
 
     public KafkaOffsetProvider() {
-        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
+        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX), null);
     }
 
-    public KafkaOffsetProvider(KafkaConfigProvider configProvider) {
+    public KafkaOffsetProvider(KafkaConfigProvider configProvider, MetricRegistry metricRegistry) {
         this.configProvider = Objects.requireNonNull(configProvider);
+        this.metricRegistry = metricRegistry;
     }
 
-    public MetricRegistry getMetrics() {
-        return metrics != null ? metrics : new MetricRegistry();
+    public MetricRegistry getMetricRegistry() {
+        return metricRegistry != null ? metricRegistry : new MetricRegistry();
     }
 
-    public void setMetrics(MetricRegistry metrics) {
-        this.metrics = metrics;
+    public void setMetricRegistry(MetricRegistry metrics) {
+        this.metricRegistry = metrics;
     }
 
     private long readOffsetMessageValue(ByteBuffer buffer) {
@@ -319,7 +320,7 @@ public class KafkaOffsetProvider {
         kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.putAll(configProvider.getProperties());
         consumerRunner = Utils.runWithGivenClassLoader(() -> new KafkaOffsetConsumerRunner(), KafkaConsumer.class.getClassLoader());
-        reporter = JmxReporter.forRegistry(getMetrics()).inDomain("org.opennms.core.ipc.sink.kafka").build();
+        reporter = JmxReporter.forRegistry(getMetricRegistry()).inDomain("org.opennms.core.ipc.sink.kafka").build();
 
         reporter.start();
         executor.execute(consumerRunner);

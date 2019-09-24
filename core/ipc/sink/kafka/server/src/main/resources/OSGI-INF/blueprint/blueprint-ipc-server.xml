@@ -30,7 +30,7 @@
     <service ref="kafkaSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
         <service-properties>
             <entry key="name" value="Kafka Sink"/>
-            <entry key="name" value="Metrics related to Sink messages between OpenNMS and Minion"/>
+            <entry key="description" value="Metrics related to Sink messages between OpenNMS and Minion"/>
         </service-properties>
     </service>
 
@@ -44,7 +44,7 @@
         <argument ref="kafkaConfigProvider" />
         <argument ref="identity"/>
         <argument ref="tracerRegistry"/>
-        <argument ref="metricRegistry"/>
+        <argument ref="kafkaSinkMetricRegistry"/>
     </bean>
     <service ref="kafkaMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
 
@@ -53,20 +53,21 @@
     <service ref="kafkaLagMetricRegistry" interface="com.codahale.metrics.MetricSet" >
         <service-properties>
             <entry key="name" value="Kafka Lag"/>
-            <entry key="name" value="Metrics related to Kafka Lag"/>
+            <entry key="description" value="Metrics related to Kafka Lag"/>
         </service-properties>
     </service>
 
-    <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider" init-method="start" destroy-method="stop" >
+    <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider"
+          init-method="start" destroy-method="stop">
         <argument ref="kafkaConfigProvider"/>
-        <property name="metrics" value="kafkaLagMetricRegistry"/>
+        <argument ref="kafkaLagMetricRegistry"/>
     </bean>
 
     <!-- Kafka HealthCheck for Sink (Sentinel) -->
     <service interface="org.opennms.core.health.api.HealthCheck">
         <bean class="org.opennms.core.ipc.common.kafka.KafkaHealthCheck" >
             <argument ref="kafkaConfigProvider"/>
-            <argument value="Sink" />
+            <argument value="Sink Consumer" />
         </bean>
     </service>
 
