@@ -26,19 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.dao.common.api;
+package org.opennms.netmgt.threshd;
 
-import java.io.InputStream;
+import java.util.function.Consumer;
 
-/**
- * This interface exists to satisfy test cases that need to explicitly provide a configuration directly to the DAO.
- */
-public interface OverrideableDao<T> extends WriteableDao<T> {
-    void overrideConfig(InputStream config);
+public interface ExpressionThresholdValue {
+    /**
+     * @param expressionConsumer a consumer for accepting the interpolated expression for caching purposes
+     * @return the expression value
+     */
+    double get(Consumer<String> expressionConsumer) throws ThresholdExpressionException;
 
-    void overrideConfig(T config);
-    
-    default T getWriteableConfig() {
-        return getReadOnlyConfig();
-    }
+    /**
+     * @param evaluatedExpression the already interpolated expression which will be used rather than interpolating the
+     *                            expression
+     * @return the expression value
+     */
+    double get(String evaluatedExpression) throws ThresholdExpressionException;
 }

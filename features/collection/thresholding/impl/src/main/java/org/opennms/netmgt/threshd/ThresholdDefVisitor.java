@@ -26,28 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.dao.common.impl;
+package org.opennms.netmgt.threshd;
 
-import java.io.IOException;
-import java.util.function.Consumer;
-
-import org.codehaus.jackson.map.ObjectMapper;
-import org.opennms.core.xml.JacksonUtils;
-import org.opennms.features.distributed.kvstore.api.JsonStore;
-
-public interface JaxbToJsonStore<T> {
-    ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
-
-    default Consumer<T> getJsonWriterCallbackFunction(JsonStore jsonStore, String key, String context) {
-        return config -> {
-            try {
-                // Synchronize to ensure mapping the pojo and writing it to the store is atomic
-                synchronized (this) {
-                    jsonStore.put(key, objectMapper.writeValueAsString(config), context);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        };
-    }
+public interface ThresholdDefVisitor {
+    void visit(ThresholdConfigWrapper thresholdConfigWrapper);
+    void visit(ExpressionConfigWrapper expressionConfigWrapper);
 }

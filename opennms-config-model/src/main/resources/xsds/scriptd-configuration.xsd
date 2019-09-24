@@ -29,7 +29,16 @@
         <element maxOccurs="unbounded" minOccurs="0" ref="this:reload-script"/>
 
         <element maxOccurs="unbounded" minOccurs="0" ref="this:event-script"/>
+
       </sequence>
+
+      <attribute name="transactional" type="boolean" default="true">
+        <annotation>
+          <documentation>Runs event scripts inside a Hibernate Transaction by default.
+           Disable if scripts doesn't need to run in a transaction.</documentation>
+        </annotation>
+      </attribute>
+
     </complexType>
   </element>
 
@@ -86,4 +95,7 @@
       <attribute name="language" type="string" use="required"/>
     </complexType>
   </element>
+
+
+
 </schema>

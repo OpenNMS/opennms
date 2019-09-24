@@ -28,11 +28,7 @@
 
 package org.opennms.netmgt.config.dao.thresholding.api;
 
-import java.util.Collection;
-
 import org.opennms.netmgt.config.dao.common.api.ReadableDao;
-import org.opennms.netmgt.config.threshd.Basethresholddef;
-import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
 /**
@@ -41,33 +37,4 @@ import org.opennms.netmgt.config.threshd.ThresholdingConfig;
  * thresholding configuration into memory.
  */
 public interface ReadableThresholdingDao extends ReadableDao<ThresholdingConfig> {
-    /**
-     * Retrieves the configured path to the RRD file repository for the
-     * specified thresholding group.
-     *
-     * @param groupName
-     *            Group name to lookup
-     * @return RRD repository path.
-     * @throws java.lang.IllegalArgumentException
-     *             if group name does not exist in the group map.
-     */
-    String getRrdRepository(String groupName);
-
-    Group getGroup(String groupName);
-
-    /**
-     * Retrieves a Collection object consisting of all the
-     * org.opennms.netmgt.config.Threshold objects which make up the specified
-     * thresholding group.
-     *
-     * @param groupName
-     *            Group name to lookup
-     * @return Collection consisting of all the Threshold objects for the
-     *         specified group..
-     * @throws java.lang.IllegalArgumentException
-     *             if group name does not exist in the group map.
-     */
-    Collection<Basethresholddef> getThresholds(String groupName);
-
-    Collection<String> getGroupNames();
 }

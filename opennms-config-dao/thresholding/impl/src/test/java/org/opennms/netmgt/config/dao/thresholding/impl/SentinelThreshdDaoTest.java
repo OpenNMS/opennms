@@ -58,7 +58,7 @@ public class SentinelThreshdDaoTest {
                 .thenReturn(Optional.of(configToJson(configToServe)));
 
         ReadableThreshdDao threshdDao = new SentinelThreshdDao(mockJsonStore);
-        assertThat(threshdDao.getConfig(), equalTo(configToServe));
+        assertThat(threshdDao.getReadOnlyConfig(), equalTo(configToServe));
 
         configToServe.setThreads(10);
         when(mockJsonStore.getLastUpdated(AbstractThreshdDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
@@ -66,7 +66,7 @@ public class SentinelThreshdDaoTest {
         when(mockJsonStore.get(AbstractThreshdDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(Optional.of(configToJson(configToServe)));
         threshdDao.reload();
-        assertThat(threshdDao.getConfig(), equalTo(configToServe));
+        assertThat(threshdDao.getReadOnlyConfig(), equalTo(configToServe));
     }
 
     private String configToJson(ThreshdConfiguration threshdConfiguration) throws IOException {

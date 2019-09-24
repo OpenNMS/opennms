@@ -37,13 +37,18 @@ public interface ReadableDao<T> {
     /**
      * Get the current configuration. Whether or not this configuration is in sync with the backing data source is up to
      * the implementation, see {@link #reload()}.
+     * 
+     * The value returned by this method may be the result of merging multiple objects together. As a result, mutations
+     * to this object may not be visible to other readers and are not permitted.
+     * 
+     * For cases where mutation and/or persistence of changes is required see {@link WriteableDao#getWriteableConfig()}.
      */
-    T getConfig();
+    T getReadOnlyConfig();
 
     /**
      * Instructs the DAO to reload the configuration from the backing data source immediately. Whether or not the config
      * actually gets reloaded is up to the implementation as it may already be up to date. However invoking this method
-     * should guarantee that a subsequent call to {@link #getConfig()} yields the up to date configuration.
+     * should guarantee that a subsequent call to {@link #getReadOnlyConfig()} yields the up to date configuration.
      */
     void reload();
 }

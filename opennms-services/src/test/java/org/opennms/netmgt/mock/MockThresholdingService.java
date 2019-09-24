@@ -36,9 +36,12 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
+import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 
 public class MockThresholdingService implements ThresholdingService {
 
+    private final ThresholdingSetPersister persister = mock(ThresholdingSetPersister.class);
+    
     @Override
     public ThresholdingSession createSession(int m_nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters) {
         ThresholdingSession mockSession = mock(ThresholdingSession.class);
@@ -46,4 +49,8 @@ public class MockThresholdingService implements ThresholdingService {
         return mockSession;
     }
 
+    @Override
+    public ThresholdingSetPersister getThresholdingSetPersister() {
+        return persister;
+    }
 }

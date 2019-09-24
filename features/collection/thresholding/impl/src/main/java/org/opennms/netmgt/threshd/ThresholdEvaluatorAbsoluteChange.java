@@ -68,7 +68,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
         private double m_change;
 
-        static class State implements Serializable {
+        static class State extends AbstractThresholdEvaluatorState.AbstractState {
             private static final long serialVersionUID = 1L;
             private double m_lastSample = Double.NaN;
             private double m_previousTriggeringSample;
@@ -76,7 +76,8 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             @Override
             public String toString() {
                 return "lastSample=" + m_lastSample +
-                        "\npreviousTriggeringSample=" + m_previousTriggeringSample;
+                        "\npreviousTriggeringSample=" + m_previousTriggeringSample +
+                        "\n" + super.toString();
             }
         }
 

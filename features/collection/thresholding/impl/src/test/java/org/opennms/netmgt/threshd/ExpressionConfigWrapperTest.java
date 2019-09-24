@@ -28,14 +28,20 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Assert;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.rpc.utils.mate.ContextKey;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.threshd.Expression;
 
@@ -45,15 +51,18 @@ import org.opennms.netmgt.config.threshd.Expression;
  */
 public class ExpressionConfigWrapperTest {
     
-    private final String FORMULA = "ifSpeed > 0 and ifSpeed < 100000000 ? ((ifInOctets * 8 / ifSpeed) * 100) : (ifHighSpeed > 0 ? (((ifHCInOctets * 8) / (ifHighSpeed * 1000000)) * 100) : 0)";
+    private final String FORMULA = "ifSpeed > 0 and ifSpeed < 100000000 ? ((ifInOctets * 8 / ifSpeed) * ${requisition:testMultiplier|0}) : (ifHighSpeed > 0 ? (((ifHCInOctets * 8) / (ifHighSpeed * 1000000)) * ${requisition:testMultiplier|0}) : 0)";
 
     private ExpressionConfigWrapper wrapper;
+    
+    private final Scope scope = mock(Scope.class);
 
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging(true, "TRACE"); 
         Expression exp = new Expression();
         exp.setExpression(FORMULA);
+        when(scope.get(new ContextKey("requisition", "testMultiplier"))).thenReturn(Optional.of("100"));
         wrapper = new ExpressionConfigWrapper(exp);
         Assert.assertEquals(4, wrapper.getRequiredDatasources().size());
     }
@@ -68,7 +77,7 @@ public class ExpressionConfigWrapperTest {
         Map<String, Double> values = new HashMap<String,Double>();
         values.put("ifInOctets", 200000.0);
         values.put("ifSpeed", 10000000.0);
-        double value = wrapper.evaluate(values);
+        double value = wrapper.interpolateAndEvaluate(values, scope).value;
         Assert.assertTrue(value == 16.0);
     }
 
@@ -78,7 +87,7 @@ public class ExpressionConfigWrapperTest {
         values.put("ifHCInOctets", 20000000.0);
         values.put("ifSpeed", 100000000.0);
         values.put("ifHighSpeed", 1000.0);
-        double value = wrapper.evaluate(values);
+        double value = wrapper.interpolateAndEvaluate(values, scope).value;
         Assert.assertTrue(value == 16.0);
     }
 
@@ -88,7 +97,7 @@ public class ExpressionConfigWrapperTest {
         values.put("ifHCInOctets", 20000000.0);
         values.put("ifSpeed", 100000000.0);
         values.put("ifHighSpeed", 1000.0);
-        double value = wrapper.evaluate(values);
+        double value = wrapper.interpolateAndEvaluate(values, scope).value;
         Assert.assertTrue(value == 16.0);
     }
 
@@ -98,7 +107,7 @@ public class ExpressionConfigWrapperTest {
         values.put("ifInOctets", 200000.0);
         values.put("ifSpeed", 0.0);
         values.put("ifHighSpeed", 0.0);
-        double value = wrapper.evaluate(values);
+        double value = wrapper.interpolateAndEvaluate(values, scope).value;
         Assert.assertTrue(value == 0.0);
     }
 
@@ -108,7 +117,7 @@ public class ExpressionConfigWrapperTest {
         values.put("ifHCInOctets", 20000000.0);
         values.put("ifSpeed", 0.0);
         values.put("ifHighSpeed", 0.0);
-        double value = wrapper.evaluate(values);
+        double value = wrapper.interpolateAndEvaluate(values, scope).value;
         Assert.assertTrue(value == 0.0);
     }
 
@@ -119,7 +128,7 @@ public class ExpressionConfigWrapperTest {
         wrapper = new ExpressionConfigWrapper(exp);
         Map<String, Double> values = new HashMap<String,Double>();
         values.put("data", 10.0);
-        Assert.assertTrue(10.0 == wrapper.evaluate(values));
+        Assert.assertTrue(10.0 == wrapper.interpolateAndEvaluate(values, scope).value);
     }
 
     /* See NMS-5014 */
@@ -131,19 +140,19 @@ public class ExpressionConfigWrapperTest {
         Assert.assertEquals(1, wrapper.getRequiredDatasources().size());
         Map<String, Double> values = new HashMap<String,Double>();
         values.put("jnxOperatingState", 1.0);
-        Assert.assertEquals(0.0, wrapper.evaluate(values), 0.0);
+        Assert.assertEquals(0.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
         values.put("jnxOperatingState", 2.0);
-        Assert.assertEquals(1.0, wrapper.evaluate(values), 0.0);
+        Assert.assertEquals(1.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
         values.put("jnxOperatingState", 3.0);
-        Assert.assertEquals(1.0, wrapper.evaluate(values), 0.0);
+        Assert.assertEquals(1.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
         values.put("jnxOperatingState", 4.0);
-        Assert.assertEquals(0.0, wrapper.evaluate(values), 0.0);
+        Assert.assertEquals(0.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
         values.put("jnxOperatingState", 5.0);
-        Assert.assertEquals(0.0, wrapper.evaluate(values), 0.0);
+        Assert.assertEquals(0.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
         values.put("jnxOperatingState", 6.0);
-        Assert.assertEquals(0.0, wrapper.evaluate(values), 0.0);
+        Assert.assertEquals(0.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
         values.put("jnxOperatingState", 7.0);
-        Assert.assertEquals(1.0, wrapper.evaluate(values), 0.0);
+        Assert.assertEquals(1.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
     }
 
     /* See NMS-5019 */
@@ -156,7 +165,7 @@ public class ExpressionConfigWrapperTest {
         Map<String, Double> values = new HashMap<String,Double>();
         values.put("ns-dskTotal", 100.0);
         values.put("ns-dskUsed", 40.0);
-        Assert.assertEquals(60.0, wrapper.evaluate(values), 0.0);
+        Assert.assertEquals(60.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
     }
 
     @Test
@@ -169,6 +178,6 @@ public class ExpressionConfigWrapperTest {
         values.put("ifInOctets", 100.0);
         values.put("ifOutOctets", 200.0);
         values.put("ifSpeed", 10.0);
-        Assert.assertEquals(160.0, wrapper.evaluate(values), 0.0);
+        Assert.assertEquals(160.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
     }
 }

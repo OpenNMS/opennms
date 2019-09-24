@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
@@ -59,6 +60,8 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     private ThresholdingEventProxy m_eventProxy;
     
     private ReadableThresholdingDao m_thresholdingDao;
+    
+    private EntityScopeProvider m_entityScopeProvider;
 
     /** {@inheritDoc} */
     @Override
@@ -76,7 +79,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         boolean merge = group != null;
         ThresholdGroup newGroup = new ThresholdGroup(name);
 
-        File rrdRepository = new File(m_thresholdingDao.getRrdRepository(name));
+        File rrdRepository = new File(m_thresholdingDao.getReadOnlyConfig().getGroup(name).getRrdRepository());
         newGroup.setRrdRepository(rrdRepository);
 
         ThresholdResourceType nodeType = getThresholdResourceType(name, "node", merge ? group.getNodeResourceType() : null, thresholdingSession);
@@ -85,7 +88,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         ThresholdResourceType ifType = getThresholdResourceType(name, "if", merge ? group.getIfResourceType() : null, thresholdingSession);
         newGroup.setIfResourceType(ifType);
 
-        for (Basethresholddef thresh : m_thresholdingDao.getThresholds(name)) {
+        for (Basethresholddef thresh : m_thresholdingDao.getReadOnlyConfig().getGroup(name).getThresholdsAndExpressions()) {
             final String id = thresh.getDsType();
             if (!(id.equals("if") || id.equals("node") || newGroup.getGenericResourceTypeMap().containsKey(id))) {
                 ThresholdResourceType genericType = getThresholdResourceType(name, id, merge ? group.getGenericResourceTypeMap().get(id) : null, thresholdingSession);
@@ -116,7 +119,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
 
     private void fillThresholdStateMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap, ThresholdingSession thresholdingSession) {
         boolean merge = !thresholdMap.isEmpty();
-        for (Basethresholddef thresh : m_thresholdingDao.getThresholds(groupName)) {
+        for (Basethresholddef thresh : m_thresholdingDao.getReadOnlyConfig().getGroup(groupName).getThresholdsAndExpressions()) {
             // See if map entry already exists for this datasource; if not, create a new one.
             if (thresh.getDsType().equals(typeName)) {
                 try {
@@ -129,7 +132,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntitySet);
                     }
                     try {
-                        ThresholdEntity thresholdEntity = new ThresholdEntity();
+                        ThresholdEntity thresholdEntity = new ThresholdEntity(m_entityScopeProvider);
                         thresholdEntity.setEventProxy(m_eventProxy);
                         thresholdEntity.addThreshold(wrapper, thresholdingSession);
                         if (merge) {
@@ -162,7 +165,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                 for (final Iterator<ThresholdEntity> thresholdIterator = value.iterator(); thresholdIterator.hasNext();) {
                     final ThresholdEntity entity = thresholdIterator.next();
                     boolean found = false;
-                    for (final Basethresholddef thresh : m_thresholdingDao.getThresholds(groupName)) {
+                    for (final Basethresholddef thresh : m_thresholdingDao.getReadOnlyConfig().getGroup(groupName).getThresholdsAndExpressions()) {
                         BaseThresholdDefConfigWrapper newConfig = null;
                         try {
                             newConfig = BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
@@ -202,4 +205,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         m_eventProxy = eventProxy;
     }
 
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        m_entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
+    }
 }
