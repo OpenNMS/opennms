@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.NodePolicy;
@@ -49,6 +50,8 @@ import org.opennms.netmgt.snmp.SnmpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+
+import com.google.common.base.Strings;
 
 final class NodeInfoScan implements RunInBatch {
     private static final Logger LOG = LoggerFactory.getLogger(NodeInfoScan.class);
@@ -155,11 +158,9 @@ final class NodeInfoScan implements RunInBatch {
                 systemGroup.updateSnmpDataForNode(getNode());
             } catch (ExecutionException e) {
                 boolean succeeded = false;
-                // If agent config is derived from definitions, we don't need to do process any profiles.
-                if (agentConfig.isDefault() &&
-                        (e.getCause() instanceof SnmpAgentTimeoutException ||
+                if ((e.getCause() instanceof SnmpAgentTimeoutException ||
                          e.getCause() instanceof SnmpException)) {
-                    succeeded = peformScanWithMatchingProfile(primaryAddress);
+                    succeeded = peformScanWithMatchingProfile(agentConfig, primaryAddress);
                 }
                 if(!succeeded) {
                     abort("Aborting node scan : Agent failed while scanning the system table: " + e.getMessage());
@@ -201,8 +202,28 @@ final class NodeInfoScan implements RunInBatch {
         }
     }
 
-    private boolean peformScanWithMatchingProfile(InetAddress primaryAddress) throws InterruptedException {
+    private boolean isConfigValid(SnmpAgentConfig currentConfig, InetAddress address) {
+        String profileLabel = currentConfig.getProfileLabel();
+        if (!Strings.isNullOrEmpty(profileLabel)) {
+            Optional<SnmpProfile> matchingProfile = getAgentConfigFactory().getProfiles().stream()
+                                                            .filter(profile -> profile.getLabel().equals(profileLabel))
+                                                            .findFirst();
+            if (matchingProfile.isPresent()) {
+                SnmpAgentConfig configFromProfile = getAgentConfigFactory().getAgentConfigFromProfile(matchingProfile.get(), address);
+                if (configFromProfile.equals(currentConfig)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
+    private boolean peformScanWithMatchingProfile(SnmpAgentConfig currentConfig, InetAddress primaryAddress) throws InterruptedException {
+
+        // If agent config is derived from profiles, check if the config is still valid (profile not updated)
+        if (!currentConfig.isDefault() && isConfigValid(currentConfig, primaryAddress)) {
+            return false;
+        }
         try {
             Optional<SnmpAgentConfig> validConfig = m_provisionService.getSnmpProfileMapper()
                                                         .getAgentConfigFromProfiles(primaryAddress, getLocationName())
