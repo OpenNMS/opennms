@@ -4,7 +4,9 @@
 
 [[ga-threshd-introduction]]
 _{opennms-product-name}_ has the ability to monitor the performance of a managed entity's resource(s) by using various thresholding techniques.
-These techniques, or algorithms, can be used applied against any metric data (telemetry) that has been gathered such as: CPU Load, Bandwidth, Disk space, etc. and, when triggered, causes Alarms to be generated.
+These techniques, or algorithms, can be applied against any performance data (telemetry) that has been collected by <<ga-performance-mgmt,collectd>> or has been pushed to <<ga-telemetryd, telemetryd>>.
+This includes, but is not limited to metrics such as: CPU Load, Bandwidth, Disk space, etc.
+
 There are a few basic thresholding algorithms available within OpenNMS:
 
 * High
@@ -14,48 +16,72 @@ There are a few basic thresholding algorithms available within OpenNMS:
 
 === Thresholding Service
 
-The Thresholding Service is the component responsible for maintaining the state of performance metrics and generating alarms from these when thresholds are triggered (fired) or cleared (sdf).
+The Thresholding Service is the component responsible for maintaining the state of the performance metrics and for generating alarms from these when thresholds are triggered (armed) or cleared (unarmed).
 
-The thresholding services listens for and visits performance metrics _after_ they are peristed in the time series database.
+The thresholding services listens for and visits performance metrics _after_ they are persisted to the time series database.
 
-The state of the thresholds are held in memory and pushed to persistent storage when changed.
+The state of the thresholds are held in memory and pushed to persistent storage only when they are changed.
 
 ==== Distributed Thresholding with Sentinel
 
-Thresholding for streaming telemetry (TODO LINK) is supports on Sentinel (TODO) when using Newts. Sessions are sticky. Protocols supporting sequence IDs.
+Thresholding for streaming telemetry with <<ga-telemetryd, telemetryd>> is supported on Sentinel when using <<ga-opennms-operation-newts, Newts>>.
+When running on Sentinel, the thresholding state can be stored in either Cassandra or PostgreSQL.
+Given that Newts already requires Cassandra, we recommend using Casssandra in order to help minimize the load on PostgreSQL.
+
+Thresholding on Sentinel uses the same configuration files as _{opennms-product-name}_ and operates similarly.
+When a thresholding changes to/from trigger or cleared, and event is published which is processed by _{opennms-product-name}_ and the alarm is created or updated.
 
 === Shell Commands
 
-```
+The following shell commands are made available to help debug and manage thresholding.
+
+Enumerate the persisted threshold states using `opennms-threshold-states:enumerate`:
+
+[source]
+----
 admin@opennms> opennms-threshold-states:enumerate 
 Index   State Key
-1       23-127.0.0.1-hrStorageIndex-hrStorageUsed / hrStorageSize * 100.0-/home/jesse/git/opennms/target/opennms-25.0.0-SNAPSHOT/share/rrd/snmp-RELATIVE_CHANGE
-2       23-127.0.0.1-if-ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100-/home/jesse/git/opennms/target/opennms-25.0.0-SNAPSHOT/share/rrd/snmp-HIGH
-3       23-127.0.0.1-node-((loadavg5 / 100) / CpuNumCpus) * 100.0-/home/jesse/git/opennms/target/opennms-25.0.0-SNAPSHOT/share/rrd/snmp-HIGH
-4       23-127.0.0.1-if-ifInDiscards + ifOutDiscards-/home/jesse/git/opennms/target/opennms-25.0.0-SNAPSHOT/share/rrd/snmp-HIGH
-```
+1       23-127.0.0.1-hrStorageIndex-hrStorageUsed / hrStorageSize * 100.0-/opt/opennms/share/rrd/snmp-RELATIVE_CHANGE
+2       23-127.0.0.1-if-ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100-/opt/opennms/share/rrd/snmp-HIGH
+3       23-127.0.0.1-node-((loadavg5 / 100) / CpuNumCpus) * 100.0-/opt/opennms/share/rrd/snmp-HIGH
+4       23-127.0.0.1-if-ifInDiscards + ifOutDiscards-/opt/opennms/share/rrd/snmp-HIGH
+----
 
+Each state is uniquely identified by a `state key` and aliased by the given `index`.
+Indexes are scoped to the particular shell session and provided as an alternative to specifying the complete state key in subsequent commands.
 
-```
+Display state details using `opennms-threshold-states:details`:
+
+[source]
+----
 admin@opennms> opennms-threshold-states:details 1
 multiplier=1.333
 lastSample=64.77758166043765
 previousTriggeringSample=28.862826722171075
 interpolatedExpression='hrStorageUsed / hrStorageSize * 100.0'
-```
+----
 
-```
+[source]
+----
 admin@opennms> opennms-threshold-states:details 2
 exceededCount=0
 armed=true
 interpolatedExpression='ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100'
-```
+----
 
-```
+NOTE: Different types of thresholds will display different properties.
+
+Clear a particular persisted state using `opennms-threshold-states:clear`:
+
+[source]
+----
 admin@opennms> opennms-threshold-states:clear 2
-```
+----
 
-```
+Or clear all the persisted states with `opennms-threshold-states:clear-all`:
+
+[source]
+----
 admin@opennms> opennms-threshold-states:clear-all 
 Clearing all thresholding states....done
-```
+----

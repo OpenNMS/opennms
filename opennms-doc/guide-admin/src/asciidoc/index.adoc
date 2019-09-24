@@ -165,16 +165,16 @@ include::text/performance-data-collection/collectors/wsman.adoc[]
 include::text/performance-data-collection/collectors/xml.adoc[]
 include::text/performance-data-collection/collectors/xmp.adoc[]
 
-[[ga-performance-mgmt-thresholds]]
-== Thresholds
-include::text/thresholds/thresholding.adoc[]
-
 [[ga-performance-mgmt-shell]]
 === Shell Commands
 include::text/performance-data-collection/shell/introduction.adoc[]
 include::text/performance-data-collection/shell/adhoc-collection.adoc[]
 include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
+
+[[ga-performance-mgmt-thresholds]]
+== Thresholding
+include::text/thresholds/thresholding.adoc[]
 
 [[ga-events]]
 == Events
