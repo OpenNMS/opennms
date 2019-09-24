@@ -41,7 +41,7 @@
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
                 "parameters": [
-                    {"name": "testParm", "value": "HelloWorld", "type":"string", "position":0}
+                    {"name": "testParm", "value": "HelloWorld", "type":"string" }
                 ],
                 "serviceType": {
                     "id": 1,
@@ -65,7 +65,7 @@
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
                 "parameters": [
-                    {"name": "testParm", "value": "HelloWorld", "type":"string", "position":0 }
+                    {"name": "testParm", "value": "HelloWorld", "type":"string" }
                 ],
                 "serviceType": {
                     "id": 1,
