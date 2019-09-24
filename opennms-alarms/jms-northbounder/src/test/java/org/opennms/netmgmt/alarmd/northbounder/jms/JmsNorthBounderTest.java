@@ -621,11 +621,11 @@ public class JmsNorthBounderTest {
                 " alarmType: PROBLEM count: 1 alarmId: 9 ipAddr: 127.0.0.1 lastOccurrence: " + StringUtils.iso8601LocalOffsetString(date2) + " nodeId: 1\n" +
                 " nodeLabel: schlazor distPoller: 00000000-0000-0000-0000-000000000000 ifService:  severity: WARNING ticketState:  x733AlarmType: other\n"+
                 " x733ProbableCause: other firstOccurrence: " + StringUtils.iso8601LocalOffsetString(date1) + " lastOccurrence " + StringUtils.iso8601LocalOffsetString(date2) + " eventParmsXml: <eventParms>\n" +
-                "    <parm name=\"syslogmessage\" value=\"Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed\" type=\"string\" position=\"0\"/>\n" +
-                "    <parm name=\"severity\" value=\"Error\" type=\"string\" position=\"1\"/>\n" +
-                "    <parm name=\"timestamp\" value=\"Dec 22 14:13:21\" type=\"string\" position=\"2\"/>\n" +
-                "    <parm name=\"process\" value=\"229250\" type=\"string\" position=\"3\"/>\n" +
-                "    <parm name=\"service\" value=\"local7\" type=\"string\" position=\"4\"/>\n" +
+                "    <parm name=\"syslogmessage\" value=\"Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed\" type=\"string\"/>\n" +
+                "    <parm name=\"severity\" value=\"Error\" type=\"string\"/>\n" +
+                "    <parm name=\"timestamp\" value=\"Dec 22 14:13:21\" type=\"string\"/>\n" +
+                "    <parm name=\"process\" value=\"229250\" type=\"string\"/>\n" +
+                "    <parm name=\"service\" value=\"local7\" type=\"string\"/>\n" +
                 "</eventParms>";
         String response = ((TextMessage)m).getText();
         

@@ -122,7 +122,7 @@ public class OnmsEventParameter implements Serializable {
     @XmlAttribute(name="type")
     private String type;
 
-    @XmlAttribute(name="position")
+    @XmlTransient
     private int position;
 
     /**
