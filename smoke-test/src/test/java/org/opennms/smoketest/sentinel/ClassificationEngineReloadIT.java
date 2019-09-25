@@ -121,7 +121,7 @@ public class ClassificationEngineReloadIT {
 
             // Verify that sentinel reloaded the rules
             new KarafShell(sentinelSshAddress).runCommand(
-                    "classification:classify --protocol tcp --srcAddress 127.0.0.1 --srcPort 55000 --dstAddress 8.8.8.8 --destPort 22 --exporterAddress 127.0.0.1",
+                    "opennms-classification:classify --protocol tcp --srcAddress 127.0.0.1 --srcPort 55000 --dstAddress 8.8.8.8 --destPort 22 --exporterAddress 127.0.0.1",
                     output -> output.contains("custom-rule")
             );
 
