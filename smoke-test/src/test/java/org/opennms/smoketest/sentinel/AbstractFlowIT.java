@@ -68,7 +68,7 @@ public abstract class AbstractFlowIT {
     @Test
     public void verifyFlowStack() throws Exception {
         // Determine endpoints
-        final InetSocketAddress elasticRestAddress = InetSocketAddress.createUnresolved(stack.elastic().getContainerIpAddress(), stack.elastic().getMappedPort(9200));
+        final InetSocketAddress elasticRestAddress = stack.elastic().getRestAddress();
         final InetSocketAddress sentinelSshAddress = stack.sentinel().getSshAddress();
         final InetSocketAddress minionFlowAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
 
