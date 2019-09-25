@@ -1701,7 +1701,11 @@ public class Event implements Message,Serializable {
 	}
 
 	public void setParmCollection(final List<Parm> parms) {
-	    _parms = parms;
+		if (parms == null) {
+			_parms = new CopyOnWriteArrayList<>();
+		} else {
+			_parms = new CopyOnWriteArrayList<>(parms);
+		}
 	}
 
 	/**
