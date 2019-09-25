@@ -26,49 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.shell;
+package org.opennms.netmgt.flows.clazzification.shell;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.core.criteria.Criteria;
+import org.apache.karaf.shell.api.console.CommandLine;
+import org.apache.karaf.shell.api.console.Completer;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.support.completers.StringsCompleter;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 
-@Command(scope="classification", name="list-groups", description = "Lists all classification groups")
 @Service
-public class ClassificationListGroupCommand implements Action {
+public class GroupCompleter implements Completer {
 
     @Reference
     private ClassificationService classificationService;
 
     @Override
-    public Object execute() throws Exception {
-        final Criteria criteria = new CriteriaBuilder(Group.class).orderBy("position", true).toCriteria();
-        final List<Group> groups = classificationService.findMatchingGroups(criteria);
-        final String TEMPLATE = "%4s   %4s   %-20s   %-50s   %-8s   %-8s";
-        if (!groups.isEmpty()) {
-            System.out.println(String.format(TEMPLATE, "ID", "Pos", "Name", "Description", "editable", "readonly"));
-            for (Group group : groups) {
-                System.out.println(
-                    String.format(
-                            TEMPLATE,
-                            group.getId(),
-                            group.getPosition(),
-                            group.getName(),
-                            group.getDescription(),
-                            group.isEnabled() ? "Y" : "N",
-                            group.isReadOnly() ? "Y" : "N"
-                    ));
-            }
-            System.out.println();
-        }
-        System.out.println("=> " + groups.size() + " group(s) defined");
-        return null;
+    public int complete(Session session, CommandLine commandLine, List<String> list) {
+        final List<Group> groups = classificationService.findMatchingGroups(new CriteriaBuilder(Group.class).toCriteria());
+        final List<String> groupNames = groups.stream().map(Group::getName).distinct().collect(Collectors.toList());
+        final StringsCompleter delegate = new StringsCompleter();
+        delegate.getStrings().addAll(groupNames);
+        return delegate.complete(session, commandLine, list);
     }
 }
-

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.shell;
+package org.opennms.netmgt.flows.clazzification.shell;
 
 import java.util.List;
 

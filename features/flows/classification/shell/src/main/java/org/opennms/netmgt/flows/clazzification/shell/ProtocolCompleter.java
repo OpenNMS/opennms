@@ -26,25 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.shell;
+package org.opennms.netmgt.flows.clazzification.shell;
 
-import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.apache.karaf.shell.api.console.CommandLine;
+import org.apache.karaf.shell.api.console.Completer;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.support.completers.StringsCompleter;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 
-@Command(scope="classification", name="reload-engine", description = "Reloads the rules of the classification engine")
 @Service
-public class ClassificationReloadCommand implements Action {
-
-    @Reference
-    private ClassificationEngine classificationEngine;
+public class ProtocolCompleter implements Completer {
 
     @Override
-    public Object execute() throws Exception {
-        classificationEngine.reload();
-        System.out.println("Classification Engine has been reloaded");
-        return null;
+    public int complete(Session session, CommandLine commandLine, List<String> list) {
+        final StringsCompleter delegate = new StringsCompleter();
+        final List<String> protocols = Protocols.getProtocols().stream()
+                .map(p -> p.getKeyword()).filter(p -> !p.equals("") && !p.equals("Reserved"))
+                .collect(Collectors.toList());
+        delegate.getStrings().addAll(protocols);
+        return delegate.complete(session, commandLine, list);
     }
 }
