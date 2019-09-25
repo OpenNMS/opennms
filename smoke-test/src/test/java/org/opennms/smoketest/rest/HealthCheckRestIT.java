@@ -70,7 +70,7 @@ public class HealthCheckRestIT {
         final String response = RestAssured.get("probe?t=0")
                 .then().assertThat()
                 .statusCode(599)
-                .statusLine("Unhealthy")
+                .statusLine("HTTP/1.1 599 Unhealthy")
                 .contentType(ContentType.TEXT)
                 .header("Health", "Oh no, something is wrong")
                 .extract().response().asString();
