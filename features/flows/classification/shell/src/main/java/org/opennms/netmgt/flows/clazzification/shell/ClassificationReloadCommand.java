@@ -26,30 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest.containers;
+package org.opennms.netmgt.flows.clazzification.shell;
 
-import java.net.InetSocketAddress;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 
-import org.opennms.smoketest.utils.TestContainerUtils;
-import org.testcontainers.containers.Network;
+@Command(scope="classification", name="reload-engine", description = "Reloads the rules of the classification engine")
+@Service
+public class ClassificationReloadCommand implements Action {
 
-public class ElasticsearchContainer extends org.testcontainers.elasticsearch.ElasticsearchContainer {
+    @Reference
+    private ClassificationEngine classificationEngine;
 
-    public ElasticsearchContainer() {
-        super("docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0");
-        withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m")
-                .withNetwork(Network.SHARED)
-                .withNetworkAliases(OpenNMSContainer.ELASTIC_ALIAS)
-                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
-    }
-
-    public InetSocketAddress getRestAddress() {
-        return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(9200));
-    }
-
-    public String getRestAddressString() {
-        final InetSocketAddress elasticRestAddress = getRestAddress();
-        final String addressString = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
-        return addressString;
+    @Override
+    public Object execute() throws Exception {
+        classificationEngine.reload();
+        System.out.println("Classification Engine has been reloaded");
+        return null;
     }
 }

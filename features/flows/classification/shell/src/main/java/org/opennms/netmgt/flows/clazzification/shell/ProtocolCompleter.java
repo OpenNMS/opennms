@@ -26,30 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest.containers;
+package org.opennms.netmgt.flows.clazzification.shell;
 
-import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.opennms.smoketest.utils.TestContainerUtils;
-import org.testcontainers.containers.Network;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.CommandLine;
+import org.apache.karaf.shell.api.console.Completer;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.support.completers.StringsCompleter;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 
-public class ElasticsearchContainer extends org.testcontainers.elasticsearch.ElasticsearchContainer {
+@Service
+public class ProtocolCompleter implements Completer {
 
-    public ElasticsearchContainer() {
-        super("docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0");
-        withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m")
-                .withNetwork(Network.SHARED)
-                .withNetworkAliases(OpenNMSContainer.ELASTIC_ALIAS)
-                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
-    }
-
-    public InetSocketAddress getRestAddress() {
-        return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(9200));
-    }
-
-    public String getRestAddressString() {
-        final InetSocketAddress elasticRestAddress = getRestAddress();
-        final String addressString = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
-        return addressString;
+    @Override
+    public int complete(Session session, CommandLine commandLine, List<String> list) {
+        final StringsCompleter delegate = new StringsCompleter();
+        final List<String> protocols = Protocols.getProtocols().stream()
+                .map(p -> p.getKeyword()).filter(p -> !p.equals("") && !p.equals("Reserved"))
+                .collect(Collectors.toList());
+        delegate.getStrings().addAll(protocols);
+        return delegate.complete(session, commandLine, list);
     }
 }

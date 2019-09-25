@@ -17,6 +17,7 @@
             <cm:property name="cache.classificationFilter.maxSize" value="5000" />
             <cm:property name="cache.classificationFilter.expireAfterRead" value="300" /> <!-- Seconds -->
             <cm:property name="cache.classificationFilter.recordStats" value="true" />
+            <cm:property name="sentinel.cache.engine.reloadInterval" value="300" /> <!-- Seconds -->
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -24,6 +25,7 @@
     <reference id="classificationGroupDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao" availability="mandatory"/>
     <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+    <reference id="sentinelIdentity" interface="org.opennms.distributed.core.api.Identity" filter="(systemType=Sentinel)" availability="optional" />
 
     <!-- CacheConfig -->
     <bean id="classificationFilterCacheConfig" class="org.opennms.core.cache.CacheConfig">
@@ -92,5 +94,15 @@
             <argument ref="transactionOperations"/>
         </bean>
     </service>
+
+    <!--
+        Uses the sentinel's identity to verify if the bundle is running on sentinel.
+        If so, this bean is responsible for periodically reloading of the classification engine rules
+    -->
+    <bean id="classificationEngineReload" class="org.opennms.netmgt.flows.classification.internal.ClassificationEngineReloader" destroy-method="shutdown">
+        <argument ref="sentinelIdentity" />
+        <argument ref="threadSafeClassificationEngine" />
+        <argument value="${sentinel.cache.engine.reloadInterval}" />
+    </bean>
 
 </blueprint>
