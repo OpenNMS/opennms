@@ -185,7 +185,13 @@ case "$COMMAND" in
 		run_as "$CONTAINER_HOME"/bin/start
 		sleep 5
 		RET="$?"
+
+		__piddir="$(dirname "$PIDFILE")"
+		if [ ! -d "$__piddir" ]; then
+			install -d -m 755 -o "$RUNAS" -g "$RUNAS" "$__piddir"
+		fi
 		get_root_pid > "$PIDFILE"
+
 		exit "$RET"
 		;;
 
