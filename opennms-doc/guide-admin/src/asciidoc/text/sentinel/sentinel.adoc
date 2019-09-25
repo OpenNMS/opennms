@@ -462,7 +462,7 @@ $ ssh -p 8301 admin@localhost
 ----
 admin@sentinel> config:edit --alias nxos --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name NXOS
-admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter
 admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
 admin@sentinel> config:update
 ----
@@ -492,7 +492,7 @@ $ ssh -p 8301 admin@localhost
 ----
 admin@sentinel> config:edit --alias jti --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name JTI
-admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter
 admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/junos-telemetry-interface.groovy
 admin@sentinel> config:update
 ----
