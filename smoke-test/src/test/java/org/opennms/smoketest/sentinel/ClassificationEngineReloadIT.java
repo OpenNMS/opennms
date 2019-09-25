@@ -31,8 +31,6 @@ package org.opennms.smoketest.sentinel;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -79,9 +77,9 @@ public class ClassificationEngineReloadIT {
     @Test
     public void verifyClassificationEngineReloads() throws IOException {
         final InetSocketAddress sentinelSshAddress = stack.sentinel().getSshAddress();
-        final String elasticRestUrl = stack.elastic().getRestAddressString();
         final InetSocketAddress minionFlowAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
         final InetSocketAddress opennmsWebAddress = stack.opennms().getWebAddress();
+        final String elasticRestUrl = stack.elastic().getRestAddressString();
 
         waitForSentinelStartup(sentinelSshAddress);
 
@@ -101,7 +99,7 @@ public class ClassificationEngineReloadIT {
         try (JestClient client = factory.getObject()) {
             // Verify nothing is created yet
             await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> {
-                final Search query = new Search.Builder("").build();
+                final Search query = new Search.Builder("").addIndex("netflow-*").build();
                 final SearchResult result = client.execute(query);
                 return SearchResultUtils.getTotal(result) == 0;
             });
@@ -113,24 +111,13 @@ public class ClassificationEngineReloadIT {
             // Verify it was classified properly
             await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> {
                 // Verify it has been created properly
-                final Search query = new Search.Builder(buildApplicationQuery("ssh")).build();
+                final Search query = new Search.Builder(buildApplicationQuery("ssh")).addIndex("netflow-*").build();
                 final SearchResult result = client.execute(query);
                 return SearchResultUtils.getTotal(result) == 2;
             });
 
             // Update rule definitions
-            RestAssured.baseURI = "http://" + opennmsWebAddress.getHostName();
-            RestAssured.port = opennmsWebAddress.getPort();
-            RestAssured.basePath = "/opennms/rest/classifications";
-            RestAssured.authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
-            final GroupDTO group = getGroup(2);
-            final RuleDTO rule = new RuleDTOBuilder()
-                    .withName("custom-rule")
-                    .withDstPort("22")
-                    .withOmnidirectional(true)
-                    .withGroup(group)
-                    .build();
-            saveAndRetrieveRule(rule);
+            createCustomRule(opennmsWebAddress);
 
             // Verify that sentinel reloaded the rules
             new KarafShell(sentinelSshAddress).runCommand(
@@ -144,7 +131,7 @@ public class ClassificationEngineReloadIT {
             // Verify it was classified according the new rule
             await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> {
                 // Verify it has been created properly
-                final Search query = new Search.Builder(buildApplicationQuery("custom-rule")).build();
+                final Search query = new Search.Builder(buildApplicationQuery("custom-rule")).addIndex("netflow-*").build();
                 final SearchResult result = client.execute(query);
                 return SearchResultUtils.getTotal(result) == 2;
             });
@@ -164,37 +151,31 @@ public class ClassificationEngineReloadIT {
         return query;
     }
 
-    private static GroupDTO getGroup(int groupId) {
-        return given().get("groups/" + groupId)
+    private static void createCustomRule(InetSocketAddress opennmsWebAddress) {
+        // Configure RestAssured
+        RestAssured.baseURI = "http://" + opennmsWebAddress.getHostName();
+        RestAssured.port = opennmsWebAddress.getPort();
+        RestAssured.basePath = "/opennms/rest/classifications";
+        RestAssured.authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+
+        // Fetch Group
+        final GroupDTO group =  given().get("groups/2") // user-defined group
                 .then().log().body(true)
-                .assertThat()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
+                .assertThat().statusCode(200)
                 .extract().response().as(GroupDTO.class);
-    }
 
-    private static RuleDTO saveAndRetrieveRule(RuleDTO ruleDTO) {
-        String header = given().contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
+        // Create new custom Rule
+        final RuleDTO ruleDTO = new RuleDTOBuilder()
+                .withName("custom-rule")
+                .withDstPort("22")
+                .withOmnidirectional(true)
+                .withGroup(group)
+                .build();
+
+        // Persist new rule
+        given().contentType(ContentType.JSON)
                 .body(ruleDTO)
-                .post().then().assertThat().statusCode(201) // created
-                .extract().header("Location");
-        final String[] split = header.split("/");
-        int classificationId = Integer.parseInt(split[split.length - 1]);
-
-        // Verify Creation of rule
-        final RuleDTO receivedHttpRule = given().get("" + classificationId)
-                .then().log().body(true)
-                .assertThat()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .extract().response().as(RuleDTO.class);
-        assertThat(receivedHttpRule.getId(), is(classificationId));
-        assertThat(receivedHttpRule.getName(), is(ruleDTO.getName()));
-        assertThat(receivedHttpRule.getDstAddress(), is(ruleDTO.getDstAddress()));
-        assertThat(receivedHttpRule.getProtocols(), is(ruleDTO.getProtocols()));
-        assertThat(receivedHttpRule.getGroup().getName(), is(ruleDTO.getGroup().getName()));
-        return receivedHttpRule;
+                .post().then().assertThat().statusCode(201);
     }
 
     private static void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) {
