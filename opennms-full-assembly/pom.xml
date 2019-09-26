@@ -489,6 +489,7 @@
                 <feature>opennms-events-api</feature>
                 <feature>opennms-events-commands</feature>
                 <feature>opennms-health</feature>
+                <feature>opennms-health-rest</feature>
                 <feature>opennms-icmp-api</feature>
                 <feature>opennms-icmp-jna</feature>
                 <feature>opennms-icmp-jni</feature>

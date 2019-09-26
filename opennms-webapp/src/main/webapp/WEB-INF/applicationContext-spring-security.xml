@@ -12,6 +12,9 @@
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 
+    <!-- Calls to health/overview are always accepted -->
+    <intercept-url pattern="/rest/health/probe" method="GET" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
+
     <!-- ack/unack/escalate/clear alarms -->
     <intercept-url pattern="/rest/alarms/**" method="PUT" access="ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />
 

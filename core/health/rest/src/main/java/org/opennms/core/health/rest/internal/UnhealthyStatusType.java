@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.health.api;
+package org.opennms.core.health.rest.internal;
 
-/**
- * A Context object to store all parameters required by the {@link HealthCheckService}
- * to calculate the overall {@link Health}.
- *
- * @author mvrueden
- */
-public class Context {
-    private long timeout; // ms
+import javax.ws.rs.core.Response;
 
-    public void setTimeout(long timeoutInMs) {
-        this.timeout = timeoutInMs;
+class UnhealthyStatusType implements Response.StatusType {
+    @Override
+    public int getStatusCode() {
+        return 599;
     }
 
-    public long getTimeout() {
-        return timeout;
+    @Override
+    public Response.Status.Family getFamily() {
+        return Response.Status.Family.SERVER_ERROR;
+    }
+
+    @Override
+    public String getReasonPhrase() {
+        return "Unhealthy";
     }
 }

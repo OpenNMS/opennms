@@ -1,0 +1,21 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="
+                http://www.osgi.org/xmlns/blueprint/v1.0.0
+                https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+                http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+">
+
+    <reference id="healthCheckService" interface="org.opennms.core.health.api.HealthCheckService" availability="mandatory" />
+
+    <bean id="healthCheckRestService" class="org.opennms.core.health.rest.internal.HealthCheckRestServiceImpl">
+        <argument ref="healthCheckService" />
+    </bean>
+    <service interface="org.opennms.core.health.rest.HealthCheckRestService" ref="healthCheckRestService" >
+        <service-properties>
+            <entry key="application-path" value="/rest" />
+        </service-properties>
+    </service>
+</blueprint>
