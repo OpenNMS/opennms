@@ -27,6 +27,11 @@ Elasticsearch versions before 7.x are no longer supported.
 
 Given the pace of changes and the number of breaking changes between major versions of Elastisearch, we will focus on supporting a single major version of Elasticsearch per release moving forward.
 
+==== Flows
+
+While working on improvements to flow support we have modified the index templates and it is no longer possible to query flows stored in indices created with prior version of OpenNMS.
+We will revisit ways to migrate these in a future release.
+
 ==== Minion Packages Combined
 
 The Minion RPM and Debian/Ubuntu packages have been combined into a single package.
@@ -64,6 +69,7 @@ Migration of existing dashboards requires a few manual steps; documentation on h
 
 * Thresholding state is now persisted to the database, and can also be shared with Sentinel.
 * Thresholding can now be applied to streaming telemetry data, including scaling to multiple Sentinel instances.
+* Thresholding expressions now support link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-meta-data[meta-data]
 * Threshold state can be managed through the Karaf shell.
 
 ==== Flows
@@ -80,6 +86,10 @@ ReST queries and Helm have been enhanced to support new flow features:
 * Support has been added for querying traffic for specific applications over time.
 * Support has been added for querying a list of "Top N" hosts, similar to applications and conversations.
 * Hostnames can now be shown in Helm rather than just IP addresses, when available.
+
+==== Elasticsearch
+
+* It is now possible to set a custom prefix for the indices, which allows for multiple OpenNMS instances to share the same cluster.
 
 ==== Detectors, Monitors, and Collectors
 
