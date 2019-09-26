@@ -28,17 +28,21 @@
 
 package org.opennms.smoketest;
 
- import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
- import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
- import org.junit.FixMethodOrder;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
- import org.openqa.selenium.By;
- import org.openqa.selenium.WebElement;
- import org.openqa.selenium.interactions.Actions;
- import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.rnorth.ducttape.unreliables.Unreliables;
+import org.slf4j.LoggerFactory;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MenuHeaderIT extends OpenNMSSeleniumIT {
@@ -140,27 +144,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         findElementById("input_j_username");
     }
 
-    // We need this helper method, as with the icon used in some menus the contains(text(),...) method does not work anymore
-    private void clickMenuItemWithIcon(String menuEntryName, String submenuText, String submenuHref) {
-        try {
-            setImplicitWait(5, TimeUnit.SECONDS);
-            final Actions action = new Actions(getDriver());
-            final WebElement headerElement = findElementByXpath(String.format("//li/a[@name='%s']", menuEntryName));
-
-            // Move to element to make sub menu visible
-            action.moveToElement(headerElement).perform();
-
-            // Wait until sub menu element is visible, then click
-            final WebElement submenuElement = headerElement.findElement(By.xpath(String.format("./../div/a[contains(@class, 'dropdown-item') and contains(@href, '%s')]", submenuHref)));
-            this.wait.until(ExpectedConditions.visibilityOf(submenuElement));
-            assertEquals(submenuText, submenuElement.getText().trim());
-            submenuElement.click();
-
-        } finally {
-            setImplicitWait();
-        }
-    }
-
     @Test
     public void verifyReportsPage() {
         // testAllTextIsPresent
@@ -194,5 +177,36 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         reportsPage();
         findElementByLink("Statistics Reports").click();
         findElementByXpath("//div[@class='card-header']/span[text()='Statistics Report List']");
+    }
+
+    // We need this helper method, as with the icon used in some menus the contains(text(),...) method does not work anymore
+    private void clickMenuItemWithIcon(String menuEntryName, String submenuText, String submenuHref) {
+        LoggerFactory.getLogger(getClass()).debug("clickMenuItemWithIcon: menuEntryName={}, submenuText={}, submenuHref={}", menuEntryName, submenuText, submenuHref);
+
+        // Repeat the process altering the offset slightly each time
+        final AtomicInteger offset = new AtomicInteger(10);
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), 1);
+        try {
+            setImplicitWait(5, TimeUnit.SECONDS);
+            Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {
+                final Actions action = new Actions(getDriver());
+                final WebElement headerElement = findElementByXpath(String.format("//li/a[@name='%s']", menuEntryName));
+
+                // Move to element to make sub menu visible
+                action.moveToElement(headerElement, offset.get(), offset.get()).perform();
+                if (offset.incrementAndGet() > 10) {
+                    offset.set(0);
+                }
+
+                // Wait until sub menu element is visible, then click
+                final WebElement submenuElement = headerElement.findElement(By.xpath(String.format("./../div/a[contains(@class, 'dropdown-item') and contains(@href, '%s')]", submenuHref)));
+                shortWait.until(ExpectedConditions.visibilityOf(submenuElement));
+                assertEquals(submenuText, submenuElement.getText().trim());
+                submenuElement.click();
+                return null;
+            });
+        } finally {
+            setImplicitWait();
+        }
     }
 }
