@@ -47,9 +47,9 @@
                   <authorizationEntry queue=">" read="admin" write="admin" admin="admin" />
                   <authorizationEntry topic=">" read="admin" write="admin" admin="admin"/>
                   <!-- Users in the minion role can write/create queues that are not keyed by location -->
-                  <authorizationEntry queue="OpenNMS.*.*" write="minion" admin="minion" />
+                  <authorizationEntry queue="OpenNMS-Meridian.*.*" write="minion" admin="minion" />
                   <!-- Users in the minion role can read/create from queues that are keyed by location -->
-                  <authorizationEntry queue="OpenNMS.*.*.*" read="minion" admin="minion" />
+                  <authorizationEntry queue="OpenNMS-Meridian.*.*.*" read="minion" admin="minion" />
                   <!-- Users in the minion role can read/write/create advisory topics -->
                   <authorizationEntry topic="ActiveMQ.Advisory.>" read="minion" write="minion" admin="minion"/>
                 </authorizationEntries>
