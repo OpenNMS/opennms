@@ -204,24 +204,31 @@ final class NodeInfoScan implements RunInBatch {
 
     private boolean isConfigValid(SnmpAgentConfig currentConfig, InetAddress address) {
         String profileLabel = currentConfig.getProfileLabel();
-        if (!Strings.isNullOrEmpty(profileLabel)) {
+        // If this config is default, we should check if any of snmp profile matches.
+        if(currentConfig.isDefault()) {
+            return  false;
+        }
+        // Not a default config, but is this a definition without profile.
+        if (Strings.isNullOrEmpty(profileLabel)) {
+            return true;
+        } else {
+            // Is this definition with profile still valid
             Optional<SnmpProfile> matchingProfile = getAgentConfigFactory().getProfiles().stream()
-                                                            .filter(profile -> profile.getLabel().equals(profileLabel))
-                                                            .findFirst();
+                    .filter(profile -> profile.getLabel().equals(profileLabel))
+                    .findFirst();
             if (matchingProfile.isPresent()) {
                 SnmpAgentConfig configFromProfile = getAgentConfigFactory().getAgentConfigFromProfile(matchingProfile.get(), address);
                 if (configFromProfile.equals(currentConfig)) {
                     return true;
                 }
             }
+            return false;
         }
-        return false;
     }
 
     private boolean peformScanWithMatchingProfile(SnmpAgentConfig currentConfig, InetAddress primaryAddress) throws InterruptedException {
 
-        // If agent config is derived from profiles, check if the config is still valid (profile not updated)
-        if (!currentConfig.isDefault() && isConfigValid(currentConfig, primaryAddress)) {
+        if (isConfigValid(currentConfig, primaryAddress)) {
             return false;
         }
         try {
@@ -248,7 +255,6 @@ final class NodeInfoScan implements RunInBatch {
         } catch (ExecutionException e) {
             LOG.error("Exception while trying to get SNMP profiles.", e);
         }
-
 
         return false;
     }

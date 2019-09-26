@@ -91,6 +91,9 @@ public class ShowConfigCommand implements Action {
             System.out.println("ReadCommunity: " + agent.getReadCommunity());
             System.out.println("WriteCommunity: " + agent.getWriteCommunity());
         }
+        if (agent.getProfileLabel() != null) {
+            System.out.println("ProfileLabel : " + agent.getProfileLabel());
+        }
         System.out.println();
     }
 }
