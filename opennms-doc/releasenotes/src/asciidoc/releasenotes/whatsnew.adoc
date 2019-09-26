@@ -167,5 +167,5 @@ A ton of other internal improvements have been made:
 * More instrumentation has been added to the Jaeger OpenTracing support introduced in Horizon 24.
 * A ton of performance improvements have been made in various parts of the codebase.
 * 2 new roles have been added:
-  * `ROLE_REPORT_DESIGNER` - use the ReST APIs or UI for manipulating reports and report schedules
-  * `ROLE_FLOW_MANAGER` - use the Rest APIs or UI for managing flow classification rules
+  ** `ROLE_REPORT_DESIGNER` - use the ReST APIs or UI for manipulating reports and report schedules
+  ** `ROLE_FLOW_MANAGER` - use the Rest APIs or UI for managing flow classification rules
