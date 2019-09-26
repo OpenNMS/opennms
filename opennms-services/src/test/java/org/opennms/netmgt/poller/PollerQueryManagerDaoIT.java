@@ -229,6 +229,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	@After
 	public void tearDown() throws Exception {
 		m_eventMgr.finishProcessingEvents();
+		m_eventMgr.reset();
 		stopDaemons();
 		sleep(200);
 		m_db.drop();

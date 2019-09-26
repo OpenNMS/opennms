@@ -62,7 +62,8 @@ public class SFlowConverter implements Converter<BsonDocument> {
             if ("0:1".equals(format) || "0:3".equals(format)) {
                 // Handle only (expanded) flow samples
 
-                if (first(get(sampleDocument, "data", "flows", "0:1"),
+                if (first(get(sampleDocument, "data", "flows", "0:1", "ipv4"),
+                           get(sampleDocument, "data", "flows", "0:1", "ipv6"),
                            get(sampleDocument, "data", "flows", "0:3"),
                            get(sampleDocument, "data", "flows", "0:4")).isPresent()) {
                     // Handle only flows containing IP related records

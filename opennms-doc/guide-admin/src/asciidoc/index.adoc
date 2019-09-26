@@ -172,6 +172,10 @@ include::text/performance-data-collection/shell/adhoc-collection.adoc[]
 include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
 
+[[ga-performance-mgmt-thresholds]]
+== Thresholding
+include::text/thresholds/thresholding.adoc[]
+
 [[ga-events]]
 == Events
 include::text/events/anatomy-events.adoc[]
