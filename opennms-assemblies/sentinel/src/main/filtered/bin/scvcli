@@ -1,0 +1,5 @@
+#!/bin/sh
+SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)"
+KEYSTORE_PATH="$SCRIPT_PATH/../etc"
+
+cd $KEYSTORE_PATH && java -jar $SCRIPT_PATH/org.opennms.features.scv.cli.jar "${@}" && cd $SCRIPT_PATH

@@ -44,10 +44,13 @@ drop table usersNotified cascade;
 drop table notifications cascade;
 drop table outages cascade;
 drop table ifServices cascade;
+drop table ifServices_metadata cascade;
 drop table snmpInterface cascade;
 drop table ipInterface cascade;
+drop table ipInterface_metadata cascade;
 drop table alarms cascade;
 drop table memos cascade;
+drop table node_metadata cascade;
 drop table node cascade;
 drop table service cascade;
 drop table scanreports cascade;
@@ -59,8 +62,6 @@ drop table monitoringsystems cascade;
 drop table events cascade;
 drop table event_parameters cascade;
 drop table pathOutage cascade;
-drop table demandPolls cascade;
-drop table pollResults cascade;
 drop table reportLocator cascade;
 drop table atinterface cascade;
 drop table stpnode cascade;
@@ -85,6 +86,8 @@ drop table filterfavorites cascade;
 drop table hwentity cascade;
 drop table hwentityattribute cascade;
 drop table hwentityattributetype cascade;
+drop table user_defined_links cascade;
+drop table kvstore_jsonb cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -95,8 +98,6 @@ drop sequence memoNxtId;
 drop sequence outageNxtId;
 drop sequence notifyNxtId;
 drop sequence userNotifNxtId;
-drop sequence demandPollNxtId;
-drop sequence pollResultNxtId;
 drop sequence reportNxtId;
 drop sequence reportCatalogNxtId;
 drop sequence mapNxtId;
@@ -189,16 +190,6 @@ create sequence catNxtId minvalue 1;
 --#          sequence, column, table
 --# install: userNotifNxtId id   usersNotified
 create sequence userNotifNxtId minvalue 1;
-
---# Sequence for the id column in the demandPolls table
---#          sequence, column, table
---# install: demandPollNxtId id   demandPolls
-create sequence demandPollNxtId minvalue 1;
-
---# Sequence for the id column in the pollResults table
---#          sequence, column, table
---# install: pollResultNxtId id   pollResults
-create sequence pollResultNxtId minvalue 1;
 
 --# Sequence for the mapID column in the map table
 --#          sequence,   column, table
@@ -495,6 +486,7 @@ create table node (
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
 	location        text not null,
+	hasFlows        boolean not null default false,
 
 	constraint pk_nodeID primary key (nodeID),
 	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON UPDATE CASCADE
@@ -563,6 +555,7 @@ create table snmpInterface (
     snmpCollect     varchar(2) default 'N',
     snmpPoll     varchar(1) default 'N',
     snmpLastSnmpPoll timestamp with time zone,
+	hasFlows        boolean not null default false,
 
     CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
@@ -1122,6 +1115,19 @@ CREATE TABLE alarm_attributes (
 CREATE INDEX alarm_attributes_idx ON alarm_attributes(alarmID);
 CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attributeName);
 
+CREATE TABLE alarm_situations (
+    id              INTEGER, CONSTRAINT pk_id PRIMARY KEY (id),
+    situation_id    INTEGER NOT NULL,
+    related_alarm_id  INTEGER NOT NULL,
+    mapped_time timestamp with time zone,
+    
+    CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (related_alarm_id) REFERENCES alarms (alarmid) ON DELETE CASCADE,
+    CONSTRAINT fk_alarm_situations_situation_id FOREIGN KEY (situation_id) REFERENCES alarms (alarmid) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX alarm_situations_situation_id_alarms_alarmid_key ON alarm_situations(situation_id, related_alarm_id);
+
+
 --# This constraint not understood by installer
 --#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );
 --#
@@ -1256,6 +1262,36 @@ create table assets (
 create index assets_nodeid_idx on assets(nodeid);
 CREATE INDEX assets_an_idx ON assets(assetNumber);
 
+CREATE TABLE node_metadata (
+    id integer NOT NULL,
+    context text NOT NULL,
+    key text NOT NULL,
+    value text NOT NULL,
+
+    CONSTRAINT node_metadata_pkey PRIMARY KEY (id, context, key),
+    CONSTRAINT fk_node_metadata_id FOREIGN KEY (id) references node (nodeid) ON DELETE CASCADE
+);
+
+CREATE TABLE ipInterface_metadata (
+    id integer NOT NULL,
+    context text NOT NULL,
+    key text NOT NULL,
+    value text NOT NULL,
+
+    CONSTRAINT ipInterface_metadata_pkey PRIMARY KEY (id, context, key),
+    CONSTRAINT fk_ipInterface_metadata_id FOREIGN KEY (id) references ipInterface ON DELETE CASCADE
+);
+
+CREATE TABLE ifServices_metadata (
+    id integer NOT NULL,
+    context text NOT NULL,
+    key text NOT NULL,
+    value text NOT NULL,
+
+    CONSTRAINT ifServices_metadata_pkey PRIMARY KEY (id, context, key),
+    CONSTRAINT fk_ifServices_metadata_id FOREIGN KEY (id) references ifServices ON DELETE CASCADE
+);
+
 --########################################################################
 --# categories table - Contains list of categories
 --#                     for nodes, interfaces, and services
@@ -1365,65 +1401,7 @@ create table pathOutage (
 create unique index pathoutage_nodeid on pathOutage(nodeID);
 create index pathoutage_criticalpathip on pathOutage(criticalPathIp);
 create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathServiceName);
-
---########################################################################
---# demandPolls Table - contains a list of requested polls
---#
---# This table contains the following information:
---#
---#  id                      : Unique identifier of the demand poll
---#  requestTime             : the time the user requested the poll
---#  user                    : the user that requested the poll
---#  description             : ?
---#
---########################################################################
-create table demandPolls (
-	id			integer,
-	requestTime	timestamp with time zone,
-	username	varchar(32),
-	description varchar(128),
 	
-	constraint demandpoll_pkey primary key (id)
-	
-);
-
-create index demandpoll_request_time on demandPolls(requestTime);
-	
---########################################################################
---# pollResults Table - contains a list of requested polls
---#
---# This table contains the following information:
---#
---#  id			: unique identifier of the demand poll
---#  pollId		: unique identifier of this specific service poll
---#  nodeId		: node id of the polled service
---#  ipAddr		: ip address of the polled service
---#  ifIndex		: ifIndex of the polled service's interface
---#  serviceId		: serviceid of the polled service
---#  statusCode		: status code of the pollstatus returned by the monitor
---#  statusName		: status name of the pollstaus returnd by the monitor
---#  reason		: the reason of the pollstatus returned by the monitor
---#
---########################################################################
-create table pollResults (
-	id			integer,
-	pollId      integer,
-	nodeId		integer,
-	ipAddr		text,
-	ifIndex		integer,
-	serviceId	integer,
-	statusCode	integer,
-	statusName	varchar(32),
-	reason		varchar(128),
-	
-	constraint pollresult_pkey primary key (id),
-	constraint fk_demandPollId foreign key (pollID) references demandPolls (id) ON DELETE CASCADE
-
-);
-
-create index pollresults_poll_id on pollResults(pollId);
-create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, serviceId);
-
 --#############################################################################
 --# location_specific_status_changes Table - contains a list status
 --#      changed reported for a service by a monitor in a remote
@@ -1830,6 +1808,7 @@ CREATE TABLE acks (
 
 create index ack_time_idx on acks(ackTime);
 create index ack_user_idx on acks(ackUser);
+create index ack_refid_idx on acks(refId);
 
 --########################################################################
 --#
@@ -1992,6 +1971,9 @@ create table isisLink (
 
 create table ipNetToMedia (
     id                      integer default nextval('opennmsNxtId') not null,
+    nodeid                  integer,
+    ifIndex                 integer,
+    port                    text,
     netAddress              text not null,
     physAddress             varchar(32) not null,
     sourceNodeId            integer not null,
@@ -1999,7 +1981,8 @@ create table ipNetToMedia (
     createTime     timestamp not null,
     lastPollTime   timestamp not null,
     constraint pk_ipnettomedia_id primary key (id),
-    constraint fk_sourcenodeid_ipnettomedia foreign key (sourcenodeid) references node (nodeid) 
+    constraint fk_ipnettomedia_nodeid foreign key (nodeid) references node (nodeid) on delete cascade,
+    constraint fk_ipnettomedia_sourcenodeid foreign key (sourcenodeid) references node (nodeid) on delete cascade
 );
 
 create table bridgeElement (
@@ -2330,44 +2313,16 @@ create table hwEntityAttribute (
 );
 create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId,hwAttribTypeId);
 
-
---##################################################################
---# NCS component tables
---##################################################################
-
-CREATE TABLE ncscomponent (
-    id integer NOT NULL,
-    version integer,
-    name character varying(255),
-    type character varying(255),
-    foreignsource character varying(255),
-    foreignid character varying(255),
-    depsrequired character varying(12),
-    nodeforeignsource character varying(64),
-    nodeforeignid character varying(64),
-    upeventuei character varying(255),
-    downeventuei character varying(255)
+create table hwEntityAlias (
+    id          integer default nextval('opennmsNxtId') not null,
+    hwEntityId  integer not null,
+    index       integer not null,
+    oid         text not null,
+    constraint pk_hwentityalias PRIMARY KEY (id),
+    constraint fk_hwentity_hwentityalias foreign key (hwentityid) references hwEntity (id) on delete cascade
 );
 
-ALTER TABLE ncscomponent ADD CONSTRAINT ncscomponent_type_foreignsource_foreignid_key UNIQUE (type, foreignsource, foreignid);
-
-
-CREATE TABLE ncs_attributes (
-    ncscomponent_id integer NOT NULL,
-    key character varying(255) NOT NULL,
-    value character varying(255) NOT NULL
-);
-
-ALTER TABLE ncs_attributes ADD CONSTRAINT ncs_attributes_pkey PRIMARY KEY (ncscomponent_id, key);
-
-
-CREATE TABLE subcomponents (
-    component_id integer NOT NULL,
-    subcomponent_id integer NOT NULL
-);
-
-ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_pkey PRIMARY KEY (component_id, subcomponent_id);
-ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent_id_key UNIQUE (component_id, subcomponent_id);
+create unique index hwentityalias_unique_idx on hwentityalias(hwentityid, index);
 
 --##################################################################
 --# Business Service Monitor (BSM) tables
@@ -2428,6 +2383,16 @@ CREATE TABLE bsm_service_ifservices (
     REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
     CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
     REFERENCES ifservices (id) ON DELETE CASCADE
+);
+
+CREATE TABLE bsm_service_applications (
+    id integer NOT NULL,
+    applicationid integer NOT NULL,
+    CONSTRAINT bsm_service_applications_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_applications_edge_id FOREIGN KEY (id)
+      REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bsm_service_applications_applicationid FOREIGN KEY (applicationid)
+      REFERENCES applications (id) ON DELETE CASCADE
 );
 
 CREATE TABLE bsm_service_reductionkeys (
@@ -2526,3 +2491,282 @@ CREATE VIEW node_outage_status AS
         WHERE outages.ifregainedservice IS NULL
         GROUP BY events.nodeid) tmp
  RIGHT JOIN node ON tmp.nodeid = node.nodeid;
+
+--##################################################################
+--# 24.0.0-node-categories-nms-10418
+--##################################################################
+
+CREATE VIEW node_categories AS (
+    SELECT
+        n.*,
+        COALESCE(s_cat.categoryname, 'no category') AS categoryname
+    FROM
+        node n
+    LEFT JOIN
+        category_node cn
+    ON
+        n.nodeid = cn.nodeid
+    LEFT JOIN
+        categories s_cat
+    ON
+        cn.categoryid = s_cat.categoryid
+);
+
+CREATE VIEW node_alarms AS (
+    SELECT
+        n.nodeid,
+        n.nodecreatetime,
+        n.nodeparentid,
+        n.nodetype,
+        n.nodesysoid,
+        n.nodesysname,
+        n.nodesysdescription,
+        n.nodesyslocation,
+        n.nodesyscontact,
+        n.nodelabel,
+        n.nodelabelsource,
+        n.nodenetbiosname,
+        n.nodedomainname,
+        n.operatingsystem,
+        n.lastcapsdpoll,
+        n.foreignsource,
+        n.foreignid,
+        n.location,
+        a.alarmid,
+        a.eventuei,
+        a.ipaddr,
+        a.reductionkey,
+        a.alarmtype,
+        a.counter,
+        a.severity,
+        a.lasteventid,
+        a.firsteventtime,
+        a.lasteventtime,
+        a.firstautomationtime,
+        a.lastautomationtime,
+        a.description,
+        a.logmsg,
+        a.operinstruct,
+        a.tticketid,
+        a.tticketstate,
+        a.suppresseduntil,
+        a.suppresseduser,
+        a.suppressedtime,
+        a.alarmackuser,
+        a.alarmacktime,
+        a.managedobjectinstance,
+        a.managedobjecttype,
+        a.applicationdn,
+        a.ossprimarykey,
+        a.x733alarmtype,
+        a.qosalarmstate,
+        a.clearkey,
+        a.ifindex,
+        a.stickymemo,
+        a.systemid,
+        (a.alarmacktime NOTNULL) AS acknowledged,
+        COALESCE(s_cat.categoryname, 'no category') AS categoryname,
+        s_cat.categorydescription,
+        s.servicename,
+        nas.max_alarm_severity,
+        nas.max_alarm_severity_unack,
+        nas.alarm_count_unack,
+        nas.alarm_count
+    FROM
+        node n
+    JOIN
+        alarms a
+    ON
+        n.nodeid = a.nodeid
+    JOIN
+        node_alarm_status nas
+    ON
+        a.nodeid = nas.nodeid
+    LEFT JOIN
+        service s
+    ON
+        a.serviceid = s.serviceid
+    LEFT JOIN
+        category_node cat
+    ON
+        n.nodeid = cat.nodeid
+    LEFT JOIN
+        categories s_cat
+    ON
+        cat.categoryid = s_cat.categoryid
+);
+
+CREATE VIEW node_outages AS (
+    SELECT
+        outages.outageid,
+        outages.svclosteventid,
+        outages.svcregainedeventid,
+        outages.iflostservice,
+        outages.ifregainedservice,
+        outages.ifserviceid,
+        e.eventuei AS svclosteventuei,
+        e.eventsource,
+        e.alarmid,
+        e.eventseverity,
+        (ifregainedservice NOTNULL) AS resolved,
+        s.servicename,
+        i.serviceid,
+        ipif.ipaddr,
+        COALESCE(outages.ifregainedservice - outages.iflostservice, now() - outages.iflostservice) AS duration,
+        nos.max_outage_severity,
+        nc.*
+    FROM
+        outages
+    JOIN
+        events e
+    ON
+        outages.svclosteventid = e.eventid
+    JOIN
+        ifservices i
+    ON
+        outages.ifserviceid = i.id
+    JOIN
+        service s
+    ON
+        i.serviceid = s.serviceid
+    JOIN
+        ipinterface ipif
+    ON
+        i.ipinterfaceid = ipif.id
+    JOIN
+        node_categories nc
+    ON
+        nc.nodeid = e.nodeid
+    JOIN
+        node_outage_status nos
+    ON
+        nc.nodeid = nos.nodeid
+);
+
+CREATE VIEW node_ip_services AS (
+    SELECT
+        n.*,
+        ip_if.id AS ip_if_id,
+        ip_if.ipaddr,
+        ip_if.iphostname,
+        ip_if.ismanaged,
+        ip_if.ipstatus,
+        ip_if.iplastcapsdpoll,
+        ip_if.issnmpprimary,
+        ip_if.snmpinterfaceid,
+        ip_if.netmask,
+        svc.serviceid,
+        svc.servicename,
+        if_svc.id AS if_svc_id,
+        if_svc.ifindex AS if_svc_ifindex,
+        if_svc.status AS if_svc_status
+    FROM
+        node_categories n
+    LEFT JOIN
+        ipinterface ip_if
+    ON
+        ip_if.nodeid = n.nodeid
+    LEFT JOIN
+        ifservices if_svc
+    ON
+        ip_if.id = if_svc.ipinterfaceid
+    LEFT JOIN
+        service svc
+    ON
+        if_svc.serviceid = svc.serviceid
+);
+
+--##################################################################
+--# Classification tables
+--##################################################################
+CREATE TABLE classification_groups (
+  id integer not null,
+  name text not null,
+  readonly boolean,
+  enabled boolean,
+  position integer not null,
+  description text,
+  CONSTRAINT classification_groups_pkey PRIMARY KEY (id)
+);
+ALTER TABLE classification_groups ADD CONSTRAINT classification_groups_name_key UNIQUE (name);
+
+CREATE TABLE classification_rules (
+  id integer NOT NULL,
+  name TEXT NOT NULL,
+  dst_address TEXT,
+  dst_port TEXT,
+  src_address TEXT,
+  src_port TEXT,
+  exporter_filter TEXT,
+  protocol TEXT,
+  omnidirectional BOOLEAN NOT NULL DEFAULT false,
+  position integer not null,
+  groupid integer NOT NULL,
+  CONSTRAINT classification_rules_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_classification_rules_groupid FOREIGN KEY (groupId) REFERENCES classification_groups (id) ON DELETE CASCADE
+);
+ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_definition_key UNIQUE (dst_address,dst_port,src_address,src_port,protocol,exporter_filter,groupid);
+
+--# Sequence for the id column in classification_rules table
+--#          sequence, column, table
+--# install: rulenxtid id classification_rules
+create sequence rulenxtid minvalue 1;
+
+--##################################################################
+--# User defined links
+--##################################################################
+CREATE TABLE user_defined_links (
+    id integer NOT NULL,
+    node_id_a integer NOT NULL,
+    node_id_z integer NOT NULL,
+    component_label_a text,
+    component_label_z text,
+    link_id text NOT NULL,
+    link_label text,
+    owner text NOT NULL
+);
+
+ALTER TABLE ONLY user_defined_links ADD CONSTRAINT user_defined_links_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_a FOREIGN KEY (node_id_a) REFERENCES node(nodeid) ON DELETE CASCADE;
+ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_z FOREIGN KEY (node_id_z) REFERENCES node(nodeid) ON DELETE CASCADE;
+
+--##################################################################
+--# Endpoints Grafana
+--##################################################################
+CREATE TABLE endpoints_grafana (
+    id integer NOT NULL,
+    uid TEXT NOT NULL,
+    url TEXT NOT NULL,
+    api_key TEXT NOT NULL,
+    description TEXT,
+    connect_timeout integer,
+    read_timeout integer,
+    CONSTRAINT endpoints_grafana_pkey PRIMARY KEY (id)
+);
+ALTER TABLE endpoints_grafana ADD CONSTRAINT endpoints_grafana_unique_uid UNIQUE (uid);
+
+--# Sequence for the id column in endpoints_grafana table
+--#          sequence, column, table
+--# install: endpointsnxtid id endponts_grafana
+create sequence endpointsnxtid minvalue 1;
+
+--##################################################################
+--# Key Value Stores
+--##################################################################
+CREATE TABLE kvstore_jsonb (
+    key text NOT NULL,
+    context text NOT NULL,
+    last_updated timestamp NOT NULL,
+    expires_at timestamp,
+    value jsonb NOT NULL,
+    CONSTRAINT pk_kvstore_jsonb PRIMARY KEY (key, context)
+);
+
+CREATE TABLE kvstore_bytea (
+    key text NOT NULL,
+    context text NOT NULL,
+    last_updated timestamp NOT NULL,
+    expires_at timestamp,
+    value bytea NOT NULL,
+    CONSTRAINT pk_kvstore_bytea PRIMARY KEY (key, context)
+);

@@ -1,3 +1,4 @@
+<%@page language="java" contentType="text/html" session="true"  %>
 <%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
@@ -27,11 +28,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
-
-<%@page language="java" contentType="text/html" session="true"  %>
-
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
+--%><jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
 	<jsp:param name="useionicons" value="true" />
 </jsp:include>
@@ -39,6 +36,11 @@
 <div class="row">
 	<!-- Left Column -->
 	<div class="col-md-3" id="index-contentleft">
+		<!-- Situations box -->
+		<% String showSituations = System.getProperty("opennms.situations.show", "true");
+		   if (Boolean.parseBoolean(showSituations)) { %>
+		<jsp:include page="/situation/summary-box.htm" flush="false" />
+		<% } %>
 		<!-- Problems box -->
 		<% String showNodesWithProblems = System.getProperty("opennms.nodesWithProblems.show", "true");
            if (Boolean.parseBoolean(showNodesWithProblems)) { %>

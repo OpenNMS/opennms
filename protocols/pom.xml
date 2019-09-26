@@ -11,7 +11,6 @@
   <name>OpenNMS :: Protocols</name>
   <modules>
     <module>cifs</module>
-    <module>dhcp</module>
     <module>nsclient</module>
     <module>radius</module>
     <module>xml</module>

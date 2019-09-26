@@ -142,7 +142,7 @@ public class DefaultResourceDaoTest {
     
     private void setUpCollectdConfigFactory() throws IOException {
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
-        m_collectdConfig = new CollectdConfigFactory(stream, "localhost", false);
+        m_collectdConfig = new CollectdConfigFactory(stream);
         stream.close();
     }
 

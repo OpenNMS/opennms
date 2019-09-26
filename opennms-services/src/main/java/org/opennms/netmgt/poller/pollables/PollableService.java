@@ -403,7 +403,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
                 try {
                     withTreeLock(r, timeout);
                 } catch (LockUnavailable e) {
-                    LOG.info("Postponing poll for {}", this, e);
+                    LOG.info("Postponing poll for {}. Another service is currently holding the lock.", this);
                     throw new PostponeNecessary("LockUnavailable postpone poll");
                 }
                 status = r.getPollStatus();
@@ -457,13 +457,6 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     public void refreshConfig() {
         m_pollConfig.refresh();
-    }
-
-    /**
-     * <p>refreshThresholds</p>
-     */
-    public void refreshThresholds() {
-        m_pollConfig.refreshThresholds();
     }
 
 }

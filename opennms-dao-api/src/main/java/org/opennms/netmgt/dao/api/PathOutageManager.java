@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -71,4 +72,6 @@ public interface PathOutageManager {
 	 * @throws SQLException
 	 */
 	Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeId) throws SQLException;
+
+	InetAddress getDefaultCriticalPathIp();
 }

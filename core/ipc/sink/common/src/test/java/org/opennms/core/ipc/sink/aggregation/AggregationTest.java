@@ -54,8 +54,12 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.test.MockLogAppender;
+import org.osgi.framework.BundleContext;
 
 import com.google.common.util.concurrent.RateLimiter;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 public class AggregationTest {
 
@@ -71,6 +75,22 @@ public class AggregationTest {
         public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
             dispatchedMessages.add(message);
         }
+
+        @Override
+        public String getMetricDomain() {
+            return AggregationTest.class.getPackage().getName();
+        }
+
+        @Override
+        public BundleContext getBundleContext() {
+            return null;
+        }
+
+        @Override
+        public Tracer getTracer() {
+            return GlobalTracer.get();
+        }
+
     };
 
     @Before
@@ -251,14 +271,14 @@ public class AggregationTest {
 
     public static class SinkModuleWithIdentityAggregate extends AbstractSinkModule<UDPPacketLog, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
+        public AggregationPolicy<UDPPacketLog, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
             return new IdentityAggregationPolicy<>();
         }
     }
 
     private static class SinkModuleWithMappingAggregate extends AbstractSinkModule<UDPPacket, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacket, UDPPacketLog> getAggregationPolicy() {
+        public AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
             return new MappingAggregationPolicy<UDPPacket, UDPPacketLog>() {
                 @Override
                 public UDPPacketLog map(UDPPacket message) {
@@ -270,8 +290,8 @@ public class AggregationTest {
 
     private static class SinkModuleWithAggregateNoInterval extends AbstractSinkModule<UDPPacket, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacket, UDPPacketLog> getAggregationPolicy() {
-            return new AggregationPolicy<UDPPacket, UDPPacketLog>() {
+        public AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
+            return new AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog>() {
                 @Override
                 public int getCompletionSize() {
                     return COMPLETION_SIZE;
@@ -297,14 +317,19 @@ public class AggregationTest {
                         return oldPacketLog;
                     }
                 }
+
+                @Override
+                public UDPPacketLog build(UDPPacketLog accumulator) {
+                    return accumulator;
+                }
             };
         }
     }
 
     private static class SinkModuleWithAggregateAndInterval extends AbstractSinkModule<UDPPacket, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacket, UDPPacketLog> getAggregationPolicy() {
-            return new AggregationPolicy<UDPPacket, UDPPacketLog>() {
+        public AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
+            return new AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog>() {
                 @Override
                 public int getCompletionSize() {
                     return COMPLETION_SIZE;
@@ -330,14 +355,19 @@ public class AggregationTest {
                         return oldPacketLog;
                     }
                 }
+
+                @Override
+                public UDPPacketLog build(UDPPacketLog accumulator) {
+                    return accumulator;
+                }
             };
         }
     }
 
     private static class SinkModuleWithAggregateAndAggressiveInterval extends AbstractSinkModule<UDPPacket, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacket, UDPPacketLog> getAggregationPolicy() {
-            return new AggregationPolicy<UDPPacket, UDPPacketLog>() {
+        public AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
+            return new AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog>() {
                 @Override
                 public int getCompletionSize() {
                     return 1;
@@ -364,6 +394,11 @@ public class AggregationTest {
                         return oldPacketLog;
                     }
                 }
+
+                @Override
+                public UDPPacketLog build(UDPPacketLog accumulator) {
+                    return accumulator;
+                }
             };
         }
     }
@@ -381,12 +416,22 @@ public class AggregationTest {
         }
 
         @Override
-        public String marshal(T message) {
+        public byte[] marshal(T message) {
             return null;
         }
 
         @Override
-        public T unmarshal(String message) {
+        public T unmarshal(byte[] bytes) {
+            return null;
+        }
+
+        @Override
+        public byte[] marshalSingleMessage(S message) {
+            return null;
+        }
+
+        @Override
+        public S unmarshalSingleMessage(byte[] message) {
             return null;
         }
 

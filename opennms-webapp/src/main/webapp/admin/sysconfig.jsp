@@ -77,11 +77,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">OpenNMS Configuration</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>OpenNMS Configuration</span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>OpenNMS Version:</th>
           <td><%=Vault.getProperty("version.display")%></td>
@@ -130,11 +130,11 @@
     </div> <!-- panel -->
   </div> <!-- column -->
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">System Configuration</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>System Configuration</span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>Server&nbsp;Time:</th>
           <td><onms:datetime instant="${Instant.now()}"/></td>
@@ -154,6 +154,10 @@
         <tr>
           <th>Operating&nbsp;System:</th>
           <td><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
+        </tr>
+        <tr>
+          <th>OSGi&nbsp;Container:</th>
+          <td>Apache Karaf <%=System.getProperty( "karaf.version" )%></td>
         </tr>
         <tr>
           <th>Servlet&nbsp;Container:</th>

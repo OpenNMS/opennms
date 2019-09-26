@@ -38,17 +38,21 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.netmgt.collectd.DefaultSnmpCollectionAgent;
 import org.opennms.netmgt.collectd.tca.config.TcaDataCollectionConfig;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -87,6 +91,11 @@ public class TcaCollectorComplianceIT extends CollectorComplianceTest {
             .put("collection", COLLECTION)
             .build();
     }
+
+    @Override
+    public CollectionAgent createAgent(Integer ifaceId, IpInterfaceDao ifaceDao, PlatformTransactionManager transMgr) {
+        return DefaultSnmpCollectionAgent.create(ifaceId, ifaceDao, transMgr);
+    };
 
     @Override
     public Map<String, Object> getRequiredBeans() {

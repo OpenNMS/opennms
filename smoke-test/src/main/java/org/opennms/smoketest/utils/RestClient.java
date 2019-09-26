@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,10 +25,14 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.smoketest.utils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Base64;
 import java.util.List;
 
 import javax.ws.rs.client.Client;
@@ -40,49 +44,71 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.cxf.common.util.Base64Utility;
+import org.glassfish.jersey.client.ClientProperties;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.smoketest.containers.OpenNMSContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * A ReST API client for OpenNMS.
- *
- * Uses CXF to perform automatic marshaling/unmarshaling of request and
- * response objects.
- *
- * @author jwhite
- */
 public class RestClient {
 
-    private static final String DEFAULT_USERNAME = "admin";
+    private static final String DEFAULT_USERNAME = OpenNMSContainer.ADMIN_USER;
 
-    private static final String DEFAULT_PASSWORD = "admin";
-
-    private final InetSocketAddress addr;
+    private static final String DEFAULT_PASSWORD = OpenNMSContainer.ADMIN_PASSWORD;
 
     private final String authorizationHeader;
 
-    public RestClient(String host, int port) {
-        this(InetSocketAddress.createUnresolved(host, port));
-    }
+    private final URL url;
 
     public RestClient(InetSocketAddress addr) {
         this(addr, DEFAULT_USERNAME, DEFAULT_PASSWORD);
     }
 
+    public RestClient(URL url) {
+        this(url, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+    }
+
     public RestClient(InetSocketAddress addr, String username, String password) {
-        this.addr = addr;
-        authorizationHeader = "Basic " + Base64Utility.encode((username + ":" + password).getBytes());
+        this(toUrl(addr), username, password);
+    }
+
+    public RestClient(URL url, String username, String password) {
+        this.url = url;
+        authorizationHeader = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+    }
+
+    /**
+     * Create a REST client that connects to http://localhost:8980/ with the default credentials.
+     * Used for testing.
+     *
+     * @return a new REST client for OpenNMS on the localhost
+     */
+    public static RestClient forLocalhost() {
+        return new RestClient(InetSocketAddress.createUnresolved("127.0.0.1", 8980));
+    }
+
+    private static URL toUrl(InetSocketAddress addr) {
+        try {
+            return new URL(String.format("http://%s:%d/opennms", addr.getHostString(), addr.getPort()));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getDisplayVersion() {
@@ -145,7 +171,11 @@ public class RestClient {
 
     public Response addInterface(String nodeCriteria, OnmsIpInterface ipInterface) {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria).path("ipinterfaces");
-        return getBuilder(target).post(Entity.entity(ipInterface, MediaType.APPLICATION_XML));
+        // Serialize interface to XML and remove attributes which can't be set
+        final String ipInterfaceXml = XmlUtils.filterAttributesFromXml(JaxbUtils.marshal(ipInterface),
+                // We shouldn't be adding any extra attributes here, but rather work to remove these
+                "isDown", "hasFlows", "monitoredServiceCount");
+        return getBuilder(target).post(Entity.entity(ipInterfaceXml, MediaType.APPLICATION_XML));
     }
 
     public Response deleteInterface(String nodeCriteria, String ipAddress) {
@@ -156,7 +186,11 @@ public class RestClient {
     public Response addService(String nodeCriteria, String ipAddress, OnmsMonitoredService service) {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria).path("ipinterfaces").path(ipAddress)
                 .path("services");
-        return getBuilder(target).post(Entity.entity(service, MediaType.APPLICATION_XML));
+        // Serialize service to XML and remove attributes which can't be set
+        final String serviceXml = XmlUtils.filterAttributesFromXml(JaxbUtils.marshal(service),
+                // We shouldn't be adding any extra attributes here, but rather work to remove these
+                "down", "statusLong");
+        return getBuilder(target).post(Entity.entity(serviceXml, MediaType.APPLICATION_XML));
     }
 
     public OnmsMonitoredService getService(String nodeCriteria, String ipAddress, String service) {
@@ -169,6 +203,11 @@ public class RestClient {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria).path("ipinterfaces").path(ipAddress)
                 .path("services").path(service);
         return getBuilder(target).get();
+    }
+
+    public Response deleteNode(String nodeCriteria) {
+        final WebTarget target = getTarget().path("nodes").path(nodeCriteria);
+        return getBuilder(target).delete();
     }
 
     public Response deleteService(String nodeCriteria, String ipAddress, String service) {
@@ -185,6 +224,26 @@ public class RestClient {
     public Response getResponseForInterface(String nodeCriteria, String ipAddress) {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria).path("ipinterfaces").path(ipAddress);
         return getBuilder(target).get();
+    }
+
+    public Response setNodeLevelMetadata(String nodeCriteria, OnmsMetaData metaData) {
+        final WebTarget target = getTargetV2().path("nodes").path(nodeCriteria).path("metadata");
+        return getBuilder(target).post(Entity.entity(metaData, MediaType.APPLICATION_XML));
+    }
+
+    public OnmsEventCollection getEventsForNode(int nodeId) {
+        final WebTarget target = getTarget().path("events").queryParam("node.id", nodeId);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
+    }
+
+    public OnmsAlarmCollection getAlarmsByEventUei(String eventUei) {
+        final WebTarget target = getTarget().path("alarms").queryParam("uei", eventUei);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsAlarmCollection.class);
+    }
+
+    public OnmsAlarmCollection getAlarmsForNode(int nodeId) {
+        final WebTarget target = getTarget().path("alarms").queryParam("node.id", nodeId);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsAlarmCollection.class);
     }
 
     public OnmsMinion getMinion(String id) {
@@ -241,17 +300,61 @@ public class RestClient {
         return getBuilder(target).get(events);
     }
 
+    public Long getFlowCount(long start, long end) {
+        final WebTarget target = getTarget().path("flows").path("count")
+                .queryParam("start", start)
+                .queryParam("end", end);
+        return getBuilder(target).get(Long.class);
+    }
+
+    public ResourceDTO getResourcesForNode(String nodeCriteria) {
+        final WebTarget target = getTarget().path("resources").path("fornode").path(nodeCriteria);
+        return getBuilder(target).get(ResourceDTO.class);
+    }
+
+    public void resetGeocoderConfiguration() {
+        final WebTarget target = getTargetV2().path("geocoding").path("config");
+        final Response response = getBuilder(target).delete();
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
+    }
+
+    public void addCategory(String categoryName) {
+        final OnmsCategory category = new OnmsCategory(categoryName);
+        final WebTarget target = getTarget().path("categories");
+        final Response response = getBuilder(target).post(Entity.entity(category, MediaType.APPLICATION_XML));
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
+    }
+
+    public void addCategoryToNode(String nodeCriteria, String categoryName) {
+        final WebTarget target = getTarget().path("categories").path(categoryName).path("nodes").path(nodeCriteria);
+        final Response response = getBuilder(target).put(null);
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
+    }
+
     private WebTarget getTarget() {
         final Client client = ClientBuilder.newClient();
-        return client.target(String.format("http://%s:%d/opennms/rest", addr.getHostString(), addr.getPort()));
+        // Allow PUT with empty body
+        client.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
+        return client.target(url.toString()).path("rest");
     }
 
     private WebTarget getTargetV2() {
         final Client client = ClientBuilder.newClient();
-        return client.target(String.format("http://%s:%d/opennms/api/v2", addr.getHostString(), addr.getPort()));
+        return client.target(url.toString()).path("api").path("v2");
     }
 
     private Invocation.Builder getBuilder(final WebTarget target) {
         return target.request().header("Authorization", authorizationHeader);
     }
+
+
 }

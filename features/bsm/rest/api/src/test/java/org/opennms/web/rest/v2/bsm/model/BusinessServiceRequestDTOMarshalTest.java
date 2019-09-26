@@ -38,6 +38,7 @@ import java.util.Collection;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
@@ -54,6 +55,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
         setTo.setStatus(Status.CRITICAL);
 
         final MapFunctionDTO increaseDto = createMapFunctionDTO(new Increase());
+        final MapFunctionDTO decreaseDto = createMapFunctionDTO(new Decrease());
         final MapFunctionDTO setToDto = createMapFunctionDTO(setTo);
         final BusinessServiceRequestDTO requestDTO = new BusinessServiceRequestDTO();
         requestDTO.setReduceFunction(createReduceFunctionDTO(new HighestSeverity()));
@@ -65,6 +67,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
         requestDTO.addReductionKey("myReductionKeyA", increaseDto, 7, "reduction-key-a-friendly-name");
         requestDTO.addReductionKey("myReductionKeyB", increaseDto, 7, "reduction-key-b-friendly-name");
         requestDTO.addIpService(1, increaseDto, 9, "ip-service-friendly-name");
+        requestDTO.addApplication(2, decreaseDto, 8);
 
         return Arrays.asList(new Object[][]{{
             BusinessServiceRequestDTO.class,
@@ -135,6 +138,16 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "           \"friendly-name\" : \"reduction-key-b-friendly-name\"" +
             "       }," +
             "   ]," +
+            "  \"application-edges\" : [" +
+            "       {" +
+            "           \"map-function\" : {" +
+            "               \"type\" : \"Decrease\"," +
+            "               \"properties\" : { }" +
+            "           }," +
+            "           \"weight\" : 8," +
+            "           \"application-id\" : 2," +
+            "       }," +
+            "   ]," +
             "}",
             "<business-service>\n" +
             "   <name>Web Servers</name>\n" +
@@ -198,6 +211,15 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "         <reduction-key>myReductionKeyB</reduction-key>\n" +
             "      </reduction-key-edge>\n" +
             "   </reduction-key-edges>\n" +
+            "   <application-edges>\n" +
+            "      <application-edge>\n" +
+            "         <map-function>\n" +
+            "            <type>Decrease</type>\n" +
+            "         </map-function>\n" +
+            "         <weight>8</weight>\n" +
+            "         <application-id>2</application-id>\n" +
+            "      </application-edge>\n" +
+            "   </application-edges>\n" +
             "   <reduce-function>\n" +
             "      <type>HighestSeverity</type>\n" +
             "   </reduce-function>\n" +

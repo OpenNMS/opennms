@@ -50,9 +50,10 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 	 */
 	@Test
 	public void testInstallAllOpenNMSFeatures() {
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version("2018.1.13-SNAPSHOT").type("xml").classifier("features").getURL());
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version("2018.1.13-SNAPSHOT").type("xml").classifier("spring-legacy").getURL());
-		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version("2018.1.13-SNAPSHOT").type("xml").classifier("features").getURL());
+		final String version = getOpenNMSVersion();
+		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("standard").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("spring-legacy").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 
 		for (String feature : new String[] {
 			"karaf-framework",
@@ -65,6 +66,7 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 			"kar",
 			"deployer",
 			"opennms-jaas-login-module",
+			"opennms-health-rest",
 			"datachoices",
 			"opennms-topology-runtime-browsers",
 			"opennms-topology-runtime-linkd",
@@ -91,7 +93,6 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 			"dashlet-surveillance",
 			"vaadin-surveillance-views",
 			"vaadin-jmxconfiggenerator",
-			"vaadin-opennms-pluginmanager",
 			"vaadin-adminpage",
 			"org.opennms.features.bsm.shell-commands"
 		}) {

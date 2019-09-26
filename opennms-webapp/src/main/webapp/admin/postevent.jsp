@@ -144,13 +144,13 @@
     eventXml = eventXml.replaceFirst("^<\\?xml[^\\>]+\\?\\>\\s*", "");
 %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Event Sent...</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Event Sent...</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <pre><c:out value="<%=eventXml%>" /></pre>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

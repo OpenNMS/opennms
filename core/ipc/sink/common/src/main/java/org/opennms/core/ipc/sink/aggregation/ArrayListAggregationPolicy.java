@@ -39,7 +39,7 @@ import org.opennms.core.ipc.sink.api.AggregationPolicy;
  *
  * @author Seth
  */
-public class ArrayListAggregationPolicy<S> implements AggregationPolicy<S, List<S>> {
+public class ArrayListAggregationPolicy<S> implements AggregationPolicy<S, List<S>, List<S>> {
 
     private final int m_completionSize;
     private final int m_completionInterval;
@@ -57,12 +57,17 @@ public class ArrayListAggregationPolicy<S> implements AggregationPolicy<S, List<
     }
 
     @Override
-    public List<S> aggregate(List<S> oldBucket, S newMessage) {
-        if (oldBucket == null) {
-            oldBucket = new ArrayList<S>(m_completionSize);
+    public List<S> aggregate(List<S> accumulator, S newMessage) {
+        if (accumulator == null) {
+            accumulator = new ArrayList<S>(m_completionSize);
         }
-        oldBucket.add(newMessage);
-        return oldBucket;
+        accumulator.add(newMessage);
+        return accumulator;
+    }
+
+    @Override
+    public List<S> build(List<S> accumulator) {
+        return accumulator;
     }
 
     @Override

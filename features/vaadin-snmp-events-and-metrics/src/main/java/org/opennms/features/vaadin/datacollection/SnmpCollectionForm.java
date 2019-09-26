@@ -32,12 +32,12 @@ import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
-import com.vaadin.data.fieldgroup.BeanFieldGroup;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * The Class SNMP Collection Form.
@@ -159,7 +159,6 @@ public class SnmpCollectionForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         snmpCollectionEditor.setReadOnly(readOnly);
     }
 
@@ -168,7 +167,7 @@ public class SnmpCollectionForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && snmpCollectionEditor.isReadOnly();
+        return snmpCollectionEditor.isReadOnly();
     }
 
     /**

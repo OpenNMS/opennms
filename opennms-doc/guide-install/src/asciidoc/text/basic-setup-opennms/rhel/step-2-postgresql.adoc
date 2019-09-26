@@ -1,0 +1,88 @@
+
+==== Step 2: Initialize and setup PostgreSQL
+
+.Initialization of the PostgreSQL database
+[source, shell]
+----
+postgresql-setup initdb
+----
+
+.System startup configuration for PostgreSQL
+[source, shell]
+----
+systemctl enable postgresql
+----
+
+.Startup PostgreSQL database
+[source, shell]
+----
+systemctl start postgresql
+----
+
+.Create an opennms database user with a password and create an opennms database which is owned by the user opennms
+[source, shell]
+----
+su - postgres
+createuser -P opennms
+createdb -O opennms opennms
+----
+
+.Set a password for Postgres super user
+[source, shell]
+----
+psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+exit
+----
+
+NOTE: The super user is required to be able to initialize and change the database schema for installation and updates.
+
+.Change the access policy for PostgreSQL
+[source, shell]
+----
+vi /var/lib/pgsql/data/pg_hba.conf
+----
+
+.Allow {opennms-product-name} accessing the database over the local network with a MD5 hashed password
+[source, shell]
+----
+host    all             all             127.0.0.1/32            md5<1>
+host    all             all             ::1/128                 md5<1>
+----
+
+<1> Change method from `ident` to `md5` for _IPv4_ and _IPv6_ on localhost.
+
+.Apply configuration changes for PostgreSQL
+[source, shell]
+----
+systemctl reload postgresql
+----
+
+.Configure database access in {opennms-product-name}
+[source, shell]
+----
+vi ${OPENNMS_HOME}/etc/opennms-datasources.xml
+----
+
+.Set credentials to access the PostgreSQL database
+[source, xml]
+----
+<jdbc-data-source name="opennms"
+                    database-name="opennms"<1>
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="** YOUR-OPENNMS-USERNAME **"<2>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><3>
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="postgres"<4>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><5>
+----
+
+<1> Set the database name _{opennms-product-name}_ should use
+<2> Set the user name to access the _opennms_ database table
+<3> Set the password to access the _opennms_ database table
+<4> Set the _postgres_ user for administrative access to PostgreSQL
+<5> Set the password for administrative access to PostgreSQL

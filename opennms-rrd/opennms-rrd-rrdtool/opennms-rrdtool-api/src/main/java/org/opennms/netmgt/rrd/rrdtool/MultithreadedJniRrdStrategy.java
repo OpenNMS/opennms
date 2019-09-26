@@ -36,7 +36,6 @@ import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.opennms.netmgt.rrd.jrrd2.api.FetchResults;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;

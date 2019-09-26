@@ -63,11 +63,11 @@ public class AlarmProviderImpl implements AlarmProvider {
         }
         if (reductionKeys.size() <= threshold) {
             List<OnmsAlarm> alarms = alarmDao.findMatching(new CriteriaBuilder(OnmsAlarm.class).in("reductionKey", reductionKeys).toCriteria());
-            return alarms.stream().collect(Collectors.toMap(alarm -> alarm.getReductionKey(), alarm -> new AlarmWrapperImpl(alarm)));
+            return alarms.stream().collect(Collectors.toMap(OnmsAlarm::getReductionKey, AlarmWrapperImpl::new));
         } else {
             return alarmDao.findAll().stream()
                     .filter(a -> reductionKeys.contains(a.getReductionKey()))
-                    .collect(Collectors.toMap(alarm -> alarm.getReductionKey(), alarm -> new AlarmWrapperImpl(alarm)));
+                    .collect(Collectors.toMap(OnmsAlarm::getReductionKey, AlarmWrapperImpl::new));
         }
     }
 

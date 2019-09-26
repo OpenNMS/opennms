@@ -1,0 +1,48 @@
+
+==== Step 4: Configure Minion to communicate with {opennms-product-name}
+
+.Login to the Karaf Shell on the system where your Minion is installed with SSH
+[source, shell]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure the Minion's location and endpoint URLs for communication with {opennms-product-name}
+[source]
+----
+[root@localhost /root]# $ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.minion.controller
+admin@minion()> config:property-set location Office-Pittsboro
+admin@minion()> config:property-set http-url http://opennms-fqdn:8980/opennms
+admin@minion()> config:property-set broker-url failover:tcp://opennms-fqdn:61616
+admin@minion()> config:update
+----
+
+TIP: Include the `failover:` portion of the broker URL to allow the _Minion_ to re-establish connectivity on failure.
+     For a reference on the different URL formats, see http://activemq.apache.org/uri-protocols.html[ActiveMQ URI Protocols].
+
+.Configure the credentials to use when communicating with {opennms-product-name}
+[source]
+----
+admin@minion()> scv:set opennms.http minion minion
+admin@minion()> scv:set opennms.broker minion minion
+----
+
+TIP: Another way to configure credentials is to use the `scvcli` utility in your _Minion_ `bin` directory.
+
+.Example of configuring credentials with the command line utility `scvcli`
+[source]
+----
+[root@localhost /root]# $ cd /opt/minion
+[root@localhost /opt/minion]# $ ./bin/scvcli set opennms.http minion minion
+[root@localhost /opt/minion]# $ ./bin/scvcli set opennms.broker minion minion
+----
+
+.Restart the Minion after updating the credentials
+[source]
+----
+[root@localhost /root]# $ systemctl restart minion
+----
+
+NOTE: The credentials are configured separately since they are encrypted on disk.

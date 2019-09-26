@@ -1,0 +1,182 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-flow-support-classification-engine]]
+=== Classification Engine
+
+The _Classification Engine_ applies a set of user- and/or system-defined rules to each flow to classify it.
+This allows users to group flows by applications, e.g. if all flows to port 80 are marked as `http`.
+
+In order to classify a flow, a rule must be defined.
+A rule defines at least a name, which the flow is classified with, and additional parameters which must match for a successful classification.
+
+==== Rule definition
+A rule has the following fields:
+
+|===
+| Name | Mandatory | Description
+
+| `group`
+| `mandatory`
+| The group in which this rule was placed, e.g. `system-defined`, see also <<Rule Groups>>
+
+| `position`
+| `mandatory`
+| The position at which it is placed within its group, relevant for the <<Order of evaluation>>.
+
+| `name`
+| `mandatory`
+| The name the flow is classified with, e.g. `http`
+
+| `dstPort`
+| `optional`
+| The `dstPort` of the flow must match this port.
+  May be a range or list of ports, e.g. 80,8080,8980, or 8000-9000.
+
+| `dstAddress`
+| `optional`
+| The `dstAddress` of the flow must match this address.
+  May contain wildcards.
+
+| `srcPort`
+| `optional`
+| The `srcPort` of the flow must match this port.
+  See `dstPort` for more details.
+
+| `srcAddress`
+| `optional`
+| The `srcAddress` of the flow must match this address.
+  See `dstAddress` for more details.
+
+| `exporterFilter`
+| `optional`
+| The exporter of the flow must match this criteria.
+  It supports all capabilities of the _https://wiki.opennms.org/wiki/Filters[{opennms-product-name} Filters API]_.
+
+| `protocol`
+| `optional`
+| The ip protocol of the flow must match this criteria.
+|===
+
+Even if all fields (besides `group`, `position` and `name`) are optional, at least one of them must be defined to be considered a valid rule.
+
+A list of pre-defined rules already exist in the group `pre-defined`.
+The pre-defined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
+New rules can be defined using the _Classification UI_ which can be found in the Admin Menu: *Admin -> Configure OpenNMS -> Manage Flow Classification*
+
+==== Omnidirectional Rules
+Rules can be marked as omnidirectional which additionally evaluates the rules with interchanged endpoint addresses and ports.
+This is helpful if traffic related to a matching classification should be classified the same way.
+
+==== Rule Groups
+Rules live within a rule group.
+New groups can be added, edited and deleted via the _Classification UI_.
+The `pre-defined` group is read only. It (and it's rules) can not be altered.
+
+==== Order of evaluation
+Rules and groups have a position. Lower positions are evaluated first.
+The position of a rules group is more important than the rules position within its group. The system defined group is always evaluated last.
+
+An example of an evaluation:
+
+|===
+| Group Position | Group     | Rule Position | Rule
+| `1`            | `group 1` | `1`           | `rule 1.1`
+| `1`            | `group 1` | `2`           | `rule 1.2`
+| `1`            | `group 1` | `3`           | `rule 1.3`
+| `1`            | `group 1` | `4`           | `rule 1.4`
+| `2`            | `group 2` | `1`           | `rule 2.1`
+| `2`            | `group 2` | `2`           | `rule 2.2`
+| `2`            | `group 2` | `3`           | `rule 2.3`
+| `2`            | `group 2` | `4`           | `rule 2.4`
+| `3`            | `group 3` | `1`           | `rule 3.1`
+| `3`            | `group 3` | `2`           | `rule 3.2`
+|===
+
+The positions of rules and groups can be changed by drag and drop or by editing the position field in the edit dialogs.
+
+==== Verification
+
+With a more complex set of rules it is not always easy to verify if everything is configured correctly.
+To make things a bit easier, the _Classification UI_ allows to test/verify a classification.
+To do so, please navigate to the _Classification UI_:
+*Admin -> Configure OpenNMS -> Manage Flow Classification* and select the _Test Classification_ action in the top right.
+This allows to simulate a flow being send to the _Classification Engine_ with certain fields.
+
+==== Example
+
+Let's assume the following rules are defined:
+
+|===
+| name |  srcAddress | srcPort | dstAddress | dstPort | protocol | exporterFilter
+
+| `OpenNMS`
+|
+|
+| 10.0.0.1
+| 8980
+| tcp,udp
+|
+
+| `http`
+|
+|
+|
+| 80,8980,8080,9000
+| udp,tcp
+|
+
+| `https`
+|
+|
+|
+| 443
+|
+|
+
+| `Exporters`
+|
+|
+|
+|
+|
+| categoryName == 'Exporters'
+|===
+
+
+The following flows are send to _{opennms-product-name}_ and with the rules defined above classified accordingly.
+
+[%header, cols=2]
+|===
+| Flow
+| Classification
+
+| protocol: tcp,
+
+  srcAddress: 10.0.0.5, srcPort: 60123,
+
+  dstAddress: 54.246.188.65, dstPort: 80,
+
+  exporterAddress: 10.0.0.55
+| `http`
+
+| protocol: tcp,
+
+  srcAddress: 10.0.0.5, srcPort: 60123,
+
+  dstAddress: 54.246.188.65, dstPort: 443,
+
+  exporterAddress: 10.0.0.55
+| `https`
+
+| protocol: tcp,
+
+  srcAddress: 10.0.0.5, srcPort: 60123,
+
+  dstAddress: 10.0.0.1, dstPort: 8980,
+
+  exporterAddress: 10.0.0.55
+| `OpenNMS`
+
+|===

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,66 +28,75 @@
 
 package liquibase.ext.opennms.setsequence;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import liquibase.change.AbstractChange;
 import liquibase.change.ChangeMetaData;
+import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
 
+@DatabaseChange(name="setSequence", description="Set Sequence", priority=ChangeMetaData.PRIORITY_DEFAULT)
 public class SetSequenceChange extends AbstractChange {
+    private String m_schemaName;
+    private String m_tableName;
+    private String m_column;
     private String m_sequenceName;
-	private Integer m_value;
-	private List<TableConfig> m_tables = new ArrayList<>();
+    private Integer m_value;
 
-	public SetSequenceChange() {
-        super("setSequence", "Set Sequence", ChangeMetaData.PRIORITY_DEFAULT);
+    public SetSequenceChange() {
+        super();
+    }
+
+    public void setSchemaName(final String schemaName) {
+        m_schemaName = schemaName;
     }
     
-	public void setSequenceName(final String sequenceName) {
-		m_sequenceName = sequenceName;
-	}
-	
-	public String getSequenceName() {
-		return m_sequenceName;
-	}
+    public String getSchemaName() {
+        return m_schemaName;
+    }
 
-	public void setValue(final String value) {
-		m_value = Integer.valueOf(value);
-	}
+    public void setTableName(final String tableName) {
+        m_tableName = tableName;
+    }
 
-	public String getValue() {
-		return m_value.toString();
-	}
+    public String getTableName() {
+        return m_tableName;
+    }
 
-	public TableConfig createTable() {
-		final TableConfig tc = new TableConfig();
-		m_tables.add(tc);
-		return tc;
-	}
+    public void setColumn(final String column) {
+        m_column = column;
+    }
+    
+    public String getColumn() {
+        return m_column;
+    }
 
-	public void addTable(final TableConfig table) {
-		m_tables.add(table);
-	}
+    public void setSequenceName(final String sequenceName) {
+        m_sequenceName = sequenceName;
+    }
 
-	public List<TableConfig> getTables() {
-		return m_tables;
-	}
+    public String getSequenceName() {
+        return m_sequenceName;
+    }
 
-    @Override
-	public SqlStatement[] generateStatements(final Database database) {
-		final SetSequenceStatement statement = new SetSequenceStatement(getSequenceName());
-		statement.setValue(m_value);
-		for (final TableConfig table : m_tables) {
-			statement.addTable(table.getName(), table.getSchemaName(), table.getColumn());
-		}
-		return new SqlStatement[] { statement };
-	}
+    public void setValue(final String value) {
+        m_value = value == null? null : Integer.valueOf(value);
+    }
+
+    public String getValue() {
+        return m_value == null? null : m_value.toString();
+    }
 
     @Override
-	public String getConfirmationMessage() {
-		return "Sequence " + m_sequenceName + " updated";
-	}
+    public SqlStatement[] generateStatements(final Database database) {
+        final SetSequenceStatement statement = new SetSequenceStatement(getSequenceName());
+        statement.setValue(m_value);
+        statement.addTable(m_tableName, m_schemaName, m_column);
+        return new SqlStatement[] { statement };
+    }
+
+    @Override
+    public String getConfirmationMessage() {
+        return "Sequence " + m_sequenceName + " updated";
+    }
 
 }

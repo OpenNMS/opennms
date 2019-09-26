@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,6 +48,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
@@ -60,8 +62,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 /**
  * <p>JdbcFilterDao class.</p>
@@ -81,6 +88,15 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
 	private DataSource m_dataSource;
     private DatabaseSchemaConfig m_databaseSchemaConfigFactory;
+
+    private final static MetricRegistry metricRegistry = new MetricRegistry();
+
+    private JmxReporter jmxReporter;
+    private final Timer getIpListTimer;
+
+    public JdbcFilterDao() {
+        getIpListTimer = metricRegistry.timer("getIPAddressListForFilter");
+    }
 
     /**
      * <p>setDataSource</p>
@@ -125,6 +141,17 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     public void afterPropertiesSet() {
         Assert.state(m_dataSource != null, "property dataSource cannot be null");
         Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
+        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.config.filterdao").build();
+        jmxReporter.start();
+    }
+
+    @PreDestroy
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void destroy() throws Exception {
+        if (jmxReporter != null) {
+            jmxReporter.stop();
+            jmxReporter = null;
+        }
     }
 
     /**
@@ -255,6 +282,14 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     	return getIPAddressList(rule, true);
     }
 
+    protected InetAddress getActiveIPAddress(final String rule, final String address) {
+        final List<InetAddress> ipAddressList = getIPAddressList(rule, true, address);
+        if (ipAddressList.isEmpty()) {
+            return null;
+        }
+        return ipAddressList.get(0);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -264,7 +299,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     private List<InetAddress> getIPAddressList(final String rule, final boolean filterDeleted) throws FilterParseException {
+        return getIPAddressList(rule, filterDeleted, null);
+
+    }
+
+    private List<InetAddress> getIPAddressList(final String rule, final boolean filterDeleted, final String address) throws FilterParseException {
     	final List<InetAddress> resultList = new ArrayList<>();
+    	final boolean filterByAddress = address != null && address.length() > 0;
         String sqlString;
 
         LOG.debug("Filter.getIPAddressList({})", rule);
@@ -272,7 +313,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         // get the database connection
         Connection conn = null;
         final DBUtils d = new DBUtils(getClass());
-        try {
+        try (final Timer.Context ctx = getIpListTimer.time()) {
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement(rule);
 
@@ -281,6 +322,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             		sqlString += " AND (ipInterface.isManaged != 'D' or ipInterface.isManaged IS NULL)";
             	}
             }
+            if (filterByAddress) {
+                sqlString += " AND ipInterface.ipaddr = ?";
+            }
 
             conn = getDataSource().getConnection();
             d.watch(conn);
@@ -288,9 +332,17 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             LOG.debug("Filter.getIPAddressList({}): SQL statement: {}", rule, sqlString);
 
             // execute query and return the list of ip addresses
-            final Statement stmt = conn.createStatement();
-            d.watch(stmt);
-            final ResultSet rset = stmt.executeQuery(sqlString);
+            final ResultSet rset;
+            if (filterByAddress) {
+                final PreparedStatement preparedStatement = conn.prepareStatement(sqlString);
+                preparedStatement.setString(1, address);
+                d.watch(preparedStatement);
+                rset = preparedStatement.executeQuery();
+            } else {
+                final Statement stmt = conn.createStatement();
+                d.watch(stmt);
+                rset = stmt.executeQuery(sqlString);
+            }
             d.watch(rset);
 
             // fill up the array list if the result set has values
@@ -331,11 +383,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         if (rule.length() == 0) {
             return true;
         } else {
-            /*
-             * see if the ip address is contained in the list that the
-             * rule returns
-             */
-            return getActiveIPAddressList(rule).contains(addr(addr));
+            return getActiveIPAddress(rule, addr) != null;
         }
     }
 

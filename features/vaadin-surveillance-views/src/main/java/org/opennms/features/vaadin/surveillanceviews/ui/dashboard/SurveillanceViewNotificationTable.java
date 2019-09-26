@@ -27,22 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.Page;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
-import org.opennms.features.topology.api.support.InfoWindow;
-import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsNotification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -54,6 +38,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+
+import org.opennms.features.topology.api.support.InfoWindow;
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNotification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.Button;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.themes.BaseTheme;
 
 /**
  * This class represents a table for displaying the notifications for a surveillance view dashboard.
@@ -269,10 +270,10 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
             public Object generateCell(final Table table, final Object itemId, final Object propertyId) {
                 final Notification notification = (Notification) itemId;
 
-                Button icon = getClickableIcon("glyphicon glyphicon-bell", new Button.ClickListener() {
+                Button icon = getClickableIcon(FontAwesome.BELL, new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final URI currentLocation = getUI().getPage().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
                         final String redirectFragment = contextRoot + "/notification/detail.jsp?quiet=true&notice=" + notification.getId();
 
@@ -298,7 +299,7 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
                 button.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final URI currentLocation = getUI().getPage().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
                         final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + notification.getNodeId();
                         ;
@@ -437,6 +438,6 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
                     LOG.error("Exception in task", e.getCause());
                 }
             }
-        }, MoreExecutors.sameThreadExecutor());
+        }, MoreExecutors.directExecutor());
     }
 }

@@ -35,6 +35,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryReference;
@@ -90,11 +91,12 @@ public final class Scriptd extends AbstractServiceDaemon {
             throw new UndeclaredThrowableException(ex);
         }
 
-        // get the node DAO
+        // get the node DAO and sessionUtils
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         NodeDao nodeDao = BeanUtils.getBean(bf, "nodeDao", NodeDao.class);
+        SessionUtils sessionUtils = BeanUtils.getBean(bf, "sessionUtils", SessionUtils.class);
 
-        m_executor = new Executor(aFactory, nodeDao);
+        m_executor = new Executor(aFactory, nodeDao, sessionUtils);
     }
 
     /**

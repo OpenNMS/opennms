@@ -118,7 +118,7 @@ public class SyslogdIT implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-        MockLogAppender.resetEvents();
+        MockLogAppender.resetState();
 
         InputStream stream = null;
         try {

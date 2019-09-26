@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.model.events;
 
-import java.util.stream.Collectors;
-
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -62,7 +61,7 @@ public class AddEventVisitor extends AbstractEntityVisitor {
         m_eventForwarder.sendNow(createNodeAddedEvent(node));
         if (node.getCategories().size() > 0) {
             // Collect the category names into an array
-            String[] categoriesAdded = node.getCategories().stream().map(cat -> cat.getName()).toArray(String[]::new);
+            String[] categoriesAdded = node.getCategories().stream().map(OnmsCategory::getName).toArray(String[]::new);
             m_eventForwarder.sendNow(createNodeCategoryMembershipChangedEvent(node, categoriesAdded, new String[0]));
         }
     }

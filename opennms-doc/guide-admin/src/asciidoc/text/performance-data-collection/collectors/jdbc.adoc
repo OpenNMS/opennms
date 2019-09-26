@@ -32,9 +32,9 @@ By default, only the _JDBC_ driver for _PostgreSQL_ is available.
 | Parameter              | Description                                                                    | Required | Default value
 | `collection`           | The name of the _JDBC Collection_ to use                                       | required | (empty)
 | `data-source`          | Use an existing datasource defined in opennms-datasources.xml                  | optional | NO_DATASOURCE_FOUND
-| `driver`               | Driver class name                                                              | optional | com.sybase.jdbc2.jdbc.SybDriver
-| `url`                  | _JDBC_ URL                                                                     | optional | jdbc:sybase:Tds:OPENNMS_JDBC_HOSTNAME/tempdb
-| `user`                 | _JDBC_ username                                                                | optional | sa
+| `driver`               | Driver class name                                                              | optional | org.postgresql.Driver
+| `url`                  | _JDBC_ URL                                                                     | optional | jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
+| `user`                 | _JDBC_ username                                                                | optional | postgres
 | `password`             | _JDBC_ password                                                                | optional | (empty string)
 |===
 

@@ -25,13 +25,15 @@
   <modules>
     <module>api</module>
     <module>build</module>
+    <module>cache</module>
     <module>camel</module>
+    <module>cli</module>
     <module>config</module>
     <module>criteria</module>
     <module>daemon</module>
     <module>db</module>
     <module>db-install</module>
-    <module>doc</module>
+    <module>health</module>
     <module>icmp-jna</module>
     <module>ipc</module>
     <module>jmx</module>
@@ -45,10 +47,13 @@
     <module>soa</module>
     <module>spring</module>
     <module>spring-web</module>
+    <module>sysprops</module>
     <module>tasks</module>
     <module>test-api</module>
     <module>upgrade</module>
     <module>web</module>
+    <module>web-assets</module>
     <module>xml</module>
+    <module>tracing</module>
   </modules>
 </project>

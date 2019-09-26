@@ -85,7 +85,7 @@
       <mibObj oid=".1.3.6.1.4.1.2281.4.5.1.1.5" instance="faAccessStatTableIndex" alias="accStatCV" type="gauge"/>
    </group>
    <systemDef name="Ceragon Fibreair 1500P">
-      <sysoidMask>.1.3.6.1.4.1.2281.1.4</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2281.1.4</sysoid>
       <collect>
          <includeGroup>ceragonfa1500-eth-stats</includeGroup>
          <includeGroup>ceragonfa1500-drawer-stats</includeGroup>
@@ -95,7 +95,7 @@
       </collect>
    </systemDef>
    <systemDef name="Ceragon Fibreair 1500R">
-      <sysoidMask>.1.3.6.1.4.1.2281.1.4.4</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2281.1.4.4</sysoid>
       <collect>
          <includeGroup>ceragonfa1500-drawer-stats</includeGroup>
          <includeGroup>ceragonfa1500-mux-stats</includeGroup>

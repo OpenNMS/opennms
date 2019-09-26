@@ -19,4 +19,8 @@
     <bean id="locationAwareDetectorClient" class="org.opennms.netmgt.provision.detector.client.rpc.LocationAwareDetectorClientRpcImpl" />
     <onmsgi:service interface="org.opennms.netmgt.provision.LocationAwareDetectorClient" ref="locationAwareDetectorClient"/>
 
+    <onmsgi:list id="serviceDetectors" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+        <onmsgi:listener bind-method="onBind" unbind-method="onUnbind" ref="serviceDetectorRegistry"/>
+    </onmsgi:list>
+
 </beans>

@@ -36,7 +36,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
+import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -62,6 +64,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 
 /**
  * <p>DefaultGraphResultsService class.</p>
@@ -73,6 +76,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultGraphResultsService.class);
 
+	public static final String RESOURCE_IDS_CONTEXT = "resourceIds";
+
     private ResourceDao m_resourceDao;
 
     private GraphDao m_graphDao;
@@ -82,6 +87,10 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     private RrdDao m_rrdDao;
 
     private EventProxy m_eventProxy;
+
+    private JsonStore m_jsonStore;
+
+    private final Gson m_gson = new Gson();
 
     private RelativeTimePeriod[] m_periods;
 
@@ -94,7 +103,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     }
 
     @Override
-    public GraphResults findResults(ResourceId[] resourceIds, String[] reports, String nodeCriteria, long start, long end, String relativeTime) {
+    public GraphResults findResults(ResourceId[] resourceIds, String[] reports, String generatedId, String nodeCriteria, long start, long end, String relativeTime) {
         if (reports == null) {
             throw new IllegalArgumentException("reports argument cannot be null");
         }
@@ -109,6 +118,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         graphResults.setRelativeTimePeriods(m_periods);
         graphResults.setReports(reports);
         graphResults.setNodeCriteria(nodeCriteria);
+        graphResults.setGeneratedId(generatedId);
 
         HashMap<ResourceId, List<OnmsResource>> resourcesMap = new HashMap<>();
         for (ResourceId resourceId : resourceIds) {
@@ -141,9 +151,9 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         // GraphAll case where all resources are fetched from node.
         if (!Strings.isNullOrEmpty(nodeCriteria)) {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if(node != null) {
+            if (node != null) {
                 OnmsResource nodeResource = m_resourceDao.getResourceForNode(node);
-                if(nodeResource != null) {
+                if (nodeResource != null) {
                     List<OnmsResource> childResources = nodeResource.getChildResources();
                     for (OnmsResource resource : childResources) {
                         try {
@@ -155,6 +165,29 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
                 }
             }
         }
+        // GraphSelected case where all resources are fetched from generatedId
+        if (!Strings.isNullOrEmpty(generatedId)) {
+            Optional<String> result = m_jsonStore.get(generatedId, RESOURCE_IDS_CONTEXT);
+            if (result.isPresent()) {
+                try {
+                    String[] resourceArray = m_gson.fromJson(result.get(), String[].class);
+                    for (String resourceId : resourceArray) {
+                        try {
+                            OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(resourceId));
+                            if(resource != null) {
+                                graphResults.addGraphResultSet(createGraphResultSet(null, resource, reports, graphResults));
+                            }
+                        } catch (IllegalArgumentException e) {
+                            LOG.warn(e.getMessage(), e);
+                        }
+                    }
+                } catch (Exception e) {
+                    LOG.warn("Exception while parsing json string {}", result.get());
+                }
+            }
+        }
+
+
 
         graphResults.setGraphTopOffsetWithText(m_rrdDao.getGraphTopOffsetWithText());
         graphResults.setGraphLeftOffset(m_rrdDao.getGraphLeftOffset());
@@ -265,6 +298,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         Assert.state(m_resourceDao != null, "resourceDao property has not been set");
         Assert.state(m_graphDao != null, "graphDao property has not been set");
         Assert.state(m_rrdDao != null, "rrdDao property has not been set");
+        Assert.state(m_jsonStore != null, "jsonStore property has not been set");
     }
 
     /**
@@ -348,5 +382,14 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }
-    
+
+
+    /**
+     * <p>setJsonStore</p>
+     *
+     * @param jsonStore a @{@link JsonStore} object.
+     */
+    public void setJsonStore(JsonStore jsonStore) {
+        m_jsonStore = jsonStore;
+    }
 }

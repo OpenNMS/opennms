@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.common;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.aggregation.AggregatingSinkMessageProducer;
@@ -36,9 +38,16 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
+import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.MetricSet;
 import com.codahale.metrics.Timer.Context;
+
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
 
 /**
  * This class does all the hard work of building and maintaining the state of the message
@@ -54,15 +63,26 @@ import com.codahale.metrics.Timer.Context;
  */
 public abstract class AbstractMessageDispatcherFactory<W> implements MessageDispatcherFactory {
 
+    private final MetricRegistry metrics = new MetricRegistry();
+
+    private JmxReporter metricsJmxRepoter = null;
+
+    private ServiceRegistration<MetricSet> metricsServiceRegistration = null;
+
     public abstract <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, W metadata, T message);
 
-    private final MetricRegistry metrics = new MetricRegistry();
+    public abstract String getMetricDomain();
+
+    public abstract BundleContext getBundleContext();
+
+    public abstract Tracer getTracer();
 
     /**
      * Invokes dispatch within a timer context.
      */
     private <S extends Message, T extends Message> void timedDispatch(DispatcherState<W, S,T> state, T message) {
-        try (Context ctx = state.getDispatchTimer().time()) {
+        try (Context ctx = state.getDispatchTimer().time();
+             Scope scope = getTracer().buildSpan(state.getModule().getId()).startActive(true)) {
             dispatch(state.getModule(), state.getMetaData(), message);
         }
     }
@@ -111,6 +131,7 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
                     super.close();
                     state.close();
                 }
+
             };
         } else {
             // No aggregation strategy is set, dispatch directly to reduce overhead
@@ -130,7 +151,7 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
         public void send(S message) {
             // Cast S to T, modules that do not use an AggregationPolicty
             // must have the same types for S and T
-            AbstractMessageDispatcherFactory.this.timedDispatch(state, (T)message);
+            AbstractMessageDispatcherFactory.this.timedDispatch(state, (T) message);
         }
 
         @Override
@@ -141,5 +162,46 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
 
     protected MetricRegistry getMetrics() {
         return metrics;
+    }
+
+    public void onInit() {
+        registerJmxReporterForMetrics();
+        maybeRegisterMetricSetInServiceRegistry();
+    }
+
+    public void onDestroy() {
+        unregisterJmxReporterForMetrics();
+        unregisterMetricSetInServiceRegistry();
+    }
+
+    private void registerJmxReporterForMetrics() {
+        metricsJmxRepoter = JmxReporter.forRegistry(getMetrics())
+                    .inDomain(getMetricDomain())
+                    .build();
+        metricsJmxRepoter.start();
+    }
+
+    private void unregisterJmxReporterForMetrics() {
+        if (metricsJmxRepoter != null) {
+            metricsJmxRepoter.close();
+            metricsJmxRepoter = null;
+        }
+    }
+
+    private void maybeRegisterMetricSetInServiceRegistry() {
+        final BundleContext bundleContext = getBundleContext();
+        if (bundleContext != null) {
+            final Dictionary<String,Object> props = new Hashtable<>();
+            props.put("name", getMetricDomain());
+            props.put("description", "Sink API Related Metrics for " + getMetricDomain());
+            metricsServiceRegistration = bundleContext.registerService(MetricSet.class, getMetrics(), props);
+        }
+    }
+
+    private void unregisterMetricSetInServiceRegistry() {
+        if (metricsServiceRegistration != null) {
+            metricsServiceRegistration.unregister();
+            metricsServiceRegistration = null;
+        }
     }
 }

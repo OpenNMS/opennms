@@ -34,7 +34,7 @@ import com.google.common.collect.Lists;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import org.opennms.features.vaadin.components.graph.InlineGraphContainer;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Label;
 
 public class InfoPanel extends CssLayout {
 
@@ -77,8 +77,8 @@ public class InfoPanel extends CssLayout {
     private void refreshInfoArea() {
         removeAllComponents();
         if (expanded) {
-            staticComponents.forEach(sc -> addComponent(sc));
-            dynamicComponents.forEach(c -> addComponent(c));
+            staticComponents.forEach(this::addComponent);
+            dynamicComponents.forEach(this::addComponent);
 
             // Add an empty component with width = 350px to always force the max length
             // This is required as otherwise the left area of the info panel would be empty, even if the info panel

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet debug page</title>
+
+	<link rel="stylesheet" href="../../dist/leaflet.css" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="../css/screen.css" />
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+</head>
+<body>
+
+	<div id="map"></div>
+	<button id="populate">Populate with 10 markers</button>
+
+	<script type="text/javascript">
+
+		var myCenter = new L.LatLng(0.60336569448,0.5673097006514);
+		var map = new L.Map('map', {center: myCenter, zoom: 13, preferCanvas: false});
+
+		var marker = new L.Polygon([[[0.60336569448,0.5673097006514],[0.60553569448,0.5641864068225],[0.6056064655545,0.5640345034819],[0.600998443059,0.5633399760533],[0.5989309721867,0.5663202930837],[0.60336569448,0.5673097006514]]], {}).addTo(map);
+
+		setTimeout(function(){
+		map.panBy([50,50])
+		}, 1000)
+	</script>
+</body>
+</html>

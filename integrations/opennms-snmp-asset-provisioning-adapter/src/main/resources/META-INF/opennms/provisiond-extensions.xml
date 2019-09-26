@@ -3,7 +3,6 @@
         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
 	<bean id="snmpAssetAdapterConfigFactory" class="org.opennms.netmgt.config.SnmpAssetAdapterConfigFactory">
-		<!-- <constructor-arg type="org.opennms.netmgt.config.OpennmsServerConfigFactory" ref="onmsServerConfig"/> -->
 	</bean>
 
 	<bean id="snmpAssetAdapterConfig" factory-bean="snmpAssetAdapterConfigFactory" factory-method="getInstance"/>

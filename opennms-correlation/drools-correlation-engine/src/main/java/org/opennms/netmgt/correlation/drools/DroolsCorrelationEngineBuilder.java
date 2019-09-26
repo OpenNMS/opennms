@@ -324,7 +324,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         EventBuilder ebldr = null;
         try {
             final PluginConfiguration[] newPlugins = locatePluginConfigurations();
-            final List<RuleSet> newEngines = Arrays.stream(newPlugins).peek(p -> p.readConfig()).flatMap(pc -> pc.getRuleSets().stream()).collect(Collectors.toList());
+            final List<RuleSet> newEngines = Arrays.stream(newPlugins).peek(PluginConfiguration::readConfig).flatMap(pc -> pc.getRuleSets().stream()).collect(Collectors.toList());
             final List<RuleSet> currentEngines = Arrays.stream(m_pluginConfigurations).flatMap(pc -> pc.getRuleSets().stream()).collect(Collectors.toList());
             LOG.debug("Current engines: {}", currentEngines);
             LOG.debug("New engines: {}", newEngines);

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.jmx;
 
+import javax.management.ObjectName;
+
 import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
 import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
 
@@ -40,12 +42,12 @@ public interface JmxSampleProcessor {
      *
      * @param attributeSample The collected sample.
      */
-    void process(JmxAttributeSample attributeSample);
+    void process(JmxAttributeSample attributeSample, ObjectName objectName);
 
     /**
      * Callback method for each collected Composite Member.
      *
      * @param compositeSample The collected sample.
      */
-    void process(JmxCompositeSample compositeSample);
+    void process(JmxCompositeSample compositeSample, ObjectName objectName);
 }

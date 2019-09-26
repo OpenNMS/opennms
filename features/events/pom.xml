@@ -16,5 +16,6 @@
     <module>syslog</module>
     <module>traps</module>
     <module>shell-commands</module>
+    <module>sink</module>
   </modules>
 </project>

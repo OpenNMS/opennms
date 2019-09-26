@@ -37,28 +37,35 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
@@ -70,7 +77,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-public class TopologyIT extends OpenNMSSeleniumTestCase {
+public class TopologyIT extends OpenNMSSeleniumIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyIT.class);
 
@@ -177,10 +184,10 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      * Represents a vertex that is currently visible on the map.
      */
     public static class VisibleVertex {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
         private final String label;
 
-        public VisibleVertex(OpenNMSSeleniumTestCase testCase, String label) {
+        public VisibleVertex(AbstractOpenNMSSeleniumHelper testCase, String label) {
             this.testCase = Objects.requireNonNull(testCase);
             this.label = Objects.requireNonNull(label);
         }
@@ -193,18 +200,31 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             return getElement().getLocation();
         }
 
+        public String getIconName() {
+            final String IconXpathExpression = "//*[@id='TopologyComponent']//*[@class='vertex-label' and text()='" +getLabel()+"']/../*[@class='icon-container']/*[@class='upIcon']";
+            String iconName = testCase.findElementByXpath(IconXpathExpression).getAttribute("href");
+            iconName = iconName.substring(1); // remove the leading '#'
+            return iconName;
+        }
+
         public void select() {
-            testCase.waitUntil(null, null, new Callable<Boolean>() {
-                @Override public Boolean call() throws Exception {
-                    getElement().findElement(By.xpath("//*[@class='svgIconOverlay']")).click();
-                    return true;
-                }
-            });
+            try {
+                testCase.setImplicitWait(5, TimeUnit.SECONDS);
+                final String iconOverlayXpath = ".//*[@class='svgIconOverlay']";
+                getElement().findElement(By.xpath(iconOverlayXpath)).click();
+
+                // Wait until vertex is actually selected before continuing
+                new WebDriverWait(testCase.getDriver(), 30).until(input -> {
+                    final WebElement element = getElement().findElement(By.xpath(iconOverlayXpath + "/.."));
+                    return element.getAttribute("class").contains("selected");
+                });
+            } finally {
+                testCase.setImplicitWait();
+            }
         }
 
         private WebElement getElement() {
-            return testCase.findElementByXpath("//*[@id='TopologyComponent']"
-                    + "//*[@class='vertex-label' and text()='" + label + "']/..");
+            return testCase.findElementByXpath("//*[@id='TopologyComponent']//*[@class='vertex-label' and text()='" + label + "']/..");
         }
 
         @Override
@@ -215,7 +235,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         public ContextMenu contextMenu() {
             try {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                Actions action = new Actions(testCase.m_driver);
+                Actions action = new Actions(testCase.getDriver());
                 action.contextClick(getElement());
                 action.build().perform();
                 return new ContextMenu(testCase);
@@ -223,13 +243,36 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
         }
+
+        public void changeIcon(String iconName) {
+            Objects.requireNonNull(iconName);
+
+            final String oldIconName = getIconName();
+            if (!oldIconName.equals(iconName)) {
+                this.contextMenu().click("Change Icon");
+                final String iconXpath = "//*[name()='title' and text()='" + iconName + "']/../*[name()='rect']";
+                try {
+                    testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                    testCase.findElementByXpath("//*[contains(text(), 'Change Icon')]");
+                    testCase.findElementByXpath(iconXpath).click();
+                    new WebDriverWait(testCase.getDriver(), 10).until(input -> {
+                        final WebElement elementByXpath = testCase.findElementByXpath(iconXpath);
+                        return elementByXpath.getAttribute("class").contains("selected");
+                    });
+                    testCase.findElementById("iconSelectionDialog.button.ok").click();
+                    waitForTransition();
+                } finally {
+                    testCase.setImplicitWait();
+                }
+            }
+        }
     }
 
     public static class PingWindow {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
         private final ContextMenu contextMenu;
 
-        private PingWindow(OpenNMSSeleniumTestCase testCase, ContextMenu contextMenu) {
+        private PingWindow(AbstractOpenNMSSeleniumHelper testCase, ContextMenu contextMenu) {
             this.testCase = Objects.requireNonNull(testCase);
             this.contextMenu = Objects.requireNonNull(contextMenu);
         }
@@ -250,9 +293,9 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      */
     public static class ContextMenu {
 
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
 
-        public ContextMenu(OpenNMSSeleniumTestCase testCase) {
+        public ContextMenu(AbstractOpenNMSSeleniumHelper testCase) {
             this.testCase = Objects.requireNonNull(testCase);
         }
 
@@ -260,15 +303,26 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
          * Closes the context menu without clicking on an item
          */
         public void close() {
-            testCase.m_driver.findElement(By.id("TopologyComponent")).click();
+            testCase.getDriver().findElement(By.id("TopologyComponent")).click();
         }
 
         public void click(String... menuPath) {
             if (menuPath != null && menuPath.length > 0) {
                 try {
                     testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                    for (String eachPath : menuPath) {
-                        testCase.findElementByXpath("//*[@class='v-context-menu-container']//*[@class='v-context-menu']//*[text()='" + eachPath + "']").click();
+                    for (int i = 0; i < menuPath.length; i++) {
+                        final String eachPath = menuPath[i];
+                        final WebElement menuElement = testCase.findElementByXpath("//*[@class='v-menubar-popup']//*[@class='v-menubar-submenu']//*[text()='" + eachPath + "']");
+
+                        // If sub-menu selection, navigate to each element in the
+                        // menu, until the last one
+                        if (i < menuPath.length - 1) {
+                            Actions actions = new Actions(testCase.getDriver());
+                            actions.moveToElement(menuElement);
+                            actions.build().perform();
+                        } else { // last element
+                            menuElement.click();
+                        }
                     }
                     waitForTransition();
                 } finally {
@@ -295,16 +349,16 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      */
     public static class Breadcrumbs {
 
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
 
-        public Breadcrumbs(OpenNMSSeleniumTestCase testCase) {
+        public Breadcrumbs(AbstractOpenNMSSeleniumHelper testCase) {
             this.testCase = Objects.requireNonNull(testCase);
         }
 
         public List<String> getLabels() {
             try {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                List<WebElement> breadcrumbs = testCase.m_driver.findElements(By.xpath("//*[@id='breadcrumbs']//span[@class='v-button-caption']"));
+                List<WebElement> breadcrumbs = testCase.getDriver().findElements(By.xpath("//*[@id='breadcrumbs']//span[@class='v-button-caption']"));
                 return breadcrumbs.stream().map(eachBreadcrumb -> eachBreadcrumb.getText()).collect(Collectors.toList());
             } finally {
                 testCase.setImplicitWait();
@@ -327,9 +381,9 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      * The information of the Topology
      */
     public static class TopologyInfo {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
 
-        public TopologyInfo(OpenNMSSeleniumTestCase testCase) {
+        public TopologyInfo(AbstractOpenNMSSeleniumHelper testCase) {
             this.testCase = Objects.requireNonNull(testCase);
         }
 
@@ -356,16 +410,16 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      * Controls the workflow of the "Topology UI" Page
      */
     public static class TopologyUIPage {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
         private final String topologyUiUrl;
 
-        public TopologyUIPage(OpenNMSSeleniumTestCase testCase, String baseUrl) {
+        public TopologyUIPage(AbstractOpenNMSSeleniumHelper testCase, String baseUrl) {
             this.testCase = Objects.requireNonNull(testCase);
             this.topologyUiUrl = Objects.requireNonNull(baseUrl) + "opennms/topology";
         }
 
         public TopologyUIPage open() {
-            testCase.m_driver.get(topologyUiUrl);
+            testCase.getDriver().get(topologyUiUrl);
             // Wait for the "View" menu to be clickable before returning control to the test in order
             // to make sure that the page is fully loaded
             testCase.wait.until(ExpectedConditions.elementToBeClickable(getCriteriaForMenubarElement("View")));
@@ -378,7 +432,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         private TopologyUIPage clickOnMenuItemsWithLabelsWithRetries(int retries, String... labels) {
             resetMenu();
-            Actions actions = new Actions(testCase.m_driver);
+            Actions actions = new Actions(testCase.getDriver());
             for (String label : labels) {
                 try {
                     // we should wait, otherwise the menu has not yet updated
@@ -458,7 +512,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             try {
                 // Reduce the timeout so we don't wait around for too long if there are no vertices in focus
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                for (WebElement el : testCase.m_driver.findElements(By.xpath("//*/table[@class='search-token-field']"))) {
+                for (WebElement el : testCase.getDriver().findElements(By.xpath("//*/table[@class='search-token-field']"))) {
                     final String namespace = el.findElement(By.xpath(".//div[@class='search-token-namespace']")).getText();
                     final String label = el.findElement(By.xpath(".//div[@class='search-token-label']")).getText();
                     verticesInFocus.add(new FocusedVertex(this, namespace, label));
@@ -488,7 +542,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             try {
                 // Reduce the timeout so we don't wait around for too long if there are no visible vertices
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                for (WebElement el : testCase.m_driver.findElements(By.xpath("//*[@id='TopologyComponent']//*[@class='vertex-label']"))) {
+                for (WebElement el : testCase.getDriver().findElements(By.xpath("//*[@id='TopologyComponent']//*[@class='vertex-label']"))) {
                     visibleVertices.add(new VisibleVertex(testCase, el.getText()));
                 }
             } finally {
@@ -529,7 +583,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             try {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 clickOnMenuItemsWithLabels("View"); // we have to click the View menubar, otherwise the menu elements are NOT visible
-                List<WebElement> elements = testCase.m_driver.findElements(By.xpath("//span[@class='v-menubar-menuitem v-menubar-menuitem-checked']"));
+                List<WebElement> elements = testCase.getDriver().findElements(By.xpath("//span[@class='v-menubar-menuitem v-menubar-menuitem-checked']"));
                 for (WebElement eachElement : elements) {
                     Layout layout = Layout.createFromLabel(eachElement.getText());
                     if (layout != null) {
@@ -595,7 +649,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         private WebElement getMenubarElement(String itemName) {
-            return testCase.m_driver.findElement(getCriteriaForMenubarElement(itemName));
+            return testCase.getDriver().findElement(getCriteriaForMenubarElement(itemName));
         }
 
         private By getCriteriaForMenubarElement(String itemName) {
@@ -610,7 +664,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             // The menu can act weirdly if we're already hovering over it so we mouse-over to
             // a known element off of the menu, and click a couples times just to make sure
             WebElement showEntireMap = getShowEntireMapElement();
-            Actions actions = new Actions(testCase.m_driver);
+            Actions actions = new Actions(testCase.getDriver());
             actions.moveToElement(showEntireMap);
             actions.clickAndHold();
             waitForTransition();
@@ -706,10 +760,10 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     public static class BrowserTab {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
         private final String tab;
 
-        private BrowserTab(OpenNMSSeleniumTestCase testCase, String tab) {
+        private BrowserTab(AbstractOpenNMSSeleniumHelper testCase, String tab) {
             this.tab = Objects.requireNonNull(tab);
             this.testCase = Objects.requireNonNull(testCase);
         }
@@ -754,9 +808,9 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     public static class NoFocusDefinedWindow {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
 
-        private NoFocusDefinedWindow(OpenNMSSeleniumTestCase testCase) {
+        private NoFocusDefinedWindow(AbstractOpenNMSSeleniumHelper testCase) {
             this.testCase = Objects.requireNonNull(testCase);
         }
 
@@ -792,9 +846,9 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     public static class SaveLayoutButton {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final AbstractOpenNMSSeleniumHelper testCase;
 
-        private SaveLayoutButton(OpenNMSSeleniumTestCase testCase) {
+        private SaveLayoutButton(AbstractOpenNMSSeleniumHelper testCase) {
             this.testCase = Objects.requireNonNull(testCase);
         }
 
@@ -831,13 +885,30 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public long countItemsThatContain(String substring) {
-            return ui.testCase.m_driver.findElements(By.xpath(String.format(XPATH, substring))).size();
+            return ui.testCase.getDriver().findElements(By.xpath(String.format(XPATH, substring))).size();
+        }
+    }
+
+    public static class TopologyReloadEvent {
+
+        private final OpenNMSSeleniumIT testCase;
+
+        public TopologyReloadEvent(OpenNMSSeleniumIT testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        // Send an event to force reload of topology
+        public void send() throws InterruptedException, IOException {
+            final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
+            builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
+            testCase.stack.opennms().getRestClient().sendEvent(builder.getEvent());
+            Thread.sleep(5000); // Wait to allow the event to be processed
         }
     }
 
     @Before
     public void setUp() {
-        topologyUiPage = new TopologyUIPage(this, getBaseUrl());
+        topologyUiPage = new TopologyUIPage(this, getBaseUrlInternal());
         topologyUiPage.open();
         topologyUiPage.setAutomaticRefresh(false);
         topologyUiPage.defaultFocus();
@@ -934,13 +1005,13 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      */
     @Test
     public void verifyPathOutageSemanticZoomLevel() throws IOException, InterruptedException {
-        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">\n" +
                 "<scan-interval>1d</scan-interval>\n" +
                 "<detectors/>\n" +
                 "<policies/>\n" +
                 "</foreign-source>";
         createForeignSource(REQUISITION_NAME, foreignSourceXML);
-        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">" +
                 "   <node foreign-id=\"tests-1\" node-label=\"Node-1\">" +
                 "       <interface ip-addr=\"8.8.8.8\" status=\"1\" snmp-primary=\"N\">" +
                 "           <monitored-service service-name=\"ICMP\"/>" +
@@ -1033,13 +1104,13 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     private void createDummyNode() throws InterruptedException, IOException {
         // Create Dummy Node
-        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">\n" +
                 "<scan-interval>1d</scan-interval>\n" +
                 "<detectors/>\n" +
                 "<policies/>\n" +
                 "</foreign-source>";
         createForeignSource(REQUISITION_NAME, foreignSourceXML);
-        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">" +
                 "   <node foreign-id=\"tests\" node-label=\"Dummy Node\">" +
                 "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
                 "           <monitored-service service-name=\"ICMP\"/>" +

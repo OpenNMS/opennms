@@ -42,6 +42,7 @@ import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +97,7 @@ public class LinkdSearchProvider implements SearchProvider {
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return AbstractSearchProvider.supportsPrefix(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD+"=", searchPrefix);
+        return AbstractSearchProvider.supportsPrefix(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD+"=", searchPrefix);
     }
 
     @Override

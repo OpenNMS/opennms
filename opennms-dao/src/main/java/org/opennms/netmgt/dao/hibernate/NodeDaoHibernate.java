@@ -43,6 +43,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.core.criteria.Alias;
@@ -149,6 +150,18 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
     /** {@inheritDoc} */
     @Override
+    public List<OnmsNode> findByForeignId(String foreignId) {
+        return find("from OnmsNode as n where n.foreignId = ?", foreignId);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsNode> findByForeignIdForLocation(String foreignId, String location) {
+        return find("from OnmsNode as n where n.foreignId = ? and n.location.locationName = ?", foreignId, location);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     public OnmsNode getHierarchy(Integer id) {
         OnmsNode node = findUnique(
                                    "select distinct n from OnmsNode as n "
@@ -175,6 +188,12 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return find("from OnmsNode as n where n.label = ?", label);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsNode> findByLabelForLocation(String label, String location) {
+        return find("from OnmsNode as n where n.label = ? and n.location.locationName = ?", label, location);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findAllByVarCharAssetColumn(
@@ -497,4 +516,42 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != ? order by n.id desc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
         return nextNodeId;
     }
+
+    @Override
+    public void markHavingFlows(final Collection<Integer> ids) {
+        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update node set hasFlows = true where nodeid in (:ids)")
+                .setParameterList("ids", ids)
+                .executeUpdate());
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingFlows() {
+        return find("from OnmsNode as n where n.hasFlows = true");
+    }
+
+    @Override
+    public OnmsNode getDefaultFocusPoint() {
+        // getting the node which has the most ifspeed
+        final String query2 = "select node.id from OnmsSnmpInterface as snmp join snmp.node as node group by node order by sum(snmp.ifSpeed) desc";
+
+        // is there already a node?
+        OnmsNode focusNode = getHibernateTemplate().execute(new HibernateCallback<OnmsNode>() {
+            public OnmsNode doInHibernate(Session session) throws HibernateException, SQLException {
+                Integer nodeId = (Integer)session.createQuery(query2).setMaxResults(1).uniqueResult();
+                return getNode(nodeId, session);
+            }
+        });
+
+        return focusNode;
+    }
+
+    private OnmsNode getNode(Integer nodeId, Session session) {
+        if (nodeId != null) {
+            Query q = session.createQuery("from OnmsNode as n where n.id = :nodeId");
+            q.setInteger("nodeId",  nodeId);
+            return (OnmsNode)q.uniqueResult();
+        }
+        return null;
+    }
+
 }

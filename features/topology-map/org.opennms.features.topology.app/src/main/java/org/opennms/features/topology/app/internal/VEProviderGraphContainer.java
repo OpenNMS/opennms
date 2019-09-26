@@ -73,7 +73,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Property;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
 

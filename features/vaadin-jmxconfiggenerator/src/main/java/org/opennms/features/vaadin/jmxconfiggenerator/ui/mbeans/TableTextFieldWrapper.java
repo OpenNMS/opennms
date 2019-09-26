@@ -28,15 +28,15 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.server.ErrorMessage;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
-
 import java.util.Collection;
+
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.Validator.InvalidValueException;
+import com.vaadin.server.ErrorMessage;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * This class wraps a {@link TextField} so it is laid out correctly inside a
@@ -146,6 +146,16 @@ public class TableTextFieldWrapper extends HorizontalLayout implements Field<Str
 	}
 
 	@Override
+	public boolean isReadOnly() {
+		return textField.isReadOnly();
+	}
+
+	@Override
+	public void setReadOnly(boolean b) {
+		textField.setReadOnly(b);
+	}
+
+	@Override
 	public void addListener(final ValueChangeListener listener) {
 		addValueChangeListener(listener);
 	}
@@ -166,8 +176,8 @@ public class TableTextFieldWrapper extends HorizontalLayout implements Field<Str
 	}
 
 	@Override
-	public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
-		this.textField.valueChange(event);
+	public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+		this.textField.valueChange(valueChangeEvent);
 	}
 
 	@Override
@@ -208,6 +218,16 @@ public class TableTextFieldWrapper extends HorizontalLayout implements Field<Str
 	@Override
 	public String getRequiredError() {
 		return this.textField.getRequiredError();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return textField.isEmpty();
+	}
+
+	@Override
+	public void clear() {
+		textField.clear();
 	}
 
 	@Override

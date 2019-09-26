@@ -52,11 +52,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Edit expression threshold</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Edit expression threshold</span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
         	<th>Type</th>
         	<th>Expression</th>
@@ -68,7 +68,7 @@
         </tr>
         	<tr>
                 <td>
-                    <select name="type" class="form-control">
+                    <select name="type" class="form-control custom-select">
                         <c:forEach items="${thresholdTypes}" var="thisType">
                             <c:choose>
                                 <c:when test="${expression.type.enumName==thisType}">
@@ -84,7 +84,7 @@
                 </td>
         		<td><input type="text" name="expression" class="form-control" size="30" value="${expression.expression}"/></td>
         		<td>
-        		   	<select name="dsType" class="form-control">
+        		   	<select name="dsType" class="form-control custom-select">
         				<c:forEach items="${dsTypes}" var="thisDsType">
        						<c:choose>
       							<c:when test="${expression.dsType==thisDsType.key}">
@@ -103,7 +103,7 @@
                 <td><input type="text" name="trigger" class="form-control" size="10" value="${expression.trigger}"/></td>
         	</tr>
         </table>
-        <table class="table table-condensed">
+        <table class="table table-sm">
              <tr>
                     <th>Description</th>
                     <th>Triggered UEI</th>
@@ -115,30 +115,30 @@
                 <td><input type="text" name="rearmedUEI" class="form-control" size="60" value="${expression.rearmedUEI.orElse(null)}"/></td>
         	</tr>
       </table>
-      <div class="panel-footer">
-        <input type="submit" name="submitAction" class="btn btn-default" value="${saveButtonTitle}"/>
-        <input type="submit" name="submitAction" class="btn btn-default" value="${cancelButtonTitle}"/>
-      </div> <!-- panel-footer -->
+      <div class="card-footer">
+        <input type="submit" name="submitAction" class="btn btn-secondary" value="${saveButtonTitle}"/>
+        <input type="submit" name="submitAction" class="btn btn-secondary" value="${cancelButtonTitle}"/>
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
   
 <div class="row">
   <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Resource Filters</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Resource Filters</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-sm-4">
-            <table class="table table-condensed">
+            <table class="table table-sm">
               <tr>
                 <th>Filter Operator</th>
               </tr>
               <tr>
                 <td>
-                  <select name="filterOperator" class="form-control">
+                  <select name="filterOperator" class="form-control custom-select">
                       <c:forEach items="${filterOperators}" var="thisOperator">
                           <c:choose>
                               <c:when test="${expression.filterOperator.enumName==thisOperator}">
@@ -158,7 +158,7 @@
         </div> <!-- row -->
         <div class="row">
           <div class="col-md-12">
-            <table class="table table-condensed">
+            <table class="table table-sm">
             <tr><th>Field Name</th><th>Regular Expression</th><th>Actions</th></tr>
               <c:forEach items="${expression.resourceFilters}" var="filter" varStatus="i">
                 <tr name="filter.${i.count}">
@@ -171,10 +171,10 @@
                       <c:otherwise>
                         <td class="standard"><input type="text" class="form-control" disabled="disabled" size="60" value="${fn:escapeXml(filter.field)}"/></td>
                         <td class="standard"><input type="text" class="form-control" disabled="disabled" size="60" value="${fn:escapeXml(filter.content.orElse(null))}"/></td>
-                        <td><input type="submit" name="submitAction" class="btn btn-default" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
-                            <input type="submit" name="submitAction" class="btn btn-default" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
-                            <input type="submit" name="submitAction" class="btn btn-default" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
-                            <input type="submit" name="submitAction" class="btn btn-default" value="${moveDownButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                        <td><input type="submit" name="submitAction" class="btn btn-secondary" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            <input type="submit" name="submitAction" class="btn btn-secondary" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            <input type="submit" name="submitAction" class="btn btn-secondary" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            <input type="submit" name="submitAction" class="btn btn-secondary" value="${moveDownButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                             </td>
                       </c:otherwise>
                     </c:choose>
@@ -183,12 +183,12 @@
                 <tr>
                     <td><input type="text" name="filterField" class="form-control" size="60"/></td>
                     <td><input type="text" name="filterRegexp" class="form-control" size="60"/></td>
-                    <td><input type="submit" name="submitAction" class="btn btn-default" value="${addFilterButtonTitle}" onClick="setFilterAction('add')"/></td>
+                    <td><input type="submit" name="submitAction" class="btn btn-secondary" value="${addFilterButtonTitle}" onClick="setFilterAction('add')"/></td>
                 </tr>
             </table>
           </div> <!-- column -->
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
@@ -197,11 +197,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Help</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Help</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         <b>Description</b>: An optional description for the threshold expression, to help identify what is their purpose.<br/>
         <b>Type</b>:<br/>
@@ -227,7 +227,7 @@
         &nbsp;&nbsp;<b>operator=OR</b>: if the resource match any of them, the threshold will be processed.<br/>
         &nbsp;&nbsp;<b>operator=AND</b>: the resource must match all the filters.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

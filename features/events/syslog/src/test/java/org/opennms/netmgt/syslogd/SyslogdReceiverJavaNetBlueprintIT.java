@@ -40,7 +40,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.distributed.core.api.MinionIdentity;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -57,6 +58,7 @@ public class SyslogdReceiverJavaNetBlueprintIT extends CamelBlueprintTest {
                 new KeyValueHolder<Object, Dictionary>(messageProducerFactory, new Properties()));
         services.put(MinionIdentity.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(minionIdentity, new Properties()));
+        services.put(Identity.class.getName(), new KeyValueHolder<>(minionIdentity, new Properties()));
     }
 
     // The location of our Blueprint XML files to be used for testing

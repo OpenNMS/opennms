@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.model.graph;
 
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -48,5 +49,7 @@ public interface GraphVertex {
     BusinessService getBusinessService();
 
     IpService getIpService();
+
+    Application getApplication();
 
 }

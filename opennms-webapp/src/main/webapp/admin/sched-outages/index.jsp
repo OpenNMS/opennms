@@ -32,7 +32,10 @@
 <%@page language="java" contentType="text/html" session="true"
 	import="
 	java.util.*,
+	org.opennms.core.spring.BeanUtils,
 	org.opennms.netmgt.config.*,
+	org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao,
+	org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao,
 	org.opennms.netmgt.config.collectd.Package,
 	org.opennms.netmgt.config.poller.*,
 	org.opennms.netmgt.config.poller.outages.*,
@@ -62,19 +65,21 @@
 		}
 	}%>
 <%
+	WriteableThreshdDao threshdDao = BeanUtils.getBean("thresholdingContext", "threshdDao", WriteableThreshdDao.class);
+	WriteablePollOutagesDao pollOutagesDao = BeanUtils.getBean("pollerConfigContext", "pollOutagesDao",
+			WriteablePollOutagesDao.class);
+
 	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
-	PollOutagesConfigFactory.init(); // Only init - do *not* reload
-	PollOutagesConfigFactory pollFactory = PollOutagesConfigFactory.getInstance();
 	String deleteName = request.getParameter("deleteOutage");
 	if (deleteName != null) {
-		pollFactory.getWriteLock().lock();
+		pollOutagesDao.getWriteLock().lock();
 		try {
-			pollFactory.removeOutage(deleteName);
+			pollOutagesDao.getWriteableConfig().removeOutage(deleteName);
 			//Remove from all the package configurations as well
-			for (final org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+			for (final org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getWriteableConfig().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
-	
+
 			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
@@ -83,17 +88,17 @@
 			for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
-	
+
 			NotifdConfigFactory.getInstance().getConfiguration().removeOutageCalendar(deleteName);
-	
-			pollFactory.saveCurrent();
+
+			pollOutagesDao.saveConfig();
 			NotifdConfigFactory.getInstance().saveCurrent();
-			ThreshdConfigFactory.getInstance().saveCurrent();
+			threshdDao.saveConfig();
 			collectdConfig.saveCurrent();
 			PollerConfigFactory.getInstance().save();
 			sendOutagesChangedEvent();
 		} finally {
-			pollFactory.getWriteLock().unlock();
+			pollOutagesDao.getWriteLock().unlock();
 		}
 	}
 %>
@@ -109,22 +114,21 @@
 	<jsp:param name="breadcrumb" value="Scheduled Outages" />
 </jsp:include>
 
-<div class="row">
-  <div class="col-md-4">
-    <form role="form" class="form-inline" action="admin/sched-outages/editoutage.jsp" method="post" >
+<div class="card">
+	<div class="card-header">
+		<h4 class="pull-left">Scheduled Outages</h4>
+    <form role="form" class="form-inline pull-right" action="admin/sched-outages/editoutage.jsp" method="post" >
       <input type="hidden" name="addNew" value="true" />
-      <input type="text" class="form-control" value="New Name" size="40" name="newName" />
-      <input type="submit" class="btn btn-default" name="newOutage" value="Add new outage" />
+		<div class="input-group">
+			<input type="text" class="form-control" value="New Name" size="40" name="newName" />
+			<div class="input-group-append">
+				<button type="submit" class="btn btn-secondary" name="newOutage"><i class="fa fa-plus"></i></button>
+			</div>
+		</div>
     </form>
-  </div> <!-- column -->
-</div> <!-- row -->
-
-<table id="outages" class="table table-condensed severity top-buffer">
-	<tr>
-		<th colspan="4">&nbsp;</th>
-		<th colspan="4">Affects...</th>
-		<th colspan="2"></th>
-	</tr>
+  </div> <!-- card-header -->
+<div class="card-body">
+<table id="outages" class="table table-sm table-striped">
 	<tr>
 		<th>Name</th>
 		<th>Type</th>
@@ -150,10 +154,9 @@
 				String outageOnImageUrl = "images/greentick.gif";
 				String outageOffImageUrl = "images/redcross.gif";
 
-				pollFactory.getReadLock().lock();
-
+				pollOutagesDao.getReadLock().lock();
 				try {
-					List<Outage> outages = pollFactory.getOutages();
+					List<Outage> outages = pollOutagesDao.getWriteableConfig().getOutages();
 			
 					Collection<String> notificationOutages = NotifdConfigFactory.getInstance().getConfiguration().getOutageCalendars();
 			
@@ -163,10 +166,9 @@
 					for (final org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
 						pollingOutages.addAll(pkg.getOutageCalendars());
 					}
-			
-					ThreshdConfigFactory.init();
+
 					List<String> thresholdingOutages = new ArrayList<>();
-					for (final org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+					for (final org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getWriteableConfig().getPackages()) {
 						thresholdingOutages.addAll(thisPackage.getOutageCalendars());
 					}
 			
@@ -178,21 +180,21 @@
 			
 					for (int i = 0; i < outages.size(); i++) {
 						Outage thisOutage = outages.get(i);
-						String rowClass   = pollFactory.isCurTimeInOutage(thisOutage) ? "severity-Critical" : "severity-Cleared";
+						String rowClass   = pollOutagesDao.isCurTimeInOutage(thisOutage) ? "severity-Critical" : "severity-Cleared";
 						String outageName = thisOutage.getName();
 	%>
 	<tr valign="top" class="<%=rowClass%>">
 		<td><%=outageName%></td>
-		<td><%=pollFactory.getOutageType(outageName)%></td>
+		<td><%=pollOutagesDao.getOutageType(outageName)%></td>
 		<td><ul class="list-unstyled">
 		<%
-		    List<org.opennms.netmgt.config.poller.outages.Node> nodeList = pollFactory.getNodeIds(outageName);
+		    List<org.opennms.netmgt.config.poller.outages.Node> nodeList = pollOutagesDao.getNodeIds(outageName);
 						for (int j = 0; j < nodeList.size(); j++) {
 							OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList.get(j).getId());
 		%> <li><%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList.get(j).getId() + " Not Found" : "Node: " + elementNode.getLabel()%></li>
 		<%
 		    }
-						List<org.opennms.netmgt.config.poller.outages.Interface> interfaceList = pollFactory.getInterfaces(outageName);
+						List<org.opennms.netmgt.config.poller.outages.Interface> interfaceList = pollOutagesDao.getInterfaces(outageName);
 						for (int j = 0; j < interfaceList.size(); j++) {
 							StringBuffer display;
 							String rawAddress = interfaceList.get(j).getAddress();
@@ -228,16 +230,16 @@
 		</td>
 		<td><ul class="list-unstyled">
 		<%
-		    List<org.opennms.netmgt.config.poller.outages.Time> outageTimes = pollFactory.getOutageTimes(outageName);
+		    List<org.opennms.netmgt.config.poller.outages.Time> outageTimes = pollOutagesDao.getOutageTimes(outageName);
 						for (int j = 0; j < outageTimes.size(); j++) {
 							org.opennms.netmgt.config.poller.outages.Time thisOutageTime = outageTimes.get(j);
 							String rawDay = thisOutageTime.getDay().orElse("");
 							String day = rawDay;
-							if ("daily".equals(pollFactory.getOutageType(outageName)))
+							if ("daily".equals(pollOutagesDao.getOutageType(outageName)))
 								day = "";
-							if ("weekly".equals(pollFactory.getOutageType(outageName)))
+							if ("weekly".equals(pollOutagesDao.getOutageType(outageName)))
 								day = (rawDay == null) ? "" : (String) shortDayNames.get(rawDay);
-							if ("specific".equals(pollFactory.getOutageType(outageName)))
+							if ("specific".equals(pollOutagesDao.getOutageType(outageName)))
 								day = "";
 		%><li><%=day%> <%=thisOutageTime.getBegins()%> - <%=thisOutageTime.getEnds()%></li>
 		<%
@@ -262,9 +264,11 @@
 	<%
 			} //end for outages
 		} finally {
-			pollFactory.getReadLock().unlock();
+			pollOutagesDao.getReadLock().unlock();
 		}
 	%>
 </table>
+	</div> <!-- card-body -->
+</div> <!-- card -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true" />

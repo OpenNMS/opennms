@@ -46,7 +46,7 @@ import org.opennms.features.topology.app.internal.service.DefaultTopologyService
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
-import org.opennms.netmgt.dao.api.TopologyEntityCache;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.osgi.OnmsServiceManager;
 
 public class GraphMLSearchProviderTest {

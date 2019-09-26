@@ -62,7 +62,7 @@ public class InterfaceLevelResourceDTO {
 
     @Override
     public String toString() {
-        return String.format("InterfaceLevelResourceDTO[parent=%s, ifName=%s]", ifName);
+        return String.format("InterfaceLevelResourceDTO[parent=%s, ifName=%s]", parent, ifName);
     }
 
     @Override

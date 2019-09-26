@@ -29,7 +29,6 @@
 package org.opennms.core.rpc.utils;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;

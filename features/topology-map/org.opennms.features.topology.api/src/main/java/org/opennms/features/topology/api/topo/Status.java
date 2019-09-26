@@ -30,8 +30,6 @@ package org.opennms.features.topology.api.topo;
 
 import java.util.Map;
 
-import com.google.common.collect.Maps;
-
 public interface Status {
 
     String computeStatus();

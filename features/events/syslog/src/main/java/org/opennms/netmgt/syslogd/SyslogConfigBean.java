@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
@@ -55,6 +56,7 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	private int m_batchSize;
 	private int m_batchIntervalMs;
 	private TimeZone timeZone;
+	private boolean includeRawSyslogmessage;
 
 	@Override
 	public int getSyslogPort() {
@@ -182,7 +184,21 @@ public final class SyslogConfigBean implements SyslogdConfig {
 		this.timeZone = timeZone;
 	}
 
+	@Override
+	public boolean shouldIncludeRawSyslogmessage() {
+		return includeRawSyslogmessage;
+	}
+
+	public void setIncludeRawSyslogmessage(boolean includeRawSyslogmessage) {
+		this.includeRawSyslogmessage = includeRawSyslogmessage;
+	}
+
 	public void setBatchIntervalMs(int batchIntervalMs) {
         m_batchIntervalMs = batchIntervalMs;
+    }
+
+    @Override
+    public void reload() throws IOException {
+      // pass
     }
 }

@@ -44,11 +44,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.network.IpListFromUrl;
@@ -74,6 +76,8 @@ import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 /**
  * <p>Abstract PollerConfigManager class.</p>
  *
@@ -92,12 +96,8 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <p>Constructor for PollerConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
      */
-    public PollerConfigManager(final InputStream stream, final String localServer, final boolean verifyServer) {
-        m_localServer = localServer;
-        m_verifyServer = verifyServer;
+    public PollerConfigManager(final InputStream stream) {
         InputStreamReader isr = null;
         try {
             isr = new InputStreamReader(stream);
@@ -139,7 +139,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     @Override
     public void update() throws IOException {
-        setUpInternalData();
+        this.setUpInternalData();
     }
 
     /**
@@ -169,15 +169,6 @@ abstract public class PollerConfigManager implements PollerConfig {
      * the configuration file.
      */
     private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<String, ServiceMonitor>();
-    /**
-     * A boolean flag to indicate If a filter rule against the local OpenNMS
-     * server has to be used.
-     */
-    private static boolean m_verifyServer;
-    /**
-     * The name of the local OpenNMS server
-     */
-    private static String m_localServer;
 
     /**
      * Go through the poller configuration and build a mapping of each
@@ -346,6 +337,36 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
+    @Override
+    public int getDefaultCriticalPathRetries() {
+        try {
+            getReadLock().lock();
+            return m_config.getDefaultCriticalPathRetries();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getDefaultCriticalPathTimeout() {
+        try {
+            getReadLock().lock();
+            return m_config.getDefaultCriticalPathTimeout();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public InetAddress getDefaultCriticalPathIp() {
+        try {
+            getReadLock().lock();
+            return m_config.getDefaultCriticalPathIp();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
     /**
      * This method returns the configured critical service name.
      *
@@ -463,17 +484,10 @@ abstract public class PollerConfigManager implements PollerConfig {
     public List<InetAddress> getIpList(final Package pkg) {
         try {
             getReadLock().lock();
-            final StringBuilder filterRules = new StringBuilder(pkg.getFilter().getContent());
-            if (m_verifyServer) {
-                filterRules.append(" & (serverName == ");
-                filterRules.append('\"');
-                filterRules.append(m_localServer);
-                filterRules.append('\"');
-                filterRules.append(")");
-            }
+            final String filterRules = pkg.getFilter().getContent();
             LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
             FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
-            return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
+            return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules);
         } finally {
             getReadLock().unlock();
         }
@@ -604,6 +618,17 @@ abstract public class PollerConfigManager implements PollerConfig {
                 if (svc.getName().equalsIgnoreCase(svcName)) {
                     // Ok its in the package. Now check the
                     // status of the service
+                    final String status = svc.getStatus();
+                    if (status == null || status.equals("on")) {
+                        return true;
+                    }
+                }
+            }
+
+            // Find service by pattern
+            for(final Service svc : services(pkg)) {
+                if (!Strings.isNullOrEmpty(svc.getPattern())
+                        && Pattern.matches(svc.getPattern(), svcName)) {
                     final String status = svc.getStatus();
                     if (status == null || status.equals("on")) {
                         return true;
@@ -983,11 +1008,20 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link java.util.Map} object.
      */
-    @Override
     public Map<String, ServiceMonitor> getServiceMonitors() {
         try {
             getReadLock().lock();
             return Collections.unmodifiableMap(m_svcMonitors);
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public Set<String> getServiceMonitorNames() {
+        try {
+            getReadLock().lock();
+            return Collections.unmodifiableSet(m_svcMonitors.keySet());
         } finally {
             getReadLock().unlock();
         }

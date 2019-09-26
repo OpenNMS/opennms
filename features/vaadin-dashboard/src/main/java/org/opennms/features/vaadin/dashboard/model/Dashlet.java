@@ -28,6 +28,8 @@
 
 package org.opennms.features.vaadin.dashboard.model;
 
+import com.vaadin.ui.UI;
+
 /**
  * This interface defines the required methods for implementing a dashlet.
  *
@@ -39,22 +41,23 @@ public interface Dashlet {
      *
      * @return the dashlet's name
      */
-    public String getName();
+    String getName();
 
-    public DashletSpec getDashletSpec();
+    DashletSpec getDashletSpec();
 
     /**
      * Checks whether this dashlet is boosted.
      *
      * @return true, if boosted, false otherwise
      */
-    public boolean isBoosted();
+    boolean isBoosted();
 
     /**
      * Updates the dashlet contents and computes new boosted state
+     * @param ui The {@link UI} which holds the component.
      */
 
-    public DashletComponent getWallboardComponent();
+    DashletComponent getWallboardComponent(final UI ui);
 
-    public DashletComponent getDashboardComponent();
+    DashletComponent getDashboardComponent(final UI ui);
 }

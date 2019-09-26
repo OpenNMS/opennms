@@ -36,7 +36,7 @@ import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.opennms.protocols.radius.utils.RadiusUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +73,9 @@ import net.jradius.packet.attribute.AttributeList;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable
-public final class RadiusAuthMonitor extends AbstractServiceMonitor {
+public final class RadiusAuthMonitor extends ParameterSubstitutingMonitor {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthMonitor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthMonitor.class);
 
     /**
      * Number of milliseconds to wait before timing out a radius AUTH request
@@ -181,13 +181,13 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
 
         int authport = ParameterMap.getKeyedInteger(parameters, "authport", DEFAULT_AUTH_PORT);
         int acctport = ParameterMap.getKeyedInteger(parameters, "acctport", DEFAULT_ACCT_PORT);
-        String user = ParameterMap.getKeyedString(parameters, "user", DEFAULT_USER);
-        String password = ParameterMap.getKeyedString(parameters, "password", DEFAULT_PASSWORD);
-        String secret = ParameterMap.getKeyedString(parameters, "secret", DEFAULT_SECRET);
+        String user = resolveKeyedString(parameters, "user", DEFAULT_USER);
+        String password = resolveKeyedString(parameters, "password", DEFAULT_PASSWORD);
+        String secret = resolveKeyedString(parameters, "secret", DEFAULT_SECRET);
         String authType = ParameterMap.getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
-        String nasid = ParameterMap.getKeyedString(parameters, "nasid", DEFAULT_NASID);
+        String nasid = resolveKeyedString(parameters, "nasid", DEFAULT_NASID);
         String innerProtocol = ParameterMap.getKeyedString(parameters, "inner-protocol", DEFAULT_TTLS_INNER_AUTH_TYPE);
-        String innerUser = ParameterMap.getKeyedString(parameters, "inner-user", DEFAULT_INNER_USER);
+        String innerUser = resolveKeyedString(parameters, "inner-user", DEFAULT_INNER_USER);
         String certFile = ParameterMap.getKeyedString(parameters, "certificate", null);
         InetAddress addr = svc.getAddress();
 

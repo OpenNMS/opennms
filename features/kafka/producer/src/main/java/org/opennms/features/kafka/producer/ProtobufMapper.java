@@ -33,24 +33,31 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
+import org.hibernate.ObjectNotFoundException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
+import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
+import com.google.common.base.Enums;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -59,21 +66,23 @@ public class ProtobufMapper {
     private static final Logger LOG = LoggerFactory.getLogger(ProtobufMapper.class);
 
     private final EventConfDao eventConfDao;
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
     private final NodeDao nodeDao;
+    private final HwEntityDao hwEntityDao;
     private final LoadingCache<Long, OpennmsModelProtos.NodeCriteria> nodeIdToCriteriaCache;
 
-    public ProtobufMapper(EventConfDao eventConfDao, TransactionOperations transactionOperations,
+    public ProtobufMapper(EventConfDao eventConfDao, HwEntityDao hwEntityDao, SessionUtils sessionUtils,
                           NodeDao nodeDao, long nodeIdToCriteriaMaxCacheSize) {
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.hwEntityDao = Objects.requireNonNull(hwEntityDao);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.nodeDao = Objects.requireNonNull(nodeDao);
 
         nodeIdToCriteriaCache = CacheBuilder.newBuilder()
             .maximumSize(nodeIdToCriteriaMaxCacheSize)
             .build(new CacheLoader<Long, OpennmsModelProtos.NodeCriteria>() {
                 public OpennmsModelProtos.NodeCriteria load(Long nodeId)  {
-                    return transactionOperations.execute(status -> {
+                    return sessionUtils.withReadOnlyTransaction(() -> {
                         final OnmsNode node = nodeDao.get(nodeId.intValue());
                         if (node != null && node.getForeignId() != null && node.getForeignSource() != null) {
                             return OpennmsModelProtos.NodeCriteria.newBuilder()
@@ -129,6 +138,61 @@ public class ProtobufMapper {
 
         setTimeIfNotNull(node.getCreateTime(), builder::setCreateTime);
 
+        OnmsHwEntity rootEntity = hwEntityDao.findRootByNodeId(node.getId());
+        if (rootEntity != null) {
+            builder.setHwInventory(toHwEntity(rootEntity));
+        }
+
+        return builder;
+    }
+
+    public static OpennmsModelProtos.HwEntity.Builder toHwEntity(OnmsHwEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        final OpennmsModelProtos.HwEntity.Builder builder = OpennmsModelProtos.HwEntity.newBuilder();
+
+        if (entity.getId() != null) {
+            builder.setEntityId(entity.getId());
+        }
+        if (entity.getEntPhysicalIndex() != null) {
+            builder.setEntPhysicalIndex(entity.getEntPhysicalIndex());
+        }
+        if (entity.getEntPhysicalClass() != null) {
+            builder.setEntPhysicalClass(entity.getEntPhysicalClass());
+        }
+        if (entity.getEntPhysicalDescr() != null) {
+            builder.setEntPhysicalDescr(entity.getEntPhysicalDescr());
+        }
+        if (entity.getEntPhysicalIsFRU() != null) {
+            builder.setEntPhysicalIsFru(entity.getEntPhysicalIsFRU());
+        }
+        if (entity.getEntPhysicalName() != null) {
+            builder.setEntPhysicalName(entity.getEntPhysicalName());
+        }
+        if (entity.getEntPhysicalVendorType() != null) {
+            builder.setEntPhysicalVendorType(entity.getEntPhysicalVendorType());
+        }
+        // Add aliases
+        entity.getEntAliases()
+                .stream()
+                .forEach(alias -> builder.addEntHwAlias(toHwAlias(alias)));
+        // Add children
+        entity.getChildren()
+                .stream()
+                .forEach(child -> builder.addChildren(toHwEntity(child)));
+
+        return builder;
+    }
+
+    public static OpennmsModelProtos.HwAlias.Builder toHwAlias(OnmsHwEntityAlias alias) {
+        if (alias == null) {
+            return null;
+        }
+        final OpennmsModelProtos.HwAlias.Builder builder = OpennmsModelProtos.HwAlias.newBuilder()
+                .setIndex(alias.getIndex())
+                .setOid(alias.getOid());
         return builder;
     }
 
@@ -177,41 +241,53 @@ public class ProtobufMapper {
         if (event == null) {
             return null;
         }
-        final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder()
-                .setId(event.getId())
-                .setUei(event.getEventUei())
-                .setSource(event.getEventSource())
-                .setSeverity(toSeverity(OnmsSeverity.get(event.getEventSeverity())))
-                .setLog("Y".equalsIgnoreCase(event.getEventLog()))
-                .setDisplay("Y".equalsIgnoreCase(event.getEventDisplay()));
+        try {
+            final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder()
+                    .setId(event.getId())
+                    .setUei(event.getEventUei())
+                    .setSource(event.getEventSource())
+                    .setSeverity(toSeverity(OnmsSeverity.get(event.getEventSeverity())))
+                    .setLog("Y".equalsIgnoreCase(event.getEventLog()))
+                    .setDisplay("Y".equalsIgnoreCase(event.getEventDisplay()));
 
-        final String eventLabel = eventConfDao.getEventLabel(event.getEventUei());
-        if (eventLabel != null) {
-            builder.setLabel(eventLabel);
-        }
-        if (event.getEventDescr() != null) {
-            builder.setDescription(event.getEventDescr());
-        }
-        if (event.getEventLogMsg() != null) {
-            builder.setLogMessage(event.getEventLogMsg());
-        }
-        if (event.getNodeId() != null) {
-            builder.setNodeCriteria(toNodeCriteria(event.getNode()));
-        }
-
-        for (OnmsEventParameter param : event.getEventParameters()) {
-            if (param.getName() == null || param.getValue() == null) {
-                continue;
+            final String eventLabel = eventConfDao.getEventLabel(event.getEventUei());
+            if (eventLabel != null) {
+                builder.setLabel(eventLabel);
             }
-            builder.addParameter(OpennmsModelProtos.EventParameter.newBuilder()
-                    .setName(param.getName())
-                    .setValue(param.getValue()));
+            if (event.getEventDescr() != null) {
+                builder.setDescription(event.getEventDescr());
+            }
+            if (event.getEventLogMsg() != null) {
+                builder.setLogMessage(event.getEventLogMsg());
+            }
+            if (event.getNodeId() != null) {
+                builder.setNodeCriteria(toNodeCriteria(event.getNode()));
+            }
+
+            for (OnmsEventParameter param : event.getEventParameters()) {
+                if (param.getName() == null || param.getValue() == null) {
+                    continue;
+                }
+                builder.addParameter(OpennmsModelProtos.EventParameter.newBuilder()
+                        .setName(param.getName())
+                        .setValue(param.getValue()));
+            }
+
+            setTimeIfNotNull(event.getEventTime(), builder::setTime);
+            setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
+            return builder;
+        } catch (RuntimeException e) {
+            // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi
+            // which has a different class for this loaded then what is being thrown
+            // Resort to comparing the name instead
+            if (ObjectNotFoundException.class.getCanonicalName().equals(e.getClass().getCanonicalName())) {
+                LOG.debug("Event was deleted before we could perform the mapping.");
+                return null;
+            } else {
+                // Rethrow
+                throw e;
+            }
         }
-
-        setTimeIfNotNull(event.getEventTime(), builder::setTime);
-        setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
-
-        return builder;
     }
 
     public OpennmsModelProtos.Alarm.Builder toAlarm(OnmsAlarm alarm) {
@@ -224,8 +300,9 @@ public class ProtobufMapper {
         if (alarm.getReductionKey() != null) {
             builder.setReductionKey(alarm.getReductionKey());
         }
-        if (toEvent(alarm.getLastEvent()) != null) {
-            builder.setLastEvent(toEvent(alarm.getLastEvent()));
+        final OpennmsModelProtos.Event.Builder event = toEvent(alarm.getLastEvent());
+        if (event != null) {
+            builder.setLastEvent(event);
         }
         if (alarm.getLogMsg() != null) {
             builder.setLogMessage(alarm.getLogMsg());
@@ -258,6 +335,10 @@ public class ProtobufMapper {
             builder.setManagedObjectType(alarm.getManagedObjectType());
         }
 
+        if (alarm.getRelatedAlarms() != null) {
+            alarm.getRelatedAlarms().forEach(relatedAlarm -> builder.addRelatedAlarm(toAlarm(relatedAlarm)));
+        }
+
         OpennmsModelProtos.Alarm.Type type = OpennmsModelProtos.Alarm.Type.UNRECOGNIZED;
         if (alarm.getAlarmType() != null) {
             if (alarm.getAlarmType() == OnmsAlarm.PROBLEM_TYPE) {
@@ -279,6 +360,18 @@ public class ProtobufMapper {
         setTimeIfNotNull(alarm.getAckTime(), builder::setAckTime);
 
         return builder;
+    }
+
+    public OpennmsModelProtos.AlarmFeedback.Builder toAlarmFeedback(AlarmFeedback alarmFeedback) {
+        return OpennmsModelProtos.AlarmFeedback.newBuilder()
+                .setSituationKey(alarmFeedback.getSituationKey())
+                .setSituationFingerprint(alarmFeedback.getSituationFingerprint())
+                .setAlarmKey(alarmFeedback.getAlarmKey())
+                .setFeedbackType(OpennmsModelProtos.AlarmFeedback.FeedbackType
+                        .valueOf(alarmFeedback.getFeedbackType().toString()))
+                .setReason(alarmFeedback.getReason())
+                .setUser(alarmFeedback.getUser())
+                .setTimestamp(alarmFeedback.getTimestamp());
     }
 
     public OpennmsModelProtos.NodeCriteria.Builder toNodeCriteria(OnmsNode node) {
@@ -388,4 +481,109 @@ public class ProtobufMapper {
             setter.accept(date.getTime());
         }
     }
+
+    public OpennmsModelProtos.TopologyRef.Builder toTopologyRef(OnmsTopologyProtocol protocol, String id) {
+        return OpennmsModelProtos.TopologyRef.newBuilder()
+                .setId(id)
+                .setProtocol(Enums.getIfPresent(OpennmsModelProtos.TopologyRef.Protocol.class, protocol.getId()).orNull());
+    }
+
+    private OpennmsModelProtos.TopologyRef getTopologyRef(OnmsTopologyProtocol protocol, String id) {
+        return toTopologyRef(protocol, id).build();
+    }
+
+    private OpennmsModelProtos.TopologyPort getPort(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
+        final OpennmsModelProtos.TopologyPort.Builder builder = OpennmsModelProtos.TopologyPort.newBuilder();
+        if(port.getVertex().getId() != null) {
+                builder.setVertexId(port.getVertex().getId());
+        }
+
+        if (port.getIfindex() != null) {
+            builder.setIfIndex(port.getIfindex());
+        }
+
+        try {
+            builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(port.getVertex().getNodeid())));
+        } catch (CacheLoader.InvalidCacheLoadException | ExecutionException e) {
+            LOG.warn("An error occurred when building node criteria for node with id: {}." +
+                            " The node foreign source and foreign id (if set) will be missing from the vertex with " +
+                            "id: {}.",
+                    port.getVertex().getNodeid(), port.getVertex().getId(), e);
+            builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
+                    .setId(port.getVertex().getNodeid()));
+        }
+
+        // The ifName and address might not be set so don't set nulls on the builder since protobuf does not allow null
+        // values
+        if (port.getIfname() != null) {
+            builder.setIfName(port.getIfname());
+        }
+
+        if (port.getAddr() != null) {
+            builder.setAddress(port.getAddr());
+        }
+
+        return builder.build();
+    }
+
+    private OpennmsModelProtos.TopologySegment getSegment(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port,
+                                                          OnmsTopologyProtocol protocol) {
+        return OpennmsModelProtos.TopologySegment.newBuilder()
+                .setRef(getTopologyRef(protocol, port.getId()))
+                .build();
+    }
+
+    private OpennmsModelProtos.Node getNode(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
+        OpennmsModelProtos.Node.Builder nodeBuilder = OpennmsModelProtos.Node.newBuilder();
+
+        if (port.getVertex().getNodeid() != null) {
+            nodeBuilder.setId(port.getVertex().getNodeid());
+        }
+
+        try {
+            OpennmsModelProtos.NodeCriteria nodeCriteria =
+                    nodeIdToCriteriaCache.get(Integer.toUnsignedLong(port.getVertex().getNodeid()));
+            if (nodeCriteria != null) {
+                nodeBuilder.setForeignSource(nodeCriteria.getForeignSource());
+                nodeBuilder.setForeignId(nodeCriteria.getForeignId());
+            }
+        } catch (Exception ignore) {
+        }
+
+        return nodeBuilder.build();
+    }
+
+    public OpennmsModelProtos.TopologyEdge toEdgeTopologyMessage(OnmsTopologyProtocol protocol,
+                                                                 org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge edge) {
+
+        OpennmsModelProtos.TopologyEdge.Builder edgeBuilder = OpennmsModelProtos.TopologyEdge.newBuilder();
+        edgeBuilder.setRef(getTopologyRef(protocol, edge.getId()));
+
+        // Set the source
+        if (edge.getSource().getVertex().getNodeid() == null) {
+            // Source is a segment
+            edgeBuilder.setSourceSegment(getSegment(edge.getSource(), protocol));
+        } else if (edge.getSource().getIfindex() != null && edge.getSource().getIfindex() >= 0) {
+            // Source is a port
+            edgeBuilder.setSourcePort(getPort(edge.getSource()));
+        } else {
+            // Source is a node
+            edgeBuilder.setSourceNode(getNode(edge.getSource()));
+        }
+
+        // Set the target
+        if (edge.getTarget().getVertex().getNodeid() == null) {
+            // Target is a segment
+            edgeBuilder.setTargetSegment(getSegment(edge.getTarget(), protocol));
+        } else if (edge.getTarget().getIfindex() != null && edge.getTarget().getIfindex() >= 0) {
+            // Target is a port
+            edgeBuilder.setTargetPort(getPort(edge.getTarget()));
+        } else {
+            // Target is a node
+            edgeBuilder.setTargetNode(getNode(edge.getTarget()));
+        }
+        
+        return edgeBuilder.build();
+    }
+
 }

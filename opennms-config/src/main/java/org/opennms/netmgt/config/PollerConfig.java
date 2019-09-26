@@ -34,8 +34,10 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
+import org.opennms.netmgt.config.api.PathOutageConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -51,7 +53,7 @@ import org.opennms.netmgt.poller.ServiceMonitorRegistry;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public interface PollerConfig {
+public interface PollerConfig extends PathOutageConfig {
 
     /**
      * This method returns the configured critical service name.
@@ -94,18 +96,6 @@ public interface PollerConfig {
      * @return a boolean.
      */
     boolean isServiceUnresponsiveEnabled();
-
-    /**
-     * Returns true if the path outage feature is enabled. If enabled, the code
-     * looks for a critical path specification when processing nodeDown events.
-     * If a critical path exists for the node, it will be tested. If the
-     * critical path fails to respond, the eventReason parameter on the
-     * nodeDown event is set to "pathOutage". This parameter will be used by
-     * notifd to suppress nodeDown notification.
-     *
-     * @return a boolean.
-     */
-    boolean isPathOutageEnabled();
 
     /**
      * This method is used to rebuild the package against ip list mapping when
@@ -338,12 +328,7 @@ public interface PollerConfig {
      */
     public int getThreads();
 
-    /**
-     * <p>getServiceMonitors</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
-    public Map<String, ServiceMonitor> getServiceMonitors();
+    public Set<String> getServiceMonitorNames();
 
     /**
      * <p>getServiceMonitor</p>

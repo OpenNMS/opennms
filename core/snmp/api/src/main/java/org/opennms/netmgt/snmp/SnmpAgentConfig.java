@@ -55,6 +55,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     private InetAddress m_address;
     private InetAddress m_proxyFor;
+    private String profileLabel;
+    private boolean isDefault = true;
 
     public SnmpAgentConfig() {
         this(null);
@@ -76,7 +78,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
         final JSONObject protocolConfig = new JSONObject(new JSONTokener(protocolConfigString)).optJSONObject("snmp");
         if (protocolConfig == null) {
-            throw new IllegalArgumentException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp object" + protocolConfigString);
+            throw new IllegalStateException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp object" + protocolConfigString);
         }
 
         Map<String, String> attributes = new HashMap<>();
@@ -105,7 +107,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     /**
      * Don't expose credentials here in plaintext in case this object is used in a log message.
      * 
-     * @see http://issues.opennms.org/browse/NMS-1504
+     * http://issues.opennms.org/browse/NMS-1504
      */
     @Override
     public String toString() {
@@ -119,6 +121,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         buff.append(", MaxRepetitions: " + getMaxRepetitions());
         buff.append(", MaxRequestSize: " + getMaxRequestSize());
         buff.append(", Version: " + versionToString(getVersion()));
+        buff.append(", TTL: " + getTTL());
         if (isVersion3()) {
             buff.append(", SecurityLevel: " + getSecurityLevel());
             buff.append(", SecurityName: " + getSecurityName());
@@ -163,6 +166,24 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         return m_proxyFor;
     }
 
+    @XmlTransient
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    @XmlTransient
+    public String getProfileLabel() {
+        return profileLabel;
+    }
+
+    public void setProfileLabel(String profileLabel) {
+        this.profileLabel = profileLabel;
+    }
+
     @Override
     public int hashCode() {
         int hash = Objects.hash(getAddress(),
@@ -185,7 +206,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                                 getContextEngineId(),
                                 getEnterpriseId(),
                                 getReadCommunity(),
-                                getWriteCommunity());
+                                getWriteCommunity(),
+                                getTTL());
         return hash;
     }
 
@@ -220,7 +242,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                     && Objects.equals(getContextEngineId(), other.getContextEngineId())
                     && Objects.equals(getEnterpriseId(), other.getEnterpriseId())
                     && Objects.equals(getReadCommunity(), other.getReadCommunity())
-                    && Objects.equals(getWriteCommunity(), other.getWriteCommunity());
+                    && Objects.equals(getWriteCommunity(), other.getWriteCommunity())
+                    && Objects.equals(getTTL(), other.getTTL());
         }
         return false;
     }
@@ -248,6 +271,10 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         map.put("enterprise-id", getEnterpriseId());
         map.put("read-community", getReadCommunity());
         map.put("write-community", getWriteCommunity());
+        // No default value for ttl.
+        if(getTTL() != null) {
+            map.put("ttl", Long.toString(getTTL()));
+        }
         return map;
     }
 
@@ -274,6 +301,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         if (map.get("enterprise-id") != null) config.setEnterpriseId(map.get("enterprise-id"));
         if (map.get("read-community") != null) config.setReadCommunity(map.get("read-community"));
         if (map.get("write-community") != null) config.setWriteCommunity(map.get("write-community"));
+        if (map.get("ttl") != null) config.setTTL(Long.parseLong(map.get("ttl")));
         return config;
     }
 }

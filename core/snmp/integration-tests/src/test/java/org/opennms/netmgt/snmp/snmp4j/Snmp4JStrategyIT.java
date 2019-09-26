@@ -36,7 +36,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.snmp4j.PDU;
@@ -308,9 +307,6 @@ public class Snmp4JStrategyIT extends MockSnmpAgentITCase {
         
         PDU pdu = m_strategy.buildPdu(new Snmp4JAgentConfig(getAgentConfig()), PDU.SET, oids, values);
         assertNull("PDU should be null", pdu);
-        
-        MockLogAppender.resetEvents();
-        MockLogAppender.resetLogLevel();
     }
     
     @Test
@@ -328,9 +324,6 @@ public class Snmp4JStrategyIT extends MockSnmpAgentITCase {
         
         PDU pdu = m_strategy.buildPdu(new Snmp4JAgentConfig(getAgentConfig()), PDU.SET, oids, values);
         assertNull("PDU should be null", pdu);
-        
-        MockLogAppender.resetEvents();
-        MockLogAppender.resetLogLevel();
     }
     
     private void assertSnmpValueEquals(String message, int expectedType, int expectedValue, SnmpValue value) {

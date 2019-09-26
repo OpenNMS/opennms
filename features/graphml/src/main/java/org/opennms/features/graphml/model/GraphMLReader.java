@@ -144,13 +144,13 @@ public class GraphMLReader {
 
         // Verify that all types are the same
         for (List<KeyType> eachList : keyTypeIdMap.values()) {
-            if (eachList.stream().map(e -> e.getAttrType()).collect(Collectors.toSet()).size() > 1) {
+            if (eachList.stream().map(KeyType::getAttrType).collect(Collectors.toSet()).size() > 1) {
                 throw new InvalidGraphException("Attribute Type of key with id " + eachList.get(0).getId() + " varies.");
             }
         }
 
         // Unify
-        Map<String, KeyType> keyIdToTypeMapping = keyTypeIdMap.values().stream().map(list -> list.get(0)).collect(Collectors.toMap(keyType -> keyType.getId(), Function.identity()));
+        Map<String, KeyType> keyIdToTypeMapping = keyTypeIdMap.values().stream().map(list -> list.get(0)).collect(Collectors.toMap(KeyType::getId, Function.identity()));
         if (keyIdToTypeMapping.keySet().stream().filter(keyId -> keyId.equals("id")).findFirst().isPresent()) {
             throw new InvalidGraphException("Property with id cannot be defined");
         }
@@ -158,7 +158,7 @@ public class GraphMLReader {
     }
 
     private static <T> List<T> filter(List<?> inputList, Class<T> type) {
-        return inputList.stream().filter(it -> type.isInstance(it)).map(it -> type.cast(it)).collect(Collectors.toList());
+        return inputList.stream().filter(type::isInstance).map(type::cast).collect(Collectors.toList());
     }
 
     private static void addProperties(GraphMLElement graphElement, String elementId, Map<String, KeyType> keyIdToTypeMapping, List<DataType> elementData) throws InvalidGraphException {
@@ -172,7 +172,7 @@ public class GraphMLReader {
                 throw new InvalidGraphException("Key with id='" + keyType.getId() + "' and " +
                         "attribute name '" + keyType.getAttrName() + "' is null. " +
                         "This is usually caused by an invalid attribute type value. " +
-                        "The following values are supported: " + Arrays.stream(KeyTypeType.values()).map(k -> k.value()).collect(Collectors.joining(", ")));
+                        "The following values are supported: " + Arrays.stream(KeyTypeType.values()).map(KeyTypeType::value).collect(Collectors.joining(", ")));
             }
             Object value = typeCastValue(eachDataElement.getContent(), keyType.getAttrType());
             graphElement.setProperty(keyType.getAttrName(), value);

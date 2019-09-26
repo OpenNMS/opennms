@@ -105,7 +105,6 @@
          <includeGroup>mib2-host-resources-memory</includeGroup>
          <!-- hrStorage is problematic on pfSense, over 200 instances on 2.0.1 -->
          <!-- <includeGroup>mib2-host-resources-storage</includeGroup> -->
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>pfsense-system-scalars</includeGroup>
          <includeGroup>pfsense-statetable-scalars</includeGroup>

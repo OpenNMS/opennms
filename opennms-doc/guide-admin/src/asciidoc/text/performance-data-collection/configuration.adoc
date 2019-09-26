@@ -64,7 +64,7 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 [source, xml]
 ----
 <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)" resourceLabel="${diskIODevice} (index ${index})">
-  <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+  <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy">
     <parameter key="match-expression" value="not(#diskIODevice matches '^(loop|ram).*')" />
   </persistenceSelectorStrategy>
   <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
@@ -80,9 +80,9 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 .Persistence Selector Strategies
 [options="header, autowidth"]
 |===
-| Class                                                    | Description
-| org.opennms.netmgt.collectd.PersistAllSelectorStrategy   | Persist All indexes
-| org.opennms.netmgt.collectd.PersistRegexSelectorStrategy | Persist indexes based on JEXL evaluation
+| Class                                                              | Description
+| org.opennms.netmgt.collection.support.PersistAllSelectorStrategy   | Persist All indexes
+| org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy | Persist indexes based on JEXL evaluation
 |===
 
 ====== PersistRegexSelectorStrategy
@@ -103,7 +103,6 @@ On evaulation, this expression should return either true, persist index to stora
 | org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy    | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for unix filesystems.
 | org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy     | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
 | org.opennms.protocols.xml.collector.XmlStorageStrategy          | Index, but cleaned up for unix filesystems.
-| org.opennms.netmgt.dao.support.
 |===
 
 ====== IndexStorageStrategy

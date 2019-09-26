@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.stats;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.dao.api.StatisticsService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;

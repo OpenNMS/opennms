@@ -80,18 +80,18 @@
      <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_RULE%>"/>
      <input type="hidden" name="nextPage" value=""/>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><% String mode = request.getParameter("mode");
+<div class="card">
+  <div class="card-header">
+    <span><% String mode = request.getParameter("mode");
            if ("failed".equals(mode)) { %>
               <font color="FF0000">The rule as entered is invalid, possibly due to a malformed TCP/IP address or invalid
 		      rule syntax. Please correct the rule to continue.</font>
            <% } else { %>
               Build the rule that determines if a notification is sent for this event based on the interface and service information contained in the event.
            <% } %>
-    </h3>
+    </span>
   </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <td valign="top" align="left">
             <p>Filtering on TCP/IP address uses a very flexible format, allowing you
@@ -128,8 +128,8 @@
                			   For example highlighting both HTTP and FTP will match TCP/IP addresses that support HTTP <b>OR</b> FTP.
              			</p>
                 <div class="form-group">
-                  <label for="input_services" class="control-label">Services:</label>
-                  <select class="form-control" size="10" multiple id="input_services" name="services"><%=buildServiceOptions(newRule)%></select>
+                  <label for="input_services" class="col-form-label">Services:</label>
+                  <select class="form-control custom-select" size="10" multiple id="input_services" name="services"><%=buildServiceOptions(newRule)%></select>
                 </div>
               </div> <!-- column -->
               <div class="col-md-6">
@@ -137,30 +137,21 @@
               			   multiple items ANDs them--for example, highlighting HTTP and FTP will match events (NOT on HTTP) AND (NOT on FTP).
               			</p>
                 <div class="form-group">
-                  <label for="input_notServices" class="control-label">"NOT" Services:</label>
-                  <select class="form-control" size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
+                  <label for="input_notServices" class="col-form-label">"NOT" Services:</label>
+                  <select class="form-control custom-select" size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
                 </div>
               </div> <!-- column -->
             </div> <!-- row -->
 			</td>
 		</tr>
-        <tr>
-          <td colspan="2">
-            <input type="reset" class="btn btn-default" value="Reset Address and Services"/>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-           <a href="javascript:next()">Validate rule results &#155;&#155;&#155;</a>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-           <a href="javascript:skipVerification()">Skip results validation &#155;&#155;&#155;</a>
-          </td>
-        </tr>
       </table>
-    </form>
+    <div class="card-footer">
+            <input type="reset" class="btn btn-secondary" value="Reset Address and Services"/>
+        <a class="btn btn-secondary" href="javascript:next()">Validate rule results <i class="fa fa-arrow-right"></i></a>
+        <a class="btn btn-secondary" href="javascript:skipVerification()">Skip results validation <i class="fa fa-arrow-right"></i></a>
+    </div>
+</div>
+</form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 

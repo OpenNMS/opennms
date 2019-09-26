@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 

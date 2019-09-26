@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.api;
 
+import java.util.Optional;
+
 /**
  * Defines how the messages will be routed and marshaled/unmarshaled over the wire.
  *
@@ -55,14 +57,25 @@ public interface SinkModule<S extends Message, T extends Message> {
     int getNumConsumerThreads();
 
     /**
-     * Marshals the message to a string.
+     * Marshals the aggregated message to a byte array.
      */
-    String marshal(T message);
+    byte[] marshal(T message);
 
     /**
-     * Unmarshals the message from a string.
+     * Unmarshals the aggregated message from a byte array.
      */
-    T unmarshal(String message);
+    T unmarshal(byte[]  message);
+
+
+    /**
+     * Marshals single message to a byte array.
+     */
+    byte[]  marshalSingleMessage(S message);
+
+    /**
+     * Unmarshals single message from a byte array.
+     */
+    S unmarshalSingleMessage(byte[]  message);
 
     /**
      * Defines how messages should be combined, and when they
@@ -73,7 +86,7 @@ public interface SinkModule<S extends Message, T extends Message> {
      * @return the {@link AggregationPolicy} used to combine messages, or {@code null}
      * if the messages should not be combined.
      */
-    AggregationPolicy<S,T> getAggregationPolicy();
+    AggregationPolicy<S,T,?> getAggregationPolicy();
 
     /**
      * Defines how messages should be asynchronously dispatched.
@@ -82,4 +95,14 @@ public interface SinkModule<S extends Message, T extends Message> {
      * messages for this module.
      */
     AsyncPolicy getAsyncPolicy();
+
+    /**
+     * Thr routing key will be used to ensure all messages of the same group is handled by the same consumer.
+     *
+     * @param message the message to generate the routing key from
+     * @return the routing key or, {@code Optional.empty()} if no routing is required
+     */
+    default Optional<String> getRoutingKey(T message) {
+        return Optional.empty();
+    }
 }

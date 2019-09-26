@@ -36,6 +36,9 @@ package org.opennms.core.ipc.sink.api;
 public interface MessageConsumerManager {
 
     static final String LOG_PREFIX = "ipc";
+    static final String METRIC_MESSAGES_RECEIVED = "messagesReceived";
+    static final String METRIC_MESSAGE_SIZE = "messageSize";
+    static final String METRIC_DISPATCH_TIME = "dispatchTime";
 
     <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message);
 

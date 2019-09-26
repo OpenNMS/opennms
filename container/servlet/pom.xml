@@ -42,9 +42,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.proxy</artifactId>
-            <version>${felixVersion}</version>
+            <groupId>org.opennms.container.bridge</groupId>
+            <artifactId>org.opennms.container.bridge.proxy</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -54,14 +54,6 @@
         <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--  TEMPORARILY ADDED SO SOURCE IS ADDED TO ECLIPSE -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-            <version>4.4.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

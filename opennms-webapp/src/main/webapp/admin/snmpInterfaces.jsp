@@ -41,28 +41,28 @@
   }
 %>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="norequirejs" value="true" />
 	<jsp:param name="title" value="Select SNMP Interfaces" />
 	<jsp:param name="headTitle" value="Select SNMP Interfaces" />
 	<jsp:param name="headTitle" value="Admin"/>
 	<jsp:param name="location" value="admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Select SNMP Interfaces" />
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' /> 
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="js/onms-interfaces/styles.css" />' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-interfaces/config.js"></script>' />
+</jsp:include>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="angular-js" />
+</jsp:include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="onms-interfaces-config" />
 </jsp:include>
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Choose SNMP Interfaces for Data Collection</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Choose SNMP Interfaces for Data Collection</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         Listed below are all the known interfaces for the selected node. If
         <strong>snmpStorageFlag</strong> is set to <strong>select</strong> for a collection scheme that includes
@@ -74,18 +74,17 @@
         In order to change what interfaces are scheduled for collection, simply click
         the checkbox shown on the collect column, and the change will immediately update the database.
         </p>
+        <p>
 	    <strong>Node ID</strong>: <%=nodeId%><br/>
 	    <strong>Node Label</strong>: <%=nodeLabel%><br/>
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
-
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default" id="onms-interfaces-config">
-      <div growl></div>
-      <onms-interfaces-config node="<%=nodeId%>"/>
+        </p>
+        <p>
+        <div id="onms-interfaces-config">
+          <div growl></div>
+          <onms-interfaces-config node="<%=nodeId%>"/>
+        </div>
+        </p>
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

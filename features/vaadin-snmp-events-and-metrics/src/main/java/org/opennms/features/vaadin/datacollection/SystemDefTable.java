@@ -33,7 +33,7 @@ import java.util.List;
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Table;
 
 /**
  * The Class System Definition Table.

@@ -18,11 +18,11 @@ It allows packages to register *Maven Repositories*, *Karaf Feature Repositories
 Here's an overview, used for reference, of the relevant directories that are (currently) present on a default install of the `opennms-minion` package:
 [source, shell]
 ----
+├── .m2
 ├── etc
 │   └── featuresBoot.d
 │       └── custom.boot
 ├── repositories
-│   ├── .local
 │   ├── core
 │   │   ├── features.uris
 │   │   └── features.boot

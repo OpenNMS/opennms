@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="sentinel-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+    <!-- OpenNMS Features -->
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
+
+    <!-- Newts Features -->
+    <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
+
+    <!-- Required by sentinel-jms -->
+    <feature name="geronimo-jms-api" description="Apache Geronimo :: JMS :: API" version="${geronimoVersion}">
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimoVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimoVersion}</bundle>
+    </feature>
+
+    <feature name="sentinel-distpoller-dao" description="Sentinel :: DAO :: Distpoller" version="${project.version}">
+        <feature>opennms-dao-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-distributed/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-jms" description="Sentinel :: Core :: JMS" version="${project.version}">
+        <feature>sentinel-core</feature>
+        <feature>geronimo-jms-api</feature>
+
+        <!-- Needed by activemq-camel -->
+        <bundle>mvn:javax.annotation/javax.annotation-api/1.2</bundle>
+        <feature>activemq-camel</feature>
+        <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
+
+        <feature>opennms-core-ipc-sink-camel-server</feature>
+        <!-- Sink Client-->
+        <feature>opennms-core-ipc-sink-camel</feature>
+        <feature>sentinel-events-forwarder</feature>
+    </feature>
+
+    <feature name="sentinel-kafka" description="Sentinel :: Core :: Kafka" version="${project.version}">
+        <feature>sentinel-core</feature>
+        <!-- Sink Client-->
+        <feature>opennms-core-ipc-sink-kafka</feature>
+        <feature>opennms-core-ipc-sink-kafka-server</feature>
+        <feature>sentinel-events-forwarder</feature>
+    </feature>
+
+    <feature name="sentinel-core" description="OpenNMS :: Sentinel :: Core" version="${project.version}">
+        <feature>opennms-spring-extender</feature>
+
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-jaxb</feature>
+        <feature>opennms-health</feature>
+
+        <!-- Used for the REST client in core-impl -->
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
+
+        <!-- CORE Distributed -->
+        <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/core-impl/${project.version}</bundle>
+
+        <!-- Core Sentinel -->
+        <bundle>mvn:org.opennms.features.distributed/shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.sentinel/core/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-events-forwarder" description="OpenNMS :: Sentinel :: Events Forwarder" version="${project.version}">
+        <feature>sentinel-core</feature>
+        <feature>opennms-events-sink-dispatcher</feature>
+        <feature>opennms-send-event-command</feature>
+    </feature>
+
+    <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
+        <feature>sentinel-core</feature>
+        <feature>opennms-persistence</feature>
+        <feature>sentinel-distpoller-dao</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-healthcheck/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
+        <feature>sentinel-persistence</feature>
+
+        <feature version="${netty4Version}">netty4</feature>
+        <feature>dropwizard-metrics</feature>
+        <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
+        <feature>camel-spring</feature>
+
+        <feature>opennms-core-daemon</feature>
+        <feature>opennms-core-ipc-sink-api</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-dao</feature>
+
+        <feature>sentinel-thresholding-service</feature>
+
+        <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.registry/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.daemon/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.sentinel/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-flows" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-jest</feature>
+        <feature>opennms-telemetry-collection</feature>
+        <feature>opennms-dnsresolver-netty</feature>
+        <feature>sentinel-kvstore-api</feature>
+        <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
+        <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
+        <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-telemetry-nxos" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-nxos</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-telemetry-jti" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: JTI" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-jti</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
+
+    <!--Coordination-->
+    <feature name="sentinel-coordination-api" description="OpenNMS :: Features :: Distributed :: Coordination :: API"
+             version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/coordination-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-coordination-common"
+             description="OpenNMS :: Features :: Distributed :: Coordination :: Common" version="${project.version}">
+        <feature version="${project.version}">sentinel-coordination-api</feature>
+        <feature version="${opennmsApiVersion}" dependency="true">opennms-integration-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/coordination-common/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-coordination-zookeeper"
+             description="OpenNMS :: Features :: Distributed :: Coordination :: Zookeeper" version="${project.version}">
+        <feature version="${project.version}">sentinel-coordination-api</feature>
+        <feature version="${project.version}">sentinel-coordination-common</feature>
+        <feature version="3.4.7">zookeeper-dependencies</feature>
+        <bundle>mvn:org.opennms.features.distributed/coordination-zookeeper/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-coordination-shell"
+             description="OpenNMS :: Features :: Distributed :: Coordination :: Shell" version="${project.version}">
+        <feature version="${project.version}">sentinel-coordination-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/coordination-shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="zookeeper-dependencies" version="3.4.7" description="ZooKeeper Dependencies">
+        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.7</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/16.0.1</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.6</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-client/2.9.1</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.9.1</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.9.1</bundle>
+    </feature>
+
+    <!-- Newts -->
+    <feature name="sentinel-newts" description="OpenNMS :: Sentinel :: Newts" version="${project.version}">
+        <feature>sentinel-core</feature>
+        <feature>guava</feature>
+        <feature>opennms-measurements-api</feature>
+        <feature>opennms-collection-api</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>newts-cassandra</feature>
+        <feature>newts-cassandra-search</feature>
+        <feature>fst</feature>
+
+        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/2.5.0</bundle>
+        <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.2</bundle>
+        <bundle dependency="true">mvn:redis.clients/jedis/2.8.1</bundle>
+        <bundle dependency="true">mvn:args4j/args4j/${args4jVersion}</bundle>
+
+        <!-- Add Groovy Script Engine -->
+        <bundle dependency="true">mvn:org.codehaus.groovy/groovy-all/${groovyVersion}</bundle>
+
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
+    </feature>
+    
+    <feature name="fst" description="FST" version="${project.version}">
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
+        <bundle dependency="true">mvn:org.javassist/javassist/3.19.0-GA</bundle>
+        <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
+        <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
+    </feature>
+
+    <feature name="sentinel-kvstore-api"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: API"
+             version="${project.version}">
+        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-blobstore-noop"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: No-Op" version="${project.version}">
+        <feature>opennms-blobstore-shell</feature>
+        <feature>sentinel-kvstore-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.no-op/${project.version}</bundle>
+    </feature>
+    
+    <feature name="sentinel-distributed-cassandra-api"
+             description="OpenNMS :: Features :: Distributed :: Cassandra :: API"
+             version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.api/${project.version}</bundle>
+    </feature>
+    
+    <feature name="sentinel-newts-cassandra"
+             description="OpenNMS :: Features :: Distributed :: Cassandra :: Newts Impl." version="${project.version}">
+        <feature>cassandra-driver</feature>
+        <feature>sentinel-newts</feature>
+        <feature>sentinel-distributed-cassandra-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.newts-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-blobstore-cassandra"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Cassandra"
+             version="${project.version}">
+        <feature>sentinel-newts-cassandra</feature>
+        <feature>opennms-blobstore-shell</feature>
+        <feature>sentinel-kvstore-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.cassandra/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-jsonstore-postgres"
+             description="OpenNMS :: Features :: Distributed :: Key Value Store :: JSON :: Postgres"
+             version="${project.version}">
+        <feature>opennms-jsonstore-shell</feature>
+        <feature>sentinel-kvstore-api</feature>
+        <feature>sentinel-persistence</feature>
+        <bundle dependency="true">mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.postgres-shared/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.postgres/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-config-dao-common" version="${project.version}" description="OpenNMS :: Config DAO :: Common">
+        <feature>resilience4j</feature>
+        <feature>sentinel-kvstore-api</feature>
+        <feature>opennms-config-dao-api</feature>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.common-impl/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
+    </feature>
+
+    <feature name="sentinel-config-dao-thresholding" version="${project.version}" description="OpenNMS :: Config DAO :: Thresholding">
+        <feature>sentinel-config-dao-common</feature>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.thresholding.impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-config-dao-poll-outages" version="${project.version}" description="OpenNMS :: Config DAO :: Poll Outages">
+        <feature>sentinel-config-dao-common</feature>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-thresholding-service" description="OpenNMS :: Thresholding :: Impl"
+             version="${project.version}">
+        <feature>opennms-thresholding-api</feature>
+        <feature>sentinel-events-forwarder</feature>
+        <feature>opennms-measurements-api</feature>
+        <feature>opennms-core-ipc-rpc-api</feature>
+        <feature>sentinel-config-dao-thresholding</feature>
+        <feature>sentinel-config-dao-poll-outages</feature>
+        <feature>fst</feature>
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.snmp-collector/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.shell/${project.version}</bundle>
+    </feature>
+</features>

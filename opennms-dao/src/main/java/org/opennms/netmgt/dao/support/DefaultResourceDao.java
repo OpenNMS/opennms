@@ -60,7 +60,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -229,7 +228,10 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resourceType = new NodeSnmpResourceType(m_resourceStorageDao);
         resourceTypes.put(resourceType.getName(), resourceType);
 
-        resourceType = new InterfaceSnmpResourceType(m_resourceStorageDao);
+        InterfaceSnmpResourceType intfResourceType = new InterfaceSnmpResourceType(m_resourceStorageDao);
+        resourceTypes.put(intfResourceType.getName(), intfResourceType);
+
+        resourceType = new InterfaceSnmpByIfIndexResourceType(intfResourceType);
         resourceTypes.put(resourceType.getName(), resourceType);
 
         resourceType = new ResponseTimeResourceType(m_resourceStorageDao, m_ipInterfaceDao);
@@ -276,8 +278,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         final List<OnmsResource> resources = m_resourceTypes.values().stream()
                 .distinct()
                 .map(type -> type.getResourcesForParent(null))
-                .flatMap(rs -> rs.stream())
-                .filter(resource -> hasAnyChildResources(resource))
+                .flatMap(List::stream)
+                .filter(this::hasAnyChildResources)
                 .collect(Collectors.toList());
         return resources;
     }

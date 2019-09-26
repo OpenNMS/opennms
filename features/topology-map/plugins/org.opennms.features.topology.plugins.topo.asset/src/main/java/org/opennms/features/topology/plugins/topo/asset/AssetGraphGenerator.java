@@ -66,7 +66,7 @@ public class AssetGraphGenerator {
 		final List<OnmsNode> nodes = nodeProvider.getNodes(layerDefinitions);
 
 		// Define Layers
-		final List<Layer> layers = layerDefinitions.stream().map(mapping -> mapping.getLayer()).collect(Collectors.toList());
+		final List<Layer> layers = layerDefinitions.stream().map(LayerDefinition::getLayer).collect(Collectors.toList());
 
 		// Add last Layer for Nodes
 		layers.add(new LayerBuilder()

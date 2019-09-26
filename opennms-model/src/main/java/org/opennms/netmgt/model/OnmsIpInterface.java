@@ -30,15 +30,21 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -68,7 +74,8 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsIpInterface class.</p>
@@ -100,6 +107,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<>();
 
     private OnmsSnmpInterface m_snmpInterface;
+
+    private List<OnmsMetaData> m_metaData = new ArrayList<>();
 
     /**
      * <p>Constructor for OnmsIpInterface.</p>
@@ -168,6 +177,16 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     public void setInterfaceId(final String id) {
         setId(Integer.valueOf(id));
+    }
+
+    @Transient
+    @XmlAttribute(name="hasFlows")
+    public boolean getHasFlows() {
+        if (m_snmpInterface == null) {
+            return false;
+        }
+
+        return m_snmpInterface.getHasFlows();
     }
 
     /**
@@ -333,6 +352,63 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         return m_isSnmpPrimary.equals(PrimaryType.PRIMARY);
     }
 
+    @JsonIgnore
+    @XmlTransient
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="ipInterface_metadata", joinColumns = @JoinColumn(name = "id"))
+    public List<OnmsMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(final List<OnmsMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
+    public void addMetaData(final String context, final String key, final String value) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+
+        final Optional<OnmsMetaData> entry = getMetaData().stream()
+                .filter(m -> m.getContext().equals(context))
+                .filter(m -> m.getKey().equals(key))
+                .findFirst();
+
+        // Update the value if present, otherwise create a new entry
+        if (entry.isPresent()) {
+            entry.get().setValue(value);
+        } else {
+            getMetaData().add(new OnmsMetaData(context, key, value));
+        }
+    }
+
+    public void removeMetaData(final String context, final String key) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext()) && key.equals(onmsNodeMetaData.getKey())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public void removeMetaData(final String context) {
+        Objects.requireNonNull(context);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext())) {
+                iterator.remove();
+            }
+        }
+    }
+
     /**
      * <p>getNode</p>
      *
@@ -426,15 +502,15 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("id", m_id)
-        .append("ipAddr", InetAddressUtils.str(m_ipAddress))
-        .append("netMask", InetAddressUtils.str(m_netMask))
-        .append("ipHostName", m_ipHostName)
-        .append("isManaged", m_isManaged)
-        .append("isSnmpPrimary", m_isSnmpPrimary)
-        .append("ipLastCapsdPoll", m_ipLastCapsdPoll)
-        .append("nodeId", getNodeId())
+        return MoreObjects.toStringHelper(this)
+        .add("id", m_id)
+        .add("ipAddr", InetAddressUtils.str(m_ipAddress))
+        .add("netMask", InetAddressUtils.str(m_netMask))
+        .add("ipHostName", m_ipHostName)
+        .add("isManaged", m_isManaged)
+        .add("isSnmpPrimary", m_isSnmpPrimary)
+        .add("ipLastCapsdPoll", m_ipLastCapsdPoll)
+        .add("nodeId", getNodeId())
         .toString();
     }
 
@@ -599,6 +675,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             else {
                 // otherwice update the service attributes
                 svc.mergeServiceAttributes(imported);
+                svc.mergeMetaData(imported);
             }
             
             // mark the service is updated
@@ -611,6 +688,12 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             svc.setIpInterface(this);
             getMonitoredServices().add(svc);
             svc.visit(new AddEventVisitor(eventForwarder));
+        }
+    }
+
+    public void mergeMetaData(OnmsIpInterface scanned) {
+        if (!getMetaData().equals(scanned.getMetaData())) {
+            setMetaData(scanned.getMetaData());
         }
     }
 
@@ -653,6 +736,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         updateSnmpInterface(scannedIface);
         mergeInterfaceAttributes(scannedIface);
         mergeMonitoredServices(scannedIface, eventForwarder, deleteMissing);
+        mergeMetaData(scannedIface);
     }
 
     @Transient

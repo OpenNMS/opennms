@@ -27,21 +27,24 @@ CAUTION: The information for the status of a virtual machine is collected from t
 .Monitor specific parameters for the VmwareMonitor
 [options="header, autowidth"]
 |===
-| Parameter       | Description                                                                        | Required | Default value
-| `retry`         | Number of retries before the service is marked as _down_.                          | optional | `0`
-| `ignoreStandBy` | Treat power state _standBy_ as _up_.                                               | optional | `false`
+| Parameter       | Description                                                                                                         | Required | Default value
+| `retry`         | Number of retries before the service is marked as _down_.                                                           | optional | `0`
+| `ignoreStandBy` | Treat power state _standBy_ as _up_.                                                                                | optional | `false`
+| `reportAlarms`  | Checks for unacknowledged vSphere alarms for a given comma-separated list of severities (red, yellow, green, gray). | optional | ``
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 Some example configuration how to configure the monitor in the `poller-configuration.xml`.
+With this configuration the monitor will go _down_ if any unacknowledged vSphere alarms with severity red or yellow exist for this managed entity.
 
 [source, xml]
 ----
 <service name="VMware-ManagedEntity" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
+  <parameter key="reportAlarms" value="red, yellow"/>
 </service>
 
 <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>

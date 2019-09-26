@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class SNMPSingleGetBuilder extends AbstractSNMPRequestBuilder<SnmpValue> {
@@ -52,7 +53,7 @@ public class SNMPSingleGetBuilder extends AbstractSNMPRequestBuilder<SnmpValue> 
         return response.getResponses().stream()
                 .flatMap(res -> res.getResults().stream())
                 .findFirst()
-                .map(res -> res.getValue())
+                .map(SnmpResult::getValue)
                 .orElse(null);
     }
 }

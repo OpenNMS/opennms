@@ -101,12 +101,12 @@ import org.opennms.netmgt.config.reporting.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
-import org.opennms.netmgt.config.server.LocalServer;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration;
 import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
+import org.opennms.netmgt.config.wsmanAsset.adapter.WsManAssetAdapterConfiguration;
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
@@ -127,8 +127,10 @@ import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.opennms.netmgt.config.wsman.WsmanConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.telemetry.config.model.TelemetrydConfiguration;
+import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.plugins.elasticsearch.rest.credentials.ElasticCredentials;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -137,19 +139,19 @@ import junit.framework.AssertionFailedError;
 /**
  * This is an integration test checking if all provided example XML files can be
  * unmarshalled.
- * 
+ *
  * For each file to test, an entry in the {@link #files()} list must exist.
  * During test run, all tests methods are executed for each test.
- * 
+ *
  * To ensure, that all provided files are covered, a meta test is used
- * ({@link WillItUnmarshalMetaTest}).
- * 
+ * ({@link WillItUnmarshalCoverageMetaIT}).
+ *
  * The name of this class is a tribute to
  * <a href="http://www.willitblend.com/">www.willitblend.com</a>.
- * 
+ *
  * @author Dustin Frisch<fooker@lab.sh>
- * 
- * @see WillItUnmarshalMetaTest
+ *
+ * @see WillItUnmarshalCoverageMetaIT
  */
 @RunWith(value = Parameterized.class)
 public class WillItUnmarshalIT {
@@ -164,11 +166,12 @@ public class WillItUnmarshalIT {
         EXAMPLE,
         SPRING,
         ABSOLUTE,
+        CLASSPATH
     }
 
     /**
      * A list of test parameters to execute.
-     * 
+     *
      * See {@link #files()} for detailed information.
      */
     public static final ArrayList<Object[]> FILES = new ArrayList<>();
@@ -209,11 +212,12 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, true, null);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, true, null);
         addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, false, null);
-        addFile(Source.CONFIG, "database-schema.xml", DatabaseSchema.class, true, null);
+        addFile(Source.CLASSPATH, "/database-schema.xml", DatabaseSchema.class, true, null);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, true, null);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, false, null);
         addFile(Source.CONFIG, "drools-northbounder-configuration.xml", DroolsNorthbounderConfig.class, true, null);
+        addFile(Source.CONFIG, "elastic-credentials.xml", ElasticCredentials.class, true, null);
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, false, null);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, true, null);
@@ -233,7 +237,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, true, null);
         addFile(Source.CONFIG, "notifications.xml", Notifications.class, true, null);
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, false, null);
-        addFile(Source.CONFIG, "opennms-server.xml", LocalServer.class, true, null);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, true, null);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
         addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
@@ -254,7 +257,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, true, null);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "syslogd-configuration.xml", SyslogdConfiguration.class, false, null);
-        // addFile(Source.CONFIG, "telemetryd-configuration.xml", TelemetrydConfiguration.class, true, null);
+        addFile(Source.CONFIG, "telemetryd-configuration.xml", TelemetrydConfig.class, false, null);
         addFile(Source.CONFIG, "threshd-configuration.xml", ThreshdConfiguration.class, true, null);
         addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, true, null);
         addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, true, null);
@@ -269,6 +272,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "vmware-datacollection-config.xml", VmwareDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, true, null);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, false, null);
+        addFile(Source.CONFIG, "wsman-asset-adapter-configuration.xml", WsManAssetAdapterConfiguration.class, true, null);
         addFile(Source.CONFIG, "wsman-config.xml", WsmanConfig.class, true, null);
 
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, false, null);
@@ -297,7 +301,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, false, null);
         addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, false, null);
         addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, false, null);
-        addFile(Source.EXAMPLE, "opennms-server.xml", LocalServer.class, false, null);
         addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, false, null);
         addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, false, null);
@@ -349,7 +352,7 @@ public class WillItUnmarshalIT {
 
     /**
      * The list of files to test.
-     * 
+     *
      * For each XML file to test, this method must return an entry in the list.
      * Each entry consists of the following parts:
      * <ul>
@@ -359,10 +362,10 @@ public class WillItUnmarshalIT {
      *   <li>Whether to check if the file is in JAXB's default marshal format</li>
      *   <li>An expected exception message</li>
      * </ul>
-     * 
+     *
      * The returned file list is stored in {@link #FILES} which is filled in the
      * static constructor.
-     * 
+     *
      * @return list of parameters for the test
      */
     @Parameterized.Parameters
@@ -386,6 +389,10 @@ public class WillItUnmarshalIT {
         this.clazz = clazz;
         this.checkFormat = checkFormat;
         this.exception = exception;
+    }
+
+    public boolean isFileSystemResource() {
+        return source != Source.CLASSPATH;
     }
 
     @Test
@@ -455,8 +462,8 @@ public class WillItUnmarshalIT {
     /**
      * Create a resource for the config file to unmarshall using the configured
      * source.
-     * 
-     * @return the Resource 
+     *
+     * @return the Resource
      */
     public final Resource createResource() {
         // Create a resource for the config file to unmarshall using the
@@ -473,6 +480,9 @@ public class WillItUnmarshalIT {
 
         case ABSOLUTE:
             return new FileSystemResource(this.file);
+
+        case CLASSPATH:
+            return new ClassPathResource(file, clazz);
 
         default:
             throw new RuntimeException("Source unknown: " + this.source);

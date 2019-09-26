@@ -83,7 +83,7 @@ import com.google.common.base.Throwables;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/applicationContext-soa.xml",
-                                 "classpath:/META-INF/opennms/applicationContext-newts.xml"})
+                                 "classpath:/META-INF/opennms/applicationContext-timeseries-newts.xml"})
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.rrd.storeByForeignSource=true",
         "org.opennms.timeseries.strategy=newts",

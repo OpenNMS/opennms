@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JacksonUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.bsm.persistence.api.ApplicationEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.EdgeEntityVisitor;
@@ -109,6 +110,15 @@ public class BsmTestUtils {
                         edgeEntity.getFriendlyName());
                 return null;
             }
+
+            @Override
+            public Void visit(ApplicationEdgeEntity edgeEntity) {
+                request.addApplication(
+                        edgeEntity.getApplication().getId(),
+                        transform(edgeEntity.getMapFunction()),
+                        edgeEntity.getWeight());
+                return null;
+            }
         }));
         return request;
     }
@@ -134,9 +144,9 @@ public class BsmTestUtils {
         response.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
         response.setAttributes(input.getAttributes());
         response.setLocation(ResourceLocationFactory.createBusinessServiceLocation(input.getId().toString()));
-        response.setReductionKeys(input.getReductionKeyEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
-        response.setIpServices(input.getIpServiceEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
-        response.setChildren(input.getChildEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
+        response.setReductionKeys(input.getReductionKeyEdges().stream().map(BsmTestUtils::toResponseDTO).collect(Collectors.toList()));
+        response.setIpServices(input.getIpServiceEdges().stream().map(BsmTestUtils::toResponseDTO).collect(Collectors.toList()));
+        response.setChildren(input.getChildEdges().stream().map(BsmTestUtils::toResponseDTO).collect(Collectors.toList()));
         response.setParentServices(Sets.newHashSet()); // do not know that here
         return response;
     }

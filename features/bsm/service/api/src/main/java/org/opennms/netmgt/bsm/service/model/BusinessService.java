@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.service.model;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
@@ -69,6 +70,10 @@ public interface BusinessService {
 
     void addIpServiceEdge(IpService ipService, MapFunction mapFunction, int weight, String friendlyName);
 
+    void addApplicationEdge(Application application, MapFunction mapFunction, int weight);
+
+    void setApplicationEdges(Set<ApplicationEdge> applicationEdges);
+
     void setReductionKeyEdges(Set<ReductionKeyEdge> reductionKeyEdges);
 
     void addReductionKeyEdge(String reductionKey, MapFunction mapFunction, int weight, String friendlyName);
@@ -82,6 +87,8 @@ public interface BusinessService {
     Set<ReductionKeyEdge> getReductionKeyEdges();
     
     Set<IpServiceEdge> getIpServiceEdges();
+
+    Set<ApplicationEdge> getApplicationEdges();
 
     Set<ChildEdge> getChildEdges();
     

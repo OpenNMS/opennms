@@ -49,10 +49,12 @@ import org.opennms.core.test.TestContextAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.core.CollectionSpecification;
+import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
@@ -83,7 +85,8 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
@@ -108,6 +111,9 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
+    @Autowired
+    private ReadablePollOutagesDao m_pollOutagesDao;
+
     /** The context. */
     private TestContext m_context;
 
@@ -118,7 +124,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
     private CollectionSpecification m_collectionSpecification;
 
     /** The collection agent. */
-    private CollectionAgent m_collectionAgent;
+    private SnmpCollectionAgent m_collectionAgent;
 
     /** The RRD strategy. */
     private RrdStrategy<?, ?> m_rrdStrategy;
@@ -177,8 +183,9 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         SnmpCollector collector = new SnmpCollector();
         collector.initialize();
 
-        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
-        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default",
+                m_pollOutagesDao);
+        m_collectionAgent = DefaultSnmpCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
 
     /**

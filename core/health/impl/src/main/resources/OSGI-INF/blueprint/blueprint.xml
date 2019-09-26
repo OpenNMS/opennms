@@ -1,0 +1,43 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <cm:property-placeholder persistent-id="org.opennms.core.health.cfg">
+        <cm:default-properties>
+            <!--
+                A list of symbolic names which should be ignored while performing the health:check.
+                A common candidate i.e. is the nominatim geocoder plugin
+            -->
+            <cm:property name="ignoreBundleList" value="org.opennms.features.geocoder.nominatim,org.apache.karaf.diagnostic.boot,io.hawt.hawtio-karaf-terminal"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="bundleService" interface="org.apache.karaf.bundle.core.BundleService" availability="mandatory" />
+
+    <!-- Container Health Check -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.core.health.impl.ContainerIntegrityHealthCheck" >
+            <argument ref="blueprintBundleContext" />
+            <argument ref="bundleService" />
+            <argument value="${ignoreBundleList}" />
+        </bean>
+    </service>
+
+    <!-- Health Check Service -->
+    <service interface="org.opennms.core.health.api.HealthCheckService">
+        <bean class="org.opennms.core.health.impl.DefaultHealthCheckService" >
+            <argument ref="blueprintBundleContext"/>
+        </bean>
+    </service>
+</blueprint>

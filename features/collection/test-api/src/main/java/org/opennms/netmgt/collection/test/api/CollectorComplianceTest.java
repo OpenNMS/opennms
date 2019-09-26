@@ -30,7 +30,8 @@ package org.opennms.netmgt.collection.test.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,14 +41,14 @@ import org.junit.Assume;
 import org.junit.Test;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.collectd.DefaultCollectionAgent;
-import org.opennms.netmgt.collectd.SnmpCollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
+import org.opennms.netmgt.collection.core.DefaultCollectionAgent;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -83,6 +84,10 @@ public abstract class CollectorComplianceTest {
 
     public abstract Map<String, Object> getRequiredParameters();
 
+    public CollectionAgent createAgent(Integer ifaceId, IpInterfaceDao ifaceDao, PlatformTransactionManager transMgr) {
+        return DefaultCollectionAgent.create(ifaceId, ifaceDao, transMgr);
+    };
+
     public void beforeMinion() { }
 
     public void afterMinion() { }
@@ -115,7 +120,7 @@ public abstract class CollectorComplianceTest {
         IpInterfaceDao ifaceDao = mock(IpInterfaceDao.class);
         when(ifaceDao.load(1)).thenReturn(iface);
         PlatformTransactionManager transMgr = mock(PlatformTransactionManager.class);
-        final SnmpCollectionAgent agent = DefaultCollectionAgent.create(1, ifaceDao, transMgr);
+        final CollectionAgent agent = createAgent(1, ifaceDao, transMgr);
 
         // init() should execute without any exceptions
         final ServiceCollector opennmsCollector = getCollector();
@@ -155,7 +160,7 @@ public abstract class CollectorComplianceTest {
         IpInterfaceDao ifaceDao = mock(IpInterfaceDao.class);
         when(ifaceDao.load(1)).thenReturn(iface);
         PlatformTransactionManager transMgr = mock(PlatformTransactionManager.class);
-        final SnmpCollectionAgent agent = DefaultCollectionAgent.create(1, ifaceDao, transMgr);
+        final CollectionAgent agent = DefaultCollectionAgent.create(1, ifaceDao, transMgr);
 
         // init() should execute without any exceptions
         final ServiceCollector opennmsCollector = getCollector();

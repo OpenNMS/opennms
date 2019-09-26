@@ -18,6 +18,7 @@
     <module>jasper-reports-compiler</module>
     <module>jasper-reports-filter</module>
     <module>repository</module>
+    <module>rest</module>
     <module>model</module>
     <module>dao</module>
     <module>sdo</module>

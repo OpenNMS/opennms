@@ -32,7 +32,7 @@
               org.opennms.netmgt.snmp;resolution:=optional,
               org.opennms.netmgt.syslogd;resolution:=optional,
               org.opennms.netmgt.trapd;resolution:=optional,
-              org.opennms.minion.core.api;resolution:=optional,
+              org.opennms.distributed.core.api;resolution:=optional,
               *
             </Import-Package>
           </instructions>

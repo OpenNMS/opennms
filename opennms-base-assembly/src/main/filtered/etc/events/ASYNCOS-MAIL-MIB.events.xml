@@ -1,0 +1,611 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/resourceConservationMode</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: resourceConservationMode</event-label>
+      <descr>
+&lt;p>Memory or queue utilization caused system to enter resource
+         conservation mode.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	resourceConservationReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		noResourceConservation(1)
+		memoryShortage(2)
+		queueSpaceShortage(3)
+		queueFull(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: System entered Reasource Conservation Mode: %parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="noResourceConservation"/>
+         <decode varbindvalue="2" varbinddecodedstring="memoryShortage"/>
+         <decode varbindvalue="3" varbinddecodedstring="queueSpaceShortage"/>
+         <decode varbindvalue="4" varbinddecodedstring="queueFull"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/powerSupplyStatusChange-1</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: powerSupplyStatusChange-NotInstalled</event-label>
+      <descr>
+&lt;p>A powerSupplyStatusChange notification is sent when power
+         supply with powerSupplyName changes states, as per one of
+         the states available in powerSupplyStatus. This
+         notification contains the opaque type for powerSupplyName
+         of the power supply which has changed state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	powerSupplyStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		powerSupplyNotInstalled(1)
+		powerSupplyHealthy(2)
+		powerSupplyNoAC(3)
+		powerSupplyFaulty(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: Power Supply Not Installed.
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="powerSupplyNotInstalled"/>
+         <decode varbindvalue="2" varbinddecodedstring="powerSupplyHealthy"/>
+         <decode varbindvalue="3" varbinddecodedstring="powerSupplyNoAC"/>
+         <decode varbindvalue="4" varbinddecodedstring="powerSupplyFaulty"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/powerSupplyStatusChange-2</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: powerSupplyStatusChange-Healthy</event-label>
+      <descr>
+&lt;p>A powerSupplyStatusChange notification is sent when power
+         supply with powerSupplyName changes states, as per one of
+         the states available in powerSupplyStatus. This
+         notification contains the opaque type for powerSupplyName
+         of the power supply which has changed state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	powerSupplyStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		powerSupplyNotInstalled(1)
+		powerSupplyHealthy(2)
+		powerSupplyNoAC(3)
+		powerSupplyFaulty(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: Power Supply Healthy
+	</logmsg>
+      <severity>normal</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="powerSupplyNotInstalled"/>
+         <decode varbindvalue="2" varbinddecodedstring="powerSupplyHealthy"/>
+         <decode varbindvalue="3" varbinddecodedstring="powerSupplyNoAC"/>
+         <decode varbindvalue="4" varbinddecodedstring="powerSupplyFaulty"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/powerSupplyStatusChange-3</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: powerSupplyStatusChange-NoAC</event-label>
+      <descr>
+&lt;p>A powerSupplyStatusChange notification is sent when power
+         supply with powerSupplyName changes states, as per one of
+         the states available in powerSupplyStatus. This
+         notification contains the opaque type for powerSupplyName
+         of the power supply which has changed state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	powerSupplyStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		powerSupplyNotInstalled(1)
+		powerSupplyHealthy(2)
+		powerSupplyNoAC(3)
+		powerSupplyFaulty(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: Power Supply has No AC Power.
+	</logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="powerSupplyNotInstalled"/>
+         <decode varbindvalue="2" varbinddecodedstring="powerSupplyHealthy"/>
+         <decode varbindvalue="3" varbinddecodedstring="powerSupplyNoAC"/>
+         <decode varbindvalue="4" varbinddecodedstring="powerSupplyFaulty"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/powerSupplyStatusChange-4</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: powerSupplyStatusChange-Faulty</event-label>
+      <descr>
+&lt;p>A powerSupplyStatusChange notification is sent when power
+         supply with powerSupplyName changes states, as per one of
+         the states available in powerSupplyStatus. This
+         notification contains the opaque type for powerSupplyName
+         of the power supply which has changed state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	powerSupplyStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		powerSupplyNotInstalled(1)
+		powerSupplyHealthy(2)
+		powerSupplyNoAC(3)
+		powerSupplyFaulty(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Irontport: Power Supply has experienced a fault.
+	</logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="powerSupplyNotInstalled"/>
+         <decode varbindvalue="2" varbinddecodedstring="powerSupplyHealthy"/>
+         <decode varbindvalue="3" varbinddecodedstring="powerSupplyNoAC"/>
+         <decode varbindvalue="4" varbinddecodedstring="powerSupplyFaulty"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/powerSupplyStatusChange</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: powerSupplyStatusChange</event-label>
+      <descr>
+&lt;p>A powerSupplyStatusChange notification is sent when power
+         supply with powerSupplyName changes states, as per one of
+         the states available in powerSupplyStatus. This
+         notification contains the opaque type for powerSupplyName
+         of the power supply which has changed state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	powerSupplyStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		powerSupplyNotInstalled(1)
+		powerSupplyHealthy(2)
+		powerSupplyNoAC(3)
+		powerSupplyFaulty(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: Indeterminiate Power Supply Issue.
+	</logmsg>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="powerSupplyNotInstalled"/>
+         <decode varbindvalue="2" varbinddecodedstring="powerSupplyHealthy"/>
+         <decode varbindvalue="3" varbinddecodedstring="powerSupplyNoAC"/>
+         <decode varbindvalue="4" varbinddecodedstring="powerSupplyFaulty"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/highTemperature</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: highTemperature</event-label>
+      <descr>
+&lt;p>A highTemperature notification is sent when the temperature
+         of an instrumented sensor in the chassis has exceeded vendor
+         defined specifications. This notification contains the
+         opaque type for the temperatureName of the sensor which has
+         failed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	temperatureName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: High Temperature on Sensor: %parm[#1]%
+	</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/fanFailure</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: fanFailure</event-label>
+      <descr>
+&lt;p>A fanFailure notification is sent when the speed of the fan
+         is not operating per the vendor defined specifications, as
+         discussed in fanRPMs. This notification contains the opaque
+         type for the fanName of the fan which has failed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	fanName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: Fan Failure on fan: %parm[#1]%
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/keyExpiration</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: keyExpiration</event-label>
+      <descr>
+&lt;p>A keyExpiration notification is sent when the corresponding
+         Feature Key is pending expiration or has expired. This
+         notification contains the opaque type for the keyDescription
+         of the Feature Key that is pending expiration or has
+         expired.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	keyDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: Key Expiration for key %parm[#1]%
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/updateFailure</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: updateFailure</event-label>
+      <descr>
+&lt;p>An updateFailure notification is sent when a service fails
+         to update properly. This notification contains the opaque
+         type for the updateServiceName of the update service that
+         has failed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	updateServiceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: Update has failed for service: %parm[#1]%.
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/raidStatusChange</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: raidStatusChange</event-label>
+      <descr>
+&lt;p>A raidStatusChange notification is sent when drive with
+         raidID changes states, as per one of the states available
+         in raidStatus. This notification contains the opaque type
+         for raidID of the drive which has changed state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	raidID&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: RAID status has changed for RAID ID: %parm[#1]%.
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/connectivityFailure</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: connectivityFailure</event-label>
+      <descr>
+&lt;p>A connectivityFailure notification is sent when the URL
+         denoted by configured connectionURL is unreachable, or the
+         request returned an HTTP code was not between 200,
+         inclusive, and 300, exclusive. The connectionURL configured
+         is returned when the notification is triggered.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	connectionURL&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: System could not connect to %parm[#1]%
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%parm[#1]%" alarm-type="3" auto-clean="true"/> 
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/memoryUtilizationExceeded</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: memoryUtilizationExceeded</event-label>
+      <descr>
+&lt;p>A memoryUtilizationExceeded notification is sent when the
+         value in perCentMemoryUtilization has exceeded the
+         configured memory usage threshold. The percentage that
+         exceeded the threshold in perCentMemoryUtilization is
+         returned via the notification.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	perCentMemoryUtilization&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: Memory Utilization has exceed a threshold with a value of %parm[#1]%.
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/cpuUtilizationExceeded</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: cpuUtilizationExceeded</event-label>
+      <descr>
+&lt;p>A cpuUtilizationExceeded notification is sent when the
+         value in perCentCPUUtilization has exceeded the configured
+         CPU usage threshold. The percentage that exceeded the
+         threshold in perCentCPUUtilization is returned via the
+         notification.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	perCentCPUUtilization&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: CPU Utilization has exceeded a threshold with a value of %parm[#1]%.
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/hsmInitializationFailure</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: hsmInitializationFailure</event-label>
+      <descr>
+&lt;p>A hsmInitializationFailure notification is sent when the
+         Hardware Security Module card cannot be initialized. The
+         initialization error in hsmErrorReason is returned via
+         the notification.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	hsmErrorReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: The Hardware Security Module cannot be initialized (%parm[#1]%).
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.15497.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ironport/traps/ASYNCOS-MAIL-MIB/hsmResetLoginFailure</uei>
+      <event-label>ASYNCOS-MAIL-MIB defined trap event: hsmResetLoginFailure</event-label>
+      <descr>
+&lt;p>A hsmResetLoginFailure notification is sent when the
+         Hardware Security Module card is reset due to multiple
+         Crypto Officer login failures. The reset login error in
+         hsmErrorReason is returned via the notification.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	hsmErrorReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+	</descr>
+      <logmsg dest="logndisplay">&lt;p>
+	Ironport: The Hardware Security Module has been reset. (%parm[#1]%).
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+</events>

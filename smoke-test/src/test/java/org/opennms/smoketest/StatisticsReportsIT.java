@@ -49,19 +49,18 @@ import org.opennms.netmgt.model.StatisticsReportData;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 
-public class StatisticsReportsIT extends OpenNMSSeleniumTestCase {
+public class StatisticsReportsIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() throws Exception {
-        m_driver.get(getBaseUrl() + "opennms/statisticsReports/index.htm");
-
+        driver.get(getBaseUrlInternal() + "opennms/statisticsReports/index.htm");
     }
 
     @Test
     public void hasReportLinkThatMatchDescription() throws Exception {
         Date startOfTest = new Date();
 
-        HibernateDaoFactory daoFactory = new HibernateDaoFactory(getPostgresService());
+        HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         ResourceReferenceDao resourceReferenceDao = daoFactory.getDao(ResourceReferenceDaoHibernate.class);
         StatisticsReportDao statisticsReportDao = daoFactory.getDao(StatisticsReportDaoHibernate.class);
 
@@ -89,7 +88,7 @@ public class StatisticsReportsIT extends OpenNMSSeleniumTestCase {
                 .until(DaoUtils.findMatchingCallable(statisticsReportDao,
                         new CriteriaBuilder(StatisticsReport.class).ge("startDate", startOfTest).toCriteria()),
                         notNullValue());
-        m_driver.navigate().refresh();
+        driver.navigate().refresh();
 
         assertNotNull(findElementByLink("Hourly Top 10 responses across all nodes"));
     }

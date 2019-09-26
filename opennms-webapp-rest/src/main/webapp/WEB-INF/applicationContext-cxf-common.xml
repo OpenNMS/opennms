@@ -22,6 +22,7 @@
 
     <bean id="noSuchElementProvider"   class="org.opennms.web.rest.support.NoSuchElementProvider"/>
     <bean id="errorResponseProvider"   class="org.opennms.web.rest.support.ErrorResponseProvider"/>
+    <bean id="serviceUnavailableResponseProvider" class="org.opennms.web.rest.support.ServiceUnavailableResponseProvider"/>
 
     <!-- JSON Serialization @Provider classes -->
     <!-- Jettison JSON provider -->

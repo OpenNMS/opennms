@@ -42,16 +42,16 @@ public abstract class AggregatingMessageProducer<S, T> implements MessageDispatc
 
     private final Aggregator<S,T> aggregator;
 
-    public AggregatingMessageProducer(String id, AggregationPolicy<S,T> policy) {
+    public AggregatingMessageProducer(String id, AggregationPolicy<S,T,?> policy) {
         aggregator = new Aggregator<S,T>(id, policy, this);
     }
 
     @Override
     public void send(S message) {
-        final T bucket = aggregator.aggregate(message);
-        if (bucket != null) {
-            // This bucket is ready to be dispatched
-            dispatch(bucket);
+        final T log = aggregator.aggregate(message);
+        if (log != null) {
+            // This log is ready to be dispatched
+            dispatch(log);
         }
     }
 

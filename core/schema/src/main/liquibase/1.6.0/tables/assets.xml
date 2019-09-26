@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-assets">
+		<validCheckSum>3:7d403bf4c78c4e333dc9baa08340574b</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="assets" /></not>
 		</preConditions> 
@@ -48,7 +49,7 @@
 			<column name="userlastmodified" type="char(20)">
 				<constraints nullable="false" />
 			</column>
-			<column name="lastmodifieddate" type="DATETIME">
+			<column name="lastmodifieddate" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
 			<column name="dateinstalled" type="varchar(64)" />

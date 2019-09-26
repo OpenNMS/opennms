@@ -28,7 +28,6 @@ However, ensure that you explain concepts in detail and do not make omissions.
 [options="header", cols="e,d"]
 |===
 | Directory            | Contents
-| `guide-user/`        | module with the guide for OpenNMS user e.g. NOC user who don't change behavior of OpenNMS.
 | `guide-admin/`       | module with the guide for administrators configuring, optimizing and running OpenNMS
 | `guide-development/` | module with the guide for those who want to develop OpenNMS
 | `guide-install/`     | module with the guide of how to install OpenNMS on different operating systems

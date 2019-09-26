@@ -38,12 +38,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Container.ItemSetChangeListener;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.HierarchicalContainer;
 
 @SuppressWarnings("serial")
 public class FilterableHierarchicalContainer extends HierarchicalContainer implements ItemSetChangeListener {

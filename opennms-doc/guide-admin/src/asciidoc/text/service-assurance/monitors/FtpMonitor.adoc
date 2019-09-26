@@ -10,6 +10,7 @@ The monitor can test ftp server on multiple ports and specific login data.
 The service using the FtpMonitor is _up_ if the FTP server responds with return codes between 200 and 299.
 For special cases the service is also marked as _up_ for 425 and 530.
 
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 ===== Monitor facts
 
@@ -24,15 +25,13 @@ For special cases the service is also marked as _up_ for 425 and 530.
 .Monitor specific parameters for the FtpMonitor.
 [options="header, autowidth"]
 |===
-| Parameter              | Description                                                                                 | Required | Default value
-| `retry`                | Number of attempts to get a valid FTP response/response-text                                | optional | `0`
-| `port`                 | A list of TCP ports to which connection shall be tried.                                     | optional | `20`,`21`
-| `password`             | This parameter is meant to be used together with the `user` parameter to perform basic
-                           authentication. This parameter specify to password to be used. The `user` and `password`
-                           parameters are ignored when the `basic-authentication` parameter is defined.                | optional | `empty string`
+| Parameter              | Description                                                                                 | Required | Default value | Placeholder substitution
+| `retry`                | Number of attempts to get a valid FTP response/response-text                                | optional | `0` | No
+| `port`                 | A list of TCP ports to which connection shall be tried.                                     | optional | `20`,`21` | No
+| `password`             | This parameter is meant to be used together with the `userid` parameter to perform
+                           authentication. This parameter specifies the password to be used.                           | optional | `empty string` | Yes
 | `userid`               | This parameter is meant to be used together with the `password` parameter to perform
-                           basic authentication. This parameter specify to user ID to be used. The `userid` and
-                           `password` parameters are ignored when the `basic-authentication` parameter is defined.     | optional | `-`
+                           authentication. This parameter specifies the user ID to be used.                            | optional | `-` | Yes
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -50,6 +49,14 @@ Some example configuration how to configure the monitor in the 'poller-configura
  <parameter key="password" value=""/>
 </service>
 
+<service name="FTP-With-Auth-From-Asset" interval="300000" user-defined="false" status="on">
+ <parameter key="retry" value="1"/>
+ <parameter key="timeout" value="3000"/>
+ <parameter key="port" value="21"/>
+ <parameter key="userid" value="{username}"/>
+ <parameter key="password" value="{password}"/>
+</service>
+
 <service name="FTP-Customer" interval="300000" user-defined="false" status="on">
  <parameter key="retry" value="1"/>
  <parameter key="timeout" value="3000"/>
@@ -59,6 +66,7 @@ Some example configuration how to configure the monitor in the 'poller-configura
 </service>
 
 <monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
+<monitor service="FTP-With-Auth-From-Asset" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
 <monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
 ----
 

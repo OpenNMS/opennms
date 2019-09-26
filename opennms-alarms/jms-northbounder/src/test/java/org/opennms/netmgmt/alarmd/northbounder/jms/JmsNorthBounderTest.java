@@ -135,7 +135,7 @@ public class JmsNorthBounderTest {
         MockLogAppender.setupLogging();
         // this spawns an embedded broker
         m_template = new JmsTemplate(m_jmsNorthbounderConnectionFactory);
-        m_template.setReceiveTimeout(100L);
+        m_template.setReceiveTimeout(1000L);
     }
 
     /**
@@ -585,7 +585,7 @@ public class JmsNorthBounderTest {
             event.setAssociatedServiceRegainedOutages(null);
             event.setAssociatedServiceLostOutages(null);
 
-            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
+            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, date2, event);
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
             alarm.setApplicationDN("applicationDN");

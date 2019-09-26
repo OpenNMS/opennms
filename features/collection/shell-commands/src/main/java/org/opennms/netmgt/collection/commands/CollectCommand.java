@@ -55,6 +55,7 @@ import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.InvalidCollectionAgentException;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -145,7 +146,9 @@ public class CollectCommand implements Action {
         final CompletableFuture<CollectionSet> future = locationAwareCollectorClient.collect()
                 .withAgent(agent)
                 .withSystemId(systemId)
-                .withCollector(collector)
+                // For Service collectors that implement integration api will have proxy collectors.
+                // fetching class name from proxy won't match with class name in collector registry.
+                .withCollectorClassName(className)
                 .withTimeToLive(ttlInMs)
                 .withAttributes(parse(attributes))
                 .execute();
@@ -178,9 +181,12 @@ public class CollectCommand implements Action {
                 } catch (InterruptedException e) {
                     System.out.println("\nInterrupted.");
                 } catch (ExecutionException e) {
-                    System.out.printf("\nCollect failed with:", e);
-                    e.printStackTrace();
-                    System.out.println();
+                    final Throwable cause = e.getCause();
+                    if (cause != null && cause instanceof InvalidCollectionAgentException) {
+                        System.out.printf("The collector requires a valid node and interface. Try specifying a valid node using the --node option.\n", e);
+                        break;
+                    }
+                    System.out.printf("\nCollect failed with: %s \n", e);
                 }
                 break;
             } catch (TimeoutException e) {
@@ -244,10 +250,6 @@ public class CollectCommand implements Action {
                     properties.put(key, value);
                 }
             }
-        }
-        //SnmpCollector uses proxy rpc, so need to pass ttl in params.
-        if(ttlInMs != null) {
-            properties.put("SERVICE_INTERVAL", ttlInMs);
         }
         return properties;
     }

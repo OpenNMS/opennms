@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -96,7 +95,7 @@ public abstract class SnmpWalker implements AutoCloseable {
         return (m_pduBuilder == null ? m_maxVarsPerPdu : m_pduBuilder.getMaxVarsPerPdu());
     }
 
-    protected void buildAndSendNextPdu() throws IOException {
+    protected void buildAndSendNextPdu() throws SnmpException {
         if (m_tracker.isFinished()) {
             handleDone();
         } else {
@@ -106,7 +105,7 @@ public abstract class SnmpWalker implements AutoCloseable {
         }
     }
 
-    protected abstract void sendNextPdu(WalkerPduBuilder pduBuilder) throws IOException;
+    protected abstract void sendNextPdu(WalkerPduBuilder pduBuilder) throws SnmpException;
 
     protected void handleDone() {
         finish();
@@ -171,7 +170,7 @@ public abstract class SnmpWalker implements AutoCloseable {
                 t = getErrorThrowable();
                 if (t == null) {
                     // Not all of the failures provide an exception, so we generate one if necessary
-                    t = new Exception(getErrorMessage());
+                    t = new SnmpException(getErrorMessage());
                 }
             }
             m_callback.complete(this, t);
@@ -208,11 +207,11 @@ public abstract class SnmpWalker implements AutoCloseable {
     }
     
     // processErrors returns true if we need to retry the request and false otherwise
-    protected boolean processErrors(int errorStatus, int errorIndex) {
+    protected boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
         return m_responseProcessor.processErrors(errorStatus, errorIndex);
     }
     
-    protected void processResponse(SnmpObjId receivedOid, SnmpValue val) {
+    protected void processResponse(SnmpObjId receivedOid, SnmpValue val) throws SnmpException {
         m_responseProcessor.processResponse(receivedOid, val);
     }
 

@@ -98,11 +98,11 @@
   <jsp:param name="breadcrumb" value="Service Deleted" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Finished Deleting <c:out value="<%=serviceName%>"/> Service on <c:out value="<%=ipAddr%>"/></h3>
+<div class="card">
+  <div class="card-header">
+    <span>Finished Deleting <c:out value="<%=serviceName%>"/> Service on <c:out value="<%=ipAddr%>"/></span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
       OpenNMS should not need to be restarted, but it may take a moment for
       the Categories to be updated.

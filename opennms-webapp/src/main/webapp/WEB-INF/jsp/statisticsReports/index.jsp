@@ -44,11 +44,11 @@
   <jsp:param name="breadcrumb" value="List"/>
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Statistics Report List</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Statistics Report List</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
 
 <c:choose>
   <c:when test="${empty model}">
@@ -56,11 +56,15 @@
   </c:when>
 
   <c:otherwise>
-    <!-- We need the </script>, otherwise IE7 breaks -->
-    <script type="text/javascript" src="js/extremecomponents.js"></script>
-      
-    <link rel="stylesheet" type="text/css" href="css/onms-extremecomponents.css"/>
-        
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="extremecomponents-js" />
+      <jsp:param name="asset-type" value="js" />
+    </jsp:include>
+
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="onms-extremecomponents" />
+    </jsp:include>
+
     <form id="form" action="${relativeRequestPath}" method="post">
       <ec:table items="model" var="row"
         action="${relativeRequestPath}?${pageContext.request.queryString}"
@@ -109,7 +113,7 @@
     </form>
   </c:otherwise>
 </c:choose>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

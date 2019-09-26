@@ -970,7 +970,6 @@
          <includeGroup>cisco-rttmon-latest-rtp-stats</includeGroup>
          <includeGroup>rfc1315-frame-relay</includeGroup>
          <includeGroup>cisco-frame-relay</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
          <includeGroup>cisco-bgp-peer-addr-family-prefix-stats</includeGroup>
@@ -980,6 +979,12 @@
    </systemDef>
    <systemDef name="Cisco CallManager">
       <sysoid>.1.3.6.1.4.1.9.1.583</sysoid>
+      <collect>
+         <includeGroup>cisco-ccm</includeGroup>
+      </collect>
+   </systemDef>
+   <systemDef name="Cisco Virtual CallManager">
+      <sysoid>.1.3.6.1.4.1.9.1.1348</sysoid>
       <collect>
          <includeGroup>cisco-ccm</includeGroup>
       </collect>

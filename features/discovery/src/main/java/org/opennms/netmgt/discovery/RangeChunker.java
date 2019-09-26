@@ -154,7 +154,7 @@ public class RangeChunker {
                     // Collect the DiscoveryJobs
                     .collect(Collectors.toList()).stream();
             })
-            .collect(Collectors.groupingBy(job -> job.getLocation(),
+            .collect(Collectors.groupingBy(DiscoveryJob::getLocation,
                     LinkedHashMap::new, Collectors.toList()));
     }
 

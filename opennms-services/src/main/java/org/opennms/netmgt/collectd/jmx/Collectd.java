@@ -104,6 +104,15 @@ public class Collectd extends AbstractSpringContextJmxServiceDaemon<org.opennms.
     }
 
     @Override
+    public long getCorePoolThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getCorePoolSize();
+        } else {
+            return 0L;
+        }
+    }
+
+    @Override
     public long getMaxPoolThreads() {
         if (getThreadPoolStatsStatus()) {
             return getExecutor().getMaximumPoolSize();

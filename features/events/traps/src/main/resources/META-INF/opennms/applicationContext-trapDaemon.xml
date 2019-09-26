@@ -21,6 +21,11 @@
   
   <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd"/>
 
+  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="daemon" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
   <bean id="trapSinkConsumer" class="org.opennms.netmgt.trapd.TrapSinkConsumer" />
 
   <bean id="trapListener" class="org.opennms.netmgt.trapd.TrapListener">

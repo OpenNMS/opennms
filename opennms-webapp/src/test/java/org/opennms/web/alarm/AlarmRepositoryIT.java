@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,6 +49,9 @@ import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
@@ -60,6 +64,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -289,4 +295,140 @@ public class AlarmRepositoryIT implements InitializingBean {
         Assert.assertEquals("agalue", acks.get(0).getAckUser());
     }
 
+    @Test
+    @Transactional
+    @JUnitTemporaryDatabase
+    public void testSortBySituation() {
+        OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
+
+        final OnmsEvent event = new OnmsEvent();
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        event.setEventCreateTime(new Date());
+        event.setDistPoller(poller);
+        event.setEventTime(new Date());
+        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+        event.setEventUei("uei://org/opennms/test/EventDaoTest");
+        event.setEventSource("test");
+        m_dbPopulator.getEventDao().save(event);
+        m_dbPopulator.getEventDao().flush();
+
+        final OnmsNode node = m_dbPopulator.getNodeDao().findAll().iterator().next();
+
+        final OnmsAlarm alarm1 = new OnmsAlarm();
+        alarm1.setNode(node);
+        alarm1.setUei(event.getEventUei());
+        alarm1.setSeverityId(event.getEventSeverity());
+        alarm1.setFirstEventTime(event.getEventTime());
+        alarm1.setLastEvent(event);
+        alarm1.setCounter(1);
+        alarm1.setDistPoller(poller);
+        m_dbPopulator.getAlarmDao().save(alarm1);
+        m_dbPopulator.getAlarmDao().flush();
+
+        final OnmsAlarm alarm2 = new OnmsAlarm();
+        alarm2.setNode(node);
+        alarm2.setUei(event.getEventUei());
+        alarm2.setSeverityId(event.getEventSeverity());
+        alarm2.setFirstEventTime(event.getEventTime());
+        alarm2.setLastEvent(event);
+        alarm2.setCounter(1);
+        alarm2.setDistPoller(poller);
+        alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
+        m_dbPopulator.getAlarmDao().save(alarm2);
+        m_dbPopulator.getAlarmDao().flush();
+
+        assertEquals(3, m_dbPopulator.getAlarmDao().findAll().size());
+
+        final AlarmCriteria sortedAsc = new AlarmCriteria(new Filter[0], SortStyle.SITUATION, AcknowledgeType.UNACKNOWLEDGED, 100, 0);
+        final OnmsAlarm[] alarmsAsc = m_alarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(sortedAsc));
+
+        final AlarmCriteria sortedDesc = new AlarmCriteria(new Filter[0], SortStyle.REVERSE_SITUATION, AcknowledgeType.UNACKNOWLEDGED, 100, 0);
+        final OnmsAlarm[] alarmsDesc = m_alarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(sortedDesc));
+
+        assertEquals(3, alarmsAsc.length);
+        assertEquals(true, alarmsAsc[0].isSituation());
+        assertEquals(false, alarmsAsc[1].isSituation());
+        assertEquals(false, alarmsAsc[2].isSituation());
+        assertEquals(3, alarmsDesc.length);
+        assertEquals(false, alarmsDesc[0].isSituation());
+        assertEquals(false, alarmsDesc[1].isSituation());
+        assertEquals(true, alarmsDesc[2].isSituation());
+    }
+
+    @Test
+    @Transactional
+    @JUnitTemporaryDatabase
+    public void testAckSituation() {
+        OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
+
+        final OnmsEvent event = new OnmsEvent();
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        event.setEventCreateTime(new Date());
+        event.setDistPoller(poller);
+        event.setEventTime(new Date());
+        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+        event.setEventUei("uei://org/opennms/test/EventDaoTest");
+        event.setEventSource("test");
+        m_dbPopulator.getEventDao().save(event);
+        m_dbPopulator.getEventDao().flush();
+
+        final OnmsNode node = m_dbPopulator.getNodeDao().findAll().iterator().next();
+
+        final OnmsAlarm alarm1 = new OnmsAlarm(); // Simple Alarm #1
+        alarm1.setNode(node);
+        alarm1.setUei(event.getEventUei());
+        alarm1.setSeverityId(event.getEventSeverity());
+        alarm1.setFirstEventTime(event.getEventTime());
+        alarm1.setLastEvent(event);
+        alarm1.setCounter(1);
+        alarm1.setDistPoller(poller);
+        m_dbPopulator.getAlarmDao().save(alarm1);
+        m_dbPopulator.getAlarmDao().flush();
+
+        final OnmsAlarm alarm2 = new OnmsAlarm(); // Situation #2 with Alarm #1 associated
+        alarm2.setNode(node);
+        alarm2.setUei(event.getEventUei());
+        alarm2.setSeverityId(event.getEventSeverity());
+        alarm2.setFirstEventTime(event.getEventTime());
+        alarm2.setLastEvent(event);
+        alarm2.setCounter(1);
+        alarm2.setDistPoller(poller);
+        alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
+        m_dbPopulator.getAlarmDao().save(alarm2);
+        m_dbPopulator.getAlarmDao().flush();
+
+        final OnmsAlarm alarm3 = new OnmsAlarm(); // Situation #3 with Situation #2 associated
+        alarm3.setNode(node);
+        alarm3.setUei(event.getEventUei());
+        alarm3.setSeverityId(event.getEventSeverity());
+        alarm3.setFirstEventTime(event.getEventTime());
+        alarm3.setLastEvent(event);
+        alarm3.setCounter(1);
+        alarm3.setDistPoller(poller);
+        alarm3.setRelatedAlarms(Sets.newHashSet(alarm2));
+        m_dbPopulator.getAlarmDao().save(alarm3);
+        m_dbPopulator.getAlarmDao().flush();
+
+        final List<OnmsAlarm> before = m_dbPopulator.getAlarmDao().findAll();
+        assertEquals(4, before.size());
+        assertEquals(false, before.get(0).isAcknowledged());
+        assertEquals(false, before.get(1).isAcknowledged());
+        assertEquals(false, before.get(2).isAcknowledged());
+        assertEquals(false, before.get(3).isAcknowledged());
+
+        m_alarmRepo.acknowledgeAlarms(new int[]{alarm3.getId()},"me", new Date());
+
+        // Ack of Alarm #3 should also ack Alarm #2 because it is a situation. Alarm #2
+        // itself is also a situation, so Alarm #1 is also ack'd.
+
+        final List<OnmsAlarm> after = m_dbPopulator.getAlarmDao().findAll().stream()
+                .filter(o -> o.isAcknowledged()).collect(Collectors.toList());
+
+        assertEquals(3, after.size());
+        assertEquals(true, after.get(0).isAcknowledged());
+        assertEquals(true, after.get(1).isAcknowledged());
+        assertEquals(true, after.get(2).isAcknowledged());
+    }
 }

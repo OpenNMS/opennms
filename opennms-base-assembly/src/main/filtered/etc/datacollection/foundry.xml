@@ -10,7 +10,6 @@
       <sysoidMask>.1.3.6.1.4.1.1991.1.</sysoidMask>
       <collect>
          <includeGroup>foundry-sys</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
       </collect>
    </systemDef>
@@ -18,7 +17,6 @@
       <sysoid>.1.3.6.1.4.1.1991.1.3.6.2</sysoid>
       <collect>
          <includeGroup>foundry-sys</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
       </collect>
@@ -27,7 +25,6 @@
       <sysoid>.1.3.6.1.4.1.1991.1.3.7.2</sysoid>
       <collect>
          <includeGroup>foundry-sys</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
       </collect>
@@ -36,7 +33,6 @@
       <sysoid>.1.3.6.1.4.1.1991.1.3.40.2.2</sysoid>
       <collect>
          <includeGroup>foundry-sys</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
       </collect>

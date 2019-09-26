@@ -28,11 +28,23 @@
 
 package org.opennms.netmgt.dao;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +69,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Sets;
 
 /**
  * Tests for Acknowledgment DAO
@@ -174,5 +188,152 @@ public class AcknowledgmentDaoIT implements InitializingBean {
         
         assertEquals(ack2.getAckUser(), alarm2.getAlarmAckUser());
         assertEquals(ack2.getAckTime(), alarm2.getAlarmAckTime());
+    }
+
+    @Test
+    @Transactional
+    public void clearingSituationClearsRelatedAlarms() {
+
+        OnmsAlarm alarm1 = new OnmsAlarm();
+        alarm1.setId(1);
+        alarm1.setAlarmType(1);
+        alarm1.setUei("uei://org/opennms/test/EventDaoTest");
+        alarm1.setSeverity(OnmsSeverity.WARNING);
+        alarm1.setReductionKey("n1:oops1");
+        alarm1.setLastEventTime(new Date(1000));
+        alarm1.setCounter(new Integer(1));
+        alarm1.setDistPoller(m_distPollerDao.whoami());
+        m_alarmDao.save(alarm1);
+        m_alarmDao.flush();
+
+        OnmsAlarm alarm2 = new OnmsAlarm();
+        alarm2.setId(2);
+        alarm2.setAlarmType(1);
+        alarm2.setUei("uei://org/opennms/test/EventDaoTest");
+        alarm2.setSeverity(OnmsSeverity.WARNING);
+        alarm2.setReductionKey("n1:oops2");
+        alarm2.setLastEventTime(new Date(1000));
+        alarm2.setCounter(new Integer(1));
+        alarm2.setDistPoller(m_distPollerDao.whoami());
+        m_alarmDao.save(alarm2);
+        m_alarmDao.flush();
+
+        OnmsAlarm situation = new OnmsAlarm();
+        situation.setId(3);
+        situation.setAlarmType(1);
+        situation.setUei("uei://org/opennms/test/EventDaoTest");
+        situation.setSeverity(OnmsSeverity.CRITICAL);
+        situation.setReductionKey("n1:situation");
+        situation.setLastEventTime(new Date(2000));
+        situation.setRelatedAlarms(Sets.newHashSet(alarm1, alarm2));
+        situation.setCounter(new Integer(1));
+        situation.setDistPoller(m_distPollerDao.whoami());
+        m_alarmDao.save(situation);
+        m_alarmDao.flush();
+
+        OnmsAcknowledgment clear = new OnmsAcknowledgment(situation);
+        clear.setAckAction(AckAction.CLEAR);
+        getAcknowledgmentDao().processAck(clear);
+
+        // The situation should be cleared
+        OnmsAlarm retrievedSituation = m_alarmDao.get(situation.getId());
+        assertThat(retrievedSituation.getSeverity(), equalTo(OnmsSeverity.CLEARED));
+        // Both related alarms should be cleared
+        OnmsAlarm retrieved1 = m_alarmDao.get(situation.getId());
+        assertThat(retrieved1.getSeverity(), equalTo(OnmsSeverity.CLEARED));
+        OnmsAlarm retrieved2 = m_alarmDao.get(situation.getId());
+        assertThat(retrieved2.getSeverity(), equalTo(OnmsSeverity.CLEARED));
+
+    }
+
+    @Test
+    @Transactional
+    public void testFindLatestAcks() {
+        Date beginningOfTime = new Date(0);
+        assertThat(m_acknowledgmentDao.findLatestAcks(beginningOfTime), hasSize(0));
+
+        int numAcks = 100;
+        Map<Integer, Integer> dbIdsByRefId = new HashMap<>();
+        dbIdsByRefId.put(1, generateAcks(1, numAcks));
+        dbIdsByRefId.put(2, generateAcks(2, numAcks));
+        dbIdsByRefId.put(3, generateAcks(3, numAcks));
+        assertThat(m_acknowledgmentDao.findAll(), hasSize(greaterThan(3)));
+
+        List<OnmsAcknowledgment> acks = m_acknowledgmentDao.findLatestAcks(beginningOfTime);
+        assertThat(acks, hasSize(3));
+        // Check that we got an ack back for each of the refIds we expect
+        assertThat(acks.stream()
+                .map(OnmsAcknowledgment::getRefId)
+                .collect(Collectors.toList()), containsInAnyOrder(1, 2, 3));
+
+        // Check that the ackTimes are the latest ones
+        for (OnmsAcknowledgment ack : acks) {
+            assertThat(ack.getAckTime(), equalTo(new Date(numAcks)));
+        }
+        
+        // Check that the Ids are the latest ones given that we had ties for ackTime
+        for (OnmsAcknowledgment ack : acks) {
+            assertThat(ack.getId(), equalTo(dbIdsByRefId.get(ack.getRefId())));
+        }
+        
+        // Check that we get consistent results with finding the acks the hard way with separate queries
+        List<OnmsAcknowledgment> acksTheHardWay = findAcksTheHardWay(Arrays.asList(1, 2, 3));
+        assertThat(acks, equalTo(acksTheHardWay));
+    }
+    
+    @Test
+    @Transactional
+    public void testFindLatestAckForRefId() {
+        int numAcks = 100;
+        Integer latestIdFor1 = generateAcks(1, 100);
+        generateAcks(2, 100);
+        assertThat(m_acknowledgmentDao.findAll(), hasSize(greaterThan(3)));
+
+        //noinspection OptionalGetWithoutIsPresent
+        OnmsAcknowledgment ack = m_acknowledgmentDao.findLatestAckForRefId(1).get();
+        // Check to make sure the ack has the latest time and the right Id since we purposely created a tie
+        assertThat(ack.getAckTime(), equalTo(new Date(numAcks)));
+        assertThat(ack.getId(), equalTo(latestIdFor1));
+    }
+
+    /**
+     * Generate acks where some of the acks share the same ackTime.
+     */
+    private Integer generateAcks(Integer refId, int numAcks) {        
+        OnmsAcknowledgment sameTimeAck = new OnmsAcknowledgment();
+        sameTimeAck.setRefId(refId);
+        sameTimeAck.setAckTime(new Date(numAcks));
+        m_acknowledgmentDao.save(sameTimeAck);
+        
+        IntStream.range(3, numAcks + 1).forEach(i -> {
+            OnmsAcknowledgment ack = new OnmsAcknowledgment();
+            ack.setRefId(refId);
+            ack.setAckTime(new Date(i));
+            m_acknowledgmentDao.save(ack);
+        });
+
+        sameTimeAck = new OnmsAcknowledgment();
+        sameTimeAck.setRefId(refId);
+        sameTimeAck.setAckTime(new Date(numAcks));
+        int id = m_acknowledgmentDao.save(sameTimeAck);
+        
+
+        m_acknowledgmentDao.flush();
+        
+        return id;
+    }
+
+    /**
+     * Find acks one by one with separate queries.
+     */
+    private List<OnmsAcknowledgment> findAcksTheHardWay(List<Integer> refIds){
+        List<OnmsAcknowledgment> foundAcks = new ArrayList<>();
+
+        for (Integer refId : refIds) {
+            //noinspection OptionalGetWithoutIsPresent
+            foundAcks.add(m_acknowledgmentDao.findLatestAckForRefId(refId).get());
+        }
+
+        return foundAcks;
     }
 }

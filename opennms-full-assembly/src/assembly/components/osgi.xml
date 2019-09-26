@@ -9,11 +9,5 @@
       <outputDirectory>system</outputDirectory>
       <directory>target/opennms-repo</directory>
     </fileSet>
-    <fileSet>
-      <filtered>false</filtered>
-      <!-- Output to the root directory -->
-      <outputDirectory></outputDirectory>
-      <directory>target/resources</directory>
-    </fileSet>
   </fileSets>
 </component>

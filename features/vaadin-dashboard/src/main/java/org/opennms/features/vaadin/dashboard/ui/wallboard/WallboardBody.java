@@ -28,14 +28,25 @@
 
 package org.opennms.features.vaadin.dashboard.ui.wallboard;
 
-import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
-import java.util.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.ProgressIndicator;
 
 public class WallboardBody extends VerticalLayout {
     private final CssLayout contentLayout;
@@ -68,16 +79,17 @@ public class WallboardBody extends VerticalLayout {
             addComponent(debugLabel);
         }
         addComponent(contentLayout);
-        setExpandRatio(contentLayout, 1.0f);
 
         progressIndicator = new ProgressIndicator();
         progressIndicator.setWidth("100%");
         progressIndicator.setPollingInterval(250);
-        progressIndicator.setVisible(false);
+        progressIndicator.setVisible(true);
         addComponent(progressIndicator);
 
-        timer = new Timer();
+        setExpandRatio(contentLayout, 0.95f);
+        setExpandRatio(progressIndicator, 0.05f);
 
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -113,11 +125,11 @@ public class WallboardBody extends VerticalLayout {
         iteration = 1;
         index = -1;
 
-        VaadinSession.getCurrent().lock();
         try {
+            getUI().getSession().lock();
             progressIndicator.setVisible(true);
         } finally {
-            VaadinSession.getCurrent().unlock();
+            getUI().getSession().unlock();
         }
     }
 
@@ -140,7 +152,7 @@ public class WallboardBody extends VerticalLayout {
     public Dashlet getDashletInstance(DashletSpec dashletSpec) {
         DashletSelector dashletSelector = ((DashletSelectorAccess) getUI()).getDashletSelector();
         Dashlet dashlet = dashletSelector.getDashletFactoryForName(dashletSpec.getDashletName()).newDashletInstance(dashletSpec);
-        dashlet.getWallboardComponent().getComponent().setCaption(null);
+        dashlet.getWallboardComponent(getUI()).getComponent().setCaption(null);
         return dashlet;
     }
 
@@ -186,11 +198,11 @@ public class WallboardBody extends VerticalLayout {
 
             if (!priorityMap.containsKey(index)) {
                 Dashlet dashlet = getDashletInstance(dashletSpecs.get(index));
-                dashlet.getWallboardComponent().getComponent().addStyleName("wallboard");
+                dashlet.getWallboardComponent(getUI()).getComponent().addStyleName("wallboard");
 
                 dashlets.put(index, dashlet);
 
-                dashlets.get(index).getWallboardComponent().refresh();
+                dashlets.get(index).getWallboardComponent(getUI()).refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -206,7 +218,7 @@ public class WallboardBody extends VerticalLayout {
 
             if (priorityMap.get(index) <= 0) {
 
-                dashlets.get(index).getWallboardComponent().refresh();
+                dashlets.get(index).getWallboardComponent(getUI()).refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -261,7 +273,7 @@ public class WallboardBody extends VerticalLayout {
 
                     panel.setCaption(caption);
 
-                    Component component = dashlets.get(next).getWallboardComponent().getComponent();
+                    Component component = dashlets.get(next).getWallboardComponent(getUI()).getComponent();
 
                     VerticalLayout verticalLayout = new VerticalLayout(component);
                     verticalLayout.setSizeFull();

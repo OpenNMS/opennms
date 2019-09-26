@@ -9,7 +9,7 @@
   ">
 
   <changeSet author="agalue" id="1.13.5-hwEntity">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:78148d5e8dcc7f3bf1f83630a9ed4d44</validCheckSum>
 
     <createTable tableName="hwentity">
       <column name="id" type="integer">
@@ -34,7 +34,7 @@
       <column name="entphysicalserialnum" type="varchar(128)"/>
       <column name="entphysicalassetid" type="varchar(128)"/>
       <column name="entphysicalisfru" type="boolean"/>
-      <column name="entphysicalmfgdate" type="datetime"/>
+      <column name="entphysicalmfgdate" type="TIMESTAMP WITH TIME ZONE"/>
       <column name="entphysicaluris" type="varchar(256)"/>
     </createTable>
 

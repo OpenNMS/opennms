@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.snmp.mock;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +38,7 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -121,7 +121,7 @@ public class MockSnmpWalker extends SnmpWalker {
     }
 
     @Override
-    protected void sendNextPdu(final WalkerPduBuilder pduBuilder) throws IOException {
+    protected void sendNextPdu(final WalkerPduBuilder pduBuilder) throws SnmpException {
         final MockPduBuilder builder = (MockPduBuilder)pduBuilder;
         final List<SnmpObjId> oids = builder.getOids();
         LOG.debug("'Sending' tracker PDU of size {}", oids.size());
@@ -171,7 +171,7 @@ public class MockSnmpWalker extends SnmpWalker {
     }
 
     @Override
-    protected void buildAndSendNextPdu() throws IOException {
+    protected void buildAndSendNextPdu() throws SnmpException {
     	LOG.debug("buildAndSendNextPdu()");
     	super.buildAndSendNextPdu();
     }

@@ -31,7 +31,6 @@ package org.opennms.netmgt.syslogd;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

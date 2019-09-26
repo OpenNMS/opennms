@@ -26,6 +26,9 @@ import org.apache.karaf.main.Main;
 import org.opennms.core.soa.support.OnmsOSGiBridgeActivator;
 import org.osgi.framework.BundleContext;
 
+/**
+ * Listener which starts Apache Karaf as part of starting up the OpenNMS Webapp.
+ */
 public class WebAppListener implements ServletContextListener {
 
     private Main main;
@@ -61,6 +64,7 @@ public class WebAppListener implements ServletContextListener {
             System.setProperty("karaf.home", root);
             System.setProperty("karaf.base", root);
             System.setProperty("karaf.data", root + File.separator + "data");
+            System.setProperty("karaf.log", root + File.separator + "logs");
             System.setProperty("karaf.etc", root + File.separator + "etc");
             System.setProperty("karaf.history", root + File.separator + "data" + File.separator + "history.txt");
             System.setProperty("karaf.instances", root + File.separator + "instances");

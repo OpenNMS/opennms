@@ -34,12 +34,24 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 public class ReductionKeyHelper {
 
     // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details
     public static final String DEFAULT_DISTRIBUTED_POLLER_NAME = "";
+
+    public static Set<String> getReductionKeys(final OnmsApplication application) {
+        Objects.requireNonNull(application);
+        Set<String> reductionKeys = new HashSet<>();
+
+        for (OnmsMonitoredService monitoredService : application.getMonitoredServices()) {
+            reductionKeys.addAll(getReductionKeys(monitoredService));
+        }
+
+        return reductionKeys;
+    }
 
     public static Set<String> getReductionKeys(final OnmsMonitoredService monitoredService) {
         Objects.requireNonNull(monitoredService);

@@ -47,11 +47,6 @@
 		<constructor-arg value="file:${opennms.home}/etc/poll-outages.xml" />
 	</bean>
 
-	<bean name="opennms-server.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
-		<constructor-arg value="org.opennms.netmgt.config.server.LocalServer" />
-		<constructor-arg value="file:${opennms.home}/etc/opennms-server.xml" />
-	</bean>
-
 	<bean name="service-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.service.ServiceConfiguration" />
 		<constructor-arg value="file:${opennms.home}/etc/service-configuration.xml" />

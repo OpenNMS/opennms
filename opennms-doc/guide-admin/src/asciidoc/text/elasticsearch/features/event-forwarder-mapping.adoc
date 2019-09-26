@@ -1,0 +1,26 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+===== Mapping of Events to Elasticsearch
+
+====== Overview of index mapping
+
+In _{opennms-product-name}_, Event table entries contain references to associated node, asset, service and journal message tables.
+In _Elasticsearch_, we must flatten these entries into a single index entry for each insertion. Thus each index entry contains 
+more context information than would be found in the actual _{opennms-product-name}_ event. This context information includes the associated node
+and asset table information which was current when (but may have changed since) the event was archived. 
+
+In the _Table of Index Mappings_ below we have example event JSON entries retrieved using a sense command. The table helps illustrate how _{opennms-product-name}_
+saves data in _Elasticsearch_.
+
+Internal _Elasticsearch_ fields always begin with an underscore character. The internal fields `_id`, `_index` and `_type` are combined to give the unique identifier for an entry
+as described above under Index Definitions. All of the fields under `_source` represent the stored event (_Elasticsearch_ documentation refers to source entries as indexed documents).
+The ID of each event is included in the `_source` `id` field and also duplicated in the internal `_id`.
+
+Events in the _{opennms-product-name}_ events table (i.e. those corresponding to logs or traps) are copied directly to the `opennms-events-raw-`
+indexes. In _{opennms-product-name}_ events can contain `parameters` which are key-value pairs referencing additional data stored when the
+event is created. In _Elasticsearch_ these parameters are always stored in separate fields in the index with names beginning with `p_`
+
+Events have `severity` fields defined as integers (long) and also corresponding `severity_text` fields which give the
+text equivalent (`Critical`, `Major`, `Minor`, `Normal`, `Cleared`).

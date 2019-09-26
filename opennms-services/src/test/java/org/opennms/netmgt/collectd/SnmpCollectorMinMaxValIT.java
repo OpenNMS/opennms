@@ -51,8 +51,10 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.core.CollectionSpecification;
+import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
@@ -90,7 +92,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
@@ -111,12 +114,15 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
+    
+    @Autowired
+    private ReadablePollOutagesDao m_pollOutagesDao;
 
     private TestContext m_context;
 
     private CollectionSpecification m_collectionSpecification;
 
-    private CollectionAgent m_collectionAgent;
+    private SnmpCollectionAgent m_collectionAgent;
 
 	private SnmpAgentConfig m_agentConfig;
 
@@ -177,8 +183,9 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
         final SnmpCollector collector = new SnmpCollector();
         collector.initialize();
 
-        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
-        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default",
+                m_pollOutagesDao);
+        m_collectionAgent = DefaultSnmpCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
 
     @After
@@ -239,7 +246,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
         assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
         assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
 
-     // now update the data in the agent
+        // now update the data in the agent
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(1234567));
 

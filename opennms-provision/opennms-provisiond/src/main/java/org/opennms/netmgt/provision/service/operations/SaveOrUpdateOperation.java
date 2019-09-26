@@ -55,6 +55,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 
     private final OnmsNode m_node;
     private OnmsIpInterface m_currentInterface;
+    private OnmsMonitoredService m_currentService;
     
     private ScanManager m_scanManager;
     private String m_rescanExisting = Boolean.TRUE.toString();
@@ -109,7 +110,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
             LOG.error("Unable to resolve address of snmpPrimary interface for node {} with address '{}'", m_node.getLabel(), ipAddr);
         }
 
-        m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
+        m_currentInterface = new OnmsIpInterface(addr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(primaryType);
 
@@ -141,7 +142,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      */
     protected void updateSnmpData() {
         if (m_scanManager != null) {
-            m_scanManager.updateSnmpData(m_node);
+            m_scanManager.updateSnmpData(m_node, getProvisionService().getHostnameResolver());
         }
 	}
 
@@ -154,9 +155,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         // current interface may be null if it has no ipaddr
         if (m_currentInterface != null) {
             OnmsServiceType svcType = getProvisionService().createServiceTypeIfNecessary(serviceName);
-            OnmsMonitoredService service = new OnmsMonitoredService(m_currentInterface, svcType);
-            service.setStatus("A");
-            m_currentInterface.getMonitoredServices().add(service);
+            m_currentService = new OnmsMonitoredService(m_currentInterface, svcType);
+            m_currentService.setStatus("A");
+            m_currentInterface.getMonitoredServices().add(m_currentService);
         }
     
     }
@@ -197,6 +198,18 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         } catch (final BeansException e) {
             LOG.warn("Could not set property on object of type {}: {}", m_node.getClass().getName(), name, e);
         }
+    }
+
+    public void foundNodeMetaData(String context, String key, String value) {
+        m_node.addMetaData(context, key, value);
+    }
+
+    public void foundInterfaceMetaData(String context, String key, String value) {
+        m_currentInterface.addMetaData(context, key, value);
+    }
+
+    public void foundServiceMetaData(String context, String key, String value) {
+        m_currentService.addMetaData(context, key, value);
     }
 
 }

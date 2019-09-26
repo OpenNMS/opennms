@@ -60,6 +60,9 @@
          <includeGroup>mib2-tcp</includeGroup>
          <includeGroup>dell-rac-chassis</includeGroup>
          <includeGroup>dell-rac-psu</includeGroup>
+         <includeGroup>openmanage-coolingdevices</includeGroup>
+         <includeGroup>openmanage-temperatureprobe</includeGroup>
+         <includeGroup>openmanage-powerusage</includeGroup>
       </collect>
    </systemDef>
 </datacollection-group>

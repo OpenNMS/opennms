@@ -1131,17 +1131,6 @@
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false" />
 -->
   </event>
-  <event>
-    <uei>uei.opennms.org/internal/demandPollService</uei>
-    <event-label>OpenNMS-defined node event: DemandPoll</event-label>
-    <descr>
-      &lt;p&gt;The Demand Poll requested on %nodeid% (%nodelabel%)
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt;The Demand Poll requested on %nodeid% (%nodelabel%).&lt;/p&gt;
-    </logmsg>
-    <severity>Normal</severity>
-  </event>
   <!-- Remote Poller Events -->
   <event>
     <uei>uei.opennms.org/remote/nodes/nodeLostService</uei>

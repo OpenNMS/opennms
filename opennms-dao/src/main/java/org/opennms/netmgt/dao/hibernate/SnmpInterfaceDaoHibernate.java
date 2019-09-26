@@ -28,8 +28,16 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
 public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements SnmpInterfaceDao {
@@ -72,5 +80,18 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
             description,
             description
         );
+    }
+
+    @Override
+    public void markHavingFlows(final Integer nodeId, final Collection<Integer> snmpIfIndexes) {
+        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update snmpinterface set hasFlows = true where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
+                .setParameter("nodeid", nodeId)
+                .setParameterList("snmpIfIndexes", snmpIfIndexes)
+                .executeUpdate());
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findAllHavingFlows(final Integer nodeId) {
+        return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and iface.hasFlows = true", nodeId);
     }
 }

@@ -130,7 +130,7 @@ public class MetaTopologySelectorOperation extends AbstractCheckedOperation {
             container.getTopologyServiceClient().getGraphProviders().stream()
                     .filter(p -> p.getNamespace().equals(selectedLayer))
                     .findFirst()
-                    .ifPresent(p -> container.selectTopologyProvider(p));
+                    .ifPresent(container::selectTopologyProvider);
         }
     }
 }

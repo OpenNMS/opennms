@@ -30,6 +30,10 @@ package org.opennms.core.rpc.camel;
 
 import static org.opennms.core.rpc.camel.CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT;
 import static org.opennms.core.rpc.camel.CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_RPC_FAILED;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -55,24 +59,35 @@ import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.common.util.concurrent.TimeLimiter;
 
-public class CamelRpcClientFactory implements RpcClientFactory, InitializingBean, DisposableBean {
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
 
-    private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerProcessor.class);
+public class CamelRpcClientFactory implements RpcClientFactory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CamelRpcClientFactory.class);
 
     /**
      * Re-use the value of the default TTL as the default timeout for RPC request execution.
      * This value is bounded by the actual value of the TTL in the request when set.
      */
-    private static final long rpcExecTimeoutMs = Long.getLong(CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT);
+    private static final long rpcExecTimeoutMs = SystemProperties.getLong(CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT);
 
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("CamelRpcClientFactory-Pool-%d")
@@ -90,16 +105,14 @@ public class CamelRpcClientFactory implements RpcClientFactory, InitializingBean
     @EndpointInject(uri = "direct:executeRpc", context = "rpcClient")
     private Endpoint endpoint;
 
-    @Override
-    public void afterPropertiesSet() {
-        executor = Executors.newCachedThreadPool(threadFactory);
-        timeLimiter = new SimpleTimeLimiter(executor);
-    }
+    @Autowired
+    private TracerRegistry tracerRegistry;
 
-    @Override
-    public void destroy() {
-        executor.shutdownNow();
-    }
+    private Tracer tracer;
+
+    private MetricRegistry metrics = new MetricRegistry();
+
+    private JmxReporter metricsReporter = null;
 
     @Override
     public <S extends RpcRequest, T extends RpcResponse> RpcClient<S,T> getClient(RpcModule<S,T> module) {
@@ -110,10 +123,24 @@ public class CamelRpcClientFactory implements RpcClientFactory, InitializingBean
                     // The request is for the current location, invoke it directly
                     return module.execute(request);
                 }
-
                 // Save the context map and restore it on callback
                 final Map<String, String> clientContextMap = Logging.getCopyOfContextMap();
-
+                // Build span with module id and start it.
+                Span span = tracer.buildSpan(module.getId()).start();
+                span.setTag(TAG_LOCATION, request.getLocation());
+                if(request.getSystemId() != null) {
+                    span.setTag(TAG_SYSTEM_ID, request.getSystemId());
+                }
+                request.getTracingInfo().forEach(span::setTag);
+                TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+                tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+                //Add custom tags to tracing info.
+                request.getTracingInfo().forEach(tracingInfoCarrier::put);
+                // Build or retrieve rpc metrics.
+                final Histogram rpcDuration = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_DURATION));
+                final Histogram responseSize = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_RESPONSE_SIZE));
+                final Meter failedMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_FAILED));
+                long requestCreationTime = System.currentTimeMillis();
                 // Wrap the request in a CamelRpcRequest and forward it to the Camel route
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 try {
@@ -130,20 +157,28 @@ public class CamelRpcClientFactory implements RpcClientFactory, InitializingBean
                     }
 
                     timeLimiter.callWithTimeout(() -> {
-                        template.asyncCallbackSendBody(endpoint, new CamelRpcRequest<>(module, request), new Synchronization() {
+                        template.asyncCallbackSendBody(endpoint, new CamelRpcRequest<>(module, request, tracingInfoCarrier.getTracingInfoMap()), new Synchronization() {
                             @Override
                             public void onComplete(Exchange exchange) {
                                 try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
-                                    final T response = module.unmarshalResponse(exchange.getOut().getBody(String.class));
+                                    String responseAsString = exchange.getOut().getBody(String.class);
+                                    responseSize.update(responseAsString.getBytes().length);
+                                    final T response = module.unmarshalResponse(responseAsString);
                                     if (response.getErrorMessage() != null) {
                                         future.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
+                                        span.setTag(TAG_RPC_FAILED, "true");
+                                        span.log(response.getErrorMessage());
                                     } else {
                                         future.complete(response);
                                     }
                                 } catch (Throwable ex) {
                                     LOG.error("Unmarshalling a response in RPC module {} failed.", module, ex);
                                     future.completeExceptionally(ex);
+                                    span.setTag(TAG_RPC_FAILED, "true");
+                                    span.log(ex.getMessage());
                                 }
+                                span.finish();
+                                rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
                                 // Ensure that future log statements on this thread are routed properly
                                 Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                             }
@@ -156,6 +191,7 @@ public class CamelRpcClientFactory implements RpcClientFactory, InitializingBean
                                     if (timeoutException != null) {
                                         // Wrap timeout exceptions within a RequestTimedOutException
                                         future.completeExceptionally(new RequestTimedOutException(exchange.getException()));
+                                        span.setTag(TAG_TIMEOUT, "true");
                                     } else if (directConsumerNotAvailableException != null) {
                                         // Wrap consumer not available exceptions with a RequestRejectedException
                                         future.completeExceptionally(new RequestRejectedException(exchange.getException()));
@@ -163,6 +199,11 @@ public class CamelRpcClientFactory implements RpcClientFactory, InitializingBean
                                         future.completeExceptionally(exchange.getException());
                                     }
                                 }
+                                span.setTag(TAG_RPC_FAILED, "true");
+                                span.log(exchange.getException().getMessage());
+                                span.finish();
+                                failedMeter.mark();
+                                rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
                                 // Ensure that future log statements on this thread are routed properly
                                 Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                             }
@@ -171,19 +212,53 @@ public class CamelRpcClientFactory implements RpcClientFactory, InitializingBean
                     }, execTimeoutMs, TimeUnit.MILLISECONDS, true);
                 } catch (Exception e) {
                     try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
-                        // Wrap exceptions with a RequestRejectedException
+                        // Wrap ProducerTemplate exceptions with a RequestRejectedException
                         future.completeExceptionally(new RequestRejectedException(e));
+                        span.setTag(TAG_RPC_FAILED, "true");
+                        span.log(e.getMessage());
+                        rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
+                        span.finish();
                     }
                     // Ensure that future log statements on this thread are routed properly
                     Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                 }
+                final Meter requestSentMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+                requestSentMeter.mark();
                 return future;
             }
         };
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        this.tracerRegistry = tracerRegistry;
     }
 
     public void setLocation(String location) {
         this.location = location;
     }
 
+    public void start() {
+        executor = Executors.newCachedThreadPool(threadFactory);
+        timeLimiter = new SimpleTimeLimiter(executor);
+
+        tracerRegistry.init(SystemInfoUtils.getInstanceId());
+        tracer = tracerRegistry.getTracer();
+        // Initialize metrics reporter.
+        metricsReporter = JmxReporter.forRegistry(metrics).
+                inDomain(JMX_DOMAIN_RPC).build();
+        metricsReporter.start();
+    }
+
+    public void stop() {
+        if (executor != null) {
+            executor.shutdownNow();
+        }
+        if (metricsReporter != null) {
+            metricsReporter.close();
+        }
+    }
 }

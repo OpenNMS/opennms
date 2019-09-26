@@ -5,8 +5,6 @@
     
   <bean id="pollerConfigDao" class="org.opennms.netmgt.config.DefaultPollerConfigDao">
     <property name="configResource" value="classpath:/org/opennms/netmgt/poller/remote/poller-configuration.xml"/>
-    <property name="localServer" value="nms1"/>
-    <property name="verifyServer" value="false"/>
   </bean>
 
   <bean id="pollerConfig" factory-bean="pollerConfigDao" factory-method="getPollerConfig"/>

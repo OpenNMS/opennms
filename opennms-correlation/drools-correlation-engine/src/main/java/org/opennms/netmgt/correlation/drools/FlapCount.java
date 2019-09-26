@@ -32,7 +32,7 @@ import java.io.Serializable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>FlapCount class.</p>
@@ -202,12 +202,12 @@ public class FlapCount implements Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        	.append("nodeid", m_nodeid)
-        	.append("ipAddr", m_ipAddr)
-        	.append("svcName", m_svcName)
-        	.append("locMon", m_locationMonitor)
-        	.append("count", m_count)
-        	.toString();
+        return MoreObjects.toStringHelper(this)
+		.add("nodeid", m_nodeid)
+		.add("ipAddr", m_ipAddr)
+		.add("svcName", m_svcName)
+		.add("locMon", m_locationMonitor)
+		.add("count", m_count)
+		.toString();
     }
 }

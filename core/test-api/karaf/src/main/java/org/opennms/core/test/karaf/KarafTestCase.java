@@ -29,6 +29,7 @@
 package org.opennms.core.test.karaf;
 
 import static org.ops4j.pax.exam.CoreOptions.maven;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.CoreOptions.systemPackages;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
@@ -47,6 +48,7 @@ import java.net.URI;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -60,10 +62,12 @@ import javax.security.auth.Subject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.karaf.features.BootFinished;
 import org.apache.karaf.features.FeaturesService;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.api.console.SessionFactory;
+import org.junit.Before;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
@@ -93,8 +97,8 @@ public abstract class KarafTestCase {
     public static final String MIN_SSH_PORT = "8101";
     public static final String MAX_SSH_PORT = "8888";
 
-    private static String getKarafVersion() {
-        final String karafVersion = System.getProperty("karafVersion", "4.1.5");
+    protected static String getKarafVersion() {
+        final String karafVersion = System.getProperty("karafVersion", "4.2.6");
         Objects.requireNonNull(karafVersion, "Please define a system property 'karafVersion'.");
         return karafVersion;
     }
@@ -139,6 +143,19 @@ public abstract class KarafTestCase {
 
     @Inject
     protected SessionFactory sessionFactory;
+
+    @Inject
+    private BootFinished bootFinished; // Wait for boot finished before doing anything
+
+    @Before
+    public void before() {
+        // The Aries Blueprint is no longer installed automatically,
+        // in order to have the tests pass, we first install it manually
+        installFeature("aries-blueprint");
+
+        // Install the by default missing feature "shell-compat"
+        installFeature("shell-compat");
+    }
 
     /**
      * This {@link ProbeBuilder} can be used to add OSGi metadata to the test
@@ -239,6 +256,7 @@ public abstract class KarafTestCase {
                     // These repositories are unpacked by the opennms-full-assembly project's build
                     // for final integration testing
                     "file:${karaf.home}/../../opennms-repo@snapshots@id=opennms-repo",
+                    "file:${karaf.home}/../../experimental-repo@snapshots@id=experimental-repo",
                     "file:${karaf.home}/../../minion-core-repo@snapshots@id=minion-core-repo",
                     "file:${karaf.home}/../../minion-default-repo@snapshots@id=minion-default-repo"
                 })
@@ -260,8 +278,8 @@ public abstract class KarafTestCase {
             editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
 
             // Work around bug KARAF-5251
-            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna/4.5.0", "5"),
-            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna-platform/4.5.0", "5"),
+            mavenBundle("net.java.dev.jna", "jna", "4.4.0").start().startLevel(5),
+            mavenBundle("net.java.dev.jna", "jna-platform", "4.4.0").start().startLevel(5),
 
             // This port is already being allocated according to an org.ops4j.net.FreePort call
             //editConfigurationFilePut("etc/system.properties", "org.ops4j.pax.exam.rbc.rmi.port", paxExamRmiRegistryPort),
@@ -325,6 +343,15 @@ public abstract class KarafTestCase {
         try {
             LOG.info("Installing feature {}", featureName);
             featuresService.installFeature(featureName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void installFeature(String featureName, EnumSet<FeaturesService.Option> options) {
+        try {
+            LOG.info("Installing feature {}", featureName);
+            featuresService.installFeature(featureName, options);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

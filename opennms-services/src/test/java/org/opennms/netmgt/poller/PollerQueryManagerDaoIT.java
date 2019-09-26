@@ -148,8 +148,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	@Before
 	public void setUp() throws Exception {
 
-		// System.setProperty("mock.logLevel", "DEBUG");
-		// System.setProperty("mock.debug", "true");
 		MockUtil.println("------------ Begin Test  --------------------------");
 		MockLogAppender.setupLogging();
 
@@ -184,11 +182,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
-
-//		DemandPollDao demandPollDao = new DemandPollDaoHibernate(m_db);
-//		demandPollDao.setAllocateIdStmt(m_db
-//				.getNextSequenceValStatement("demandPollNxtId"));
-//		m_demandPollDao = demandPollDao;
 
 		m_pollerConfig = new MockPollerConfig(m_network);
 		m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
@@ -229,13 +222,14 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setNetwork(network);
 		m_poller.setQueryManager(m_queryManager);
 		m_poller.setPollerConfig(m_pollerConfig);
-		m_poller.setPollOutagesConfig(m_pollerConfig);
+		m_poller.setPollOutagesDao(m_pollerConfig);
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		m_eventMgr.finishProcessingEvents();
+		m_eventMgr.reset();
 		stopDaemons();
 		sleep(200);
 		m_db.drop();
@@ -254,25 +248,10 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         pkg.setName("SFO");
         pkg.setRemote(true);
         Poller poller = new Poller();
+		poller.setPollerConfig(new MockPollerConfig(m_network));
         assertFalse(poller.pollableServiceInPackage(null, null, pkg));
         poller = null;
     }
-
-//	public void testDemandPollService() {
-//		DemandPoll demandPoll = new DemandPoll();
-//		demandPoll.setDescription("Test Poll");
-//		demandPoll.setRequestTime(new Date());
-//		demandPoll.setUserName("admin");
-//
-//		m_demandPollDao.save(demandPoll);
-//
-//		assertNotNull(demandPoll.getId());
-//
-//		MockService httpService = m_network
-//				.getService(2, "192.168.1.3", "HTTP");
-//		Event demandPollEvent = httpService.createDemandPollEvent(demandPoll.getId());
-//
-//	}
 
     @Test
     public void testNullInterfaceOnNodeDown() {

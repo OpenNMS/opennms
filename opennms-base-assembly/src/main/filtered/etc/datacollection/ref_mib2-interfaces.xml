@@ -1,0 +1,16 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="REF_MIB2-Interfaces">
+   <group name="mib2-interfaces" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.2" instance="ifIndex" alias="ifDescr" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.5" instance="ifIndex" alias="ifSpeed" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.10" instance="ifIndex" alias="ifInOctets" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.11" instance="ifIndex" alias="ifInUcastpkts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.12" instance="ifIndex" alias="ifInNUcastpkts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.13" instance="ifIndex" alias="ifInDiscards" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.14" instance="ifIndex" alias="ifInErrors" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.16" instance="ifIndex" alias="ifOutOctets" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.17" instance="ifIndex" alias="ifOutUcastPkts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.18" instance="ifIndex" alias="ifOutNUcastPkts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors" type="counter"/>
+   </group>
+</datacollection-group>

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+FAKE_JAVA_VERSION="@fake_java_version@";
+FAKE_JAVA_BUILD="@fake_java_build@";
+FAKE_OPENJDK="@fake_openjdk@";
+
+if [ "$1" = "-version" ]; then
+  if [ "$FAKE_OPENJDK" = true ]; then
+    echo "openjdk version \"$FAKE_JAVA_VERSION\""
+    echo "OpenJDK Runtime Environment (build $FAKE_JAVA_VERSION-$FAKE_JAVA_BUILD)"
+    echo "OpenJDK 64-Bit Server VM (build $FAKE_JAVA_BUILD, mixed mode)"
+  else
+    echo "java version \"$FAKE_JAVA_VERSION\""
+    echo "Java(TM) SE Runtime Environment (build $FAKE_JAVA_VERSION-$FAKE_JAVA_BUILD)"
+    echo "Java HotSpot(TM) 64-Bit Server VM (build $FAKE_JAVA_BUILD, mixed mode)"
+  fi
+else
+  echo "Fakejava command:" "$@"
+fi
+
+exit 0

@@ -51,6 +51,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.snmpinterfacepoller.CriticalService;
 import org.opennms.netmgt.config.snmpinterfacepoller.ExcludeRange;
 import org.opennms.netmgt.config.snmpinterfacepoller.IncludeRange;
 import org.opennms.netmgt.config.snmpinterfacepoller.Interface;
@@ -76,13 +77,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * <p>Constructor for SnmpInterfacePollerConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
      * @throws java.io.IOException if any.
      */
-    public SnmpInterfacePollerConfigManager(InputStream stream, String localServer, boolean verifyServer) throws IOException {
-        m_localServer = localServer;
-        m_verifyServer = verifyServer;
+    public SnmpInterfacePollerConfigManager(InputStream stream) throws IOException {
         reloadXML(stream);
     }
 
@@ -120,17 +117,6 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
 
 
     private Map<String,Map<String,Interface>> m_pkgIntMap;
-
-    /**
-     * A boolean flag to indicate If a filter rule against the local OpenNMS
-     * server has to be used.
-     */
-    private static boolean m_verifyServer;
-
-    /**
-     * The name of the local OpenNMS server
-     */
-    private static String m_localServer;
 
     /**
      * Go through the poller configuration and build a mapping of each
@@ -264,9 +250,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     @Override
     public synchronized String[] getCriticalServiceIds() {
-        return m_config.getNodeOutage().getCriticalServices().stream().map(crit -> {
-            return crit.getName();
-        }).collect(Collectors.toList()).toArray(new String[0]);
+        return m_config.getNodeOutage().getCriticalServices().stream()
+            .map(CriticalService::getName)
+            .collect(Collectors.toList()).toArray(new String[0]);
    }
 
      /**
@@ -313,16 +299,6 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         final StringBuilder filterRules = new StringBuilder();
         if (pkg.getFilter().getContent().isPresent()) {
             filterRules.append(pkg.getFilter().getContent().get());
-        }
-        if (m_verifyServer) {
-            if (filterRules.length() > 0) {
-                filterRules.append(" & ");
-            }
-            filterRules.append("(serverName == ");
-            filterRules.append('\"');
-            filterRules.append(m_localServer);
-            filterRules.append('\"');
-            filterRules.append(")");
         }
         LOG.debug("createPackageIpMap: package is {}. filer rules are {}", pkg.getName(), filterRules);
         FilterDaoFactory.getInstance().flushActiveIpAddressListCache();

@@ -11,15 +11,12 @@
     <packaging>pom</packaging>
     <name>OpenNMS :: Features :: Minion :: Default Repository</name>
 
-    <properties>
-        <minionHawtioVersion>2.0.0</minionHawtioVersion>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
+                <version>${karafVersion}</version>
                 <executions>
                     <execution>
                         <id>features-add-to-repository</id>
@@ -37,19 +34,23 @@
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
                                 <!-- Additional tools -->
-                                <descriptor>mvn:io.hawt/hawtio-karaf/${minionHawtioVersion}/xml/features</descriptor>
+                                <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature 
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
                                 <feature>opennms-core-ipc-rpc-jms</feature>
                                 <feature>opennms-core-ipc-rpc-aws-sqs</feature>
+                                <feature>opennms-core-ipc-rpc-kafka</feature>
                                 <feature>opennms-core-ipc-sink-camel</feature>
                                 <feature>opennms-core-ipc-sink-kafka</feature>
                                 <feature>opennms-core-ipc-sink-aws-sqs</feature>
+                                <feature>opennms-core-ipc-sink-offheap</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-trapd-listener</feature>
+                                <feature>opennms-send-event-command</feature>
+                                <feature>opennms-events-sink-dispatcher</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>
@@ -58,8 +59,12 @@
                                 <feature>minion-poller</feature>
                                 <feature>minion-collection</feature>
                                 <feature>minion-icmp-proxy</feature>
-                                <feature>minion-telemetryd-listeners</feature>
+                                <feature>minion-telemetryd-receivers</feature>
                                 <feature>hawtio-offline</feature>
+                                <feature>cxf-commands/${cxfVersion}</feature>
+                                <feature>opennms-core-tracing-jaeger</feature>
+                                <feature>opennms-dnsresolver-shell</feature>
+                                <feature>opennms-dnsresolver-netty</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -142,8 +147,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.minion</groupId>
+            <groupId>org.opennms.features.distributed</groupId>
             <artifactId>jms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>core-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -167,12 +177,26 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.events.sink</groupId>
+            <artifactId>org.opennms.features.events.sink.dispatcher</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.events.sink</groupId>
+            <artifactId>org.opennms.features.events.sink.command</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-requisition-service</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-bsf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-dhcp</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
@@ -196,6 +220,10 @@
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-jdbc</artifactId>
         </dependency>
         <dependency>
@@ -205,11 +233,6 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.protocols</groupId>
-            <artifactId>org.opennms.protocols.dhcp</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.protocols</groupId>
@@ -237,8 +260,23 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.netflow.parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.sflow.parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core.ipc.rpc</groupId>
             <artifactId>org.opennms.core.ipc.rpc.jms-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.kafka</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -247,19 +285,39 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.ipc.sink</groupId>
-            <artifactId>org.opennms.core.ipc.sink.camel-impl</artifactId>
+            <groupId>org.opennms.core.ipc.sink.camel</groupId>
+            <artifactId>org.opennms.core.ipc.sink.camel.client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.sink.kafka</groupId>
+            <artifactId>org.opennms.core.ipc.sink.kafka.client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
+            <artifactId>org.opennms.core.ipc.sink.aws.sqs.client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.core.ipc.sink</groupId>
-            <artifactId>org.opennms.core.ipc.sink.kafka-impl</artifactId>
+            <artifactId>org.opennms.core.ipc.sink.offheap</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.ipc.sink</groupId>
-            <artifactId>org.opennms.core.ipc.sink.aws-sqs-impl</artifactId>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.jaeger-osgi</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.jaeger-tracer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-api</artifactId>
+	    <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.poller</groupId>
@@ -281,6 +339,16 @@
         <dependency>
             <groupId>org.opennms.protocols</groupId>
             <artifactId>org.opennms.protocols.xml</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.dnsresolver</groupId>
+            <artifactId>org.opennms.features.dnsresolver.netty</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.dnsresolver</groupId>
+            <artifactId>org.opennms.features.dnsresolver.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

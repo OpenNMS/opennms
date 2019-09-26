@@ -38,8 +38,8 @@ fi
 
 # Check for JAVA_HOME
 if [ -z "$JAVA_HOME" ]; then
-	for dir in `find /usr/lib/jvm/* -maxdepth 0 -type d | grep java-8 | sort -u -r`; do
-		if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
+	for dir in `find /usr/lib/jvm/* -maxdepth 0 -type d | grep -E "java-(8|11)" | sort -u -r`; do
+		if [ -d "$dir" -a -x "$dir/bin/javac" ]; then
 			JAVA_HOME="$dir"
 			break
 		fi
@@ -56,16 +56,20 @@ export JAVA_HOME
 case "$1" in
   start)
 	echo -n "Starting $DESC: $NAME"
-	DAEMON_MESSAGES=$($DAEMON start)
+	DAEMON_MESSAGES="$($DAEMON start)"
+	__ret="$?"
 	# hide message if opennms says it's ok
-	echo $OUTPUT | grep -v "Starting OpenNMS: ok"
+	echo "$DAEMON_MESSAGES" | grep -v "Starting OpenNMS: ok"
 	echo "."
+	exit "$__ret"
 	;;
   stop)
 	echo -n "Stopping $DESC: $NAME"
-	DAEMON_MESSAGES=$($DAEMON stop)
+	DAEMON_MESSAGES="$($DAEMON stop)"
+	__ret="$?"
 	rm -f /var/run/$NAME.pid
 	echo "."
+	exit "$__ret"
 	;;
   restart|force-reload)
 	$0 stop

@@ -41,13 +41,10 @@
 	<jsp:param name="breadcrumb" value="Applications" />
 </jsp:include>
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Applications</h3>
+      <div class="card-header">
+        <span>Applications</span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm table-responsive">
         <tr>
           <th>Delete</th>
           <th>Edit</th>
@@ -61,19 +58,16 @@
         </tr>
         </c:forEach>
         <tr>
-          <td></td>
-          <td></td>
-          <td>
-            <form class="form-inline" action="admin/applications.htm">
+          <td colspan="3">
+            <form class="form-inline mt-4" action="admin/applications.htm">
               <div class="form-group">
-                <input type="textfield" class="form-control" name="newApplicationName" size="40"/>
+                <input type="textfield" class="form-control" placeholder="Application name" name="newApplicationName" size="40"/>
               </div>
-              <button type="submit" class="btn btn-default">Add New Application</button>
+              <button type="submit" class="btn btn-secondary ml-2"><i class="fa fa-plus"></i> Add New Application</button>
             </form>
+          </td>
         </tr>
       </table>
     </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

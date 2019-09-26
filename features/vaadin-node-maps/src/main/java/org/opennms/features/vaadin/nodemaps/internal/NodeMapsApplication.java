@@ -36,7 +36,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.HeaderUtil;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
 import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
@@ -50,24 +52,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.event.UIEvents;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The Class Node Maps Application.
@@ -108,21 +110,15 @@ import com.vaadin.ui.VerticalSplitPanel;
 @Title("OpenNMS Node Maps")
 @Theme("opennms")
 @JavaScript({
-    "//maps.google.com/maps/api/js?sensor=false",
-    "gwt/public/leaflet/leaflet-src.js",
-    "gwt/public/openlayers/OpenLayers.js",
-    "gwt/public/markercluster/leaflet.markercluster-src.js"
-
+    "theme://../opennms/assets/node-maps-init.vaadin.js"
 })
 @StyleSheet({
-    "gwt/public/leaflet/leaflet.css",
-    "gwt/public/markercluster/MarkerCluster.css",
-    "gwt/public/markercluster/MarkerCluster.Default.css",
+    "theme://../opennms/assets/leaflet.css",
     "gwt/public/node-maps.css"
 })
 public class NodeMapsApplication extends UI {
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
-    private static final int REFRESH_INTERVAL = Integer.getInteger("org.opennms.features.nodemaps.refresh", 30*1000);
+    private static final int REFRESH_INTERVAL = SystemProperties.getInteger("org.opennms.features.nodemaps.refresh", 30*1000);
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 
@@ -247,7 +243,7 @@ public class NodeMapsApplication extends UI {
         Assert.notNull(m_nodeTable);
 
         final String searchString = vaadinRequest.getParameter("search");
-        final Integer maxClusterRadius = Integer.getInteger("gwt.maxClusterRadius", 350);
+        final Integer maxClusterRadius = SystemProperties.getInteger("gwt.maxClusterRadius", 350);
         LOG.info("Starting search string: {}, max cluster radius: {}", searchString, maxClusterRadius);
 
         m_alarmTable.setVaadinApplicationContext(context);
@@ -278,7 +274,7 @@ public class NodeMapsApplication extends UI {
 
         createMapPanel(searchString, maxClusterRadius);
         createRootLayout();
-        addRefresher();
+        setupAutoRefresher();
 
         // Notify the user if no tileserver url or options are set
         if (!configuration.isValid()) {
@@ -330,6 +326,10 @@ public class NodeMapsApplication extends UI {
                 final CustomLayout headerLayout = new CustomLayout(is);
                 headerLayout.setWidth("100%");
                 headerLayout.addStyleName("onmsheader");
+
+                // check for header visibility when component is attached
+                headerLayout.addAttachListener(HeaderUtil.getAttachListener());
+
                 m_rootLayout.addComponent(headerLayout);
             } catch (final IOException e) {
                 closeQuietly(is);
@@ -356,11 +356,9 @@ public class NodeMapsApplication extends UI {
         }
     }
 
-    private void addRefresher() {
-        final Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(REFRESH_INTERVAL);
-        refresher.addListener((theRefresher) -> m_nodeMapComponent.refresh());
-        addExtension(refresher);
+    public void setupAutoRefresher(){
+        setPollInterval(REFRESH_INTERVAL); // Pull every n seconds for view updates
+        addPollListener((UIEvents.PollListener) event -> m_nodeMapComponent.refresh());
     }
 
     public void refresh() {

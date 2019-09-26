@@ -35,12 +35,12 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.rpc.api.RequestRejectedException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
-import org.opennms.netmgt.collectd.CollectionUnknown;
 import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionUnknown;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;

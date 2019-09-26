@@ -33,12 +33,6 @@ import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
-import org.opennms.netmgt.config.collectd.CollectdConfiguration;
-import org.opennms.netmgt.config.collectd.Filter;
-import org.opennms.netmgt.config.collectd.IncludeRange;
-import org.opennms.netmgt.config.collectd.Package;
-import org.opennms.netmgt.config.collectd.Parameter;
-import org.opennms.netmgt.config.collectd.Service;
 
 public class TrendConfigurationTest extends XmlTestNoCastor<TrendConfiguration> {
 

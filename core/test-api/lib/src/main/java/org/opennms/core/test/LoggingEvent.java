@@ -29,9 +29,9 @@
 package org.opennms.core.test;
 
 public class LoggingEvent {
-    private String m_name;
-    private Level m_level;
-    private String m_message;
+    private final String m_name;
+    private final Level m_level;
+    private final String m_message;
 
     public LoggingEvent(final String name, final Level level, final String message) {
         m_name = name;

@@ -110,15 +110,6 @@
       <severity>Warning</severity>
    </event>
    <event>
-      <uei>uei.opennms.org/internal/demandPollService</uei>
-      <event-label>OpenNMS-defined node event: DemandPoll</event-label>
-      <descr>&lt;p>The Demand Poll requested on %nodeid% (%nodelabel%)</descr>
-      <logmsg dest="logndisplay">
-            &lt;p>The Demand Poll requested on %nodeid% (%nodelabel%).&lt;/p>
-        </logmsg>
-      <severity>Normal</severity>
-   </event>
-   <event>
       <uei>uei.opennms.org/internal/schedOutagesChanged</uei>
       <event-label>OpenNMS-defined internal event: scehduled outage configuration changed</event-label>
       <descr>This event is sent by the WebUI or the user when scheduled outage configuration has changed and shoule be
@@ -238,5 +229,20 @@
             '%parm[monitoringSystemId]%' at location '%parm[monitoringSystemLocation]%' has been deleted.
         </logmsg>
       <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/telemetry/clockSkewDetected</uei>
+      <event-label>Clock Skew detected</event-label>
+      <descr>Clock skew (%parm[delta]% ms) detected for flow exporter (maxClockSkew = %parm[maxClockSkew]% secs)</descr>
+      <logmsg dest="logndisplay">Clock skew for exporter with interface '%interface%' in location '%parm[monitoringSystemLocation]%' detected by '%parm[monitoringSystemId]%'.</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/translator/telemetry/clockSkewDetected</uei>
+      <event-label>Clock Skew detected</event-label>
+       <descr>Clock skew (%parm[delta]% ms) detected for flow exporter (maxClockSkew = %parm[maxClockSkew]% secs)</descr>
+      <logmsg dest="logndisplay">Clock skew for exporter with interface '%interface%' in location '%parm[monitoringSystemLocation]%' detected by '%parm[monitoringSystemId]%'.</logmsg>
+      <alarm-data reduction-key="%uei%:%parm[monitoringSystemLocation]%:%interface%" alarm-type="3" auto-clean="true" />
+      <severity>Warning</severity>
    </event>
 </events>

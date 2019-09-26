@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <bean name="dataSource" class="org.opennms.core.db.DataSourceFactory" factory-method="getInstance"/>
+
+    <bean name="jsonStore" class="org.opennms.features.distributed.kvstore.json.postgres.PostgresJsonStore">
+        <constructor-arg ref="dataSource"/>
+    </bean>
+    <onmsgi:service interface="org.opennms.features.distributed.kvstore.api.JsonStore" ref="jsonStore"/>
+
+</beans>

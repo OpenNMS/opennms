@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -75,51 +74,32 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
     private final Object m_collectdConfigMutex = new Object();
 
     private final String m_fileName;
-    private final String m_serverName;
-    private final boolean m_verifyServer;
-
-    static {
-        // Make sure that the OpennmsServerConfigFactory is initialized
-        try {
-            OpennmsServerConfigFactory.init();
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
-        }
-    }
 
     public CollectdConfigFactory() throws IOException {
         m_fileName = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME).getPath();
-        m_serverName = OpennmsServerConfigFactory.getInstance().getServerName();
-        m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
 
-        init(new FileInputStream(m_fileName), m_serverName, m_verifyServer);
+        init(new FileInputStream(m_fileName));
     }
 
     /**
      * For testing purposes only.
      * 
      * @param stream
-     * @param serverName
-     * @param verifyServer
      * @throws IOException
      */
-    public CollectdConfigFactory(InputStream stream, String serverName, boolean verifyServer) throws IOException {
+    public CollectdConfigFactory(InputStream stream) throws IOException {
         m_fileName = null;
-        m_serverName = serverName;
-        m_verifyServer = verifyServer;
 
-        init(stream, m_serverName, m_verifyServer);
+        init(stream);
     }
 
     /**
      * <p>Constructor for CollectdConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
-     * @throws IOException 
+     * @throws IOException
      */
-    private void init(final InputStream stream, final String localServer, boolean verifyServer) throws IOException {
+    private void init(final InputStream stream) throws IOException {
         InputStreamReader isr = null;
         try {
             isr = new InputStreamReader(stream);
@@ -140,7 +120,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      * @throws java.io.IOException if any.
      */
     public void reload() throws IOException {
-        init(new FileInputStream(m_fileName), m_serverName, m_verifyServer);
+        init(new FileInputStream(m_fileName));
     }
 
     /**
@@ -170,7 +150,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
     /**
      * <p>getCollectdConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.CollectdConfig} object.
+     * @return a {@link org.opennms.netmgt.config.collectd.CollectdConfiguration} object.
      */
     public CollectdConfiguration getCollectdConfig() {
         synchronized (m_collectdConfigMutex) {
@@ -195,7 +175,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      * <p>getPackage</p>
      *
      * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
+     * @return a {@link org.opennms.netmgt.config.collectd.Package} object.
      */
     public Package getPackage(final String name) {
         synchronized (m_collectdConfigMutex) {
@@ -277,7 +257,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      * to "on").
      *
      * @deprecated This function should take normal model objects instead of bare IP addresses
-     * and service names. Use {@link CollectdConfig#isServiceCollectionEnabled(OnmsIpInterface, String)}
+     * and service names. Use {@link #isServiceCollectionEnabled(OnmsIpInterface, String)}
      * instead.
      *
      * @param ipAddr
@@ -308,19 +288,6 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
         }
     }
 
-    private static String getFilterRule(String filter, String localServer, boolean verifyServer) {
-        final StringBuilder filterRules = new StringBuilder(filter);
-    
-        if (verifyServer) {
-            filterRules.append(" & (serverName == ");
-            filterRules.append('\"');
-            filterRules.append(localServer);
-            filterRules.append('\"');
-            filterRules.append(")");
-        }
-        return filterRules.toString();
-    }
-
     public boolean interfaceInFilter(String iface, Package pkg) {
         String filter = pkg.getFilter().getContent();
         if (iface == null) return false;
@@ -328,18 +295,14 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
 
         boolean filterPassed = false;
 
-        // get list of IPs in this package
-        List<InetAddress> ipList = Collections.emptyList();
-
         //
         // Get a list of IP address per package against the filter rules from
         // database and populate the package, IP list map.
         //
-        String filterRules = getFilterRule(filter, m_serverName, m_verifyServer);
-        
-        LOG.debug("interfaceInFilter: package is {}. filter rules are {}", pkg.getName(), filterRules);
+
+        LOG.debug("interfaceInFilter: package is {}. filter rules are {}", pkg.getName(), filter);
         try {
-            ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules);
+            final List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filter);
             filterPassed = ipList.contains(ifaceAddress);
             if (!filterPassed) {
                 LOG.debug("interfaceInFilter: Interface {} passed filter for package {}?: false", iface, pkg.getName());
@@ -361,7 +324,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      * filter will only work if the IP is already in the database.
      *
      * @deprecated This function should take normal model objects instead of bare IP 
-     * addresses. Move this implementation into {@link #interfaceInPackage(OnmsIpInterface)}.
+     * addresses. Move this implementation into {@link #interfaceInPackage(OnmsIpInterface, Package)}.
      *
      * @param iface
      *            The interface to test against the package.

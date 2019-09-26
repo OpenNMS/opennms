@@ -57,17 +57,21 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-      	<h3 class="panel-title">Alarm Queries</h3>
+    <div class="card">
+      <div class="card-header">
+      	<span>Alarm Queries</span>
       </div>
-      <div class="panel-body">
-        <form action="alarm/detail.htm" method="get" role="form" class="form-inline pull-right">
+      <div class="card-body">
+        <form action="alarm/detail.htm" method="get" role="form" class="pull-right">
           <div class="form-group">
-            <label for="byalarmid_id">Alarm ID:</label>
-            <input type="text" class="form-control" name="id" id="byalarmid_id"/>
-            <button type="submit" class="btn btn-default">Get details</button>
-          </div>                
+            <label for="byalarmid_id">Alarm ID</label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="id" id="byalarmid_id"/>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                </div>
+              </div>
+          </div>
         </form>
         <ul class="list-unstyled">
           <li><a href="alarm/list.htm" title="Summary view of all outstanding alarms">All alarms (summary)</a></li>
@@ -77,18 +81,18 @@
         </ul>  
       </div>
     </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Alarm Filter Favorites</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Alarm Filter Favorites</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
 	      <onms:alert/>
           <c:choose>
               <c:when test="${!empty favorites}">
               
               
                   <!-- Filters -->
-                  <ul class="list-unstyled">
+                  <ul class="list-unstyled mb-0">
                       <c:forEach var="eachFavorite" items="${favorites}">
                       	<%
                       		OnmsFilterFavorite current = (OnmsFilterFavorite) pageContext.getAttribute("eachFavorite");
@@ -108,7 +112,7 @@
     					%>
 
                           <li>
-                              <a href="alarm/list.htm?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='<c:out value='${favTitle}'/>' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="alarm/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/alarm/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-remove text-danger"></span></a>
+                              <a href="alarm/list.htm?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='<c:out value='${favTitle}'/>' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="alarm/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/alarm/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="fa fa-remove text-danger"></span></a>
                           </li>
                       </c:forEach>
                   </ul>
@@ -122,11 +126,11 @@
   </div>
 
 	<div class="col-md-6">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title">Outstanding and acknowledged alarms</h3>
+		<div class="card">
+			<div class="card-header">
+				<span>Outstanding and acknowledged alarms</span>
 			</div>
-			<div class="panel-body">
+			<div class="card-body">
 				<p>
 					Alarms can be <em>acknowledged</em>, or removed from the default
 					view of all users, by selecting the alarms' <em>Ack</em> check box

@@ -32,11 +32,14 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig.Feature;
 
 import com.google.common.base.Throwables;
 
+@XmlRootElement
 public class UsageStatisticsReportDTO {
 
     private String m_systemId;

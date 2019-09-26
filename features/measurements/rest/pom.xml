@@ -59,6 +59,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.rest-provider</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
       <scope>test</scope>
@@ -109,8 +115,39 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.timeformat</groupId>
       <artifactId>org.opennms.features.timeformat.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!--  Expose the test context for thresholding DAOs  -->
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.thresholding.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!--  Expose the test context for poller DAOs  -->
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

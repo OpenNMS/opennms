@@ -28,6 +28,17 @@
 
 package org.opennms.features.vaadin.dashboard.ui.dashboard;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.opennms.features.vaadin.dashboard.config.DashletSelector;
+import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
+import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
@@ -35,19 +46,10 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
+
 import fi.jasoft.dragdroplayouts.DDGridLayout;
 import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
 import fi.jasoft.dragdroplayouts.events.LayoutBoundTransferable;
-import org.opennms.features.vaadin.dashboard.config.DashletSelector;
-import org.opennms.features.vaadin.dashboard.model.Dashlet;
-import org.opennms.features.vaadin.dashboard.model.DashletComponent;
-import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
-import org.opennms.features.vaadin.dashboard.model.DashletSpec;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class implements a portal-like dashboard.
@@ -171,7 +173,7 @@ public class DashboardBody extends DDGridLayout {
                 if (i < dashboardSuitableDashlets.size()) {
                     Dashlet dashlet = getDashletInstance(dashboardSuitableDashlets.get(i));
 
-                    DashletComponent dashletComponent = dashlet.getDashboardComponent();
+                    DashletComponent dashletComponent = dashlet.getDashboardComponent(getUI());
 
                     m_displayDashlets.put(dashletComponent.getComponent(), dashletComponent);
 

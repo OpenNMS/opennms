@@ -60,7 +60,7 @@
 
     public String getContent(OnmsHwEntity entity) {
         StringBuffer sb = new StringBuffer();
-        sb.append("<table class=\"table table-condensed table-bordered\">");
+        sb.append("<table class=\"table table-sm table-bordered\">");
         sb.append("<tr><th>Description</th><td>" + entity.getEntPhysicalDescr() + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalVendorType()))
             sb.append("<tr><th>Vendor Type</th><td>" + entity.getEntPhysicalVendorType() + "</td></tr>");
@@ -110,12 +110,14 @@
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
   <jsp:param name="breadcrumb" value="Hardware Inventory" />
-  <jsp:param name="link" value='<link type="text/css" href="lib/jquery-treegrid/css/jquery.treegrid.css" rel="stylesheet" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-treegrid/js/jquery.treegrid.js"></script>' />
+</jsp:include>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="jquery-treegrid-js" />
 </jsp:include>
 
 <br/>
-<table class="table table-condensed table-hover tree">
+<table class="table table-sm table-hover tree">
   <% if (root == null) { %>
       <br/>
       <div class="jumbotron"><h3>The node <%= node.getLabel() %> doesn't have hardware information on the database.</h3></div>

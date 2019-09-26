@@ -43,7 +43,7 @@ import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collectd.DefaultCollectionAgent;
+import org.opennms.netmgt.collectd.DefaultSnmpCollectionAgent;
 import org.opennms.netmgt.collectd.NodeInfo;
 import org.opennms.netmgt.collectd.NodeResourceType;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
@@ -205,7 +205,7 @@ public class BasePersisterTest {
         
         m_easyMockUtils.replayAll();
         
-        SnmpCollectionAgent agent = DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
+        SnmpCollectionAgent agent = DefaultSnmpCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 

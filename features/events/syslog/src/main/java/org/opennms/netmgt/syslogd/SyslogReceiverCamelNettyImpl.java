@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.syslogd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -61,9 +62,9 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
 
     private static final int SOCKET_TIMEOUT = 500;
 
-    private final InetAddress m_host;
+    private InetAddress m_host;
 
-    private final int m_port;
+    private int m_port;
 
     private final SyslogdConfig m_config;
 
@@ -71,9 +72,8 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
 
     public SyslogReceiverCamelNettyImpl(final SyslogdConfig config) {
         super(config);
-        m_host = addr(config.getListenAddress() == null? "0.0.0.0" : config.getListenAddress());
-        m_port = config.getSyslogPort();
         m_config = config;
+        setHostAndPort();
     }
 
     @Override
@@ -187,5 +187,16 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
         } catch (Throwable e) {
             LOG.error("Could not configure Camel routes for syslog receiver", e);
         }
+    }
+
+    private void setHostAndPort() {
+        m_host = addr(m_config.getListenAddress() == null? "0.0.0.0" : m_config.getListenAddress());
+        m_port = m_config.getSyslogPort();
+    }
+
+    @Override
+    public void reload() throws IOException {
+        m_config.reload();
+        setHostAndPort();
     }
 }

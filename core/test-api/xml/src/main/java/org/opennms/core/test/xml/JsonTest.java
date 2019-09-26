@@ -71,7 +71,11 @@ public final class JsonTest {
     public static void assertJsonEquals(String expected, String actual) {
         try {
             JSONAssert.assertEquals(expected, actual, true);
-        } catch (JSONException ex) {
+        } catch (AssertionError e) {
+            System.out.println("Actual JSON: " + actual);
+            System.out.println("Expected JSON: " + expected);
+            throw e;
+        }  catch (JSONException ex) {
             Assert.fail(ex.getMessage());
         }
     }

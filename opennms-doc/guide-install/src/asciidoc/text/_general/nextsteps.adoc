@@ -1,0 +1,12 @@
+
+==== Next Steps
+
+Additional information can be found in these follow up documents:
+
+* Getting Started Guide
++
+Learn the first steps to setup, configure, and maintain an _{opennms-product-name}_.
+
+* Reference Guide
++
+Find in-depth information on the detecters, monitors, collectors, and configuration files used by the _{opennms-product-name}_ platform.

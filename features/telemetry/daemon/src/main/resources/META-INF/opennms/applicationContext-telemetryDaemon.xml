@@ -20,9 +20,6 @@
     <property name="configResource" value="file:${opennms.home}/etc/telemetryd-configuration.xml" />
   </bean>
 
-  <!-- Duplicated from the collectd context -->
-  <bean id="collectionAgentFactory" class="org.opennms.netmgt.collectd.DefaultCollectionAgentFactory" />
-
   <bean id="daemon" class="org.opennms.netmgt.telemetry.daemon.Telemetryd" />
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">

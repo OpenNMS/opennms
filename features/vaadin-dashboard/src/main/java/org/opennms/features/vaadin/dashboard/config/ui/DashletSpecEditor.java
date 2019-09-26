@@ -28,15 +28,15 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.validator.AbstractStringValidator;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.validator.AbstractStringValidator;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.NativeSelect;
+import com.vaadin.v7.ui.NativeSelect;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletFactory;

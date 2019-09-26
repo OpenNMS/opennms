@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
 
 @XmlRootElement(name = "minion")
 @XmlAccessorType(XmlAccessType.FIELD)

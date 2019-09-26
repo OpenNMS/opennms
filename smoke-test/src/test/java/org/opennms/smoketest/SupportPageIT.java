@@ -28,10 +28,10 @@
 
 package org.opennms.smoketest;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -41,67 +41,47 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SupportPageIT extends OpenNMSSeleniumTestCase {
+public class SupportPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         supportPage();
     }
 
     @Test
-    public void testAllLinksArePresent() throws Exception {
-        Thread.sleep(4000);
-        assertEquals(4, countElementsMatchingCss("h3.panel-title"));
+    public void testAllButtonsArePresent() throws Exception {
         final String[] links = new String[] {
                 "the OpenNMS.com support page",
-                "About the OpenNMS Web Console",
-                "Online Documentation and Release Notes",
-                // Online docs links
-                "Installation Guide",
-                "Users Guide",
-                "Online Wiki Documentation",
-                // Offline docs links
-                "Installation Guide",
-                "Users Guide",
-                "Online Wiki Documentation",
-                "Generate a System Report",
-                "Open a Bug or Enhancement Request",
-                "Chat with Developers on IRC"
+                "Generate System Report",
+                "Collectd Statistics",
+                "About OpenNMS",
+                "Commercial Support",
+                "Web Chat",
+                "Mailing Lists",
+                "Questions & Answers"
         };
-        assertEquals(links.length, countElementsMatchingCss("div.panel-body a"));
+        assertEquals(links.length, countElementsMatchingCss("div.card-body a"));
         for (final String text : links) {
-            assertNotNull("Link with text '" + text + "' must exist.", m_driver.findElement(By.linkText(text)));
+            assertNotNull("Link with text '" + text + "' must exist.", driver.findElement(By.linkText(text)));
         }
     }
 
     @Test
-    public void testAllFormsArePresent() throws InterruptedException {
-        final WebElement form = m_driver.findElement(By.cssSelector("form[action='support/index.htm']"));
-        assertNotNull(form);
+    public void testAllFormsArePresent() {
+        final WebElement form = driver.findElement(By.cssSelector("form[action='support/index.htm']"));
         assertNotNull(form.findElement(By.cssSelector("input[type=text][name=username]")));
         assertNotNull(form.findElement(By.cssSelector("input[type=password][name=password]")));
     }
 
     @Test
-    public void testAboutPage() throws Exception {
-        final WebElement about = m_driver.findElement(By.linkText("About the OpenNMS Web Console"));
-        assertNotNull(about);
-        about.click();
-        assertNotNull(m_driver.findElement(By.xpath("//h3[text()='License and Copyright']")));
-        assertNotNull(m_driver.findElement(By.xpath("//th[text()='Version:']")));
-    }
-    
-    @Test
-    public void testSystemReport() throws Exception {
-        final WebElement generate = m_driver.findElement(By.linkText("Generate a System Report"));
-        assertNotNull(generate);
-        generate.click();
+    public void testSystemReport() {
+        driver.findElement(By.linkText("Generate System Report")).click();
+
         // checkboxes are selected by default
-        final WebElement allCheckbox = m_driver.findElement(By.cssSelector("input[type=checkbox][name=all]"));
-        assertNotNull(allCheckbox);
-        assertTrue(m_driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected());
+        final WebElement allCheckbox = driver.findElement(By.cssSelector("input[type=checkbox][name=all]"));
+        assertThat(driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(true));
+
         // deselect the "all" checkbox
         allCheckbox.click();
-        assertFalse(m_driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected());
+        assertThat(driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(false));
     }
-
 }

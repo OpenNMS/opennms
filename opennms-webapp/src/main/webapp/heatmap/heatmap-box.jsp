@@ -127,10 +127,9 @@
     }
 </style>
 
-<div id="heatmap-box" class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=Util.encode(mode)%>&amp;heatmap=<%=Util.encode(heatmap)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>"><%=WebSecurityUtils.sanitizeString(title)%>
-        </a></h3>
+<div id="heatmap-box" class="card">
+    <div class="card-header">
+        <a href="heatmap/index.jsp?mode=<%=Util.encode(mode)%>&amp;heatmap=<%=Util.encode(heatmap)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>"><%=WebSecurityUtils.sanitizeString(title)%></a>
     </div>
 
     <div id="treemap" style="position: relative;">
@@ -154,133 +153,130 @@
         }
 
         addOnLoadEvent(function() {
-            require(['jquery', 'jquery-ui-treemap'], function( $ ) {
+            var tooltipDelay = 500;
+            var tooltipFadeIn = 500;
+            var tooltipTimeout;
 
-                var tooltipDelay = 500;
-                var tooltipFadeIn = 500;
-                var tooltipTimeout;
+            function clearAndHideTooltip() {
+                clearTimeout(tooltipTimeout);
+                $(".tooltipbox").hide();
+            }
 
-                function clearAndHideTooltip() {
-                    clearTimeout(tooltipTimeout);
-                    $(".tooltipbox").hide();
+            var mousemoveHandler = function(e, data) {
+                clearAndHideTooltip();
+
+                $("#tooltipbox").html("<span><p><b>" + data.nodes[0].id + "</b></p></span>");
+
+                var tooltipWidth = $("#tooltipbox").width();
+                var tooltipHeight = $("#tooltipbox").height();
+                var treemapWidth = $("#treemap").width();
+                var treemapHeight = $("#treemap").height();
+
+                if (e.offsetX + tooltipWidth + 16 > treemapWidth) {
+                  $("#tooltipbox").css({ "left" : e.offsetX - tooltipWidth - 8 });
+                } else {
+                  $("#tooltipbox").css({ "left" : e.offsetX + 16 });
                 }
 
-                var mousemoveHandler = function(e, data) {
-                    clearAndHideTooltip();
-
-                    $("#tooltipbox").html("<span><p><b>" + data.nodes[0].id + "</b></p></span>");
-
-                    var tooltipWidth = $("#tooltipbox").width();
-                    var tooltipHeight = $("#tooltipbox").height();
-                    var treemapWidth = $("#treemap").width();
-                    var treemapHeight = $("#treemap").height();
-
-                    if (e.offsetX + tooltipWidth + 16 > treemapWidth) {
-                      $("#tooltipbox").css({ "left" : e.offsetX - tooltipWidth - 8 });
-                    } else {
-                      $("#tooltipbox").css({ "left" : e.offsetX + 16 });
-                    }
-
-                    if (e.offsetY + tooltipHeight > treemapHeight) {
-                      $("#tooltipbox").css({ "top" : e.offsetY - tooltipHeight });
-                    } else {
-                      $("#tooltipbox").css({ "top" : e.offsetY });
-                    }
-
-                    tooltipTimeout = setTimeout(function(event){
-                        $("#tooltipbox").fadeIn(tooltipFadeIn);
-                    }, tooltipDelay);
-                };
-
-                var mouseleaveHandler = function (e, data) {
-                    clearAndHideTooltip();
+                if (e.offsetY + tooltipHeight > treemapHeight) {
+                  $("#tooltipbox").css({ "top" : e.offsetY - tooltipHeight });
+                } else {
+                  $("#tooltipbox").css({ "top" : e.offsetY });
                 }
 
+                tooltipTimeout = setTimeout(function(event){
+                    $("#tooltipbox").fadeIn(tooltipFadeIn);
+                }, tooltipDelay);
+            };
 
-                var mouseclickHandler = function (e, data) {
-                    var nodes = data.nodes;
-                    var ids = data.ids;
-                    <%
-                      if ("foreignSources".equals(heatmap)) {
-                    %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByForeignSource&foreignSource=" + encodeURIComponent(nodes[0].id);
-                    <%
-                      }
+            var mouseleaveHandler = function (e, data) {
+                clearAndHideTooltip();
+            }
 
-                      if ("categories".equals(heatmap)) {
-                    %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByCategory&category=" + encodeURIComponent(nodes[0].id);
-                    <%
-                      }
 
-                      if ("monitoredServices".equals(heatmap)) {
-                    %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByMonitoredService&monitoredService=" + encodeURIComponent(nodes[0].id);
-                    <%
-                      }
+            var mouseclickHandler = function (e, data) {
+                var nodes = data.nodes;
+                var ids = data.ids;
+                <%
+                  if ("foreignSources".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByForeignSource&foreignSource=" + encodeURIComponent(nodes[0].id);
+                <%
+                  }
 
-                      if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
-                    %>
-                    location.href = "/opennms/element/node.jsp?node=" + encodeURIComponent(nodes[0].elementId);
-                    <%
-                      }
-                    %>
-                };
+                  if ("categories".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByCategory&category=" + encodeURIComponent(nodes[0].id);
+                <%
+                  }
 
-                var url = "<%=url%>";
-                var children;
+                  if ("monitoredServices".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByMonitoredService&monitoredService=" + encodeURIComponent(nodes[0].id);
+                <%
+                  }
 
-                function refresh() {
-                    clearAndHideTooltip();
+                  if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
+                %>
+                location.href = "/opennms/element/node.jsp?node=" + encodeURIComponent(nodes[0].elementId);
+                <%
+                  }
+                %>
+            };
 
-                    var height = $(window).height() - 105 - $("#treemap").offset().top;
+            var url = "<%=url%>";
+            var children;
 
-                    if (height < 0) {
-                        height = $(window).width();
-                    }
+            function refresh() {
+                clearAndHideTooltip();
 
-                    height = Math.min(height, $(window).width());
+                var height = $(window).height() - 105 - $("#treemap").offset().top;
 
-                    $("#treemap").treemap({
-                        "dimensions": [
-                            $("#treemap").width(),
-                            height
-                        ],
-                        "colorStops": [
-                            {"val": 1.0, "color": "#CC0000"},
-                            {"val": 0.4, "color": "#FF3300"},
-                            {"val": 0.2, "color": "#FF9900"},
-                            {"val": 0.1, "color": "#FFCC00"},
-                            {"val": 0.0, "color": "#336600"}
-                        ],
-                        "labelsEnabled": true,
-                        "nodeData": {
-                            "id": "<%=Util.encode(heatmap)%>",
-                            "children": children
-                        }
-                    }).bind('treemapmousemove', mousemoveHandler)
-                      .bind('treemapclick', mouseclickHandler)
-                      .mouseleave(function(){mouseleaveHandler()});
+                if (height < 0) {
+                    height = $(window).width();
                 }
 
-                $(window).resize(function() {
+                height = Math.min(height, $(window).width());
+
+                $("#treemap").treemap({
+                    "dimensions": [
+                        $("#treemap").width(),
+                        height
+                    ],
+                    "colorStops": [
+                        {"val": 1.0, "color": "#CC0000"},
+                        {"val": 0.4, "color": "#FF3300"},
+                        {"val": 0.2, "color": "#FF9900"},
+                        {"val": 0.1, "color": "#FFCC00"},
+                        {"val": 0.0, "color": "#336600"}
+                    ],
+                    "labelsEnabled": true,
+                    "nodeData": {
+                        "id": "<%=Util.encode(heatmap)%>",
+                        "children": children
+                    }
+                }).bind('treemapmousemove', mousemoveHandler)
+                  .bind('treemapclick', mouseclickHandler)
+                  .mouseleave(function(){mouseleaveHandler()});
+            }
+
+            $(window).resize(function() {
+                refresh();
+            });
+
+            $(document).ready(function () {
+                $.getJSON(url, function (data) {
+                    children = data.children;
                     refresh();
-                });
-
-                $(document).ready(function () {
-                    $.getJSON(url, function (data) {
-                        children = data.children;
-                        refresh();
-                    });
                 });
             });
         });
     </script>
-    <div class="panel-footer">
+    <div class="card-footer">
         <div class="row">
             <div class="col-sm-7 col-md-7" style="padding-right: 0 !important">
                 <span class="text-nowrap">
-                    <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
+                    <span class="fa fa-retweet" aria-hidden="true"></span>&nbsp;
                     <%
                         if ("outages".equals(mode)) {
                     %>
@@ -295,7 +291,7 @@
                 </span>
                 &nbsp;
                 <span class="text-nowrap">
-                    <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
+                    <span class="fa fa-retweet" aria-hidden="true"></span>&nbsp;
                     <%
                         if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
                     %>
@@ -319,19 +315,19 @@
                 <%
                     if ("outages".equals(mode)) {
                 %>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;0% down</span>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;10% down</span>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;20% down</span>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;40% down</span>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;100% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;0% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;10% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;20% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;40% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;100% down</span>
                 <%
                 } else {
                 %>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;Normal</span>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;Warning</span>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;Minor</span>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;Major</span>
-                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;Critical</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;Normal</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;Warning</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;Minor</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;Major</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;Critical</span>
                 <%
                     }
                 %>

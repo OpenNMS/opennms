@@ -154,10 +154,15 @@ public class BusinessServiceEntity {
     }
 
     @Transient
+    public Set<ApplicationEdgeEntity> getApplicationEdges() {
+        return getEdges(ApplicationEdgeEntity.class);
+    }
+
+    @Transient
     @SuppressWarnings("unchecked")
     private <T extends BusinessServiceEdgeEntity> Set<T> getEdges(Class<T> type) {
         return getEdges().stream()
-                .filter(e -> type.isInstance(e))
+                .filter(type::isInstance)
                 .map(e -> (T)e)
                 .collect(Collectors.toSet());
     }

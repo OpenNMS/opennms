@@ -34,19 +34,19 @@ import java.util.List;
 import java.util.Objects;
 
 public class OrFilter<T> implements Filter<T> {
-	private final List<Filter> orFilters;
+	private final List<Filter<T>> orFilters;
 
-	public OrFilter(Filter... filters) {
+	public OrFilter(Filter<T>... filters) {
 		this(filters == null ? new ArrayList<>() : Arrays.asList(filters));
 	}
 
-	public OrFilter(List<Filter> orFilters){
+	public OrFilter(List<Filter<T>> orFilters){
 		this.orFilters= Objects.requireNonNull(orFilters);
 	}
 
 	@Override
 	public boolean apply(T value) {
-		for(Filter f : orFilters){
+		for(Filter<T> f : orFilters){
 			if(f.apply(value)) {
 				return true;
 			}

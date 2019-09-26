@@ -28,26 +28,35 @@
 
 package org.opennms.netmgt.alarmd;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.soa.ServiceRegistry;
@@ -59,12 +68,16 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
+import org.opennms.netmgt.dao.api.AlarmAssociationDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.model.AlarmAssociation;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -76,14 +89,11 @@ import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.util.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 
+@Ignore("flapping - see NMS-12309")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -96,7 +106,7 @@ import org.springframework.util.StringUtils;
         "classpath:/META-INF/opennms/applicationContext-alarmd.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class,reuseDatabase=false)
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
 
     public class MockNorthbounder implements Northbounder {
@@ -148,16 +158,19 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     private Alarmd m_alarmd;
 
     @Autowired
+    private AlarmDao m_alarmDao;
+
+    @Autowired
+    private AlarmAssociationDao m_alarmAssociationDao;
+
+    @Autowired
     private MonitoringLocationDao m_locationDao;
 
     @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
-    private JdbcTemplate m_jdbcTemplate;
-
-    @Autowired
-    private MockEventIpcManager m_eventdIpcMgr;
+    private MockEventIpcManager m_eventMgr;
 
     @Autowired
     private ServiceRegistry m_registry;
@@ -172,15 +185,15 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         BeanUtils.assertAutowiring(this);
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         m_mockNetwork.createStandardNetwork();
 
-        m_eventdIpcMgr.setEventWriter(m_database);
+        m_eventMgr.setEventWriter(m_database);
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
         final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
@@ -189,14 +202,17 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         
         m_northbounder = new MockNorthbounder();
         m_registry.register(m_northbounder, Northbounder.class);
+
+        m_alarmd.start();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         m_alarmd.destroy();
     }
 
     @Test
+    @Transactional
     public void testPersistAlarm() throws Exception {
         final MockNode node = m_mockNetwork.getNode(1);
 
@@ -206,31 +222,56 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
         sendNodeDownEvent("%nodeid%", node);
-        Thread.sleep(1000);
-        assertEquals(1, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(1, m_alarmDao.findAll().size());
 
         //this should be the second occurrence and shouldn't create another row
         //there should still be only 1 alarm
         sendNodeDownEvent("%nodeid%", node);
-        Thread.sleep(1000);
-        assertEquals(1, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(1, m_alarmDao.findAll().size());
 
         //this should be a new alarm because of the new key
         //there should now be 2 alarms
         sendNodeDownEvent("DontReduceThis", node);
-        Thread.sleep(1000);
-        assertEquals(2, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(2, m_alarmDao.findAll().size());
 
         MockUtil.println("Going for the print of the counter column");
-        m_jdbcTemplate.query("select reductionKey, sum(counter) from alarms group by reductionKey", new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                MockUtil.println("count for reductionKey: " + rs.getString(1) + " is: " + rs.getObject(2));
-            }
-
-        });
+        for (OnmsAlarm alarm : m_alarmDao.findAll()) {
+            MockUtil.println("count for reductionKey: " + alarm.getReductionKey() + " is: " + alarm.getCounter());
+        }
     }
     
+    @Test
+    public void canHandleMultipleClearsWithNoCorrrespondingProblemAlarm() throws Exception {
+        final MockNode node = m_mockNetwork.getNode(1);
+        sendNodeUpEvent(node);
+        sendNodeUpEvent(node);
+
+        // We should only have one alarm now and should have a count of 2
+        await().until(() -> m_alarmDao.findAll(), hasSize(1));
+        await().until(() -> m_alarmDao.findAll().get(0).getCounter(), equalTo(2));
+    }
+
+    @Test
+    public void canReduceMultipleClearsWithOutOfOrderProblem() throws Exception {
+        final MockNode node = m_mockNetwork.getNode(1);
+        // Send Clear
+        Date firstClearTime = new Date();
+        sendNodeUpEvent(node, firstClearTime);
+        // Send Second Clear
+        sendNodeUpEvent(node, new Date());
+        // Send OutOfOrder Problem with a timestamp 2 minutes before the initial Clear
+        Date initialProblemDate = new Date(firstClearTime.getTime() - SECONDS.toMillis(60));
+        sendNodeDownEvent(node, initialProblemDate);
+
+        // We should have 2 alarms now
+        // The problem should be cleared and the clear should be normal
+        await().until(() -> m_alarmDao.findAll().size(), equalTo(2));
+        await().until(() -> m_alarmDao.findByReductionKey("uei.opennms.org/nodes/nodeDown:1").getSeverity(), equalTo(OnmsSeverity.CLEARED));
+        await().until(() -> m_alarmDao.findByReductionKey("uei.opennms.org/nodes/nodeUp:1").getSeverity(), equalTo(OnmsSeverity.NORMAL));
+    }
 
     @Test
     public void testPersistManyAlarmsAtOnce() throws InterruptedException {
@@ -278,53 +319,148 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
-        int rowCount = m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue();
-        Integer counterColumn = m_jdbcTemplate.queryForObject("select counter from alarms where reductionKey = ?", new Object[] { reductionKey }, Integer.class).intValue();
-        MockUtil.println("rowcCount is: "+rowCount+", expected 1.");
-        MockUtil.println("counterColumn is: "+counterColumn+", expected "+numberOfAlarmsToReduce);
-        assertEquals(1, rowCount);
-        if (numberOfAlarmsToReduce != counterColumn) {
-            final List<Integer> reducedEvents = new ArrayList<>();
-            m_jdbcTemplate.query("select eventid from events where alarmID is not null", new RowCallbackHandler() {
-                @Override
-                public void processRow(ResultSet rs) throws SQLException {
-                    reducedEvents.add(rs.getInt(1));
-                }
-            });
-            Collections.sort(reducedEvents);
-
-            final List<Integer> nonReducedEvents = new ArrayList<>();
-            m_jdbcTemplate.query("select eventid from events where alarmID is null", new RowCallbackHandler() {
-                @Override
-                public void processRow(ResultSet rs) throws SQLException {
-                    nonReducedEvents.add(rs.getInt(1));
-                }
-            });
-            Collections.sort(nonReducedEvents);
-
-            fail("number of alarms to reduce (" + numberOfAlarmsToReduce + ") were not reduced into a single alarm (instead the counter column reads " + counterColumn + "); "
-                    + "events that were reduced: " + StringUtils.collectionToCommaDelimitedString(reducedEvents) + "; events that were not reduced: "
-                    + StringUtils.collectionToCommaDelimitedString(nonReducedEvents));
+        int alarmCount = m_alarmDao.findAll().size();
+        assertEquals("there should be 1 alarm", 1, alarmCount);
+        OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
+        Integer counter = alarm.getCounter();
+        MockUtil.println("rowcCount is: "+alarmCount+", expected 1.");
+        MockUtil.println("counterColumn is: "+counter+", expected "+numberOfAlarmsToReduce);
+        if (numberOfAlarmsToReduce != counter) {
+            fail("number of alarms to reduce (" + numberOfAlarmsToReduce + ") were not reduced into a single alarm (instead the counter column reads " + counter + "); ");
         }
-
-
-        Integer alarmId = m_jdbcTemplate.queryForObject("select alarmId from alarms where reductionKey = ?", new Object[] { reductionKey }, Integer.class).intValue();
-        rowCount = m_jdbcTemplate.queryForObject("select count(*) from events where alarmid = ?", new Object[] { alarmId }, Integer.class).intValue();
-        MockUtil.println(String.valueOf(rowCount) + " of events with alarmid: "+alarmId);
-        //      assertEquals(numberOfAlarmsToReduce, rowCount);
-
-        rowCount = m_jdbcTemplate.queryForObject("select count(*) from events where alarmid is null", Integer.class).intValue();
-        MockUtil.println(String.valueOf(rowCount) + " of events with null alarmid");
-        assertEquals(10, rowCount);
-
     }
 
     @Test
+    @Transactional
+    public void testPersistSituations() throws Exception {
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        //there should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //there should be no alarms in the alarm_situations table
+        assertEmptyAlarmSituationTable();
+
+        //create 3 alarms to roll up into situation
+        sendNodeDownEvent("Alarm1", node);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(1, m_alarmDao.findAll().size());
+
+        sendNodeDownEvent("Alarm2", node);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(2, m_alarmDao.findAll().size());
+
+        sendNodeDownEvent("Alarm3", node);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(3, m_alarmDao.findAll().size());
+
+        //create situation rolling up the first 2 alarms
+        List<String> reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2"));
+        sendSituationEvent("Situation1", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(2, situation.getRelatedAlarms().size());
+
+        //capture the current association time of the related alarms
+        Map<Integer, Date> associationTimesByRelatedAlarmId = situation.getAssociatedAlarms().stream()
+                .collect(Collectors.toMap(assoc -> assoc.getRelatedAlarm().getId(), AlarmAssociation::getMappedTime));
+
+        //now trigger the same situation again
+        sendSituationEvent("Situation1", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        situation = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(2, situation.getRelatedAlarms().size());
+
+        // We have two related alarms, so we should have a two associations
+        assertThat(m_alarmAssociationDao.getAssociationsForSituation(situation.getId()), hasSize(2));
+
+        //the association times should not have changed - gather them again and compare
+        Map<Integer, Date> afterReduceAssociationTimesByRelatedAlarmId = situation.getAssociatedAlarms().stream()
+                .collect(Collectors.toMap(assoc -> assoc.getRelatedAlarm().getId(), AlarmAssociation::getMappedTime));
+        //make sure the two maps match
+        assertThat(associationTimesByRelatedAlarmId.entrySet(), everyItem(isIn(afterReduceAssociationTimesByRelatedAlarmId.entrySet())));
+        assertThat(afterReduceAssociationTimesByRelatedAlarmId.entrySet(), everyItem(isIn(associationTimesByRelatedAlarmId.entrySet())));
+
+        //send situation in with 3rd alarm, should result in 1 situation with 1 alarm since the situation's related
+        //alarms will be overwritten with this new related alarm
+        List<String> newReductionKeys = new ArrayList<>(Arrays.asList("Alarm3"));
+        sendSituationEvent("Situation1", node, newReductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        situation = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(1, situation.getRelatedAlarms().size());
+
+        // We have one related alarm, so we should have a single association
+        assertThat(m_alarmAssociationDao.getAssociationsForSituation(situation.getId()), hasSize(1));
+    }
+
+    @Test
+    @Transactional
+    public void testPreventingCyclicGraphForSituations() throws SQLException {
+
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        //there should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //there should be no alarms in the alarm_situations table
+        assertEmptyAlarmSituationTable();
+
+        //create 2 alarms to roll up into situation
+        sendNodeDownEvent("Alarm1", node);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(1, m_alarmDao.findAll().size());
+
+        sendNodeDownEvent("Alarm2", node);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(2, m_alarmDao.findAll().size());
+
+        //create situation rolling up the first 2 alarms
+        List<String> reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2"));
+        sendSituationEvent("Situation1", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation1 = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(2, situation1.getRelatedAlarms().size());
+
+        // create Situation2 that includes 2 alarms and the previous situation.
+        reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2", "Situation1"));
+        sendSituationEvent("Situation2", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation2 = m_alarmDao.findByReductionKey("Situation2");
+        assertEquals(3, situation2.getRelatedAlarms().size());
+
+        // create Situation3 that includes 2 alarms and the previous two situation.
+        reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2", "Situation1", "Situation2"));
+        sendSituationEvent("Situation3", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation3 = m_alarmDao.findByReductionKey("Situation3");
+        assertEquals(4, situation3.getRelatedAlarms().size());
+
+        // create Situation4 that includes 2 alarms and the previous situation 1,2 but not 3.
+        reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2", "Situation1", "Situation2"));
+        sendSituationEvent("Situation4", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation4 = m_alarmDao.findByReductionKey("Situation4");
+        assertEquals(4, situation4.getRelatedAlarms().size());
+        
+        // Create loop ( make situation4 as related alarm for situation1 )
+        List<String> situation3ReductionKey = new ArrayList<>(Arrays.asList("Situation4"));
+        sendSituationEvent("Situation1", node, situation3ReductionKey);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        situation1 = m_alarmDao.findByReductionKey("Situation1");
+        // Verify that Situation3 can't be related to Situation1
+        assertEquals(0, situation1.getRelatedAlarms().size());
+        assertFalse(situation1.getRelatedAlarms().contains(situation4));
+
+    }
+
+
+    @Test
+    @Transactional
     public void testNullEvent() throws Exception {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("Incoming event was null, aborting"));
+        ta.anticipate(new NullPointerException("Cannot create alarm from null event."));
         try {
-            m_alarmd.getPersister().persist(null, true);
+            m_alarmd.getPersister().persist(null);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -332,6 +468,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     }
 
     @Test
+    @Transactional
     public void testNorthbounder() throws Exception {
         assertTrue(m_northbounder.isInitialized());
         assertThat(m_northbounder.getAlarms(), hasSize(0));
@@ -352,6 +489,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     
 
     @Test
+    @Transactional
     public void testNoLogmsg() throws Exception {
         EventBuilder bldr = new EventBuilder("testNoLogmsg", "AlarmdTest");
         bldr.setAlarmData(new AlarmData());
@@ -359,7 +497,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(bldr.getEvent(), false);
+            m_alarmd.getPersister().persist(bldr.getEvent());
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -367,14 +505,16 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     }
 
     @Test
+    @Transactional
     public void testNoAlarmData() throws Exception {
         EventBuilder bldr = new EventBuilder("testNoAlarmData", "AlarmdTest");
         bldr.setLogMessage(null);
 
-        m_alarmd.getPersister().persist(bldr.getEvent(), false);
+        m_alarmd.getPersister().persist(bldr.getEvent());
     }
 
     @Test
+    @Transactional
     public void testNoDbid() throws Exception {
         EventBuilder bldr = new EventBuilder("testNoDbid", "AlarmdTest");
         bldr.setLogMessage(null);
@@ -383,7 +523,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(bldr.getEvent(), false);
+            m_alarmd.getPersister().persist(bldr.getEvent());
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -391,6 +531,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     }
     
     @Test
+    @Transactional
     public void changeFields() throws InterruptedException, SQLException {
         assertEmptyAlarmTable();
 
@@ -399,61 +540,30 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
         //Verify we have the default alarm
         sendNodeDownEvent(reductionKey, node1);
-        int severity = m_jdbcTemplate.queryForObject("select severity from alarms a where a.reductionKey = ?", new Object[] { reductionKey }, Integer.class).intValue();
-        assertEquals(OnmsSeverity.MAJOR, OnmsSeverity.get(severity));
+        OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
+        assertEquals(OnmsSeverity.MAJOR, alarm.getSeverity());
         
         //Store the original logmsg from the original alarm (we are about to test changing it with subsequent alarm reduction)
-        String defaultLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
-
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                int row = results.getRow();
-                boolean isLast = results.isLast();
-                boolean isFirst = results.isFirst();
-                
-                if (row != 1 && !isLast && !isFirst) {
-                    throw new SQLException("Row count is not = 1.  There should only be one row returned from the query: \n"+ results.getStatement());
-                }
-                
-                return results.getString(1);
-            }
-            
-        });
-        
+        String defaultLogMsg = alarm.getLogMsg();
         assertTrue("The logmsg column should not be null", defaultLogMsg != null);
 
         //Duplicate the alarm but change the severity and verify the change
         sendNodeDownEventWithUpdateFieldSeverity(reductionKey, node1, OnmsSeverity.CRITICAL);
-        severity = m_jdbcTemplate.queryForObject("select severity from alarms", Integer.class).intValue();
-        assertEquals("Severity should now be Critical", OnmsSeverity.CRITICAL, OnmsSeverity.get(severity));
+        assertEquals("Severity should now be Critical", OnmsSeverity.CRITICAL, m_alarmDao.findByReductionKey(reductionKey).getSeverity());
         
         //Duplicate the alarm but don't force the change of severity
         sendNodeDownEvent(reductionKey, node1);
-        severity = m_jdbcTemplate.queryForObject("select severity from alarms", Integer.class).intValue();
-        assertEquals("Severity should still be Critical", OnmsSeverity.CRITICAL, OnmsSeverity.get(severity));
+        assertEquals("Severity should still be Critical", OnmsSeverity.CRITICAL, m_alarmDao.findByReductionKey(reductionKey).getSeverity());
 
         //Duplicate the alarm and change the logmsg
         sendNodeDownEventChangeLogMsg(reductionKey, node1, "new logMsg");
-        String newLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
+        String newLogMsg = m_alarmDao.findByReductionKey(reductionKey).getLogMsg();
         assertEquals("new logMsg", newLogMsg);
         assertTrue(!newLogMsg.equals(defaultLogMsg));
         
-        //Duplicate the alarm but force logmsg to not change (lggmsg field is updated by default)
+        //Duplicate the alarm but force logmsg to not change (logmsg field is updated by default)
         sendNodeDownEventDontChangeLogMsg(reductionKey, node1, "newer logMsg");
-        newLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
+        newLogMsg = m_alarmDao.findByReductionKey(reductionKey).getLogMsg();
         assertTrue("The logMsg should not have changed.", !"newer logMsg".equals(newLogMsg));
         assertEquals("The logMsg should still be equal to the previous update.", "new logMsg", newLogMsg);
 
@@ -461,144 +571,176 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         //Duplicate the alarm with the default configuration and verify the logmsg has changed (as is the default behavior
         //for this field)
         sendNodeDownEvent(reductionKey, node1);
-        newLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
+        newLogMsg = m_alarmDao.findByReductionKey(reductionKey).getLogMsg();
         assertTrue("The logMsg should have changed.", !"new logMsg".equals(newLogMsg));
         assertEquals("The logMsg should new be the default logMsg.", newLogMsg, defaultLogMsg);
         
         // Acknowledge the alarm via update-field for "acktime" / "ackuser"
         Map<String,String> eventParams = new LinkedHashMap<>();
-        long timeWhenSent = System.currentTimeMillis();
         sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "swivelchair", "", eventParams);
-        String newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
-        String newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
+        String newAckUser = m_alarmDao.findByReductionKey(reductionKey).getAckUser();
+        long newAckTime = m_alarmDao.findByReductionKey(reductionKey).getAckTime().getTime();
         assertEquals("New alarmackuser must be as in event parameter", "swivelchair", newAckUser);
-        assertTrue("New alarmacktime must be non-null", newAckTime != null);
-        assertTrue("New alarmacktime must be within 5s of current system time", System.currentTimeMillis() - Long.valueOf(newAckTime) < 5000);
+        assertTrue("New alarmacktime must be non-null", newAckTime != 0);
+        assertTrue("New alarmacktime must be within 5s of current system time", System.currentTimeMillis() - newAckTime < 5000);
         
         // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be in whole seconds
         eventParams.put("extSourcedAckUser", "somebodyelse");
         eventParams.put("extSourcedAckTime", "1000000");
         sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
-        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
-        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
+        newAckUser = m_alarmDao.findByReductionKey(reductionKey).getAckUser();
+        newAckTime = m_alarmDao.findByReductionKey(reductionKey).getAckTime().getTime();
         assertEquals("somebodyelse", newAckUser);
-        assertEquals("1000000000", newAckTime);
+        assertEquals(1000000000L, newAckTime);
         
         // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be in milliseconds
         eventParams.put("extSourcedAckUser", "somethirdactor");
         eventParams.put("extSourcedAckTime", "1526040190000");
         sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
-        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
-        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
+        newAckUser = m_alarmDao.findByReductionKey(reductionKey).getAckUser();
+        newAckTime = m_alarmDao.findByReductionKey(reductionKey).getAckTime().getTime();
         assertEquals("somethirdactor", newAckUser);
-        assertEquals("1526040190000", newAckTime);
+        assertEquals(1526040190000L, newAckTime);
         
         // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be an SNMPv2-TC::DateAndTime including time zone
         eventParams.put("extSourcedAckUser", "someotheractortz");
         eventParams.put("extSourcedAckTime", "0x07e2050b0d2a3a052d0000");
         sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
-        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
-        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
+        newAckUser = m_alarmDao.findByReductionKey(reductionKey).getAckUser();
+        newAckTime = m_alarmDao.findByReductionKey(reductionKey).getAckTime().getTime();
         assertEquals("someotheractortz", newAckUser);
-        assertEquals("1526046178500", newAckTime);
+        assertEquals(1526046178500L, newAckTime);
         
         // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be an SNMPv2-TC::DateAndTime excluding time zone
         eventParams.put("extSourcedAckUser", "someotheractornotz");
         eventParams.put("extSourcedAckTime", "0x07e2050b0d2a3a09");
         sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
-        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
-        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
+        newAckUser = m_alarmDao.findByReductionKey(reductionKey).getAckUser();
+        newAckTime = m_alarmDao.findByReductionKey(reductionKey).getAckTime().getTime();
         assertEquals("someotheractornotz", newAckUser);
-        assertEquals("1526046178900", newAckTime);
+        assertEquals(1526046178900L, newAckTime);
         
         // De-acknowledge the alarm via update-field. Verify this nulls both acktime and ackuser.
         eventParams.clear();
         eventParams.put("extSourcedAckUser", "somethirdactor");
         eventParams.put("extSourcedAckTime", "null");
         sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[extSourcedAckUser]%", "%parm[#2]%", eventParams);
-        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
+        assertNull(m_alarmDao.findByReductionKey(reductionKey).getAckUser());
+        assertNull(m_alarmDao.findByReductionKey(reductionKey).getAckTime());
+    }
+
+    @Test
+    public void testArchiveAlarm() throws Exception {
+        // Enable the archiving functionality
+        AlarmPersisterImpl persisterImpl = (AlarmPersisterImpl)m_alarmd.getPersister();
+        persisterImpl.setCreateNewAlarmIfClearedAlarmExists(true);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        // There should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //this should be the first occurrence of this alarm
+        //there should be 1 alarm now
+        sendNodeDownEvent("%nodeid%", node);
+
+        // Wait until we've create the node down alarm
+        await().atMost(10, SECONDS).until(getNumAlarmsCallable(), equalTo(1));
+
+        // Clear the existing alarm(s)
+        m_alarmDao.findAll().forEach(alarm -> {
+            alarm.setSeverity(OnmsSeverity.CLEARED);
+            m_alarmDao.update(alarm);
+            // Should not be archive
+            assertThat(alarm.isArchived(), equalTo(false));
         });
-        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
-            @Override
-            public String extractData(ResultSet results) throws SQLException, DataAccessException {
-                results.next();
-                return results.getString(1);
-            }
-        });
-        assertNull(newAckUser);
-        assertNull(newAckTime);
+        m_alarmDao.flush();
+
+        // Trigger the alarm again
+        sendNodeDownEvent("%nodeid%", node);
+
+        // We should have two alarms now
+        await().atMost(10, SECONDS).until(getNumAlarmsCallable(), equalTo(2));
+
+        // One alarm should be cleared, and archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> a.isArchived()
+                && OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+
+        // The other should not be cleared, and not be archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+                && !OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+    }
+    
+    @Test
+    public void testDualAlarmState() throws Exception {
+        AlarmPersisterImpl persisterImpl = (AlarmPersisterImpl)m_alarmd.getPersister();
         
+        // Enable the legacy two alarm state functionality
+        persisterImpl.setLegacyAlarmState(true);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        // There should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //this should be the first occurrence of this alarm
+        //there should be 1 alarm now
+        sendNodeDownEvent(node);
+
+        // Wait until we've create the node down alarm
+        Callable<Integer> numAlarmsCallable = getNumAlarmsCallable();
+        await().atMost(10, SECONDS).until(numAlarmsCallable, equalTo(1));
+
+        // Send in the UP
+        sendNodeUpEvent(node);
+
+        // We should have two alarms now
+        numAlarmsCallable = getNumAlarmsCallable();
+        await().atMost(10, SECONDS).until(numAlarmsCallable, equalTo(2));
+
+        await().atMost(10, SECONDS).until(() -> m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+                && OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+
+        // The other should be Normal, and not be archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+                && OnmsSeverity.NORMAL.equals(a.getSeverity())).count(), equalTo(1L));
+    }
+    
+    @Test
+    public void testSingleAlarmState() throws Exception {
+        AlarmPersisterImpl persisterImpl = (AlarmPersisterImpl)m_alarmd.getPersister();
+        
+        // Enable the new single alarm state functionality
+        persisterImpl.setLegacyAlarmState(false);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        // There should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //this should be the first occurrence of this alarm
+        //there should be 1 alarm now
+        sendNodeDownEvent(node);
+
+        // Wait until we've create the node down alarm
+        Callable<Integer> numAlarmsCallable = getNumAlarmsCallable();
+        await().atMost(10, SECONDS).until(numAlarmsCallable, equalTo(1));
+
+        // Send in the UP
+        sendNodeUpEvent(node);
+
+        // We should only have one alarm now
+        numAlarmsCallable = getNumAlarmsCallable();
+        await().atMost(10, SECONDS).until(numAlarmsCallable, equalTo(1));
+
+        // One alarm should be cleared, and not archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+                && OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+
+    }
+    
+    private Callable<Integer> getNumAlarmsCallable() {
+        return () -> m_alarmDao.countAll();
     }
 
     //Supporting method for test
@@ -628,7 +770,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         event.setLogDest("logndisplay");
         event.setLogMessage(logMsg);
 
-        m_eventdIpcMgr.sendNow(event.getEvent());
+        m_eventMgr.sendNow(event.getEvent());
     }
     
     private void sendNodeDownEventChangeLogMsg(String reductionKey, MockNode node, String logMsg) {
@@ -657,10 +799,10 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         event.setLogDest("logndisplay");
         event.setLogMessage(logMsg);
 
-        m_eventdIpcMgr.sendNow(event.getEvent());
+        m_eventMgr.sendNow(event.getEvent());
     }
 
-    private void sendNodeDownEventWithUpdateFieldSeverity(String reductionKey, MockNode node, OnmsSeverity severity) throws SQLException {
+    private void sendNodeDownEventWithUpdateFieldSeverity(String reductionKey, MockNode node, OnmsSeverity severity) {
         EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
 
         if (reductionKey != null) {
@@ -687,7 +829,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         
         event.setSeverity(severity.getLabel());
 
-        m_eventdIpcMgr.sendNow(event.getEvent());
+        m_eventMgr.sendNow(event.getEvent());
     }
 
     private void sendNodeDownEvent(String reductionKey, MockNode node) throws SQLException {
@@ -705,21 +847,80 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         event.setLogDest("logndisplay");
         event.setLogMessage("testing");
 
-        m_eventdIpcMgr.sendNow(event.getEvent());
+        m_eventMgr.sendNow(event.getEvent());
+    }
+
+
+    private void sendNodeDownEvent(MockNode node) throws SQLException {
+        sendNodeDownEvent(node, new Date());
+    }
+
+    private void sendNodeDownEvent(MockNode node, Date eventTime) {
+        EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
+        event.setTime(eventTime);
+
+        AlarmData data = new AlarmData();
+        data.setAlarmType(1);
+        data.setReductionKey("uei.opennms.org/nodes/nodeDown:1");
+        event.setAlarmData(data);
+        
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
+
+        m_eventMgr.sendNow(event.getEvent());
+    }
+
+    private void sendNodeUpEvent(MockNode node) throws SQLException {
+        sendNodeUpEvent(node, new Date());
+    }
+
+    private void sendNodeUpEvent(MockNode node, Date eventTime) throws SQLException {
+        EventBuilder event = MockEventUtil.createNodeUpEventBuilder("Test", node);
+        event.setTime(eventTime);
+
+        AlarmData data = new AlarmData();
+        data.setAlarmType(2);
+        data.setReductionKey("uei.opennms.org/nodes/nodeUp:1");
+        data.setClearKey("uei.opennms.org/nodes/nodeDown:1");
+        event.setAlarmData(data);
+        
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
+
+        m_eventMgr.sendNow(event.getEvent());
+    }
+
+    private void sendSituationEvent(String reductionKey, MockNode node, List<String> alarmReductionKeys) throws SQLException {
+        EventBuilder event = MockEventUtil.createNodeEventBuilder("Test", "uei.opennms.org/nodes/situation", node);
+        AlarmData data = new AlarmData();
+        data.setAlarmType(1);
+        data.setReductionKey(reductionKey);
+        event.setSeverity(OnmsSeverity.MAJOR.getLabel());
+        event.setAlarmData(data);
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
+        for (String alarm : alarmReductionKeys) {
+            // TOOD revisit when event_parameters table supports multiple params with the same name (NMS-10214)
+            // For now, suffix the parameter name with the value.
+            event.addParam("related-reductionKey" + alarm, alarm);
+        }
+        m_eventMgr.sendNow(event.getEvent());
     }
 
     private void assertEmptyAlarmTable() {
-        List<String> alarmDescriptions = new LinkedList<>();
-        m_jdbcTemplate.query("select alarmId, reductionKey, severity from alarms", new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                alarmDescriptions.add(String.format("Alarm[id=%s, reductionKey=%s, severity=%s]",
-                        rs.getString(1), rs.getObject(2), rs.getObject(3)));
-            }
-        });
-        assertEquals("Found one or more alarms: " + alarmDescriptions, 0, alarmDescriptions.size());
+        List<OnmsAlarm> alarms = m_alarmDao.findAll();
+        assertEquals("Found one or more alarms: " + alarms, 0, alarms.size());
     }
     
+    private void assertEmptyAlarmSituationTable() {
+        List<String> alarmDescriptions = m_alarmDao.findAll().stream()
+                .map(a -> a.getRelatedAlarms())
+                .flatMap(Collection::stream)
+                .map(a -> String.format("Alarm[id=%s, reductionKey=%s, severity=%s]", a.getId(), a.getReductionKey(), a.getSeverity()))
+                .collect(Collectors.toList());
+        assertEquals("Found one or more alarms linked to Situations: " + alarmDescriptions, 0, alarmDescriptions.size());
+    }
+
     private void sendNodeDownEventWithUpdateFieldsAckUserAndTime(String reductionKey, MockNode node, String ackUserExpr, String ackTimeExpr, Map<String,String> params) throws SQLException {
         EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
 
@@ -760,6 +961,15 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             event.addParam(paramName, params.get(paramName), "OctetString", null);
         }
 
-        m_eventdIpcMgr.sendNow(event.getEvent());
+        m_eventMgr.sendNow(event.getEvent());
+    }
+
+    public Callable<Boolean> allAnticipatedEventsWereReceived() {
+        return new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return m_eventMgr.getEventAnticipator().getAnticipatedEvents().isEmpty();
+            }
+        };
     }
 }

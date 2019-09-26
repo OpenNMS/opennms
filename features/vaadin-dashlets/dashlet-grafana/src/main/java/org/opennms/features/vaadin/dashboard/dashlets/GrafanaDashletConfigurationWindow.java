@@ -52,16 +52,16 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
 import com.google.common.base.Strings;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.AbstractTextField;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * This class implements a configuration window for the  Grafana dashlet.
@@ -93,7 +93,7 @@ public class GrafanaDashletConfigurationWindow extends DashletConfigurationWindo
         m_dashletSpec = dashletSpec;
 
         setWidth("60%");
-        setHeight("55%");
+        setHeight("58%");
 
         /**
          * Layout the components...
@@ -116,7 +116,6 @@ public class GrafanaDashletConfigurationWindow extends DashletConfigurationWindo
         GrafanaDashletQuickRangePicker grafanaDashletQuickRangePicker = new GrafanaDashletQuickRangePicker();
         grafanaDashletQuickRangePicker.setCaption("Quick ranges");
         grafanaDashletQuickRangePicker.setDescription("Quick ranges defined");
-        grafanaDashletQuickRangePicker.setImmediate(true);
         grafanaDashletQuickRangePicker.setWidth("100%");
 
         TextField timeRangeFrom = new TextField();

@@ -75,6 +75,7 @@ public class GraphResultsController extends AbstractController implements Initia
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] requestedParameters = new String[] {
                 "resourceId",
+                "generatedId",
                 "reports",
                 "nodeCriteria"
         };
@@ -84,6 +85,7 @@ public class GraphResultsController extends AbstractController implements Initia
         }
         String[] reports = request.getParameterValues("reports");
         String nodeCriteria = request.getParameter("nodeCriteria");
+        String generatedId = request.getParameter("generatedId");
         
         // see if the start and end time were explicitly set as params
         String start = request.getParameter("start");
@@ -228,7 +230,7 @@ public class GraphResultsController extends AbstractController implements Initia
 
         ModelAndView modelAndView = null;
         try {
-            GraphResults model = m_graphResultsService.findResults(resourceIds, reports, nodeCriteria, startLong, endLong, relativeTime);
+            GraphResults model = m_graphResultsService.findResults(resourceIds, reports, generatedId, nodeCriteria, startLong, endLong, relativeTime);
             modelAndView = new ModelAndView("/graph/results", "results", model);
         } catch (Exception e) {
             LOG.warn("Can't get graph results", e);

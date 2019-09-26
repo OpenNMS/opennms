@@ -95,7 +95,7 @@ public class GeolocationRestService {
         return Response.ok(config).build();
     }
 
-    private ServiceRegistry getServiceRegistry() {
+     private ServiceRegistry getServiceRegistry() {
         if (serviceRegistry == null) {
             serviceRegistry = BeanUtils.getBean("soaContext", "serviceRegistry", ServiceRegistry.class);
             Objects.requireNonNull(serviceRegistry);
@@ -118,8 +118,8 @@ public class GeolocationRestService {
         return null;
     }
 
-    private static <T> T getEnum(String input, Enum[] values) {
-        for (Enum eachEnum : values) {
+    private static <T> T getEnum(String input, Enum<?>[] values) {
+        for (Enum<?> eachEnum : values) {
             if (input.equalsIgnoreCase(eachEnum.name())) {
                 return (T) eachEnum;
             }

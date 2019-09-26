@@ -128,7 +128,7 @@ public class Config {
 
     private static List<String> buildList(String input) {
         if (!Strings.isNullOrEmpty(input)) {
-            return Arrays.stream(input.split(",")).map(v -> v.trim()).filter(v -> !v.isEmpty()).collect(Collectors.toList());
+            return Arrays.stream(input.split(",")).map(String::trim).filter(v -> !v.isEmpty()).collect(Collectors.toList());
         }
         return Lists.newArrayList();
     }

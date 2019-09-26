@@ -85,6 +85,7 @@
 			<attribute name="keyfield"   type="string" use="optional"/>
 			<attribute name="exclude"    type="string" use="optional"/>
 			<attribute name="key-alias"  type="string" use="optional"/>
+			<attribute name="resource-type"   type="string" use="optional"/>
 		</complexType>
 	</element>
 

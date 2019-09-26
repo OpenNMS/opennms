@@ -107,6 +107,12 @@
       <artifactId>org.opennms.features.discovery</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.daemon</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Contains model code for the WillItUnmarshall test -->
     <dependency>
@@ -218,8 +224,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry</groupId>
-      <artifactId>org.opennms.features.telemetry.daemon</artifactId>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.elastic</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.jest</groupId>
+      <artifactId>org.opennms.features.jest.client</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.config</groupId>
+      <artifactId>org.opennms.features.telemetry.config.jaxb</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

@@ -28,8 +28,12 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
@@ -478,5 +482,231 @@ public class ConvertToEventTest {
 
         Date eventTime = event.getTime();
         assertEquals(messageTime, eventTime);
+    }
+
+    /**
+     * Tests a message that looks like this:
+     * <189>: 2018 Jul 16 23:56:11 CDT: %ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface Ethernet119/1/36 is down (Link failure)
+     */
+    @Test
+    public void testCiscoPatternA() throws ParseException {
+        int messageFacilityPriority = 189;
+        String messageContent = "%ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface Ethernet119/1/36 is down (Link failure)";
+        String timeZone = "CDT";
+        String date = "2018 Jul 16 23:56:11";
+        String syslogMessage = "<" + messageFacilityPriority + ">: " + date + " " + timeZone + ": " + messageContent;
+        Event event = parseSyslog("testCiscoPatternA", radixConfig, syslogMessage, new Date());
+        assertEquals(SyslogSeverity.getSeverityForCode(messageFacilityPriority).toString(),
+                event.getParm("severity").getValue().getContent());
+        assertEquals(new SimpleDateFormat("yyyy MMM dd hh:mm:ss Z").parse(date + " " + timeZone),
+                event.getTime());
+        assertEquals(messageContent, event.getLogmsg().getContent());
+    }
+
+    /**
+     * Tests a message that looks like this:
+     * %CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet5/9 (75), with switch.fqdn.com GigabitEthernet2/4/21 (2)
+     */
+    @Test
+    public void testCiscoPatternB() {
+        String syslogMessage = "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet5/9 " +
+                "(75), with switch.fqdn.com GigabitEthernet2/4/21 (2)";
+        Event event = parseSyslog("testCiscoPatternB", radixConfig, syslogMessage, new Date());
+        assertEquals(syslogMessage, event.getLogmsg().getContent());
+    }
+
+    /**
+     * Tests a message that looks like this:
+     * <189>71863: LC/0/0/CPU0:Jul 16 23:49:47.738 : ifmgr[217]: %PKT_INFRA-LINEPROTO-5-UPDOWN : Line protocol on Interface Serial0/0/0/0/1/2/2:0, changed state to Up
+     */
+    @Test
+    public void testCiscoPatternC() throws ParseException {
+        int messageFacilityPriority = 189;
+        String sequenceNum = "71863";
+        String componentId = "LC/0/0/CPU0";
+        String processName = "ifmgr";
+        String processId = "217";
+        String messageContent = "%PKT_INFRA-LINEPROTO-5-UPDOWN : Line protocol on Interface Serial0/0/0/0/1/2/2:0, " +
+                "changed state to Up";
+        String date = "Jul 16 23:49:47.738";
+        String syslogMessage = "<" + messageFacilityPriority + ">" + sequenceNum + ": " + componentId +
+                ":" + date + " : " + processName + "[" + processId + "]: " + messageContent;
+        Event event = parseSyslog("testCiscoPatternC", radixConfig, syslogMessage, new Date());
+        assertEquals(SyslogSeverity.getSeverityForCode(messageFacilityPriority).toString(),
+                event.getParm("severity").getValue().getContent());
+        assertEquals(sequenceNum, event.getParm("SequenceNum").getValue()
+                .getContent());
+        assertEquals(componentId, event.getParm("ComponentId").getValue()
+                .getContent());
+        int expectedYear = SyslogMessageTest.getExpectedYear(date);
+        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(expectedYear + " " + date);
+        assertEquals(expectedDate, event.getTime());
+        assertEquals(processName, event.getParm("process").getValue().getContent());
+        assertEquals(processId, event.getParm("processid").getValue().getContent());
+        assertEquals(messageContent, event.getLogmsg().getContent());
+    }
+
+    /**
+     * Tests a message that looks like this:
+     * <188>1421602: Jul 17 04:36:01.993: %CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet0/43 (503), with Switch GigabitEthernet1/0/24 (1).
+     */
+    @Test
+    public void testCiscoPatternD() throws ParseException {
+        int messageFacilityPriority = 188;
+        String sequenceNum = "1421602";
+        String messageContent = "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet0/43 " +
+                "(503), with Switch GigabitEthernet1/0/24 (1).";
+        String date = "Jul 17 04:36:01.993";
+        String syslogMessage = "<" + messageFacilityPriority + ">" + sequenceNum + ": " + date + ": " +
+                messageContent;
+        Event event = parseSyslog("testCiscoPatternD", radixConfig, syslogMessage, new Date());
+        assertEquals(SyslogSeverity.getSeverityForCode(messageFacilityPriority).toString(),
+                event.getParm("severity").getValue().getContent());
+        assertEquals(sequenceNum, event.getParm("SequenceNum").getValue()
+                .getContent());
+        int expectedYear = SyslogMessageTest.getExpectedYear(date);
+        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(expectedYear + " " + date);
+        assertEquals(expectedDate, event.getTime());
+        assertEquals(messageContent, event.getLogmsg().getContent());
+    }
+
+    /**
+     * Tests a message that looks like this:
+     * <12> 2017 Jul 6 08:42:31 CDT *host1-2-3-4* 1,2017/06/02 01:59:06,123ABC456, THREAT
+     */
+    @Test
+    public void testCiscoPatternE() throws ParseException {
+        int messageFacilityPriority = 12;
+        String messageContent = "1,2017/06/02 01:59:06,123ABC456, THREAT";
+        String hostName = "host1-2-3-4";
+        String date = "2017 Jul 6 08:42:31";
+        String timeZone = "CDT";
+        String syslogMessage = "<" + messageFacilityPriority + "> " + date + " " + timeZone + " *" + hostName + "* " +
+                messageContent;
+        Event event = parseSyslog("testCiscoPatternE", radixConfig, syslogMessage, new Date());
+        assertEquals(SyslogSeverity.getSeverityForCode(messageFacilityPriority).toString(),
+                event.getParm("severity").getValue().getContent());
+        assertEquals(new SimpleDateFormat("yyyy MMM dd hh:mm:ss Z").parse(date + " " + timeZone),
+                event.getTime());
+        assertEquals(hostName, event.getParm("hostname").getValue().getContent());
+        assertEquals(messageContent, event.getLogmsg().getContent());
+    }
+
+    /**
+     * Tests a message that looks like this:
+     * <12> 2017 Jul 6 08:42:31 CDT 1,2017/06/02 01:59:06,123ABC456, THREAT
+     */
+    @Test
+    public void testCiscoPatternF() throws ParseException {
+        int messageFacilityPriority = 12;
+        String messageContent = "1,2017/06/02 01:59:06,123ABC456, THREAT";
+        String date = "2017 Jul 6 08:42:31";
+        String timeZone = "CDT";
+        String syslogMessage = "<" + messageFacilityPriority + "> " + date + " " + timeZone + " " + messageContent;
+        Event event = parseSyslog("testCiscoPatternF", radixConfig, syslogMessage, new Date());
+        assertEquals(SyslogSeverity.getSeverityForCode(messageFacilityPriority).toString(),
+                event.getParm("severity").getValue().getContent());
+        assertEquals(new SimpleDateFormat("yyyy MMM dd hh:mm:ss Z").parse(date + " " + timeZone),
+                event.getTime());
+        assertEquals(messageContent, event.getLogmsg().getContent());
+    }
+
+    /**
+     * Make sure the terminal case works where a hostname is the last grok pattern.
+     */
+    @Test
+    public void testHostnameLastPattern() {
+        RadixTreeParser oldRadixParser = RadixTreeSyslogParser.getRadixParser();
+
+        // Create a custom radix tree parser that can handle our simple test message
+        RadixTreeParser radixParser = new RadixTreeParser();
+        radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("%{STRING:message}: %{HOSTNAME:hostname}")
+                .toArray(new ParserStage[0]));
+        RadixTreeSyslogParser.setRadixParser(radixParser);
+        String testPrefix = "%TEST-123: ";
+
+        String testHostName = "my-test-host";
+        String syslogMessage = testPrefix + testHostName;
+        Event event = parseSyslog("testHostnameLastPattern", radixConfig, syslogMessage);
+        assertEquals(testHostName, event.getParm("hostname").getValue().getContent());
+
+        String testIp = "10.0.0.1";
+        syslogMessage = testPrefix + testIp;
+        event = parseSyslog("testHostnameLastPattern", radixConfig, syslogMessage);
+        assertEquals(testIp, event.getParm("hostname").getValue().getContent());
+
+        RadixTreeSyslogParser.setRadixParser(oldRadixParser);
+    }
+
+    /**
+     * Make sure the ${WHITESPACE:} matching works.
+     */
+    @Test
+    public void testPatternWithWhitespace() {
+        String syslogMessage = "<123>123456: Jan   \t1 01:10:10.123 CDT: %BGP-5-ADJCHANGE: neighbor 1.2.3.4 vpn " +
+                "vrf abc-def Up";
+        Event event = parseSyslog("testPatternWithWhitespace", radixConfig, syslogMessage, new Date());
+        assertThat(event.getLogmsg().getContent().startsWith("%BGP"), is(equalTo(true)));
+    }
+
+    /**
+     * Make sure ignore parameters via ${BLAH:ignore} works.
+     */
+    @Test
+    public void testIgnoreParms() {
+        String ignoredParmValue = "00123456";
+        String syslogMessage = "<123>456: " + ignoredParmValue + ": Jan  1 1:10:10.123 CDT: %SYS-5-CONFIG_I: " +
+                "Configured from console by hostname123 on vty2 (1.2.3.4)";
+        Event event = parseSyslog("testIgnoreParms", radixConfig, syslogMessage, new Date());
+        boolean hasParmValue =
+                event.getParmCollection().stream().anyMatch(parm -> parm.getValue()
+                        .getContent().equals(ignoredParmValue));
+        assertThat(event.getLogmsg().getContent().startsWith("%SYS"), is(equalTo(true)));
+        assertThat(hasParmValue, is(equalTo(false)));
+    }
+
+    /**
+     * Test that Cisco syslog messages are successfully parsed such that their log message starts with a given mnemonic.
+     */
+    @Test
+    public void testNewAuditPatterns() {
+        testAuditPattern("<189>98485: Nov  1 11:09:04: %SYS-5-CONFIG_I: Configured from console by hostname123 on " +
+                "vty1 (1.2.3.4)", "%SYS-5-CONFIG_I");
+        testAuditPattern("<189>414: 000414: Nov  1 11:07:45.159 CDT: %SYS-5-CONFIG_I: Configured from console by " +
+                "hostname123 on vty2 (1.2.3.4)", "%SYS-5-CONFIG_I");
+        testAuditPattern("<189>Nov  1 10:57:48.136 CDT:  10948: RP/0/RSP0/CPU0:Nov  1 10:57:48.136 CDT: bgp[1234]: " +
+                "%ROUTING-BGP-5-ADJCHANGE : neighbor 1.2.3.4 Up (VRF: abc) (AS: 12345)", "%ROUTING-BGP-5-ADJCHANGE");
+        testAuditPattern("<189>104897820: 104894003: Nov  1 01:46:05: %HSRP-5-STATECHANGE: Vlan123 Grp 123 state " +
+                "Speak -> Standby", "%HSRP-5-STATECHANGE");
+        testAuditPattern("<189>17460: Nov  1 01:14:41.474 CDT: %BGP-5-ADJCHANGE: neighbor 1.2.3.4 vpn vrf abc-def Up"
+                , "%BGP-5-ADJCHANGE");
+        testAuditPattern("<189>: 2019 Feb  1 00:17:15 cst: %ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface Ethernet1/15 is down (Link failure)"
+                , "%ETHPORT-5-IF_DOWN_LINK_FAILURE");
+    }
+
+    private void testAuditPattern(String syslog, String mnemonic) {
+        Event event = parseSyslog("testAuditPattern", radixConfig, syslog, new Date());
+        assertThat(event.getLogmsg().getContent(), startsWith(mnemonic));
+    }
+    
+    @Test
+    public void canIncludeRawSyslogmessage() {
+        String rawMessage = "<123>123456: Jan 1 01:10:10.123 CDT: %BGP-5-ADJCHANGE: neighbor 1.2.3.4 vpn " +
+                "vrf abc-def Up";
+        // Test that default behavior is to not include
+        boolean existingConfig = radixConfig.shouldIncludeRawSyslogmessage();
+        
+        if(existingConfig) {
+            fail("Default configuration for including raw syslog messages was true instead of false");
+        }
+
+        Event event = parseSyslog("canIncludeRawSyslogmessage", radixConfig, rawMessage, new Date());
+        assertThat(event.getParm("rawSyslogmessage"), equalTo(null));
+
+        // Once configured we should include a new event parameter containing the raw message
+        radixConfig.setIncludeRawSyslogmessage(true);
+        event = parseSyslog("canIncludeRawSyslogmessage", radixConfig, rawMessage, new Date());
+        assertThat(event.getParm("rawSyslogmessage").getValue().getContent(), equalTo(rawMessage));
+        radixConfig.setIncludeRawSyslogmessage(existingConfig);
     }
 }

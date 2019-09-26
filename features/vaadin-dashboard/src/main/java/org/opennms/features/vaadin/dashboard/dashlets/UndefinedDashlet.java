@@ -28,11 +28,17 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.model.*;
+import com.vaadin.v7.ui.Label;
 
 /**
  * This class represents a "undefined" {@link Dashlet} used for error conditions when the
@@ -52,7 +58,7 @@ public class UndefinedDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
         DashletComponent dashletComponent = new AbstractDashletComponent() {
             @Override
             public void refresh() {
@@ -72,7 +78,7 @@ public class UndefinedDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
-        return getWallboardComponent();
+    public DashletComponent getDashboardComponent(final UI ui) {
+        return getWallboardComponent(ui);
     }
 }

@@ -117,7 +117,7 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
         removeExpiredOutages();
 
         if (regainedtime > 0 && regainedtime < losttime) {
-            LOG.warn("RTCNodeSvcTimesList: Rejecting service time pair since regained time {}\tregainedtime in milliseconds: {} less than lost time -> losttime in milliseconds: {}", regainedtime, losttime);
+            LOG.warn("RTCNodeSvcTimesList: Rejecting service time pair since regained time in milliseconds: {} less than lost time -> losttime in milliseconds: {}", regainedtime, losttime);
 
             return;
         }

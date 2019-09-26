@@ -1,4 +1,4 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="resourceDao" interface="org.opennms.netmgt.dao.api.ResourceDao" availability="mandatory"/>
@@ -41,8 +41,8 @@
 
     <service id="surveillanceViewsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="surveillanceViewsUIFactory">
         <service-properties>
-            <entry key="alias" value="/vaadin-surveillance-views"/>
-            <entry key="init.widgetset" value="org.opennms.features.vaadin.surveillanceviews.SurveillanceViewsWidgetSet"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/vaadin-surveillance-views/*"/>
+            <entry key="servlet.init.widgetset" value="org.opennms.vaadin.DefaultWidgetset"/>
         </service-properties>
     </service>
 
@@ -64,7 +64,8 @@
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="surveillanceViewsConfigUIFactory">
         <service-properties>
-            <entry key="alias" value="/admin/vaadin-surveillance-views-config"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/vaadin-surveillance-views-config/*"/>
+            <entry key="servlet.init.widgetset" value="org.opennms.vaadin.DefaultWidgetset"/>
         </service-properties>
     </service>
 

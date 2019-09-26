@@ -16,5 +16,7 @@
 
   <bean id="measurementsRestService" class="org.opennms.web.rest.v1.MeasurementsRestService"/>
   <bean name="timeformatService" class="org.opennms.features.timeformat.impl.DefaultTimeformatService" />
+  <import resource="classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml"/>
+  <import resource="classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"/>
 
 </beans>

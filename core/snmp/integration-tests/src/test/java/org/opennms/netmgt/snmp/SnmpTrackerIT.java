@@ -48,6 +48,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,9 +57,11 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-soa.xml",
-		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
+@JUnitConfigurationEnvironment
 @JUnitSnmpAgent(host="192.0.2.205", resource="classpath:/snmpTestData1.properties")
 public class SnmpTrackerIT implements InitializingBean {
 	
@@ -120,17 +123,17 @@ public class SnmpTrackerIT implements InitializingBean {
         }
 
         @Override
-        public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+        public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException {
             final ResponseProcessor rp = super.buildNextPdu(pduBuilder);
             final ResponseProcessor errorRp = new ResponseProcessor() {
 
                 @Override
-                public void processResponse(final SnmpObjId snmpObjId, SnmpValue val) {
+                public void processResponse(final SnmpObjId snmpObjId, SnmpValue val) throws SnmpException {
                     rp.processResponse(snmpObjId, val);
                 }
 
                 @Override
-                public boolean processErrors(final int errorStatus, final int errorIndex) {
+                public boolean processErrors(final int errorStatus, final int errorIndex) throws SnmpException {
                     final boolean retry = rp.processErrors(errorStatus, errorIndex);
                     m_errors.add(new ResponseError(ErrorStatus.fromStatus(errorStatus), retry));
                     return retry;

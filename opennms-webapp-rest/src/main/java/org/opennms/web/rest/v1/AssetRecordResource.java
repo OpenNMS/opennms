@@ -136,8 +136,8 @@ public class AssetRecordResource extends OnmsRestService {
             LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
             assetRecord.setLastModifiedBy(Strings.nullToEmpty(request.getRemoteUser()));
             assetRecord.setLastModifiedDate(new Date());
-            assetRecord.setNode(node);
-            m_assetRecordDao.saveOrUpdate(assetRecord);
+            node.setAssetRecord(assetRecord);
+            m_nodeDao.saveOrUpdate(node);
             try {
                 sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
             } catch (EventProxyException e) {

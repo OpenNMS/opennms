@@ -15,7 +15,7 @@
     can depend on to use the drools library.
   </description>
   <properties>
-    <droolsVersion>7.7.0.Final</droolsVersion>
+    <droolsVersion>7.26.0.Final</droolsVersion>
   </properties>
   <dependencies>
     <dependency>

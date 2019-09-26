@@ -49,6 +49,8 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.config.agents.AgentResponse;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.mock.UnimplementedFilterDao;
 import org.opennms.netmgt.dao.mock.UnimplementedMonitoredServiceDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
@@ -165,6 +167,31 @@ public class AgentConfigurationResourceTest {
         @Override
         public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
             return new SnmpAgentConfig(address, getDefaults());
+        }
+
+        @Override
+        public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address) {
+            return null;
+        }
+
+        @Override
+        public void saveDefinition(Definition definition) {
+
+        }
+
+        @Override
+        public boolean removeFromDefinition(InetAddress ipAddress, String location, String module) {
+            return true;
+        }
+
+        @Override
+        public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
+
+        }
+
+        @Override
+        public List<SnmpProfile> getProfiles() {
+            return null;
         }
     }
 }

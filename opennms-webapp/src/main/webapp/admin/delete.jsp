@@ -137,11 +137,11 @@
   }
 %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Delete Nodes</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Delete Nodes</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
 	<P>The nodes present in the system are listed below. To permanently delete a node (and all associated
 	   interfaces, services, outages, events and notifications), check the "Delete?" box beside the node's ID and
            select "Delete Nodes". You may check more than one.
@@ -157,17 +157,17 @@
         </P>
 
         <div class="form-group">
-          <input type="button" class="btn btn-default" value="Delete Nodes" onClick="applyChanges()">
-          <input type="button" class="btn btn-default" value="Cancel" onClick="cancel()">
-          <input type="button" class="btn btn-default" value="Select All" onClick="checkAll()">
-          <input type="button" class="btn btn-default" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset" class="btn btn-default">
+          <input type="button" class="btn btn-secondary" value="Delete Nodes" onClick="applyChanges()">
+          <input type="button" class="btn btn-secondary" value="Cancel" onClick="cancel()">
+          <input type="button" class="btn btn-secondary" value="Select All" onClick="checkAll()">
+          <input type="button" class="btn btn-secondary" value="Unselect All" onClick="uncheckAll()">
+          <input type="reset" class="btn btn-secondary">
         </div>
       
       <div class="row form-group">
    <% if (nodes.size() > 0) { %>
 	<div class="col-md-6" id="contentleft">
-          <table class="table table-condensed">
+          <table class="table table-sm">
             <tr>
               <th class="text-center" width="5%">Delete?</th>
               <th class="text-center" width="5%">Data?</th>
@@ -183,7 +183,7 @@
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
 	<div class="col-md-6" id="contentright">
-          <table class="table table-condensed">
+          <table class="table table-sm">
             <tr>
               <th class="text-center" width="5%">Delete?</th>
               <th class="text-center" width="5%">Data?</th>
@@ -199,13 +199,13 @@
       </div> <!-- row -->
 
       <div class="form-group">
-          <input type="button" class="btn btn-default" value="Delete Nodes" onClick="applyChanges()">
-          <input type="button" class="btn btn-default" value="Cancel" onClick="cancel()">
-          <input type="button" class="btn btn-default" value="Select All" onClick="checkAll()">
-          <input type="button" class="btn btn-default" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset" class="btn btn-default">
+          <input type="button" class="btn btn-secondary" value="Delete Nodes" onClick="applyChanges()">
+          <input type="button" class="btn btn-secondary" value="Cancel" onClick="cancel()">
+          <input type="button" class="btn btn-secondary" value="Select All" onClick="checkAll()">
+          <input type="button" class="btn btn-secondary" value="Unselect All" onClick="uncheckAll()">
+          <input type="reset" class="btn btn-secondary">
       </div>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </form>

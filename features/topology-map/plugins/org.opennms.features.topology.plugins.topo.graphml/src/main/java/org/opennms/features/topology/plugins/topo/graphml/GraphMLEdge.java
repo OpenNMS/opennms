@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 public class GraphMLEdge extends AbstractEdge {

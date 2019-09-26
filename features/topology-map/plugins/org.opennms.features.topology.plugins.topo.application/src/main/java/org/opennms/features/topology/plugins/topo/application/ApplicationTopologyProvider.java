@@ -123,8 +123,10 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                 return new SelectionChangedListener.IdSelection<>(nodeIds);
             case Application:
                 final Set<Integer> applicationIds = filteredVertices.stream()
-                        .filter(v -> v.isRoot())
-                        .map(v -> Integer.valueOf(v.getId())).collect(Collectors.toSet());
+                        .filter(ApplicationVertex::isRoot)
+                        .map(ApplicationVertex::getId)
+                        .map(Integer::valueOf)
+                        .collect(Collectors.toSet());
                 return new SelectionChangedListener.IdSelection<>(applicationIds);
         }
         throw new IllegalArgumentException(getClass().getSimpleName() + " does not support filtering vertices for contentType " + contentType);
@@ -135,13 +137,13 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
         return Sets.newHashSet(
                 ContentType.Application,
                 ContentType.Alarm,
-                ContentType.Alarm.Node).contains(type);
+                ContentType.Node).contains(type);
     }
 
     private Set<Integer> extractNodeIds(Set<ApplicationVertex> applicationVertices) {
         return applicationVertices.stream()
                 .filter(eachVertex -> TOPOLOGY_NAMESPACE.equals(eachVertex.getNamespace()) && eachVertex.getNodeID() != null)
-                .map(eachVertex -> eachVertex.getNodeID())
+                .map(ApplicationVertex::getNodeID)
                 .collect(Collectors.toSet());
     }
 }

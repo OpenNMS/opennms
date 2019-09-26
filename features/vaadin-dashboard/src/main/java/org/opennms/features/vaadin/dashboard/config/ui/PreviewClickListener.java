@@ -28,9 +28,15 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardBody;
+
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 /**
  * Class implementing {@link Button.ClickListener} for creating the preview window.

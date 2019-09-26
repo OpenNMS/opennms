@@ -28,43 +28,17 @@
 
 package org.opennms.core.rpc.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.SimpleRegistry;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.ClassRule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.rpc.api.RemoteExecutionException;
-import org.opennms.core.rpc.api.RequestRejectedException;
-import org.opennms.core.rpc.api.RequestTimedOutException;
-import org.opennms.core.rpc.camel.CamelRpcClientPreProcessor;
-import org.opennms.core.rpc.camel.CamelRpcConstants;
-import org.opennms.core.rpc.camel.CamelRpcRequest;
 import org.opennms.core.rpc.camel.CamelRpcServerRouteManager;
 import org.opennms.core.rpc.camel.MockMinionIdentity;
-import org.opennms.core.rpc.echo.EchoClient;
-import org.opennms.core.rpc.echo.EchoRequest;
-import org.opennms.core.rpc.echo.EchoResponse;
-import org.opennms.core.rpc.echo.EchoRpcModule;
-import org.opennms.core.rpc.echo.MyEchoException;
-import org.opennms.core.rpc.jms.JmsRpcServerRouteManager;
-import org.opennms.core.test.Level;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +49,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -82,7 +59,8 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml"
+        "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -103,6 +81,18 @@ public class EchoRpcIT extends org.opennms.core.rpc.camel.EchoRpcIT {
     @Qualifier("rpcClient")
     private CamelContext rpcClientContext;
 
+    private TracerRegistry tracerRegistry = new TracerRegistry() {
+        @Override
+        public Tracer getTracer() {
+            return GlobalTracer.get();
+        }
+
+
+        @Override
+        public void init(String serviceName) {
+        }
+    };
+
     @Override
     public CamelContext getContext() {
         SimpleRegistry registry = new SimpleRegistry();
@@ -119,6 +109,6 @@ public class EchoRpcIT extends org.opennms.core.rpc.camel.EchoRpcIT {
     @Override
     public CamelRpcServerRouteManager getRouteManager(CamelContext context) {
         return new JmsRpcServerRouteManager(context,
-                new MockMinionIdentity(REMOTE_LOCATION_NAME));
+                new MockMinionIdentity(REMOTE_LOCATION_NAME), tracerRegistry);
     }
 }

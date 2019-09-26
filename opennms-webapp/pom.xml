@@ -10,9 +10,6 @@
   <packaging>war</packaging>
   <name>OpenNMS Web Application</name>
   <properties>
-    <frontendPluginVersion>1.0</frontendPluginVersion>
-    <nodeVersion>v6.10.2</nodeVersion>
-    <npmVersion>3.10.10</npmVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
@@ -23,40 +20,44 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jasig.maven</groupId>
-        <artifactId>sass-maven-plugin</artifactId>
-        <version>${sass.maven.plugin.version}</version>
-        <executions>
-          <execution>
-            <goals><goal>update-stylesheets</goal></goals>
-            <phase>generate-resources</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <sassSourceDirectory>${basedir}/src/main/scss</sassSourceDirectory>
-          <destination>${project.build.directory}/${project.build.finalName}/css</destination>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
+            <id>unpack-js</id>
+            <phase>process-resources</phase>
+            <goals><goal>unpack</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.core</groupId>
+                  <artifactId>org.opennms.core.web-assets</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>dist</classifier>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>target/opennms-webapp-${project.version}</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <excludes>META-INF/**</excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-jaxb-dependencies</id>
             <phase>test-compile</phase>
             <goals><goal>copy</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.dependencies</groupId>
+                  <artifactId>jaxb-dependencies</artifactId>
+                  <type>pom</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${basedir}/target/endorsed</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <artifactItems>
-            <artifactItem>
-              <groupId>org.opennms.dependencies</groupId>
-              <artifactId>jaxb-dependencies</artifactId>
-              <type>pom</type>
-              <overWrite>false</overWrite>
-              <outputDirectory>${basedir}/target/endorsed</outputDirectory>
-            </artifactItem>
-          </artifactItems>
-        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
@@ -146,53 +147,6 @@
               org.springframework.transaction.config;version="[4.0,5)",
               org.springframework.web.context;version="[4.0,5)",
               org.springframework.web.filter;version="[4.0,5)",
-
-              <!-- Spring Web Flow -->
-              <!-- There are no versions here because the webflow JAR is a wrapped dep :/ -->
-              org.springframework.webflow.expression,
-              org.springframework.webflow.expression.el,
-              org.springframework.webflow.expression.spel,
-              org.springframework.webflow.scope,
-              org.springframework.webflow.security,
-              org.springframework.webflow.engine,
-              org.springframework.webflow.engine.builder,
-              org.springframework.webflow.engine.builder.model,
-              org.springframework.webflow.engine.builder.support,
-              org.springframework.webflow.engine.impl,
-              org.springframework.webflow.engine.model,
-              org.springframework.webflow.engine.model.registry,
-              org.springframework.webflow.engine.model.builder,
-              org.springframework.webflow.engine.model.builder.xml,
-              org.springframework.webflow.engine.support,
-              org.springframework.webflow.conversation,
-              org.springframework.webflow.conversation.impl,
-              org.springframework.webflow.mvc,
-              org.springframework.webflow.mvc.portlet,
-              org.springframework.webflow.mvc.builder,
-              org.springframework.webflow.mvc.view,
-              org.springframework.webflow.mvc.servlet,
-              org.springframework.webflow.persistence,
-              org.springframework.webflow.context,
-              org.springframework.webflow.context.web,
-              org.springframework.webflow.context.portlet,
-              org.springframework.webflow.context.servlet,
-              org.springframework.webflow.validation,
-              org.springframework.webflow.action,
-              org.springframework.webflow.execution,
-              org.springframework.webflow.execution.factory,
-              org.springframework.webflow.execution.repository,
-              org.springframework.webflow.execution.repository.snapshot,
-              org.springframework.webflow.execution.repository.impl,
-              org.springframework.webflow.execution.repository.support,
-              org.springframework.webflow.test,
-              org.springframework.webflow.test.execution,
-              org.springframework.webflow.config,
-              org.springframework.webflow.executor,
-              org.springframework.webflow.core,
-              org.springframework.webflow.core.collection,
-              org.springframework.webflow.upgrade,
-              org.springframework.webflow.definition,
-              org.springframework.webflow.definition.registry,
 
               <!-- Mark some packages that dependency JARs rely on as optional -->
               <!-- Optional dependencies of jdom -->
@@ -335,15 +289,6 @@
     							</pluginExecutionFilter>
     							<action><ignore/></action>
     						</pluginExecution>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>org.jasig.maven</groupId>
-    								<artifactId>sass-maven-plugin</artifactId>
-    								<versionRange>[${sass.maven.plugin.version},)</versionRange>
-    								<goals><goal>update-stylesheets</goal></goals>
-    							</pluginExecutionFilter>
-    							<action><ignore/></action>
-    						</pluginExecution>
     					</pluginExecutions>
     				</lifecycleMappingMetadata>
     			</configuration>
@@ -353,90 +298,10 @@
   </build>
   <profiles>
     <profile>
-      <id>runJSTests</id>
-      <activation>
-        <property>
-          <name>skipITs</name>
-          <value>false</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <!-- https://github.com/eirslett/frontend-maven-plugin -->
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <version>${frontendPluginVersion}</version>
-            <configuration>
-              <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
-              <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
-              <installDirectory>target</installDirectory>
-              <triggerfiles>
-                <triggerfile>package.json</triggerfile>
-              </triggerfiles>
-            </configuration>
-            <executions>
-              <execution>
-                <id>install node and npm</id>
-                <goals>
-                  <goal>install-node-and-npm</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <nodeVersion>${nodeVersion}</nodeVersion>
-                  <npmVersion>${npmVersion}</npmVersion>
-                </configuration>
-              </execution>
-              <execution>
-                <id>install nodejs dependencies</id>
-                <goals>
-                  <goal>npm</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <arguments>install</arguments>
-                </configuration>
-              </execution>
-              <execution>
-                <id>install bower dependencies</id>
-                <goals>
-                  <goal>bower</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <arguments>install --allow-root</arguments>
-                </configuration>
-              </execution>
-              <execution>
-                <id>copy third-party dependencies</id>
-                <goals>
-                  <goal>gulp</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <arguments>vendor</arguments>
-                </configuration>
-              </execution>
-              <execution>
-                <id>execute karma tests</id>
-                <goals>
-                  <goal>karma</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <arguments>start</arguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>runInPlace</id>
       <activation><activeByDefault>false</activeByDefault></activation>
       <properties>
-    		<onmsLibScope>compile</onmsLibScope>
+        <onmsLibScope>compile</onmsLibScope>
       </properties>
       <dependencies>
         <dependency>
@@ -526,13 +391,50 @@
     </profile>
   </profiles>
   <dependencies>
+    <!-- this dependency only exists for unpacking into the final webapp, hence scope=provided -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web-assets</artifactId>
+      <version>${project.version}</version>
+      <classifier>dist</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <!-- ...but this one contains code -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web-assets</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
 
     <!-- indirect OpenNMS dependencies that belong in $OPENNMS_HOME/lib -->
     <!-- these should all be <scope>${onmsLibScope}</scope> and also included in opennms-base-assembly -->
 
     <dependency>
+      <groupId>org.eclipse.jetty.websocket</groupId>
+      <artifactId>websocket-servlet</artifactId>
+      <version>${jettyVersion}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.persistence.api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
+      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -584,6 +486,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.sysprops</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.config</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
@@ -613,7 +521,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
-      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -681,7 +588,6 @@
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.impl</artifactId>
-      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
 
@@ -788,6 +694,18 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.config-dao.thresholding.api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.config-dao.poll-outages.api</artifactId>
+      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -952,6 +870,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <scope>test</scope>
@@ -971,6 +895,12 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>3.1.6</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

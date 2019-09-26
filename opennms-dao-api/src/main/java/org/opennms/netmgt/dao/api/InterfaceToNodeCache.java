@@ -29,7 +29,6 @@
 package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
-import java.util.Iterator;
 import java.util.Optional;
 
 public interface InterfaceToNodeCache {
@@ -49,12 +48,6 @@ public interface InterfaceToNodeCache {
 	 */
 	void clear();
 
-	default Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr) {
-		final Iterator<Integer> it = this.getNodeId(location, ipAddr).iterator();
-		if (it.hasNext()) {
-			return Optional.of(it.next());
-		} else {
-			return Optional.empty();
-		}
-	}
+	Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr);
+
 }

@@ -43,11 +43,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Notification queries</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Notification queries</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-md-4 col-xs-6">
             <ul class="list-unstyled">
@@ -61,12 +61,16 @@
            <%-- search by user --%>
            <div class="row">
              <div class="col-md-12">
-               <form role="form" class="form-inline pull-right" method="get" action="notification/browse">
+               <form role="form" class="form pull-right" method="get" action="notification/browse">
                  <div class="form-group">
-                   <label for="byuser_user">User:</label>
-                   <input type="text" class="form-control" id="byuser_user" name="user"/>
+                   <label for="byuser_user">User</label>
+                   <div class="input-group">
+                    <input type="text" class="form-control" id="byuser_user" name="user"/>
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary" id="btn_search_by_user"><i class="fa fa-search"></i></button>
+                    </div>
+                   </div>
                  </div>
-                 <button type="submit" class="btn btn-default">Check notices</button>
                </form>
              </div> <!-- column -->
            </div> <!-- row -->
@@ -74,29 +78,33 @@
            <%-- search by notice --%>
            <div class="row top-buffer">
              <div class="col-md-12">
-               <form role="form" class="form-inline pull-right" method="get" action="notification/detail.jsp" >
+               <form role="form" class="form pull-right" method="get" action="notification/detail.jsp" >
                  <div class="form-group">
-                   <label for="bynotice_notice">Notice:</label>
-                   <input type="text" class="form-control" id="bynotice_notice" name="notice"/>
+                   <label for="bynotice_notice">Notice</label>
+                   <div class="input-group">
+                    <input type="text" class="form-control" id="bynotice_notice" name="notice"/>
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary" id="btn_search_by_notice"><i class="fa fa-search"></i></button>
+                    </div>
+                   </div>
                  </div>
-                 <button type="submit" class="btn btn-default">Get details</button>
                </form>
              </div> <!-- column -->
            </div> <!-- row -->
           </div> <!-- column -->
        </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
     <div class="row">
       <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Outstanding and Acknowledged Notices</h3>
+        <div class="card">
+          <div class="card-header">
+            <span>Outstanding and Acknowledged Notices</span>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
             <p>When important events are detected by OpenNMS, users may 
               receive a <em>notice</em>, a descriptive message sent automatically
               to a pager, an email address, or both. In order to
@@ -121,18 +129,18 @@
               Note that this is particularly useful if you are using a numeric 
               paging service and receive the numeric notice identifier as part of the page.
             </p>
-          </div> <!-- panel-body -->
+          </div> <!-- card-body -->
         </div> <!-- panel -->
       </div> <!-- column -->
     </div> <!-- row -->
 
     <div class="row">
       <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Notification Escalation</h3>
+        <div class="card">
+          <div class="card-header">
+            <span>Notification Escalation</span>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
             <p>Once a notice is sent, it is considered <em>outstanding</em> until 
                 someone <em>acknowledge</em>s receipt of the notice via the OpenNMS
                 Notification interface.&nbsp; If the event that 
@@ -148,7 +156,7 @@
                 where all members of that group will be notified at once with no 
                 15 minute escalation interval.
             </p>
-          </div> <!-- panel-body -->
+          </div> <!-- card-body -->
         </div> <!-- panel -->
       </div> <!-- column -->
     </div> <!-- row -->

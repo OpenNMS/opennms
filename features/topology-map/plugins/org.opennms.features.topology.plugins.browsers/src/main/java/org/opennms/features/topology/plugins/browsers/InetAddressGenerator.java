@@ -32,9 +32,9 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 
-import com.vaadin.data.Property;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.Table.ColumnGenerator;
 
 public class InetAddressGenerator implements ColumnGenerator {
 

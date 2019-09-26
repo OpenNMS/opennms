@@ -397,8 +397,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		m_graph = GWTGraph.create();
 	}
 
-    @SuppressWarnings("serial")
-    @Override
+	@Override
 	protected void onLoad() {
 		// HACK: Somehow the onLoad method is invoked n times, causing the TopologyComponent to be added n times
 		// To prevent this, we set a property after initialization

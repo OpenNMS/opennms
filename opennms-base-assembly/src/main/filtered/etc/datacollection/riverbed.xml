@@ -51,7 +51,6 @@
    <systemDef name="Riverbed Steelhead WAN Accelerators">
       <sysoid>.1.3.6.1.4.1.17163.1.1</sysoid>
       <collect>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>riverbed-steelhead-scalars</includeGroup>
          <includeGroup>riverbed-steelhead-cpu-stats</includeGroup>

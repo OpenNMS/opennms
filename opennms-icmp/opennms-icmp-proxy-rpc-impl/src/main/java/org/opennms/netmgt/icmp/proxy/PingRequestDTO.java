@@ -29,6 +29,8 @@
 package org.opennms.netmgt.icmp.proxy;
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -64,6 +66,8 @@ public class PingRequestDTO implements RpcRequest {
     @XmlElement(name="packet-size")
     private int packetSize;
 
+    private Map<String, String> tracingInfo = new HashMap<>();
+
     @Override
     public String getLocation() {
         return location;
@@ -92,14 +96,11 @@ public class PingRequestDTO implements RpcRequest {
     }
 
     public void setRetries(int retries) {
-
         this.retries = retries;
-
     }
 
     public void setTimeout(long timeoutInMs) {
         this.timeout = timeoutInMs;
-
     }
 
     public void setInetAddress(InetAddress inetAddress) {
@@ -121,6 +122,15 @@ public class PingRequestDTO implements RpcRequest {
 
     public int getPacketSize() {
         return packetSize;
+    }
+
+    @Override
+    public Map<String, String> getTracingInfo() {
+        return tracingInfo;
+    }
+
+    public void addTracingInfo(String key, String value) {
+        tracingInfo.put(key, value);
     }
 
     public PingRequest toPingRequest() {

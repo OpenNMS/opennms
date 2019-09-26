@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.sink.xml;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -48,18 +49,31 @@ public abstract class AbstractXmlSinkModule<S extends Message, T extends Message
      */
     private final ThreadLocal<XmlHandler<T>> messageXmlHandler = new ThreadLocal<>();
 
+
     public AbstractXmlSinkModule(Class<T> messageClazz) {
         this.messageClazz = Objects.requireNonNull(messageClazz);
     }
 
     @Override
-    public String marshal(T message) {
-        return getXmlHandler().marshal(message);
+    public byte[] marshal(T message) {
+        return getXmlHandler().marshal(message).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
-    public T unmarshal(String message) {
-        return getXmlHandler().unmarshal(message);
+    public T unmarshal(byte[] bytes) {
+        return getXmlHandler().unmarshal(new String(bytes, StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public byte[] marshalSingleMessage(S message) {
+        return marshal((T)getAggregationPolicy().aggregate(null, message));
+    }
+
+    /** Modules with different aggregated message should override this method **/
+    @Override
+    public S unmarshalSingleMessage(byte[] bytes) {
+        T log = unmarshal(bytes);
+        return (S)log;
     }
 
     @Override

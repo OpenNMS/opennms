@@ -27,16 +27,17 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
+import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
-import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The surveillance view config application's "main" class
@@ -84,15 +85,14 @@ public class SurveillanceViewsConfigUI extends UI {
      * @param type        the type of this notification
      */
     public void notifyMessage(String message, String description, Notification.Type type) {
-        Notification m_notification = new Notification("Message", type);
-
-        m_notification.setCaption(message);
-        m_notification.setDescription(description);
-        m_notification.setDelayMsec(1000);
+        Notification notification = new Notification("Message", type);
+        notification.setCaption(message);
+        notification.setDescription(description);
+        notification.setDelayMsec(1000);
 
         if (getUI() != null) {
             if (getPage() != null) {
-                m_notification.show(getUI().getPage());
+                notification.show(getUI().getPage());
             }
         }
     }

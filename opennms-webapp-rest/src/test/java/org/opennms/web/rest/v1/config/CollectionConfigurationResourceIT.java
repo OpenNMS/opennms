@@ -31,8 +31,6 @@ package org.opennms.web.rest.v1.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -93,13 +91,12 @@ public class CollectionConfigurationResourceIT extends AbstractSpringJerseyRestT
         String xml = sendRequest(GET, "/config/RDU/collection", 200);
         assertFalse(xml, xml.contains("vmware3"));
         assertFalse(xml, xml.contains("example2"));
-        assertTrue(xml, xml.contains("JBoss4"));
 
         CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, xml);
         assertNotNull(config);
         assertEquals(1, config.getPackages().size());
         assertEquals("example1", config.getPackages().get(0).getName());
-        assertEquals(4, config.getCollectors().size());
+        assertEquals(2, config.getCollectors().size());
 
         xml = sendRequest(GET, "/config/00002/collection", 404);
 

@@ -28,7 +28,7 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.BeanItemContainer;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;

@@ -47,6 +47,7 @@ import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.test.TestingServer;
+import org.apache.kafka.common.utils.SystemTime;
 import org.junit.After;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
@@ -82,6 +83,7 @@ public class JUnitKafkaServer extends ExternalResource {
     private KafkaConfig kafkaConfig;
     private KafkaServer kafkaServer;
     private TestingServer zkServer;
+    private static final long CLEANER_BUFFER_SIZE = 2 * 1024 * 1024L;
 
     public JUnitKafkaServer() {
         this("target/kafka-log");
@@ -122,6 +124,10 @@ public class JUnitKafkaServer extends ExternalResource {
         properties.put("port", String.valueOf(kafkaPort.get()));
         properties.put("zookeeper.connect", zkServer.getConnectString());
         properties.put("offsets.topic.replication.factor", (short)1);
+        properties.put("listeners", "PLAINTEXT://" + "localhost:" + String.valueOf(kafkaPort.get()));
+        // This was added as kafka by default allocates  128*1024*1024 bytes. Sometimes kafka server is not shutting down properly
+        // and this is causing OutOfMemory errors. Since test server doesn't need log deduplication, make it 2MB
+        properties.put("log.cleaner.dedupe.buffer.size", CLEANER_BUFFER_SIZE);
 
         System.err.println("Kafka server properties: " + properties);
         kafkaConfig = new KafkaConfig(properties);
@@ -130,7 +136,7 @@ public class JUnitKafkaServer extends ExternalResource {
         final Buffer<KafkaMetricsReporter> metricsList = scala.collection.JavaConversions.asScalaBuffer(kmrList);
         kafkaServer = new KafkaServer(kafkaConfig, new SystemTime(), Option.<String>empty(), metricsList);
         kafkaServer.startup();
-        await().atMost(1, MINUTES).until(() -> getBrokerMetadatas(), hasSize(greaterThanOrEqualTo(1)));
+        await().atMost(1, MINUTES).until(this::getBrokerMetadatas, hasSize(greaterThanOrEqualTo(1)));
 
         System.err.println("Kafka Address: " + getKafkaConnectString());
         System.err.println("Zookeeper Address: " + getZookeeperConnectString());

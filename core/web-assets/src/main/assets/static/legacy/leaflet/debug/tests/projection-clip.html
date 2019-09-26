@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../css/screen.css" />
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+
+	<script data-semver="1.0.0-beta" src="https://rawgit.com/kartena/Proj4Leaflet/leaflet-proj-refactor/lib/proj4-compressed.js"></script>
+	<script data-semver="1.0.0-beta" src="https://rawgit.com/kartena/Proj4Leaflet/leaflet-proj-refactor/src/proj4leaflet.js"></script>
+</head>
+
+<body>
+  <div id="map" style="background-color: #C2DEF3;width: 100%;height: 80vh"></div>
+
+
+  <script>
+
+
+	var getStyle = function(feature) {
+		return {
+			weight: 1,
+			opacity: 1.0,
+			color: 'black',
+			fillOpacity: 0.7,
+			fillColor: "#c0c0c0",
+			noClip: true
+		};
+	};
+
+	var map = L.map('map');
+
+	var epsg2154 = new L.Proj.CRS('EPSG:2154', "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+	var epsg3035 = new L.Proj.CRS('EPSG:3035', "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs");
+	var maxResolution = 100000; // magic number yay
+	// Scale for each level
+	var scale = function(zoom) {
+	return 1 / (maxResolution / Math.pow(2, zoom));
+	};
+	epsg2154.scale = scale;
+	epsg3035.scale = scale;
+
+	//end of epsg2154
+
+	var geojson = null;
+
+// 	fetch("https://rawgit.com/johan/world.geo.json/master/countries.geo.json")
+// 	.then(function(response) {
+// 		return response.json();
+// 	}).then(function(json) {
+//
+// 		console.log(json);
+// 		var brazil = json.features[23];
+// 		var states = json.features[170];
+// 		var russia = json.features[137];
+//
+// 		var myCountries = {
+// 			type: "FeatureCollection",
+// 			features: [
+// 				brazil,
+// // 				states,
+// // 				russia
+// 			]
+// 		};
+// 		var geojson = L.geoJson(myCountries, {
+// 			style: getStyle
+// 		});
+//
+// 		console.log(geojson.getBounds());
+//
+// 		var rectangle = L.rectangle(geojson.getBounds()).addTo(map);
+//
+// 		geojson.addTo(map);
+// 	});
+
+	var rectangle = L.rectangle([[5.244486, -34.729993],[-33.768378, -73.987235]]).addTo(map);
+
+
+
+// 		$.getJSON("https://rawgit.com/johan/world.geo.json/master/countries.geo.json",function(data) {
+// 			geojson = L.geoJson([data], {
+// 				style: getStyle,
+// 				});
+// 			geojson.addTo(map);
+// 			L.control.layers(geojson, {
+// 				position: 'bottomright'
+// 			}).addTo(map);
+// 		});
+
+
+	map.options.crs = epsg3035;
+	map.fitBounds(rectangle.getBounds());
+
+  </script>
+
+
+
+</body>
+
+</html>

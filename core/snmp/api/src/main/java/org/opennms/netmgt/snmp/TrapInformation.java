@@ -99,9 +99,9 @@ public abstract class TrapInformation {
     /**
      * Validate the trap.
      *
-     * @throws IllegalArgumentException on validation error.
+     * @throws SnmpException on validation error.
      */
-    public void validate() throws IllegalArgumentException {
+    public void validate() throws SnmpException {
         // by default we do nothing
     }
 

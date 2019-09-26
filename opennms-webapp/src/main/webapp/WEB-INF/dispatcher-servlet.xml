@@ -3,10 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
         >
 
@@ -35,11 +37,6 @@
         <property name="order" value="0"/>
     </bean>
 
-    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
-        <property name="flowRegistry" ref="flowRegistry"/>
-        <property name="order" value="1"/>
-    </bean>
-
     <!-- These HandlerMapping beans ensure that @RequestMapping-annotated classes and methods are resolvable -->
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
@@ -62,11 +59,6 @@
 
     <!-- Dispatches requests mapped to org.springframework.web.servlet.mvc.Controller implementations -->
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
-
-    <!-- Enables FlowHandler URL mapping -->
-    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
-        <property name="flowExecutor" ref="flowExecutor"/>
-    </bean>
 
     <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
         <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
@@ -228,6 +220,11 @@
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
+    <bean name="/situation/summary-box.htm" class="org.opennms.web.controller.situation.SituationBoxController">
+        <property name="successView" value="situation/summary-box"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+
     <bean name="/bsm/summary-box.htm" class="org.opennms.web.controller.bsm.BusinessServicesBoxController">
         <property name="successView" value="bsm/summary-box"/>
         <property name="businessServiceManager" ref="businessServiceManager"/>
@@ -323,12 +320,6 @@
         <property name="url" value="maps.htm" />
         <property name="entries">
             <list>
-                <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
-                    <property name="name" value="Distributed"/>
-                    <property name="url" value="RemotePollerMap/index.jsp"/>
-                    <property name="locationMatch" value="RemotePollerMap"/>
-                    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
-                </bean>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Topology"/>
                     <property name="url" value="topology"/>
@@ -481,7 +472,7 @@
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Database Reports"/>
-                                <property name="url" value="report/database/index.htm"/>
+                                <property name="url" value="report/database/index.jsp"/>
                                 <property name="locationMatch" value="database-reports"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
@@ -530,25 +521,6 @@
     <bean name="/includes/serviceApplication-box.htm"
           class="org.opennms.web.controller.ServiceApplicationBoxController">
         <property name="adminApplicationService" ref="adminApplicationService"/>
-    </bean>
-
-    <!-- Database Reports -->
-
-    <bean name="/report/database/index.htm"
-          class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
-
-    <bean name="/report/database/reportList.htm"
-          class="org.opennms.web.controller.ReportListController">
-        <property name="databaseReportListService" ref="databaseReportListService"/>
-        <property name="pageSize" value="10"/>
-    </bean>
-
-    <bean name="/report/database/batchReport.htm"
-          class="org.opennms.web.report.database.BatchReportFlowHander"/>
-
-    <bean name="/report/database/downloadReport.htm"
-          class="org.opennms.web.controller.DownloadReportController">
-        <property name="reportStoreService" ref="reportStoreService"/>
     </bean>
 
     <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
@@ -682,4 +654,16 @@
            <property name="successView" value="processed" />
          </bean>
      -->
+
+    <mvc:default-servlet-handler />
+
+    <mvc:resources mapping="/assets/**" location="/assets/">
+        <mvc:resource-chain resource-cache="true">
+            <mvc:resolvers>
+                <ref bean="assetLocator" />
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+
+    <mvc:annotation-driven/>
 </beans>

@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.dao.mock;
 
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 
 import java.util.UUID;

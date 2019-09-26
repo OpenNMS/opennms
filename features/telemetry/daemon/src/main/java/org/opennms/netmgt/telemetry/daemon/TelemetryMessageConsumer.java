@@ -28,115 +28,109 @@
 
 package org.opennms.netmgt.telemetry.daemon;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.telemetry.adapters.api.Adapter;
-import org.opennms.netmgt.telemetry.config.model.Protocol;
-import org.opennms.netmgt.telemetry.ipc.TelemetryMessageLogDTO;
-import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
-import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
+import org.opennms.netmgt.telemetry.api.adapter.Adapter;
+import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
+import org.opennms.netmgt.telemetry.config.model.QueueConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.ApplicationContext;
 
-import javax.annotation.PostConstruct;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import com.google.common.collect.Sets;
 
-public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryMessageLogDTO> {
+
+public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
 
-    private static final ServiceParameters EMPTY_SERVICE_PARAMETERS = new ServiceParameters(Collections.emptyMap());
-
     @Autowired
-    private ApplicationContext applicationContext;
+    private TelemetryRegistry telemetryRegistry;
 
-    private final Protocol protocolDef;
+    private final QueueDefinition queueDef;
     private final TelemetrySinkModule sinkModule;
-    private final List<Adapter> adapters;
+    private final List<AdapterDefinition> adapterDefs;
 
-    public TelemetryMessageConsumer(Protocol protocol, TelemetrySinkModule sinkModule) throws Exception {
-        this.protocolDef = Objects.requireNonNull(protocol);
+    // Actual adapters implementing the logic
+    private final Set<Adapter> adapters = Sets.newHashSet();
+
+    public TelemetryMessageConsumer(QueueConfig queueConfig, TelemetrySinkModule sinkModule) throws Exception {
+        this(queueConfig,
+                queueConfig.getAdapters(),
+                sinkModule);
+    }
+
+    public TelemetryMessageConsumer(QueueDefinition queueDef,
+                                    Collection<? extends AdapterDefinition> adapterDefs,
+                                    TelemetrySinkModule sinkModule) {
+        this.queueDef = Objects.requireNonNull(queueDef);
         this.sinkModule = Objects.requireNonNull(sinkModule);
-        adapters = new ArrayList<>(protocol.getAdapters().size());
+        this.adapterDefs = new ArrayList(adapterDefs);
     }
 
     @PostConstruct
     public void init() throws Exception {
         // Pre-emptively instantiate the adapters
-        for (org.opennms.netmgt.telemetry.config.model.Adapter adapterDef : protocolDef.getAdapters()) {
+        for (AdapterDefinition adapterDef : adapterDefs) {
+            final Adapter adapter;
             try {
-                adapters.add(buildAdapter(adapterDef));
+                adapter = telemetryRegistry.getAdapter(adapterDef);
             } catch (Exception e) {
                 throw new Exception("Failed to create adapter from definition: " + adapterDef, e);
             }
+
+            if (adapter == null) {
+                throw new Exception("No adapter found for class: " + adapterDef.getClassName());
+            }
+            adapters.add(adapter);
         }
     }
 
     @Override
-    public void handleMessage(TelemetryMessageLogDTO messageLog) {
-        try(Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
+    public void handleMessage(TelemetryProtos.TelemetryMessageLog messageLog) {
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
             LOG.trace("Received message log: {}", messageLog);
             // Handle the message with all of the adapters
             for (Adapter adapter : adapters) {
                 try {
                     adapter.handleMessageLog(messageLog);
                 } catch (RuntimeException e) {
-                    LOG.warn("Adapter: {} failed to handle message log: {}. Skipping.", adapter, messageLog);
+                    LOG.warn("Adapter: {} failed to handle message log: {}. Skipping.", adapter, messageLog, e);
                     continue;
                 }
             }
         }
     }
 
-    private Adapter buildAdapter(org.opennms.netmgt.telemetry.config.model.Adapter adapterDef) throws Exception {
-        // Instantiate the associated class
-        final Object adapterInstance;
-        try {
-            final Class<?> clazz = Class.forName(adapterDef.getClassName());
-            final Constructor<?> ctor = clazz.getConstructor();
-            adapterInstance = ctor.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(String.format("Failed to instantiate adapter with class name '%s'.",
-                    adapterDef.getClassName(), e));
-        }
-
-        // Cast
-        if (!(adapterInstance instanceof Adapter)) {
-            throw new IllegalArgumentException(String.format("%s must implement %s", adapterDef.getClassName(), Adapter.class.getCanonicalName()));
-        }
-        final Adapter adapter = (Adapter)adapterInstance;
-
-        // Apply the parameters
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
-        wrapper.setPropertyValues(adapterDef.getParameterMap());
-
-        // Autowire!
-        final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
-        beanFactory.autowireBean(adapter);
-        beanFactory.initializeBean(adapter, "adapter");
-
-        // Set the protocol reference
-        adapter.setProtocol(protocolDef);
-
-        return adapter;
+    @PreDestroy
+    public void destroy() {
+        adapters.forEach((adapter) -> adapter.destroy());
     }
 
     @Override
-    public SinkModule<TelemetryMessage, TelemetryMessageLogDTO> getModule() {
+    public SinkModule<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> getModule() {
         return sinkModule;
     }
 
-    public Protocol getProtocol() {
-        return protocolDef;
+    public QueueDefinition getQueue() {
+        return queueDef;
+    }
+
+    public void setRegistry(TelemetryRegistry telemetryRegistry) {
+        this.telemetryRegistry = telemetryRegistry;
     }
 }

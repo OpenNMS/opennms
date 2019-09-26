@@ -20,6 +20,6 @@
   <tx:annotation-driven/>
 
   <bean id="pingerFactory" class="org.opennms.netmgt.discovery.TestPingerFactory"/>
-  <bean id="pinger" class="org.opennms.netmgt.discovery.TestPinger"/>
+  <bean id="pinger" class="org.opennms.netmgt.icmp.TestPinger"/>
 
 </beans>

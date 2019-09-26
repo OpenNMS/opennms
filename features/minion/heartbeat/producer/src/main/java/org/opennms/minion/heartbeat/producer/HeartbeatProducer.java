@@ -34,7 +34,7 @@ import java.util.TimerTask;
 
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.minion.heartbeat.common.HeartbeatModule;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.slf4j.Logger;

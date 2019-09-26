@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.rpc.api.RequestRejectedException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.api.CriticalPath;
 import org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl;
@@ -47,6 +46,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
+import org.opennms.netmgt.icmp.proxy.PingSequence;
 import org.opennms.netmgt.icmp.proxy.PingSummary;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
@@ -84,7 +84,13 @@ public class DefaultPollContext implements PollContext, EventListener {
         EventConstants.NODE_DOWN_EVENT_UEI,
         EventConstants.NODE_UP_EVENT_UEI
     };
-    
+
+    /**
+     * Poll timestamps are updated using a DB transaction in the same thread and immediately following the poll.
+     * This may cause unnecessary overhead in extreme cases, so we add the ability to disable this functionality.
+     */
+    public static final boolean DISABLE_POLL_TIMESTAMP_TRACKING = Boolean.getBoolean("org.opennms.netmgt.poller.disablePollTimestampTracking");
+
     private volatile PollerConfig m_pollerConfig;
     private volatile QueryManager m_queryManager;
     private volatile EventIpcManager m_eventManager;
@@ -436,6 +442,17 @@ public class DefaultPollContext implements PollContext, EventListener {
         LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", event, event.getUei(), event.getDbid());
     }
 
+    @Override
+    public void trackPoll(PollableService service, PollStatus result) {
+        try {
+            if (!result.isUnknown() && !DISABLE_POLL_TIMESTAMP_TRACKING) {
+                getQueryManager().updateLastGoodOrFail(service.getNodeId(), service.getAddress(), service.getSvcName(), result);
+            }
+        } catch (Exception e) {
+            LOG.warn("Error occurred while tracking poll for service: {}", service, e);
+        }
+    }
+
     private static void processPending(final PendingPollEvent pollEvent) {
         LOG.trace("onEvent: pollEvent is no longer pending, processing pollEvent: {}", pollEvent);
         // Thread-safe and idempotent
@@ -450,8 +467,8 @@ public class DefaultPollContext implements PollContext, EventListener {
         }
 
         final InetAddress ipAddress = criticalPath.getIpAddress();
-        final int retries = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries();
-        final int timeout = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout();
+        final int retries = getPollerConfig().getDefaultCriticalPathRetries();
+        final int timeout = getPollerConfig().getDefaultCriticalPathTimeout();
 
         boolean available = false;
         try {
@@ -464,7 +481,7 @@ public class DefaultPollContext implements PollContext, EventListener {
 
             // We consider the path to be available if any of the requests were successful
             available = pingSummary.getSequences().stream()
-                            .filter(s -> s.isSuccess())
+                            .filter(PingSequence::isSuccess)
                             .count() > 0;
         } catch (InterruptedException e) {
             LOG.warn("Interrupted while testing {}. Marking the path as available.", criticalPath);

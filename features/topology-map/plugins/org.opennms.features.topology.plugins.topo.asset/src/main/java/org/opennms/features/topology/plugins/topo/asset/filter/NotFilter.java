@@ -30,9 +30,9 @@ package org.opennms.features.topology.plugins.topo.asset.filter;
 
 public class NotFilter<T> implements Filter<T> {
 
-    private final Filter filter;
+    private final Filter<T> filter;
 
-    public NotFilter(Filter filter) {
+    public NotFilter(Filter<T> filter) {
         this.filter = filter;
     }
 

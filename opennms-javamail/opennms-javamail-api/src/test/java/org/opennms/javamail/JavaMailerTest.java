@@ -28,8 +28,14 @@
 
 package org.opennms.javamail;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
+
+import javax.mail.Message;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -263,5 +269,51 @@ public class JavaMailerTest {
         jm.setTo(TEST_ADDRESS);
 
         return jm;
+    }
+
+    @Test
+    public void testReplyTo() throws Exception {
+        final Properties p = new Properties();
+        p.setProperty("org.opennms.core.utils.replyToAddress", "christian@opennms.org");
+        final JavaMailer jm = new JavaMailer(p);
+
+        jm.setFrom(TEST_ADDRESS);
+        jm.setMessageText("The subject");
+        jm.setSubject("Testing JavaMailer");
+        jm.setTo(TEST_ADDRESS);
+
+        final Message message = jm.buildMessage();
+        assertEquals(1, message.getReplyTo().length);
+        assertEquals("christian@opennms.org", jm.buildMessage().getReplyTo()[0].toString());
+    }
+
+    @Test
+    public void testEmptyReplyTo() throws Exception {
+        final Properties p = new Properties();
+        p.setProperty("org.opennms.core.utils.replyToAddress", "");
+        final JavaMailer jm = new JavaMailer(p);
+
+        jm.setFrom(TEST_ADDRESS);
+        jm.setMessageText("The subject");
+        jm.setSubject("Testing JavaMailer");
+        jm.setTo(TEST_ADDRESS);
+
+        final Message message = jm.buildMessage();
+        assertEquals(1, message.getReplyTo().length);
+        assertEquals("test@opennms.org", jm.buildMessage().getReplyTo()[0].toString());
+    }
+
+    @Test
+    public void testNullReplyTo() throws Exception {
+        final JavaMailer jm = new JavaMailer();
+
+        jm.setFrom(TEST_ADDRESS);
+        jm.setMessageText("The subject");
+        jm.setSubject("Testing JavaMailer");
+        jm.setTo(TEST_ADDRESS);
+
+        final Message message = jm.buildMessage();
+        assertEquals(1, message.getReplyTo().length);
+        assertEquals("test@opennms.org", jm.buildMessage().getReplyTo()[0].toString());
     }
 }

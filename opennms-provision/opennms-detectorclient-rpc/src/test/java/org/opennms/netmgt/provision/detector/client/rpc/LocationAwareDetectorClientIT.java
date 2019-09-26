@@ -45,7 +45,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
@@ -63,7 +64,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-scan-executor.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-detect.xml"
+        "classpath:/META-INF/opennms/applicationContext-rpc-detect.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml"
 })
 @JUnitConfigurationEnvironment  
 @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
@@ -115,6 +118,10 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
                     @Override
                     public String getLocation() {
                         return REMOTE_LOCATION_NAME;
+                    }
+                    @Override
+                    public String getType() {
+                        return SystemType.Minion.name();
                     }
                 }, new Properties()));
 

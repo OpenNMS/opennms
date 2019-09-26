@@ -29,7 +29,6 @@
 package org.opennms.netmgt.syslogd;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

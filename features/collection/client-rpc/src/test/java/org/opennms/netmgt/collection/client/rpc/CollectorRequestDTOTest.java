@@ -55,7 +55,7 @@ public class CollectorRequestDTOTest extends XmlTestNoCastor<CollectorRequestDTO
             {
                 request,
                 "<collector-request location=\"HQ\" class-name=\"org.opennms.netmgt.collection.api.ServiceCollector\">\n" + 
-                "   <agent type=\"0\" node-id=\"0\" sys-up-time=\"0\"/>\n" + 
+                "   <agent node-id=\"0\" sys-up-time=\"0\"/>\n" + 
                 "   <attribute key=\"key\"><![CDATA[value]]></attribute>\n" + 
                 "</collector-request>"
             }

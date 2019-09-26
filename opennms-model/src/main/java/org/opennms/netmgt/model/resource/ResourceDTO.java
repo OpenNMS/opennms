@@ -41,7 +41,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 
 @XmlRootElement(name = "resource")

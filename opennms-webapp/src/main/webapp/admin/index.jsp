@@ -125,24 +125,24 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">OpenNMS System</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>OpenNMS System</span>
       </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/sysconfig.jsp">System Configuration</a></li>
             <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
         </ul>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Provisioning</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Provisioning</span>
       </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/ng-requisitions/index.jsp">Manage Provisioning Requisitions</a></li>
             <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
             <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
@@ -151,16 +151,17 @@
             <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP Address</a></li>
             <li><a href="javascript:addInterfacePost()">Manually Add an Interface</a></li>
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
+            <li><a href="admin/geoservice/index.jsp">Configure Geocoder Service</a></li>
         </ul>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Event Management</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Event Management</span>
       </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/sendevent.htm">Manually Send an Event</a></li>
             <!-- Secret function 
                     <a href="admin/eventconf/list.jsp">Configure Events</a> 
@@ -168,8 +169,8 @@
             <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
             <li><a href="admin/manageEvents.jsp">Customize Event Configurations</a></li>
         </ul>
-      </div> <!-- panel-body -->
-      <div class="panel-footer text-right">
+      </div> <!-- card-body -->
+      <div class="card-footer text-right">
         <form role="form" method="post" name="notificationStatus" action="admin/updateNotificationStatus">
             <%String status = "Unknown";
                 try {
@@ -177,77 +178,94 @@
                     status = NotifdConfigFactory.getPrettyStatus();
                 } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
             %>
-              <label class="control-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%></label>
+              <label class="col-form-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%></label>
               &nbsp;
-              <label for="on" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="on" value="on" <%=("On".equals(status) ? "checked" : "")%> />On</label>
-              <label for="off" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="off" value="off" <%=("Off".equals(status) ? "checked" : "")%> />Off</label>
-              &nbsp;
-              <button type="submit" class="btn btn-default">Update</button>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="status" id="on" value="on" <%=("On".equals(status) ? "checked" : "")%>>
+                <label class="form-check-label" for="on">On</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="status" id="off" value="off" <%=("Off".equals(status) ? "checked" : "")%>>
+                <label class="form-check-label" for="off">Off</label>
+              </div>
+              <button type="submit" class="btn btn-sm btn-secondary">Update</button>
         </form>
-      </div> <!-- panel-footer -->
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Service Monitoring</h3>
+      <div class="card">
+          <div class="card-header">
+              <span>Flow Management</span>
+          </div>
+          <div class="card-body">
+              <ul class="list-unstyled mb-0">
+                  <li><a href="admin/classification/index.jsp">Manage Flow Classification</a></li>
+              </ul>
+          </div> <!-- card-body -->
+      </div> <!-- panel -->
+
+    <div class="card">
+      <div class="card-header">
+        <span>Service Monitoring</span>
       </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/sched-outages/index.jsp">Configure Scheduled Outages</a></li>
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
             <%=getAdminPageNavEntries("service-monitoring")%>
         </ul>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Performance Measurement</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Performance Measurement</span>
       </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/manageSnmpCollections.jsp">Configure SNMP Collections and Data Collection Groups</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
             <li><a href="admin/thresholds/index.htm">Configure Thresholds</a></li>
         </ul>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Distributed Monitoring</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Distributed Monitoring</span>
       </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
             <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
             <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
             <li><a href="minion/index.jsp">Manage Minions</a></li>
         </ul>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Additional Tools</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Additional Tools</span>
       </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
+            <li><a href="admin/endpoint/index.jsp">Configure Grafana Endpoints (Reports only)</a></li>
             <li><a href="admin/nodemanagement/instrumentationLogReader.jsp">Instrumentation Log Reader</a></li>
             <%=getAdminPageNavEntries("operations")%>
         </ul>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Descriptions</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Descriptions</span>
       </div>
-      <div class="panel-body">
-        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
+      <div class="card-body">
+        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://wiki.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
 
         <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
@@ -348,10 +366,7 @@
 
         <p><b>SNMP MIB Compiler</b>: Compile MIBs in order to generate events definitions from traps or
             data collection groups for performance metrics.</p>
-            
-        <p><b>OpenNMS Plugin Manager</b>: Manage optional OpenNMS OSGi plugins installed in local and remote Karaf Containers.</p>
-
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

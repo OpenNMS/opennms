@@ -1,0 +1,47 @@
+
+==== NetFlow v5
+
+See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.
+
+
+[[telemetryd-netflow5-parser-udp]]
+===== Netflow v5 UDP Parser
+
+The Netflow v5 UDP Parser accepts packets received by a <<telemetryd-listener-udp, UDP Listener>> and must forward them to a <<telemetryd-netflow5-adapter, Netflow v5 Adapter>>.
+
+The Netflow v5 UDP Parser supports protocol detection.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser`
+|===
+
+====== Parameters
+
+.Parameters for the Netflow v5 UDP Parser
+[options="header, autowidth"]
+|===
+| Parameter             | Description                                                                | Required | Default value
+| `maxClockSkew`        | The maximum delta in seconds between exporter and Minion timestamps.       | no       | 0
+| `clockSkewEventRate`  | Used to rate-limit clock skew events in seconds.                           | no       | 3600
+| `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
+|===
+
+[[telemetryd-netflow5-adapter]]
+===== Netflow v5 Adapter
+
+The Netflow v5 Adapter is used to handle _Netflow v5_ payloads received and parsed by by the <<telemetryd-netflow5-parser-udp, Netflow v5 UDP Parser>>.
+Flows are decoded from the messages into the canonical flow format and are published to the _flow repository_
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter`
+|===
+
+====== Parameters
+
+This adapter does not currently have any configurable parameters.

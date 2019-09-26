@@ -55,6 +55,7 @@ import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
@@ -95,7 +96,9 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
     private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
             new SimpleEntry<>(WSMAN_AGENT_CONFIG_KEY, Definition.class),
             new SimpleEntry<>(WSMAN_GROUPS_KEY, Groups.class))
-            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+            .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
+
+    static final String ELEMENT_COUNT_ATTRIB_NAME = "##ElementCount##";
 
     private WSManClientFactory m_factory = new CXFWSManClientFactory();
 
@@ -147,7 +150,7 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
 
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
-        LOG.debug("collect({}, {}, {})", agent, parameters);
+        LOG.debug("collect(agent={}, parameters={})", agent, parameters);
 
         final WsmanAgentConfig config = (WsmanAgentConfig)parameters.get(WSMAN_AGENT_CONFIG_KEY);
         final Groups groups = (Groups)parameters.get(WSMAN_GROUPS_KEY);
@@ -157,7 +160,7 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
 
         if (LOG.isDebugEnabled()) {
-            String groupNames = groups.getGroups().stream().map(g -> g.getName()).collect(Collectors.joining(", "));
+            String groupNames = groups.getGroups().stream().map(Group::getName).collect(Collectors.joining(", "));
             LOG.debug("Collecting attributes on {} from groups: {}", agent, groupNames);
         }
 
@@ -239,26 +242,36 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
                 }
 
                 String valueAsString = null;
-                final List<String> attributeValues = elementValues.get(attrib.getName());
-                if (attributeValues.size() > 1 && attrib.getIndexOf() != null) {
-                    try {
-                        int index = ResponseHandlingUtils.getMatchingIndex(attrib.getIndexOf(), elementValues);
-                        valueAsString = attributeValues.get(index);
-                    } catch (NoSuchElementException e) {
-                        LOG.warn("No index was matched by index-of rule '{}' for attribute {} with values: {}.",
-                                attrib.getIndexOf(), attrib.getName(), elementValues);
-                    }
+                if (ELEMENT_COUNT_ATTRIB_NAME.equals(attrib.getName())) {
+                    valueAsString = Integer.toString(nodes.size());
+                    LOG.debug("Found {} attribute, setting value to {}", attrib.getName(), valueAsString);
                 } else {
-                    // Grab the first value, defaulting to null is there are no values
-                    valueAsString = Iterables.getFirst(elementValues.get(attrib.getName()), null);
+                    final List<String> attributeValues = elementValues.get(attrib.getName());
+                    if (attributeValues.size() > 1 && attrib.getIndexOf() != null) {
+                        try {
+                            int index = ResponseHandlingUtils.getMatchingIndex(attrib.getIndexOf(), elementValues);
+                            valueAsString = attributeValues.get(index);
+                        } catch (NoSuchElementException e) {
+                            LOG.warn("No index was matched by index-of rule '{}' for attribute {} with values: {}.",
+                                    attrib.getIndexOf(), attrib.getName(), elementValues);
+                        }
+                    } else {
+                        // Grab the first value, defaulting to null is there are no values
+                        valueAsString = Iterables.getFirst(elementValues.get(attrib.getName()), null);
+                    }
                 }
-
                 if (valueAsString == null) {
                     LOG.warn("No value found for attribute: {} in group: {}", attrib.getName(), group.getName());
                     continue;
                 }
 
                 builder.withAttribute(resource, group.getName(), attrib.getAlias(), valueAsString, attrib.getType());
+            }
+
+            if (CollectionResource.RESOURCE_TYPE_NODE.equals(resource.getTypeName())) {
+                // Only process the first element when dealing with node-level resources, otherwise the element
+                // will overwrite the first, and so on...
+                break;
             }
         }
     }

@@ -11,15 +11,23 @@
   <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: Measurements :: API</name>
   <build>
-    <!-- We need to be JDK 6 compliant, because we rely on an old jasper-reports version -->
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <!-- To load the jar file into jaspersoft studio it is required to be Java 6 compatible -->
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <!-- To load the jar file into jaspersoft studio it is required to be Java 1.7 compatible -->
+              <source>1.7</source>
+              <target>1.7</target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>

@@ -1,0 +1,147 @@
+@import "severity-definition.scss";
+
+/* General Styles */
+.geomap {
+  width: 100px;
+  height: 400px;
+  min-height: 100%;
+  min-width: 100%;
+  display: block;
+}
+
+/* Cluster styles (Plugin leaflet.markercluster) */
+.geomap .marker-cluster-Critical {
+  background-color: $severity-alarm-critical-border;
+}
+.geomap .marker-cluster-Major {
+  background-color: $severity-alarm-major-border;
+}
+.geomap .marker-cluster-Minor {
+  background-color: $severity-alarm-minor-border;
+}
+.geomap .marker-cluster-Warning {
+  background-color: $severity-alarm-warning-border;
+}
+.geomap .marker-cluster-Normal {
+  background-color: $severity-alarm-normal-border;
+}
+.geomap .marker-cluster div {
+  position: absolute;
+  top: 0;
+  color: white;
+}
+
+.geomap .svg {
+  stroke-width: 0px;
+}
+
+/* Styles for SVG elements */
+.geomap .svg .Cleared {
+  fill: $severity-alarm-cleared-border;
+  stroke: $severity-alarm-cleared-border;
+}
+.geomap .svg .Normal {
+  fill: $severity-alarm-normal-border;
+  stroke: $severity-alarm-normal-border;
+}
+.geomap .svg .Minor {
+  fill: $severity-alarm-minor-border;
+  stroke: $severity-alarm-minor-border;
+}
+.geomap .svg .Major {
+  fill: $severity-alarm-major-border;
+  stroke: $severity-alarm-major-border;
+}
+.geomap .svg .Warning {
+  fill: $severity-alarm-warning-border;
+  stroke: $severity-alarm-warning-border;
+}
+.geomap .svg .Critical {
+  fill: $severity-alarm-critical-border;
+  stroke: $severity-alarm-critical-border;
+}
+
+/* General Popup styles */
+.geomap .leaflet-popup-content .node {
+  word-wrap: break-word;
+}
+.geomap .leaflet-popup-scrolled {
+  border-bottom: 0;
+  border-top: 0;
+}
+
+.geomap .node-marker-popup .leaflet-popup-content ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+.geomap table.node-marker-list {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Styles for severties in popup */
+.geomap .severity {
+  text-align: center;
+  padding: 4px;
+}
+.geomap .severity a {
+  text-decoration: none;
+  color: white;
+}
+
+.geomap .severity.Normal {
+  background-color: $severity-alarm-normal-border;
+  opacity: 0.6;
+}
+.geomap .severity.Normal:hover {
+  background-color: $severity-alarm-normal-border;
+  opacity: 1.0;
+}
+
+.geomap .severity.Warning {
+  background-color: $severity-alarm-warning-border;
+  opacity: 0.6;
+}
+.geomap .severity.Warning:hover {
+  background-color: $severity-alarm-warning-border;
+  opacity: 1.0;
+}
+
+.geomap .severity.Minor {
+  background-color: $severity-alarm-minor-border;
+  opacity: 0.6;
+}
+
+.geomap .severity.Minor:hover {
+  background-color: $severity-alarm-minor-border;
+  opacity: 1.0;
+}
+
+.geomap .severity.Major {
+  background-color: $severity-alarm-major-border;
+  opacity: 0.6;
+}
+
+.geomap .severity.Major:hover {
+  background-color: $severity-alarm-major-border;
+  opacity: 1.0;
+}
+.geomap .severity.Critical {
+  background-color: $severity-alarm-critical-border;
+  opacity: 0.6;
+}
+
+.geomap .severity.Critical:hover {
+  background-color: $severity-alarm-critical-border;
+  opacity: 1.0;
+}
+
+/* Toolbar Control styles */
+.geomap .leaflet-container .leaflet-control-zoom {
+  margin-top: 20px;
+}
+.geomap .leaflet-container .leaflet-control .selected {
+  background-color: lightgray;
+}
+
+@import "leaflet.scss";

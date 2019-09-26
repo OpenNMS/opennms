@@ -48,11 +48,9 @@ import org.springframework.util.Assert;
 public class DefaultPollerConfigDao implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerConfigDao.class);
     private Resource m_configResource;
-    private String m_localServer;
-    private Boolean m_verifyServer;
-    
+
     private PollerConfig m_pollerConfig;
-    
+
     /**
      * <p>Constructor for DefaultPollerConfigDao.</p>
      */
@@ -67,23 +65,21 @@ public class DefaultPollerConfigDao implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
-        Assert.state(m_localServer != null, "property localServer must be set to a non-null value");
-        Assert.state(m_verifyServer != null, "property verifyServer must be set to a non-null value");
-        
+
         loadConfig();
     }
 
     private void loadConfig() throws Exception {
         InputStream stream = null;
         long lastModified;
-        
+
         File file = null;
         try {
             file = getConfigResource().getFile();
         } catch (IOException e) {
             LOG.info("Resource '{}' does not seem to have an underlying File object; using input stream", getConfigResource());
         }
-        
+
         try {
             if (file != null) {
                 lastModified = file.lastModified();
@@ -95,12 +91,12 @@ public class DefaultPollerConfigDao implements InitializingBean {
                 LOG.debug("loadConfig: creating new PollerConfigFactory from input stream");
             }
 
-            setPollerConfig(new PollerConfigFactory(lastModified, stream, getLocalServer(), isVerifyServer()));
+            setPollerConfig(new PollerConfigFactory(lastModified, stream));
         } finally {
             if (stream != null) stream.close();
         }
     }
-    
+
     /**
      * <p>getPollerConfig</p>
      *
@@ -132,41 +128,4 @@ public class DefaultPollerConfigDao implements InitializingBean {
         m_configResource = configResource;
     }
 
-    /**
-     * <p>getLocalServer</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getLocalServer() {
-        return m_localServer;
-    }
-
-    /**
-     * <p>setLocalServer</p>
-     *
-     * @param localServer a {@link java.lang.String} object.
-     */
-    public void setLocalServer(String localServer) {
-        m_localServer = localServer;
-    }
-
-    /**
-     * <p>isVerifyServer</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
-    public Boolean isVerifyServer() {
-        return m_verifyServer;
-    }
-
-    /**
-     * <p>setVerifyServer</p>
-     *
-     * @param verifyServer a {@link java.lang.Boolean} object.
-     */
-    public void setVerifyServer(Boolean verifyServer) {
-        m_verifyServer = verifyServer;
-    }
-    
-    
 }

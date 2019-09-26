@@ -1,0 +1,61 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+The DNS Resolver is used internally by OpenNMS modules and functions to provide lookup functionality as required.
+
+=== Modules that use DNS Resolution
+* <<ga-telemetryd, TelemetryD>>
+
+
+=== Configuring DNS Resolution
+In order to customize the DNS servers that are queried, the following commands can be used:
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.dnsresolver.netty
+admin@minion()> property-set nameservers 8.8.8.8,4.2.2.2:53,[::1]:5353
+admin@minion()> property-set query-timeout-millis 5000
+admin@minion()> property-set max-cache-size 10000
+admin@minion()> config:update
+----
+
+If no nameservers are set (or set to an empty string), the servers configured by the system running the JVM will be used.
+
+The resolved host names are cached for their TTL as specified in the returned DNS records.
+TTL handling can be customized by setting the `min-ttl-seconds`, `max-ttl-seconds` and `negative-ttl-seconds` properties in the configuration above.
+
+=== Configuring Circuit Breaker
+Circuit Breaker functionality exist that helps prevent your DNS infrastructure from being flooded with requests when multiple failures occur.
+It is enabled by default but can be disabled by setting `breaker-enabled` to `false`.
+
+Additional parameters can be modified to tune the functionality of the circuit breaker:
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.dnsresolver.netty
+admin@minion()> property-set breaker-enabled true
+admin@minion()> property-set breaker-failure-rate-threshold 80
+admin@minion()> property-set breaker-wait-duration-in-open-state 15
+admin@minion()> property-set breaker-ring-buffer-size-in-half-open-state 10
+admin@minion()> property-set breaker-ring-buffer-size-in-closed-state 100
+admin@minion()> config:update
+----
+
+NOTE: If the circuit breaker is disabled, the lookup statistics `lookupsSuccessful` and `lookupsFailed` are no longer tracked.
+
+=== Configuring Bulkhead
+A bulkhead is used to limit the number of concurrent DNS lookups that can be made.
+
+Additional parameters can be modified to tune the functionality of the circuit breaker:
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.dnsresolver.netty
+admin@minion()> property-set bulkhead-max-concurrent-calls 1000
+admin@minion()> property-set bulkhead-max-wait-duration-millis 5100
+admin@minion()> config:update
+----

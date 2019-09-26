@@ -34,9 +34,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
@@ -57,17 +59,17 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
-import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
-import com.vaadin.data.validator.AbstractStringValidator;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.validator.AbstractStringValidator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.ListSelect;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**
@@ -622,6 +624,9 @@ public class BusinessServiceEditWindow extends Window {
     public static String describeBusinessService(final BusinessService businessService) {
         return businessService.getName();
     }
+    public static String describeApplication(final Application application) {
+        return application.getApplicationName();
+    }
 
     public static String describeIpService(final IpService ipService) {
         return describeIpService(ipService, null);
@@ -652,6 +657,11 @@ public class BusinessServiceEditWindow extends Window {
             public String visit(ChildEdge edge) {
                 return "Child";
             }
+
+            @Override
+            public String visit(ApplicationEdge edge) {
+                return "Application";
+            }
         });
     }
 
@@ -671,6 +681,11 @@ public class BusinessServiceEditWindow extends Window {
             @Override
             public String visit(ChildEdge edge) {
                 return describeBusinessService(edge.getChild());
+            }
+
+            @Override
+            public String visit(ApplicationEdge edge) {
+                return describeApplication(edge.getApplication());
             }
         });
     }

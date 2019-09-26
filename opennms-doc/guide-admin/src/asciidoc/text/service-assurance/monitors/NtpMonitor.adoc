@@ -34,7 +34,7 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 
 [source, xml]
 ----
-<--! Fast NTP server -->
+<!-- Fast NTP server -->
 <service name="NTP" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="1000"/>

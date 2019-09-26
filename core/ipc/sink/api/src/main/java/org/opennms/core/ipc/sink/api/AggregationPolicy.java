@@ -32,11 +32,11 @@ package org.opennms.core.ipc.sink.api;
  * Defines how messages will be aggregated.
  *
  * When a {@link SinkModule} defines a {@link AggregationPolicy}, messages
- * will be aggregated into "buckets", which are keyed based on the object
+ * will be aggregated by accumulators, which are keyed based on the object
  * returned by {@link #key(Object)}.
  *
- * The aggregation function {@link #aggregate(Message, Object)} is called to
- * create buckets and combine messages into an existing bucket.
+ * The aggregation function {@link #aggregate(Object, Object)} is called to
+ * create accumulators and add messages to existing accumulators.
  *
  * The completion size and completion interval options determine the conditions
  * under which the buckets will be dispatched.
@@ -44,9 +44,10 @@ package org.opennms.core.ipc.sink.api;
  * @author jwhite
  *
  * @param <S> type of message that will be sent by the producers
- * @param <T> type of message (bucket) that will be received by the consumers
+ * @param <T> type of message that will be received by the consumers
+ * @param <U> intermerdiary accumulator type used to aggregate the messages
  */
-public interface AggregationPolicy<S, T> {
+public interface AggregationPolicy<S, T, U> {
 
     /**
      * Maximum number of messages to be added to a bucket before dispatching.
@@ -85,13 +86,21 @@ public interface AggregationPolicy<S, T> {
     Object key(S message);
 
     /**
-     * Aggregate the given message into an existing bucket, or
-     * create a new bucket if no bucket exists.
+     * Aggregate the given message into an existing accumulator, or
+     * create a new accumulator if no accumulator exists.
      *
-     * @param oldBucket the existing bucket, or <code>null</code> if a new bucket should be created
+     * @param accumulator the existing accumulator, or <code>null</code> if a new accumulator should be created
      * @param newMessage the message to aggregate
-     * @return the new bucket
+     * @return the new or updated accumulator
      */
-    T aggregate(T oldBucket, S newMessage);
+     U aggregate(U accumulator, S newMessage);
+
+    /**
+     * Build the resulting message from the accumulator.
+     *
+     * @param accumulator an existing accumulator
+     * @return the aggregated message to dispatch
+     */
+     T build(U accumulator);
 
 }

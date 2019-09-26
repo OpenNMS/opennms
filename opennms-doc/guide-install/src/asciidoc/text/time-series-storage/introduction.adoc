@@ -1,0 +1,23 @@
+== Using a different Time Series Storage
+ 
+_{opennms-product-name}_ stores performance data in a time series storage which is by default link:https://wiki.opennms.org/wiki/JRobin[JRobin].
+For different scenarios it is useful to switch to a different time series storage.
+The following implementations are supported:
+
+.Supported Time Series Databasees
+[width="100%", cols="1,4"]
+|===
+| _JRobin_  | _JRobin_ is a clone of _RRDTool_ written in _Java_, it does not fully cover the latest feature set of _RRDTool_ and is the default when you install _{opennms-product-name}_.
+              Data is stored on the local file system of the {opennms-product-name} node.
+              Depending on I/O capabilities it works good for small to medium sized installations.
+| _RRDTool_ | _RRDTool_ is active maintained and the de-facto standard dealing with time series data.
+              Data is stored on the local file system of the {opennms-product-name} node.
+              Depending on I/O capabilities it works good for small to medium sized installations.
+| _Newts_   | link:http://opennms.github.io/newts/[Newts] is a database schema for link:http://cassandra.apache.org[Cassandra].
+              The time series is stored on a dedicated _Cassandra_ cluster which gives growth flexibility and allows to persist time series data in a large scale.
+|===
+
+This section describes how to configure _{opennms-product-name}_ to use _RRDTool_ and _Newts_.
+
+CAUTION: The way how data is stored in the different time series databases makes it extremely hard to migrate from one technology to another.
+         Data loss can't be prevented when you switch from one to another.

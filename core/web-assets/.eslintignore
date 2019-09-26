@@ -1,0 +1,6 @@
+node_modules/*
+target/*
+src/main/assets/static/legacy/*
+src/main/assets/js/lib/3rdparty/*
+src/main/assets/js/vendor/cropper-js.js
+src/test/*

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,9 @@ package liquibase.ext.opennms.autoincrement;
 import java.util.ArrayList;
 import java.util.List;
 
+import liquibase.change.ChangeMetaData;
+import liquibase.change.DatabaseChange;
+import liquibase.change.DatabaseChangeNote;
 import liquibase.change.core.AddAutoIncrementChange;
 import liquibase.database.Database;
 import liquibase.database.core.PostgresDatabase;
@@ -40,37 +43,43 @@ import liquibase.statement.core.AddDefaultValueStatement;
 import liquibase.statement.core.CreateSequenceStatement;
 import liquibase.statement.core.SetNullableStatement;
 
+@DatabaseChange(name = "addAutoIncrement",
+description = "Converts an existing column to be an auto-increment (a.k.a 'identity') column",
+priority = ChangeMetaData.PRIORITY_DEFAULT + 1, appliesTo = "column",
+databaseNotes = {@DatabaseChangeNote(
+    database = "sqlite", notes = "If the column type is not INTEGER it is converted to INTEGER"
+)}
+)
 public class AddNamedAutoIncrementChange extends AddAutoIncrementChange {
 
     private String m_sequenceName;
 
-	public AddNamedAutoIncrementChange() {
-    	super();
-    	setPriority(getChangeMetaData().getPriority() + 1);
+    public AddNamedAutoIncrementChange() {
+        super();
     }
 
     public String getSequenceName() {
-    	return m_sequenceName;
+        return m_sequenceName;
     }
-    
+
     public void setSequenceName(final String sequenceName) {
-    	m_sequenceName = sequenceName;
+        m_sequenceName = sequenceName;
     }
-    
+
     @Override
     public SqlStatement[] generateStatements(final Database database) {
-    	final List<SqlStatement> statements = new ArrayList<>();
+        final List<SqlStatement> statements = new ArrayList<>();
         if (database instanceof PostgresDatabase) {
-    		String sequenceName = m_sequenceName;
-        	if (m_sequenceName == null) {
-        		sequenceName = (getTableName() + "_" + getColumnName() + "_seq").toLowerCase();
-        		statements.add(new CreateSequenceStatement(getSchemaName(), sequenceName));
-        	}
-        	statements.add(new SetNullableStatement(getSchemaName(), getTableName(), getColumnName(), null, false));
-        	statements.add(new AddDefaultValueStatement(getSchemaName(), getTableName(), getColumnName(), getColumnDataType(), new DatabaseFunction("NEXTVAL('"+sequenceName+"')")));
-        	return statements.toArray(new SqlStatement[0]);
+            String sequenceName = m_sequenceName;
+            if (m_sequenceName == null) {
+                sequenceName = (getTableName() + "_" + getColumnName() + "_seq").toLowerCase();
+                statements.add(new CreateSequenceStatement(getCatalogName(), getSchemaName(), sequenceName));
+            }
+            statements.add(new SetNullableStatement(getCatalogName(), getSchemaName(), getTableName(), getColumnName(), null, false));
+            statements.add(new AddDefaultValueStatement(getCatalogName(), getSchemaName(), getTableName(), getColumnName(), getColumnDataType(), new DatabaseFunction("NEXTVAL('"+sequenceName+"')")));
+            return statements.toArray(new SqlStatement[0]);
         } else {
-        	return super.generateStatements(database);
+            return super.generateStatements(database);
         }
     }
 

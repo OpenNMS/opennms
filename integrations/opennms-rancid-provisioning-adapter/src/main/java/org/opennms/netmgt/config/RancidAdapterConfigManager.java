@@ -83,17 +83,6 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
      private RancidConfiguration m_config;
 
     /**
-     * A boolean flag to indicate If a filter rule against the local OpenNMS
-     * server has to be used.
-     */
-    private static boolean m_verifyServer;
-
-    /**
-     * The name of the local OpenNMS server
-     */
-    private static String m_localServer;
-
-    /**
      * A mapping of the configured URLs to a list of the specific IPs configured
      * in each - so as to avoid file reads
      */
@@ -115,13 +104,9 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
      *
      * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
      * @param reader a {@link java.io.InputStream} object.
-     * @param verifyServer a boolean.
      * @throws java.io.IOException if any.
-     * @param serverName a {@link java.lang.String} object.
      */
-    public RancidAdapterConfigManager(final InputStream reader,final String serverName, final boolean verifyServer) throws IOException {
-         m_localServer = serverName;
-         m_verifyServer = verifyServer;
+    public RancidAdapterConfigManager(final InputStream reader) throws IOException {
          reloadXML(reader);
      }
 
@@ -142,7 +127,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     /**
      * <p>reloadXML</p>
      *
-     * @param reader a {@link java.io.InputStream} object.
+     * @param is a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
     protected void reloadXML(final InputStream is) throws IOException {
@@ -228,13 +213,6 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     
     private List<InetAddress> getIpList(final Package pkg) {
         final StringBuilder filterRules = new StringBuilder(pkg.getFilter().getContent());
-        if (m_verifyServer) {
-            filterRules.append(" & (serverName == ");
-            filterRules.append('\"');
-            filterRules.append(m_localServer);
-            filterRules.append('\"');
-            filterRules.append(")");
-        }
         LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
         FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
         return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());

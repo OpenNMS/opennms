@@ -54,11 +54,11 @@ function toggleFormEnablement() {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Edit surveillance categories on ${model.node.label}</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Edit surveillance categories on ${model.node.label}</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         Node <a href="<c:url value='element/node.jsp?node=${model.node.id}'/>">${model.node.label}</a> (node ID: ${model.node.id}) has ${fn:length(model.node.categories)} categories 
         </p>
@@ -78,8 +78,8 @@ function toggleFormEnablement() {
           </div>
           <div class="col-md-2 text-center">
              <div class="btn-group-vertical" role="group">
-                <button id="addButton" type="submit" class="btn btn-default" name="action" value="Add &#155;&#155;" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if> >Add &#155;&#155;</button>
-                <button id="removeButton" type="submit" class="btn btn-default" name="action" value="&#139;&#139; Remove" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if> >&#139;&#139; Remove</button>
+                <button id="addButton" type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if> >Add &#155;&#155;</button>
+                <button id="removeButton" type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if> >&#139;&#139; Remove</button>
              </div>
           </div>
           <div class="col-md-5">
@@ -93,21 +93,21 @@ function toggleFormEnablement() {
         </div> <!-- row -->
 
         </form>
-      </div> <!-- panel-body -->
-      <div class="panel-footer">
+      </div> <!-- card-body -->
+      <div class="card-footer">
         <input id="toggleCheckbox" type="checkbox" onchange="javascript:toggleFormEnablement()" />
         <label for="toggleCheckbox">Check this box to enable controls (see warning above for why)</label>
-      </div> <!-- panel-footer -->
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
 <c:if test="${!empty model.node.foreignSource}">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Warning</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Warning</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         You are editing category memberships for a node that was provisioned
         through a requisition. Any edits made here will be rolled back the next
@@ -129,7 +129,7 @@ function toggleFormEnablement() {
           you know that the requisition "<em>${model.node.foreignSource}</em>" is created
           from some data source outside OpenNMS.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </c:if>

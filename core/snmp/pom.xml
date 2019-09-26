@@ -21,5 +21,6 @@
 
     <module>proxy-rpc-impl</module>
     <module>proxy-rpc-tests</module>
+    <module>profile-mapper</module>
   </modules>
 </project>

@@ -5,4 +5,15 @@
   <artifactId>org.opennms.checkstyle</artifactId>
   <version>2018.1.13-SNAPSHOT</version>
   <name>OpenNMS :: Checkstyle</name>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

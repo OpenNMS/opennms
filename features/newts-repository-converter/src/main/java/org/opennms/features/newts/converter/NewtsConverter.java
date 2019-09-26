@@ -358,7 +358,7 @@ public class NewtsConverter implements AutoCloseable {
         try {
             this.context = new ClassPathXmlApplicationContext(new String[]{
                     "classpath:/META-INF/opennms/applicationContext-soa.xml",
-                    "classpath:/META-INF/opennms/applicationContext-newts.xml"
+                    "classpath:/META-INF/opennms/applicationContext-timeseries-newts.xml"
             });
 
             this.repository = context.getBean(SampleRepository.class);
@@ -439,7 +439,7 @@ public class NewtsConverter implements AutoCloseable {
             // Find an process all '.meta' files and the according RRD files
             Files.walk(path)
                  .filter(p -> p.getFileName().toString().endsWith(".meta"))
-                 .forEach(p -> this.processStoreByMetricResource(p));
+                 .forEach(this::processStoreByMetricResource);
 
         } catch (Exception e) {
             LOG.error("Error while reading RRD files", e);

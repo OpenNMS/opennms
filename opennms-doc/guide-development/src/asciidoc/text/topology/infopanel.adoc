@@ -28,7 +28,7 @@ public class ExampleInfoPanelItemProvider implements InfoPanelItemProvider {
                     .withTitle("Static information") <2>
                     .withOrder(0) <3>
                     .withComponent(
-                        new com.vaadin.ui.Label("I am a static component") <4>
+                        new com.vaadin.v7.ui.Label("I am a static component") <4>
                     )
         );
     }
@@ -59,7 +59,7 @@ public class ExampleEdgeInfoPanelItemProvider extends EdgeInfoPanelItemProvider 
                 .withTitle(ref.getLabel() + " Info")
                 .withOrder(0)
                 .withComponent(
-                        new com.vaadin.ui.Label("Id: " + ref.getId() + ", Namespace: " + ref.getNamespace())
+                        new com.vaadin.v7.ui.Label("Id: " + ref.getId() + ", Namespace: " + ref.getNamespace())
                 );
     }
 }

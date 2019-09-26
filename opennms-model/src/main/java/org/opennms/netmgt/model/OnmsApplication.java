@@ -29,7 +29,6 @@
 package org.opennms.netmgt.model;
 
 import org.codehaus.jackson.annotate.JsonBackReference;
-import org.springframework.core.style.ToStringCreator;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -46,6 +45,8 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import com.google.common.base.MoreObjects;
 
 @Entity
 @Table(name = "applications")
@@ -152,10 +153,10 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        ToStringCreator creator = new ToStringCreator(this);
-        creator.append("id", getId());
-        creator.append("name", getName());
-        return creator.toString();
+        return MoreObjects.toStringHelper(this)
+        .add("id", getId())
+        .add("name", getName())
+        .toString();
     }
 
     /** {@inheritDoc} */

@@ -76,51 +76,6 @@ public class AvailabilityReportService implements ReportService {
 
     private static final String CAL_TYPE = "calendar";
 
-
-    /**
-     * <p>Constructor for AvailabilityReportService.</p>
-     */
-    public AvailabilityReportService() {
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean validate(final Map<String, Object> reportParms, final String reportID) {
-        try {
-            return Logging.withPrefix(LOG4J_CATEGORY, new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    if (!reportParms.containsKey("endDate")) {
-                        LOG.error("report parameters should contain parameter endDate");
-                        return false;
-                    }
-
-                    if (!(reportParms.get("endDate") instanceof Date)) {
-                        LOG.error("report parameters 'endDate' should be a Date");
-                        return false;
-                    }
-
-                    if (!reportParms.containsKey("reportCategory")) {
-                        LOG.error("report parameters should contain parameter reportCategory");
-                        return false;
-                    }
-
-                    if (!(reportParms.get("reportCategory") instanceof String)) {
-                        LOG.error("report parameter 'reportCategory' should be a String");
-                        return false;
-                    }
-
-                    return true;
-                }
-
-            });
-        } catch (final Exception e) {
-            LOG.error("And unknown error occurred.", e);
-            return false;
-        }
-    }
-
-
     /** {@inheritDoc} */
     @Override
     public void render(final String id, final String location, final ReportFormat format, final OutputStream outputStream) {

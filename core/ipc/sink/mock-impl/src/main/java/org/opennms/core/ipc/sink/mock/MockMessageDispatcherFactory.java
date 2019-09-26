@@ -33,6 +33,12 @@ import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * A simple {@link MessageDispatcherFactory} that handles all messages with a single consumer.
@@ -41,7 +47,7 @@ import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
  *
  * @author jwhite
  */
-public class MockMessageDispatcherFactory<U extends Message, V extends Message> extends AbstractMessageDispatcherFactory<Void> {
+public class MockMessageDispatcherFactory<U extends Message, V extends Message> extends AbstractMessageDispatcherFactory<Void> implements InitializingBean, DisposableBean {
 
     private MessageConsumer<U,V> consumer;
 
@@ -53,6 +59,31 @@ public class MockMessageDispatcherFactory<U extends Message, V extends Message> 
         }
     }
 
+    @Override
+    public void afterPropertiesSet() {
+        onInit();
+    }
+
+    @Override
+    public void destroy() {
+        onDestroy();
+    }
+
+    @Override
+    public String getMetricDomain() {
+        return MockMessageDispatcherFactory.class.getPackage().getName();
+    }
+
+    @Override
+    public BundleContext getBundleContext() {
+        return null;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
+    }
+
     public MessageConsumer<U, V> getConsumer() {
         return consumer;
     }
@@ -60,4 +91,5 @@ public class MockMessageDispatcherFactory<U extends Message, V extends Message> 
     public void setConsumer(MessageConsumer<U, V> consumer) {
         this.consumer = consumer;
     }
+
 }

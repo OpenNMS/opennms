@@ -117,8 +117,8 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
                 };
             } else {
                 final Collection<Collectable> columnTrackers = walk.getOids().stream()
-                        .map(oid -> SnmpObjId.get(oid))
-                        .map(objId -> new ColumnTracker(objId))
+                        .map(SnmpObjId::get)
+                        .map(ColumnTracker::new)
                         .collect(Collectors.toList());
                 tracker = new AggregateTracker(columnTrackers) {
                     @Override

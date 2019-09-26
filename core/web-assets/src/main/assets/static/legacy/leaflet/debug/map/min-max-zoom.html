@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet debug page</title>
+
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="../css/screen.css" />
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+</head>
+<body>
+
+	<div id='map'></div>
+	<div id='zoomlevel'></div>
+
+
+	<script type="text/javascript">
+
+		var map = L.map('map', {
+// 			zoomAnimation: false
+		});
+
+		var attrib = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
+
+		var positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+			attribution: attrib,
+			minZoom: 2,
+			maxZoom: 18
+		}).addTo(map);
+
+		var darkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+			attribution: attrib,
+			minZoom: 17,
+			maxZoom: 18
+		}).addTo(map);
+
+
+		map.setView([63.4298,10.3927], 12)
+
+// 		window.setTimeout(function(){
+// 			map.setZoom(17);
+// 			window.setTimeout(function(){
+// 				map.setZoom(16);
+// 			}, 1000);
+// 		}, 1000);
+
+		map.on('zoomend', function(){
+			document.getElementById('zoomlevel').innerHTML = 'Zoom level: ' + map.getZoom();
+		});
+
+
+
+	</script>
+</body>
+</html>

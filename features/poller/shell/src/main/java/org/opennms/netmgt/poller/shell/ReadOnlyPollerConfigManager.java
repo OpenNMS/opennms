@@ -45,14 +45,14 @@ import org.opennms.netmgt.config.PollerConfigManager;
  */
 public class ReadOnlyPollerConfigManager extends PollerConfigManager {
 
-    private ReadOnlyPollerConfigManager(InputStream stream, String localServer, boolean verifyServer) {
-        super(stream, localServer, verifyServer);
+    private ReadOnlyPollerConfigManager(InputStream stream) {
+        super(stream);
     }
 
     public static ReadOnlyPollerConfigManager create() throws IOException {
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
         try (InputStream is = new FileInputStream(cfgFile)) {
-            return new ReadOnlyPollerConfigManager(is, null, false);
+            return new ReadOnlyPollerConfigManager(is);
         }
     }
 

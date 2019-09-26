@@ -12,5 +12,6 @@
   <name>OpenNMS :: Core :: IPC :: Common</name>
   <modules>
     <module>aws-sqs</module>
+    <module>kafka</module>
   </modules>
 </project>

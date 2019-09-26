@@ -24,23 +24,9 @@
                 <configuration>
                     <instructions>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-                        <Include-Resource>{maven-resources}</Include-Resource>
+                        <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                        <Vaadin-Widgetsets>org.opennms.vaadin.DefaultWidgetset</Vaadin-Widgetsets>
                     </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <bundles>
-                        <bundle>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}</bundle>
-                    </bundles>
-                    <features>
-                        <feature>vaadin</feature>
-                        <feature>jmxconfiggenerator</feature>
-                        <!-- These classes are exposed via the system classpath (for now) -->
-                        <!-- <feature>opennms-config-jaxb</feature> -->
-                    </features>
                 </configuration>
             </plugin>
         </plugins>
@@ -54,6 +40,11 @@
         <dependency>
             <groupId>org.opennms.features.vaadin-components</groupId>
             <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>widgetset</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -30,6 +30,9 @@ package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -54,6 +57,8 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.ResourceType;
+import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
@@ -171,6 +176,34 @@ public class JMXCollectorTest {
         jmxNodeInfo.setDsMap(dataSourceMap);
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, Collections.emptyMap());
         assertEquals("Collection of one Jvm default value failed", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
+    }
+
+    @Test
+    public void collectJvmMbeansWithWildCard() {
+
+        final Map<String, Object> parms = new HashMap<String, Object>();
+        parms.put(ParameterName.COLLECTION.toString(), "collectBasicJvmValues");
+        parms.putAll(jmxCollector.getRuntimeAttributes(collectionAgent, parms));
+        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, parms);
+        assertEquals("Collection of jvm values failed", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
+
+        ResourceType rt = mock(ResourceType.class, RETURNS_DEEP_STUBS);
+        when(rt.getName()).thenReturn("jvm");
+        when(rt.getStorageStrategy().getClazz()).thenReturn(MockStorageStrategy.class.getCanonicalName());
+        when(rt.getPersistenceSelectorStrategy().getClazz())
+                .thenReturn(MockPersistenceSelectorStrategy.class.getCanonicalName());
+        ResourceTypeMapper.getInstance().setResourceTypeMapper((name) -> rt);
+        Map<String, Map<String, CollectionAttribute>> attributesByNameByGroup = CollectionSetUtils
+                .getAttributesByNameByGroup(collectionSet);
+        // 2 attributes from the defined Numeric attributes and 3 string
+        // attributes, domain, type, name
+        assertEquals(5, attributesByNameByGroup.get("java_lang_type_GarbageCollector_name__").size());
+        Map<String, CollectionAttribute> attributes = attributesByNameByGroup
+                .get("java_lang_type_GarbageCollector_name__");
+        CollectionAttribute attribute1 = attributes.get("domain");
+        CollectionAttribute attribute2 = attributes.get("type");
+        assertEquals("java.lang", attribute1.getStringValue());
+        assertEquals("GarbageCollector", attribute2.getStringValue());
     }
 
     private Map<String, Map<String, CollectionAttribute>> collect(String collectionName) {

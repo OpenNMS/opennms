@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-ipInterface">
+		<validCheckSum>3:2975a1965990c11927144ef4d0eea327</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="ipinterface" /></not>
 		</preConditions> 
@@ -54,7 +55,7 @@
 			<column name="ipstatus" type="integer" />
 
 			<!-- Date and time of last poll by capsd -->
-			<column name="iplastcapsdpoll" type="DATETIME" />
+			<column name="iplastcapsdpoll" type="TIMESTAMP WITH TIME ZONE" />
 
 			<!-- Is this address the primary SNMP interface?
 				'P' - Primary SNMP

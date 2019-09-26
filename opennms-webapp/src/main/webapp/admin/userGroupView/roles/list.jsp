@@ -95,11 +95,11 @@
 	<input type="hidden" name="role" />
 </form>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">On-Call Role Configuration</h3>
+<div class="card">
+  <div class="card-header">
+    <span>On-Call Role Configuration</span>
   </div>
-  <table class="table table-condensed">
+  <table class="table table-sm">
         <tr>
           <th>Delete</th>
           <th>Name</th>
@@ -149,7 +149,7 @@
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="newForm">
   <input name="operation" type="hidden" value="new"/>
-  <button type="submit" class="btn btn-default">Add New On-Call Role</button>
+  <button type="submit" class="btn btn-secondary">Add New On-Call Role</button>
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

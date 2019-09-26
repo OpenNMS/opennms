@@ -59,12 +59,8 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        // Initialize the cache when this listener is created
-        //
-        // TODO: Should we periodically rebuild the cache from
-        // scratch?
-        //
-        m_cache.dataSourceSync();
+        // Initialization of the cache has moved to the cache implementation itself.
+        // The same is true for refreshing the cache
     }
 
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)

@@ -17,6 +17,13 @@
  */
 package org.opennms.vaadin.extender.internal;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import javax.servlet.Servlet;
+import javax.servlet.http.HttpServlet;
+
+import org.opennms.vaadin.extender.Constants;
 import org.opennms.vaadin.extender.SessionListenerRepository;
 import org.opennms.vaadin.extender.VaadinResourceService;
 import org.opennms.vaadin.extender.internal.extender.ApplicationFactoryServiceTracker;
@@ -26,12 +33,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-
-import java.util.Dictionary;
-import java.util.Hashtable;
 
 /**
  * @author achim
@@ -84,7 +85,8 @@ public class Activator implements BundleActivator {
         Dictionary<String, String> props;
 
         props = new Hashtable<String, String>();
-        props.put("alias", VaadinResourceServlet.VAADIN);
+        props.put(Constants.ALIAS, VaadinResourceServlet.VAADIN + "/*");
+        props.put(Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN, VaadinResourceServlet.VAADIN + "/*");
 
         HttpServlet vaadinResourceServlet = new VaadinResourceServlet(vaadin);
 

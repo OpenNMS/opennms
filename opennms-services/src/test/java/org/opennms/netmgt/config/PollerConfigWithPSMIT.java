@@ -52,8 +52,6 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PollerConfigWithPSMIT {
@@ -62,11 +60,7 @@ public class PollerConfigWithPSMIT {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        Resource dbConfig = new ClassPathResource("/org/opennms/netmgt/config/test-database-schema.xml");
-        InputStream s = dbConfig.getInputStream();
-        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(s);
-        s.close();
-        DatabaseSchemaConfigFactory.setInstance(dscf);
+        DatabaseSchemaConfigFactory.init();
 
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
@@ -112,7 +106,7 @@ public class PollerConfigWithPSMIT {
     @org.junit.Ignore("Accesses external Mapquest site that no longer works")
     public void testPSM() throws Exception {
         InputStream is = new FileInputStream(new File("src/test/resources/etc/psm-poller-configuration.xml"));
-        PollerConfigFactory factory = new PollerConfigFactory(0, is, "localhost", false);
+        PollerConfigFactory factory = new PollerConfigFactory(0, is);
         PollerConfigFactory.setInstance(factory);        
         IOUtils.closeQuietly(is);
         ServiceMonitor monitor = PollerConfigFactory.getInstance().getServiceMonitor("MQ_API_DirectRte_v2");

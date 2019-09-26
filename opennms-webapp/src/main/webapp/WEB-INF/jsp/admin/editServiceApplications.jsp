@@ -48,12 +48,12 @@
   <input type="hidden" name="edit" value=""/>
 
 <div class="row">
-  <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Edit applications on ${fn:escapeXml(model.service.serviceName)}</h3>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <span>Edit applications on ${fn:escapeXml(model.service.serviceName)}</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         Service <a href="<c:url value='element/service.jsp?ifserviceid=${model.service.id}'/>">${fn:escapeXml(model.service.serviceName)}</a>
         on interface <a href="<c:url value='element/interface.jsp?ipinterfaceid=${model.service.ipInterface.id}'/>">${model.service.ipAddressAsString}</a>
@@ -69,9 +69,9 @@
               </c:forEach>
             </select>
           </div> <!-- column -->
-          <div class="col-md-2">
-            <input type="submit" name="action" class="btn btn-default" value="Add &#155;&#155;"/>
-            <input type="submit" name="action" class="btn btn-default" value="&#139;&#139; Remove"/>
+          <div class="col-md-2 my-auto text-center">
+            <input type="submit" name="action" class="btn btn-secondary" value="&#139;&#139; Remove"/>
+            <input type="submit" name="action" class="btn btn-secondary" value="Add &#155;&#155;"/>
           </div> <!-- column -->
           <div class="col-md-5">
             <label>Applications on service</label>
@@ -82,7 +82,7 @@
             </select>
           </div> <!-- column -->
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

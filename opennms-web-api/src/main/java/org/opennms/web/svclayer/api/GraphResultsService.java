@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface GraphResultsService {
     public GraphResults findResults(ResourceId[] resources,
                                     String[] reports,
-                                    String nodeCriteria, long start, long end, String relativeTime);
+                                    String generatedId, String nodeCriteria, long start, long end, String relativeTime);
 
     public PrefabGraph[] getAllPrefabGraphs(ResourceId resourceId);
 }

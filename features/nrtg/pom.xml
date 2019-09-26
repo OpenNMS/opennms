@@ -39,7 +39,6 @@
     <module>nrtcollector</module>
     <module>protocolcollector</module>
     <module>web</module>
-    <module>features</module>
     <module>jar</module>
   </modules>
   <build>

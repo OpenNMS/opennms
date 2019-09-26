@@ -58,7 +58,8 @@ public class NodeListCommand {
     private boolean m_listInterfaces = false;
     private String m_nodeId;
     private String m_monitoringLocation;
-    
+    private Boolean m_flows;
+
     public void setNodeId(String nodeId) {
         m_nodeId = nodeId;
     }
@@ -257,5 +258,17 @@ public class NodeListCommand {
 
     public boolean hasMonitoringLocation() {
         return !Strings.isNullOrEmpty(m_monitoringLocation);
+    }
+
+    public void setFlows(final boolean flows) {
+        m_flows = flows;
+    }
+
+    public Boolean getFlows() {
+        return m_flows;
+    }
+
+    public boolean hasFlows() {
+        return m_flows != null;
     }
 }

@@ -4,7 +4,6 @@
     <property name="transactionTemplate" ref="transactionTemplate"/>
     <property name="distPollerDao" ref="distPollerDao"/>
     <property name="nodeDao" ref="nodeDao"/>
-    <property name="cdpLinkDao" ref="cdpLinkDao"/>
     <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
     <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>

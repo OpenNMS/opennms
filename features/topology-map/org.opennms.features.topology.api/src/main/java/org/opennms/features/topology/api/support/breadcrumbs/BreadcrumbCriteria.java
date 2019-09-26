@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.Callbacks;
@@ -141,7 +142,7 @@ public class BreadcrumbCriteria extends Criteria {
                         .stream()
                         .filter(c -> c instanceof VertexHopGraphProvider.VertexHopCriteria)
                         .map(c -> ((VertexHopGraphProvider.VertexHopCriteria) c).getVertices())
-                        .flatMap(v -> v.stream())
+                        .flatMap(Set::stream)
                         .collect(Collectors.toList());
                 handleClick(graphContainer, targetGraphProvider, defaultFocus, breadcrumb);
             } else {
@@ -178,7 +179,7 @@ public class BreadcrumbCriteria extends Criteria {
         }
 
         // Reset focus
-        getCriteriaForGraphContainer(graphContainer, VertexHopGraphProvider.VertexHopCriteria.class).forEach(c -> graphContainer.removeCriteria(c));
+        getCriteriaForGraphContainer(graphContainer, VertexHopGraphProvider.VertexHopCriteria.class).forEach(graphContainer::removeCriteria);
 
         // Set elements to focus
         verticesToFocus.forEach(v -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(v)));

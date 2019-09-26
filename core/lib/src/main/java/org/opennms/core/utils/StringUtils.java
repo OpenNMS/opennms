@@ -320,6 +320,14 @@ public abstract class StringUtils {
         return false;
     }
 
+    public static boolean isEmpty(final String text) {
+        return text == null || text.trim().length() == 0;
+    }
+
+    public static boolean hasText(final String text) {
+        return text != null && text.trim().length() > 0;
+    }
+
     /**
      * <p>NMS-9091: This method calls {@link Date#toString()} but then calls
      * {@link Date#setTime(long)} so that internally, the {@link Date#cdate}

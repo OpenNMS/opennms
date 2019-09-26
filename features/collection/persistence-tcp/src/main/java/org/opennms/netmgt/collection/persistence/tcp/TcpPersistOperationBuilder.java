@@ -119,7 +119,7 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
 
     private List<Double> getDblValues() {
         return m_dbl_declarations.values().stream()
-                .map(v -> v.doubleValue())
+                .map(Number::doubleValue)
                 .collect(Collectors.toList());
     }
 

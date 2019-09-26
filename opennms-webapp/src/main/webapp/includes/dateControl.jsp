@@ -36,9 +36,9 @@
 <c:set var="prefix" value="${param.prefix}" />
 <fmt:parseDate var="date" value="${param.date}" pattern="dd-MM-yyyy" />
 
-<div class="form-group">
+<div class="form-group form-row">
   <div class="col-sm-4">
-					<select class="form-control" name="<c:out value='${prefix}'/>Date">
+					<select class="form-control custom-select" name="<c:out value='${prefix}'/>Date">
 					<fmt:formatDate var="startDate" value="${date}" pattern="d"/>
 					<c:forEach var="d" begin="1" end="31">
 						<c:choose>
@@ -53,7 +53,7 @@
 					</select>
   </div> <!-- column -->
   <div class="col-sm-4">
-					<select class="form-control" name="<c:out value='${prefix}'/>Month">
+					<select class="form-control custom-select" name="<c:out value='${prefix}'/>Month">
 					<fmt:formatDate var="startMonth" value="${date}" pattern="M"/>
 					<c:forEach var="m" begin="1" end="12">
 						<fmt:parseDate var="mo" value="${m}" pattern="M" />
@@ -70,7 +70,7 @@
 					</select>
   </div> <!-- column -->
   <div class="col-sm-4">
-					<select class="form-control" name="<c:out value='${prefix}'/>Year">
+					<select class="form-control custom-select" name="<c:out value='${prefix}'/>Year">
 					<fmt:formatDate var="yearStr" value="${date}" pattern="yyyy" />
 					<fmt:parseNumber var="startYear" value="${yearStr}"/>
 					<c:forEach var="y" begin="0" end="6">

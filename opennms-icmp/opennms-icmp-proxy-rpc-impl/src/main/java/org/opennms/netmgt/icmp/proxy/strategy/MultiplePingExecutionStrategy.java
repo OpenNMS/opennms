@@ -60,7 +60,7 @@ public class MultiplePingExecutionStrategy implements ExecutionStrategy{
      * In addition the SingleThreadPool to handle the execution of this {@link CompletableFuture} is shutdown afterwards.
      */
     private static class CancelableCompletableFuture extends CompletableFuture {
-        private Future future;
+        private Future<?> future;
         private ExecutorService executor;
 
         @Override
@@ -90,7 +90,7 @@ public class MultiplePingExecutionStrategy implements ExecutionStrategy{
             }
         }
 
-        public void startCancelableExecution(Callable task) {
+        public void startCancelableExecution(Callable<?> task) {
             this.executor = Executors.newSingleThreadExecutor(runnable -> new Thread(null, runnable, "icmp-proxy-pool-" + poolNumber.getAndIncrement()));
             this.future = executor.submit(task);
         }

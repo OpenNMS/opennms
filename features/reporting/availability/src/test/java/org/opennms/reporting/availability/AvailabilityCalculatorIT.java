@@ -28,16 +28,12 @@
 
 package org.opennms.reporting.availability;
 
-import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.CategoryFactory;
@@ -46,6 +42,8 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.reporting.availability.svclayer.LegacyAvailabilityDataService;
+
+import junit.framework.TestCase;
 
 public class AvailabilityCalculatorIT extends TestCase {
 
@@ -74,9 +72,7 @@ public class AvailabilityCalculatorIT extends TestCase {
         m_db = new MockDatabase();
         DataSourceFactory.setInstance(m_db);
 
-        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(is));
-        is.close();
+        DatabaseSchemaConfigFactory.init();
 
         m_catFactory = new MockCategoryFactory();
         CategoryFactory.setInstance(m_catFactory);

@@ -12,7 +12,6 @@
    <systemDef name="Force10 10Gbe switches">
       <sysoidMask>.1.3.6.1.4.1.6027.</sysoidMask>
       <collect>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>force10-stack-unit-stats</includeGroup>
       </collect>

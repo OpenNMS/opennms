@@ -185,7 +185,7 @@
             </mbean>
             <mbean name="org.apache.cassandra.metrics.ThreadPools"
                    objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=MutationStage,name=CurrentlyBlockedTasks">
-                 <attrib name="Value" alias="tpMutStgeCbt" type="gauge"/>
+                 <attrib name="Count" alias="tpMutStgeCbt" type="counter"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.ThreadPools"
                    objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=MutationStage,name=PendingTasks">
@@ -203,7 +203,7 @@
             </mbean>
             <mbean name="org.apache.cassandra.metrics.ThreadPools"
                    objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadStage,name=CurrentlyBlockedTasks">
-                 <attrib name="Value" alias="tpReadStageCbt" type="gauge"/>
+                 <attrib name="Count" alias="tpReadStageCbt" type="counter"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.ThreadPools"
                    objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadStage,name=PendingTasks">
@@ -221,7 +221,7 @@
             </mbean>
             <mbean name="org.apache.cassandra.metrics.ThreadPools"
                    objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=RequestResponseStage,name=CurrentlyBlockedTasks">
-                <attrib name="Value" alias="tpReqRespStgeCbt" type="gauge"/>
+                <attrib name="Count" alias="tpReqRespStgeCbt" type="counter"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.ThreadPools"
                    objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=RequestResponseStage,name=PendingTasks">
@@ -239,7 +239,7 @@
             </mbean>
             <mbean name="org.apache.cassandra.metrics.ThreadPools"
                    objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadRepairStage,name=CurrentlyBlockedTasks">
-                <attrib name="Count" alias="tpReadRepairStgeCbt" type="gauge"/>
+                <attrib name="Count" alias="tpReadRepairStgeCbt" type="counter"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.ThreadPools"
                    objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadRepairStage,name=PendingTasks">

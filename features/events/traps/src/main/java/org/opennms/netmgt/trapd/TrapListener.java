@@ -39,8 +39,10 @@ import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
@@ -79,7 +81,7 @@ public class TrapListener implements TrapNotificationListener {
                             TrapSinkConsumer.trapdInstrumentation.incErrorCount();
                         }
                     });
-        } catch (IllegalArgumentException ex) {
+        } catch (final SnmpException | IllegalArgumentException ex) {
             LOG.error("Received trap {} is not valid and cannot be processed. The trap will be dropped.", trapInformation, ex);
             // This trap will never reach the sink consumer
             TrapSinkConsumer.trapdInstrumentation.incErrorCount();
@@ -177,6 +179,11 @@ public class TrapListener implements TrapNotificationListener {
         LOG.info("Restarting the TrapListener service...");
         start();
         LOG.info("TrapListener service has been restarted.");
+    }
+
+    public void reload() throws IOException {
+        TrapdConfigFactory.reload();
+        m_config = TrapdConfigFactory.getInstance();
     }
 
     private InetAddress getInetAddress() {

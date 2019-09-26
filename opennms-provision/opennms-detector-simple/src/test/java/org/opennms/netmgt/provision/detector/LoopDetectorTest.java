@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class LoopDetectorTest implements InitializingBean {
     @Before
     public void setUp(){
         MockLogAppender.setupLogging();
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
         m_detector.setSupported(true);
     }
     

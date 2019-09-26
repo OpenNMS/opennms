@@ -13,10 +13,11 @@
   <modules>
     <module>api</module>
     <module>common</module>
-    <module>camel-impl</module>
-    <module>kafka-impl</module>
-    <module>aws-sqs-impl</module>
+    <module>camel</module>
+    <module>kafka</module>
+    <module>aws-sqs</module>
     <module>mock-impl</module>
     <module>xml</module>
+    <module>off-heap</module>
   </modules>
 </project>

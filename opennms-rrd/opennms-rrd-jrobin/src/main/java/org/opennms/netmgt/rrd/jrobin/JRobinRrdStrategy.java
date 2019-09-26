@@ -55,7 +55,6 @@ import org.jrobin.graph.RrdGraphDef;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -41,8 +41,6 @@ import java.util.List;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.netmgt.events.api.EventDatabaseConstants;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.events.api.EventWriter;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;

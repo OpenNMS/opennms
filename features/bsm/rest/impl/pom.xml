@@ -53,6 +53,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.rest-provider</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp-rest</artifactId>
       <version>${project.version}</version>
@@ -159,6 +165,12 @@
     <dependency>
       <groupId>org.opennms.features.rest</groupId>
       <artifactId>org.opennms.features.rest.mapper</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

@@ -27,12 +27,14 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Button;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.themes.BaseTheme;
 
 /**
  * This abstract class represents a table based component that is refreshable by an associated surveillance view.
@@ -99,12 +101,12 @@ public abstract class SurveillanceViewDetailTable extends Table implements Surve
     /**
      * Returns a clickable glyph icon with the given {@link com.vaadin.ui.Button.ClickListener}.
      *
-     * @param glyphIcon     the icon to be used
+     * @param icon     the icon to be used
      * @param clickListener the listener
      * @return the button instance
      */
-    protected Button getClickableIcon(String glyphIcon, Button.ClickListener clickListener) {
-        Button button = new Button("<span class=\"" + glyphIcon + "\" aria-hidden=\"true\"></span>");
+    protected Button getClickableIcon(FontAwesome icon, Button.ClickListener clickListener) {
+        Button button = new Button(icon.getHtml());
         button.setHtmlContentAllowed(true);
         button.setStyleName(BaseTheme.BUTTON_LINK);
         button.addStyleName("icon");

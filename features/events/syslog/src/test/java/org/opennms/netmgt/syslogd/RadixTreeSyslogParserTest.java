@@ -31,6 +31,7 @@ package org.opennms.netmgt.syslogd;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZoneId;
 
@@ -76,5 +77,26 @@ public class RadixTreeSyslogParserTest {
         final RadixTreeSyslogParser parser = new RadixTreeSyslogParser(config, SyslogdTestUtils.toByteBuffer(log));
         SyslogMessage message = parser.parse();
         assertEquals(expectedTimeZoneId, message.getZoneId());
+    }
+
+    private SyslogMessage parseSyslogMessage(final String log) throws IOException {
+        final String configuration = "<syslogd-configuration><configuration syslog-port=\"10514\"/></syslogd-configuration>";
+
+        final InputStream stream = new ByteArrayInputStream((configuration).getBytes());
+        final SyslogdConfigFactory config = new SyslogdConfigFactory(stream);
+        final RadixTreeSyslogParser parser = new RadixTreeSyslogParser(config, SyslogdTestUtils.toByteBuffer(log));
+        return parser.parse();
+    }
+
+    @Test
+    public void test_HZN_1504_Case1() throws IOException {
+        final String log = "<187>2765: .Jan  7 12:36:39: %LINK-3-UPDOWN: Interface GigabitEthernet0, changed state to up";
+        assertEquals(Integer.valueOf(1), parseSyslogMessage(log).getMonth());
+    }
+
+    @Test
+    public void test_HZN_1504_Case2() throws IOException {
+        final String log = "<189>338: *Jan 17 17:05:36.608: %SYS-5-CONFIG_I: Configured from console by console";
+        assertEquals(Integer.valueOf(1), parseSyslogMessage(log).getMonth());
     }
 }

@@ -32,16 +32,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/opennms-trendline.css" />
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="opennms-trendline" />
+</jsp:include>
 
-<div class="alert alert-trend" role="alert">
+<div class="alert bg-light" role="alert">
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
             <td width="1%">
-                <h1 style="margin:0;"><span class="glyphicon ${trendDefinition.icon}" aria-hidden="true"></span></h1>
+                <h1 style="margin:0;" class="mr-2"><span class="fa ${trendDefinition.icon}" aria-hidden="true"></span></h1>
             </td>
             <td style="white-space: nowrap;">
-                <h3 style="margin:0;">${trendDefinition.title}</h3><h4 style="margin:0;">${trendDefinition.subtitle}</h4>
+                <h4 style="margin:0;">${trendDefinition.title}</h4><h6 style="margin:0;">${trendDefinition.subtitle}</h6>
             </td>
             <td width="50%" align="right">
                 <jsp:text><![CDATA[<span "]]></jsp:text>
@@ -71,8 +73,5 @@
 </div>
 
 <script type="text/javascript">
-    require(['jquery', 'jquery-sparkline'], function( $ ) {
-        $('.sparkline-${trendDefinition.name}').sparkline('html', { enableTagOptions: true });
-    });
+    $('.sparkline-${trendDefinition.name}').sparkline('html', { enableTagOptions: true });
 </script>
-

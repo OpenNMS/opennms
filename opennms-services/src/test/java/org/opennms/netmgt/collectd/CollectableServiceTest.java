@@ -59,6 +59,7 @@ import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.core.CollectionSpecification;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -72,6 +73,7 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmp.InetAddrUtils;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.test.FileAnticipator;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -243,7 +245,9 @@ public class CollectableServiceTest {
         when(ifaceDao.load(any())).thenReturn(iface);
         when(iface.getIpAddress()).thenReturn(InetAddrUtils.getLocalHostAddress());
 
-        service = new CollectableService(iface, ifaceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, resourceStorageDao);
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class, RETURNS_DEEP_STUBS);
+
+        service = new CollectableService(iface, ifaceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, mockThresholdingService);
     }
 
     private RrdRepository createRrdRepository() throws IOException {

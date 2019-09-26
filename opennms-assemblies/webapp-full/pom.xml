@@ -43,29 +43,13 @@
                 <exclude>WEB-INF/applicationContext-svclayer.xml</exclude>
               </excludes>
             </overlay>
-            <overlay>
-              <groupId>org.opennms.features</groupId>
-              <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
-              <excludes>
-                <exclude>includes/header.jsp</exclude>
-                <exclude>includes/footer.jsp</exclude>
-              </excludes>
-            </overlay>
-            <overlay>
-              <groupId>org.opennms.features.ncs</groupId>
-              <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
-              <excludes>
-                <exclude>META-INF/MANIFEST.MF</exclude>
-                <exclude>WEB-INF/web.xml</exclude>
-              </excludes>
-            </overlay>
           </overlays>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>opennms-warmerge-plugin</artifactId>
-        <version>0.4</version>
+        <version>0.5</version>
         <executions>
           <execution>
             <goals>
@@ -153,6 +137,17 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.rest-provider</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <!-- The bsm.rest.api uses org.reflections, manually copy it to the web app -->
     <dependency>
       <groupId>org.reflections</groupId>
@@ -190,19 +185,6 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
-      <type>war</type>
-      <version>${project.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
-      <type>war</type>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>

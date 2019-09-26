@@ -31,8 +31,6 @@ package org.opennms.netmgt.collectd;
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -44,6 +42,8 @@ import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.InputStreamResource;
+
+import junit.framework.TestCase;
 
 public class CollectorConfigDaoImplIT extends TestCase {
     @Override
@@ -82,12 +82,9 @@ public class CollectorConfigDaoImplIT extends TestCase {
     private void initialize() throws IOException, Exception {
         System.setProperty("opennms.home", ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
 
+        DatabaseSchemaConfigFactory.init();
+
         InputStream stream = null;
-
-        stream = getInputStreamForFile("/org/opennms/netmgt/config/test-database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(stream));
-        stream.close();
-
         stream = getInputStreamForFile("/org/opennms/netmgt/config/snmp-config.xml");
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new InputStreamResource(stream)));
         stream.close();
@@ -101,7 +98,7 @@ public class CollectorConfigDaoImplIT extends TestCase {
 
         stream = getInputStreamForFile("/org/opennms/netmgt/config/collectd-testdata.xml");
         try {
-            new CollectdConfigFactory(stream, "localhost", false);
+            new CollectdConfigFactory(stream);
         } finally {
             stream.close();
         }

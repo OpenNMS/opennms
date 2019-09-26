@@ -32,6 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -101,7 +102,7 @@ public class HttpDetectorTest {
         MockLogAppender.setupLogging();
 
         /* make sure defaults are initialized */
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
         m_detector.setPort(80);
         m_detector.setUrl("/");
         m_detector.setMaxRetCode(399);

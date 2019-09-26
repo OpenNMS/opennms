@@ -4,6 +4,7 @@
 
 ==== JCifsMonitor
 This monitor allows to test a file sharing service based on the CIFS/SMB protocol.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 WARNING: This monitor is not installed by default.
 You have to install `opennmms-plugin-protocol-cifs` from your {opennms-product-name} installation repository.
@@ -48,21 +49,21 @@ The _JCifsMonitor_ can *not* test:
 .Monitor specific parameters for the JCifsMonitor
 [options="header, autowidth"]
 |===
-| Parameter           | Description                                                                                     | Required | Default value
-| `retry`             | Number of retries before the service is marked as _down_.                                       | optional | `0`
+| Parameter           | Description                                                                                     | Required | Default value | Placeholder substitution
+| `retry`             | Number of retries before the service is marked as _down_.                                       | optional | `0` | No
 | `domain`            | Windows domain where the user is located. You don't have to use the domain parameter if you use
-                        local user accounts.                                                                            | optional | empty String
-| `username`          | Username to access the resource over a network                                                  | optional | empty String
-| `password`          | Password for the user                                                                           | optional | empty String
-| `path`              | Path to the resource you want to test                                                           | required | empty String
+                        local user accounts.                                                                            | optional | empty String | Yes
+| `username`          | Username to access the resource over a network                                                  | optional | empty String | Yes
+| `password`          | Password for the user                                                                           | optional | empty String | Yes
+| `path`              | Path to the resource you want to test                                                           | required | empty String | No
 | `mode`              | The test mode which has the following options +
                         `path_exist`: Service is _up_ if the resource is accessible +
                         `path_not_exist`: Service is _up_ if the resource is *not* accessible +
                         `folder_empty`: Service is _up_ if the folder is empty (0 files) +
-                        `folder_not_empty`: Service is _up_ if the folder has at least one file                         | optional | `path_exist`
-| `smbHost`           | Override the IP address of the SMB url to check shares on different file servers.               | optional | empty String
+                        `folder_not_empty`: Service is _up_ if the folder has at least one file                         | optional | `path_exist` | No
+| `smbHost`           | Override the IP address of the SMB url to check shares on different file servers.               | optional | empty String | No
 | `folderIgnoreFiles` | Ignore specific files in folder with regular expression. This parameter will just be applied on
-                        `folder_empty` and `folder_not_empty`, otherwise it will be ignored.                            | optional | `-`
+                        `folder_empty` and `folder_not_empty`, otherwise it will be ignored.                            | optional | `-` | No
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

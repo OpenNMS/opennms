@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,14 +39,19 @@ import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionFailed;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.CollectionTimedOut;
+import org.opennms.netmgt.collection.api.CollectionUnknown;
+import org.opennms.netmgt.collection.api.CollectionWarning;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.core.CollectionSpecification;
 import org.opennms.netmgt.collection.support.AttributeGroupWrapper;
 import org.opennms.netmgt.collection.support.CollectionAttributeWrapper;
 import org.opennms.netmgt.collection.support.CollectionResourceWrapper;
@@ -63,8 +68,9 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
-import org.opennms.netmgt.threshd.ThresholdInitializationException;
-import org.opennms.netmgt.threshd.ThresholdingVisitor;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -113,13 +119,6 @@ class CollectableService implements ReadyRunnable {
      */
     private final CollectorUpdates m_updates;
 
-    /**
-     * The thresholdvisitor for this collectable service; called 
-     */
-    private final ThresholdingVisitor m_thresholdVisitor;
-    /**
-     * 
-     */
     private static final boolean ABORT_COLLECTION = true;
 
 	private final CollectionSpecification m_spec;
@@ -138,7 +137,7 @@ class CollectableService implements ReadyRunnable {
 
     private final PersisterFactory m_persisterFactory;
 
-    private final ResourceStorageDao m_resourceStorageDao;
+    private ThresholdingSession m_thresholdingSession;
 
     /**
      * Constructs a new instance of a CollectableService object.
@@ -153,16 +152,15 @@ class CollectableService implements ReadyRunnable {
      */
     protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec,
             Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr,
-            PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) throws CollectionInitializationException {
+            PersisterFactory persisterFactory, ThresholdingService thresholdingService) throws CollectionInitializationException {
 
-        m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
+        m_agent = DefaultSnmpCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
         m_ifaceDao = ifaceDao;
         m_transMgr = transMgr;
         m_persisterFactory = persisterFactory;
-        m_resourceStorageDao = resourceStorageDao;
 
         m_nodeId = iface.getNode().getId().intValue();
         m_status = CollectionStatus.SUCCEEDED;
@@ -177,9 +175,9 @@ class CollectableService implements ReadyRunnable {
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
         try {
-            m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params, m_resourceStorageDao);
-        } catch (final ThresholdInitializationException e) {
-            throw new CollectionInitializationException("Failed to initialize thresholding visitor.", e);
+            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params);
+        } catch (ThresholdInitializationException e) {
+            LOG.error("Error when initializing Thresholding. No Thresholding will be performed on this service.", e);
         }
     }
     
@@ -195,7 +193,7 @@ class CollectableService implements ReadyRunnable {
     /**
      * <p>getSpecification</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionSpecification} object.
+     * @return a {@link org.opennms.netmgt.collection.core.CollectionSpecification} object.
      */
     public CollectionSpecification getSpecification() {
     	return m_spec;
@@ -246,13 +244,6 @@ class CollectableService implements ReadyRunnable {
      */
     public void refreshPackage(CollectdConfigFactory collectorConfigDao) throws CollectionInitializationException {
         m_spec.refresh(collectorConfigDao);
-        if (m_thresholdVisitor != null) {
-            try {
-                m_thresholdVisitor.reloadScheduledOutages();
-            } catch (final ThresholdInitializationException e) {
-                throw new CollectionInitializationException("Failed to reload scheduled outages after refreshing package.", e);
-            }
-        }
     }
 
     /** {@inheritDoc} */
@@ -260,7 +251,6 @@ class CollectableService implements ReadyRunnable {
     public String toString() {
         return "CollectableService for service "+m_nodeId+':'+getAddress()+':'+getServiceName();
     }
-
 
     /**
      * This method is used to evaluate the status of this interface and service
@@ -329,20 +319,14 @@ class CollectableService implements ReadyRunnable {
      */
     @Override
     public void run() {
-        Logging.withPrefix(Collectd.LOG4J_CATEGORY, new Runnable() {
-
-            @Override
-            public void run() {
-                Logging.putThreadContext("service", m_spec.getServiceName());
-                Logging.putThreadContext("ipAddress", m_agent.getAddress().getHostAddress());
-                Logging.putThreadContext("nodeId", Integer.toString(m_agent.getNodeId()));
-                Logging.putThreadContext("nodeLabel", m_agent.getNodeLabel());
-                Logging.putThreadContext("foreignSource", m_agent.getForeignSource());
-                Logging.putThreadContext("foreignId", m_agent.getForeignId());
-                Logging.putThreadContext("sysObjectId", m_agent.getSysObjectId());
-                doRun();
-            }
-            
+        Logging.withPrefix(Collectd.LOG4J_CATEGORY, () -> {
+            Logging.putThreadContext("service", m_spec.getServiceName());
+            Logging.putThreadContext("ipAddress", m_agent.getAddress().getHostAddress());
+            Logging.putThreadContext("nodeId", Integer.toString(m_agent.getNodeId()));
+            Logging.putThreadContext("nodeLabel", m_agent.getNodeLabel());
+            Logging.putThreadContext("foreignSource", m_agent.getForeignSource());
+            Logging.putThreadContext("foreignId", m_agent.getForeignId());
+            doRun();
         });
     }
 
@@ -451,17 +435,15 @@ class CollectableService implements ReadyRunnable {
                             Collectd.instrumentation().endPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         }
 
-                        /*
-                         * Do the thresholding; this could be made more generic (listeners being passed the collectionset), but frankly, why bother?
-                         * The first person who actually needs to configure that sort of thing on the fly can code it up.
-                         */
-                        if (m_thresholdVisitor != null) {
-                            if (m_thresholdVisitor.isNodeInOutage()) {
-                                LOG.info("run: the threshold processing will be skipped because the node {} is on a scheduled outage.", m_nodeId);
-                            } else if (m_thresholdVisitor.hasThresholds()) {
-                                m_thresholdVisitor.setCounterReset(result.ignorePersist()); // Required to reinitialize the counters.
-                                result.visit(m_thresholdVisitor);
+                        // Do thresholding
+                        if (m_thresholdingSession != null) {
+                            try {
+                                m_thresholdingSession.accept(result);
+                            } catch (ThresholdInitializationException e) {
+                                LOG.warn("ThresholdInitializationException for {}. Thresholding skipped.", this, e);
                             }
+                        } else {
+                            LOG.warn("No thresholding session for {}. Thresholding skipped.", this);
                         }
 
                         if (!CollectionStatus.SUCCEEDED.equals(result.getStatus())) {
@@ -635,34 +617,11 @@ class CollectableService implements ReadyRunnable {
 
     private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
         m_spec.release(m_agent);
-        m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
+        m_agent = DefaultSnmpCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);
         m_spec.initialize(m_agent);
     }
 
-    /**
-     * <p>reinitializeThresholding</p>
-     */
-    /*
-     * TODO Re-create or merge ?
-     * 
-     * The reason of doing a merge is to keep and update the threshold states.
-     * 
-     * It is extremely more easy to just recreate the thresholding visitor to avoid complex
-     * operations. But, the cost of doing this is that all the states will be lost, and
-     * some alarms will become orphans.
-     * 
-     * Other idea is to create two methods to get and set the states, and detect orphan
-     * states. That way, we can decide what to do with orphans (like clear the alarm, or
-     * send an auto-rearm), and also it can be used to persist the states across restarts.
-     */
-    public void reinitializeThresholding() {
-        if(m_thresholdVisitor!=null) {
-            LOG.debug("reinitializeThresholding on {}", this);
-            m_thresholdVisitor.reload();
-        }
-    }
-    
     /**
      * <p>getReadyRunnable</p>
      *

@@ -31,19 +31,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="norequirejs" value="true" />
   <jsp:param name="title" value="Resource Graphs" />
   <jsp:param name="headTitle" value="Resource Graphs" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="location" value="performance" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="Resource Graphs" />
-  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/underscore/underscore.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/onms-resources/app.js"></script>' />
 </jsp:include>
 
 <div class="container-fluid" ng-app="onms-resources" ng-controller="NodeListCtrl">
@@ -66,11 +59,11 @@
 
   <div class="row" ng-show="hasResources">
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Resources</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>Resources</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <div class="radio">
             <label>
               <input type="radio" name="reportTarget" value="graph/results.htm" ng-model="endUrl"/>
@@ -87,20 +80,26 @@
           </div>
           <div class="table-responsive">
             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-search"></span>
-              </span>
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <i class="fa fa-search"></i>
+                </div>
+
+              </div>
               <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
             </div>
-            <table class="table table-striped table-condensed table-hover">
+
+            <table class="table table-striped table-sm table-hover">
               <thead>
                 <tr>
                   <th>Resources</th>
                 </tr>
               </thead>
               <tbody>
-                <tr ng-click="goTo(resource.id)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
-                  <td>{{ resource.label }}</td>
+                <tr ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                  <td>
+                    <a ng-click="goTo(resource.id)" href>{{ resource.label }}</a>
+                  </td>
                 </tr>
              </tbody>
             </table>
@@ -116,11 +115,11 @@
       </div>
     </div>
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Network Performance Data</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>Network Performance Data</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>
           The <strong>Standard Performance Reports</strong> provide a stock way to
           easily visualize the critical SNMP data collected from managed nodes
@@ -138,5 +137,12 @@
   </div>
 
 </div>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="angular-js" />
+</jsp:include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="onms-resources" />
+</jsp:include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.List;
+
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 
@@ -59,4 +63,8 @@ public interface SnmpInterfaceDao extends LegacyOnmsDao<OnmsSnmpInterface, Integ
     OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex);
 
     OnmsSnmpInterface findByNodeIdAndDescription(Integer nodeId, String description);
+
+    void markHavingFlows(final Integer nodeId, final Collection<Integer> snmpIfIndexes);
+
+    List<OnmsSnmpInterface> findAllHavingFlows(final Integer nodeId);
 }

@@ -110,7 +110,6 @@
          <includeGroup>bigip-sys-global-cpu</includeGroup>
          <includeGroup>bigip-gtm-wideip-stats</includeGroup>
          <includeGroup>bigip-gtm-wideip-global-stats</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
       </collect>
    </systemDef>
 </datacollection-group>

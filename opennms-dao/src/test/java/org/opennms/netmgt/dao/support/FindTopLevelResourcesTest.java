@@ -100,7 +100,7 @@ public class FindTopLevelResourcesTest {
 
         m_easyMockUtils.replayAll();
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
-        m_collectdConfig = new CollectdConfigFactory(stream, "localhost", false);
+        m_collectdConfig = new CollectdConfigFactory(stream);
         m_easyMockUtils.verifyAll();
 
         m_resourceDao = new DefaultResourceDao();

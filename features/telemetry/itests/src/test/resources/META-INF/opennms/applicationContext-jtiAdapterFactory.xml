@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <context:annotation-config />
+
+    <bean id="jtiAdapterFactory" class="org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiAdapterFactory" />
+    <onmsgi:service interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory" ref="jtiAdapterFactory" />
+
+    <bean id="udpListenerFactory" class="org.opennms.netmgt.telemetry.listeners.factory.UdpListenerFactory" >
+        <constructor-arg ref="telemetryRegistry" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory" ref="udpListenerFactory" />
+
+    <bean id="forwardParserFactory" class="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParserFactory" >
+        <constructor-arg ref="telemetryRegistry" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory" ref="forwardParserFactory" />
+
+</beans>

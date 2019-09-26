@@ -57,18 +57,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
 public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerConfigManager {
@@ -93,12 +81,10 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
      *
      * @param currentVersion a long.
      * @param stream a {@link java.io.InputStream} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
      * @throws java.io.IOException if any.
      */
-    public SnmpInterfacePollerConfigFactory(long currentVersion, InputStream stream, String localServer, boolean verifyServer) throws IOException {
-        super(stream, localServer, verifyServer);
+    public SnmpInterfacePollerConfigFactory(long currentVersion, InputStream stream) throws IOException {
+        super(stream);
         m_currentVersion = currentVersion;
     }
 
@@ -117,9 +103,6 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
             return;
         }
 
-        OpennmsServerConfigFactory.init();
-        OpennmsServerConfigFactory onmsSvrConfig = OpennmsServerConfigFactory.getInstance();
-
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME);
 
         LOG.debug("init: config file path: {}", cfgFile.getPath());
@@ -127,7 +110,7 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
         InputStream stream = null;
         try {
             stream = new FileInputStream(cfgFile);
-            SnmpInterfacePollerConfigFactory config = new SnmpInterfacePollerConfigFactory(cfgFile.lastModified(), stream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+            SnmpInterfacePollerConfigFactory config = new SnmpInterfacePollerConfigFactory(cfgFile.lastModified(), stream);
             setInstance(config);
         } finally {
             if (stream != null) {

@@ -28,14 +28,6 @@
 
 package org.opennms.netmgt.notifd;
 
-import java.util.List;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.opennms.netmgt.config.NotificationManager;
-import org.opennms.netmgt.model.notifd.Argument;
-
 /**
  * <p>SlackNotificationStrategy class.</p>
  *

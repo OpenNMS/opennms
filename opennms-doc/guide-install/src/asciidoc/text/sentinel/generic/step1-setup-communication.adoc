@@ -1,0 +1,11 @@
+
+==== Step 1: Setup {opennms-product-name} to allow Sentinel communication
+
+This step is exactly the same as for _Minion_.
+Even the role name `ROLE_MINION` can be used, as there does not exist a dedicated role `ROLE_SENTINEL` yet.
+
+Therefore, please refer to section <<gi-minion-rhel-setup-communication, Setup {opennms-product-name} to allow Minion communication>>.
+
+NOTE:   Even if we have to configure the communication to the _{opennms-product-name}_ exactly the same as for _Minion_
+        no ReST requests are made and may be removed at a later state.
+

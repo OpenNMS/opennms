@@ -1,0 +1,39 @@
+//colors
+$color_horizon:                     #4c9d29;
+$color_meridian:                    #227cb8;
+$link_color:                        #265A87;
+
+$font-size-base:  0.875rem;
+//$font-family-base-sans-serif: 'Lucida Grande', Verdana, sans-serif;
+
+// This is the default color, and does not overwrite, but reset the styling.
+// Is required for the vaadin themes to compile
+$table-border-color: #ddd !default;
+
+// Add custom colors to the theme
+$theme-colors: (
+    "horizon":                      $color_horizon,
+    "meridian":                     $color_meridian,
+
+    // Some bootstrap 3 components are still used.
+    // Usually they work properly, but they use mostly -default stylings, which
+    // are no longer available with bootstrap 4.
+    // Here default is defined the same as "light".
+    "default":                      #f8f9fa,
+
+    // Additional colors may be added here, e.g. "severity-normal"
+    // to allow alerts, badges, buttons, etc to be colored accordingly
+);
+
+// Spacing of cards is a bit too much by default.
+// The UI looks very bloated, so we reduce it
+$card-spacer-y:                     .25rem !default;
+$card-spacer-x:                     .42rem !default;
+
+// Breadcrumbs take up a lot of space, so we reduce the default padding a bit
+$breadcrumb-padding-y:              .5rem !default;
+$breadcrumb-padding-x:              .5rem !default;
+
+// Default Card-Header is too bright, we make it a bit darker by just using the breadcrumb color
+$breadcrumb-bg:                     #e9ecef !default; // Same as bootstrap $grey200 default
+$card-cap-bg:                       $breadcrumb-bg;

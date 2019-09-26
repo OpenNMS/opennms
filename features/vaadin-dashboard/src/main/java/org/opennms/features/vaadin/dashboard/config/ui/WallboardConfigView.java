@@ -37,19 +37,19 @@ import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.validator.AbstractStringValidator;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This class represents the base editing component for {@link Wallboard} instances.
@@ -303,6 +303,7 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
      * @param tabContent
      */
     public void onTabClose(final TabSheet tabsheet, final Component tabContent) {
+        tabsheet.setSelectedTab(0);
         tabsheet.removeComponent(tabContent);
         m_wallboardEditorMap.remove(((WallboardEditor) tabContent).getWallboard());
     }

@@ -45,30 +45,30 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Discovery</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Discovery</span>
       </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
           <li><a href="admin/discovery/edit-config.jsp">Configure Discovery</a></li>
           <li><a href="admin/discovery/edit-scan.jsp">Run Single Discovery Scan</a></li>
         </ul>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Configuration</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Configuration</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>The place to configure the Discovery service.
         After you have added, removed specific IP addresses or ranges, you can save the configuration and restart
         the service.
         </p>       
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

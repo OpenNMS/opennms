@@ -63,8 +63,7 @@ public class DataSenderTest {
         Resource categoryResource = ConfigurationTestUtils.getSpringResourceForResource(this, "/org/opennms/netmgt/config/categories.xml");
         CategoryFactory.setInstance(new CategoryFactory(categoryResource));
         
-        stream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(stream));
+        DatabaseSchemaConfigFactory.init();
         stream.close();
 
         

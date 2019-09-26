@@ -47,7 +47,7 @@ import org.opennms.netmgt.config.collectd.jmx.Mbean;
  */
 abstract class MBeansHelper {
 
-	public static List getMBeansTreeElements(Mbean input) {
+	public static List<?> getMBeansTreeElements(Mbean input) {
 		return getMBeansTreeElements(input, true);
 	}
 
@@ -59,7 +59,7 @@ abstract class MBeansHelper {
 		List<String> labels = getMBeansTreeElements(input, false);
 		if (labels.isEmpty()) return input.getName();
 		Object label = labels.get(labels.size() - 1);
-		if (label instanceof Entry) return ((Entry) label).getValue().toString();
+		if (label instanceof Entry<?,?>) return ((Entry<?,?>) label).getValue().toString();
 		return label.toString();
 	}
 
@@ -71,8 +71,8 @@ abstract class MBeansHelper {
 	 *            should last element be removed?
 	 * @return a List of Elements to build the MBeanTree.
 	 */
-	private static List getMBeansTreeElements(Mbean input, boolean removeLastElement) {
-		List names = new ArrayList();
+	private static List<String> getMBeansTreeElements(Mbean input, boolean removeLastElement) {
+		List names = new ArrayList<>();
 		try {
 			/*
 			 * By default, the MBeans are displayed in the tree based on their

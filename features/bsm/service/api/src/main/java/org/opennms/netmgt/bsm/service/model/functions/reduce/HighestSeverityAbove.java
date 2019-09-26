@@ -51,7 +51,7 @@ public class HighestSeverityAbove implements ReductionFunction {
 
     protected static Optional<StatusWithIndices> reduceWithHighestSeverityAbove(List<StatusWithIndex> statuses, Status threshold) {
         final Status highestSeverity = statuses.stream()
-                .map(si -> si.getStatus())
+                .map(StatusWithIndex::getStatus)
                 .filter(s -> s.isGreaterThan(threshold))
                 .reduce((a, b) -> a.isGreaterThan(b) ? a : b)
                 .orElse(null);

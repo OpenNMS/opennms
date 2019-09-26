@@ -14,29 +14,6 @@
 			<parameter key="timeout" value="3000" />
 		</service>
 
-		<service name="JBoss4" interval="300000" user-defined="false" status="on">
-			<parameter key="port" value="1099" />
-			<parameter key="retry" value="2" />
-			<parameter key="timeout" value="3000" />
-			<parameter key="factory" value="RMI" />
-			<!-- if you set the factory to HTTP (necessary when monitoring through 
-				a firewall) then you need to ensure the port matches the port specified in 
-				the InvokerURLSuffix for the Naming Service entry in <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml 
-				The default port is 8080 -->
-		</service>
-
-		<service name="JBoss32" interval="300000" user-defined="false" status="on">
-			<parameter key="version" value="32" />
-			<parameter key="port" value="1099" />
-			<parameter key="retry" value="2" />
-			<parameter key="timeout" value="3000" />
-			<parameter key="factory" value="RMI" />
-			<!-- if you set the factory to HTTP (necessary when monitoring through 
-				a firewall) then you need to ensure the port matches the port specified in 
-				the InvokerURLSuffix for the Naming Service entry in <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml 
-				The default port is 8080 -->
-		</service>
-
 		<service name="JVM" interval="300000" user-defined="false" status="on">
 			<parameter key="port" value="9003" />
 			<parameter key="retry" value="2" />
@@ -70,8 +47,6 @@
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 	</package>
 
-	<collector service="JBoss4" class-name="org.opennms.netmgt.collectd.JBossCollector" />
-	<collector service="JBoss32" class-name="org.opennms.netmgt.collectd.JBossCollector" />
 	<collector service="JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
 	<collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector" />
 

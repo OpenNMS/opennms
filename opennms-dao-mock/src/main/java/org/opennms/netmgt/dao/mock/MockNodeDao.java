@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.mock;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -150,10 +151,15 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         }
     }
 
-    @Override
-    public OnmsNode get(final String lookupCriteria) {
-        throw new UnsupportedOperationException("Not yet implemented!");
-    }
+	@Override
+	public OnmsNode get(final String lookupCriteria) {
+		if (lookupCriteria.contains(":")) {
+			throw new UnsupportedOperationException("Not yet implemented!");
+		} else {
+			Integer nodeId = Integer.parseInt(lookupCriteria);
+			return get(nodeId);
+		}
+	}
 
     @Override
     public String getLabelForId(final Integer id) {
@@ -445,4 +451,53 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     public int getNextNodeId() {
         return m_id.get() + 1;
     }
+
+    @Override
+    public List<OnmsNode> findByLabelForLocation(String label, String location) {
+        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        for (final OnmsNode node : findAll()) {
+            if (node.getLabel().equals(label) && (node.getLocation().getLocationName().equals(location))) {
+                nodes.add(node);
+            }
+        }
+        return nodes;
+    }
+
+    @Override
+    public List<OnmsNode> findByForeignId(String foreignId) {
+        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        for (final OnmsNode node : findAll()) {
+            if (node.getLabel().equals(foreignId)) {
+                nodes.add(node);
+            }
+        }
+        return nodes;
+    }
+
+    @Override
+    public List<OnmsNode> findByForeignIdForLocation(String foreignId, String location) {
+        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        for (final OnmsNode node : findAll()) {
+            if (node.getLabel().equals(foreignId) && (node.getLocation().getLocationName().equals(location))) {
+                nodes.add(node);
+            }
+        }
+        return nodes;
+    }
+
+    @Override
+    public void markHavingFlows(Collection<Integer> nodeIds) {
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingFlows() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public OnmsNode getDefaultFocusPoint() {
+        return null;
+    }
+
+
 }

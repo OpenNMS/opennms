@@ -84,7 +84,7 @@ public class LocationAwareDnsLookupClientRpcImpl implements LocationAwareDnsLook
         dto.setSystemId(systemId);
         dto.setQueryType(queryType);
         CompletableFuture<DnsLookupResponseDTO> future = getDelegate().execute(dto);
-        return future.thenApply(response -> response.getHostResponse());
+        return future.thenApply(DnsLookupResponseDTO::getHostResponse);
     }
 
 }

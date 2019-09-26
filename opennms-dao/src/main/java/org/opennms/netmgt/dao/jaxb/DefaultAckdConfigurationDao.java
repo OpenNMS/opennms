@@ -171,9 +171,7 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
 
     @Override
     public int getEnabledReaderCount() {
-        return Long.valueOf(getConfig().getReaders().stream().filter(r -> {
-            return r.getEnabled();
-        }).count()).intValue();
+        return Long.valueOf(getConfig().getReaders().stream().filter(Reader::getEnabled).count()).intValue();
     }
 
     /** {@inheritDoc} */

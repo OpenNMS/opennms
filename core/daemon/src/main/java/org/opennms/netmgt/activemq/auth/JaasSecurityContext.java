@@ -45,8 +45,8 @@ public class JaasSecurityContext extends SecurityContext {
         super(userName);
         // Map all of the subject's principals to GroupPrincipals with the same name
         principals = subject.getPrincipals().stream()
-                .map(p -> p.getName())
-                .map(n -> new GroupPrincipal(n))
+                .map(Principal::getName)
+                .map(GroupPrincipal::new)
                 .collect(Collectors.toSet());
     }
 

@@ -107,32 +107,28 @@
     int endIndex = multiple+UPPER_OFFSET;
     endIndex = (endIndex > highestPossibleIndex) ? highestPossibleIndex : endIndex;    
 %>
-
+<div class="my-2">
  <% if (limit > 0 ) { %> 
   <strong>Results <%=startResult%>-<%=endResult%> of <%=count%></strong>
  <% } else { %>
   <strong>All Results</strong>
- <% } %> 
-
+ <% } %>
+</div>
 <% if( count > limit ) { %>  
   <nav>
     <ul class="pagination pagination-sm">
-    <% if( multiple > 0 ) { %>
-      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=0&amp;<%=limitName%>=<%=limit%>">First</a></li>
-      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>&amp;<%=limitName%>=<%=limit%>">Previous</a></li>
-    <% } %>
-    
+    <li class="page-item <%=multiple > 0 ? "" : "disabled"%>"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=0&amp;<%=limitName%>=<%=limit%>">First</a></li>
+    <li class="page-item <%=multiple > 0 ? "" : "disabled"%>"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>&amp;<%=limitName%>=<%=limit%>">Previous</a></li>
+
     <% for( int i=startIndex; i <= endIndex; i++ ) { %>
       <% if( multiple == i ) { %>
-         <li class="active"><span><%=i+1%></span></li>
+         <li class="page-item active"><a class="page-link" href=""><%=i+1%> <span class="sr-only">(current)</span></a></li>
       <% } else { %>
-        <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a></li>
+        <li class="page-item"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a></li>
       <% } %>
     <% } %>
-    <% if( multiple < highestPossibleIndex ) { %>
-      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>&amp;<%=limitName%>=<%=limit%>">Next</a></li>
-      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=highestPossibleIndex%>&amp;<%=limitName%>=<%=limit%>">Last</a></li>
-    <% } %>
+      <li class="page-item <%=multiple < highestPossibleIndex ? "" : "disabled"%>"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>&amp;<%=limitName%>=<%=limit%>">Next</a></li>
+      <li class="page-item <%=multiple < highestPossibleIndex ? "" : "disabled"%>"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=highestPossibleIndex%>&amp;<%=limitName%>=<%=limit%>">Last</a></li>
     </ul>
   </nav>
 <% } %>

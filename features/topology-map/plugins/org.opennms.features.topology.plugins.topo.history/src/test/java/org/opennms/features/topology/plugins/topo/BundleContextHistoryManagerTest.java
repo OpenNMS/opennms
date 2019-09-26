@@ -90,7 +90,7 @@ import org.opennms.features.topology.app.internal.service.DefaultTopologyService
 import org.opennms.features.topology.app.internal.support.AlarmHopCriteria;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.IpLikeHopCriteria;
-import org.opennms.netmgt.dao.api.TopologyEntityCache;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;

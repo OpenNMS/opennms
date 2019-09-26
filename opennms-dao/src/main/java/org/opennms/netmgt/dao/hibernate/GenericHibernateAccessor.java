@@ -38,6 +38,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -97,7 +98,7 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
             if (parameterMap != null) {
                 parameterMap.entrySet().forEach(entry -> {
                     if (entry.getValue() instanceof Collection) {
-                        query.setParameterList(entry.getKey(), (Collection) entry.getValue());
+                        query.setParameterList(entry.getKey(), (Collection<?>) entry.getValue());
                     } else {
                         query.setParameter(entry.getKey(), entry.getValue());
                     }
@@ -125,6 +126,34 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
         return getHibernateTemplate().execute(callback);
     }
 
+    @Override
+    public <T> void saveAll(Collection<T> entities) {
+        for(T entity : entities){
+            save(entity);
+        }
+    }
+
+    @Override
+    public <T> T save(T entity) {
+        return (T) getHibernateTemplate().save(entity);
+    }
+
+    @Override
+    public <T> void deleteAll(Class<T> clazz) {
+        String sql = String.format("delete from %s entity", clazz.getSimpleName());
+        getHibernateTemplate().bulkUpdate(sql);
+    }
+
+    @Override
+    public <T> void deleteAll(final Collection<T> entities) {
+        getHibernateTemplate().deleteAll(entities);
+    }
+
+    @Override
+    public <T> List<T> findAll(Class<T> entityClass) throws DataAccessException {
+        return getHibernateTemplate().loadAll(entityClass);
+    }
+
     private void prepareQuery(Query queryObject) {
         if(getHibernateTemplate().isCacheQueries()) {
             queryObject.setCacheable(true);
@@ -144,7 +173,7 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
 
     private static void applyNamedParameterToQuery(Query queryObject, String paramName, Object value) throws HibernateException {
         if(value instanceof Collection) {
-            queryObject.setParameterList(paramName, (Collection)value);
+            queryObject.setParameterList(paramName, (Collection<?>)value);
         } else if(value instanceof Object[]) {
             queryObject.setParameterList(paramName, (Object[])((Object[])value));
         } else {

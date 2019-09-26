@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -46,11 +50,14 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.collect.Iterables;
 
@@ -72,6 +79,15 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
     @Autowired
     DatabasePopulator m_databasePopulator;
 
+    @Autowired
+    ApplicationContext applicationContext;
+
+    @Autowired
+    TransactionOperations transactionOperations;
+
+    @Autowired
+    MonitoringLocationDao m_monitoringLocationDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -81,6 +97,44 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
     public void setUp() throws Exception {
         m_databasePopulator.populateDatabase();
         m_cache.clear();
+    }
+
+    // Verify reloading works. See HZN-1311
+    @Test
+    public void testReloading() {
+        // We manually have to create a reloading dao, as by default it does not
+        m_cache = new InterfaceToNodeCacheDaoImpl(1000L);
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(m_cache);
+        applicationContext.getAutowireCapableBeanFactory().initializeBean(m_cache, "reloading-interface-to-node-cache");
+
+        // Verify it is initialized
+        Optional<Integer> nodeId = m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_databasePopulator.getNode1().getPrimaryInterface().getIpAddress());
+        Assert.assertEquals(true, nodeId.isPresent());
+        Assert.assertEquals(m_databasePopulator.getNode1().getId(), nodeId.get());
+
+        // Verify bean is not there yet
+        nodeId = m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddressUtils.addr("8.8.8.8"));
+        Assert.assertEquals(false, nodeId.isPresent());
+
+        // Execute adding of missing node in transaction scope
+        transactionOperations.execute((status) -> {
+            // Add missing node
+            final OnmsNode node = new OnmsNode();
+            node.setLocation(m_databasePopulator.getNode1().getLocation());
+            node.setLabel("Dummy-Node");
+            node.setType(OnmsNode.NodeType.ACTIVE);
+
+            // Add interface to node
+            new OnmsIpInterface(InetAddressUtils.addr("8.8.8.8"), node);
+            m_databasePopulator.getNodeDao().save(node);
+            m_databasePopulator.getNodeDao().flush();
+            return null;
+        });
+
+        // Try for number of seconds until it succeeds
+        await().atMost(10, TimeUnit.SECONDS)
+               .pollInterval(1000, TimeUnit.MILLISECONDS)
+               .until(() -> m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddressUtils.addr("8.8.8.8")).isPresent());
     }
 
     @Test
@@ -148,5 +202,41 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
         // Now try retrieving that same node using null for the location
         nodeId = m_cache.getFirstNodeId(null, ipAddr).get();
         Assert.assertEquals(expectedNodeId, nodeId);
+    }
+
+    @Test
+    @Transactional
+    public void testDuplicate() throws Exception {
+        final OnmsMonitoringLocation defaultLocation = m_monitoringLocationDao.getDefaultLocation();
+
+        final InetAddress theAddress = InetAddress.getByName("1.2.3.4");
+
+        Assert.assertNotNull(m_cache);
+
+        final OnmsNode node1 = new OnmsNode(defaultLocation,"node1");
+        final OnmsIpInterface iface1 = new OnmsIpInterface();
+        iface1.setIpAddress(theAddress);
+        iface1.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        node1.addIpInterface(iface1);
+        final int nodeId1 = m_databasePopulator.getNodeDao().save(node1);
+
+        m_cache.setNodeId(defaultLocation.getLocationName(), iface1.getIpAddress(), node1.getId());
+
+        Assert.assertEquals(nodeId1, (int) m_cache.getFirstNodeId(defaultLocation.getLocationName(), theAddress).get());
+
+        final OnmsNode node2 = new OnmsNode(defaultLocation,"node2");
+        final OnmsIpInterface iface2 = new OnmsIpInterface();
+        iface2.setIpAddress(theAddress);
+        iface2.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        node2.addIpInterface(iface2);
+        final int nodeId2 = m_databasePopulator.getNodeDao().save(node2);
+
+        m_cache.setNodeId(defaultLocation.getLocationName(), iface2.getIpAddress(), node2.getId());
+
+        Assert.assertEquals(nodeId1, (int) m_cache.getFirstNodeId(defaultLocation.getLocationName(), theAddress).get());
+
+        m_cache.removeNodeId(defaultLocation.getLocationName(), theAddress, nodeId1);
+
+        Assert.assertEquals(nodeId2, (int) m_cache.getFirstNodeId(defaultLocation.getLocationName(), theAddress).get());
     }
 }

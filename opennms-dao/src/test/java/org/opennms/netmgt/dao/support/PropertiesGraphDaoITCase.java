@@ -263,7 +263,7 @@ public class PropertiesGraphDaoITCase {
 	
 		m_fileAnticipator.deleteExpected();
 		m_fileAnticipator.tearDown();
-	    MockLogAppender.resetEvents();
+	    MockLogAppender.resetState();
 	}
 
 	public PropertiesGraphDao createPropertiesGraphDao(Map<String, Resource> prefabConfigs, Map<String, Resource> adhocConfigs)

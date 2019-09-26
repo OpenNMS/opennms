@@ -81,7 +81,8 @@
             "sysDescription": "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386", 
             "sysLocation": "DevJam", 
             "sysName": "TestMachine0", 
-            "sysObjectId": ".1.3.6.1.4.1.8072.3.2.255", 
+            "sysObjectId": ".1.3.6.1.4.1.8072.3.2.255",
+            "hasFlows" : false,
             "type": "A"
         }
     ], 

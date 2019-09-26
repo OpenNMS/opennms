@@ -129,8 +129,10 @@ public class MockLogger extends MarkerIgnoringBase {
         loadProperties();
 
         String defaultLogLevelString = getStringProperty(DEFAULT_LOG_LEVEL_KEY, null);
-        if (defaultLogLevelString != null)
+        if (defaultLogLevelString != null) {
+            //System.err.println("Changing default log level to: " + defaultLogLevelString);
             DEFAULT_LOG_LEVEL = stringToLevel(defaultLogLevelString);
+        }
 
         SHOW_LOG_NAME = getBooleanProperty(SHOW_LOG_NAME_KEY, SHOW_LOG_NAME);
         SHOW_SHORT_LOG_NAME = getBooleanProperty(SHOW_SHORT_LOG_NAME_KEY, SHOW_SHORT_LOG_NAME);

@@ -28,8 +28,12 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.OutputStreamWriter;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -40,10 +44,7 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
-import java.util.Optional;
-
 import javax.net.ssl.SNIHostName;
-import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 
@@ -54,15 +55,11 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.SocketUtils;
-import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.SslSocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,10 +69,18 @@ import org.slf4j.LoggerFactory;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  *
+ * It also has some limited support for STARTTLS. You can specify a preliminary
+ * message and expected response (optional, but required for some protocols,
+ * notably XMPP) as well as the actual STARTTLS verb and the expected response.
+ * Assuming the exchanges pass (only the latter is required for all protocols)
+ * normal TLS negotiation then takes place to determine certificate expiration
+ * validity.
+ *
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
+ * @author <a href="mailto:dschlenk@convergeone.com">David Schlenk</a>
  */
 @Distributable
-public class SSLCertMonitor extends AbstractServiceMonitor {
+public class SSLCertMonitor extends ParameterSubstitutingMonitor {
     
     
     public static final Logger LOG = LoggerFactory.getLogger(SSLCertMonitor.class);
@@ -107,6 +112,13 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
 
     public static final String PARAMETER_SERVER_NAME = "server-name";
 
+    public static final String PARAMETER_STLS_INIT = "starttls-preamble";
+
+    public static final String PARAMETER_STLS_INIT_RESP = "starttls-preamble-response";
+
+    public static final String PARAMETER_STLS_START = "starttls-start";
+
+    public static final String PARAMETER_STLS_START_RESP = "starttls-start-response";
     /**
      * {@inheritDoc}
      *
@@ -139,6 +151,18 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
         final String serverName = PropertiesUtils.substitute(ParameterMap.getKeyedString(parameters, PARAMETER_SERVER_NAME, ""),
                                                              getServiceProperties(svc));
 
+        final String stlsInitiate = PropertiesUtils.substitute(resolveKeyedString(parameters, PARAMETER_STLS_INIT, ""),
+                                                             getServiceProperties(svc));
+
+        final String stlsInitExpectedResp = PropertiesUtils.substitute(resolveKeyedString(parameters, PARAMETER_STLS_INIT_RESP, ""),
+                                                             getServiceProperties(svc));
+
+        final String tlsStart = PropertiesUtils.substitute(resolveKeyedString(parameters, PARAMETER_STLS_START, ""),
+                                                             getServiceProperties(svc));
+
+        final String tlsStartResp = PropertiesUtils.substitute(resolveKeyedString(parameters, PARAMETER_STLS_START_RESP, ""),
+                                                             getServiceProperties(svc));
+
         // Calculate validity range
         Calendar calValid = this.getCalendarInstance();
         Calendar calCurrent = this.getCalendarInstance();
@@ -158,18 +182,31 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
         PollStatus serviceStatus = PollStatus.unavailable();
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
+            BufferedReader r = null;
+            BufferedWriter wr = null;
             try {
                 tracker.startAttempt();
 
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
+                r = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 LOG.debug("Connected to host: {} on port: {}", ipAddr, port);
-                SSLSocket sslSocket = SocketUtils.wrapSocketInSslContext(socket, null, null);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
 
+                // xmpp (and probably others) make you find out if the server supports STARTTLS
+                // at the protocol level before actually trying to start it
+                boolean stlsSupported = SocketUtils.validResponse(stlsInitiate, stlsInitExpectedResp, r, wr) &&
+                    SocketUtils.validResponse(tlsStart, tlsStartResp, r, wr);
+                if (!stlsSupported) {
+                    serviceStatus = PollStatus.unavailable("STARTTLS requested, but server does not support STARTTLS.");
+                    return serviceStatus;
+                }
+
+                SSLSocket sslSocket = SocketUtils.wrapSocketInSslContext(socket, null, null);
                 // Use the server name as as SNI host name if available
                 if (!Strings.isNullOrEmpty(serverName)) {
                     final SSLParameters sslParameters = sslSocket.getSSLParameters();
@@ -200,7 +237,7 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
                                 serviceStatus = PollStatus.available(tracker.elapsedTimeInMillis());
                                 break;
                             } else {
-                                String reason = "Certificate is valid, but will expire in " + validityDays + " days.";
+                                String reason = "Certificate is valid, but will expire within " + validityDays + " days (" + certx.getNotAfter() + ").";
                                 LOG.debug(reason);
                                 serviceStatus = PollStatus.unavailable(reason);
                                 break;
@@ -232,6 +269,12 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 try {
+                    if (r != null) {
+                        r.close();
+                    }
+                    if (wr != null) {
+                        wr.close();
+                    }
                     if (socket != null) {
                         socket.close();
                     }

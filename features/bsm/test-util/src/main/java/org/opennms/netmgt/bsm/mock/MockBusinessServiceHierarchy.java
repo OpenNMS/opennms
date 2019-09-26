@@ -150,8 +150,8 @@ public class MockBusinessServiceHierarchy {
 
     public Edge getEdgeByReductionKey(String reductionKey) {
         return m_builder.m_businessServicesById.values().stream()
-                .map(b -> b.getEdges())
-                .flatMap(l -> l.stream())
+                .map(MockBusinessService::getEdges)
+                .flatMap(Set::stream)
                 .filter(e -> e.getReductionKeys().contains(reductionKey))
                 .findFirst().orElse(null);
     }

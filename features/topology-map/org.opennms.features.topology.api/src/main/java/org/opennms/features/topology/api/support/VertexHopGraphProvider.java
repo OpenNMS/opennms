@@ -440,7 +440,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         for (CollapsibleCriteria collapsibleCriteria : criteria) {
             if (collapsibleCriteria.isCollapsed()) {
                 final Set<VertexRef> verticesRepresentedByCollapsible = collapsibleCriteria.getVertices().stream()
-                        .filter(v -> vertices.contains(v))
+                        .filter(vertices::contains)
                         .collect(Collectors.toSet());
                 verticesToProcess.removeAll(verticesRepresentedByCollapsible);
                 retval.add(collapsibleCriteria.getCollapsedRepresentation());

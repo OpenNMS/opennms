@@ -46,7 +46,7 @@ public class SetFocusVertexOperation implements Operation {
 
         final GraphContainer graphContainer = operationContext.getGraphContainer();
         graphContainer.findCriteria(VertexHopGraphProvider.VertexHopCriteria.class)
-                        .forEach(vertexHopCriteria -> graphContainer.removeCriteria(vertexHopCriteria));
+                        .forEach(graphContainer::removeCriteria);
         new AddFocusVerticesOperation().execute(targets, operationContext);
     }
 

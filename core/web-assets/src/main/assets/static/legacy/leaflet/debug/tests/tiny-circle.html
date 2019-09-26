@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet debug page</title>
+
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="../css/screen.css" />
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+</head>
+<body>
+
+	<div id="map"></div>
+
+	<script type="text/javascript">
+
+		var map = L.map("map").setView([0, 0], 27);
+
+// 		var circle = L.circle([0, 0], {radius: 0.01, weight: 5}).addTo(map);
+		var circle = L.circle([0, 0], {radius: 0.05, weight: 5}).addTo(map);
+		var circle = L.circle([0, 0], {radius: 0.1, weight: 5}).addTo(map);
+
+	</script>
+</body>
+</html>

@@ -13,31 +13,6 @@
   <description>Feature definition for alarm-change-notifier</description>
   <packaging>pom</packaging>
 
-  <build>
-
-    <plugins>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>features.xml</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>generate-features-xml</goal>
-            </goals>
-            <configuration>
-              <bundles>
-                <!-- <bundle>mvn:com.impossibl.pgjdbc-ng/pgjdbc-ng/${pgjdbc-ng-version}</bundle> -->
-              </bundles>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-
-  </build>
-
   <dependencies>
 
     <dependency>
@@ -93,11 +68,6 @@
     <dependency>
       <groupId>org.opennms.plugins</groupId>
       <artifactId>${productName}.main-module</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.plugins</groupId>
-      <artifactId>${productName}.product-descriptor</artifactId>
       <version>${project.version}</version>
     </dependency>
 

@@ -1,0 +1,24 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-flow-support-introduction]]
+=== Introduction
+
+_{opennms-product-name}_ supports receiving, decoding and persisting flow information sent via _Netflow v5_, _Netflow v9_, _IPFIX_ and _sFlow_.
+While flows offer a great breadth of information, the current focus of the support in _{opennms-product-name}_ is aimed at:
+
+* Network diagnostic: Being able to view the top protocols and top talkers within the context of a particular network interface.
+* Forensic analysis: Persisting the flows for long term storage.
+
+==== How it works
+
+At a high level:
+
+* <<ga-telemetryd, telemetryd>> is used to receive and decode flows on both _{opennms-product-name}_ and _Minion_.
+* The _telemetryd_ adapters convert the flows to a canonical flow model and dispatch these to the _flow repository_.
+* The _flow repository_ enriches the flows and persists them to Elasticsearch:
+** Flows are tagged with an application name via the <<ga-flow-support-classification-engine, Classification Engine>>.
+** Metadata related to associated nodes such as ids and categories are also added to the flows.
+* The _REST API_ supports generating both summaries and time series data from the flows stored in the _flow repository_.
+* _OpenNMS Helm_ is used to visualize the flow data using the _flow datasource_ that interfaces with the  _{opennms-product-name}_ _REST API_.

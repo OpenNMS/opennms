@@ -295,7 +295,7 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
         
         m_easyMockUtils.replayAll();
         
-        m_agent = DefaultCollectionAgent.create(m_iface.getId(), m_ifaceDao, new MockPlatformTransactionManager());
+        m_agent = DefaultSnmpCollectionAgent.create(m_iface.getId(), m_ifaceDao, new MockPlatformTransactionManager());
         
     }
     

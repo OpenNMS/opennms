@@ -32,13 +32,9 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
@@ -52,6 +48,8 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.xml.event.Event;
+
+import junit.framework.TestCase;
 
 /**
  * Test the MockNetwork and related classes
@@ -464,8 +462,7 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testPollOutageConfig() {
-        PollOutagesConfig pollOutagesConfig = m_pollerConfig;
-        assertNotNull(pollOutagesConfig);
+        assertNotNull(m_pollerConfig);
     }
 
     public void testPollStatus() {

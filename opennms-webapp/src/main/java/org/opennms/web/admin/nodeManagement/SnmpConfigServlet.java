@@ -182,6 +182,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		String maxRepetitions = request.getParameter("maxRepetitions");
 		String proxyHost = request.getParameter("proxyHost");
 		String location = request.getParameter("location");
+		String ttl = request.getParameter("ttl");
 		
 		// v1/v2c specifics
 		String readCommunityString = request.getParameter("readCommunityString");
@@ -221,6 +222,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		if (!Strings.isNullOrEmpty(version)) snmpInfo.setVersion(version);
 		if (!Strings.isNullOrEmpty(writeCommunityString)) snmpInfo.setWriteCommunity(writeCommunityString);
 	    if (!Strings.isNullOrEmpty(location)) snmpInfo.setLocation(location);
+	    if (!Strings.isNullOrEmpty(ttl)) snmpInfo.setTTL(Long.parseLong(ttl));
 
 		return snmpInfo;
 	}

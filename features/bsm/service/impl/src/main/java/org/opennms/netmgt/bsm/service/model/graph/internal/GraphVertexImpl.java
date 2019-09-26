@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.model.graph.internal;
 
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
@@ -37,25 +38,31 @@ public class GraphVertexImpl extends GraphElement implements GraphVertex, Compar
     private final BusinessService m_businessService;
     private final IpService m_ipService;
     private final String m_reductionKey;
+    private final Application m_application;
     private ReductionFunction m_reductionFunction;
     int m_level = -1;
 
     protected GraphVertexImpl(ReductionFunction reduceFunction, BusinessService businessService) {
-        this(reduceFunction, businessService, null, null);
+        this(reduceFunction, businessService, null, null, null);
     }
 
     protected GraphVertexImpl(ReductionFunction reduceFunction, IpService ipService) {
-        this(reduceFunction, null, ipService, null);
+        this(reduceFunction, null, ipService, null, null);
+    }
+
+    protected GraphVertexImpl(ReductionFunction reduceFunction, Application application) {
+        this(reduceFunction, null, null, application, null);
     }
 
     protected GraphVertexImpl(ReductionFunction reduceFunction, String reductionKey) {
-        this(reduceFunction, null, null, reductionKey);
+        this(reduceFunction, null, null, null, reductionKey);
     }
 
-    public GraphVertexImpl(ReductionFunction reduceFunction, BusinessService businessService, IpService ipService, String reductionKey) {
+    public GraphVertexImpl(ReductionFunction reduceFunction, BusinessService businessService, IpService ipService, Application application, String reductionKey) {
         m_businessService = businessService;
         m_ipService = ipService;
         m_reductionKey = reductionKey;
+        m_application = application;
         m_reductionFunction = reduceFunction;
     }
 
@@ -90,11 +97,17 @@ public class GraphVertexImpl extends GraphElement implements GraphVertex, Compar
     }
 
     @Override
+    public Application getApplication() {
+        return m_application;
+    }
+
+    @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("businessService", m_businessService)
                 .add("ipService", m_ipService)
                 .add("reductionKey", m_reductionKey)
+                .add("application", m_application)
                 .add("level", m_level)
                 .add("reductionFunction", m_reductionFunction)
                 .toString();
@@ -114,6 +127,11 @@ public class GraphVertexImpl extends GraphElement implements GraphVertex, Compar
         i = getIpService() == null ?
                 (other.getIpService() == null ? 0 : -1) :
                 (other.getIpService() == null ? 1 : Integer.compare(getIpService().getId(), other.getIpService().getId()));
+        if (i != 0) return i;
+
+        i = getApplication() == null ?
+                (other.getApplication() == null ? 0 : -1) :
+                (other.getApplication() == null ? 1 : Integer.compare(getApplication().getId(), other.getApplication().getId()));
         if (i != 0) return i;
 
         i = getReductionKey() == null ?

@@ -1,0 +1,57 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <cm:property-placeholder id="datasourceProperties" persistent-id="org.opennms.netmgt.distributed.datasource" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="connection.pool.factory" value="org.opennms.core.db.HikariCPConnectionFactory" />
+            <cm:property name="connection.pool.idleTimeout" value="600" />
+            <cm:property name="connection.pool.loginTimeout" value="3" />
+            <cm:property name="connection.pool.minPool" value="50" />
+            <cm:property name="connection.pool.maxPool" value="50" />
+            <cm:property name="connection.pool.maxSize" value="50" />
+            <cm:property name="datasource.name" value="opennms" />
+            <cm:property name="datasource.url" value="jdbc:postgresql://localhost:5432/opennms" />
+            <cm:property name="datasource.username" value="postgres" />
+            <cm:property name="datasource.password" value="" />
+            <cm:property name="datasource.driverClass" value="org.postgresql.Driver" />
+            <cm:property name="datasource.databaseName" value="opennms" />
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="connectionPool" class="org.opennms.netmgt.config.opennmsDataSources.ConnectionPool">
+        <property name="factory" value="${connection.pool.factory}" />
+        <property name="idleTimeout" value="${connection.pool.idleTimeout}" />
+        <property name="loginTimeout" value="${connection.pool.loginTimeout}" />
+        <property name="minPool" value="${connection.pool.minPool}" />
+        <property name="maxPool" value="${connection.pool.maxPool}" />
+        <property name="maxSize" value="${connection.pool.maxSize}" />
+    </bean>
+
+    <bean id="dataSourceConfig" class="org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource">
+        <property name="databaseName" value="${datasource.databaseName}" />
+        <property name="name" value="${datasource.databaseName}" />
+        <property name="className" value="${datasource.driverClass}" />
+        <property name="url" value="${datasource.url}" />
+        <property name="userName" value="${datasource.username}" />
+        <property name="password" value="${datasource.password}" />
+    </bean>
+
+    <bean id="configFactory" class="org.opennms.netmgt.distributed.datasource.ConfigFactory" />
+    <bean id="datasource" factory-ref="configFactory" factory-method="createDataSource" destroy-method="close">
+        <argument ref="connectionPool" />
+        <argument ref="dataSourceConfig" />
+    </bean>
+    <service ref="datasource" interface="javax.sql.DataSource" />
+</blueprint>

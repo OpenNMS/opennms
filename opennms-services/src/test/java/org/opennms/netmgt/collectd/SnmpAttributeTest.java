@@ -32,6 +32,7 @@ import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.matches;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +41,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
@@ -71,8 +70,8 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
-import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.FileAnticipator;
+import org.opennms.test.mock.EasyMockUtils;
 
 public class SnmpAttributeTest {
     private EasyMockUtils m_mocks = new EasyMockUtils();
@@ -142,7 +141,6 @@ public class SnmpAttributeTest {
     }
 
     @Ignore
-    @SuppressWarnings("unchecked")
     private void testPersisting(String matchValue, SnmpValue snmpValue) throws Exception {
         OnmsNode node = new OnmsNode();
         node.setId(3);
@@ -165,7 +163,7 @@ public class SnmpAttributeTest {
 
         m_mocks.replayAll();
 
-        SnmpCollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
+        SnmpCollectionAgent agent = DefaultSnmpCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig(), m_locationAwareSnmpClient);
         NodeResourceType resourceType = new NodeResourceType(agent, snmpCollection);
         NodeInfo nodeInfo = resourceType.getNodeInfo();

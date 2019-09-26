@@ -28,27 +28,29 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
-import com.vaadin.data.util.AbstractBeanContainer;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.MethodPropertyDescriptor;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.data.util.PropertysetItem;
-import com.vaadin.data.util.VaadinPropertyDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.AbstractBeanContainer;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.MethodPropertyDescriptor;
+import com.vaadin.v7.data.util.ObjectProperty;
+import com.vaadin.v7.data.util.PropertysetItem;
+import com.vaadin.v7.data.util.VaadinPropertyDescriptor;
+
 /**
  * This class represents a selectable item. In encapsulates any java objects
  * which fulfillths the java bean convention. In addition it implements
  * {@link Selectable} which determines that this item can be selected. This
- * class is mainly a rough copy of {@link com.vaadin.data.util.BeanItem}, but
+ * class is mainly a rough copy of {@link com.vaadin.v7.data.util.BeanItem}, but
  * due to some limitations in how the {@link BeanItemContainer} (or
  * {@link AbstractBeanContainer}) handles the creation of a BeanItem I decided
  * to implement a new SelectableItem. This may change in future releases in the
@@ -95,7 +97,7 @@ public class SelectableItem<T> extends PropertysetItem implements Selectable {
 
 	/**
 	 * <b>Note:</b>This method is simmilar to
-	 * {@link com.vaadin.data.util.BeanItem#getPropertyDescriptors(java.lang.Class)
+	 * {@link com.vaadin.v7.data.util.BeanItem#getPropertyDescriptors(java.lang.Class)
 	 * }
 	 * but adds an additional <code>VaadinPropertyDescriptor</codE> to support a
 	 * "is selectable" feature. Because the earlier mentioned method is static,
@@ -114,14 +116,14 @@ public class SelectableItem<T> extends PropertysetItem implements Selectable {
 	 * {@link java.beans.Introspector} is used to get all PropertyDescriptors
 	 * from the given class <code>clazz</code>. Each PropertyDescriptor is
 	 * converted to a vaadin <code>MethodPropertyDescriptor</code>(
-	 * {@link com.vaadin.data.util.MethodPropertyDescriptor} is created. In
+	 * {@link com.vaadin.v7.data.util.MethodPropertyDescriptor} is created. In
 	 * addition a VaadinPropertyDescriptor is added to provide the "select"
 	 * feature. For this we use the <code>ObjectProperty</code> of vaadin. <br/>
 	 * <br/>
 	 * 
 	 * The build map is a mapping between property names and the
 	 * <code>VaadinPropertyDescriptor</code>s, whereby
-	 * {@link com.vaadin.data.util.VaadinPropertyDescriptor#getName()} is
+	 * {@link com.vaadin.v7.data.util.VaadinPropertyDescriptor#getName()} is
 	 * identically with the key of the returned map (and therefore represents
 	 * the property name).
 	 * 
@@ -151,7 +153,7 @@ public class SelectableItem<T> extends PropertysetItem implements Selectable {
 				}
 
 				@Override
-				public com.vaadin.data.Property createProperty(T value) {
+				public Property createProperty(T value) {
 					return new ObjectProperty(false, Boolean.class, false);
 				}
 			});

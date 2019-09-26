@@ -40,9 +40,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.opennms.core.collections.LazySet;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.SIUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
@@ -160,6 +160,46 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return resource;
     }
 
+    protected static String[] getKeysFor(OnmsSnmpInterface snmpInterface) {
+        /*
+         * When Cisco Express Forwarding (CEF) or some ATM encapsulations
+         * (AAL5) are used on Cisco routers, an additional entry might be
+         * in the ifTable for these sub-interfaces, but there is no
+         * performance data available for collection.  This check excludes
+         * ifTable entries where ifDescr contains "-cef".  See bug #803.
+         */
+        if (snmpInterface.getIfDescr() != null) {
+            if (Pattern.matches(".*-cef.*", snmpInterface.getIfDescr())) {
+                return new String[0];
+            }
+        }
+
+        String replacedIfName = AlphaNumeric.parseAndReplace(snmpInterface.getIfName(), '_');
+        String replacedIfDescr = AlphaNumeric.parseAndReplace(snmpInterface.getIfDescr(), '_');
+
+        return new String[] {
+                replacedIfName + "-",
+                replacedIfDescr + "-",
+                replacedIfName + "-" + snmpInterface.getPhysAddr(),
+                replacedIfDescr + "-" + snmpInterface.getPhysAddr()
+        };
+    }
+
+    private static String getKeyFor(String intfName) {
+        String desc = intfName;
+        String mac = "";
+
+        // Strip off the MAC address from the end, if there is one
+        int dashIndex = intfName.lastIndexOf('-');
+
+        if (dashIndex >= 0) {
+            desc = intfName.substring(0, dashIndex);
+            mac = intfName.substring(dashIndex + 1, intfName.length());
+        }
+
+        return desc + "-" + mac;
+    }
+
     private List<OnmsResource> getNodeResources(ResourcePath parent, Set<String> intfNames, OnmsNode node) {
             
         ArrayList<OnmsResource> resources = new ArrayList<>();
@@ -168,30 +208,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         Map<String, OnmsSnmpInterface> intfMap = new HashMap<String, OnmsSnmpInterface>();
 
         for (OnmsSnmpInterface snmpInterface : snmpInterfaces) {
-            /*
-             * When Cisco Express Forwarding (CEF) or some ATM encapsulations
-             * (AAL5) are used on Cisco routers, an additional entry might be 
-             * in the ifTable for these sub-interfaces, but there is no
-             * performance data available for collection.  This check excludes
-             * ifTable entries where ifDescr contains "-cef".  See bug #803.
-             */
-            if (snmpInterface.getIfDescr() != null) {
-                if (Pattern.matches(".*-cef.*", snmpInterface.getIfDescr())) {
-                    continue;
-                }
-            }
-
-            String replacedIfName = AlphaNumeric.parseAndReplace(snmpInterface.getIfName(), '_');
-            String replacedIfDescr = AlphaNumeric.parseAndReplace(snmpInterface.getIfDescr(), '_');
-            
-            String[] keys = new String[] {
-                    replacedIfName + "-",
-                    replacedIfDescr + "-",
-                    replacedIfName + "-" + snmpInterface.getPhysAddr(),
-                    replacedIfDescr + "-" + snmpInterface.getPhysAddr()
-            };
-            
-            for (String key : keys) {
+            for (String key : getKeysFor(snmpInterface)) {
                 if (!intfMap.containsKey(key)) {
                     intfMap.put(key, snmpInterface);
                 }
@@ -199,18 +216,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         }
 
         for (String intfName : intfNames) {
-            String desc = intfName;
-            String mac = "";
-
-            // Strip off the MAC address from the end, if there is one
-            int dashIndex = intfName.lastIndexOf('-');
-
-            if (dashIndex >= 0) {
-                desc = intfName.substring(0, dashIndex);
-                mac = intfName.substring(dashIndex + 1, intfName.length());
-            }
-
-            String key = desc + "-" + mac; 
+            String key = getKeyFor(intfName);
             OnmsSnmpInterface snmpInterface = intfMap.get(key);
             
             String label;
@@ -268,7 +274,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 label = descr.toString();
             }
 
-            OnmsResource resource = getResourceByParentPathAndInterface(parent, intfName, label, ifSpeed, ifSpeedFriendly);
+            OnmsResource resource = getResourceByParentPathAndInterface(parent, intfName, label, snmpInterface);
             if (snmpInterface != null) {
                 Set<OnmsIpInterface> ipInterfaces = snmpInterface.getIpInterfaces();
                 if (ipInterfaces.size() > 0) {
@@ -306,13 +312,13 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return resources;
     }
 
-    private Set<String> getQueryableInterfaces(OnmsResource parent) {
+    protected Set<String> getQueryableInterfaces(OnmsResource parent) {
         if (!NodeResourceType.isNode(parent) && !DomainResourceType.isDomain(parent)) {
             return Collections.emptySet();
         }
 
         return m_resourceStorageDao.children(parent.getPath(), 1).stream()
-                .map(rp -> rp.getName())
+                .map(ResourcePath::getName)
                 .collect(Collectors.toSet());
     }
 
@@ -323,9 +329,9 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return new OnmsResource(intf, intf, this, set, path);
     }
 
-    private OnmsResource getResourceByParentPathAndInterface(ResourcePath parent, String intf, String label, Long ifSpeed, String ifSpeedFriendly) throws DataAccessException {
+    private OnmsResource getResourceByParentPathAndInterface(ResourcePath parent, String intf, String label, OnmsSnmpInterface snmpInterface) throws DataAccessException {
         final ResourcePath path = ResourcePath.get(parent, intf);
-        final AttributeLoader loader = new AttributeLoader(m_resourceStorageDao, path, ifSpeed, ifSpeedFriendly);
+        final AttributeLoader loader = new AttributeLoader(m_resourceStorageDao, path, snmpInterface);
         final Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(loader);
         return new OnmsResource(intf, label, this, set, path);
     }
@@ -333,24 +339,27 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     private static class AttributeLoader implements LazySet.Loader<OnmsAttribute> {
         private final ResourceStorageDao m_resourceStorageDao;
         private final ResourcePath m_path;
-        private final Long m_ifSpeed;
-        private final String m_ifSpeedFriendly;
+        private final OnmsSnmpInterface m_snmpInterface;
 
-        public AttributeLoader(ResourceStorageDao resourceStorageDao, ResourcePath path, Long ifSpeed, String ifSpeedFriendly) {
+        public AttributeLoader(ResourceStorageDao resourceStorageDao, ResourcePath path,
+                OnmsSnmpInterface snmpInterface) {
             m_resourceStorageDao = resourceStorageDao;
             m_path = path;
-            m_ifSpeed = ifSpeed;
-            m_ifSpeedFriendly = ifSpeedFriendly;
+            m_snmpInterface = snmpInterface;
         }
 
         @Override
         public Set<OnmsAttribute> load() {
             Set<OnmsAttribute> attributes = m_resourceStorageDao.getAttributes(m_path);
-            if (m_ifSpeed != null) {
-                attributes.add(new ExternalValueAttribute("ifSpeed", m_ifSpeed.toString()));
-            }
-            if (m_ifSpeedFriendly != null) {
-                attributes.add(new ExternalValueAttribute("ifSpeedFriendly", m_ifSpeedFriendly));
+            if (m_snmpInterface != null) {
+                attributes.add(new ExternalValueAttribute("nodeId", m_snmpInterface.getNodeId().toString()));
+                attributes.add(new ExternalValueAttribute("ifIndex", m_snmpInterface.getIfIndex().toString()));
+                attributes.add(new ExternalValueAttribute("hasFlows", String.valueOf(m_snmpInterface.getHasFlows())));
+                if (m_snmpInterface.getIfSpeed() != null) {
+                    String ifSpeedFriendly = SIUtils.getHumanReadableIfSpeed(m_snmpInterface.getIfSpeed());
+                    attributes.add(new ExternalValueAttribute("ifSpeed", m_snmpInterface.getIfSpeed().toString()));
+                    attributes.add(new ExternalValueAttribute("ifSpeedFriendly", ifSpeedFriendly));
+                }
             }
             return attributes;
         }

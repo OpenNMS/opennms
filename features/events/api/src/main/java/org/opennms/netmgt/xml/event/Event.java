@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -56,6 +57,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.events.api.DateTimeAdapter;
@@ -63,8 +65,8 @@ import org.opennms.netmgt.events.api.DateTimeAdapter;
 @XmlRootElement(name = "event")
 @XmlAccessorType(XmlAccessType.FIELD)
 //@ValidateUsing("event.xsd")
-public class Event implements Serializable {
-        private static final long serialVersionUID = 6997816158234653400L;
+public class Event implements Message,Serializable {
+        private static final long serialVersionUID = 6997817689084653400L;
 
 	@XmlAttribute(name = "uuid")
 	private String _uuid;
@@ -293,11 +295,11 @@ public class Event implements Serializable {
 	public Event() {
 		super();
 
-		_autoactionList = new ArrayList<>();
-		_operactionList = new ArrayList<>();
-		_loggroupList = new ArrayList<>();
-		_forwardList = new ArrayList<>();
-		_scriptList = new ArrayList<>();
+		_autoactionList = new CopyOnWriteArrayList<>();
+		_operactionList = new CopyOnWriteArrayList<>();
+		_loggroupList = new CopyOnWriteArrayList<>();
+		_forwardList = new CopyOnWriteArrayList<>();
+		_scriptList = new CopyOnWriteArrayList<>();
 	}
 
 	// -----------/
@@ -387,7 +389,7 @@ public class Event implements Serializable {
 
 	public void addParm(final Parm parm) {
 	    if (_parms == null) {
-	        _parms = new ArrayList<>();
+	        _parms = new CopyOnWriteArrayList<>();
 	    }
 	    _parms.add(parm);
 	}
@@ -1699,7 +1701,11 @@ public class Event implements Serializable {
 	}
 
 	public void setParmCollection(final List<Parm> parms) {
-	    _parms = parms;
+		if (parms == null) {
+			_parms = new CopyOnWriteArrayList<>();
+		} else {
+			_parms = new CopyOnWriteArrayList<>(parms);
+		}
 	}
 
 	/**
@@ -1883,8 +1889,7 @@ public class Event implements Serializable {
 		if (_dbid   != null) builder.append("dbid", _dbid);
 		if (_source != null) builder.append("source", _source);
 		if (_nodeid != null) builder.append("nodeid", _nodeid);
-		// Copy the _parms array instead of referencing it, to avoid Concurrent Modification Exceptions
-		if (_parms  != null) builder.append("parms",  new ArrayList<>(_parms));
+		if (_parms  != null) builder.append("parms",  _parms);
 		return builder.toString();
 	}
 

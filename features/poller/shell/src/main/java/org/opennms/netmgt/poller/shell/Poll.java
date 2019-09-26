@@ -61,6 +61,9 @@ public class Poll implements Action {
 
     @Option(name = "-t", aliases = "--ttl", description = "Time to live", required = false, multiValued = false)
     Long ttlInMs;
+    
+    @Option(name = "-n", aliases = "--node-id", description = "Node Id for Service", required = false, multiValued = false)
+    int nodeId;
 
     @Argument(index = 0, name = "monitorClass", description = "Monitor class", required = true, multiValued = false)
     @Completion(MonitorClassNameCompleter.class)
@@ -77,8 +80,14 @@ public class Poll implements Action {
 
     @Override
     public Object execute() throws Exception {
+        SimpleMonitoredService service = null;
+        if (nodeId > 0) {
+            service = new SimpleMonitoredService(InetAddress.getByName(host), nodeId, null, "SVC", location);
+        } else {
+            service = new SimpleMonitoredService(InetAddress.getByName(host), "SVC", location);
+        }
         final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll()
-                .withService(new SimpleMonitoredService(InetAddress.getByName(host), "SVC", location))
+                .withService(service)
                 .withSystemId(systemId)
                 .withMonitorClassName(className)
                 .withTimeToLive(ttlInMs)

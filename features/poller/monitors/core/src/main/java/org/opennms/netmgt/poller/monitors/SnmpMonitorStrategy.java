@@ -30,7 +30,6 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.regex.Pattern;
 

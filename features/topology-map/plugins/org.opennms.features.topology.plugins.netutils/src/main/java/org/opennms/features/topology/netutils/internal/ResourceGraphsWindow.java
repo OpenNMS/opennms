@@ -33,7 +33,7 @@ import java.net.URL;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Embedded;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**
@@ -72,7 +72,6 @@ public class ResourceGraphsWindow extends Window {
 		    label = " - " + label;
 		}
 		setCaption("Resource Graphs" + label);
-		setImmediate(true);
 		setResizable(false);
 		
 		/*Adds the browser component to the main layout*/

@@ -145,13 +145,16 @@ public class ConvertToEvent {
 
         bldr.addParam("hostname", message.getHostName());
 
+        // Add any syslog message parameters as event parameters.
+        message.getParameters().forEach((k, v) -> bldr.addParam(k.toString(), v));
+
         final InetAddress hostAddress = message.getHostAddress();
         if (hostAddress != null) {
             // Set nodeId
             InterfaceToNodeCache cache = AbstractInterfaceToNodeCache.getInstance();
             if (cache != null) {
                 cache.getFirstNodeId(location, hostAddress)
-                        .ifPresent(nodeId -> bldr.setNodeid(nodeId));
+                        .ifPresent(bldr::setNodeid);
             }
 
             bldr.setInterface(hostAddress);
@@ -303,6 +306,11 @@ public class ConvertToEvent {
 
         if (LOG.isTraceEnabled()) {
             LOG.trace("got syslog message {}", SyslogParser.fromByteBuffer(buffer));
+        }
+
+        if (config.shouldIncludeRawSyslogmessage()) {
+            // Set the raw syslog message as a parm
+            message.addParameter("rawSyslogmessage", SyslogParser.fromByteBuffer(buffer));
         }
 
         // If no host name was provided we will use the source IP address

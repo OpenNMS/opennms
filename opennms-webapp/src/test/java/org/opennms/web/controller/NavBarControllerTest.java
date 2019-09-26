@@ -38,6 +38,7 @@ import org.opennms.web.navigate.LocationBasedNavBarEntry;
 import org.opennms.web.navigate.MenuDropdownNavBarEntry;
 import org.opennms.web.navigate.NavBarEntry;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockServletContext;
 
 import com.google.common.collect.Lists;
 
@@ -60,6 +61,7 @@ public class NavBarControllerTest {
 
         // Instantiate the controller
         navBarController = new NavBarController();
+        navBarController.setServletContext(new MockServletContext("file:src/main/webapp"));
         navBarController.setNavBarItems(navBarEntries);
         navBarController.afterPropertiesSet();
     }

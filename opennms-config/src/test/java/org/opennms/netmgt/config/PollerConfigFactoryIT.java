@@ -34,10 +34,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.xml.JaxbUtils;
@@ -50,6 +47,8 @@ import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockNetwork;
+
+import junit.framework.TestCase;
 
 public class PollerConfigFactoryIT extends TestCase {
 
@@ -85,7 +84,7 @@ public class PollerConfigFactoryIT extends TestCase {
         super.setUp();
         MockLogAppender.setupLogging();
         
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml")));
+        DatabaseSchemaConfigFactory.init();
 
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
@@ -135,15 +134,15 @@ public class PollerConfigFactoryIT extends TestCase {
     static class TestPollerConfigManager extends PollerConfigManager {
         private String m_xml;
 
-        public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws IOException {
-            super(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), localServer, verifyServer);
+        public TestPollerConfigManager(String xml) throws IOException {
+            super(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
             save();
         }
 
         @Override
         public void update() throws IOException {
             m_config = JaxbUtils.unmarshal(PollerConfiguration.class, m_xml);
-            setUpInternalData();
+            super.update();
         }
 
         @Override
@@ -157,7 +156,7 @@ public class PollerConfigFactoryIT extends TestCase {
     }
     
     public void testPollerConfigFactory() throws Exception {
-        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
+        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG);
         assertNull(factory.getPackage("TestPkg"));
         Package pkg = new Package();
         pkg.setName("TestPkg");
@@ -190,7 +189,7 @@ public class PollerConfigFactoryIT extends TestCase {
         
         assertNotNull(factory.getPackage("TestPkg"));
         
-        TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml(), "localhost", false);
+        TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml());
         Package p = newFactory.getPackage("TestPkg");
         assertNotNull("package for 'TestPkg'", p);
         assertTrue("Expected 192.169.1.5 to be in the package", newFactory.isInterfaceInPackage("192.169.1.5", p));
@@ -199,7 +198,7 @@ public class PollerConfigFactoryIT extends TestCase {
     }
     
     public void testInterfaceInPackage() throws Exception {
-        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
+        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG);
         Package pkg = factory.getPackage("default");
         assertNotNull("Unable to find pkg default", pkg);
         
@@ -210,7 +209,7 @@ public class PollerConfigFactoryIT extends TestCase {
     }
     
     public void testSpecific() throws Exception {
-        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
+        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG);
         assertNull(factory.getPackage("TestPkg"));
         Package pkg = new Package();
         pkg.setName("TestPkg");
@@ -241,7 +240,7 @@ public class PollerConfigFactoryIT extends TestCase {
         
         assertNotNull(factory.getPackage("TestPkg"));
         
-        TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml(), "localhost", false);
+        TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml());
         Package p = newFactory.getPackage("TestPkg");
         assertNotNull("package 'TestPkg' from new factory", p);
         assertTrue("Expect 123.12.123.121 to be part of the package", newFactory.isInterfaceInPackage("123.12.123.121", p));
@@ -251,7 +250,7 @@ public class PollerConfigFactoryIT extends TestCase {
     }
 
     public void testIncludeUrl() throws Exception {
-        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
+        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG);
         assertNull(factory.getPackage("TestPkg"));
         Package pkg = new Package();
         pkg.setName("TestPkg");
@@ -289,7 +288,7 @@ public class PollerConfigFactoryIT extends TestCase {
         
         assertNotNull(factory.getPackage("TestPkg"));
         
-        TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml(), "localhost", false);
+        TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml());
         Package p = newFactory.getPackage("TestPkg");
         assertNotNull(p);
         System.out.println(factory.getXml());

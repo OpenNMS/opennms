@@ -103,22 +103,22 @@
   <%=Util.makeHiddenTags(request)%>
   <input type="hidden" name="sourcePage" value="chooseCommands.jsp"/>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Choose the commands to use for each user and group. More than one
+<div class="card">
+  <div class="card-header">
+    <span>Choose the commands to use for each user and group. More than one
     command can be chosen for each (except for email addresses). Also
-    choose the desired behavior for automatic notification on "UP" events.</h3>
+    choose the desired behavior for automatic notification on "UP" events.</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="row">
       <div class="col-md-4">
         <%=buildCommands(newPath, WebSecurityUtils.safeParseInt(request.getParameter("targetIndex")))%>
       </div>
     </div>
-    <input type="reset" class="btn btn-default"/>
-  </div> <!-- panel-body -->
-  <div class="panel-footer">
-    <a href="javascript:next()">Next &#155;&#155;&#155;</a>
+  </div> <!-- card-body -->
+  <div class="card-footer">
+      <input type="reset" class="btn btn-secondary"/>
+      <a class="btn btn-secondary" href="javascript:next()">Next Step <i class="fa fa-arrow-right"></i></a>
   </div>
 </div> <!-- panel -->
 
@@ -131,7 +131,7 @@
       throws ServletException
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("<table class=\"table table-condensed table-borderless\">");
+        buffer.append("<table class=\"table table-sm table-borderless\">");
         
         Target targets[] = null;
         
@@ -165,7 +165,7 @@
     public String buildCommandSelect(Path path, int index, String name)
       throws ServletException
     {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" multiple size=\"3\" NAME=\"" + name + "Commands\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple size=\"3\" NAME=\"" + name + "Commands\">");
         
         TreeMap<String, Command> commands = null;
         Collection<String> selectedOptions = null;
@@ -203,7 +203,7 @@
     public String buildAutoNotifySelect(String name, String currValue)
     {
           String values[] = {"off", "auto", "on"};
-          StringBuffer buffer = new StringBuffer("<select class=\"form-control\" size=\"3\" NAME=\"" + name  + "AutoNotify\">");
+          StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" size=\"3\" NAME=\"" + name  + "AutoNotify\">");
           String defaultOption = "on";
  
           if(currValue == null || currValue.equals("")) {

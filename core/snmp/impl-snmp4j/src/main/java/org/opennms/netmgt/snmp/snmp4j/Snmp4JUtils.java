@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
@@ -98,6 +99,7 @@ public class Snmp4JUtils {
 		dispatcher.addMessageProcessingModel(new MPv2c());
 
 		final Snmp snmp = new Snmp(dispatcher, responder);
+		Snmp4JStrategy.trackSession(snmp);
 		try {
 			snmp.listen();
 
@@ -116,7 +118,13 @@ public class Snmp4JUtils {
 
 			return bytes.get();
 		} finally {
+		    try {
 			snmp.close();
+		    } catch (final IOException e) {
+		        LOG.error("failed to close SNMP session", e);
+		    } finally {
+		        Snmp4JStrategy.reapSession(snmp);
+		    }
 		}
 	}
 

@@ -1,6 +1,6 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Konica">
    <systemDef name="Konica Minolta Network Printer">
-      <sysoidMask>.1.3.6.1.4.1.18334.1.1.1.2.1</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.18334.1.1.1.2.1</sysoid>
       <collect>
          <includeGroup>printer-usage</includeGroup>
          <includeGroup>printer-mib-supplies</includeGroup>

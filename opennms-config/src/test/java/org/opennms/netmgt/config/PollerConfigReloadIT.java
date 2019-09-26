@@ -77,13 +77,13 @@ public class PollerConfigReloadIT {
         inetAddressList.add(InetAddressUtils.addr("128.0.1.12"));
         when(mockFilterDao.getActiveIPAddressList(Mockito.anyString())).thenReturn(inetAddressList);
         FilterDaoFactory.setInstance(mockFilterDao);
-        pollerConfigManager = new TestPollerConfigFactory(configStream, "OPENNMS", false);
+        pollerConfigManager = new TestPollerConfigFactory(configStream);
     }
 
     private static class TestPollerConfigFactory extends PollerConfigManager {
 
-        private TestPollerConfigFactory(InputStream stream, String localServer, boolean verifyServer) {
-            super(stream, localServer, verifyServer);
+        private TestPollerConfigFactory(InputStream stream) {
+            super(stream);
         }
 
         @Override

@@ -59,10 +59,5 @@ public interface PollConfig extends Timer {
      * <p>refresh</p>
      */
     public void refresh();
-    
-    /**
-     * <p>refreshThresholds</p>
-     */
-    public void refreshThresholds();
 
 }
