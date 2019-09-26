@@ -383,6 +383,13 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
             group.id = OpenNMS
             bootstrap.servers = localhost:9092
         </config>
+        <!--
+            Configure as Kafka Producer for sending Events from Sentinel.
+            All properties desribed at https://kafka.apache.org/0100/documentation.html#producerconfigs are supported.
+        -->
+        <config name="org.opennms.core.ipc.sink.kafka">
+            bootstrap.servers = localhost:9092
+        </config>
         <!-- Install Kafka related features -->
         <feature>sentinel-kafka</feature>
         <!-- Install flow related features -->
