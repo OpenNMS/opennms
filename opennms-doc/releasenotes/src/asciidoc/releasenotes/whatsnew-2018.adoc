@@ -101,6 +101,8 @@ The codename for 2018.1.12 is _link:https://en.wikipedia.org/wiki/Beaufort_scale
 * Cannot change the type of a scheduled outage (Issue http://issues.opennms.org/browse/NMS-12255[NMS-12255])
 * Short outages are not visible in Availability-Bar (Issue http://issues.opennms.org/browse/NMS-12262[NMS-12262])
 * vmwarereqtool freezes and never return to the prompt after is executed (Issue http://issues.opennms.org/browse/NMS-12265[NMS-12265])
+* On the scheduled outage UI, the day is displayed as null for weekly schedule (Issue http://issues.opennms.org/browse/LTS-233[LTS-233])
+* Using special characters on the scheduled outages name breaks the UI (Issue http://issues.opennms.org/browse/LTS-234[LTS-234])
 
 [releasenotes-changelog-Meridian-2018.1.11]
 
