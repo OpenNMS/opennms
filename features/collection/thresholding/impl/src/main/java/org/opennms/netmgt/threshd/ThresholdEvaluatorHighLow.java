@@ -76,7 +76,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
          */
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
 
-        static class State implements Serializable {
+        static class State extends AbstractThresholdEvaluatorState.AbstractState {
             private static final long serialVersionUID = 1L;
 
             /**
@@ -99,7 +99,8 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             @Override
             public String toString() {
                 return "exceededCount=" + m_exceededCount +
-                        "\narmed=" + m_armed;
+                        "\narmed=" + m_armed +
+                        "\n" + super.toString();
             }
         }
         

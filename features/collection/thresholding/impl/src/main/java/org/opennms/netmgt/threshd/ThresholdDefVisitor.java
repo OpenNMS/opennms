@@ -26,31 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.threshd;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.opennms.core.config.api.JaxbListWrapper;
-
-@XmlRootElement(name = "meta-data-list")
-@JsonRootName("metaDataList")
-public class OnmsMetaDataList extends JaxbListWrapper<OnmsMetaData> {
-    private static final long serialVersionUID = 1L;
-
-    public OnmsMetaDataList() { super(); }
-    public OnmsMetaDataList(final Collection<? extends OnmsMetaData> onmsNodeMetaData) {
-        super(onmsNodeMetaData);
-    }
-
-    @XmlElement(name="meta-data")
-    @JsonProperty("metaData")
-    public List<OnmsMetaData> getObjects() {
-        return super.getObjects();
-    }
+public interface ThresholdDefVisitor {
+    void visit(ThresholdConfigWrapper thresholdConfigWrapper);
+    void visit(ExpressionConfigWrapper expressionConfigWrapper);
 }

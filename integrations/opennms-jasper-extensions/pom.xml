@@ -16,8 +16,6 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <!-- TODO MVR verify that this still works with 1.8 (was 1.7) -->
-          <!-- To load the jar file into jaspersoft studio it is required to be Java 6 compatible -->
           <source>1.8</source>
           <target>1.8</target>
         </configuration>

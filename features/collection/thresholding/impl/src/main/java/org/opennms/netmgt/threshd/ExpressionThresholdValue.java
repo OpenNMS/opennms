@@ -26,31 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.threshd;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.function.Consumer;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public interface ExpressionThresholdValue {
+    /**
+     * @param expressionConsumer a consumer for accepting the interpolated expression for caching purposes
+     * @return the expression value
+     */
+    double get(Consumer<String> expressionConsumer) throws ThresholdExpressionException;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.opennms.core.config.api.JaxbListWrapper;
-
-@XmlRootElement(name = "meta-data-list")
-@JsonRootName("metaDataList")
-public class OnmsMetaDataList extends JaxbListWrapper<OnmsMetaData> {
-    private static final long serialVersionUID = 1L;
-
-    public OnmsMetaDataList() { super(); }
-    public OnmsMetaDataList(final Collection<? extends OnmsMetaData> onmsNodeMetaData) {
-        super(onmsNodeMetaData);
-    }
-
-    @XmlElement(name="meta-data")
-    @JsonProperty("metaData")
-    public List<OnmsMetaData> getObjects() {
-        return super.getObjects();
-    }
+    /**
+     * @param evaluatedExpression the already interpolated expression which will be used rather than interpolating the
+     *                            expression
+     * @return the expression value
+     */
+    double get(String evaluatedExpression) throws ThresholdExpressionException;
 }

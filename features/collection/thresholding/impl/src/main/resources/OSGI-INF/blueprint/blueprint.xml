@@ -3,11 +3,24 @@
     <reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao"/>
     <reference id="pollOutagesDao" interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
     <reference id="ifLabelDao" interface="org.opennms.netmgt.dao.api.IfLabel"/>
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+
+    <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl">
+        <property name="nodeDao" ref="nodeDao"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+        <property name="sessionUtils" ref="sessionUtils"/>
+    </bean>
+    
     <bean id="thresholdingSetPersister" class="org.opennms.netmgt.threshd.DefaultThresholdingSetPersister">
         <property name="threshdDao" ref="threshdDao"/>
         <property name="thresholdingDao" ref="thresholdingDao"/>
         <property name="pollOutagesDao" ref="pollOutagesDao"/>
         <property name="ifLabelDao" ref="ifLabelDao"/>
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
     </bean>
     
     <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />

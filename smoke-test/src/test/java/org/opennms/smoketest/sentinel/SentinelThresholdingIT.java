@@ -37,6 +37,7 @@ import static org.opennms.netmgt.events.api.EventConstants.HIGH_THRESHOLD_EVENT_
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Random;
@@ -45,11 +46,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop;
 import org.opennms.smoketest.stacks.BlobStoreStrategy;
@@ -58,14 +59,15 @@ import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.SentinelProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.telemetry.Packet;
 import org.opennms.smoketest.utils.KarafShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SentinelThrehsoldingIT {
-    private static final Logger LOG = LoggerFactory.getLogger(SentinelThrehsoldingIT.class);
+public class SentinelThresholdingIT {
+    private static final Logger LOG = LoggerFactory.getLogger(SentinelThresholdingIT.class);
     private static final String NODE_IP = "192.168.1.1";
     private static final String INTERFACE_ID = "eth0_system_test";
 
@@ -136,6 +138,11 @@ public class SentinelThrehsoldingIT {
         requisitionCreateInfo.foreignSource = "telemetry-jti";
         requisitionCreateInfo.foreignId = "dummy-node";
         requisitionCreateInfo.nodeLabel = "Dummy Node";
+        RequisitionMetaData metaData = new RequisitionMetaData();
+        metaData.setKey("multiplier");
+        metaData.setValue("1");
+        metaData.setContext("requisition");
+        requisitionCreateInfo.metaData = Collections.singletonList(metaData);
         return requisitionCreateInfo;
     }
 

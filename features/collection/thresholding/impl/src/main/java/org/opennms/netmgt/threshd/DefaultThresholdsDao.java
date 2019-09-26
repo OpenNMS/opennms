@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
@@ -59,6 +60,8 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     private ThresholdingEventProxy m_eventProxy;
     
     private ReadableThresholdingDao m_thresholdingDao;
+    
+    private EntityScopeProvider m_entityScopeProvider;
 
     /** {@inheritDoc} */
     @Override
@@ -129,7 +132,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntitySet);
                     }
                     try {
-                        ThresholdEntity thresholdEntity = new ThresholdEntity();
+                        ThresholdEntity thresholdEntity = new ThresholdEntity(m_entityScopeProvider);
                         thresholdEntity.setEventProxy(m_eventProxy);
                         thresholdEntity.addThreshold(wrapper, thresholdingSession);
                         if (merge) {
@@ -202,4 +205,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         m_eventProxy = eventProxy;
     }
 
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        m_entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
+    }
 }

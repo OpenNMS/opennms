@@ -46,6 +46,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -100,11 +101,12 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     private final ReadableThresholdingDao m_thresholdingDao;
     private final ReadablePollOutagesDao m_pollOutagesDao;
     private final IfLabel m_ifLabelDao;
+    private final EntityScopeProvider m_entityScopeProvider;
 
     public ThresholdingSetImpl(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao,
-            ThresholdingEventProxy eventProxy, ThresholdingSession thresholdingSession, ReadableThreshdDao threshdDao,
+                               ThresholdingEventProxy eventProxy, ThresholdingSession thresholdingSession, ReadableThreshdDao threshdDao,
                                ReadableThresholdingDao thresholdingDao, ReadablePollOutagesDao pollOutagesDao,
-                               IfLabel ifLabelDao)
+                               IfLabel ifLabelDao, EntityScopeProvider entityScopeProvider)
             throws ThresholdInitializationException {
         m_nodeId = nodeId;
         m_hostAddress = (hostAddress == null ? null : hostAddress.intern());
@@ -118,6 +120,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         m_thresholdingDao = Objects.requireNonNull(thresholdingDao);
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
         m_ifLabelDao = Objects.requireNonNull(ifLabelDao);
+        m_entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
         
         initThresholdsDao();
         initialize();
@@ -397,6 +400,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                 m_thresholdingDao.reload();
                 defaultThresholdsDao.setThresholdingDao(m_thresholdingDao);
                 defaultThresholdsDao.setEventProxy(m_eventProxy);
+                defaultThresholdsDao.setEntityScopeProvider(m_entityScopeProvider);
                 defaultThresholdsDao.afterPropertiesSet();
             } catch (final Throwable t) {
                 final ThresholdInitializationException tie = new ThresholdInitializationException("Could not initialize DefaultThresholdsDao.", t);
