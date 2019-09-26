@@ -2,11 +2,48 @@
 
 === Changelog
 
+[releasenotes-changelog-24.1.3]
+
+==== Release 24.1.3
+
+Release 24.1.3 is a stable release of OpenNMS.
+It contains a few enhancements including JMS RPC improvements, as well as a bunch of bug fixes.
+
+For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
+
+The codename for 24.1.3 is _link:https://en.wikipedia.org/wiki/WOPR[WOPR]_
+
+===== Bug
+
+* Possible Memory Leak in Ops Board (Issue http://issues.opennms.org/browse/NMS-8283[NMS-8283])
+* Heatmap in CenterURL not functioning properly (Issue http://issues.opennms.org/browse/NMS-8884[NMS-8884])
+* importFailed exposes the vcenter credentials (Issue http://issues.opennms.org/browse/NMS-9535[NMS-9535])
+* Node label accepts ampersand (&) symbol, but it breaks graphing (Issue http://issues.opennms.org/browse/NMS-9904[NMS-9904])
+* Default eventconf for clogMessageDiscarded has invalid snmphost mask (Issue http://issues.opennms.org/browse/NMS-10162[NMS-10162])
+* Netflow 9 graphs do not line up with MIB2 data (Issue http://issues.opennms.org/browse/NMS-10721[NMS-10721])
+* DNS Requisition import fails if location is specified (Issue http://issues.opennms.org/browse/NMS-11748[NMS-11748])
+* Group Duty Schedules Formatting Issues (Issue http://issues.opennms.org/browse/NMS-12155[NMS-12155])
+* Topology/Geographical map: Header not hidden when displayed inside iFrame (Issue http://issues.opennms.org/browse/NMS-12166[NMS-12166])
+* Nodes and alarms disappear from Geo Map after few seconds (Issue http://issues.opennms.org/browse/NMS-12171[NMS-12171])
+* Kafka RPC shouldn't set default  auto.offset.reset  to earliest (Issue http://issues.opennms.org/browse/NMS-12172[NMS-12172])
+* find-java.sh does not canonicalize all symlinks in java path (Issue http://issues.opennms.org/browse/NMS-12176[NMS-12176])
+* Drools engine hangs on shutdown (Issue http://issues.opennms.org/browse/NMS-12201[NMS-12201])
+* Minion can't be started after installation from RPM/DEB with OpenJDK 11 (Issue http://issues.opennms.org/browse/NMS-12206[NMS-12206])
+* Can't connect to Karaf Shell in Minion on Debian/Ubuntu (Issue http://issues.opennms.org/browse/NMS-12211[NMS-12211])
+* Date handling broken in OpsBoard's criteria builder component (Issue http://issues.opennms.org/browse/NMS-12223[NMS-12223])
+
+===== Enhancement
+
+* %interface% & %interfaceresolve% variables should resolve nodes managed IP address (Issue http://issues.opennms.org/browse/NMS-10657[NMS-10657])
+* Remove the /etc/default/opennms from Debian/Ubuntu installs (Issue http://issues.opennms.org/browse/NMS-12183[NMS-12183])
+* Improve diagnostics and resiliency of JMS RPC (w/ embedded ActiveMQ) (Issue http://issues.opennms.org/browse/NMS-12222[NMS-12222])
+* Track and display timestamps for the last polls (Issue http://issues.opennms.org/browse/NMS-12225[NMS-12225])
+
 [releasenotes-changelog-24.1.2]
 
 ==== Release 24.1.2
 
-Release 24.1.2 is the latest stable release of OpenNMS.
+Release 24.1.2 is a stable release of OpenNMS.
 It contains bug fixes for flow processing, Debian package startup, the minion UI, and more.
 
 For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.2/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
@@ -28,7 +65,7 @@ The codename for 24.1.2 is _link:https://en.wikipedia.org/wiki/$$Watson_(compute
 
 ==== Release 24.1.1
 
-Release 24.1.1 is the latest stable release of OpenNMS.
+Release 24.1.1 is a stable release of OpenNMS.
 It contains bug fixes to WS-Man, the web UI, flows, and more as well as a few small enhancements.
 
 For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.1/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
@@ -58,7 +95,7 @@ The codename for 24.1.1 is _link:https://en.wikipedia.org/wiki/GLaDOS[GLaDOS]_.
 
 ==== Release 24.1.0
 
-Release 24.1.0 is the latest stable release of OpenNMS.
+Release 24.1.0 is a stable release of OpenNMS.
 It contains a bunch of bug fixes and a few enhancements, including support for OpenTracing in the sink API and a rework of geocoding services.
 
 For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.0/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
@@ -101,7 +138,7 @@ The codename for 24.1.0 is _link:https://marvel-movies.fandom.com/wiki/J.A.R.V.I
 
 ==== Release 24.0.0
 
-Release 24.0.0 is the latest stable release of OpenNMS.
+Release 24.0.0 is a stable release of OpenNMS.
 It contains a large number of bug fixes and enhancements, most notably adding machine-learning-guided correlation of alarms, and many improvements to Netflow/IPFIX/sFlow support.
 
 For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.0.0/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
