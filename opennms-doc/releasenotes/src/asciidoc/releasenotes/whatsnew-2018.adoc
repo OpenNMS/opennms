@@ -84,6 +84,26 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.12]
+
+==== Release Meridian-2018.1.12
+
+Release 2018.1.12 is a small update to 2018.1.11 that fixes a number of (mostly UI) bugs.
+
+The codename for 2018.1.12 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_12[Hurricane Force]_.
+
+===== Bug
+
+* "Graph all" fails with 'Request Header Fields Too Large' error (Issue http://issues.opennms.org/browse/NMS-8712[NMS-8712])
+* No class found exception in OSGi for org.osgi.service.jdbc.DataSourceFactory (Issue http://issues.opennms.org/browse/NMS-9341[NMS-9341])
+* Updating external lists referenced by include-url requires restart OpenNMS (Issue http://issues.opennms.org/browse/NMS-10071[NMS-10071])
+* Telephone PIN Field in User Details is Misplaced (Issue http://issues.opennms.org/browse/NMS-10073[NMS-10073])
+* Cannot change the type of a scheduled outage (Issue http://issues.opennms.org/browse/NMS-12255[NMS-12255])
+* Short outages are not visible in Availability-Bar (Issue http://issues.opennms.org/browse/NMS-12262[NMS-12262])
+* vmwarereqtool freezes and never return to the prompt after is executed (Issue http://issues.opennms.org/browse/NMS-12265[NMS-12265])
+* On the scheduled outage UI, the day is displayed as null for weekly schedule (Issue http://issues.opennms.org/browse/LTS-233[LTS-233])
+* Using special characters on the scheduled outages name breaks the UI (Issue http://issues.opennms.org/browse/LTS-234[LTS-234])
+
 [releasenotes-changelog-Meridian-2018.1.11]
 
 ==== Release Meridian-2018.1.11
