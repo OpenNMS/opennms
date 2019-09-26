@@ -31,10 +31,12 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -45,7 +47,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -66,7 +67,6 @@ import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 
 import com.google.common.base.MoreObjects;
 
@@ -414,30 +414,20 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	@XmlElementWrapper(name="parameters")
 	@XmlElement(name="parameter")
 	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
-	@OrderBy("position")
 	public List<OnmsEventParameter> getEventParameters() {
 	    return this.m_eventParameters;
 	}
 
 	public void setEventParameters(List<OnmsEventParameter> eventParameters) {
 		this.m_eventParameters = eventParameters;
-
-		// make sure the positions are set correctly
-		if(eventParameters != null) {
-		    for(int i=0; i<eventParameters.size(); i++) {
-		        eventParameters.get(i).setPosition(i);
-            }
-        }
+		setPositionsOnParameters(m_eventParameters);
 	}
 
 	public void setEventParametersFromEvent(final Event event) {
-		 List<Parm> parms = EventParameterUtils.normalizePreserveOrder(event.getParmCollection());
-		 List<OnmsEventParameter> parameters = new ArrayList<>();
-		 for(int i=0; i<parms.size(); i++) {
-			 OnmsEventParameter parameter = new OnmsEventParameter(this, parms.get(i), i);
-			 parameters.add(parameter);
-		 }
-		this.m_eventParameters = parameters;
+		this.m_eventParameters = EventParameterUtils.normalizePreserveOrder(event.getParmCollection()).stream()
+				.map(p -> new OnmsEventParameter(this, p))
+				.collect(Collectors.toList());
+		setPositionsOnParameters(m_eventParameters);
 	}
 
 	public void addEventParameter(OnmsEventParameter parameter) {
@@ -447,8 +437,29 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		if (m_eventParameters.contains(parameter)) {
 			m_eventParameters.remove(parameter);
 		}
+		parameter.setPosition(m_eventParameters.size());
 		m_eventParameters.add(parameter);
+        setPositionsOnParameters(m_eventParameters);
 	}
+
+	/**
+     * We need this method to preserve the order in the m_eventParameters when saved and retrieved from the database.
+     * There might be a more elegant solution via JPA but none seems to work in our context, see also:
+     * https://issues.opennms.org/browse/NMS-9827
+     */
+    void setPositionsOnParameters(List<OnmsEventParameter> parameters) {
+        if (parameters != null) {
+
+            // sort first if positions were already given (e.g. coming from the database)
+            parameters.sort(Comparator
+                    .comparing(OnmsEventParameter::getPosition));
+
+            // give each parameter a distinct position
+            for (int i = 0; i < parameters.size(); i++) {
+                parameters.get(i).setPosition(i);
+            }
+        }
+    }
 
 	/**
 	 * <p>getEventCreateTime</p>
