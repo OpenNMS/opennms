@@ -85,7 +85,7 @@ public class SnmpProfileMapperIT {
     private ProxySnmpAgentConfigFactory snmpPeerFactory;
 
 
-    @Test
+    @Test(timeout = 30000)
     public void testSnmpProfileMapper() throws UnknownHostException {
 
         // timeout and ttl from first profile.
@@ -108,7 +108,7 @@ public class SnmpProfileMapperIT {
         }
     }
 
-    @Test
+    @Test(timeout = 30000)
     public void testSnmpProfileMapperWithCustomOID() {
 
         // timeout and ttl from profile.
@@ -133,7 +133,7 @@ public class SnmpProfileMapperIT {
     }
 
 
-    @Test
+    @Test(timeout = 30000)
     public void testFitProfile() throws UnknownHostException {
 
         // timeout and ttl from profile.

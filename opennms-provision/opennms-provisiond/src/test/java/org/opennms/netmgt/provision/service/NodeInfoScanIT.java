@@ -102,7 +102,7 @@ public class NodeInfoScanIT {
         scanProgress = new MockScanProgress();
     }
 
-    @Test
+    @Test(timeout = 30000)
     public void testNodeInfoScanWithDefaultConfig() throws InterruptedException {
         try (InputStream configStream = getClass().getResource("/snmp-config1.xml").openStream()) {
             snmpPeerFactory = new ProxySnmpAgentConfigFactory(configStream);
@@ -120,7 +120,7 @@ public class NodeInfoScanIT {
         }
     }
 
-    @Test
+    @Test(timeout = 60000)
     public void testNodeInfoScanWithProfile() throws InterruptedException {
         try (InputStream configStream = getClass().getResource("/snmp-config1.xml").openStream()) {
             // Make default scan fail by setting wrong read community.
@@ -143,7 +143,7 @@ public class NodeInfoScanIT {
         }
     }
 
-    @Test
+    @Test(timeout = 60000)
     public void testNodeInfoScanWithProfileThatsGotUpdated() throws InterruptedException {
         try (InputStream configStream = getClass().getResource("/snmp-config1.xml").openStream()) {
             // Make default scan fail by setting wrong read community.
