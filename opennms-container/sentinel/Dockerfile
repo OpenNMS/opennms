@@ -4,7 +4,7 @@
 ARG BASE_IMAGE="opennms/openjdk"
 ARG BASE_IMAGE_VERSION="11"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as meridian-sentinel-base
 
 ARG REQUIRED_RPMS="wget gettext"
 
@@ -29,10 +29,10 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 ##
 # Install and setup OpenNMS Sentinel RPMS
 ##
-FROM sentinel-base
+FROM meridian-sentinel-base
 
-# A default which installs the minimum required Minion packages
-ARG SENTINEL_PACKAGES="opennms-sentinel"
+# A default which installs the minimum required Sentinel packages
+ARG SENTINEL_PACKAGES="meridian-sentinel"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
@@ -69,9 +69,9 @@ ARG BUILD_SHA1
 
 LABEL maintainer="The OpenNMS Group" \
       license="AGPLv3" \
-      name="Sentinel" \
+      name="Meridian Sentinel" \
       version="${VERSION}" \
-      vendor="OpenNMS Community" \
+      vendor="The OpenNMS Group" \
       cicd.build.date="${BUILD_DATE}" \
       cicd.build.number="${BUILD_NUMBER}" \
       cicd.build.url="${BUILD_URL}" \

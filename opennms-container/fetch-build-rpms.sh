@@ -23,16 +23,16 @@ PLAN_KEY=$(echo "${BUILD}" | awk -F'-' '{ print $(NF-2) "-" $(NF-1) }')
 BUILD_ID=$(echo "${BUILD}" | awk -F'-' '{ print $NF }')
 
 # Figure out RPM_VERSION
-RPM_VERSION=$(curl -s "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_ID}/RPMs/" | grep -i opennms-core | sed -E 's/(.*>)(opennms-core-)(.*)\.noarch.rpm<\/a>.*/\3/g')
+RPM_VERSION=$(curl -s "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_ID}/RPMs/" | grep -i meridian-core | sed -E 's/(.*>)(meridian-core-)(.*)\.noarch.rpm<\/a>.*/\3/g')
 
-RPMS_HORIZON=("opennms-core-${RPM_VERSION}.noarch.rpm"
-              "opennms-webapp-jetty-${RPM_VERSION}.noarch.rpm"
-              "opennms-webapp-remoting-${RPM_VERSION}.noarch.rpm"
-              "opennms-webapp-hawtio-${RPM_VERSION}.noarch.rpm")
+RPMS_MERIDIAN=("meridian-core-${RPM_VERSION}.noarch.rpm"
+              "meridian-webapp-jetty-${RPM_VERSION}.noarch.rpm"
+              "meridian-webapp-remoting-${RPM_VERSION}.noarch.rpm"
+              "meridian-webapp-hawtio-${RPM_VERSION}.noarch.rpm")
 
-RPMS_MINION=("opennms-minion-${RPM_VERSION}.noarch.rpm")
+RPMS_MINION=("meridian-minion-${RPM_VERSION}.noarch.rpm")
 
-RPMS_SENTINEL=("opennms-sentinel-${RPM_VERSION}.noarch.rpm")
+RPMS_SENTINEL=("meridian-sentinel-${RPM_VERSION}.noarch.rpm")
 
 # Start Downloading
 
@@ -49,9 +49,9 @@ if [ -z "${BUILD}" ] || [ -z "${PLAN_KEY}" ] || [ -z "${BUILD_ID}" ] || [ -z "${
     exit 2
 fi
 
-for RPM in ${RPMS_HORIZON[*]}; do
+for RPM in ${RPMS_MERIDIAN[*]}; do
     echo "RPM: ${RPM}"
-    wget --no-clobber "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_ID}/RPMs/${RPM}" -P horizon/rpms
+    wget --no-clobber "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_ID}/RPMs/${RPM}" -P meridian/rpms
 done
 
 for RPM in ${RPMS_MINION[*]}; do
@@ -71,6 +71,6 @@ cat <<END
 Note that if you are trying to just build local versions of these images for
 running smoke tests, you don't need to use the "build_container_image.sh"
 scripts, you can just go into the individual projects and run
-"docker build -t horizon ." and so on...
+"docker build -t meridian ." and so on...
 
 END

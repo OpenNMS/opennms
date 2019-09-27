@@ -4,7 +4,7 @@
 ARG BASE_IMAGE="opennms/openjdk"
 ARG BASE_IMAGE_VERSION="11"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as minion-base
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as meridian-minion-base
 
 ARG REQUIRED_RPMS="wget gettext jicmp jicmp6"
 
@@ -29,12 +29,12 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 ##
 # Install and setup OpenNMS Minion RPMS
 ##
-FROM minion-base
+FROM meridian-minion-base
 
 ARG USER="minion"
 
 # A default which installs the minimum required Minion packages
-ARG MINION_PACKAGES="opennms-minion"
+ARG MINION_PACKAGES="meridian-minion"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
@@ -64,9 +64,9 @@ ARG BUILD_SHA1
 
 LABEL maintainer="The OpenNMS Group" \
       license="AGPLv3" \
-      name="Minion" \
+      name="Meridian Minion" \
       version="${VERSION}" \
-      vendor="OpenNMS Community" \
+      vendor="The OpenNMS Group" \
       cicd.build.date="${BUILD_DATE}" \
       cicd.build.number="${BUILD_NUMBER}" \
       cicd.build.url="${BUILD_URL}" \

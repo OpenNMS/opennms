@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# we should not publish meridian sentinel containers
+exit 1
+
 # Exit script if a statement returns a non-true return value.
 set -o errexit
 
@@ -13,5 +16,5 @@ source ../registry-config.sh
 source ../version-tags.sh
 
 for TAG in ${OCI_TAGS[*]}; do
-  docker push "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/sentinel:${TAG}"
+  docker push "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/meridian-sentinel:${TAG}"
 done

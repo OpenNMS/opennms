@@ -4,7 +4,7 @@
 ARG BASE_IMAGE="opennms/openjdk"
 ARG BASE_IMAGE_VERSION="11"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as meridian-base
 
 ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq"
 
@@ -38,10 +38,10 @@ RUN groupadd -g 10001 opennms && \
 ##
 # Install and setup OpenNMS RPMS
 ##
-FROM horizon-base
+FROM meridian-base
 
-# A default which installs the required OpenNMS Horizon packages
-ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting opennms-webapp-hawtio"
+# A default which installs the required OpenNMS Meridian packages
+ARG ONMS_PACKAGES="meridian-core meridian-webapp-jetty meridian-webapp-remoting meridian-webapp-hawtio"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
@@ -121,9 +121,9 @@ ARG BUILD_SHA1
 
 LABEL maintainer="The OpenNMS Group" \
       license="AGPLv3" \
-      name="Horizon" \
+      name="OpenNMS Meridian" \
       version="${VERSION}" \
-      vendor="OpenNMS Community" \
+      vendor="The OpenNMS Group" \
       cicd.build.date="${BUILD_DATE}" \
       cicd.build.number="${BUILD_NUMBER}" \
       cicd.build.url="${BUILD_URL}" \

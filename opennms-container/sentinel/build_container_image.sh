@@ -13,13 +13,13 @@ source ../registry-config.sh
 source ../version-tags.sh
 
 # OpenNMS Minion packages
-SENTINEL_PACKAGES="opennms-sentinel"
+SENTINEL_PACKAGES="meridian-sentinel"
 
 for PKG in ${SENTINEL_PACKAGES}; do 
   cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
 done
 
-docker build -t sentinel \
+docker build -t meridian-sentinel \
   --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \
   --build-arg BASE_IMAGE="opennms/openjdk" \
   --build-arg BASE_IMAGE_VERSION="11.0.4.11" \
@@ -30,4 +30,4 @@ docker build -t sentinel \
   --build-arg BUILD_SHA1="${CIRCLE_SHA1}" \
   .
 
-docker image save sentinel -o images/container.oci
+docker image save meridian-sentinel -o images/container.oci

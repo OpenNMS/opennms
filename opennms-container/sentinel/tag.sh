@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# we should not publish meridian sentinel tags
+exit 1
+
 # Exit script if a statement returns a non-true return value.
 set -o errexit
 
