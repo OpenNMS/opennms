@@ -225,6 +225,54 @@ public class BsmdIT {
         Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
     }
 
+    public void verifyReloadBySendingEventUei(final String uei) throws Exception {
+        final BusinessServiceEntity businessService1 = createBusinessService("service1");
+        m_bsmd.start();
+        Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService1)));
+
+        final BusinessServiceEntity businessService2 = createBusinessService("service2");
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+
+        final EventBuilder eventBuilder = new EventBuilder(uei, "test");
+        m_eventMgr.sendNow(eventBuilder.getEvent(), true);
+
+        await().atMost(5, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)), equalTo(Status.NORMAL));
+    }
+
+    @Test
+    public void verifyDelayedReload() throws Exception {
+        final BusinessServiceEntity businessService1 = createBusinessService("service1");
+        m_bsmd.start();
+        Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService1)));
+
+        final BusinessServiceEntity businessService2 = createBusinessService("service2");
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "test");
+        for (int i = 0; i < 5; i++) {
+            m_eventMgr.sendNow(eventBuilder.getEvent(), true);
+            Thread.sleep(Bsmd.RELOAD_DELAY / 2);
+            Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+        }
+
+        await().atMost(5, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)), equalTo(Status.NORMAL));
+    }
+
+    @Test
+    public void verifyReloadByDeletionOfService() throws Exception {
+        verifyReloadBySendingEventUei(EventConstants.SERVICE_DELETED_EVENT_UEI);
+    }
+
+    @Test
+    public void verifyReloadByDeletionOfInterface() throws Exception {
+        verifyReloadBySendingEventUei(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+    }
+
+    @Test
+    public void verifyReloadByDeletionOfNode() throws Exception {
+        verifyReloadBySendingEventUei(EventConstants.NODE_DELETED_EVENT_UEI);
+    }
+
     /**
      * Verifies that the state is properly updated when handling alarm snapshots from the lifecycle API.
      */

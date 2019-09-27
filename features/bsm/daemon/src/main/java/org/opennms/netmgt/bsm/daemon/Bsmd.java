@@ -30,6 +30,8 @@ package org.opennms.netmgt.bsm.daemon;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -79,6 +81,8 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     public static final String NAME = "Bsmd";
 
+    public static final long RELOAD_DELAY = 1000;
+
     @Autowired
     @Qualifier("eventIpcManager")
     private EventIpcManager m_eventIpcManager;
@@ -96,6 +100,8 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     private BusinessServiceManager m_manager;
 
     private boolean m_verifyReductionKeys = true;
+
+    private Timer reloadTimer = null;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -157,6 +163,27 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                 return Status.INDETERMINATE;
             }
         });
+    }
+
+    @EventHandler(ueis = {EventConstants.SERVICE_DELETED_EVENT_UEI, EventConstants.INTERFACE_DELETED_EVENT_UEI, EventConstants.NODE_DELETED_EVENT_UEI})
+    public void serviceInterfaceOrNodeDeleted(Event e) {
+        LOG.debug("Received event " + e.getUei());
+
+        if (reloadTimer != null) {
+            LOG.debug("Configuration reload already scheduled. Cancelling and re-scheduling reload of configuration...");
+            reloadTimer.cancel();
+            reloadTimer = null;
+        }
+
+        LOG.debug("Scheduling reload in " + RELOAD_DELAY + "ms...");
+        reloadTimer = new Timer(getClass().getSimpleName(), true);
+        reloadTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                LOG.debug("Running scheduled configuration reload...");
+                handleConfigurationChanged();
+            }
+        }, RELOAD_DELAY);
     }
 
     /**
