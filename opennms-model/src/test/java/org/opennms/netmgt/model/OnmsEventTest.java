@@ -31,7 +31,9 @@ package org.opennms.netmgt.model;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.Test;
 
@@ -74,10 +76,30 @@ public class OnmsEventTest {
         shouldOrderEventParams(params, "A", "E", "B", "F", "C", "D");
     }
 
+	@Test
+	public void shouldPreserveOrderFromDatabase() {
+		List<OnmsEventParameter> params = Arrays.asList(
+				param("A", 0),
+				param("B", 0),
+				param("C", 0),
+				param("D", 0),
+				param("E", 0)
+		);
+		OnmsEvent event = new OnmsEvent();
+		event.setEventParameters(params);
+		params = event.getEventParameters();
+
+		// assume we are writing now to database and retrieve parameters out of order
+		Collections.shuffle(params, new Random(42));
+
+		// but the order should be ok again when invoking the getter
+		shouldOrderEventParams(params, "A", "B", "C", "D", "E");
+	}
+
     private void shouldOrderEventParams(final List<OnmsEventParameter> params, final String ... expected) {
         OnmsEvent event = new OnmsEvent();
-        event.setPositionsOnParameters(params);
-        assertEquals(expected, params.stream().map(OnmsEventParameter::getName).toArray());
+        event.setEventParameters(params);
+        assertEquals(expected, event.getEventParameters().stream().map(OnmsEventParameter::getName).toArray());
     }
 
     private OnmsEventParameter param(String name, int position) {

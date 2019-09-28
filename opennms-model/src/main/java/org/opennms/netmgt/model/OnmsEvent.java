@@ -415,12 +415,21 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	@XmlElement(name="parameter")
 	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
 	public List<OnmsEventParameter> getEventParameters() {
-	    return this.m_eventParameters;
+		if(this.m_eventParameters != null) {
+			// make sure they are sorted (could have come from db in wrong order). We can't do the sorting in the setter,
+			// hibernate will complain
+			this.m_eventParameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
+		}
+		return this.m_eventParameters;
 	}
 
 	public void setEventParameters(List<OnmsEventParameter> eventParameters) {
 		this.m_eventParameters = eventParameters;
-		setPositionsOnParameters(m_eventParameters);
+		// we want to set the positions on the parameters only if they weren't set already to preserve what comes out of
+		// the database
+		if(eventParameters != null && eventParameters.size() > 1 && eventParameters.stream().noneMatch(p -> p.getPosition() > 0)) {
+			setPositionsOnParameters(m_eventParameters);
+		}
 	}
 
 	public void setEventParametersFromEvent(final Event event) {
@@ -447,19 +456,18 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
      * There might be a more elegant solution via JPA but none seems to work in our context, see also:
      * https://issues.opennms.org/browse/NMS-9827
      */
-    void setPositionsOnParameters(List<OnmsEventParameter> parameters) {
+    private void setPositionsOnParameters(List<OnmsEventParameter> parameters) {
         if (parameters != null) {
-
-            // sort first if positions were already given (e.g. coming from the database)
-            parameters.sort(Comparator
-                    .comparing(OnmsEventParameter::getPosition));
-
             // give each parameter a distinct position
             for (int i = 0; i < parameters.size(); i++) {
                 parameters.get(i).setPosition(i);
             }
         }
     }
+
+    private void sortParametersByPosition(List<OnmsEventParameter> parameters) {
+		parameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
+	}
 
 	/**
 	 * <p>getEventCreateTime</p>
