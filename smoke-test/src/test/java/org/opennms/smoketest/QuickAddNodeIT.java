@@ -55,7 +55,6 @@ public class QuickAddNodeIT extends OpenNMSSeleniumIT {
     public void setUp() throws Exception {
         deleteTestRequisition();
         createTestRequisition();
-        provisioningPage();
     }
 
     /**
