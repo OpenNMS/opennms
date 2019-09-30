@@ -19,6 +19,14 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
 const confirmTopoverTemplate = require('./views/modals/popover.html');
 
+const handleErrorResponse = function(response) {
+    if (response && response.data) {
+        var error = response.data;
+        $scope.error = {};
+        $scope.error[error.context] = error.message;
+    }
+};
+
 (function() {
     'use strict';
 
@@ -240,7 +248,6 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             };
             // for drag and drop of groups (redefining position)
             $scope.sortableGroups = {
-
                 start: function(e, ui) {
                     // remember old index before moving
                     angular.element(ui.item).data('oldIndex', ui.item.index());
@@ -250,41 +257,30 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                     // Check Precondition:  item was actually moved
                     var oldIndex =  angular.element(ui.item).data().oldIndex;
                     var newIndex =  ui.item.index();
-                    if(oldIndex === newIndex) {
-                        ui.item.parent().sortable('cancel');
-                        return; // nothing to do
-                    }
-
-                    // Calculate and set new position (index + offset)
-                    var parameters = $scope.query || {};
-                    var offset =  (parameters.page -1) * parameters.limit || 0;
-                    var group = $scope.groups[newIndex];
-                    var position;
-                    if(newIndex -1 < 0) {
-                        // we are already at the beginning of the visible paged list
-                        position = offset;
-                    } else {
-                        var previousGroup = $scope.groups[newIndex -1];
-                        position = (newIndex > oldIndex) ? previousGroup.position : previousGroup.position + 1;
-                    }
-                    group.position = position;
-
-                    // Update backend
-                    var refreshCallback = function() {
-                        $scope.refreshTabs();
-                        $scope.refresh();
-                    };
-
-                    var handleErrorResponse = function(response) {
-                        if (response && response.data) {
-                            var error = response.data;
-                            $scope.error = {};
-                            $scope.error[error.context] = error.message;
+                    if(oldIndex !== newIndex) {
+                        // Calculate and set new position (index + offset)
+                        var parameters = $scope.query || {};
+                        var offset = (parameters.page - 1) * parameters.limit || 0;
+                        var group = $scope.groups[newIndex];
+                        var position;
+                        if (newIndex - 1 < 0) {
+                            // we are already at the beginning of the visible paged list
+                            position = offset;
+                        } else {
+                            var previousGroup = $scope.groups[newIndex - 1];
+                            position = (newIndex > oldIndex) ? previousGroup.position : previousGroup.position + 1;
                         }
-                    };
-                    ClassificationGroupService.update(group, refreshCallback, handleErrorResponse);
+                        group.position = position;
+
+                        // Update backend
+                        var refreshCallback = function () {
+                            $scope.refreshTabs();
+                            $scope.refresh();
+                        };
+
+                        ClassificationGroupService.update(group, refreshCallback, handleErrorResponse);
+                    }
                 },
-                cancel: ".unsortable",
                 items: "tr:not(.unsortable)"
             };
             $scope.refresh();
@@ -429,48 +425,36 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
 
             // for drag and drop of rules (redefining position)
             $scope.sortableRules = {
-
                 start: function(e, ui) {
                     // remember old index before moving
                     angular.element(ui.item).data('oldIndex', ui.item.index());
                 },
                 stop: function(e, ui) {
-
                     // Check Precondition: item was actually moved
                     var oldIndex =  angular.element(ui.item).data().oldIndex;
                     var newIndex =  ui.item.index();
-                    if(oldIndex === newIndex) {
-                        ui.item.parent().sortable('cancel');
-                        return; // nothing to do
-                    }
-
-                    // Calculate and set new position (index + offset)
-                    var parameters = $scope.query || {};
-                    var offset =  (parameters.page -1) * parameters.limit || 0;
-                    var rule = $scope.rules[newIndex];
-                    var position;
-                    if(newIndex -1 < 0) {
-                        // we are already at the beginning of the visible paged list
-                        position = offset;
-                    } else {
-                        var previousRule = $scope.rules[newIndex -1];
-                        position = (newIndex > oldIndex) ? previousRule.position : previousRule.position + 1;
-                    }
-                    rule.position = position;
-
-                    // Update backend
-                    var refreshCallback = function() {
-                        $scope.refreshAll();
-                    };
-
-                    var handleErrorResponse = function(response) {
-                        if (response && response.data) {
-                            var error = response.data;
-                            $scope.error = {};
-                            $scope.error[error.context] = error.message;
+                    if(oldIndex !== newIndex) {
+                        // Calculate and set new position (index + offset)
+                        var parameters = $scope.query || {};
+                        var offset = (parameters.page - 1) * parameters.limit || 0;
+                        var rule = $scope.rules[newIndex];
+                        var position;
+                        if (newIndex - 1 < 0) {
+                            // we are already at the beginning of the visible paged list
+                            position = offset;
+                        } else {
+                            var previousRule = $scope.rules[newIndex - 1];
+                            position = (newIndex > oldIndex) ? previousRule.position : previousRule.position + 1;
                         }
-                    };
-                    ClassificationRuleService.update(rule, refreshCallback, handleErrorResponse);
+                        rule.position = position;
+
+                        // Update backend
+                        var refreshCallback = function () {
+                            $scope.refreshAll();
+                        };
+
+                        ClassificationRuleService.update(rule, refreshCallback, handleErrorResponse);
+                    }
                 }
             };
 
@@ -610,14 +594,6 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
                 });
             };
 
-            var handleErrorResponse = function(response) {
-                if (response && response.data) {
-                    var error = response.data;
-                    $scope.error = {};
-                    $scope.error[error.context] = error.message;
-                }
-            };
-
             $scope.save = function() {
                 // Close modal afterwards
                 var closeCallback = function() {
@@ -669,14 +645,6 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
             $scope.groups = groups;
             $scope.groupsTotalAmount = groupsTotalAmount;
             $scope.maxPosition = (group === undefined) ? groupsTotalAmount-1 : groupsTotalAmount-2; // pre-defined group has always the last position
-
-            var handleErrorResponse = function(response) {
-                if (response && response.data) {
-                    var error = response.data;
-                    $scope.error = {};
-                    $scope.error[error.context] = error.message;
-                }
-            };
 
             $scope.save = function() {
                 // Close modal afterwards
