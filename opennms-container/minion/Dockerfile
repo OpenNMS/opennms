@@ -26,6 +26,10 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
     echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
     ldconfig
 
+# Create Minion user with a specific group ID
+RUN groupadd -g 10001 minion && \
+    adduser -u 10001 -g 10001 -d /opt/minion -s /usr/bin/bash minion
+
 ##
 # Install and setup OpenNMS Minion RPMS
 ##
@@ -81,14 +85,14 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 
 WORKDIR /opt/minion
 
+### Containers should NOT run as root as a good practice
+USER 10001
+
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 STOPSIGNAL SIGTERM
 
 CMD [ "-f" ]
-
-### Containers should NOT run as root as a good practice
-USER 10001
 
 ### Runtime information and not relevant at build time
 ENV MINION_ID="00000000-0000-0000-0000-deadbeef0001" \

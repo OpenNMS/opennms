@@ -34,7 +34,7 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
     echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
     ldconfig
 
-# Set gid=0 and make group perms==owner perms
+# Create OpenNMS user with a specific group ID
 RUN groupadd -g 10001 opennms && \
     adduser -u 10001 -g 10001 -d /opt/opennms -s /usr/bin/bash opennms
 ##
@@ -139,6 +139,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 
 WORKDIR /opt/opennms
 
+### Containers should NOT run as root as a good practice
 USER 10001
 
 ENTRYPOINT [ "/entrypoint.sh" ]
