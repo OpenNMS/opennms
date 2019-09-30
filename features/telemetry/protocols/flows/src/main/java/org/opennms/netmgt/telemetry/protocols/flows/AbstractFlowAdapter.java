@@ -116,6 +116,10 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             }
         } catch (FlowException ex) {
             LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
+            if (ex.getMessage().equals("Connection pool shut down")) {
+                LOG.error("Connection pool was shut down. Cannot recover. {} messages are lost", messageLog.getMessageList().size());
+                return;
+            }
         }
 
         LOG.debug("Completed processing {} telemetry messages.",

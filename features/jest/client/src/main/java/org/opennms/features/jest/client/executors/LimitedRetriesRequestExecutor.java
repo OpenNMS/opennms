@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,12 @@ public class LimitedRetriesRequestExecutor implements RequestExecutor {
                 T result = client.execute(clientRequest);
                 return result;
             } catch (Exception exception) {
+                // In case the connection pool was shut down, bail. See NMS-10697 for more details
+                if (exception instanceof IllegalStateException && exception.getMessage().equals("Connection pool shut down")) {
+                    LOG.error("Connection pool shut down. Nothing we can do. Bailing");
+                    throw new ConnectionPoolShutdownException(exception.getMessage(), exception);
+                }
+
                 // shouldRetry would return true because nextAttempt has not yet been invoked.
                 // Therefore we manually verify instead of calling shouldRetry()
                 if (timeoutTracker.getAttempt() + 1 <= retryCount) {

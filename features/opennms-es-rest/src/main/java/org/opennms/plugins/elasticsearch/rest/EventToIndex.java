@@ -47,15 +47,16 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.xml.event.AlarmData;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
 import org.opennms.features.jest.client.bulk.BulkException;
 import org.opennms.features.jest.client.bulk.BulkRequest;
 import org.opennms.features.jest.client.bulk.BulkWrapper;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.xml.event.AlarmData;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,6 +160,9 @@ public class EventToIndex implements AutoCloseable {
 				.thenAcceptAsync(this::sendEvents, executor)
 				.exceptionally(e -> {
 					LOG.error("Unexpected exception during task completion: " + e.getMessage(), e);
+					if (e.getCause() instanceof ConnectionPoolShutdownException) {
+						ExceptionUtils.handle(getClass(), (ConnectionPoolShutdownException) e.getCause(), events);
+					}
 					return null;
 				});
 	}

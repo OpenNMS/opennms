@@ -30,6 +30,7 @@ package org.opennms.features.jest.client.executors;
 
 import java.io.IOException;
 
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
 import org.opennms.features.jest.client.RequestExecutorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,14 @@ public class DefaultRequestExecutor implements RequestExecutor, RequestExecutorF
                 LOG.error("Could not perform request {}: {}", clientRequest, ex.getMessage(), ex);
             } catch (com.google.gson.JsonSyntaxException gsonException) {
                 LOG.error("A Json error occurred: {}", gsonException.getMessage(), gsonException);
+            } catch (IllegalStateException ex) {
+                // In case the connection pool was shut down, bail. See NMS-10697 for more details
+                if (ex.getMessage().equals("Connection pool shut down")) {
+                    LOG.error("Connection pool shut down. Nothing we can do. Bailing");
+                    throw new ConnectionPoolShutdownException(ex.getMessage(), ex);
+                } else {
+                    LOG.error("IllegalStateException occurred: {}", ex.getMessage(), ex);
+                }
             }
 
             // Retry-Logic

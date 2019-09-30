@@ -34,6 +34,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -43,7 +45,6 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
-import org.opennms.features.jest.client.template.IndexSettings;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.collect.Table;
@@ -74,8 +75,12 @@ public class InitializingFlowRepository implements FlowRepository {
 
     @Override
     public void persist(Collection<Flow> flows, FlowSource source) throws FlowException {
-        ensureInitialized();
-        delegate.persist(flows, source);
+        try {
+            ensureInitialized();
+            delegate.persist(flows, source);
+        } catch (ConnectionPoolShutdownException ex) {
+            throw new FlowException(ex.getMessage(), ex);
+        }
     }
 
     @Override

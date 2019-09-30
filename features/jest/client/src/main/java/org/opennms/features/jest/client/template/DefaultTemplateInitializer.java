@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +85,8 @@ public class DefaultTemplateInitializer implements TemplateInitializer {
                 LOG.debug("Template {} is not initialized. Initializing...", templateName);
                 doInitialize();
                 initialized = true;
+            } catch (ConnectionPoolShutdownException ex) {
+                throw ex; // We cannot recover from this
             } catch (Exception ex) {
                 LOG.error("An error occurred while initializing template {}: {}.", templateName, ex.getMessage(), ex);
                 long coolDownTimeInMs = COOL_DOWN_TIMES_IN_MS[retryCount.get()];
