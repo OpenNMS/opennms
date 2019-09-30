@@ -48,8 +48,7 @@ import io.searchbox.indices.template.PutTemplate;
 public class DefaultTemplateInitializer implements TemplateInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultTemplateInitializer.class);
 
-//    private static final long[] COOL_DOWN_TIMES_IN_MS = { 250, 500, 1000, 5000, 10000, 60000 };
-    private static final long[] COOL_DOWN_TIMES_IN_MS = { 1000 };
+    private static final long[] COOL_DOWN_TIMES_IN_MS = { 250, 500, 1000, 5000, 10000, 60000 };
 
     private final AtomicInteger retryCount = new AtomicInteger(0);
     private final JestClient client;
