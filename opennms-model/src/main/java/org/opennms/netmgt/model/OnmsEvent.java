@@ -413,7 +413,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	@XmlElementWrapper(name="parameters")
 	@XmlElement(name="parameter")
-	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="event", cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	public List<OnmsEventParameter> getEventParameters() {
 		if(this.m_eventParameters != null) {
 			// make sure they are sorted (could have come from db in wrong order). We can't do the sorting in the setter,
