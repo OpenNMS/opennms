@@ -31,6 +31,7 @@ package org.opennms.netmgt.notifd;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -40,14 +41,15 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 public abstract class AbstractSlackCompatibleNotificationStrategy implements NotificationStrategy {
 
@@ -68,14 +70,20 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	protected abstract String formatWebhookErrorResponse(int statusCode, String contents);
 
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractSlackCompatibleNotificationStrategy.class);
-	private List<Argument> m_arguments;
+	private final List<Argument> m_arguments = Lists.newArrayList();
+
+	protected void setArguments(List<Argument> arguments) {
+		m_arguments.clear();
+		m_arguments.addAll(arguments);
+	}
 
 	/** {@inheritDoc} */
 	@SuppressWarnings("unchecked")
 	public int send(List<Argument> arguments) {
-	
-	    m_arguments = arguments;
-	
+		if (arguments != null) {
+			setArguments(arguments);
+		}
+
 	    String url = getUrl();
 	    if (url == null) {
 	        LOG.error("send: url must not be null");
@@ -192,24 +200,43 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	}
 
 	protected String getValueFromSwitchOrProp(String what, String switchName, String propName) {
-		if (switchName != null && ! switchName.startsWith("-")) {
-			switchName = "-" + switchName;
+		if (Strings.isNullOrEmpty(switchName)) {
+			LOG.error("Switch name must not be null or empty");
+			return null;
+		}
+
+		// Inform user about API changes, but do not enforce them
+		if (!switchName.startsWith("-")) {
 			LOG.warn("Specifying switch names (e.g. '{}') without a leading dash is deprecated. Please update your notification command definition to use '-{}' instead. See https://issues.opennms.org/browse/NMS-10552", switchName, switchName);
 		}
-		LOG.debug("Trying to get {} from notification switch {}", what, switchName);
-		String val = getSwitchValue(switchName);
-		if (val != null) {
+
+		// Try getting the value for switchName
+		LOG.debug("Trying to get {} from notification switch '{}'", what, switchName);
+		if (hasSwitchName(switchName) && hasSwitchValue(switchName)) {
+			final String val = getSwitchValue(switchName);
 			LOG.info("Using {} value {} from notification switch {}", what, val, switchName);
 			return val;
 		}
-		LOG.debug("Trying to get {} from system property {}", what, propName);
-		val = System.getProperty(propName);
-		if (val != null) {
-			LOG.info("Using {} value {} from system property {}", what, val, propName);
+
+		// switchName does not exist, try with alternate version
+		final String alternateSwitchName = switchName.startsWith("-") ? switchName.substring(1) : "-" + switchName;
+		LOG.debug("Trying to get {} from notification switch '{}'", what, alternateSwitchName);
+		if (hasSwitchValue(alternateSwitchName) && hasSwitchValue(alternateSwitchName)) {
+			final String val = getSwitchValue(alternateSwitchName);
+			LOG.info("Using {} value {} from notification switch '{}'", what, val, switchName);
 			return val;
 		}
-		
-		LOG.warn("Could not determine value for {} from notification command switch {} or system property {}", what, switchName, propName);
+
+		if (propName != null) {
+			LOG.debug("Trying to get {} from system property '{}'", what, propName);
+			final String val = System.getProperty(propName);
+			if (val != null) {
+				LOG.info("Using {} value {} from system property '{}'", what, val, propName);
+				return val;
+			}
+		}
+
+		LOG.warn("Could not determine value for {} from notification command switch '{}' or system property '{}'", what, switchName, propName);
 		return null;
 	}
 
@@ -238,15 +265,8 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	}
 
 	protected String buildMessage(List<Argument> args) {
-		String subject = null;
-		String body = null;
-		for (Argument arg : args) {
-			if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) {
-				subject = arg.getValue();
-			} else if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
-				body = arg.getValue();
-			}
-		}
+		String subject = getValueFromSwitchOrProp("Subject", NotificationManager.PARAM_SUBJECT, null);
+		String body = getValueFromSwitchOrProp("Message Body", NotificationManager.PARAM_TEXT_MSG, null);
 
 		StringBuilder bldr = new StringBuilder();
 		if ("".equals(subject) || "RESOLVED: ".equals(subject)) {
@@ -264,4 +284,24 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 		return bldr.toString();
 	}
 
+	protected String getValue(String switchName) {
+		return getValueFromSwitchOrProp(switchName, switchName, null);
+	}
+
+	protected String getValue(String switchName, String systemPropertyName) {
+		return getValueFromSwitchOrProp(switchName, switchName, systemPropertyName);
+	}
+
+	private boolean hasSwitchName(String theSwitchName) {
+		return m_arguments.stream().anyMatch(a -> a.getSwitch().equals(theSwitchName));
+	}
+
+	private boolean hasSwitchValue(String theSwitchName) {
+		final List<String> values = m_arguments.stream()
+				.filter(a -> a.getSwitch().equals(theSwitchName))
+				.flatMap(a -> Lists.newArrayList(a.getValue(), a.getSubstitution()).stream())
+				.filter(value -> value != null && !"".equals(value))
+				.collect(Collectors.toList());
+		return !values.isEmpty();
+	}
 }

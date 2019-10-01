@@ -34,8 +34,6 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.opennms.netmgt.model.notifd.NotificationStrategy;
-
 /**
  * <p>MattermostNotificationStrategy class.</p>
  *
@@ -50,8 +48,8 @@ public class MattermostNotificationStrategy extends AbstractSlackCompatibleNotif
     private static final String MM_ICONURL_PROPERTY = "org.opennms.netmgt.notifd.mattermost.iconURL";
     private static final String MM_ICONEMOJI_PROPERTY = "org.opennms.netmgt.notifd.mattermost.iconEmoji";
     private static final String MM_CHANNEL_PROPERTY = "org.opennms.netmgt.notifd.mattermost.channel";
-    
-    @Override
+
+	@Override
 	protected String formatWebhookErrorResponse(int statusCode, String contents) {
     	StringBuilder bldr = new StringBuilder("Response code: ");
     	bldr.append(statusCode);
