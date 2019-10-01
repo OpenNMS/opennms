@@ -43,9 +43,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
+import org.hibernate.ObjectNotFoundException;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -65,6 +67,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.codahale.metrics.Gauge;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 
@@ -106,6 +109,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     private final CountDownLatch seedSubmittedLatch = new CountDownLatch(1);
 
+    private final AtomicLong atomicActionsInFlight = new AtomicLong(-1);
+    private final AtomicLong numAlarmsFromLastSnapshot = new AtomicLong(-1);
+    private final AtomicLong numSituationsFromLastSnapshot = new AtomicLong(-1);
+
     public DroolsAlarmContext() {
         this(getDefaultRulesFolder());
     }
@@ -136,7 +143,17 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                     associationFacts.put(alarmId, new AlarmAssociationAndFact(associationInSession, fact));
                 }
             }
+
+            // Reset metrics
+            atomicActionsInFlight.set(0L);
+            numAlarmsFromLastSnapshot.set(-1L);
+            numSituationsFromLastSnapshot.set(-1L);
         });
+
+        // Register metrics
+        getMetrics().register("atomicActionsInFlight", (Gauge<Long>) atomicActionsInFlight::get);
+        getMetrics().register("numAlarmsFromLastSnapshot", (Gauge<Long>) numAlarmsFromLastSnapshot::get);
+        getMetrics().register("numSituationsFromLastSnapshot", (Gauge<Long>) numSituationsFromLastSnapshot::get);
     }
 
     public static File getDefaultRulesFolder() {
@@ -177,6 +194,21 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         stateTracker.startTrackingAlarms();
     }
 
+    private void submitOrRun(KieSession.AtomicAction atomicAction) {
+        if (fireThreadId.get() == Thread.currentThread().getId()) {
+            // This is the fire thread! Let's execute the action immediately instead of defering it.
+            atomicAction.execute(getKieSession());
+        } else {
+            // Submit the action for execution
+            // Track the number of atomic actions waiting to be executed for debugging
+            atomicActionsInFlight.incrementAndGet();
+            getKieSession().submit(kieSession -> {
+                atomicAction.execute(kieSession);
+                atomicActionsInFlight.decrementAndGet();
+            });
+        }
+    }
+
     @Override
     public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
         if (!isStarted()) {
@@ -197,7 +229,12 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         // Retrieve the acks from the database for the set of the alarms we've been given
         final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
 
-        getKieSession().submit(kieSession -> {
+        // Track some stats
+        final long numSituations = alarms.stream().filter(OnmsAlarm::isSituation).count();
+        numAlarmsFromLastSnapshot.set(alarms.size() - numSituations);
+        numSituationsFromLastSnapshot.set(numSituations);
+
+        submitOrRun(kieSession -> {
             final Set<Integer> alarmIdsInDb = alarmsInDbById.keySet();
             final Set<Integer> alarmIdsInWorkingMem = alarmsById.keySet();
 
@@ -295,7 +332,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         // Retrieve the acks from the database for the set of the alarms we've been given
         final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(Collections.singletonList(alarm));
 
-        getKieSession().submit(kieSession -> {
+        submitOrRun(kieSession -> {
             handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
             stateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
         });
@@ -360,7 +397,12 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         Hibernate.initialize(alarm.getAssociatedAlarms());
         if (alarm.getLastEvent() != null) {
             // The last event may be null in unit tests
-            Hibernate.initialize(alarm.getLastEvent().getEventParameters());
+            try {
+                Hibernate.initialize(alarm.getLastEvent().getEventParameters());
+            } catch (ObjectNotFoundException ex) {
+                // This may be triggered if the event attached to the alarm entity is already gone
+                alarm.setLastEvent(null);
+            }
         }
         if (alarm.getNode() != null) {
             // Allow rules to use the categories on the associated node
@@ -436,7 +478,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             LOG.debug("Ignoring deleted alarm. Drools session is stopped.");
             return;
         }
-        getKieSession().submit(kieSession -> {
+        submitOrRun(kieSession -> {
             handleDeletedAlarmForAtomic(kieSession, alarmId, reductionKey);
             stateTracker.trackDeletedAlarm(alarmId, reductionKey);
         });

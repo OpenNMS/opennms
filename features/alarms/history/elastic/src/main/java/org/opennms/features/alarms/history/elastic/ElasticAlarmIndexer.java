@@ -467,7 +467,17 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         }
 
         if (needsIndexing) {
-            final AlarmDocumentDTO doc = documentMapper.apply(alarm);
+            final AlarmDocumentDTO doc;
+            try {
+                doc = documentMapper.apply(alarm);
+            } catch (Exception e) {
+                // This may be triggered by Hibernate ObjectNotFoundExceptions if the event
+                // attached to the alarm entity is already gone. In this case, we simply want to skip
+                // the alarm for now.
+                LOG.warn("Mapping alarm to DTO failed. Document will not be indexed.", e);
+                return Optional.empty();
+            }
+
             alarmDocumentsById.put(alarm.getId(), doc);
             return Optional.of(doc);
         }
