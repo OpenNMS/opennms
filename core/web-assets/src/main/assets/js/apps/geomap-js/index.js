@@ -327,7 +327,7 @@ const render = function(options) {
                 applySeverity(severities[index]);
             });
 
-            var filterLabel = createButton('', '', container, function() {});
+            var filterLabel = createButton('', '', container, function() {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
             // Decrase severity button
             createButton('Decrease severity filter', 'fa fa-angle-down', container, function() {
