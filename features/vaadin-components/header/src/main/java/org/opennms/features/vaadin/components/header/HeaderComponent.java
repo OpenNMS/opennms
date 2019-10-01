@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,23 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.vaadin.components.header;
 
-import com.vaadin.server.ClientConnector;
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.ui.AbstractJavaScriptComponent;
 
-public class HeaderUtil {
-    public static ClientConnector.AttachListener getAttachListener() {
-        return new ClientConnector.AttachListener() {
-            @Override
-            public void attach(ClientConnector.AttachEvent event) {
-                checkHeaderVisibility();
-            }
-        };
-    }
+@JavaScript("theme://../opennms/assets/header-component_connector.vaadin.js")
+public class HeaderComponent extends AbstractJavaScriptComponent {
 
-    public static void checkHeaderVisibility() {
-        com.vaadin.ui.JavaScript.getCurrent().execute(
-                "if (window.location != window.parent.location && window.name.indexOf('-with-header') == -1) {$('#header').hide(); $('body.fixed-nav').attr('style', 'padding-top: 0px !important');}"
-        );
+    public HeaderComponent() {
+        setId("onmsheader");
+        setWidth(100, Unit.PERCENTAGE);
     }
 }
