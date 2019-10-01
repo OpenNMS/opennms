@@ -39,7 +39,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 
-@Command(scope="classification", name="list-groups", description = "Lists all classification groups")
+@Command(scope="opennms-classification", name="list-groups", description = "Lists all classification groups stored in the database")
 @Service
 public class ClassificationListGroupCommand implements Action {
 
@@ -52,7 +52,7 @@ public class ClassificationListGroupCommand implements Action {
         final List<Group> groups = classificationService.findMatchingGroups(criteria);
         final String TEMPLATE = "%4s   %4s   %-20s   %-50s   %-8s   %-8s";
         if (!groups.isEmpty()) {
-            System.out.println(String.format(TEMPLATE, "ID", "Pos", "Name", "Description", "editable", "readonly"));
+            System.out.println(String.format(TEMPLATE, "ID", "Pos", "Name", "Description", "Editable", "Read-only"));
             for (Group group : groups) {
                 System.out.println(
                     String.format(
