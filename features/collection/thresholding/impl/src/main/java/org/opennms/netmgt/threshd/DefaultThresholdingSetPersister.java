@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
@@ -63,6 +64,9 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
     
     @Autowired
     private IfLabel ifLabelDao;
+    
+    @Autowired
+    private EntityScopeProvider entityScopeProvider;
 
     @Override
     public void persistSet(ThresholdingSession session, ThresholdingSet set) {
@@ -78,7 +82,7 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
                     ((ThresholdingSessionImpl) session).getRrdRepository(),
                     ((ThresholdingSessionImpl) session).getServiceParameters(),
                     ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy, session, threshdDao,
-                    thresholdingDao, pollOutagesDao, ifLabelDao);
+                    thresholdingDao, pollOutagesDao, ifLabelDao, entityScopeProvider);
             thresholdingSets.put(key, tSet);
         }
         return tSet;
@@ -109,5 +113,9 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
 
     public void setIfLabelDao(IfLabel ifLabelDao) {
         this.ifLabelDao = Objects.requireNonNull(ifLabelDao);
+    }
+
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
     }
 }

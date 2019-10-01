@@ -311,6 +311,16 @@ public class ManagedDroolsContext {
         }
         if (thread != null) {
             thread.interrupt();
+            // Wait until the thread is stopped
+            try {
+                final long waitMillis = TimeUnit.MINUTES.toMillis(2);
+                thread.join(waitMillis);
+                if (thread.isAlive()) {
+                    LOG.error("Thread is still alive after waiting for {}ms.", waitMillis);
+                }
+            } catch (InterruptedException e) {
+                LOG.info("Interrupted while waiting for thread to exit.");
+            }
             thread = null;
         }
     }

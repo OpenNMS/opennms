@@ -37,10 +37,10 @@ import org.junit.rules.Timeout;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.test.elastic.ExecutionTime;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
-import org.opennms.netmgt.dao.mock.MockTransactionManager;
-import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
@@ -98,12 +98,9 @@ public class ElasticFlowRepositoryRetryIT {
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
             final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
-            final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
-            mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
-
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
-                            classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
+                            classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                             new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),3, 12000), client);
 
             consumer.accept(elasticFlowRepository);

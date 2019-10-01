@@ -122,6 +122,8 @@ commands:
             mkdir -p ~/test-results/system-logs
             dmesg > ~/test-results/system-logs/dmesg
             ps auxf > ~/test-results/system-logs/ps
+            free -m > ~/test-results/system-logs/free
+            docker stats --no-stream > ~/test-results/system-logs/docker_stats
       - run:
           name: Gather test artifacts
           when: always
@@ -293,7 +295,6 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
-                - /^mvr.*/
       - smoke-test-minimal:
           requires:
             - horizon-package-build
@@ -308,7 +309,6 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
-                - /^mvr.*/
       - horizon-publish-oci:
           requires:
             - horizon-package-build

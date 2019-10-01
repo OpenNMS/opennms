@@ -99,7 +99,7 @@ public class PollOutagesConfigPersistenceIT {
         // Verify the initial config we see in the DB matches the one on the FS
         Path resource = Paths.get(testDir.getAbsolutePath(), "/poll-outages.xml");
         Outages fromFile = JaxbUtils.unmarshal(Outages.class, resource.toFile());
-        Outages fromDB = pollOutagesDao.getConfig();
+        Outages fromDB = pollOutagesDao.getReadOnlyConfig();
         assertThat(fromFile, equalTo(fromDB));
         
         // Write a new config to the FS then reload, now expect the DB copy to match the new FS copy
@@ -110,7 +110,7 @@ public class PollOutagesConfigPersistenceIT {
         fromFile = JaxbUtils.unmarshal(Outages.class, resource.toFile());
         assertThat(fromFile.getOutages().size(), equalTo(0));
         pollOutagesDao.reload();
-        fromDB = pollOutagesDao.getConfig();
+        fromDB = pollOutagesDao.getReadOnlyConfig();
         assertThat(fromFile, equalTo(fromDB));
     }
     

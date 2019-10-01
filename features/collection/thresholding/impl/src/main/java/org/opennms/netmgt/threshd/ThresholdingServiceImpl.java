@@ -212,6 +212,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         eventProxy = new ThresholdingEventProxyImpl(eventForwarder);
     }
 
+    @Override
     public ThresholdingSetPersister getThresholdingSetPersister() {
         return thresholdingSetPersister;
     }

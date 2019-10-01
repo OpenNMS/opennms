@@ -276,9 +276,17 @@ public class ProtobufMapper {
             setTimeIfNotNull(event.getEventTime(), builder::setTime);
             setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
             return builder;
-        } catch (ObjectNotFoundException e) {
-            LOG.debug("Event was deleted before we could perform the mapping.");
-            return null;
+        } catch (RuntimeException e) {
+            // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi
+            // which has a different class for this loaded then what is being thrown
+            // Resort to comparing the name instead
+            if (ObjectNotFoundException.class.getCanonicalName().equals(e.getClass().getCanonicalName())) {
+                LOG.debug("Event was deleted before we could perform the mapping.");
+                return null;
+            } else {
+                // Rethrow
+                throw e;
+            }
         }
     }
 

@@ -22,7 +22,7 @@ done
 docker build -t sentinel \
   --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \
   --build-arg BASE_IMAGE="opennms/openjdk" \
-  --build-arg BASE_IMAGE_VERSION="11.0.3.7-b1" \
+  --build-arg BASE_IMAGE_VERSION="11.0.4.11" \
   --build-arg VERSION="${VERSION}" \
   --build-arg BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
   --build-arg BUILD_URL="${CIRCLE_BUILD_URL}" \

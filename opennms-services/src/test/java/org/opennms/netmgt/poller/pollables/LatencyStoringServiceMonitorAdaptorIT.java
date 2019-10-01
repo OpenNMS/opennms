@@ -90,7 +90,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
         "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
-        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
@@ -213,7 +214,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         writer.write(sb.toString());
         writer.close();
         
-        Outages oldConfig = m_pollOutagesDao.getConfig();
+        Outages oldConfig = m_pollOutagesDao.getReadOnlyConfig();
         m_pollOutagesDao.overrideConfig(new FileSystemResource(file).getInputStream());
 
         executeThresholdTest(new Double[] { 100.0 });

@@ -229,6 +229,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	@After
 	public void tearDown() throws Exception {
 		m_eventMgr.finishProcessingEvents();
+		m_eventMgr.reset();
 		stopDaemons();
 		sleep(200);
 		m_db.drop();
@@ -248,7 +249,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         pkg.setRemote(true);
         Poller poller = new Poller();
 		poller.setPollerConfig(new MockPollerConfig(m_network));
-        assertFalse(poller.getPollerConfig().pollableServiceInPackage(null, null, pkg));
+        assertFalse(poller.pollableServiceInPackage(null, null, pkg));
         poller = null;
     }
 

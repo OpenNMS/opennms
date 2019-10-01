@@ -49,6 +49,7 @@ import java.util.concurrent.Callable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Criteria;
@@ -82,6 +83,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  *
  * @author jwhite
  */
+@Ignore("flapping - see NMS-12309")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -97,7 +99,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         // Reduce the default snapshot interval so that the tests can finish in a reasonable time
         AlarmLifecycleListenerManager.ALARM_SNAPSHOT_INTERVAL_MS_SYS_PROP+"=5000"
 })
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<MockDatabase>, AlarmLifecycleListener {
 
     @Autowired
@@ -160,6 +162,10 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
     @After
     public void tearDown() {
+        // Unregister!
+        m_alarmLifecycleListenerManager.onListenerUnregistered(this, Collections.emptyMap());
+
+        // Destroy!
         m_alarmd.destroy();
     }
 

@@ -28,10 +28,10 @@
 
 package org.opennms.smoketest.containers;
 
+import java.net.InetSocketAddress;
+
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.testcontainers.containers.Network;
-
-import com.github.dockerjava.api.command.CreateContainerCmd;
 
 public class ElasticsearchContainer extends org.testcontainers.elasticsearch.ElasticsearchContainer {
 
@@ -43,4 +43,13 @@ public class ElasticsearchContainer extends org.testcontainers.elasticsearch.Ela
                 .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
     }
 
+    public InetSocketAddress getRestAddress() {
+        return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(9200));
+    }
+
+    public String getRestAddressString() {
+        final InetSocketAddress elasticRestAddress = getRestAddress();
+        final String addressString = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
+        return addressString;
+    }
 }

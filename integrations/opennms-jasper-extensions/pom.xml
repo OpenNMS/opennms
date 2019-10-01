@@ -16,8 +16,6 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <!-- TODO MVR verify that this still works with 1.8 (was 1.7) -->
-          <!-- To load the jar file into jaspersoft studio it is required to be Java 6 compatible -->
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
@@ -89,19 +87,16 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>
     </dependency>
-    <!-- TODO MVR rework dependencies -->
     <dependency>
       <groupId>org.opennms.features.endpoints.grafana</groupId>
       <artifactId>org.opennms.features.endpoints.grafana.api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- TODO MVR rework dependencies -->
     <dependency>
       <groupId>org.opennms.features.endpoints.grafana</groupId>
       <artifactId>org.opennms.features.endpoints.grafana.client</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- TODO MVR rework dependencies -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>

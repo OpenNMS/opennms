@@ -33,10 +33,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.apache.commons.jexl2.ExpressionImpl;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
+import org.opennms.core.rpc.utils.mate.EmptyScope;
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,15 +56,19 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(ExpressionConfigWrapper.class);
 
     private final Expression m_expression;
-    private final Collection<String> m_datasources;
+    private final Collection<String> m_datasources;    
+    private final JexlEngine jexlEngine = new JexlEngine();
+    
     public ExpressionConfigWrapper(Expression expression) throws ThresholdExpressionException {
         super(expression);
         m_expression = expression;
 
-        JexlEngine expressionParser = new JexlEngine();
         m_datasources = new ArrayList<>();
         try {
-            ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(m_expression.getExpression());
+            // We need to remove any mate data that are part of the expression before we try to find the datasources so
+            // we will interpolate with an empty scope and rely on default values to keep the expression valid
+            ExpressionImpl e = (ExpressionImpl) jexlEngine
+                    .createExpression(interpolateExpression(m_expression.getExpression(), EmptyScope.EMPTY));
             LOG.trace("List of Variables on the Expression: {}", e.getVariables());
             for (List<String> list : e.getVariables()) { // Requires JEXL 2.1.x
                 if (list.get(0).equalsIgnoreCase("math")) {
@@ -140,21 +149,80 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
         public float ulp(float a) { return Math.ulp(a); }
     }
 
-    @Override
-    public double evaluate(Map<String, Double> values) throws ThresholdExpressionException {
+    /**
+     * Evaluate given an already interpolated expression that contains no mate data.
+     */
+    public double evaluate(String expression, Map<String, Double> values) throws ThresholdExpressionException {
         // Add all of the variable values to the script context
-        Map<String,Object> context = new HashMap<String,Object>();
-        context.putAll(values);
-        context.put("datasources", new HashMap<String, Double>(values)); // To workaround NMS-5019
+        Map<String, Object> context = new HashMap<>(values);
+        context.put("datasources", new HashMap<>(values)); // To workaround NMS-5019
         context.put("math", new MathBinding());
-        double result = Double.NaN;
+        double result;
         try {
             // Fetch an instance of the JEXL script engine to evaluate the script expression
-            Object resultObject = new JexlEngine().createExpression(m_expression.getExpression()).evaluate(new MapContext(context));
+            Object resultObject = jexlEngine.createExpression(expression).evaluate(new MapContext(context));
             result = Double.parseDouble(resultObject.toString());
         } catch (Throwable e) {
             throw new ThresholdExpressionException("Error while evaluating expression " + m_expression.getExpression() + ": " + e.getMessage(), e);
         }
         return result;
+    }
+
+    /**
+     * Evaluate with un-interpolated expression that may contain mate data, meaning we need to interpolate it first. The
+     * interpolation should happen once here and future calls to evaluate should use the resulting interpolated value.
+     */
+    public ExpressionValue interpolateAndEvaluate(Map<String, Double> values, Scope scope)
+            throws ThresholdExpressionException {
+        String interpolatedExpression = interpolateExpression(m_expression.getExpression(), scope);
+        return new ExpressionValue(interpolatedExpression, evaluate(interpolatedExpression, values));
+    }
+
+    @Override
+    public void accept(ThresholdDefVisitor thresholdDefVisitor) {
+        thresholdDefVisitor.visit(this);
+    }
+
+    private String interpolateExpression(String expression, Scope scope) {
+        if (Interpolator.containsMateData(expression)) {
+            String interpolatedExpression = Interpolator.interpolate(expression, scope);
+            LOG.debug("Expression {} was interpolated to {}", expression, interpolatedExpression);
+            return interpolatedExpression;
+        }
+
+        LOG.debug("Expression {} does not contain any mate data and will not be interpolated", expression);
+        return expression;
+    }
+    
+    public static class ExpressionValue {
+        public final String expression;
+        public final double value;
+
+        public ExpressionValue(String expression, double value) {
+            this.expression = Objects.requireNonNull(expression);
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ExpressionValue that = (ExpressionValue) o;
+            return Double.compare(that.value, value) == 0 &&
+                    Objects.equals(expression, that.expression);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(expression, value);
+        }
+
+        @Override
+        public String toString() {
+            return "ExpressionValue{" +
+                    "expression='" + expression + '\'' +
+                    ", value=" + value +
+                    '}';
+        }
     }
 }

@@ -31,6 +31,7 @@ package org.opennms.core.rpc.utils.mate;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -121,7 +122,6 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
         return metaDataScope;
     }
 
-
     @Override
     public Scope getScopeForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName) {
         if (nodeId == null || ipAddress == null || Strings.isNullOrEmpty(serviceName)) {
@@ -147,5 +147,21 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
         final Map<ContextKey, String> map = metaData.stream()
                 .collect(Collectors.toMap(e -> new ContextKey(e.getContext(), e.getKey()), e -> e.getValue()));
         return new MapScope(map);
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = Objects.requireNonNull(nodeDao);
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
+    }
+
+    public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+        this.monitoredServiceDao = Objects.requireNonNull(monitoredServiceDao);
+    }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 }

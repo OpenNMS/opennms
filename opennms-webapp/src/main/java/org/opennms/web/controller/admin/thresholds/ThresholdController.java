@@ -161,7 +161,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
     private ModelAndView gotoGroupEdit(String groupName) {
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", thresholdingDao.getGroup(groupName));
+        modelAndView.addObject("group", thresholdingDao.getWriteableConfig().getGroup(groupName));
         return modelAndView;
     }
 
@@ -226,7 +226,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewThreshold(String groupName) {
-        final Group group = thresholdingDao.getGroup(groupName);
+        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         final List<Threshold> thresholds = group.getThresholds();
 
         //We're assuming that adding a threshold puts it at the end of the current list (i.e. that the Group implementation
@@ -279,7 +279,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewExpression(String groupName) {
-        final Group group = thresholdingDao.getGroup(groupName);
+        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         final List<Expression> expressions = group.getExpressions();
 
         //We're assuming that adding a expression puts it at the end of the current list (i.e. that the Group implementation
@@ -338,7 +338,10 @@ public class ThresholdController extends AbstractController implements Initializ
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
 
-        Threshold threshold = thresholdingDao.getGroup(groupName).getThresholds().get(thresholdIndex);
+        Threshold threshold = thresholdingDao.getWriteableConfig()
+                .getGroup(groupName)
+                .getThresholds()
+                .get(thresholdIndex);
         modelAndView = new ModelAndView("admin/thresholds/editThreshold");
 
         modelAndView.addObject("threshold", threshold);
@@ -469,7 +472,10 @@ public class ThresholdController extends AbstractController implements Initializ
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
 
-        Expression expression = thresholdingDao.getGroup(groupName).getExpressions().get(expressionIndex);
+        Expression expression = thresholdingDao.getWriteableConfig()
+                .getGroup(groupName)
+                .getExpressions()
+                .get(expressionIndex);
         modelAndView = new ModelAndView("admin/thresholds/editExpression");
 
         modelAndView.addObject("expression", expression);
@@ -525,11 +531,11 @@ public class ThresholdController extends AbstractController implements Initializ
             throw new ServletException("thresholdIndex parameter required to delete a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
-        Group group = thresholdingDao.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         group.removeThreshold(group.getThresholds().get(thresholdIndex));
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", thresholdingDao.getGroup(groupName));
+        modelAndView.addObject("group", group);
         saveChanges();
         return modelAndView;
     }
@@ -552,13 +558,13 @@ public class ThresholdController extends AbstractController implements Initializ
             throw new ServletException("expressionIndex parameter required to delete a threshold expression");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
-        Group group = thresholdingDao.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         group.removeExpression(group.getExpressions().get(expressionIndex));
         saveChanges();
 
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", thresholdingDao.getGroup(groupName));
+        modelAndView.addObject("group", group);
         return modelAndView;
     }
 
@@ -697,7 +703,7 @@ public class ThresholdController extends AbstractController implements Initializ
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = thresholdingDao.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         String thresholdIndexString = request.getParameter("thresholdIndex");
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to modify or delete a threshold");
@@ -745,7 +751,7 @@ public class ThresholdController extends AbstractController implements Initializ
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = thresholdingDao.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         String expressionIndexString = request.getParameter("expressionIndex");
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to modify or delete a threshold expression");
@@ -786,7 +792,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
         //and got back to the editGroup page
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", thresholdingDao.getGroup(groupName));
+        modelAndView.addObject("group", group);
         return modelAndView;
     }
 
@@ -801,9 +807,9 @@ public class ThresholdController extends AbstractController implements Initializ
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/list");
 
         Map<String, Group> groupMap = new TreeMap<String, Group>();
-        for (String aName : thresholdingDao.getGroupNames()) {
-            groupMap.put(aName, thresholdingDao.getGroup(aName));
-        }
+        thresholdingDao.getWriteableConfig()
+                .getGroups()
+                .forEach(g -> groupMap.put(g.getName(), g));
 
         modelAndView.addObject("groupMap", groupMap);
         return modelAndView;

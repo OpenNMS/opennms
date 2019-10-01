@@ -62,6 +62,7 @@
                             org.slf4j,
 
                             org.hibernate,
+                            org.hibernate.classic,
                             org.hibernate.criterion,
                             org.hibernate.metadata,
                             org.hibernate.transform,

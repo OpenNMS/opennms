@@ -232,7 +232,7 @@
     ReadablePollOutagesDao pollOutagesDao = BeanUtils.getBean("pollerConfigContext", "pollOutagesDao",
             ReadablePollOutagesDao.class);
 
-    for (final Outage outage : pollOutagesDao.getConfig().getOutages()) {
+    for (final Outage outage : pollOutagesDao.getReadOnlyConfig().getOutages()) {
         if (pollOutagesDao.isCurTimeInOutage(outage)) {
             boolean inOutage = pollOutagesDao.isNodeIdInOutage(nodeId, outage);
             if (!inOutage) {

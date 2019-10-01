@@ -21,6 +21,11 @@ RUN rpm --import "${REPO_KEY_URL}" && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
+# Allow to send ICMP messages as non-root user
+RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
+    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
+    ldconfig
+
 ##
 # Install and setup OpenNMS Minion RPMS
 ##
@@ -29,7 +34,7 @@ FROM minion-base
 ARG USER="minion"
 
 # A default which installs the minimum required Minion packages
-ARG MINION_PACKAGES="opennms-minion opennms-minion-container opennms-minion-features-core opennms-minion-features-default"
+ARG MINION_PACKAGES="opennms-minion"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES

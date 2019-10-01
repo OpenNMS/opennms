@@ -117,6 +117,11 @@
       <artifactId>org.opennms.config-dao.poll-outages.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     
     <dependency>
       <groupId>junit</groupId>
