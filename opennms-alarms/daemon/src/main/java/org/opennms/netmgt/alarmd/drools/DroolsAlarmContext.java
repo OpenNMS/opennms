@@ -177,6 +177,15 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         stateTracker.startTrackingAlarms();
     }
 
+    private void submitOrRun(KieSession.AtomicAction atomicAction) {
+        if (fireThreadId.get() == Thread.currentThread().getId()) {
+            // This is the fire thread!
+            atomicAction.execute(getKieSession());
+        } else {
+            getKieSession().submit(atomicAction);
+        }
+    }
+
     @Override
     public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
         if (!isStarted()) {
@@ -197,7 +206,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         // Retrieve the acks from the database for the set of the alarms we've been given
         final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
 
-        getKieSession().submit(kieSession -> {
+        submitOrRun(kieSession -> {
             final Set<Integer> alarmIdsInDb = alarmsInDbById.keySet();
             final Set<Integer> alarmIdsInWorkingMem = alarmsById.keySet();
 
@@ -295,7 +304,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         // Retrieve the acks from the database for the set of the alarms we've been given
         final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(Collections.singletonList(alarm));
 
-        getKieSession().submit(kieSession -> {
+        submitOrRun(kieSession -> {
             handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
             stateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
         });
@@ -436,7 +445,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             LOG.debug("Ignoring deleted alarm. Drools session is stopped.");
             return;
         }
-        getKieSession().submit(kieSession -> {
+        submitOrRun(kieSession -> {
             handleDeletedAlarmForAtomic(kieSession, alarmId, reductionKey);
             stateTracker.trackDeletedAlarm(alarmId, reductionKey);
         });

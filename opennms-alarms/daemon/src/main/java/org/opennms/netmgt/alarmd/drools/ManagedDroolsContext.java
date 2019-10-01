@@ -43,6 +43,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -96,10 +97,7 @@ public class ManagedDroolsContext {
 
     private SessionPseudoClock clock;
 
-    /**
-     * Ensure that this lock is fair so that ordering is respected.
-     */
-    private final ReentrantLock lock = new ReentrantLock(true);
+    protected AtomicLong fireThreadId = new AtomicLong(-1);
 
     private Consumer<KieSession> onNewKiewSessionCallback;
 
@@ -154,6 +152,7 @@ public class ManagedDroolsContext {
 
         if (!useManualTick) {
             thread = new Thread(() -> {
+                fireThreadId.set(Thread.currentThread().getId());
                 while (started.get()) {
                     try {
                         LOG.debug("Firing until halt.");

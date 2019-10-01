@@ -45,7 +45,7 @@ public class NodeCache {
 
     private final SessionUtils sessionUtils;
 
-    private final Map<Long, Long> lastUpdatedByNodeId = Maps.newHashMap();
+    private final Map<Long, Long> lastUpdatedByNodeId = Maps.newConcurrentMap();
 
     private long timeoutInMs = TimeUnit.MINUTES.toMillis(5);
 
@@ -54,7 +54,7 @@ public class NodeCache {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 
-    public synchronized void triggerIfNeeded(long nodeId, Consumer<OnmsNode> consumer) {
+    public void triggerIfNeeded(long nodeId, Consumer<OnmsNode> consumer) {
         final long now = System.currentTimeMillis();
         final Long lastUpdated = lastUpdatedByNodeId.get(nodeId);
         if (lastUpdated != null && now - lastUpdated <= timeoutInMs) {
