@@ -26,11 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.jest.client;
+package org.opennms.netmgt.flows.api;
 
-public class ConnectionPoolShutdownException extends RuntimeException {
-
-    public ConnectionPoolShutdownException(final String message, final Exception cause) {
+public class UnrecoverableFlowException extends FlowException {
+    public UnrecoverableFlowException(String message, Throwable cause) {
         super(message, cause);
     }
 }

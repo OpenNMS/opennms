@@ -40,6 +40,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
@@ -114,12 +115,11 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             for (final String logMessage: ex.getDetailedLogMessages()) {
                 LOG.error(logMessage);
             }
+        } catch(UnrecoverableFlowException ex) {
+            LOG.error("Error while persisting flows. Cannot recover: {}. {} messages are lost.", ex.getMessage(), messageLog.getMessageList().size(), ex);
+            return;
         } catch (FlowException ex) {
             LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
-            if (ex.getMessage().equals("Connection pool shut down")) {
-                LOG.error("Connection pool was shut down. Cannot recover. {} messages are lost", messageLog.getMessageList().size());
-                return;
-            }
         }
 
         LOG.debug("Completed processing {} telemetry messages.",
