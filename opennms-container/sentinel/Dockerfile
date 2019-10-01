@@ -51,6 +51,7 @@ RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y in
     rm -rf /tmp/rpms && \
     dnf clean all && \
     rm -rf /var/cache/yum && \
+    chown 10001:10001 -R /opt/sentinel && \
     chgrp -R 0 /opt/sentinel && \
     chmod -R g=u /opt/sentinel
 

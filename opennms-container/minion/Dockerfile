@@ -54,6 +54,7 @@ RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y in
     dnf clean all && \
     rm -rf /var/cache/yum && \
     sed -r -i '/RUNAS/s/.*/export RUNAS=${USER}/' /etc/sysconfig/minion && \
+    chown 10001:10001 -R /opt/minion && \
     chgrp -R 0 /opt/minion && \
     chmod -R g=u /opt/minion
 
