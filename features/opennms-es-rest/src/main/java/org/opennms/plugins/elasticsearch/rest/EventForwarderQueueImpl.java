@@ -129,6 +129,7 @@ public class EventForwarderQueueImpl implements EventForwarder, AutoCloseable {
 				}
 			} catch (ConnectionPoolShutdownException ex) { // Connection Pool is gone, nothing we can do
 				ExceptionUtils.handle(getClass(), ex, events);
+				return;
 			}
 			eventToIndex.forwardEvents(events);
 		}
