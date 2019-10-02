@@ -364,22 +364,17 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
                 return;
             }
 
-            Set<String> keys = enumerateResult.keySet();
-            Iterator<String> keysIterator = keys.iterator();
-            CompletableFuture<?>[] deleteFutures = new CompletableFuture[keys.size()];
-
-            for (int i = 0; i < keys.size(); i++) {
-                deleteFutures[i] = deleteAsync(keysIterator.next(), context);
-            }
-
-            CompletableFuture.allOf(deleteFutures).whenComplete((deleteResult, deleteThrowable) -> {
-                if (deleteThrowable != null) {
-                    truncateFuture.completeExceptionally(deleteThrowable);
-                    return;
+            // It would be nice to fire off a bunch of deleteAsync here instead of sync deletes, however that has the
+            // tendency to overwhelm the Cassandra connection pool therefore we will just tie this thread up until we
+            // are done deleting synchronously
+            enumerateResult.keySet().forEach(key -> {
+                try {
+                    delete(key, context);
+                } catch (Exception e) {
+                    truncateFuture.completeExceptionally(e);
                 }
-
-                truncateFuture.complete(deleteResult);
             });
+            truncateFuture.complete(null);
         });
 
         return truncateFuture;
