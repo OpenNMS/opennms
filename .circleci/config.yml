@@ -56,7 +56,7 @@ commands:
             name: Calculate cache key
             command: |
               sha256sum core/web-assets/package.json > nodejs-dependency-cache.key
-              sha256sum core/web-assets/yarn.lock >> nodejs-dependency-cache.key
+              sha256sum core/web-assets/package-lock.json >> nodejs-dependency-cache.key
         - restore_cache:
             keys:
               - nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
