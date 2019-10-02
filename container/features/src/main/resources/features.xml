@@ -1689,4 +1689,8 @@
         <feature>opennms-graph-domain</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.persistence-test/${project.version}</bundle>
     </feature>
+    <feature name="opennms-remote-poller-ng" description="OpenNMS :: Features :: Remote Poller NG" version="${project.version}">
+        <bundle>mvn:org.opennms.features.remotepollerng/org.opennms.features.remotepollerng.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.remotepollerng/org.opennms.features.remotepollerng.impl/${project.version}</bundle>
+    </feature>
 </features>

@@ -179,5 +179,6 @@
     <module>jest</module>
     <module>dnsresolver</module>
     <module>karaf-health</module>
+    <module>remotepollerng</module>
   </modules>
 </project>
