@@ -172,5 +172,6 @@
 
     <module>jest</module>
     <module>dnsresolver</module>
+    <module>remotepollerng</module>
   </modules>
 </project>

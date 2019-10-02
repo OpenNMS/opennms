@@ -1548,4 +1548,9 @@
     <feature name="opennms-threshold-states-shell" description="OpenNMS :: Features :: Collection :: Thresholding :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.shell/${project.version}</bundle>
     </feature>
+
+    <feature name="opennms-remote-poller-ng" description="OpenNMS :: Features :: Remote Poller NG" version="${project.version}">
+        <bundle>mvn:org.opennms.features.remotepollerng/org.opennms.features.remotepollerng.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.remotepollerng/org.opennms.features.remotepollerng.impl/${project.version}</bundle>
+    </feature>
 </features>

@@ -586,6 +586,7 @@
                 <feature>opennms-blobstore-shell</feature>
                 <feature>opennms-jsonstore-shell</feature>
                 <feature>opennms-threshold-states-shell</feature>
+                <feature>opennms-remote-poller-ng</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
@@ -1009,6 +1010,11 @@
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.remotepollerng</groupId>
+      <artifactId>org.opennms.features.remotepollerng.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
 
