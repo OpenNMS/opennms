@@ -233,7 +233,11 @@ public class BsmdIT {
         final BusinessServiceEntity businessService2 = createBusinessService("service2");
         Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
 
-        final EventBuilder eventBuilder = new EventBuilder(uei, "test");
+        final EventBuilder eventBuilder = new EventBuilder(uei, "test")
+                .setNodeid(m_databasePopulator.getNode1().getId())
+                .setInterface(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getIpAddress())
+                .setService(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getMonitoredServices().iterator().next().getServiceName());
+
         m_eventMgr.sendNow(eventBuilder.getEvent(), true);
 
         await().atMost(5, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)), equalTo(Status.NORMAL));
@@ -248,7 +252,11 @@ public class BsmdIT {
         final BusinessServiceEntity businessService2 = createBusinessService("service2");
         Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
 
-        final EventBuilder eventBuilder = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "test");
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "test")
+                .setNodeid(m_databasePopulator.getNode1().getId())
+                .setInterface(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getIpAddress())
+                .setService(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getMonitoredServices().iterator().next().getServiceName());
+
         for (int i = 0; i < 5; i++) {
             m_eventMgr.sendNow(eventBuilder.getEvent(), true);
             Thread.sleep(Bsmd.RELOAD_DELAY / 2);

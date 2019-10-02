@@ -30,8 +30,11 @@ package org.opennms.netmgt.bsm.daemon;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
+import java.util.Set;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -101,7 +104,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     private boolean m_verifyReductionKeys = true;
 
-    private Timer reloadTimer = null;
+    private ScheduledExecutorService scheduledExecutorService = null;
+
+    private long reloadConfigurationAt = 0L;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -167,23 +172,31 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     @EventHandler(ueis = {EventConstants.SERVICE_DELETED_EVENT_UEI, EventConstants.INTERFACE_DELETED_EVENT_UEI, EventConstants.NODE_DELETED_EVENT_UEI})
     public void serviceInterfaceOrNodeDeleted(Event e) {
-        LOG.debug("Received event " + e.getUei());
+        if (scheduledExecutorService == null) {
+            scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+            scheduledExecutorService.scheduleWithFixedDelay(new TimerTask() {
+                @Override
+                public void run() {
+                    if (reloadConfigurationAt == 0L || reloadConfigurationAt > System.currentTimeMillis()) {
+                        return;
+                    }
 
-        if (reloadTimer != null) {
-            LOG.debug("Configuration reload already scheduled. Cancelling and re-scheduling reload of configuration...");
-            reloadTimer.cancel();
-            reloadTimer = null;
+                    reloadConfigurationAt = 0L;
+                    final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "bsmd");
+                    eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+                    m_eventIpcManager.sendNow(eventBuilder.getEvent());
+                }
+            }, RELOAD_DELAY, RELOAD_DELAY, TimeUnit.MILLISECONDS);
         }
 
-        LOG.debug("Scheduling reload in " + RELOAD_DELAY + "ms...");
-        reloadTimer = new Timer(getClass().getSimpleName(), true);
-        reloadTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                LOG.debug("Running scheduled configuration reload...");
-                handleConfigurationChanged();
-            }
-        }, RELOAD_DELAY);
+        final Set<String> reductionKeys = m_stateMachine.getGraph().getReductionKeys();
+
+        if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid())) ||
+            EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/interfaceDown::%d:%s", e.getNodeid(), e.getInterface())) ||
+            EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService()))) {
+
+            reloadConfigurationAt = System.currentTimeMillis() + RELOAD_DELAY;
+        }
     }
 
     /**
