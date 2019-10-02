@@ -22,7 +22,6 @@ override_dh_auto_install:
 	# make all the target directories
 	mkdir -p \
 		$$(pwd)/debian/$(PACKAGE_NAME)$(MINION_PREFIX) \
-		$$(pwd)/debian/$(PACKAGE_NAME)$(MINION_PREFIX) \
 		$$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX) \
 		$$(pwd)/debian/$(PACKAGE_NAME)$(LOGDIR) \
 		$$(pwd)/debian/$(PACKAGE_NAME)$(SYSCONFDIR)
@@ -33,14 +32,14 @@ override_dh_auto_install:
 	# translate Minion prefix and etc directories in the init script, and put it in place
 	sed -e "s,/opt/minion/etc,$(SYSCONFDIR),g" \
 			-e "s,RUNAS=root,RUNAS=minion,g" \
-			-e "s,/opt/minion/log/minion.pid,$(PIDFILE),g" \
+			-e "s,/opt/minion/data/log/minion.pid,$(PIDFILE),g" \
 			-e "s,/opt/minion,$(MINION_PREFIX),g" \
 			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 			$$(pwd)/etc/minion.init > $$(pwd)/debian/$(PACKAGE_NAME).minion.init \
 		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(MINION_PREFIX)/etc/minion.init \
 		&& sed -e "s,/opt/minion/etc,$(SYSCONFDIR),g" \
 			-e "s,RUNAS=root,RUNAS=minion,g" \
-			-e "s,/opt/minion/log/minion.pid,$(PIDFILE),g" \
+			-e "s,/opt/minion/data/log/minion.pid,$(PIDFILE),g" \
 			-e "s,/opt/minion,$(MINION_PREFIX),g" \
 			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 			$$(pwd)/etc/minion.service > $$(pwd)/debian/$(PACKAGE_NAME).minion.service \

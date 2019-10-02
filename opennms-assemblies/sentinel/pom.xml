@@ -18,7 +18,7 @@
     <RUNAS>sentinel</RUNAS>
     <INITDIR>/etc/init.d</INITDIR>
     <SYSCONFDIR>/opt/sentinel/etc</SYSCONFDIR>
-    <PIDFILE>/opt/sentinel/log/sentinel.pid</PIDFILE>
+    <PIDFILE>/opt/sentinel/data/log/sentinel.pid</PIDFILE>
   </properties>
   <build>
     <resources>

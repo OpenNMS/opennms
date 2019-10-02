@@ -32,18 +32,18 @@ override_dh_auto_install:
 	# translate Sentinel prefix and etc directories in the init script, and put it in place
 	sed -e "s,/opt/sentinel/etc,$(SYSCONFDIR),g" \
 			-e "s,RUNAS=root,RUNAS=sentinel,g" \
-			-e "s,/opt/sentinel/log/sentinel.pid,$(PIDFILE),g" \
-			-e "s,/opt/sentinel,$(MINION_PREFIX),g" \
+			-e "s,/opt/sentinel/data/log/sentinel.pid,$(PIDFILE),g" \
+			-e "s,/opt/sentinel,$(SENTINEL_PREFIX),g" \
 			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 			$$(pwd)/etc/sentinel.init > $$(pwd)/debian/$(PACKAGE_NAME).sentinel.init \
-		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(MINION_PREFIX)/etc/sentinel.init \
+		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(SENTINEL_PREFIX)/etc/sentinel.init \
 		&& sed -e "s,/opt/sentinel/etc,$(SYSCONFDIR),g" \
 			-e "s,RUNAS=root,RUNAS=sentinel,g" \
-			-e "s,/opt/sentinel/log/sentinel.pid,$(PIDFILE),g" \
-			-e "s,/opt/sentinel,$(MINION_PREFIX),g" \
+			-e "s,/opt/sentinel/data/log/sentinel.pid,$(PIDFILE),g" \
+			-e "s,/opt/sentinel,$(SENTINEL_PREFIX),g" \
 			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 			$$(pwd)/etc/sentinel.service > $$(pwd)/debian/$(PACKAGE_NAME).sentinel.service \
-		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(MINION_PREFIX)/etc/sentinel.service
+		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(SENTINEL_PREFIX)/etc/sentinel.service
 	
 	# move etc / data / deploy directories to where they will live
 	mv $$(pwd)/debian/$(PACKAGE_NAME)$(SENTINEL_PREFIX)/etc $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR) \
