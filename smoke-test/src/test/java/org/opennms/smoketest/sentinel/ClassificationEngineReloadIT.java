@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.flows.rest.classification.GroupDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
@@ -187,7 +188,7 @@ public class ClassificationEngineReloadIT {
     }
 
     private static String getSentinelReadyString() {
-        return "Route: Sink.Server.Telemetry-Netflow-5 started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-Netflow-5";
+        return "Route: Sink.Server.Telemetry-Netflow-5 started and consuming from: queuingservice://" + SystemInfoUtils.getInstanceId() + ".Sink.Telemetry-Netflow-5";
     }
 
 }
