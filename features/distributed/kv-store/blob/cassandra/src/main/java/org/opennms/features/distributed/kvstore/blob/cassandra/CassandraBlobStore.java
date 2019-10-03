@@ -41,6 +41,8 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.opennms.features.distributed.cassandra.api.CassandraSchemaManagerFactory;
 import org.opennms.features.distributed.cassandra.api.CassandraSession;
@@ -54,6 +56,7 @@ import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Statement;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * A {@link BlobStore} that is backed by Cassandra.
@@ -80,6 +83,11 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
     private final PreparedStatement timestampStmt;
     private final PreparedStatement enumerateStatement;
     private final PreparedStatement deleteStatement;
+    
+    // The cardinality of this thread pool will be limited by the limited number (expected) of requests that end up
+    // using it
+    private final Executor asyncDeleteExecutor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+            .setNameFormat("cassandra-async-delete-%d").build());
 
     public CassandraBlobStore(CassandraSessionFactory sessionFactory,
                               CassandraSchemaManagerFactory cassandraSchemaManagerFactory) throws IOException {
@@ -358,7 +366,9 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
 
         CompletableFuture<Void> truncateFuture = new CompletableFuture<>();
 
-        enumerateContextAsync(context).whenComplete((enumerateResult, enumerateThrowable) -> {
+        // The below ends up doing deletes synchronously so we move processing off of the Cassandra session thread and
+        // onto our own
+        enumerateContextAsync(context).whenCompleteAsync((enumerateResult, enumerateThrowable) -> {
             if (enumerateThrowable != null) {
                 truncateFuture.completeExceptionally(enumerateThrowable);
                 return;
@@ -375,7 +385,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
                 }
             });
             truncateFuture.complete(null);
-        });
+        }, asyncDeleteExecutor);
 
         return truncateFuture;
     }
