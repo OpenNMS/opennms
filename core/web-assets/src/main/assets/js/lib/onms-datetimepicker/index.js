@@ -33,7 +33,7 @@ angular.module('onms.datetimepicker', ['ui.bootstrap'])
                     scope.id = angular.element('[data-toggle="datetimepicker"]').length;
                     scope.elementId = 'datetimepicker-' + scope.id;
                 }
-                scope.onStateChange = scope.onStateChange || function(invalidState) {};
+                scope.onStateChange = scope.onStateChange || function(invalidState) {}; // eslint-disable-line @typescript-eslint/no-empty-function
 
                 // Determine the options
                 scope.options = scope.options || {};
