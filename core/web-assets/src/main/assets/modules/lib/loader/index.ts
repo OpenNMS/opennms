@@ -57,7 +57,6 @@ export default class OnmsLoader {
   }
 
   public waitFor(name: string, check: () => boolean, onready: () => void, retry = 50) {
-    const self = this;
     if (check()) {
       console.log('OnmsLoader: ' + name + ' is ready.');
       onready();
@@ -65,7 +64,7 @@ export default class OnmsLoader {
       const nextRetry = Math.round(retry * 1.5);
       console.log('OnmsLoader: ' + name + ' is not ready. Trying again in ' + nextRetry + 'ms.');
       setTimeout(() => {
-        self.waitFor(name, check, onready, nextRetry);
+        this.waitFor(name, check, onready, nextRetry);
       }, nextRetry);
     } else {
       console.log('OnmsLoader: giving up on ' + name);

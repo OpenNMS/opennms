@@ -195,7 +195,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                         endpoint: undefined,
                         dashboard: undefined
                     };
-                    scope.onInvalidChange = scope.onInvalidChange || function(invalidState) {};
+                    scope.onInvalidChange = scope.onInvalidChange || function(invalidState) {}; // eslint-disable-line @typescript-eslint/no-empty-function
                     scope.onDateParamStateChange = function(invalidState) {
                         scope.onInvalidChange({invalidState: invalidState});
                     };
