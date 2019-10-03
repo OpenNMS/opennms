@@ -41,7 +41,7 @@ import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 
 import com.google.common.base.Strings;
 
-@Command(scope="classification", name="classify", description = "Verify the classification rules by classifying a request")
+@Command(scope="opennms-classification", name="classify", description = "Verify the classification rules by classifying a request, for example: opennms-classification:classify --protocol tcp --srcAddress 127.0.0.1 --srcPort 55000 --dstAddress 8.8.8.8 --destPort 22 --exporterAddress 127.0.0.1")
 @Service
 public class ClassificationClassifyCommand implements Action {
 

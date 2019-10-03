@@ -41,7 +41,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
-@Command(scope="classification", name="list-rules", description = "Lists classification rules")
+@Command(scope="opennms-classification", name="list-rules", description = "Lists classification rules stored in the database")
 @Service
 public class ClassificationListRuleCommand implements Action {
 
