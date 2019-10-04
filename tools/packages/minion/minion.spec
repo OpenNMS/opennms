@@ -181,7 +181,7 @@ rm -rf %{buildroot}
 %files -f %{_tmppath}/files.minion
 %defattr(664 minion minion 775)
 %attr(755,minion,minion) %{_initrddir}/minion
-%attr(755,minion,minion) %{_unitdir}/minion.service
+%attr(644,minion,minion) %{_unitdir}/minion.service
 %attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
 
