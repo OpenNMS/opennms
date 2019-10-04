@@ -190,9 +190,18 @@ case "$COMMAND" in
 		if [ ! -d "$__piddir" ]; then
 			install -d -m 755 -o "$RUNAS" -g "$RUNAS" "$__piddir"
 		fi
-		get_root_pid > "$PIDFILE"
 
-		exit "$RET"
+		# wait 30 seconds for it to write an instance pid
+		# shellcheck disable=SC2034
+		for COUNT in $(seq 1 6); do
+			if is_running; then
+				get_root_pid > "$PIDFILE"
+				exit "$RET"
+			fi
+			sleep 5
+		done
+
+		exit 1
 		;;
 
 	stop)
@@ -206,6 +215,7 @@ case "$COMMAND" in
 					sleep $STOP_WAIT
 				else
 					echo "OK"
+					rm -f "$PIDFILE"
 					exit 0
 				fi
 			done
@@ -217,6 +227,7 @@ case "$COMMAND" in
 				echo "FAILED"
 			else
 				echo "OK"
+				rm -f "$PIDFILE"
 				exit 0
 			fi
 
@@ -227,9 +238,11 @@ case "$COMMAND" in
 				exit 1
 			fi
 			echo "OK"
+			rm -f "$PIDFILE"
 			exit 0
 		else
 			echo "$DESC is not running."
+			rm -f "$PIDFILE"
 			exit 0 # LSB specifies calling "stop" on a stopped service is still a success
 		fi
 		;;
