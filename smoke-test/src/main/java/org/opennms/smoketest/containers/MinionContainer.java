@@ -90,7 +90,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private final Path overlay;
 
     public MinionContainer(StackModel model, MinionProfile profile) {
-        super("minion");
+        super("meridian-minion");
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();

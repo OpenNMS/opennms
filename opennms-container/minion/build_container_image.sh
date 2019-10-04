@@ -13,13 +13,13 @@ source ../registry-config.sh
 source ../version-tags.sh
 
 # OpenNMS Minion packages
-MINION_PACKAGES="opennms-minion"
+MINION_PACKAGES="meridian-minion"
 
 for PKG in ${MINION_PACKAGES}; do 
   cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
 done
 
-docker build -t minion \
+docker build -t meridian-minion \
   --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \
   --build-arg BASE_IMAGE="opennms/openjdk" \
   --build-arg BASE_IMAGE_VERSION="11.0.4.11" \
@@ -30,4 +30,4 @@ docker build -t minion \
   --build-arg BUILD_SHA1="${CIRCLE_SHA1}" \
   .
 
-docker image save minion -o images/container.oci
+docker image save meridian-minion -o images/container.oci
