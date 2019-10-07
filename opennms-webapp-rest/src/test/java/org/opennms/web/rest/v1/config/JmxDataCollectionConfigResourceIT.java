@@ -88,9 +88,17 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
         assertEquals(300, config.getJmxCollection("jmx-jboss").getRrd().getStep());
         assertThat(config.getJmxCollection("jmx-jboss").getMbeanCount(), greaterThanOrEqualTo(4));
 
-        assertEquals("jsr160", config.getJmxCollection("jsr160").getName());
-        assertEquals(300, config.getJmxCollection("jsr160").getRrd().getStep());
-        assertThat(config.getJmxCollection("jsr160").getMbeanCount(), greaterThanOrEqualTo(38));
+        assertEquals("default", config.getJmxCollection("default").getName());
+        assertEquals(300, config.getJmxCollection("default").getRrd().getStep());
+        assertThat(config.getJmxCollection("default").getMbeanCount(), greaterThanOrEqualTo(0));
+
+        assertEquals("jmx-opennms", config.getJmxCollection("jmx-opennms").getName());
+        assertEquals(300, config.getJmxCollection("jmx-opennms").getRrd().getStep());
+        assertThat(config.getJmxCollection("jmx-opennms").getMbeanCount(), greaterThanOrEqualTo(28));
+
+        assertEquals("jmx-java-8", config.getJmxCollection("jmx-java-8").getName());
+        assertEquals(300, config.getJmxCollection("jmx-java-8").getRrd().getStep());
+        assertThat(config.getJmxCollection("jmx-java-8").getMbeanCount(), greaterThanOrEqualTo(15));
 
         assertEquals("jmx-minion", config.getJmxCollection("jmx-minion").getName());
         assertEquals(300, config.getJmxCollection("jmx-minion").getRrd().getStep());
