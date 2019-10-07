@@ -64,7 +64,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
                 var isSelf = $('#onms-spotlight-form').is(event.target);
                 var isInside = isChild || isSelf;
                 if (!isInside) {
-                    $scope.$apply(function() {
+                    $timeout(function() {
                         $scope.resetQuery();
                         $scope.cancelRequest();
                     });
@@ -73,7 +73,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
 
             $document.bind('keyup', function(e) {
                 // Search Focus Field
-                $scope.$apply(function() {
+                $timeout(function() {
                     if (e.keyCode === KeyCodes.SHIFT && new Date() - $scope.shiftLastPressed <= 350) {
                         angular.element('#query').focus();
                         angular.element('#query').select();
@@ -91,7 +91,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
             });
 
             $document.bind('keydown', function(e) {
-                $scope.$apply(function() {
+                $timeout(function() {
                     if ($scope.results.length > 0) {
                         var element = document.getElementById('onms-search-result-item-' + $scope.selectedIndex);
                         if (e.keyCode === KeyCodes.KEY_UP || e.keyCode === KeyCodes.KEY_DOWN) {
