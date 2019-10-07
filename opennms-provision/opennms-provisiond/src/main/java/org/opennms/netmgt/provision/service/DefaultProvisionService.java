@@ -97,6 +97,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +123,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private static final Logger LOG = LoggerFactory.getLogger(DefaultProvisionService.class);
 
     private final static String FOREIGN_SOURCE_FOR_DISCOVERED_NODES = null;
+    public final static String PROVISIOND = "Provisiond";
 
     /**
      * ServiceTypeFulfiller
@@ -192,6 +194,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
+    @Autowired
+    private SnmpProfileMapper snmpProfileMapper;
+
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
 
@@ -238,6 +243,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public void updateNode(final OnmsNode node, String rescanExisting) {
         updateLocation(node);
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
+        String prevLocation = dbNode.getLocation().getLocationName();
+        String currentLocation = node.getLocation().getLocationName();
 
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
         node.setCategories(dbNode.getCategories());
@@ -249,6 +256,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
 
+        if(!prevLocation.equals(currentLocation)) {
+            accumulator.sendNow(EventUtils.createNodeLocationChangedEvent(PROVISIOND, dbNode.getId(), dbNode.getLabel(), prevLocation, currentLocation));
+        }
         accumulator.flush();
         final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting);
         dbNode.visit(eventAccumlator);
@@ -963,8 +973,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     // this is a newSuspect-scanned node, so there are no requisitioned categories
                 } else {
                     final OnmsNodeRequisition req = m_foreignSourceRepository.getNodeRequisition(foreignSource, dbNode.getForeignId());
-                    for (final RequisitionCategory cat : req.getNode().getCategories()) {
-                        categories.add(cat.getName());
+                    if(req != null && req.getNode() != null) {
+                        for (final RequisitionCategory cat : req.getNode().getCategories()) {
+                            categories.add(cat.getName());
+                        }
                     }
                 }
 
@@ -1011,7 +1023,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doUpdate(final OnmsNode dbNode) {
-                dbNode.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
+                // If there is no monitoring location object, update location with existing location.
+                if (dbNode.getLocation() == null) {
+                    dbNode.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
+                }
                 LOG.debug("Associating node {}/{}/{} with location: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), dbNode.getLocation());
 
                 final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
@@ -1027,12 +1042,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final OnmsNode ret = saveOrUpdate(dbNode);
 
                 if (changed) {
-                    accumulator.sendNow(EventUtils.createNodeCategoryMembershipChangedEvent("Provisiond", ret.getId(), ret.getLabel(), m_categoriesAdded.toArray(new String[0]), m_categoriesDeleted.toArray(new String[0])));
+                    accumulator.sendNow(EventUtils.createNodeCategoryMembershipChangedEvent(PROVISIOND, ret.getId(), ret.getLabel(), m_categoriesAdded.toArray(new String[0]), m_categoriesDeleted.toArray(new String[0])));
                     LOG.debug("Node {}/{}/{} categories changed: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), getCategoriesForNode(dbNode));
                 } else {
                     LOG.debug("Node {}/{}/{} categories unchanged: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), getCategoriesForNode(dbNode));
                 }
-
+                // If location updated, send node location changed event
+                if (dbNode.getLocation() != null && node.getLocation() != null
+                        && !node.getLocation().getLocationName().equals(dbNode.getLocation().getLocationName())) {
+                    accumulator.sendNow(EventUtils.createNodeLocationChangedEvent(PROVISIOND,
+                            ret.getId(), ret.getLabel(), ret.getLocation().getLocationName(), node.getLocation().getLocationName()));
+                }
                 accumulator.flush();
                 return ret;
             }
@@ -1351,6 +1371,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getIpInterfaces());
         m_nodeDao.initialize(node.getLocation());
+        m_nodeDao.initialize(node.getSnmpInterfaces());
+        m_nodeDao.initialize(node.getMetaData());
+        m_nodeDao.initialize(node.getAssetRecord());
         return node;
     }
 
@@ -1382,6 +1405,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;
+    }
+
+    public SnmpProfileMapper getSnmpProfileMapper() {
+        return snmpProfileMapper;
     }
 
     @Override

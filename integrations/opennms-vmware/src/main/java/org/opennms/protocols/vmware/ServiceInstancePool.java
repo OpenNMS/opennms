@@ -49,7 +49,7 @@ public class ServiceInstancePool {
     );
 
     private final Map<String, ServiceInstancePoolEntry> serviceInstancePoolEntries = new ConcurrentHashMap<>();
-    private final Timer timer = new Timer("ServiceInstancePool-Timer", false);
+    private final Timer timer = new Timer("ServiceInstancePool-Timer", true);
 
     public ServiceInstancePool() {
         this.timer.schedule(new TimerTask() {

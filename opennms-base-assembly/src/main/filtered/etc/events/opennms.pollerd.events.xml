@@ -255,6 +255,16 @@
       <severity>Warning</severity>
    </event>
    <event>
+      <uei>uei.opennms.org/nodes/nodeLocationChanged</uei>
+      <event-label>OpenNMS-defined node event: nodeLocationChanged</event-label>
+      <descr>&lt;p>A currently provisioned node (%parm[nodelabel]%) changed its
+        location from (%parm[nodePrevLocation]%) to (%parm[nodeCurrentLocation]%).&lt;/p></descr>
+      <logmsg dest="logndisplay">
+        A provisioned node (%parm[nodelabel]%) changed its location to (%parm[nodeCurrentLocation]%).
+      </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
       <uei>uei.opennms.org/nodes/nodeCategoryMembershipChanged</uei>
       <event-label>OpenNMS-defined node event: nodeCategoryMembershipChanged</event-label>
       <descr>&lt;p>Node category membership has changed for node

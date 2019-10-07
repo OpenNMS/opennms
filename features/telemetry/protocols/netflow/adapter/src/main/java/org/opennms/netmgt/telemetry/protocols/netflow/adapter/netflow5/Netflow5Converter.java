@@ -30,26 +30,15 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.proto.NetflowPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class Netflow5Converter implements Converter<NetflowPacket> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Netflow5Converter.class);
+public class Netflow5Converter implements Converter<BsonDocument> {
 
     @Override
-    public List<Flow> convert(final NetflowPacket packet) {
-        if (packet == null) {
-            LOG.debug("Nothing to convert.");
-            return Collections.emptyList();
-        }
-        return packet.getRecords().stream()
-                .map(record -> new Netflow5Flow(packet, record))
-                .collect(Collectors.toList());
+    public List<Flow> convert(final BsonDocument packet) {
+        return Collections.singletonList(new Netflow5Flow(packet));
     }
 }

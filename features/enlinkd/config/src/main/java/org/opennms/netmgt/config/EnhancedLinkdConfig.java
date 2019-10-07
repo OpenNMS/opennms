@@ -127,6 +127,7 @@ public interface EnhancedLinkdConfig {
      */
     boolean useIsisDiscovery();
 
+    boolean disableBridgeVlanDiscovery();
 
     /**
      * <p>reload</p>

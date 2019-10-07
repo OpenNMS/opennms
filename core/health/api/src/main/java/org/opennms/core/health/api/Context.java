@@ -35,10 +35,10 @@ package org.opennms.core.health.api;
  * @author mvrueden
  */
 public class Context {
-    private long timeout;
+    private long timeout; // ms
 
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
+    public void setTimeout(long timeoutInMs) {
+        this.timeout = timeoutInMs;
     }
 
     public long getTimeout() {

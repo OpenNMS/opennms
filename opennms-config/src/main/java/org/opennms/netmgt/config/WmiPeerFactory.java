@@ -96,9 +96,6 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
         setConfigResource(new FileSystemResource(configFile));
     }
 
-    /**
-     * Create a PollOutagesConfigFactory using the specified Spring resource.
-     */
     public WmiPeerFactory(final Resource resource) {
         super(WmiConfig.class, "WMI peer configuration");
         setConfigResource(resource);
@@ -158,10 +155,6 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * <p>
      * setInstance
      * </p>
-     *
-     * @param instance
-     *            a {@link org.opennms.netmgt.config.PollOutagesConfigFactory}
-     *            object.
      */
     public static void setInstance(final WmiPeerFactory instance) {
         m_loaded = true;

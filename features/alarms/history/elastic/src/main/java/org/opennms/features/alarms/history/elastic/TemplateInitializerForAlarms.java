@@ -45,6 +45,6 @@ public class TemplateInitializerForAlarms extends DefaultTemplateInitializer {
     }
 
     public TemplateInitializerForAlarms(JestClient client) {
-        super(client, TEMPLATE_RESOURCE, TEMPLATE_NAME, new DefaultTemplateLoader());
+        super(client, TEMPLATE_RESOURCE, TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
 }

@@ -31,7 +31,6 @@ package org.opennms.netmgt.threshd;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -101,15 +100,6 @@ public abstract class BaseThresholdDefConfigWrapper {
      * @return Collection of the names of datasources
      */
     public abstract Collection<String> getRequiredDatasources();
-    
-    /**
-     * Evaluate the threshold expression/datasource in terms of the named values supplied, and return that value
-     *
-     * @param values named values to use in evaluating the expression/data source
-     * @return the value of the evaluated expression
-     * @throws org.opennms.netmgt.threshd.ThresholdExpressionException if any.
-     */
-    public abstract double evaluate(Map<String, Double> values)  throws ThresholdExpressionException;
     
     /**
      * <p>getDsType</p>
@@ -259,5 +249,6 @@ public abstract class BaseThresholdDefConfigWrapper {
         m_baseDef = threshold.getBasethresholddef();
     }
     
+    public abstract void accept(ThresholdDefVisitor thresholdDefVisitor);
 }
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<engine-configuration xmlns="http://xmlns.opennms.org/xsd/drools-engine">
+  <rule-set name="persistStateStreamingTest" persist-state="true" event-processing-mode="stream">
+    <rule-file>PersistStateStreaming.drl</rule-file>
+    <event>uei.opennms.org/nodes/nodeLostService</event>
+  </rule-set>  
+</engine-configuration>

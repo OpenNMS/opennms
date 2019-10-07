@@ -29,14 +29,12 @@
 package org.opennms.smoketest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,16 +96,13 @@ public class AssetsPageForNodeIT extends OpenNMSSeleniumIT {
      * @throws Exception the exception
      */
     @Test
-    public void testAssetPage() throws Exception {
+    public void testAssetPage() {
         findElementByLink("Asset Info").click();
         Alert alert = driver.switchTo().alert();
         alert.accept();
 
         final String descriptionXpath = "(//input[@ng-model='asset[field.model]'])[1]";
-        waitForElement(By.xpath(descriptionXpath));
-        WebElement description = findElementByXpath(descriptionXpath);
-        Assert.assertNotNull(description);
-        Assert.assertEquals("Right here, Right now", description.getAttribute("value"));
+        waitForValue(By.xpath(descriptionXpath), "Right here, Right now");
     }
 
 }

@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
@@ -70,6 +71,28 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
         }
 
         final SnmpAgentConfig config = new SnmpAgentConfig(agentAddress.getAddress());
+        config.setProxyFor(address);
+        config.setPort(agentAddress.getPort());
+
+        LOG.debug("proxying {} -> {}", addressString, agentAddress);
+        return config;
+    }
+
+    @Override
+    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address) {
+        final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
+        final SnmpAgentAddress agentAddress = mapper.getAddress(address);
+
+        final String addressString = str(address);
+        if (agentAddress == null) {
+            LOG.debug(
+                    "No agent address mapping found for {}!  Try adding a @JUnitSnmpAgent(host=\"{}\", resource=\"...\" entry...",
+                    addressString, addressString);
+
+            return super.getAgentConfig(address, null);
+
+        }
+        SnmpAgentConfig config = super.getAgentConfigFromProfile(snmpProfile, agentAddress.getAddress());
         config.setProxyFor(address);
         config.setPort(agentAddress.getPort());
 

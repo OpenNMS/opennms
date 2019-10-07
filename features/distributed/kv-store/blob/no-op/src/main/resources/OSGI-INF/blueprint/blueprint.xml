@@ -1,0 +1,8 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+<bean id="noOpBlobStore" class="org.opennms.features.distributed.kvstore.blob.noop.NoOpBlobStore" factory-method="getInstance"/>
+<service ref="noOpBlobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore">
+    <service-properties>
+        <entry key="registration.export" value="true" />
+    </service-properties>
+</service>
+</blueprint>

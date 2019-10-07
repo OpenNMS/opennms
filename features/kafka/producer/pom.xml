@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.kafka</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -100,7 +100,6 @@
     <dependency>
       <groupId> com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>${protobuf3Version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

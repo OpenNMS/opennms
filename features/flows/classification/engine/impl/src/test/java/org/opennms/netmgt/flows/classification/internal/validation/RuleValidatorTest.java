@@ -30,10 +30,13 @@ package org.opennms.netmgt.flows.classification.internal.validation;
 
 import static org.opennms.netmgt.flows.classification.internal.validation.ValidatorTestUtils.verify;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.error.ErrorContext;
 import org.opennms.netmgt.flows.classification.error.Errors;
+import org.opennms.netmgt.flows.classification.persistence.api.Group;
+import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
@@ -42,15 +45,24 @@ import org.slf4j.LoggerFactory;
 
 public class RuleValidatorTest {
 
+    private Group group;
+
+    @Before
+    public void before() {
+        group = new GroupBuilder().withName("myGroup").build();
+    }
+
     @Test
     public void verifyNameIsRequired() {
         final Rule rule = new Rule();
+        rule.setGroup(group);
         verify(() -> new RuleValidator(FilterService.NOOP).validate(rule), Errors.RULE_NAME_IS_REQUIRED);
     }
 
     @Test
     public void verifyDefinitionIsRequired() {
         final Rule rule = new Rule();
+        rule.setGroup(group);
         rule.setName("test");
         verify(() -> new RuleValidator(FilterService.NOOP).validate(rule), Errors.RULE_NO_DEFINITIONS);
     }
@@ -58,6 +70,7 @@ public class RuleValidatorTest {
     @Test
     public void verifySuccess() {
         final Rule rule = new RuleBuilder()
+                .withGroup(group)
                 .withName("dummy")
                 .withProtocol("tcp")
                 .withDstAddress("8.8.8.8")

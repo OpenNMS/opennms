@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionProvider;
 import org.opennms.netmgt.provision.persist.RequisitionRequest;
@@ -167,10 +168,10 @@ public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequi
         String addr = null;
         if ("A".equals(Type.string(rec.getType()))) {
             final ARecord arec = (ARecord) rec;
-            addr = StringUtils.stripStart(arec.getAddress().toString(), "/");
+            addr = InetAddressUtils.str(arec.getAddress());
         } else if ("AAAA".equals(Type.string(rec.getType()))) {
             final AAAARecord aaaarec = (AAAARecord) rec;
-            addr = aaaarec.rdataToString();
+            addr = InetAddressUtils.str(aaaarec.getAddress());
         } else {
             throw new IllegalArgumentException(
                     "Invalid record type " + Type.string(rec.getType()) + ". A or AAAA expected.");

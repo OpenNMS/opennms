@@ -28,6 +28,8 @@
 
 package org.opennms.core.test.elastic;
 
+import static org.opennms.core.test.elastic.ElasticSearchServerConfig.ES_HTTP_PORT;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -46,6 +48,10 @@ public class ElasticSearchRule implements TestRule {
     private EmbeddedElasticSearchServer eserver;
 
     private final ElasticSearchServerConfig config;
+
+    public ElasticSearchRule() {
+        this(new ElasticSearchServerConfig());
+    }
 
     public ElasticSearchRule(ElasticSearchServerConfig config) {
         this.config = config;
@@ -72,7 +78,7 @@ public class ElasticSearchRule implements TestRule {
     }
 
     public void startServer() throws Exception {
-        createHomDirectory();
+        createHomeDirectory();
 
         eserver = new EmbeddedElasticSearchServer(config);
         if (config.getStartDelay() > 0) {
@@ -102,7 +108,7 @@ public class ElasticSearchRule implements TestRule {
     }
 
 
-    private void createHomDirectory() {
+    private void createHomeDirectory() {
         deleteHomeDirectory();
         new File(config.getHomeDirectory()).mkdirs();
     }
@@ -119,5 +125,9 @@ public class ElasticSearchRule implements TestRule {
             }
         }
         file.delete();
+    }
+
+    public String getUrl() {
+        return String.format("http://localhost:%s", ES_HTTP_PORT);
     }
 }

@@ -87,6 +87,7 @@ drop table hwentity cascade;
 drop table hwentityattribute cascade;
 drop table hwentityattributetype cascade;
 drop table user_defined_links cascade;
+drop table kvstore_jsonb cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -2683,7 +2684,7 @@ CREATE TABLE classification_groups (
   name text not null,
   readonly boolean,
   enabled boolean,
-  priority integer not null,
+  position integer not null,
   description text,
   CONSTRAINT classification_groups_pkey PRIMARY KEY (id)
 );
@@ -2728,3 +2729,44 @@ CREATE TABLE user_defined_links (
 ALTER TABLE ONLY user_defined_links ADD CONSTRAINT user_defined_links_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_a FOREIGN KEY (node_id_a) REFERENCES node(nodeid) ON DELETE CASCADE;
 ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_z FOREIGN KEY (node_id_z) REFERENCES node(nodeid) ON DELETE CASCADE;
+
+--##################################################################
+--# Endpoints Grafana
+--##################################################################
+CREATE TABLE endpoints_grafana (
+    id integer NOT NULL,
+    uid TEXT NOT NULL,
+    url TEXT NOT NULL,
+    api_key TEXT NOT NULL,
+    description TEXT,
+    connect_timeout integer,
+    read_timeout integer,
+    CONSTRAINT endpoints_grafana_pkey PRIMARY KEY (id)
+);
+ALTER TABLE endpoints_grafana ADD CONSTRAINT endpoints_grafana_unique_uid UNIQUE (uid);
+
+--# Sequence for the id column in endpoints_grafana table
+--#          sequence, column, table
+--# install: endpointsnxtid id endponts_grafana
+create sequence endpointsnxtid minvalue 1;
+
+--##################################################################
+--# Key Value Stores
+--##################################################################
+CREATE TABLE kvstore_jsonb (
+    key text NOT NULL,
+    context text NOT NULL,
+    last_updated timestamp NOT NULL,
+    expires_at timestamp,
+    value jsonb NOT NULL,
+    CONSTRAINT pk_kvstore_jsonb PRIMARY KEY (key, context)
+);
+
+CREATE TABLE kvstore_bytea (
+    key text NOT NULL,
+    context text NOT NULL,
+    last_updated timestamp NOT NULL,
+    expires_at timestamp,
+    value bytea NOT NULL,
+    CONSTRAINT pk_kvstore_bytea PRIMARY KEY (key, context)
+);

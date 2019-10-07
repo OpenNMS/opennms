@@ -93,15 +93,14 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 
     @Test(timeout=90000)
     public void testRunDetectorInTempThread() throws InterruptedException {
-        for(int i = 0; i < 1000; i++) {
+        for(int i = 0; i < 10; i++) {
             Thread t = new Thread() {
                 @Override
                 public void run() {
                     try {
                         testDetectorFail();
                     } catch (UnknownHostException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        // ignore
                     }
                 }
             };

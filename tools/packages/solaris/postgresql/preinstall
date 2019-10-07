@@ -1,7 +1,0 @@
-#!/bin/sh
-
-if grep '^postgres:' /etc/passwd >/dev/null 2>&1; then
-	echo "no need to create postgres user -- already exists"
-else
-	/usr/sbin/useradd postgres
-fi

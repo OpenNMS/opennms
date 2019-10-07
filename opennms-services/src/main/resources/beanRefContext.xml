@@ -2,14 +2,24 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd" default-lazy-init="true">
-        
+
+    <bean id="pollerConfigContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        <constructor-arg>
+            <list>
+                <value>META-INF/opennms/applicationContext-pollerConfigDaos.xml</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="daoContext" />
+    </bean>
+    
    <bean id="thresholdingContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-thresholding.xml</value>
+         <value>META-INF/opennms/applicationContext-thresholdingConfigDaos.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daoContext" />
+     <constructor-arg ref="pollerConfigContext" />
    </bean>
 
    <bean id="collectdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -28,7 +38,7 @@
          <value>META-INF/opennms/applicationContext-notifd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daoContext" />
+     <constructor-arg ref="pollerConfigContext" />
    </bean>
 
    <bean id="pollerdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">

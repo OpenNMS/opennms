@@ -150,6 +150,8 @@ public class RpcKafkaIT {
     @Test(timeout = 30000)
     public void testKafkaRpcAtRemoteLocationWithSystemId() throws InterruptedException, ExecutionException {
         EchoRequest request = new EchoRequest("Kafka-RPC");
+        // Bug NMS-12267.
+        request.addTracingInfo(null, null);
         request.setSystemId(minionIdentity.getId());
         request.setLocation(REMOTE_LOCATION_NAME);
         EchoResponse expectedResponse = new EchoResponse("Kafka-RPC");
@@ -210,7 +212,7 @@ public class RpcKafkaIT {
         }
     }
 
-    @Test(timeout = 60000)
+    @Test(timeout = 90000)
     public void stressTestKafkaRpcWithDifferentTimeouts() {
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.setId(System.currentTimeMillis());
@@ -223,7 +225,7 @@ public class RpcKafkaIT {
             int randomNum = ThreadLocalRandom.current().nextInt(5, 30);
             sendRequestAndVerifyResponse(request, randomNum*1000);
         }
-        await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
+        await().atMost(60, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
     }
     
     @Test(timeout = 60000)

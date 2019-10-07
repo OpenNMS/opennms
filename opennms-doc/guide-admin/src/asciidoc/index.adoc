@@ -90,6 +90,7 @@ include::text/service-assurance/polling-packages.adoc[]
 [[ga-service-monitors]]
 === Service monitors
 include::text/service-assurance/monitors/introduction.adoc[]
+include::text/service-assurance/monitors/ActiveMQMonitor.adoc[]
 include::text/service-assurance/monitors/AvailabilityMonitor.adoc[]
 include::text/service-assurance/monitors/BgpSessionMonitor.adoc[]
 include::text/service-assurance/monitors/BSFMonitor.adoc[]
@@ -168,7 +169,12 @@ include::text/performance-data-collection/collectors/xmp.adoc[]
 === Shell Commands
 include::text/performance-data-collection/shell/introduction.adoc[]
 include::text/performance-data-collection/shell/adhoc-collection.adoc[]
+include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
+
+[[ga-performance-mgmt-thresholds]]
+== Thresholding
+include::text/thresholds/thresholding.adoc[]
 
 [[ga-events]]
 == Events
@@ -217,6 +223,7 @@ include::text/provisioning/integration.adoc[]
 include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
+include::text/provisioning/snmp-profile.adoc[]
 
 [[ga-provisioning-detectors]]
 === Service Detectors
@@ -280,7 +287,6 @@ include::text/opentracing/setup.adoc[]
 include::text/operation/ssl/ssl.adoc[]
 include::text/operation/request-logging.adoc[]
 include::text/operation/geocoder.adoc[]
-include::text/operation/resourcecli.adoc[]
 include::text/operation/newts-repository-converter.adoc[]
 
 [[ga-opennms-operation-newts]]
@@ -302,6 +308,7 @@ include::text/operation/daemon-config-files/trapd.adoc[]
 [[ga-opennms-system-properties]]
 == System Properties
 include::text/system-properties/introduction.adoc[]
+include::text/system-properties/system-proxies.adoc[]
 
 [[ga-ticketing]]
 == Ticketing
@@ -316,15 +323,14 @@ include::text/ticketing/tsrm.adoc[]
 == Enabling RMI
 include::text/rmi.adoc[]
 
-ifndef::opennms-prime[]
 [[ga-minion]]
 == Minion
+include::text/minion/jms.adoc[]
 include::text/minion/kafka.adoc[]
 include::text/minion/aws-sqs.adoc[]
 include::text/minion/offheap.adoc[]
 include::text/minion/jdbc-driver.adoc[]
 include::text/minion/ttl.adoc[]
-endif::opennms-prime[]
 
 [[ga-sentinel]]
 == Sentinel
@@ -341,6 +347,11 @@ include::text/workarounds/snmp.adoc[]
 [[ga-ifttt]]
 == IFTTT Integration
 include::text/ifttt/ifttt-integration.adoc[]
+
+
+[[ga-dnsresolver]]
+== DNS Resolver
+include::text/dnsresolver/introduction.adoc[]
 
 [[ga-telemetryd]]
 == Telemetry Daemon

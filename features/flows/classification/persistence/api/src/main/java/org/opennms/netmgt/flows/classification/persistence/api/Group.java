@@ -29,7 +29,6 @@
 package org.opennms.netmgt.flows.classification.persistence.api;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,8 +58,8 @@ public class Group {
     @Column(name = "enabled")
     private boolean enabled = true;
 
-    @Column(name = "priority", nullable = false)
-    private int priority;
+    @Column(name = "position", nullable = false)
+    private int position;
 
     @Column(name = "description")
     private String description;
@@ -85,7 +84,7 @@ public class Group {
     }
 
     public List<Rule> getRules() {
-        Collections.sort(rules, new RulePositionComparator());
+        rules.sort(new RulePositionComparator());
         return rules;
     }
 
@@ -122,12 +121,12 @@ public class Group {
         this.enabled = enabled;
     }
 
-    public int getPriority() {
-        return priority;
+    public int getPosition() {
+        return position;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public String getDescription() {
@@ -136,5 +135,17 @@ public class Group {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "Group{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", readOnly=" + readOnly +
+                ", enabled=" + enabled +
+                ", position=" + position +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

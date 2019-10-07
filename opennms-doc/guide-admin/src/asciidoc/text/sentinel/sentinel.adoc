@@ -55,8 +55,8 @@ config:property-set http-url http://127.0.0.1:8980/opennms <3>
 config:property-set broker-url failover:tcp://127.0.0.1:61616 <4>
 config:update
 ----
-<1> Not used at the moment, but must be provided
-<2> Not used at the moment, may be omitted
+<1> used only for tracing, must be provided
+<2> used only for tracing, must be provided
 <3> url which points to {opennms-product-name} (required)
 <4> url which points to the {opennms-product-name} Active MQ Broker (only required if using feature `sentinel-jms`, otherwise may be omitted)
 
@@ -159,7 +159,7 @@ featuresBoot = \
       instance/4.2.2, \
       package/4.2.2, \
       log/4.2.2, \
-      scv/25.0.0-SNAPSHOT, \
+      scv/26.0.0-SNAPSHOT, \
       ssh/4.2.2, \
       framework/4.2.2, \
       system/4.2.2, \
@@ -383,6 +383,13 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
             group.id = OpenNMS
             bootstrap.servers = localhost:9092
         </config>
+        <!--
+            Configure as Kafka Producer for sending Events from Sentinel.
+            All properties desribed at https://kafka.apache.org/0100/documentation.html#producerconfigs are supported.
+        -->
+        <config name="org.opennms.core.ipc.sink.kafka">
+            bootstrap.servers = localhost:9092
+        </config>
         <!-- Install Kafka related features -->
         <feature>sentinel-kafka</feature>
         <!-- Install flow related features -->
@@ -462,7 +469,7 @@ $ ssh -p 8301 admin@localhost
 ----
 admin@sentinel> config:edit --alias nxos --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name NXOS
-admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter
 admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
 admin@sentinel> config:update
 ----
@@ -492,7 +499,7 @@ $ ssh -p 8301 admin@localhost
 ----
 admin@sentinel> config:edit --alias jti --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name JTI
-admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter
 admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/junos-telemetry-interface.groovy
 admin@sentinel> config:update
 ----

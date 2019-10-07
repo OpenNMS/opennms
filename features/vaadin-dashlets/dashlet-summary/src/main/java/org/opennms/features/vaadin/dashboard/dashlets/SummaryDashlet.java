@@ -467,6 +467,7 @@ public class SummaryDashlet extends AbstractDashlet {
                 {
                     m_horizontalLayout.setCaption(getName());
                     m_horizontalLayout.setSizeFull();
+                    injectWallboardStyles();
                 }
 
                 /**
@@ -499,8 +500,6 @@ public class SummaryDashlet extends AbstractDashlet {
                     }
 
                     m_horizontalLayout.removeAllComponents();
-
-                    injectWallboardStyles();
 
                     Component severity = getComponentSeverity(32);
                     Component uei = getComponentUei(32);
@@ -537,6 +536,7 @@ public class SummaryDashlet extends AbstractDashlet {
                 {
                     m_horizontalLayout.setCaption(getName());
                     m_horizontalLayout.setSizeFull();
+                    injectDashboardStyles();
                 }
 
                 /**
@@ -572,8 +572,6 @@ public class SummaryDashlet extends AbstractDashlet {
 
                     Accordion accordion = new Accordion();
                     accordion.setSizeFull();
-
-                    injectDashboardStyles();
 
                     Component severity = getComponentSeverity(16);
                     Component uei = getComponentUei(16);

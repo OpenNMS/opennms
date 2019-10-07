@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.protocols.nxos.adapter;
 
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -48,7 +48,7 @@ public class NxosAdapterFactory extends AbstractCollectionAdapterFactory {
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final NxosGpbAdapter adapter = new NxosGpbAdapter();
+        final NxosGpbAdapter adapter = new NxosGpbAdapter(adapterConfig.getName(), getTelemetryRegistry().getMetricRegistry());
         adapter.setConfig(adapterConfig);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
@@ -56,6 +56,7 @@ public class NxosAdapterFactory extends AbstractCollectionAdapterFactory {
         adapter.setTransactionTemplate(getTransactionTemplate());
         adapter.setFilterDao(getFilterDao());
         adapter.setPersisterFactory(getPersisterFactory());
+        adapter.setThresholdingService(getThresholdingService());
         adapter.setBundleContext(getBundleContext());
 
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);

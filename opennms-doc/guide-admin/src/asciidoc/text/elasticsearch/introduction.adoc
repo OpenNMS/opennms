@@ -11,7 +11,8 @@ Internally all _Elasticsearch_ integrations use the https://github.com/searchbox
 [[ga-elasticsearch-integration-configuration]]
 === Configuration
 
-The configuration is feature dependant and therefore must take place in the feature configuration file in `${OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+The location of the configuration file depends on the feature.
+For flows, it can be found in `${OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 
 The following properties can be set:
 
@@ -112,6 +113,11 @@ When bulk operations fail, only the failed items are retried.
 
 | _settings.index.routing_partition_size_
 | The number of shards a custom routing valuce can go to. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| optional
+| -
+
+| _indexPrefix_
+| Prefix is prepended to the index and template names. Can be used in cases where you want to share the same Elasticsearch cluster with many _{opennms-product-name}_ instances.
 | optional
 | -
 |===

@@ -12,10 +12,12 @@
 ">
 
     <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" availability="mandatory" />
+    <reference id="dnsResolver" interface="org.opennms.netmgt.dnsresolver.api.DnsResolver" availability="mandatory" />
 
     <!-- SFlow Parser Factory -->
     <bean id="sflowParserFactory" class="org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParserFactory">
         <argument ref="telemetryRegistry" />
+        <argument ref="dnsResolver" />
     </bean>
     <service ref="sflowParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
         <service-properties>

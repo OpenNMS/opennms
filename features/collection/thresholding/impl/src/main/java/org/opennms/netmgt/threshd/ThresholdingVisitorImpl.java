@@ -40,6 +40,9 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
+import org.opennms.netmgt.threshd.api.ThresholdingVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,11 +83,15 @@ public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implem
 	private Date m_collectionTimestamp;
 
     private ThresholdingEventProxy m_thresholdingEventProxy;
+    
+    private final Long m_sequenceNumber;
 
-    protected ThresholdingVisitorImpl(ThresholdingSetImpl thresholdingSet, ResourceStorageDao resourceStorageDao, ThresholdingEventProxy eventProxy) {
+    protected ThresholdingVisitorImpl(ThresholdingSetImpl thresholdingSet, ResourceStorageDao resourceStorageDao,
+                                      ThresholdingEventProxy eventProxy, Long sequenceNumber) {
         m_thresholdingSet = thresholdingSet;
         m_thresholdingEventProxy = eventProxy;
         m_collectionTimestamp = new Date();
+        m_sequenceNumber = sequenceNumber;
     }
     
     public void setCounterReset(boolean counterReset) {
@@ -152,7 +159,8 @@ public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implem
      */
     @Override
     public void completeResource(CollectionResource resource) {
-        List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap, m_collectionTimestamp);
+        List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap, m_collectionTimestamp,
+                m_sequenceNumber);
         for (Event event : eventList) {
             m_thresholdingEventProxy.sendEvent(event);
         }

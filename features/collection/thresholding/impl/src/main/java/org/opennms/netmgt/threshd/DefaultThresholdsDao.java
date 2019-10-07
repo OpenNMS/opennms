@@ -34,10 +34,14 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
+import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,40 +56,42 @@ import org.springframework.util.Assert;
 public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     
     private static final Logger LOG = LoggerFactory.getLogger(DefaultThresholdsDao.class);
-    
-    private ThresholdingConfigFactory m_thresholdingConfigFactory;
 
     private ThresholdingEventProxy m_eventProxy;
     
+    private ReadableThresholdingDao m_thresholdingDao;
+    
+    private EntityScopeProvider m_entityScopeProvider;
+
     /** {@inheritDoc} */
     @Override
-    public ThresholdGroup get(String name) {
-        return get(name, null);
+    public ThresholdGroup get(String name, ThresholdingSession thresholdingSession) {
+        return get(name, null, thresholdingSession);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ThresholdGroup merge(ThresholdGroup group) {
-        return get(group.getName(), group);
+    public ThresholdGroup merge(ThresholdGroup group, ThresholdingSession thresholdingSession) {
+        return get(group.getName(), group, thresholdingSession);
     }
 
-    private ThresholdGroup get(String name, ThresholdGroup group) {
+    private ThresholdGroup get(String name, ThresholdGroup group, ThresholdingSession thresholdingSession) {
         boolean merge = group != null;
         ThresholdGroup newGroup = new ThresholdGroup(name);
 
-        File rrdRepository = new File(getThresholdingConfigFactory().getRrdRepository(name));
+        File rrdRepository = new File(m_thresholdingDao.getReadOnlyConfig().getGroup(name).getRrdRepository());
         newGroup.setRrdRepository(rrdRepository);
 
-        ThresholdResourceType nodeType = getThresholdResourceType(name, "node", merge ? group.getNodeResourceType() : null);
+        ThresholdResourceType nodeType = getThresholdResourceType(name, "node", merge ? group.getNodeResourceType() : null, thresholdingSession);
         newGroup.setNodeResourceType(nodeType);
 
-        ThresholdResourceType ifType = getThresholdResourceType(name, "if", merge ? group.getIfResourceType() : null);
+        ThresholdResourceType ifType = getThresholdResourceType(name, "if", merge ? group.getIfResourceType() : null, thresholdingSession);
         newGroup.setIfResourceType(ifType);
 
-        for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(name)) {
+        for (Basethresholddef thresh : m_thresholdingDao.getReadOnlyConfig().getGroup(name).getThresholdsAndExpressions()) {
             final String id = thresh.getDsType();
             if (!(id.equals("if") || id.equals("node") || newGroup.getGenericResourceTypeMap().containsKey(id))) {
-                ThresholdResourceType genericType = getThresholdResourceType(name, id, merge ? group.getGenericResourceTypeMap().get(id) : null);
+                ThresholdResourceType genericType = getThresholdResourceType(name, id, merge ? group.getGenericResourceTypeMap().get(id) : null, thresholdingSession);
                 if (genericType.getThresholdMap().size() > 0) {
                     LOG.info("Adding {}::{} with {} elements", name, id, genericType.getThresholdMap().size());
                     newGroup.getGenericResourceTypeMap().put(id, genericType);
@@ -96,24 +102,24 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         return newGroup;
     }
 
-    private ThresholdResourceType getThresholdResourceType(String groupName, String typeName, ThresholdResourceType type) {
+    private ThresholdResourceType getThresholdResourceType(String groupName, String typeName, ThresholdResourceType type, ThresholdingSession thresholdingSession) {
         ThresholdResourceType resourceType = new ThresholdResourceType(typeName);
         Map<String, Set<ThresholdEntity>> thresholdMap = null;
         if (type == null) {
             thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
-            fillThresholdStateMap(groupName, typeName, thresholdMap);
+            fillThresholdStateMap(groupName, typeName, thresholdMap, thresholdingSession);
         } else {
             thresholdMap = type.getThresholdMap();
-            fillThresholdStateMap(groupName, type.getDsType(), thresholdMap);
+            fillThresholdStateMap(groupName, type.getDsType(), thresholdMap, thresholdingSession);
 
         }
         resourceType.setThresholdMap(thresholdMap);
         return resourceType;
     }
 
-    private void fillThresholdStateMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap) {
+    private void fillThresholdStateMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap, ThresholdingSession thresholdingSession) {
         boolean merge = !thresholdMap.isEmpty();
-        for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
+        for (Basethresholddef thresh : m_thresholdingDao.getReadOnlyConfig().getGroup(groupName).getThresholdsAndExpressions()) {
             // See if map entry already exists for this datasource; if not, create a new one.
             if (thresh.getDsType().equals(typeName)) {
                 try {
@@ -126,9 +132,9 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntitySet);
                     }
                     try {
-                        ThresholdEntity thresholdEntity = new ThresholdEntity();
+                        ThresholdEntity thresholdEntity = new ThresholdEntity(m_entityScopeProvider);
                         thresholdEntity.setEventProxy(m_eventProxy);
-                        thresholdEntity.addThreshold(wrapper);
+                        thresholdEntity.addThreshold(wrapper, thresholdingSession);
                         if (merge) {
                             boolean updated = false;
                             for (ThresholdEntity e : thresholdEntitySet) {
@@ -159,7 +165,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                 for (final Iterator<ThresholdEntity> thresholdIterator = value.iterator(); thresholdIterator.hasNext();) {
                     final ThresholdEntity entity = thresholdIterator.next();
                     boolean found = false;
-                    for (final Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
+                    for (final Basethresholddef thresh : m_thresholdingDao.getReadOnlyConfig().getGroup(groupName).getThresholdsAndExpressions()) {
                         BaseThresholdDefConfigWrapper newConfig = null;
                         try {
                             newConfig = BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
@@ -181,23 +187,8 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         }
     }
 
-    /**
-     * <p>getThresholdingConfigFactory</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
-     */
-    @Override
-    public ThresholdingConfigFactory getThresholdingConfigFactory() {
-        return m_thresholdingConfigFactory;
-    }
-
-    /**
-     * <p>setThresholdingConfigFactory</p>
-     *
-     * @param thresholdingConfigFactory a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
-     */
-    public void setThresholdingConfigFactory(ThresholdingConfigFactory thresholdingConfigFactory) {
-        m_thresholdingConfigFactory = thresholdingConfigFactory;
+    public void setThresholdingDao(ReadableThresholdingDao thresholdingDao) {
+        m_thresholdingDao = Objects.requireNonNull(thresholdingDao);
     }
 
     /**
@@ -207,11 +198,14 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_thresholdingConfigFactory != null, "thresholdingConfigFactory property not set");
+        Assert.state(m_thresholdingDao != null, "thresholdingDao property not set");
     }
 
     public void setEventProxy(ThresholdingEventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }
 
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        m_entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
+    }
 }

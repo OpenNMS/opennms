@@ -30,23 +30,40 @@ package org.opennms.netmgt.threshd;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
 
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.lookup.ServiceRegistryLookup;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
+import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 
 /**
@@ -62,27 +79,57 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
                                EventConstants.RELOAD_DAEMON_CONFIG_UEI,
                                EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
 
-    @Autowired
-    private ThresholdingEventProxy eventProxy;
-
-    @Autowired
     private ThresholdingSetPersister thresholdingSetPersister;
+
+    private ThresholdingEventProxy eventProxy;
 
     @Autowired
     private ResourceStorageDao resourceStorageDao;
 
     @Autowired
     private EventIpcManager eventIpcManager;
+    
+    private final AtomicReference<BlobStore> kvStore = new AtomicReference<>();
+    
+    @Autowired
+    private ReadableThreshdDao threshdDao;
 
+    @Autowired
+    private ReadableThresholdingDao thresholdingDao;
+
+    private static final ServiceLookup<Class<?>, String> SERVICE_LOOKUP = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
+            .blocking()
+            .build();
+
+    private final Timer reInitializeTimer = new Timer();
+
+    private boolean isDistributed = false;
+    
+    // Spring init entry point
     @PostConstruct
     private void init() {
-        try {
-            ThreshdConfigFactory.init();
-            ThresholdingConfigFactory.init();
-            eventIpcManager.addEventListener(this, UEI_LIST);
-        } catch (final Exception e) {
-            throw new RuntimeException("Unable to initialize thresholding.", e);
-        }
+        // When we are on OpenNMS we will have been wired an event manager and can listen for events
+        eventIpcManager.addEventListener(this, UEI_LIST);
+    }
+
+    // OSGi init entry point
+    public void initOsgi() {
+        // If we were started viag OSGi then we are on Sentinel therefore we will mark ourselves as being distributed
+        // for thresholding
+        isDistributed = true;
+        
+        reInitializeTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                // On Sentinel we won't have access to an event manager so we will have to manage config updates via
+                // timer
+                reinitializeOnTimer();
+            }
+        }, 0, TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES));
+    }
+    
+    private void reinitializeOnTimer() {
+        thresholdingSetPersister.reinitializeThresholdingSets();
     }
 
     @Override
@@ -114,14 +161,14 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     public void nodeGainedService(Event event) {
         LOG.debug(event.toString());
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        threshdDao.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);
     }
 
     public void handleNodeCategoryChanged(Event event) {
         LOG.debug(event.toString());
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        threshdDao.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);
     }
 
@@ -130,17 +177,25 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
             throws ThresholdInitializationException {
         Objects.requireNonNull(repository, "RrdRepository must not be null");
         Objects.requireNonNull(serviceParams, "ServiceParameters must not be null");
+
+        synchronized (kvStore) {
+            if (kvStore.get() == null) {
+                waitForKvStore();
+            }
+        }
+        
         String resource = "";
         if (repository.getRrdBaseDir() != null && repository.getRrdBaseDir().getPath() != null) {
             resource = repository.getRrdBaseDir().getPath();
         }
-        ThresholdingSessionKey sessionKey = new ThresholdingSessionKey(nodeId, hostAddress, serviceName, resource);
-        return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams);
+        ThresholdingSessionKey sessionKey = new ThresholdingSessionKeyImpl(nodeId, hostAddress, serviceName, resource);
+        return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams,
+                kvStore.get(), isDistributed);
     }
 
-    public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session) throws ThresholdInitializationException {
+    public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session, Long sequenceNumber) throws ThresholdInitializationException {
         ThresholdingSetImpl thresholdingSet = (ThresholdingSetImpl) thresholdingSetPersister.getThresholdingSet(session, eventProxy);
-        return new ThresholdingVisitorImpl(thresholdingSet, ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy);
+        return new ThresholdingVisitorImpl(thresholdingSet, ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy, sequenceNumber);
     }
 
     public EventIpcManager getEventIpcManager() {
@@ -151,14 +206,13 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         this.eventIpcManager = eventIpcManager;
     }
 
-    public ThresholdingEventProxy getEventProxy() {
-        return eventProxy;
+    @Autowired
+    public void setEventProxy(EventForwarder eventForwarder) {
+        Objects.requireNonNull(eventForwarder);
+        eventProxy = new ThresholdingEventProxyImpl(eventForwarder);
     }
 
-    public void setEventProxy(ThresholdingEventProxy eventProxy) {
-        this.eventProxy = eventProxy;
-    }
-
+    @Override
     public ThresholdingSetPersister getThresholdingSetPersister() {
         return thresholdingSetPersister;
     }
@@ -182,8 +236,8 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         }
         if (isThresholds) {
             try {
-                ThreshdConfigFactory.reload();
-                ThresholdingConfigFactory.reload();
+                threshdDao.reload();
+                thresholdingDao.reload();
                 thresholdingSetPersister.reinitializeThresholdingSets();
             } catch (final Exception e) {
                 throw new RuntimeException("Unable to reload thresholding.", e);
@@ -195,4 +249,28 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         thresholdingSetPersister.reinitializeThresholdingSets();
     }
 
+    private void waitForKvStore() {
+        BlobStore osgiKvStore = SERVICE_LOOKUP.lookup(BlobStore.class, null);
+
+        if (osgiKvStore == null) {
+            throw new RuntimeException("Timed out waiting for a key value store");
+        } else {
+            kvStore.set(osgiKvStore);
+        }
+    }
+
+    public void setKvStore(BlobStore keyValueStore) {
+        Objects.requireNonNull(keyValueStore);
+
+        synchronized (kvStore) {
+            if (kvStore.get() == null) {
+                kvStore.set(keyValueStore);
+            }
+        }
+    }
+
+    @VisibleForTesting
+    public void setDistributed(boolean distributed) {
+        isDistributed = distributed;
+    }
 }

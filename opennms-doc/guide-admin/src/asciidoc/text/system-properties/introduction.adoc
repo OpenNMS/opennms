@@ -2,9 +2,9 @@
 // Allow GitHub image rendering
 :imagesdir: ../images
 
-The global behavior of _OpenNMS_ is configured with Property files.
-Configuration can have also effect on the _Java Virtual Machine_ underneath _OpenNMS_.
-Changes in these property files require a restart of _OpenNMS_.
+The global behavior of _{opennms-product-name}_ is configured with properties files.
+Configuration can also affect the _Java Virtual Machine_ under which _{opennms-product-name}_ runs.
+Changes in these properties files require a restart of _{opennms-product-name}_.
 The configuration files can be found in `${OPENNMS_HOME}/etc`.
 
 The priority for _Java system properties_ is as follows:

@@ -221,6 +221,7 @@ public class PageSequenceMonitorIT {
     }
 
     @Test
+    @Ignore("Don't depend on external services for ITs")
     public void testVirtualHost() throws Exception {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +

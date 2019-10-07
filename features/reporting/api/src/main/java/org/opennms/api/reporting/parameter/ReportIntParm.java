@@ -29,6 +29,7 @@
 package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <p>ReportIntParm class.</p>
@@ -43,46 +44,28 @@ public class ReportIntParm extends ReportParm implements Serializable {
     int m_value;
     String m_type;
     
-    /**
-     * <p>Constructor for ReportIntParm.</p>
-     */
     public ReportIntParm() {
       super();
     }
     
-    /**
-     * <p>getValue</p>
-     *
-     * @return a int.
-     */
     public int getValue() {
         return m_value;
     }
     
-    /**
-     * <p>setValue</p>
-     *
-     * @param value a int.
-     */
     public void setValue(int value) {
         m_value = value;
     }
     
-    /**
-     * <p>getInputType</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getInputType() {
         return m_type;
     }
-    /**
-     * <p>setInputType</p>
-     *
-     * @param type a {@link java.lang.String} object.
-     */
+
     public void setInputType(String type) {
         m_type = type;
     }
 
+    @Override
+    void accept(ReportParmVisitor visitor) {
+        Objects.requireNonNull(visitor).visit(this);
+    }
 }

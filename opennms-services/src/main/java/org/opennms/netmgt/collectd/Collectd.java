@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -62,10 +63,10 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -80,7 +81,7 @@ import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmp.InetAddrUtils;
-import org.opennms.netmgt.threshd.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -92,6 +93,8 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * <p>Collectd class.</p>
@@ -191,6 +194,9 @@ public class Collectd extends AbstractServiceDaemon implements
 
     @Autowired
     private ThresholdingService m_thresholdingService;
+    
+    @Autowired
+    private ReadablePollOutagesDao pollOutagesDao;
 
     /**
      * Constructor.
@@ -269,6 +275,9 @@ public class Collectd extends AbstractServiceDaemon implements
         
         // node category membership changes
         ueiList.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
+
+        // node location changed event
+        ueiList.add(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI);
         
         getEventIpcManager().addEventListener(this, ueiList);
     }
@@ -605,7 +614,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
             LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
             
-            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient));
+            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao));
         }
         return matchingPkgs;
     }
@@ -617,8 +626,6 @@ public class Collectd extends AbstractServiceDaemon implements
      * @param iface
      *            TODO
      * @param spec
-     *            TODO
-     * @param svcName
      *            TODO
      */
     private boolean alreadyScheduled(OnmsIpInterface iface, CollectionSpecification spec) {
@@ -733,6 +740,8 @@ public class Collectd extends AbstractServiceDaemon implements
                 handleReloadDaemonConfig(event);
             } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
                 handleNodeCategoryMembershipChanged(event);
+            } else if (event.getUei().equals(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI)) {
+                handleNodeLocationChanged(event);
             }
         } catch (InsufficientInformationException e) {
             handleInsufficientInfo(e);
@@ -993,6 +1002,25 @@ public class Collectd extends AbstractServiceDaemon implements
         unscheduleNodeAndMarkForDeletion(nodeId);
 
         LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
+
+        scheduleNode(nodeId.intValue(), true);
+    }
+
+    /**
+     * This method is responsible for handling NodeLocationChanged events.
+     *
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException if the event does not have a nodeId
+     */
+    private void handleNodeLocationChanged(Event event) throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+
+        Long nodeId = event.getNodeid();
+
+        unscheduleNodeAndMarkForDeletion(nodeId);
+
+        LOG.debug("nodeLocationChanged: unscheduling nodeid {} completed.", nodeId);
 
         scheduleNode(nodeId.intValue(), true);
     }
@@ -1400,7 +1428,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>getScheduler</p>
      *
-     * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
+     * @return a {@link org.opennms.netmgt.scheduler.Scheduler} object.
      */
     public Scheduler getScheduler() {
         if (m_scheduler == null) {
@@ -1533,4 +1561,8 @@ public class Collectd extends AbstractServiceDaemon implements
         return m_collectableServices.size();
     }
 
+    @VisibleForTesting
+    public void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
+        this.pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+    }
 }

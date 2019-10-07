@@ -33,13 +33,14 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.time.YearGuesser;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,19 +166,10 @@ public class SyslogParser {
                 final DateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.ROOT);
                 adjustTimeZone(df);
                 Date date = df.parse(dateString);
-                final Calendar c = df.getCalendar();
-                c.setTime(date);
-
-                // Set the calendar to the current year.
-                final LocalDateTime now = LocalDateTime.now();
-                final int currentYear = now.getYear();
-                c.set(Calendar.YEAR, currentYear);
-
-                // ...BUT, if the calendar entry is in the future, assume the year
-                // should be the previous year.
-                SyslogTimeStamp.adjustYear(c, now);
-
-                return c.getTime();
+                LocalDateTime parsedDateWithoutYear = LocalDateTime.ofInstant(date.toInstant(), df.getTimeZone().toZoneId());
+                LocalDateTime parsedDateWithYear = YearGuesser.guessYearForDate(parsedDateWithoutYear, LocalDateTime.now(df.getTimeZone().toZoneId()));
+                Instant adjustedInstant = parsedDateWithYear.atZone(df.getTimeZone().toZoneId()).toInstant();
+                return Date.from(adjustedInstant);
             }
         } catch (final Exception e) {
             LOG.debug("Unable to parse date '{}'", dateString, e);

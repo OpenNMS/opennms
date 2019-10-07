@@ -30,11 +30,18 @@ package org.opennms.web.alarm.filter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,9 +58,12 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.CriteriaConverter;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -65,6 +75,7 @@ import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.SortStyle;
+import org.opennms.web.category.CategoryUtil;
 import org.opennms.web.controller.alarm.AlarmFilterController;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
@@ -97,6 +108,12 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Autowired
     AlarmRepository m_daoAlarmRepo;
+
+    @Autowired
+    CategoryDao m_categoryDao;
+
+    @Autowired
+    NodeDao m_nodeDao;
 
     @Autowired
     ApplicationContext m_appContext;
@@ -329,7 +346,46 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
         assertEquals(1, alarms.length);
     }
-    
+
+    @Test
+    @Transactional
+    @JUnitTemporaryDatabase
+    @SuppressWarnings("deprecation")
+    public void testCategoryFilter() {
+        // get all alarms
+        final Set<OnmsAlarm> allAlarms = Arrays.stream(m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new Filter[0])))).collect(Collectors.toSet());
+
+        // create node to categories map
+        final Map<Integer, Set<String>> nodeCategoriesMap = new TreeMap<>();
+
+        // iterate over all nodes
+        for (final OnmsNode onmsNode : m_nodeDao.findAll()) {
+            // get node's categories
+            nodeCategoriesMap.put(onmsNode.getId(), onmsNode.getCategories().stream().map(c -> c.getName()).collect(Collectors.toSet()));
+        }
+
+        // now iterate over all cetegories
+        final List<OnmsCategory> onmsCategories = m_categoryDao.findAll();
+        for (final OnmsCategory alarmFound : onmsCategories) {
+            // get alarms for given category
+            final AlarmCriteria criteria = getCriteria(new CategoryFilter(alarmFound.getName()));
+            final OnmsAlarm[] alarmsByCategory = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
+            // check that each alarm has a node with the given category associated
+            for (final OnmsAlarm onmsAlarm : alarmsByCategory) {
+                assertNotNull(onmsAlarm.getNodeId());
+                assertTrue(nodeCategoriesMap.get(onmsAlarm.getNodeId()).contains(alarmFound.getName()));
+                // remote from all alarms
+                allAlarms.remove(onmsAlarm);
+            }
+        }
+
+        // check remaining alarms
+        for (final OnmsAlarm remainingAlarm : allAlarms) {
+            // no node or no categories assigned
+            assertTrue(remainingAlarm.getNodeId() == null || nodeCategoriesMap.get(remainingAlarm.getNodeId()).isEmpty());
+        }
+    }
+
     @Test
     @Transactional
     @JUnitTemporaryDatabase

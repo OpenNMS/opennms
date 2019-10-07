@@ -1,3 +1,29 @@
+opennms (25.0.0-1) stable; urgency=medium
+
+  * New major stable release.  It contains a huge number of bug fixes and
+    enhancements, most notably massive thresholding improvements, big changes
+    to netflow and other streaming telemetry data, reporting and UI updates,
+    plus much more.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/25.0.0/releasenotes/releasenotes.html
+
+opennms (24.1.3-1) stable; urgency=low
+
+  * New stable release.  It contains a few enhancements including JMS RPC
+    improvements, as well as a bunch of bug fixes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html
+
+opennms (24.1.2-1) stable; urgency=medium
+
+  * New stable release.  It contains bug fixes for flow processing, Debian package
+    startup, the minion UI, and more.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/24.1.2/releasenotes/releasenotes.html
+
 opennms (24.1.1-1) stable; urgency=medium
 
   * New stable release.  It contains bug fixes to WS-Man, the web UI, flows,

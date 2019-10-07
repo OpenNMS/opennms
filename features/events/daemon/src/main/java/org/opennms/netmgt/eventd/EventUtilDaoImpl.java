@@ -44,6 +44,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.LikeRestriction;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -92,6 +93,16 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
     @Override
     public String getNodeLabel(long nodeId) {
         return nodeDao.getLabelForId(Integer.valueOf((int)nodeId));
+    }
+
+    @Override
+    public String getPrimaryInterface(final long nodeId) {
+        final OnmsIpInterface onmsIpInterface = ipInterfaceDao.findPrimaryInterfaceByNodeId((int)nodeId);
+        if (onmsIpInterface != null) {
+            return InetAddressUtils.toIpAddrString(onmsIpInterface.getIpAddress());
+        } else {
+            return null;
+        }
     }
 
     @Override

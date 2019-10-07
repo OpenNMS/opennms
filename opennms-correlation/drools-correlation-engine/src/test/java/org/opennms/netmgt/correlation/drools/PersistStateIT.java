@@ -28,23 +28,62 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import org.junit.Assert;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+
+import java.util.concurrent.TimeUnit;
+
+import org.apache.camel.Consume;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 public class PersistStateIT extends CorrelationRulesTestCase {
 
-    @Test
-    public void testDroolsFusion() throws Exception {
+    @ClassRule
+    public static TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @BeforeClass
+    public static void setUpClass() {
+        // Engine states are written to the JVM's temp dir - overwrite this so we don't
+        // inadvertently share state between runs.
+        System.setProperty("java.io.tmpdir", temporaryFolder.getRoot().getAbsolutePath());
+    }
+
+    @Test(timeout=30000)
+    public void canPersistState() throws Exception {
         DroolsCorrelationEngine engine = findEngineByName("persistStateTest");
-        Assert.assertNotNull(engine);
+        assertThat(engine, notNullValue());
+
         engine.correlate(createNodeLostServiceEvent(1, "SSH"));
-        Assert.assertEquals(3, engine.getKieSessionObjects().size());
+        assertThat(engine.getKieSessionObjects(), hasSize(3));
         engine.tearDown();
+
+        // Re-initialize and verify
         engine.initialize();
-        Assert.assertEquals(3, engine.getKieSessionObjects().size());
+        assertThat(engine.getKieSessionObjects(), hasSize(3));
+        engine.tearDown();
+    }
+
+    @Test(timeout=30000)
+    public void canPersistStateWithStreaming() throws Exception {
+        DroolsCorrelationEngine engine = findEngineByName("persistStateStreamingTest");
+        assertThat(engine, notNullValue());
+
+        engine.correlate(createNodeLostServiceEvent(1, "SSH"));
+        await().atMost(1, TimeUnit.MINUTES).until(engine::getKieSessionObjects, hasSize(3));
+        engine.tearDown();
+
+        // Re-initialize and verify
+        engine.initialize();
+        assertThat(engine.getKieSessionObjects(), hasSize(3));
+        engine.tearDown();
     }
 
     private Event createNodeLostServiceEvent(int nodeid, String serviceName) {

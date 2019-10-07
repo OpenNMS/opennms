@@ -6,7 +6,7 @@
 		<relativePath>../topology-map/poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>25.0.0-SNAPSHOT</version>
+		<version>26.0.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.opennms.features</groupId>
 	<artifactId>vaadin-node-maps</artifactId>
@@ -56,7 +56,7 @@
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.plugin.version}</version>
                 <configuration>
-                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
+                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx${vaadinJavaMaxMemory} -Xss1024k</extraJvmArgs>
                     <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
                     <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets</hostedWebapp>
                     <noServer>true</noServer>
@@ -66,6 +66,7 @@
                     <strict>true</strict>
                     <runTarget>http://localhost:8980/opennms/node-maps</runTarget>
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+                    <localWorkers>${vaadinLocalWorkers}</localWorkers>
                 </configuration>
                 <executions>
                     <execution>
@@ -151,6 +152,11 @@
 		<dependency>
 			<groupId>org.opennms.features.vaadin-components</groupId>
 			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.features.vaadin-components</groupId>
+			<artifactId>header</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- Node Maps Dependencies -->

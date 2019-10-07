@@ -653,11 +653,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
-	public void testInstallFeatureSpringWebflow() {
-		installFeature("spring-webflow");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	@Ignore("OSGi dependency problems: javax.ws.rs")
 	public void testInstallFeatureJiraTroubleticketer() {
 		installFeature("opennms-core"); // System classpath

@@ -44,7 +44,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
+
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 public class IndexSelector {
 
@@ -60,12 +63,14 @@ public class IndexSelector {
 
     }
 
-    private String prefix;
-    private IndexStrategy strategy;
-    private TemporalUnit unit;
-    private long expandTimeRangeInMs;
+    private final IndexSettings indexSettings;
+    private final String prefix;
+    private final IndexStrategy strategy;
+    private final TemporalUnit unit;
+    private final long expandTimeRangeInMs;
 
-    public IndexSelector(String prefix, IndexStrategy strategy, long expandTimeRangeInMs) {
+    public IndexSelector(IndexSettings indexSettings, String prefix, IndexStrategy strategy, long expandTimeRangeInMs) {
+        this.indexSettings = Objects.requireNonNull(indexSettings);
         this.prefix = prefix;
         this.strategy = strategy;
         this.unit = UNIT_MAP.get(strategy);
@@ -94,14 +99,14 @@ public class IndexSelector {
         Instant currentDate = startDate;
 
         while (currentDate.isBefore(endDate)) {
-            String index = strategy.getIndex(prefix, currentDate);
+            String index = strategy.getIndex(indexSettings, prefix, currentDate);
             all.add(index);
             currentDate = plusOne(currentDate);
         }
 
         // collapse the indexes in order to reduce the length of the URL:
-        String elementAfterSequence = strategy.getIndex(prefix, currentDate);
-        String elementBeforeSequence = strategy.getIndex(prefix, minusOne(startDate));
+        String elementAfterSequence = strategy.getIndex(indexSettings, prefix, currentDate);
+        String elementBeforeSequence = strategy.getIndex(indexSettings, prefix, minusOne(startDate));
 
         return collapseList(all, elementBeforeSequence, elementAfterSequence, 0);
     }

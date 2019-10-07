@@ -493,7 +493,7 @@ VTD-XML is very fast GPL library for parsing XMLs with XPath Support.
 
 %prep
 
-tar -xvzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+tar -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -533,27 +533,23 @@ if [ "%{skip_compile}" = 1 ]; then
 		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 	fi
 	TOPDIR=`pwd`
-	for dir in . opennms-tools; do
-		cd $dir
-			"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install
-		cd -
-	done
+	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install
+		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install --builder smart --threads ${CCI_MAXCPU:-2}
 fi
+
+cd opennms-tools
+	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+	-Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
+cd -
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install
-
-cd opennms-tools
-	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-	-Dopennms.home="%{instprefix}" install
-cd -
+	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install --builder smart --threads ${CCI_MAXCPU:-2}
 
 echo "=== INSTALL COMPLETED ==="
 
@@ -562,7 +558,7 @@ echo "=== UNTAR BUILD ==="
 mkdir -p %{buildroot}%{instprefix}
 
 # Untar the tar.gz created by opennms-full-assembly
-tar zxvf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
+tar zxf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 

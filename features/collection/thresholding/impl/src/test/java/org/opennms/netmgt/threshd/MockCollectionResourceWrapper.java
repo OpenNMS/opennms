@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,10 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
                 return instance;
             }
             @Override
+            public String getUnmodifiedInstance() {
+                return instance;
+            }
+            @Override
             public String getInterfaceLabel() {
                 return null;
             }
@@ -79,7 +83,7 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
             public ResourcePath getPath() {
                 return null;
             }
-        }, null, null);
+        }, null, null, null, null);
     }
 
 }

@@ -45,8 +45,6 @@ import com.google.gson.annotations.SerializedName;
 public class AlarmDocumentDTO implements AlarmState {
     private static final int DOCUMENT_VERSION = 1;
 
-    public static final String TYPE = "alarm";
-
     @SerializedName("@deleted_time")
     private Long deletedTime;
 
