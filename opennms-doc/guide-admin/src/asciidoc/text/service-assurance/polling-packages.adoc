@@ -151,6 +151,33 @@ The _IP Interface_ and _Service_ page show which _Polling Package_ and _Service_
 .Polling Package applied to IP interface and Service
 image::service-assurance/03_polling-package.png[]
 
+[[ga-pollerd-packages-patterns]]
+==== Service Patterns
+
+Usually, the _Poller_ used to monitor a _Service_ is found by the matching the pollers name with the service name.
+In addition, a matching poller can be found if an additional element `pattern` is specified for the poller.
+If so, the poller is used for all services matching the _RegEx_ pattern, too.
+
+The _RegEx_ pattern allows to specify named capture groups.
+There can be multiple capture groups inside of a pattern, but each must have a unique name.
+Please note, that the _RegEx_ must be escaped or be wrapped in a CDATA-Tag inside the configuration XML to make it a valid property.
+
+If a poller is matched using its pattern, the parts of the service name which matches the capture groups of the pattern are available as parameters to the link:#ga-pollerd-configuration-meta-data[Meta-Data-DSL] using the context `pattern` and the capture group name as key.
+
+Examples:
+
+`<pattern><![CDATA[^HTTP-(?<vhost>.*)$]]></pattern>`::
+Matches all services which names starts with `HTTP-` followed by a host name.
+If the services is called `HTTP-www.example.com`, the Meta-DSL expression `${pattern:vhost}` will resolved to `www.example.com`.
+
+`<pattern><![CDATA[^HTTP-(?<vhost>.*?):(?<port>[0-9]+)$]]></pattern>"`::
+Matches all services which names starts with `HTTP-` followed by a hostname and a port.
+There will be two variables (`${pattern:vhost}` and `${pattern:port}`) which can be used in the poller parameters.
+
+The service pattern mechanism can be used to whenever there are multiple instances of a service on the same interface.
+By specifying a distinct service name to each instance, the services is identifiable, but there is no need to add a poller definition per service.
+Common use-cases for such services are HTTP Virtual Hosts, where multiple web applications run on the same web-server or BGP session monitoring where each router has multiple neighbours.
+
 [[ga-pollerd-packages-test-service-manually]]
 ==== Test Services on manually
 

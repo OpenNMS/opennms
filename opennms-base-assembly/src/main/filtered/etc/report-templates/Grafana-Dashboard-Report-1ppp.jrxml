@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2019-07-08T15:03:09 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="1190" pageHeight="1684" columnWidth="1150" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9967c600-878d-4d17-9b00-8ca2f00e9c39">
+  <property name="com.jaspersoft.studio.unit." value="pixel"/>
+  <parameter name="reportTitle" class="java.lang.String">
+    <parameterDescription><![CDATA[Report Title]]></parameterDescription>
+    <defaultValueExpression><![CDATA["Grafana Dashboard Report"]]></defaultValueExpression>
+  </parameter>
+  <parameter name="reportDescription" class="java.lang.String">
+    <parameterDescription><![CDATA[Report Description]]></parameterDescription>
+    <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+  </parameter>
+  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/"]]></defaultValueExpression>
+  </parameter>
+  <parameter name="startDate" class="java.util.Date">
+    <parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
+    <defaultValueExpression><![CDATA[new java.util.Date(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 1).getTimeInMillis()
+)]]></defaultValueExpression>
+  </parameter>
+  <parameter name="endDate" class="java.util.Date">
+    <parameterDescription><![CDATA[Report End Date]]></parameterDescription>
+    <defaultValueExpression><![CDATA[new java.util.Date(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
+)]]></defaultValueExpression>
+  </parameter>
+  <parameter name="startDateTime" class="java.lang.Long" isForPrompting="false">
+    <defaultValueExpression><![CDATA[$P{startDate}.getTime()]]></defaultValueExpression>
+  </parameter>
+  <parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
+    <defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
+  </parameter>
+  <parameter name="GRAFANA_DASHBOARD_UID" class="java.lang.String">
+    <defaultValueExpression><![CDATA["mjkV0rkZk"]]></defaultValueExpression>
+  </parameter>
+  <parameter name="GRAFANA_ENDPOINT_UID" class="java.lang.String">
+    <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+  </parameter>
+  <parameter name="timezone" class="java.time.ZoneId">
+    <parameterDescription><![CDATA[Report Timezone]]></parameterDescription>
+    <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+  </parameter>
+  <queryString language="grafana"><![CDATA[{
+                        "dashboard": {
+                        "uid": "$P{GRAFANA_DASHBOARD_UID}"
+                        },
+                        "time": {
+                          "from": $P{startDateTime},
+                          "to": $P{endDateTime},
+                          "tz": "$P{timezone}"
+                        },
+                        "render": {
+                          "width": 1149,
+                          "height": 1572,
+                          "theme": "light"
+                        },
+                        "variables": {}
+                }]]></queryString>
+  <field name="png" class="java.lang.Object"/>
+  <field name="title" class="java.lang.String"/>
+  <field name="description" class="java.lang.String"/>
+  <field name="datasource" class="java.lang.String"/>
+  <field name="width" class="java.lang.Integer"/>
+  <field name="height" class="java.lang.Integer"/>
+  <title>
+    <band splitType="Stretch"/>
+  </title>
+  <pageHeader>
+    <band height="119" splitType="Stretch">
+      <image scaleImage="FillFrame">
+        <reportElement x="0" y="10" width="1149" height="69" uuid="b2b14931-9b7b-49fd-85ca-becf00f3b41f"/>
+        <imageExpression><![CDATA[$P{ONMS_REPORT_DIR} + "assets/images/background.png"]]></imageExpression>
+      </image>
+      <rectangle>
+        <reportElement mode="Transparent" x="0" y="10" width="1149" height="69" uuid="67fa5b5c-98bb-4500-be31-b9e7c9ffd5f1"/>
+      </rectangle>
+      <textField>
+        <reportElement x="1" y="10" width="1148" height="68" uuid="2a2325ca-d32c-43ec-a930-970f17c2286c"/>
+        <textElement textAlignment="Center" verticalAlignment="Middle">
+          <font size="26"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{reportTitle}]]></textFieldExpression>
+      </textField>
+      <textField>
+        <reportElement x="7" y="89" width="702" height="20" uuid="0dad4f9e-c982-4147-8e27-5da3acdb4ced"/>
+        <textElement>
+          <font size="12"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{reportDescription}]]></textFieldExpression>
+      </textField>
+      <textField pattern="EEE dd MMM yyyy HH:mm:ss">
+        <reportElement x="500" y="89" width="210" height="20" forecolor="#000000" uuid="ac9d2b31-2a51-4768-90e9-b5a1f1698b67"/>
+        <textElement verticalAlignment="Middle">
+          <font size="12" isBold="false"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{startDate}]]></textFieldExpression>
+      </textField>
+      <textField pattern="EEE dd MMM yyyy HH:mm:ss">
+        <reportElement x="700" y="89" width="219" height="20" forecolor="#000000" uuid="558f5fde-80e7-4515-976e-643bc23ad397"/>
+        <textElement verticalAlignment="Middle">
+          <font size="12" isBold="false"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{endDate}]]></textFieldExpression>
+      </textField>
+      <textField>
+        <reportElement x="870" y="89" width="300" height="20" forecolor="#000000" uuid="d4f139e5-6af9-44fa-bb50-eca765c5b6f3"/>
+        <textElement verticalAlignment="Middle">
+          <font size="12" isBold="false"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{timezone} + " " + org.opennms.netmgt.jasper.helper.TimezoneHelper.getUtcOffset($P{timezone}, $P{startDate})]]></textFieldExpression>
+      </textField>
+      <staticText>
+        <reportElement x="470" y="89" width="34" height="20" uuid="30cb5bcf-d0b2-48cd-940e-f6bef7bcc753">
+          <property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+          <property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+        </reportElement>
+        <textElement verticalAlignment="Middle">
+          <font size="12"/>
+        </textElement>
+        <text><![CDATA[Start:]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="670" y="89" width="30" height="20" uuid="4bcd92a9-04e0-4706-b6dc-02ab02356f40"/>
+        <textElement verticalAlignment="Middle">
+          <font size="12"/>
+        </textElement>
+        <text><![CDATA[End:]]></text>
+      </staticText>
+      <image hAlign="Center" vAlign="Middle">
+        <reportElement x="10" y="12" width="197" height="65" uuid="84f9fb75-2b8c-4a2a-ac51-f245ae29dcc3"/>
+        <imageExpression><![CDATA[$P{ONMS_REPORT_DIR} + "assets/images/logo_flat.png"]]></imageExpression>
+      </image>
+    </band>
+  </pageHeader>
+  <detail>
+    <band height="1500" splitType="Stretch">
+      <textField>
+        <reportElement x="1" y="0" width="1149" height="20" uuid="3340166d-e746-4839-9c74-0ba3defb70e4"/>
+        <textElement textAlignment="Center"/>
+        <textFieldExpression><![CDATA[$F{description} + " from datasource: " + $F{datasource} + " rendered at: " + $F{width} + "x" + $F{height} + " px"]]></textFieldExpression>
+      </textField>
+      <image>
+        <reportElement stretchType="RelativeToBandHeight" x="1" y="20" width="1148" height="1479" uuid="6d3caa20-5995-424f-893c-fcb1c220be6f">
+          <property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+        </reportElement>
+        <imageExpression><![CDATA[new java.io.ByteArrayInputStream((byte[])$F{png})]]></imageExpression>
+      </image>
+    </band>
+  </detail>
+  <columnFooter>
+    <band splitType="Stretch"/>
+  </columnFooter>
+  <pageFooter>
+    <band height="25" splitType="Stretch">
+      <frame>
+        <reportElement mode="Opaque" x="1" y="1" width="1148" height="24" uuid="10dfd2c7-7881-4dbd-b1f2-b2b550d2f003"/>
+        <textField evaluationTime="Report">
+          <reportElement x="590" y="1" width="40" height="20" uuid="f7ae35fa-8f6c-4c3e-a111-a7b868a83134"/>
+          <textElement verticalAlignment="Middle">
+            <font size="10" isBold="false"/>
+          </textElement>
+          <textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+        </textField>
+        <textField>
+          <reportElement x="510" y="1" width="80" height="20" uuid="871f4010-1065-40d8-b55d-aa238d80a59d"/>
+          <textElement textAlignment="Right" verticalAlignment="Middle">
+            <font size="10" isBold="false"/>
+          </textElement>
+          <textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+        </textField>
+        <staticText>
+          <reportElement x="0" y="2" width="78" height="20" uuid="ef96d5b1-2bfc-4111-8176-6a01e0daafd8"/>
+          <textElement textAlignment="Right" verticalAlignment="Middle">
+            <font size="10" isBold="false"/>
+          </textElement>
+          <text><![CDATA[Rendered at:]]></text>
+        </staticText>
+        <textField pattern="EEE dd MMM yyyy HH:mm:ss z">
+          <reportElement x="80" y="2" width="200" height="20" uuid="72447933-df4d-4da8-8c10-e8b5f08f41d0"/>
+          <textElement verticalAlignment="Middle">
+            <font size="10" isBold="false"/>
+          </textElement>
+          <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+        </textField>
+      </frame>
+    </band>
+  </pageFooter>
+</jasperReport>

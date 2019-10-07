@@ -33,7 +33,9 @@ import java.util.Optional;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
@@ -74,20 +76,25 @@ public class CountersSample implements SampleData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt64("sequence_number", this.sequence_number);
 
         bsonWriter.writeName("source_id");
-        this.source_id.writeBson(bsonWriter);
+        this.source_id.writeBson(bsonWriter, enr);
 
         bsonWriter.writeStartDocument("counters");
         for (final CounterRecord counterRecord : this.counters) {
             bsonWriter.writeName(counterRecord.dataFormat.toId());
-            counterRecord.writeBson(bsonWriter);
+            counterRecord.writeBson(bsonWriter, enr);
         }
         bsonWriter.writeEndDocument();
 
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(final SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

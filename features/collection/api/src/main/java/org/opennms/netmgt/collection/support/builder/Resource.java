@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,6 +51,14 @@ public interface Resource {
      * @return instance name
      */
     public String getInstance();
+
+    /**
+     * Returns the original unmodified unique name for the instance of this resource.
+     * Used by the {@link org.opennms.netmgt.collection.support.ObjectNameStorageStrategy}
+     *
+     * @return instance name
+     */
+    public String getUnmodifiedInstance();
 
     /**
      * Returns a unique label for the instance of this resource.

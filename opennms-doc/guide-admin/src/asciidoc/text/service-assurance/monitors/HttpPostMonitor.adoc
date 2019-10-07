@@ -35,7 +35,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | `usesslfilter` | Enables or disables the SSL ceritificate validation. `true - false`   | optional | `false` | No
 | `uri`          | The uri to use during the POST.                                       | optional | `/` | Yes
 | `use-system-proxy` | Should the system wide proxy settings be used? The system proxy
-                   settings can be configured in link:#ga-opennms-system-properties[opennms.conf]                    | optional |`false` | No
+                   settings can be configured in link:#ga-opennms-system-properties[system properties] | optional |`false` | No
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

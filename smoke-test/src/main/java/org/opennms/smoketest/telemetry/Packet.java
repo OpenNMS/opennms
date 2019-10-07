@@ -40,6 +40,7 @@ import com.google.common.io.ByteStreams;
 public class Packet {
 
     private final String resource;
+    private final byte[] payload;
     private InetSocketAddress destinationAddress;
 
     public Packet(String resource) {
@@ -49,6 +50,13 @@ public class Packet {
     public Packet(String resource, InetSocketAddress destinationAddress) {
         this.resource = Objects.requireNonNull(resource);
         this.destinationAddress = destinationAddress;
+        payload = null;
+    }
+
+    public Packet(byte[] payload, InetSocketAddress destinationAddress) {
+        this.payload = Objects.requireNonNull(payload);
+        this.destinationAddress = destinationAddress;
+        resource = null;
     }
 
     public void setDestinationAddress(InetSocketAddress destinationAddress) {
@@ -66,7 +74,7 @@ public class Packet {
     // Sends a packet to the defined destination address
     public void send() throws IOException {
         Objects.requireNonNull(destinationAddress, "DestinationAddress was not initialized properly");
-        final byte[] bytes = getPacketContent(resource);
+        final byte[] bytes = payload == null ? getPacketContent(resource) : payload;
         try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
             final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length, destinationAddress.getAddress(), destinationAddress.getPort());
             serverSocket.send(sendPacket);

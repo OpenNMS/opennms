@@ -29,6 +29,11 @@
 package org.opennms.core.xml;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.function.Consumer;
+
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
 import org.slf4j.Logger;
@@ -56,6 +61,8 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     private FileReloadContainer<V> m_container;
     private JaxbReloadCallback m_callback = new JaxbReloadCallback();
     private Long m_reloadCheckInterval = null;
+    private final Collection<Consumer<V>> onReloadCausedChangeCallbacks = new ArrayList<>();
+    private V lastKnownEntityValue;
 
     /**
      * <p>Constructor for AbstractJaxbConfigDao.</p>
@@ -95,6 +102,22 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
 
         LOG.info("Loaded {} in {} ms", getDescription(), (endTime - startTime));
 
+        // If this reload resulted in the contained object changing we will trigger the callbacks watching for this
+        // change
+        if (lastKnownEntityValue == null || !Objects.equals(lastKnownEntityValue, config)) {
+            lastKnownEntityValue = config;
+            synchronized (onReloadCausedChangeCallbacks) {
+                if (!onReloadCausedChangeCallbacks.isEmpty()) {
+                    LOG.debug("Calling onReloaded callbacks");
+                    try {
+                        onReloadCausedChangeCallbacks.forEach(c -> c.accept(config));
+                    } catch (Exception e) {
+                        LOG.warn("Encountered exception while calling onReloaded callbacks", e);
+                    }
+                }
+            }
+        }
+        
         return config;
     }
 
@@ -175,5 +198,16 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
      */
     public String getDescription() {
         return m_description;
+    }
+
+    /**
+     * @param callback a callback that will be called when the entity maintained by this DAO is reloaded
+     */
+    public void addOnReloadedCallback(Consumer<V> callback) {
+        Objects.requireNonNull(callback);
+
+        synchronized (onReloadCausedChangeCallbacks) {
+            onReloadCausedChangeCallbacks.add(callback);
+        }
     }
 }

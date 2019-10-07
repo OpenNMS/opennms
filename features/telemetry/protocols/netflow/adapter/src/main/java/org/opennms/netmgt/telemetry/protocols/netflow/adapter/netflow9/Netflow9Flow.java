@@ -37,8 +37,9 @@ import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.UpdatingFlow;
 
-class Netflow9Flow implements Flow {
+class Netflow9Flow extends UpdatingFlow implements Flow {
     private final BsonDocument document;
 
     public Netflow9Flow(final BsonDocument document) {
@@ -79,9 +80,8 @@ class Netflow9Flow implements Flow {
     }
 
     @Override
-    public Integer getDstAs() {
+    public Long getDstAs() {
         return getInt64(this.document, "DST_AS")
-                .map(Long::intValue)
                 .orElse(null);
     }
 
@@ -229,9 +229,8 @@ class Netflow9Flow implements Flow {
     }
 
     @Override
-    public Integer getSrcAs() {
+    public Long getSrcAs() {
         return getInt64(this.document, "SRC_AS")
-                .map(Long::intValue)
                 .orElse(null);
     }
 
@@ -275,6 +274,18 @@ class Netflow9Flow implements Flow {
                 getInt64(this.document, "DST_VLAN"))
                 .map(Long::intValue)
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<Timeout> getTimeout() {
+        final Optional<Long> active = getInt64(this.document, "FLOW_ACTIVE_TIMEOUT").map(t -> t * 1000L);
+        final Optional<Long> inactive = getInt64(this.document, "FLOW_INACTIVE_TIMEOUT").map(t -> t * 1000L);
+
+        if (active.isPresent() && inactive.isPresent()) {
+            return Optional.of(new Timeout(active.get(), inactive.get()));
+        } else {
+            return Optional.empty();
+        }
     }
 
     private long getSysUpTime() {

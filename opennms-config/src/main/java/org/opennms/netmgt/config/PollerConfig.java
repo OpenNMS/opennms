@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 import org.opennms.netmgt.config.api.PathOutageConfig;
@@ -327,12 +328,7 @@ public interface PollerConfig extends PathOutageConfig {
      */
     public int getThreads();
 
-    /**
-     * <p>getServiceMonitors</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
-    public Map<String, ServiceMonitor> getServiceMonitors();
+    public Set<String> getServiceMonitorNames();
 
     /**
      * <p>getServiceMonitor</p>

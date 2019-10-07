@@ -46,6 +46,7 @@ import org.junit.Test;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
+import org.opennms.smoketest.ui.framework.DeleteAllButton;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -113,11 +114,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         final Group userDefinedGroup = settings.getGroup(Tabs.USER_DEFINED);
         assertThat(userDefinedGroup.isEditable(), is(true));
         assertThat(userDefinedGroup.isEnabled(), is(true));
+        assertThat(userDefinedGroup.getPosition(), is(0));
 
         // Verify pre-defined group
         final Group preDefinedGroup = settings.getGroup(Tabs.PRE_DEFINED);
         assertThat(preDefinedGroup.isEditable(), is(false));
         assertThat(preDefinedGroup.isEnabled(), is(true));
+        assertThat(preDefinedGroup.getPosition(), is(1));
 
         // Verify disable groups
         userDefinedGroup.setEnabled(false);
@@ -383,11 +386,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
                     .withDstPort("8980")
                     .withProtocol("udp,tcp")
                     .withExporterFilter("categoryName == 'Routers'")
+                    .withPosition(0)
                     .build());
             groupTab.addNewRule(new RuleDTOBuilder()
                     .withName("OpenNMS")
                     .withDstPort("8980")
                     .withProtocol("udp,tcp")
+                    .withPosition(1)
                     .build());
 
             final ClassificationRequestDTO classificationRequest = new ClassificationRequestDTO();
@@ -583,8 +588,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             this.name = name;
         }
 
-        public int getPriority() {
-            return getGroupData().getPriority();
+        public int getPosition() {
+            return getGroupData().getPosition();
         }
 
         public String getName() {
@@ -623,12 +628,12 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         private GroupData getGroupData() {
             return execute(() -> {
                 final List<WebElement> columns = driver.findElements(By.xpath("//table/tbody/tr[@data-row='" + this.name + "']/td"));
-                final int priority = Integer.parseInt(columns.get(0).getText());
+                final int position = Integer.parseInt(columns.get(0).getText());
                 final String name = columns.get(1).getText();
                 final String description = columns.get(2).getText();
                 final boolean editable = Boolean.valueOf(columns.get(3).getText());
                 final boolean enabled = columns.get(4).findElements(By.xpath(".//toggle/div[contains(@class, 'off')]")).isEmpty(); // the off class indicates the toggle is off
-                return new GroupData(name, priority, description, editable, enabled);
+                return new GroupData(name, position, description, editable, enabled);
             });
         }
 
@@ -644,13 +649,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
     private class GroupData {
         private final String name;
         private final String description;
-        private final int priority;
+        private final int position;
         private final boolean editable;
         private final boolean enabled;
 
-        private GroupData(String name, int priority, String description, boolean editable, boolean enabled) {
+        private GroupData(String name, int position, String description, boolean editable, boolean enabled) {
             this.name = Objects.requireNonNull(name);
-            this.priority = priority;
+            this.position = position;
             this.description = Objects.requireNonNull(description);
             this.editable = editable;
             this.enabled = enabled;
@@ -664,8 +669,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             return description;
         }
 
-        public int getPriority() {
-            return priority;
+        public int getPosition() {
+            return position;
         }
 
         public boolean isEditable() {
@@ -856,12 +861,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
         public void deleteAll() {
             if (!getRules().isEmpty()) {
-                final WebElement deleteAllButton = execute(() -> findElementById("action.deleteAll"));
-                if (deleteAllButton.isDisplayed() && deleteAllButton.isEnabled()) {
-                    deleteAllButton.click();
-                    execute(() -> findElementByXpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]")).click();
-                    sleep(DEFAULT_WAIT_TIME);
-                }
+                new DeleteAllButton(driver).click();
+                sleep(DEFAULT_WAIT_TIME);
             }
         }
 

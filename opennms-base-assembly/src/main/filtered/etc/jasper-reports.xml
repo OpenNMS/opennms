@@ -3,6 +3,9 @@
         xmlns:this="http://xmlns.opennms.org/xsd/config/jasper-reports"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/jasper-reports">
+        <report id="Grafana-Dashboard-Report-1ppp" template="Grafana-Dashboard-Report-1ppp.jrxml" engine="jdbc" />
+        <report id="Grafana-Dashboard-Report-2ppp" template="Grafana-Dashboard-Report-2ppp.jrxml" engine="jdbc" />
+        <report id="Grafana-Dashboard-Report-4ppp" template="Grafana-Dashboard-Report-4ppp.jrxml" engine="jdbc" />
         <report id="Early-Morning-Report" template="Early-Morning-Report.jrxml" engine="jdbc" />
         <report id="Response-Time-Summary-Report" template="ResponseTimeSummary.jrxml" engine="jdbc" />
         <report id="Node-Availability-Report" template="NodeAvailabilityReport.jrxml" engine="jdbc" />

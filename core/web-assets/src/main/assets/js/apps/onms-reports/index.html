@@ -1,0 +1,23 @@
+<div class="alert alert-danger" ng-if="globalError">
+    <span>{{globalError}}</span>
+    <pre ng-show="globalErrorDetails">{{globalErrorDetails}}</pre>
+</div>
+
+<div class="w-100" ng-if="!globalError">
+    <ul id="tabs" class="nav nav-tabs">
+        <li role="presentation" class="nav-item">
+            <a ui-sref-active="active" ui-sref="report.templates" data-name="report-templates" class="nav-link">Report Templates</a>
+        </li>
+
+        <li role="presentation" class="nav-item">
+            <a ui-sref-active="active" ui-sref="report.schedules" data-name="report-schedules" class="nav-link">Report Schedules</a>
+        </li>
+
+        <li role="presentation" class="nav-item">
+            <a ui-sref-active="active" ui-sref="report.persisted" data-name="report-persisted" class="nav-link">Persisted Reports</a>
+        </li>
+    </ul>
+    <div class="card border-top-0" ui-view>
+
+    </div>
+</div>

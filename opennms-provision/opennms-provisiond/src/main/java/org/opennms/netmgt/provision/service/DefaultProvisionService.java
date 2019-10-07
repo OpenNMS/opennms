@@ -97,6 +97,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,6 +193,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
+
+    @Autowired
+    private SnmpProfileMapper snmpProfileMapper;
 
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
@@ -969,8 +973,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     // this is a newSuspect-scanned node, so there are no requisitioned categories
                 } else {
                     final OnmsNodeRequisition req = m_foreignSourceRepository.getNodeRequisition(foreignSource, dbNode.getForeignId());
-                    for (final RequisitionCategory cat : req.getNode().getCategories()) {
-                        categories.add(cat.getName());
+                    if(req != null && req.getNode() != null) {
+                        for (final RequisitionCategory cat : req.getNode().getCategories()) {
+                            categories.add(cat.getName());
+                        }
                     }
                 }
 
@@ -1365,6 +1371,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getIpInterfaces());
         m_nodeDao.initialize(node.getLocation());
+        m_nodeDao.initialize(node.getSnmpInterfaces());
+        m_nodeDao.initialize(node.getMetaData());
+        m_nodeDao.initialize(node.getAssetRecord());
         return node;
     }
 
@@ -1396,6 +1405,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;
+    }
+
+    public SnmpProfileMapper getSnmpProfileMapper() {
+        return snmpProfileMapper;
     }
 
     @Override

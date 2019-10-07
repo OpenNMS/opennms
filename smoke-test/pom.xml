@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>25.0.0-SNAPSHOT</version>
+  <version>26.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skipITs>true</skipITs>
@@ -13,11 +13,12 @@
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.9.8</jackson2Version>
     <jersey.version>2.28</jersey.version>
-    <jestVersion>5.3.3</jestVersion>
     <karafVersion>4.2.6</karafVersion>
     <selenium.version>3.141.59</selenium.version>
     <testcontainers.version>1.11.3</testcontainers.version>
     <test.fork.count>1</test.fork.count>
+    <!-- Limit ITs to 30 minutes by default -->
+    <test.fork.timeout>1800</test.fork.timeout>
   </properties>
   <build>
     <testResources>
@@ -128,8 +129,12 @@
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
           <forkCount>${test.fork.count}</forkCount>
+          <!-- We don't reuse forks - any given test should not take longer than the given timeout -->
+          <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
           <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
           <reuseForks>false</reuseForks>
+          <!-- Configure heap and GC -->
+          <argLine>-Xms512m -Xmx512m -XX:+UseG1GC</argLine>
         </configuration>
         <executions>
           <execution>
@@ -312,9 +317,9 @@
       <version>25.0-jre</version>
     </dependency>
     <dependency>
-      <groupId>io.searchbox</groupId>
-      <artifactId>jest-complete-osgi</artifactId>
-      <version>${jestVersion}</version>
+      <groupId>org.opennms.features.jest</groupId>
+      <artifactId>org.opennms.features.jest.client</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -465,6 +470,12 @@
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.elastic</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.jti.adapter</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <repositories>

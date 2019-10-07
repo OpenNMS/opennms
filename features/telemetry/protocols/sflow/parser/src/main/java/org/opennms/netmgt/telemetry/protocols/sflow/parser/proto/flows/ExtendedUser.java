@@ -33,7 +33,9 @@ import java.util.Optional;
 
 import org.bson.BsonBinary;
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.base.MoreObjects;
@@ -69,16 +71,21 @@ public class ExtendedUser implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("src_charset");
-        this.src_charset.writeBson(bsonWriter);
+        this.src_charset.writeBson(bsonWriter, enr);
         bsonWriter.writeName("src_user");
         bsonWriter.writeBinaryData(new BsonBinary(this.src_user.value));
         bsonWriter.writeName("dst_charset");
-        this.dst_charset.writeBson(bsonWriter);
+        this.dst_charset.writeBson(bsonWriter, enr);
         bsonWriter.writeName("dst_user");
         bsonWriter.writeBinaryData(new BsonBinary(this.dst_user.value));
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(final SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

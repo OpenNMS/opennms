@@ -28,18 +28,29 @@
 
 package org.opennms.netmgt.mock;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
+import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 
 public class MockThresholdingService implements ThresholdingService {
 
+    private final ThresholdingSetPersister persister = mock(ThresholdingSetPersister.class);
+    
     @Override
-    public ThresholdingSession createSession(int m_nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters)
-            throws ThresholdInitializationException {
-        return new MockThresholdingSession();
+    public ThresholdingSession createSession(int m_nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters) {
+        ThresholdingSession mockSession = mock(ThresholdingSession.class);
+        when(mockSession.getKey()).thenReturn(mock(ThresholdingSessionKey.class));
+        return mockSession;
     }
 
+    @Override
+    public ThresholdingSetPersister getThresholdingSetPersister() {
+        return persister;
+    }
 }

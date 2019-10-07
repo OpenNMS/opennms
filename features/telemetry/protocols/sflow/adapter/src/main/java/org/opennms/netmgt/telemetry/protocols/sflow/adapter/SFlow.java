@@ -114,7 +114,7 @@ public class SFlow implements Flow {
     }
 
     @Override
-    public Integer getDstAs() {
+    public Long getDstAs() {
         // TODO: Multi-path, any-cast, etc...
         return null;
     }
@@ -263,9 +263,9 @@ public class SFlow implements Flow {
     }
 
     @Override
-    public Integer getSrcAs() {
+    public Long getSrcAs() {
         return get(document, "flows", "0:1003", "src_as")
-                .map(v -> (int) v.asInt64().getValue())
+                .map(v -> v.asInt64().getValue())
                 .orElse(null);
     }
 
@@ -294,6 +294,11 @@ public class SFlow implements Flow {
                 get(document, "flows", "0:1", "ipv6", "tcp_flags"))
                 .map(v -> v.asInt32().getValue())
                 .orElse(null);
+    }
+
+    @Override
+    public Long getDeltaSwitched() {
+        return this.getFirstSwitched();
     }
 
     @Override

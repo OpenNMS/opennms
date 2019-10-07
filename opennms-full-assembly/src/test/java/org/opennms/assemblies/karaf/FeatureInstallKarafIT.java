@@ -128,7 +128,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("org.json");
         installFeature("postgresql");
         installFeature("spring-security32");
-        installFeature("spring-webflow");
 
 //        System.out.println(executeCommand("feature:list -i"));
     }

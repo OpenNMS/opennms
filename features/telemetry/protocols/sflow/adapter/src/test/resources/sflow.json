@@ -323,6 +323,82 @@
             }
           }
         }
+      },
+      {
+        "format": "0:1",
+        "data": {
+          "sequence_number": {
+            "$numberLong": "28"
+          },
+          "source_id": {
+            "$numberLong": "33555432"
+          },
+          "sampling_rate": {
+            "$numberLong": "64"
+          },
+          "sample_pool": {
+            "$numberLong": "1792"
+          },
+          "drops": {
+            "$numberLong": "0"
+          },
+          "input": {
+            "$numberLong": "4"
+          },
+          "output": {
+            "$numberLong": "17"
+          },
+          "flows": {
+            "0:2": {
+              "length": {
+                "$numberLong": "1234"
+              },
+              "src_mac": "00:00:00:00:00:00",
+              "dst_mac": "00:00:00:00:00:00",
+              "type": {
+                "$numberLong": "1"
+              }
+            }
+          }
+        }
+      },
+      {
+        "format": "0:1",
+        "data": {
+          "sequence_number": {
+            "$numberLong": "28"
+          },
+          "source_id": {
+            "$numberLong": "33555432"
+          },
+          "sampling_rate": {
+            "$numberLong": "64"
+          },
+          "sample_pool": {
+            "$numberLong": "1792"
+          },
+          "drops": {
+            "$numberLong": "0"
+          },
+          "input": {
+            "$numberLong": "4"
+          },
+          "output": {
+            "$numberLong": "17"
+          },
+          "flows": {
+            "0:1": {
+              "protocol": 1,
+              "frame_length": {
+                "$numberLong": "203"
+              },
+              "stripped": {
+                "$numberLong": "4"
+              },
+              "ethernet": {}
+            }
+          }
+        }
       }
     ]
   }

@@ -34,13 +34,13 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+
+import org.opennms.core.time.YearGuesser;
 
 /**
  * The TimestampFormat class implements the code necessary to format and parse
@@ -256,15 +256,11 @@ public class SyslogTimeStamp extends Format {
 
         TimeZone tz = TimeZone.getTimeZone(SyslogTimeStamp.DEFAULT_GMT_TZID);
 
-        Calendar cal = Calendar.getInstance(tz, loc);
+        LocalDateTime now = LocalDateTime.now(tz.toZoneId());
+        LocalDateTime parsedDateWithoutYear = LocalDateTime.of(0, month + 1, date, hour, minute, second);
+        LocalDateTime parsedDateWithYear = YearGuesser.guessYearForDate(parsedDateWithoutYear, now);
 
-        final Date now = new Date();
-        cal.setTime(now);
-
-        cal.set(cal.get(Calendar.YEAR), month, date, hour, minute, second);
-        SyslogTimeStamp.adjustYear(cal, now.toInstant().atZone(tz.toZoneId()).toLocalDateTime());
-
-        Date result = new Date(cal.getTime().getTime());
+        Date result = Date.from(parsedDateWithYear.atZone(tz.toZoneId()).toInstant());
 
         return result;
     }
@@ -300,14 +296,5 @@ public class SyslogTimeStamp extends Format {
             return 11;
 
         throw new ParseException("unknown month name '" + name + "'", 0);
-    }
-
-    public static void adjustYear(final Calendar cal, final LocalDateTime referenceTime) {
-        final LocalDateTime referenceDateTime = referenceTime == null? LocalDateTime.now() : referenceTime;
-        final int referenceYear = referenceDateTime.getYear();
-        cal.set(Calendar.YEAR, referenceYear);
-        if (referenceDateTime.atZone(ZoneId.systemDefault()).toInstant().isBefore(cal.toInstant())) {
-            cal.set(Calendar.YEAR, referenceYear - 1);
-        }
     }
 }

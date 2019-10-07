@@ -26,28 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.netmgt.flows.classification.internal.csv;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.opennms.netmgt.flows.classification.persistence.api.Group;
+import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
+import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
 public class CsvBuilderTest {
 
     @Test
     public void verifyBuilder() {
-        final String expectedCsv = new CsvBuilder()
-                .withRule(new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1"))
-                .withRule(new RuleBuilder().withName("google").withDstAddress("8.8.8.8"))
-                .withRule(new RuleBuilder().withName("opennms").withDstPort(8980))
+        final Group group = new GroupBuilder().withName(Groups.USER_DEFINED).build();
+        final String actualCsv = new CsvBuilder()
+                .withRule(new RuleBuilder().withGroup(group).withName("http2").withProtocol("TCP,UDP")
+                        .withDstAddress("127.0.0.1"))
+                .withRule(new RuleBuilder().withGroup(group).withName("google").withDstAddress("8.8.8.8"))
+                .withRule(new RuleBuilder().withGroup(group).withName("opennms").withDstPort(8980))
                 .withRule(new RuleBuilder()
+                        .withGroup(group)
                         .withName("opennms-monitor")
                         .withSrcAddress("10.0.0.1").withSrcPort(10000)
                         .withDstAddress("10.0.0.2").withDstPort(8980))
-                .withRule(new RuleBuilder().withName("http").withProtocol("TCP").withOmnidirectional(true))
+                .withRule(new RuleBuilder().withGroup(group).withName("http").withProtocol("TCP")
+                        .withOmnidirectional(true))
                 .withRule(new RuleBuilder()
+                        .withGroup(group)
                         .withName("xxx")
                         .withProtocol("tcp,udp")
                         .withSrcAddress("10.0.0.1").withSrcPort(10000)
@@ -65,7 +72,7 @@ public class CsvBuilderTest {
         builder.append("http;TCP;;;;;;true\n");
         builder.append("xxx;tcp,udp;10.0.0.1;10000;10.0.0.2;8980;some-filter-value;false");
 
-        final String actualCsv = builder.toString();
+        final String expectedCsv = builder.toString();
         assertEquals(expectedCsv, actualCsv);
     }
 }

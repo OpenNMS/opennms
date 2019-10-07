@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd.api;
 
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -43,4 +44,12 @@ public interface ThresholdingSession extends AutoCloseable {
      */
     void accept(CollectionSet collectionSet) throws ThresholdInitializationException;
 
+    ThresholdingSessionKey getKey();
+    
+    BlobStore getBlobStore();
+
+    /**
+     * @return true if we are thresholding in a distributed environment (i.e. Sentinel) false otherwise (i.e. OpenNMS)
+     */
+    boolean isDistributed();
 }

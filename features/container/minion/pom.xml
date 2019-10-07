@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>container-parent</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>26.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.container</groupId>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>org.opennms.container</groupId>
             <artifactId>org.opennms.container.shared</artifactId>
-	    <version>${project.version}</version>
+            <version>${project.version}</version>
             <type>tar.gz</type>
         </dependency>
     </dependencies>

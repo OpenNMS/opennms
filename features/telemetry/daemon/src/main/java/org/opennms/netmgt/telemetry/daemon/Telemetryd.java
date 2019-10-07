@@ -90,7 +90,6 @@ public class Telemetryd implements SpringServiceDaemon {
     private List<TelemetryMessageConsumer> consumers = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
 
-
     @Override
     public synchronized void start() throws Exception {
         if (consumers.size() > 0) {

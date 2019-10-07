@@ -29,8 +29,8 @@
 package org.opennms.web.svclayer.model;
 
 import java.util.Date;
-import java.util.Map;
 
+import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.reporting.core.DeliveryOptions;
 
 /**
@@ -47,7 +47,8 @@ public class TriggerDescription {
     private String m_reportId;
     private Date m_nextFireTime;
     private DeliveryOptions m_deliveryOptions;
-    private Map<String,Object> m_reportParameters;
+    private ReportParameters m_reportParameters;
+    private String cronExpression;
 
     /**
      * <p>getTriggerName</p>
@@ -139,22 +140,19 @@ public class TriggerDescription {
         this.m_deliveryOptions = deliveryOptions;
     }
 
-    /**
-     * <p>getReportParameters</p>
-     *
-     * @return a {@link java.util.Map<String, Object>} object.
-     */
-    public Map<String,Object> getReportParameters() {
+    public ReportParameters getReportParameters() {
         return m_reportParameters;
     }
 
-    /**
-     * <p>setReportParameters</p>
-     *
-     * @param reportParameters a {@link java.util.Map<String, Object>} object.
-     */
-    public void setReportParameters(Map<String,Object> reportParameters) {
+    public void setReportParameters(ReportParameters reportParameters) {
         this.m_reportParameters = reportParameters;
     }
 
+    public void setCronExpression(String cronExpression) {
+        this.cronExpression = cronExpression;
+    }
+
+    public String getCronExpression() {
+        return cronExpression;
+    }
 }

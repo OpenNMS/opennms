@@ -108,10 +108,12 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final int OPENNMS_TELEMETRY_IPFIX_TCP_PORT = 4730;
     private static final int OPENNMS_TELEMETRY_JTI_PORT = 50001;
     private static final int OPENNMS_TELEMETRY_NXOS_PORT = 50002;
+    private static final int OPENNMS_DEBUG_PORT = 8001;
 
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)
             .put(NetworkProtocol.HTTP, OPENNMS_WEB_PORT)
+            .put(NetworkProtocol.JDWP, OPENNMS_DEBUG_PORT)
             .put(NetworkProtocol.SNMP, OPENNMS_SNMP_PORT)
             .put(NetworkProtocol.SYSLOG, OPENNMS_SYSLOG_PORT)
             .put(NetworkProtocol.FLOWS, OPENNMS_TELEMETRY_FLOW_PORT)
@@ -132,7 +134,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         String containerCommand = "-s";
         if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
-            containerCommand = "-c";
+            this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
         }
 
         final Integer[] exposedPorts = new ArrayList<>(networkProtocolMap.values())
@@ -141,6 +143,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .filter(e -> InternetProtocol.UDP.equals(e.getKey().getIpProtocol()))
                 .mapToInt(Map.Entry::getValue)
                 .toArray();
+
+        String javaOpts = "-Xms1536m -Xmx1536m -Djava.security.egd=file:/dev/./urandom ";
+        if (profile.isJvmDebuggingEnabled()) {
+            javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
+        }
 
         withExposedPorts(exposedPorts)
                 .withCreateContainerCmdModifier(cmd -> {
@@ -158,13 +165,13 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .withEnv("OPENNMS_DBUSER", "opennms")
                 .withEnv("OPENNMS_DBPASS", "opennms")
                 // These are expected to be set when using Newts
-                // We also set the corresponding roperties explicitly in our overlay
+                // We also set the corresponding properties explicitly in our overlay
                 .withEnv("OPENNMS_CASSANDRA_HOSTNAMES", CASSANDRA_ALIAS)
                 .withEnv("OPENNMS_CASSANDRA_KEYSPACE", "newts")
                 .withEnv("OPENNMS_CASSANDRA_PORT", Integer.toString(CassandraContainer.CQL_PORT))
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
-                .withEnv("JAVA_OPTS", "-Xms1536m -Xmx1536m -Djava.security.egd=file:/dev/./urandom")
+                .withEnv("JAVA_OPTS", javaOpts)
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
@@ -422,10 +429,15 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     private static void copyLogs(OpenNMSContainer container, String prefix) {
         // List of known log files we expect to find in the container
-        final List<String> logFiles = Arrays.asList("eventd.log",
+        final List<String> logFiles = Arrays.asList("alarmd.log",
+                "collectd.log",
+                "eventd.log",
                 "jetty-server.log",
                 "karaf.log",
                 "manager.log",
+                "poller.log",
+                "provisiond.log",
+                "trapd.log",
                 "web.log");
         DevDebugUtils.copyLogs(container,
                 // dest

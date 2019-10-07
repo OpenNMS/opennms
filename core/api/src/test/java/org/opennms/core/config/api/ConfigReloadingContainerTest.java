@@ -106,13 +106,7 @@ public class ConfigReloadingContainerTest {
     public void canExtend() {
         ConfigReloadContainer<SomeConfig> container = new ConfigReloadContainer.Builder<>(SomeConfig.class)
                 .withProvider(new BeanConfigurationProvider<>(new SomeConfig(1)))
-                .withMerger((a,b) -> {
-                    if (a == null) {
-                        a = new SomeConfig();
-                    }
-                    a.add(b.getSum());
-                    return a;
-                })
+                .withFolder((accumulator, next) -> accumulator.add(next.getSum()))
                 .build();
 
         // Verify the original object

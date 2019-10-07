@@ -59,8 +59,11 @@ import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import io.searchbox.action.BulkableAction;
 import io.searchbox.client.JestClient;
@@ -75,8 +78,7 @@ public class EventToIndex implements AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EventToIndex.class);
 
-	private static final String INDEX_PREFIX = "opennms-events-raw";
-	private static final String INDEX_TYPE = "eventdata";
+	private static final String INDEX_NAME = "opennms-events-raw";
 
 	private static final String NODE_LABEL_PARAM="nodelabel";
 
@@ -98,18 +100,14 @@ public class EventToIndex implements AutoCloseable {
 
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
 
+	private IndexSettings indexSettings = new IndexSettings();
+
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 			threads,
 			threads,
 			0L, TimeUnit.MILLISECONDS,
 			new SynchronousQueue<>(true),
-			new ThreadFactory() {
-				final AtomicInteger index = new AtomicInteger();
-				@Override
-				public Thread newThread(Runnable r) {
-					return new Thread(r, EventToIndex.class.getSimpleName() + "-Thread-" + String.valueOf(index.incrementAndGet()));
-				}
-			},
+			new ThreadFactoryBuilder().setNameFormat(EventToIndex.class.getSimpleName() + "-Thread-%d").build(),
 			// Throttle incoming tasks by running them on the caller thread
 			new ThreadPoolExecutor.CallerRunsPolicy()
 	);
@@ -293,20 +291,18 @@ public class EventToIndex implements AutoCloseable {
 			}
 		}
 
-		String completeIndexName = indexStrategy.getIndex(INDEX_PREFIX, cal.toInstant());
+		String completeIndexName = indexStrategy.getIndex(indexSettings, INDEX_NAME, cal.toInstant());
 
 		if (LOG.isDebugEnabled()){
 			String str = "populateEventIndexBodyFromEvent - index:"
 					+ "/"+completeIndexName
-					+ "/"+INDEX_TYPE
 					+ "/"+id
 					+ "\n   body: \n" + body.toJSONString();
 			LOG.debug(str);
 		}
 
 		Index.Builder builder = new Index.Builder(body)
-				.index(completeIndexName)
-				.type(INDEX_TYPE);
+				.index(completeIndexName);
 
 		// NMS-9015: If the event is a database event, set the ID of the
 		// document to the event's database ID. Otherwise, allow ES to
@@ -380,6 +376,14 @@ public class EventToIndex implements AutoCloseable {
 				nodeCache.refreshEntry(event.getNodeid());
 			}
 		}
+	}
+
+	public IndexSettings getIndexSettings() {
+		return indexSettings;
+	}
+
+	public void setIndexSettings(IndexSettings indexSettings) {
+		this.indexSettings = Objects.requireNonNull(indexSettings);
 	}
 
 	private static final void logEsError(String operation, String index, String type, String result, int responseCode, String errorMessage) {

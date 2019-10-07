@@ -85,7 +85,7 @@ public interface Flow {
     /**
      * Destination autonomous system (AS).
      */
-    Integer getDstAs();
+    Long getDstAs();
 
     /**
      * The number of contiguous bits in the source address subnet mask.
@@ -106,6 +106,12 @@ public interface Flow {
      * Type of flow-switching engine.
      */
     Integer getEngineType();
+
+    /**
+     * Unix timestamp in ms at which the previous exported packet
+     * associated with this flow was switched.
+     */
+    Long getDeltaSwitched();
 
     /**
      * Unix timestamp in ms at which the first packet
@@ -187,7 +193,7 @@ public interface Flow {
     /**
      * Source autonomous system (AS).
      */
-    Integer getSrcAs();
+    Long getSrcAs();
 
     /**
      * The number of contiguous bits in the destination address subnet mask.

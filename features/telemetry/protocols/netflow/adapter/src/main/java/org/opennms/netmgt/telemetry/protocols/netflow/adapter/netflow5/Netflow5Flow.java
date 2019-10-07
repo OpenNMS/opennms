@@ -75,9 +75,8 @@ class Netflow5Flow implements Flow {
     }
 
     @Override
-    public Integer getDstAs() {
+    public Long getDstAs() {
         return getInt64(this.document, "dstAs")
-                .map(Long::intValue)
                 .get();
     }
 
@@ -212,9 +211,8 @@ class Netflow5Flow implements Flow {
     }
 
     @Override
-    public Integer getSrcAs() {
+    public Long getSrcAs() {
         return getInt64(this.document, "srcAs")
-                .map(Long::intValue)
                 .get();
     }
 
@@ -237,6 +235,11 @@ class Netflow5Flow implements Flow {
         return getInt64(this.document, "tcpFlags")
                 .map(Long::intValue)
                 .get();
+    }
+
+    @Override
+    public Long getDeltaSwitched() {
+        return this.getFirstSwitched();
     }
 
     @Override

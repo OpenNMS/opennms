@@ -33,4 +33,5 @@ public interface CamelSinkConstants {
     String JMS_QUEUE_NAME_HEADER = "JmsQueueName";
     String CAMEL_JMS_REQUEST_TIMEOUT_HEADER = "CamelJmsRequestTimeout";
     String JMS_SINK_TRACING_INFO = "SinkTracingInfo";
+    String JMS_XGROUP_ID = "JMSXGroupId";
 }

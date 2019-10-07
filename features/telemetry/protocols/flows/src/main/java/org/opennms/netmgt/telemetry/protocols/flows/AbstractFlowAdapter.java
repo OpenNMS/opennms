@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.flows;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.netmgt.flows.api.DetailedFlowException;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
@@ -66,14 +69,17 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
      */
     private final Histogram packetsPerLogHistogram;
 
-    public AbstractFlowAdapter(final MetricRegistry metricRegistry,
-                           final FlowRepository flowRepository,
-                           final Converter<P> converter) {
+    public AbstractFlowAdapter(final String name,
+                               final MetricRegistry metricRegistry,
+                               final FlowRepository flowRepository,
+                               final Converter<P> converter) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(metricRegistry);
         this.flowRepository = Objects.requireNonNull(flowRepository);
         this.converter = Objects.requireNonNull(converter);
 
-        logParsingTimer = metricRegistry.timer("logParsing");
-        packetsPerLogHistogram = metricRegistry.histogram("packetsPerLog");
+        logParsingTimer = metricRegistry.timer(name("adapters", name, "logParsing"));
+        packetsPerLogHistogram = metricRegistry.histogram(name("adapters", name, "packetsPerLog"));
     }
 
     @Override
@@ -103,8 +109,13 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             LOG.debug("Persisting {} packets, {} flows.", flowPackets.size(), flows.size());
             final FlowSource source = new FlowSource(messageLog.getLocation(), messageLog.getSourceAddress());
             flowRepository.persist(flows, source);
+        } catch (DetailedFlowException ex) {
+            LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
+            for (final String logMessage: ex.getDetailedLogMessages()) {
+                LOG.error(logMessage);
+            }
         } catch (FlowException ex) {
-            LOG.error("Failed to persist one or more packets: {}", ex.getMessage());
+            LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
         }
 
         LOG.debug("Completed processing {} telemetry messages.",

@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +54,8 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
 
     /** {@inheritDoc} */
     @Override
-    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
-        return new ThresholdEvaluatorStateRearmingAbsoluteChange(threshold);
+    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
+        return new ThresholdEvaluatorStateRearmingAbsoluteChange(threshold, thresholdingSession);
     }
 
     /** {@inheritDoc} */
@@ -62,23 +64,39 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
         return TYPE.equals(type);
     }
     
-    public static class ThresholdEvaluatorStateRearmingAbsoluteChange extends AbstractThresholdEvaluatorState {
+    public static class ThresholdEvaluatorStateRearmingAbsoluteChange extends AbstractThresholdEvaluatorState<ThresholdEvaluatorStateRearmingAbsoluteChange.State> {
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
 
-        private double m_lastSample = Double.NaN;
-        private double m_previousTriggeringSample = Double.NaN;
-        private int m_triggerCount = 0;
+        static class State extends AbstractThresholdEvaluatorState.AbstractState {
+            private static final long serialVersionUID = 1L;
+            private double m_lastSample = Double.NaN;
+            private double m_previousTriggeringSample = Double.NaN;
+            private int m_triggerCount = 0;
 
-        public ThresholdEvaluatorStateRearmingAbsoluteChange(BaseThresholdDefConfigWrapper threshold) {
-            Assert.notNull(threshold, "threshold argument cannot be null");
+            @Override
+            public String toString() {
+                return "lastSample=" + m_lastSample +
+                        "\npreviousTriggeringSample=" + m_previousTriggeringSample +
+                        "\ntriggerCount=" + m_triggerCount +
+                        "\n" + super.toString();
+            }
+        }
+
+        public ThresholdEvaluatorStateRearmingAbsoluteChange(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
+            super(threshold, thresholdingSession);
             setThresholdConfig(threshold);
+        }
+
+        @Override
+        protected void initializeState() {
+            state = new State();
         }
 
         public String getType() {
         	return getThresholdConfig().getType().toString();
         }
         
-        public void setThresholdConfig(BaseThresholdDefConfigWrapper thresholdConfig) {
+        private void setThresholdConfig(BaseThresholdDefConfigWrapper thresholdConfig) {
             Assert.notNull(thresholdConfig.getType(), "threshold must have a 'type' value set");
             Assert.notNull(thresholdConfig.getDatasourceExpression(), "threshold must have a 'ds-name' value set");
             Assert.notNull(thresholdConfig.getDsType(), "threshold must have a 'ds-type' value set");
@@ -100,53 +118,49 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
         }
 
         @Override
-        public Status evaluate(double dsValue) {
-//            log().debug(TYPE + " threshold evaluating, sample value="+dsValue);
-        	try {
-        		if(!Double.valueOf(getPreviousTriggeringSample()).isNaN()) {
-        			++m_triggerCount;
-        			if(!wasTriggered(dsValue) && (m_triggerCount >= getThresholdConfig().getTrigger())) {
-        				setPreviousTriggeringSample(Double.NaN);
-        				m_triggerCount = 0;
-					LOG.debug("{} threshold rearmed, sample value={}", TYPE, dsValue);
-        				return Status.RE_ARMED;
-        			} 
-        		} else if (wasTriggered(dsValue)) {
-        			setPreviousTriggeringSample(getLastSample());
-        			m_triggerCount = 0;
-				LOG.debug("{} threshold triggered, sample value={}", TYPE, dsValue);
-        			return Status.TRIGGERED;
-        		} 
-        	} finally {
-        		setLastSample(dsValue);
-        	}
+        public Status evaluateAfterFetch(double dsValue) {
+            try {
+                if (!Double.valueOf(getPreviousTriggeringSample()).isNaN()) {
+                    setTriggerCount(getTriggerCount() + 1);
+                    if (!wasTriggered(dsValue) && (getTriggerCount() >= getThresholdConfig().getTrigger())) {
+                        setPreviousTriggeringSample(Double.NaN);
+                        setTriggerCount(0);
+                        LOG.debug("{} threshold rearmed, sample value={}", TYPE, dsValue);
+                        return Status.RE_ARMED;
+                    }
+                } else if (wasTriggered(dsValue)) {
+                    setPreviousTriggeringSample(getLastSample());
+                    setTriggerCount(0);
+                    LOG.debug("{} threshold triggered, sample value={}", TYPE, dsValue);
+                    return Status.TRIGGERED;
+                }
+            } finally {
+                setLastSample(dsValue);
+            }
 
-        	return Status.NO_CHANGE;
+            return Status.NO_CHANGE;
         }
-        
+
         private boolean wasTriggered(double dsValue) {
-        	// Test Code
-//        	if(Double.valueOf(getPreviousTriggeringSample()).isNaN()) {
-//            	log().debug(TYPE + " threshold evaluate trigger, sample value="+dsValue);
-//        		return true;
-//        	}
-        	if(Double.valueOf(dsValue).isNaN())
-        		return false;
-        	if(Double.valueOf(getLastSample()).isNaN())
-        		return false;
-        		
-        	double threshold = Math.abs(getLastSample() - dsValue);
-        	// Test Code
-//        	log().debug(TYPE + " threshold evaluate trigger, sample value="+dsValue+",prev value="+getLastSample()+",thresh="+threshold+",trigger="+getThresholdConfig().getValue());
-        	return threshold >= getThresholdConfig().getValue();
+            if (Double.valueOf(dsValue).isNaN())
+                return false;
+            if (getLastSample().isNaN())
+                return false;
+
+            double threshold = Math.abs(getLastSample() - dsValue);
+
+            return threshold >= getThresholdConfig().getValue();
         }
 
-        public Double getLastSample() {
-            return m_lastSample;
+        private Double getLastSample() {
+            return state.m_lastSample;
         }
 
-        public void setLastSample(double lastSample) {
-            m_lastSample = lastSample;
+        private void setLastSample(double lastSample) {
+            if (state.m_lastSample != lastSample) {
+                state.m_lastSample = lastSample;
+                markDirty();
+            }
         }
 
         @Override
@@ -173,29 +187,43 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
             return createBasicEvent(uei, date, dsValue, resource, params);
         }
 
-        public double getPreviousTriggeringSample() {
-            return m_previousTriggeringSample;
+        private double getPreviousTriggeringSample() {
+            return state.m_previousTriggeringSample;
+        }
+
+        private void setPreviousTriggeringSample(double previousTriggeringSample) {
+            if (state.m_previousTriggeringSample != previousTriggeringSample) {
+                state.m_previousTriggeringSample = previousTriggeringSample;
+                markDirty();
+            }
         }
         
-        public void setPreviousTriggeringSample(double previousTriggeringSample) {
-            m_previousTriggeringSample = previousTriggeringSample;
+        private int getTriggerCount() {
+            return state.m_triggerCount;
+        }
+        
+        private void setTriggerCount(int triggerCount) {
+            if (state.m_triggerCount != triggerCount) {
+                state.m_triggerCount = triggerCount;
+                markDirty();
+            }
         }
         
         @Override
         public ThresholdEvaluatorState getCleanClone() {
-            return new ThresholdEvaluatorStateRearmingAbsoluteChange(m_thresholdConfig);
+            return new ThresholdEvaluatorStateRearmingAbsoluteChange(m_thresholdConfig, getThresholdingSession());
         }
 
         @Override
         public boolean isTriggered() {
-            return wasTriggered(m_previousTriggeringSample); // TODO Is that right ?
+            return wasTriggered(state.m_previousTriggeringSample); // TODO Is that right ?
         }
         
         @Override
-        public void clearState() {
+        public void clearStateBeforePersist() {
             // Based on what evaluator does for rearmed state
-            m_lastSample = Double.NaN;
-            m_triggerCount = 0;
+            setLastSample(Double.NaN);
+            setTriggerCount(0);
             setPreviousTriggeringSample(Double.NaN);
         }
 

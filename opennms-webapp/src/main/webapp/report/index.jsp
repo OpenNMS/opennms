@@ -86,7 +86,7 @@
                         <li><a href="charts/index.jsp">Charts</a></li>
                         <li><a href="graph/index.jsp">Resource Graphs</a></li>
                         <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domains</a></li>
-                        <li><a href="report/database/index.htm">Database Reports</a></li>
+                        <li><a href="report/database/index.jsp">Database Reports</a></li>
                         <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
                         <li><a href="inventory/rancidReport.htm">Inventory</a></li>
                         <% }%>

@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.provision.detector.jms;
 
-import java.util.Map;
 import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ActiveMQDetectorFactory extends GenericServiceDetectorFactory<ActiveMQDetector> {
@@ -42,9 +41,4 @@ public class ActiveMQDetectorFactory extends GenericServiceDetectorFactory<Activ
         super(ActiveMQDetector.class);
     }
 
-    @Override
-    public ActiveMQDetector createDetector(Map<String, String> properties) {
-        final ActiveMQDetector detector = new ActiveMQDetector();
-        return detector;
-    }
 }

@@ -37,16 +37,17 @@ import org.junit.rules.Timeout;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.test.elastic.ExecutionTime;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
-import org.opennms.netmgt.dao.mock.MockTransactionManager;
-import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
@@ -73,12 +74,6 @@ public class ElasticFlowRepositoryRetryIT {
     @Rule
     public ElasticSearchRule elasticServerRule = new ElasticSearchRule(
             new ElasticSearchServerConfig()
-                .withDefaults()
-                .withSetting("http.enabled", true)
-                .withSetting("http.port", HTTP_PORT)
-                .withSetting("http.type", "netty4")
-                .withSetting("transport.type", "netty4")
-                .withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
                 .withStartDelay(START_DELAY)
                 .withManualStartup()
     );
@@ -94,7 +89,7 @@ public class ElasticFlowRepositoryRetryIT {
     private void apply(FlowRepositoryConsumer consumer) throws Exception {
         Objects.requireNonNull(consumer);
 
-        final RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT);
+        final RestClientFactory restClientFactory = new RestClientFactory(elasticServerRule.getUrl());
         restClientFactory.setRequestExecutorSupplier(() -> new DefaultRequestExecutor(RETRY_COOLDOWN));
         try (JestClient client = restClientFactory.createClient()) {
             executionTime.resetStartTime();
@@ -103,13 +98,10 @@ public class ElasticFlowRepositoryRetryIT {
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
             final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
-            final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
-            mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
-
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
-                            classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
-                            new MockIdentity(), new MockTracerRegistry(),3, 12000), client);
+                            classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
+                            new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),3, 12000), client);
 
             consumer.accept(elasticFlowRepository);
 

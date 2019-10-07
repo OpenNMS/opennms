@@ -114,7 +114,7 @@ public class FlowDocument {
      * Destination autonomous system (AS).
      */
     @SerializedName("netflow.dst_as")
-    private Integer dstAs;
+    private Long dstAs;
 
     /**
      * Locality of the destination address (i.e. private vs public address)
@@ -250,7 +250,7 @@ public class FlowDocument {
      * Source autonomous system (AS).
      */
     @SerializedName("netflow.src_as")
-    private Integer srcAs;
+    private Long srcAs;
 
     /**
      * Locality of the source address (i.e. private vs public address)
@@ -275,6 +275,13 @@ public class FlowDocument {
      */
     @SerializedName("netflow.tcp_flags")
     private Integer tcpFlags;
+
+    /**
+     * Unix timestamp in ms at which the previous exported packet
+     * associated with this flow was switched.
+     */
+    @SerializedName("netflow.delta_switched")
+    private Long deltaSwitched;
 
     /**
      * TOS.
@@ -406,11 +413,11 @@ public class FlowDocument {
         this.dstAddrHostname = dstAddrHostname;
     }
 
-    public Integer getDstAs() {
+    public Long getDstAs() {
         return dstAs;
     }
 
-    public void setDstAs(Integer dstAs) {
+    public void setDstAs(Long dstAs) {
         this.dstAs = dstAs;
     }
 
@@ -583,11 +590,11 @@ public class FlowDocument {
         this.srcAddrHostname = srcAddrHostname;
     }
 
-    public Integer getSrcAs() {
+    public Long getSrcAs() {
         return srcAs;
     }
 
-    public void setSrcAs(Integer srcAs) {
+    public void setSrcAs(Long srcAs) {
         this.srcAs = srcAs;
     }
 
@@ -621,6 +628,14 @@ public class FlowDocument {
 
     public void setTcpFlags(Integer tcpFlags) {
         this.tcpFlags = tcpFlags;
+    }
+
+    public Long getDeltaSwitched() {
+        return deltaSwitched;
+    }
+
+    public void setDeltaSwitched(Long deltaSwitched) {
+        this.deltaSwitched = deltaSwitched;
     }
 
     public Integer getTos() {
@@ -702,6 +717,7 @@ public class FlowDocument {
         doc.setSrcMaskLen(flow.getSrcMaskLen());
         doc.setSrcPort(flow.getSrcPort());
         doc.setTcpFlags(flow.getTcpFlags());
+        doc.setDeltaSwitched(flow.getDeltaSwitched());
         doc.setTos(flow.getTos());
         doc.setNetflowVersion(NetflowVersion.from(flow.getNetflowVersion()));
         doc.setVlan(flow.getVlan() != null ? Integer.toUnsignedString(flow.getVlan()) : null);

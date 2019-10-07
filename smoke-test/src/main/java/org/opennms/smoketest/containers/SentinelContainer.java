@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.io.FileUtils;
 import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.SentinelProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
@@ -76,6 +77,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class SentinelContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(SentinelContainer.class);
+    private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
     static final String ALIAS = "sentinel";
 
@@ -88,7 +90,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();
-        withExposedPorts(SENTINEL_SSH_PORT)
+        withExposedPorts(SENTINEL_DEBUG_PORT, SENTINEL_SSH_PORT)
                 .withEnv("SENTINEL_LOCATION", "Sentinel")
                 .withEnv("SENTINEL_ID", profile.getId())
                 .withEnv("POSTGRES_HOST", OpenNMSContainer.DB_ALIAS)
@@ -116,6 +118,11 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                 })
                 .addFileSystemBind(overlay.toString(),
                         "/opt/sentinel-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+
+        if (profile.isJvmDebuggingEnabled()) {
+            withEnv("KARAF_DEBUG", "true");
+            withEnv("JAVA_DEBUG_PORT", "*:" + SENTINEL_DEBUG_PORT);
+        }
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/opt/sentinel/.m2");
@@ -198,6 +205,20 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
             featuresOnBoot.add("sentinel-telemetry-jti");
             featuresOnBoot.add("sentinel-telemetry-nxos");
         }
+        
+        switch (model.getBlobStoreStrategy()) {
+            case NOOP:
+                featuresOnBoot.add("sentinel-blobstore-noop");
+                break;
+            case NEWTS_CASSANDRA:
+                featuresOnBoot.add("sentinel-blobstore-cassandra");
+                break;
+        }
+
+        if (model.getJsonStoreStrategy() == null || model.getJsonStoreStrategy() == JsonStoreStrategy.POSTGRES) {
+            featuresOnBoot.add("sentinel-jsonstore-postgres");
+        }
+
         return featuresOnBoot;
     }
 

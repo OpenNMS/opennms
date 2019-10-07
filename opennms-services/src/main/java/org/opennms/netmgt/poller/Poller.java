@@ -34,19 +34,19 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -71,6 +71,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * <p>Poller class.</p>
@@ -97,8 +99,6 @@ public class Poller extends AbstractServiceDaemon {
 
     private PollerConfig m_pollerConfig;
 
-    private PollOutagesConfig m_pollOutagesConfig;
-
     private EventIpcManager m_eventMgr;
 
     @Autowired
@@ -114,13 +114,13 @@ public class Poller extends AbstractServiceDaemon {
     private PersisterFactory m_persisterFactory;
 
     @Autowired
-    private ResourceStorageDao m_resourceStorageDao;
-
-    @Autowired
     private ThresholdingService m_thresholdingService;
 
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
+    
+    @Autowired
+    private ReadablePollOutagesDao m_pollOutagesDao;
 
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
@@ -247,21 +247,15 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     /**
-     * <p>getPollOutagesConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
+     * <p>getPollOutagesDao</p>
      */
-    public PollOutagesConfig getPollOutagesConfig() {
-        return m_pollOutagesConfig;
+    ReadablePollOutagesDao getPollOutagesDao() {
+        return m_pollOutagesDao;
     }
-
-    /**
-     * <p>setPollOutagesConfig</p>
-     *
-     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
-     */
-    public void setPollOutagesConfig(PollOutagesConfig pollOutagesConfig) {
-        m_pollOutagesConfig = pollOutagesConfig;
+    
+    @VisibleForTesting
+    void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
+        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
     }
 
     /**
@@ -284,14 +278,6 @@ public class Poller extends AbstractServiceDaemon {
 
     public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
         m_locationAwarePollerClient = locationAwarePollerClient;
-    }
-
-    public ThresholdingService getThresholdingService() {
-        return m_thresholdingService;
-    }
-
-    public void setThresholdingService(ThresholdingService thresholdingService) {
-        m_thresholdingService = thresholdingService;
     }
 
     /**
@@ -406,16 +392,6 @@ public class Poller extends AbstractServiceDaemon {
         getScheduler().resume();
     }
 
-    /**
-     * <p>getServiceMonitor</p>
-     *
-     * @param svcName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
-     */
-    public ServiceMonitor getServiceMonitor(String svcName) {
-        return getPollerConfig().getServiceMonitor(svcName);
-    }
-
     private void scheduleExistingServices() throws Exception {
         scheduleServices();
 
@@ -510,7 +486,7 @@ public class Poller extends AbstractServiceDaemon {
 
         closeOutageIfSvcLostEventIsMissing(outage);
 
-        final Package pkg = findPackageForService(ipAddr, serviceName);
+        final Package pkg = this.findPackageForService(ipAddr, serviceName);
         if (pkg == null) {
             if(active){
                 LOG.warn("Active service {} on {} not configured for any package. Marking as Not Polled.", serviceName, ipAddr);
@@ -522,12 +498,6 @@ public class Poller extends AbstractServiceDaemon {
             updateServiceStatus(service, "A");
         }
 
-        ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(serviceName);
-        if (monitor == null) {
-            LOG.info("Could not find service monitor associated with service {}", serviceName);
-            return false;
-        }
-
         InetAddress addr;
         addr = InetAddressUtils.addr(ipAddr);
         if (addr == null) {
@@ -536,9 +506,9 @@ public class Poller extends AbstractServiceDaemon {
         }
 
         PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
-        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, pkg,
                                                                      getScheduler(), m_persisterFactory, m_thresholdingService,
-                                                                     m_resourceStorageDao, m_locationAwarePollerClient);
+                                                                     m_locationAwarePollerClient, m_pollOutagesDao);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {
@@ -566,6 +536,36 @@ public class Poller extends AbstractServiceDaemon {
 
         return true;
 
+    }
+
+    private Package findPackageForService(String ipAddr, String serviceName) {
+        Enumeration<Package> en = this.m_pollerConfig.enumeratePackage();
+        Package lastPkg = null;
+
+        while (en.hasMoreElements()) {
+            Package pkg = en.nextElement();
+            if (this.pollableServiceInPackage(ipAddr, serviceName, pkg))
+                lastPkg = pkg;
+        }
+        return lastPkg;
+    }
+
+    public boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
+        if (pkg.getRemote()) {
+            return false;
+        }
+
+        if (!this.m_pollerConfig.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
+
+        boolean inPkg = this.m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
+        if (inPkg) return true;
+
+        if (this.m_initialized) {
+            this.m_pollerConfig.rebuildPackageIpListMap();
+            return this.m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
+        } else {
+            return false;
+        }
     }
 
     private void updateServiceStatus(OnmsMonitoredService service, String status) {
@@ -599,79 +599,6 @@ public class Poller extends AbstractServiceDaemon {
         final Date now = new Date();
         outage.setIfRegainedService(now);
         m_outageDao.update(outage);
-    }
-
-    Package findPackageForService(String ipAddr, String serviceName) {
-        Enumeration<Package> en = m_pollerConfig.enumeratePackage();
-        Package lastPkg = null;
-
-        while (en.hasMoreElements()) {
-            Package pkg = (Package)en.nextElement();
-            if (pollableServiceInPackage(ipAddr, serviceName, pkg))
-                lastPkg = pkg;
-        }
-        return lastPkg;
-    }
-
-    /**
-     * <p>pollableServiceInPackage</p>
-     *
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param serviceName a {@link java.lang.String} object.
-     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
-     * @return a boolean.
-     */
-    protected boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
-
-        if (pkg.getRemote()) {
-            LOG.debug("pollableServiceInPackage: this package: {}, is a remote monitor package.", pkg.getName());
-            return false;
-        }
-
-        if (!m_pollerConfig.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
-
-        boolean inPkg = m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
-
-        if (inPkg) return true;
-
-        if (m_initialized) {
-            m_pollerConfig.rebuildPackageIpListMap();
-            return m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
-        }
-
-        return false;
-    }
-
-    /**
-     * <p>packageIncludesIfAndSvc</p>
-     *
-     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
-        if (!getPollerConfig().isServiceInPackageAndEnabled(svcName, pkg)) {
-            LOG.debug("packageIncludesIfAndSvc: address/service: {}/{} not scheduled, service is not enabled or does not exist in package: {}", ipAddr, svcName, pkg.getName());
-            return false;
-        }
-
-        // Is the interface in the package?
-        //
-        if (!getPollerConfig().isInterfaceInPackage(ipAddr, pkg)) {
-
-            if (m_initialized) {
-                getPollerConfig().rebuildPackageIpListMap();
-                if (!getPollerConfig().isInterfaceInPackage(ipAddr, pkg)) {
-                    LOG.debug("packageIncludesIfAndSvc: interface {} gained service {}, but the interface was not in package: {}", ipAddr, svcName, pkg.getName());
-                    return false;
-                }
-            } else {
-                LOG.debug("packageIncludesIfAndSvc: address/service: {}/{} not scheduled, interface does not belong to package: {}", ipAddr, svcName, pkg.getName());
-                return false;
-            }
-        }
-        return true;
     }
 
     public void refreshServicePackages() {

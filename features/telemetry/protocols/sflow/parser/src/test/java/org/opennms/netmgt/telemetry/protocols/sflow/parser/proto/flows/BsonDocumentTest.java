@@ -32,9 +32,11 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWriter;
@@ -43,6 +45,7 @@ import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlow;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.EthernetHeader;
@@ -51,7 +54,7 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.Inet6He
 
 import com.google.common.primitives.UnsignedInteger;
 
-public class BsonDocumentTest {
+public class BsonDocumentTest implements SampleDatagramEnrichment {
     private static final long CURRENT_TIME_MILLIS = System.currentTimeMillis();
     private static final IpV4 SRC_IPV4 = new IpV4(ByteBuffer.wrap(new byte[]{(byte) 192, (byte) 168, (byte) 1, (byte) 1}));
     private static final String SRC_IPV4_STR = "192.168.1.1";
@@ -109,7 +112,7 @@ public class BsonDocumentTest {
         final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        flowSample.writeBson(bsonDocumentWriter);
+        flowSample.writeBson(bsonDocumentWriter, this);
         return bsonDocument;
     }
 
@@ -119,7 +122,7 @@ public class BsonDocumentTest {
         final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        flowSample.writeBson(bsonDocumentWriter);
+        flowSample.writeBson(bsonDocumentWriter, this);
         return bsonDocument;
     }
 
@@ -131,7 +134,7 @@ public class BsonDocumentTest {
         final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        flowSample.writeBson(bsonDocumentWriter);
+        flowSample.writeBson(bsonDocumentWriter, this);
         return bsonDocument;
     }
 
@@ -143,7 +146,7 @@ public class BsonDocumentTest {
         final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        flowSample.writeBson(bsonDocumentWriter);
+        flowSample.writeBson(bsonDocumentWriter, this);
         return bsonDocument;
     }
 
@@ -153,7 +156,7 @@ public class BsonDocumentTest {
         final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        flowSample.writeBson(bsonDocumentWriter);
+        flowSample.writeBson(bsonDocumentWriter, this);
         return bsonDocument;
     }
 
@@ -165,7 +168,7 @@ public class BsonDocumentTest {
         final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        flowSample.writeBson(bsonDocumentWriter);
+        flowSample.writeBson(bsonDocumentWriter, this);
         return bsonDocument;
     }
 
@@ -177,7 +180,7 @@ public class BsonDocumentTest {
         final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        flowSample.writeBson(bsonDocumentWriter);
+        flowSample.writeBson(bsonDocumentWriter, this);
         return bsonDocument;
     }
 
@@ -189,7 +192,7 @@ public class BsonDocumentTest {
         final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        flowSample.writeBson(bsonDocumentWriter);
+        flowSample.writeBson(bsonDocumentWriter, this);
         return bsonDocument;
     }
 
@@ -361,7 +364,7 @@ public class BsonDocumentTest {
     public void testExtendedGateway() {
         final BsonDocument bsonDocument = createExtendedGateway();
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
-        Assert.assertEquals(new Integer(SRC_AS), sFlow.getSrcAs());
+        Assert.assertEquals(new Long(SRC_AS), sFlow.getSrcAs());
     }
 
     @Test
@@ -370,7 +373,7 @@ public class BsonDocumentTest {
         final SampleDatagramV5 sampleDatagramV5 = new SampleDatagramV5(address, SUB_AGENT_ID, SEQUENCE_NUMBER, UPTIME, new Array<SampleRecord>(0, new ArrayList<>()));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        sampleDatagramV5.writeBson(bsonDocumentWriter);
+        sampleDatagramV5.writeBson(bsonDocumentWriter, this);
         final SFlow.Header sFlow = new SFlow.Header(bsonDocument);
         Assert.assertEquals(new Integer(SUB_AGENT_ID), sFlow.getSubAgentId());
         Assert.assertEquals(new Long(SEQUENCE_NUMBER), sFlow.getSequenceNumber());
@@ -407,5 +410,10 @@ public class BsonDocumentTest {
             final Object object = propertyDescriptor.getReadMethod().invoke(sFlow);
             System.out.println(propertyDescriptor.getReadMethod().getName() + "() returns '" + object + "'");
         }
+    }
+
+    @Override
+    public Optional<String> getHostnameFor(InetAddress srcAddress) {
+        return Optional.empty();
     }
 }

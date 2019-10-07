@@ -39,6 +39,8 @@ import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
+import com.codahale.metrics.MetricRegistry;
+
 public interface TelemetryRegistry {
     Adapter getAdapter(AdapterDefinition adapterDefinition);
     Listener getListener(ListenerDefinition listenerDefinition);
@@ -49,4 +51,6 @@ public interface TelemetryRegistry {
     void removeDispatcher(String queueName);
     Collection<AsyncDispatcher<TelemetryMessage>> getDispatchers();
     AsyncDispatcher<TelemetryMessage> getDispatcher(String queueName);
+
+    MetricRegistry getMetricRegistry();
 }

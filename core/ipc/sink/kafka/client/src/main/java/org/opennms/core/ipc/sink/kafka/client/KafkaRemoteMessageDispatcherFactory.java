@@ -104,11 +104,12 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             LOG.trace("dispatch({}): sending message {}", topic, message);
             byte[] sinkMessageContent = module.marshal(message);
             String messageId = UUID.randomUUID().toString();
+            final String messageKey = module.getRoutingKey(message).orElse(messageId);
             // Send this message to Kafka, If partition changed in between sending chunks of a larger message,
             // try to send message again.
             boolean partitionChanged = false;
             do {
-                partitionChanged = sendMessage(topic, messageId, sinkMessageContent);
+                partitionChanged = sendMessage(topic, messageId, messageKey, sinkMessageContent);
             } while (partitionChanged);
         }
     }
@@ -119,21 +120,23 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
      * been sent to different partitions, method will return true indicating partition change in between.
      * @param topic    The kafka topic message needs to be sent
      * @param messageId  The messageId message associated with
+     * @param messageKey  The key used to route the message
      * @param sinkMessageContent  The sink message
      * @return partitionChanged  return true if partition changed in between else return false by default.
      */
-    private boolean sendMessage(String topic, String messageId, byte[] sinkMessageContent) {
+    private boolean sendMessage(String topic, String messageId, String messageKey, byte[] sinkMessageContent) {
         int partitionNum = INVALID_PARTITION;
         boolean partitionChanged = false;
         int totalChunks = IntMath.divide(sinkMessageContent.length, maxBufferSize, RoundingMode.UP);
         for (int chunk = 0; chunk < totalChunks; chunk++) {
             byte[] messageInBytes = wrapMessageToProto(messageId, chunk, totalChunks, sinkMessageContent);
-            final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, messageId, messageInBytes);
+            final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, messageKey, messageInBytes);
             // Add tags to tracer active span.
             Span activeSpan = getTracer().activeSpan();
             if (activeSpan != null && (chunk + 1 == totalChunks)) {
                 activeSpan.setTag(TracerConstants.TAG_TOPIC, topic);
                 activeSpan.setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageContent.length);
+                activeSpan.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             }
             // Keep sending record till it delivers successfully.
             int partition = sendMessageChunkToKafka(topic, record);
@@ -195,6 +198,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
             tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, identity.getLocation());
+            tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
                 SinkMessageProtos.TracingInfo tracingInfo = SinkMessageProtos.TracingInfo.newBuilder()
                         .setKey(key).setValue(value).build();

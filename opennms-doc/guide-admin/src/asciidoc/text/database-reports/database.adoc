@@ -172,6 +172,12 @@ In addition to the `queryString` the following _JasperReports_ parameters are su
 | MEASUREMENT_PASSWORD | `no`      | If authentication is required, specify the password, e.g. `admin`
 |===
 
+[[ga-database-reports-disable-scheduler]]
+=== Disable Scheduler
+
+In cases where the scheduler executing the reports must be disabled, set the system property `opennms.report.scheduler.enabled` to `false`.
+This can be set in `${OPENNMS_HOME}/etc/opennms.properties` or `${OPENNMS_HOME}/etc/opennms.properties.d/<my-properties-file>.properties`.
+
 [[ga-database-reports-helper-methods]]
 === Helper methods
 

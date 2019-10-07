@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.threshd;
 
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +52,20 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     protected final RrdRepository rrdRepository;
 
     private ServiceParameters serviceParameters;
+    
+    private final BlobStore blobStore;
+    
+    private final boolean isDistributed;
 
     public ThresholdingSessionImpl(ThresholdingServiceImpl service, ThresholdingSessionKey sessionKey, ResourceStorageDao resourceStorageDao, RrdRepository rrdRepository,
-            ServiceParameters serviceParams) {
+                                   ServiceParameters serviceParams, BlobStore blobStore, boolean isDistributed) {
         this.service = service;
         this.sessionKey = sessionKey;
         this.resourceStorageDao = resourceStorageDao;
         this.rrdRepository = rrdRepository;
         this.serviceParameters = serviceParams;
+        this.blobStore = blobStore;
+        this.isDistributed = isDistributed;
     }
 
     @Override
@@ -70,8 +78,14 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
         service.close(this);
     }
 
+    @Override
     public ThresholdingSessionKey getKey() {
         return sessionKey;
+    }
+
+    @Override
+    public BlobStore getBlobStore() {
+        return blobStore;
     }
 
     public ResourceStorageDao getResourceDao() {
@@ -87,7 +101,9 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     }
 
     private void acceptCollection(CollectionSet collectionSet) throws ThresholdInitializationException {
-        ThresholdingVisitorImpl thresholdingVisitor = service.getThresholdingVistor(this);
+        Long sequenceNumber = collectionSet.getSequenceNumber().isPresent() ?
+                collectionSet.getSequenceNumber().getAsLong() : null;
+        ThresholdingVisitorImpl thresholdingVisitor = service.getThresholdingVistor(this, sequenceNumber);
 
         if (thresholdingVisitor == null) {
             LOG.error("No thresholdingVisitor for ThresholdingSession {}", sessionKey);
@@ -103,4 +119,8 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
         }
     }
 
+    @Override
+    public boolean isDistributed() {
+        return isDistributed;
+    }
 }

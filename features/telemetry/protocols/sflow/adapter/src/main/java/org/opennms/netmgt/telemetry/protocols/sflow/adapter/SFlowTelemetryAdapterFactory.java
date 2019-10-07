@@ -29,9 +29,8 @@
 package org.opennms.netmgt.telemetry.protocols.sflow.adapter;
 
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
-import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -53,7 +52,7 @@ public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final SFlowTelemetryAdapter adapter = new SFlowTelemetryAdapter();
+        final SFlowTelemetryAdapter adapter = new SFlowTelemetryAdapter(adapterConfig.getName(), getTelemetryRegistry().getMetricRegistry());
         adapter.setConfig(adapterConfig);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setPersisterFactory(getPersisterFactory());
@@ -67,14 +66,6 @@ public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
         wrapper.setPropertyValues(adapterConfig.getParameterMap());
 
         return adapter;
-    }
-
-    public void bind(ThresholdingService thresholdingService) {
-        super.bind(thresholdingService);
-    }
-
-    public void unbind(ThresholdingService thresholdingService) {
-        super.unbind(thresholdingService);
     }
 
 }

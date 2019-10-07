@@ -60,4 +60,6 @@ public interface ThresholdingService {
      */
     ThresholdingSession createSession(int nodeId, String hostAddress, String serviceName, RrdRepository rrdRepository, ServiceParameters serviceParameters)
             throws ThresholdInitializationException;
+
+    ThresholdingSetPersister getThresholdingSetPersister();
 }

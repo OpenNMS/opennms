@@ -31,6 +31,9 @@ package org.opennms.plugins.elasticsearch.rest.template;
 import com.google.common.base.Strings;
 
 public class IndexSettings {
+
+    private String indexPrefix;
+
     private Integer numberOfShards;
 
     private Integer numberOfReplicas;
@@ -38,6 +41,14 @@ public class IndexSettings {
     private Integer routingPartitionSize;
 
     private String refreshInterval;
+
+    public String getIndexPrefix() {
+        return indexPrefix;
+    }
+
+    public void setIndexPrefix(String indexPrefix) {
+        this.indexPrefix = indexPrefix;
+    }
 
     public Integer getNumberOfShards() {
         return numberOfShards;
@@ -91,7 +102,10 @@ public class IndexSettings {
     }
 
     public boolean isEmpty() {
-        boolean empty = numberOfShards == null && numberOfReplicas == null && routingPartitionSize == null && refreshInterval == null;
-        return empty;
+        return indexPrefix == null
+                && numberOfShards == null
+                && numberOfReplicas == null
+                && routingPartitionSize == null
+                && refreshInterval == null;
     }
 }

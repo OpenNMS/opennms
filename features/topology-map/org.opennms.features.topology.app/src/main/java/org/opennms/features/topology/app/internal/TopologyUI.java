@@ -30,9 +30,7 @@ package org.opennms.features.topology.app.internal;
 
 import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getWrappedVertexHopCriteria;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -42,8 +40,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
@@ -95,6 +91,7 @@ import org.opennms.features.topology.app.internal.ui.ToolbarPanel;
 import org.opennms.features.topology.app.internal.ui.ToolbarPanelController;
 import org.opennms.features.topology.app.internal.ui.breadcrumbs.BreadcrumbComponent;
 import org.opennms.features.topology.link.TopologyLinkBuilder;
+import org.opennms.features.vaadin.components.header.HeaderComponent;
 import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
 import org.opennms.osgi.EventConsumer;
 import org.opennms.osgi.OnmsServiceManager;
@@ -102,7 +99,6 @@ import org.opennms.osgi.VaadinApplicationContext;
 import org.opennms.osgi.VaadinApplicationContextCreator;
 import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.opennms.osgi.locator.OnmsServiceManagerLocator;
-import org.opennms.web.api.OnmsHeaderProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -495,9 +491,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     private WidgetManager m_widgetManager;
     private Component m_mapLayout;
     private final HistoryManager m_historyManager;
-    private String m_headerHtml;
     private boolean m_showHeader = true;
-    private OnmsHeaderProvider m_headerProvider = null;
     private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
@@ -509,14 +503,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     private ToolbarPanel m_toolbarPanel;
     private TransactionOperations m_transactionOperations;
     private final LayoutManager m_layoutManager;
-
-    private String getHeader(HttpServletRequest request) throws Exception {
-        if(m_headerProvider == null) {
-            return "";
-        } else {
-            return m_headerProvider.getHeaderHtml(request);
-        }
-    }
 
     public TopologyUI(OperationManager operationManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, LayoutManager layoutManager, TransactionOperations transactionOperations) {
         // Ensure that selection changes trigger a history save operation
@@ -540,12 +526,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     protected void init(final VaadinRequest request) {
         // Register a cleanup
         request.getService().addSessionDestroyListener((SessionDestroyListener) event -> m_widgetManager.removeUpdateListener(TopologyUI.this));
-
-        try {
-            m_headerHtml = getHeader(((VaadinServletRequest) request).getHttpServletRequest());
-        } catch (final Exception e) {
-            LOG.error("failed to get header HTML for request " + request.getPathInfo(), e.getCause());
-        }
 
         //create VaadinApplicationContext
         m_applicationContext = m_serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
@@ -716,22 +696,9 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     }
 
     private void addHeader() {
-        if (m_headerHtml != null && m_showHeader) {
-            InputStream is = null;
-            try {
-                is = new ByteArrayInputStream(m_headerHtml.getBytes());
-                final CustomLayout headerLayout = new CustomLayout(is);
-                headerLayout.setWidth("100%");
-                headerLayout.addStyleName("onmsheader");
-                m_rootLayout.addComponent(headerLayout);
-            } catch (final IOException e) {
-                try {
-                    is.close();
-                } catch (final IOException closeE) {
-                    LOG.debug("failed to close HTML input stream", closeE);
-                }
-                LOG.debug("failed to get header layout data", e);
-            }
+        if (m_showHeader) {
+            final HeaderComponent headerComponent = new HeaderComponent();
+            m_rootLayout.addComponent(headerComponent);
         }
     }
 
@@ -1135,10 +1102,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         // We update the ui elements accordingly
         m_toolbarPanel.graphChanged(m_graphContainer);
         m_layoutHintComponent.graphChanged(m_graphContainer);
-    }
-
-    public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
-        m_headerProvider = headerProvider;
     }
 
     /**

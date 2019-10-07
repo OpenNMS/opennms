@@ -34,14 +34,10 @@
         <constructor-arg ref="pollContext" />
     </bean>
 
-    <bean name="thresholdingService" class="org.opennms.netmgt.threshd.ThresholdingServiceImpl" />
-
     <bean name="daemon" class="org.opennms.netmgt.poller.Poller">
       <property name="network" ref="pollableNetwork" />
       <property name="pollerConfig" ref="pollerConfig" />
-      <property name="pollOutagesConfig" ref="pollOutagesConfig" />
       <property name="eventIpcManager" ref="eventIpcManager"/>
-      <property name="thresholdingService" ref="thresholdingService"/>
     </bean>
     
 </beans>
