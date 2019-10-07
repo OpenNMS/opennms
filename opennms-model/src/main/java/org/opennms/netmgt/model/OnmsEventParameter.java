@@ -122,7 +122,7 @@ public class OnmsEventParameter implements Serializable {
     @XmlAttribute(name="type")
     private String type;
 
-    /** helper attribute to maintain the right order of event parameters when saving and retrieving into database. */
+    /** helper attribute to maintain the right order of event parameters when saving and retrieving to/from database. */
     @XmlTransient
     private int position;
 
