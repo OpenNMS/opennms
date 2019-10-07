@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -57,6 +58,8 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * <p>QueryManagerDaoImpl class.</p>
@@ -78,6 +81,9 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
+
+    @Autowired
+    private TransactionOperations m_transcationOps;
 
     /** {@inheritDoc} */
     @Override
@@ -317,6 +323,31 @@ public class QueryManagerDaoImpl implements QueryManager {
             m_monitoredServiceDao.saveOrUpdate(service);
         } catch (UnknownHostException e) {
             LOG.error("Failed to set the status for service named {} on node id {} and interface {} to {}.",
+                    serviceName, nodeId,  ipAddr, status, e);
+        }
+    }
+
+    @Override
+    public void updateLastGoodOrFail(int nodeId, InetAddress ipAddr, String serviceName, PollStatus status) {
+        try {
+            m_transcationOps.execute((TransactionCallback<Object>) transactionStatus -> {
+                final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, ipAddr, serviceName);
+                if (service == null) {
+                    // Throw so we can hit the exception block bellow and re-use the log message
+                    throw new NoSuchElementException("Service no longer exists.");
+                }
+                if (status.isAvailable()) {
+                    service.setLastGood(status.getTimestamp());
+                } else if (status.isUnavailable() || status.isUnresponsive()) {
+                    service.setLastFail(status.getTimestamp());
+                }  // else ignore, not explicitly good or bad
+                m_monitoredServiceDao.saveOrUpdate(service);
+                return service;
+            });
+            LOG.debug("Successfully updated last good/fail timestamp for service named {} on node id {} and interface {}.",
+                    serviceName, nodeId, ipAddr);
+        } catch (Exception e) {
+            LOG.error("Failed to set the last good/fail timestamp for service named {} on node id {} and interface {} for {}.",
                     serviceName, nodeId,  ipAddr, status, e);
         }
     }

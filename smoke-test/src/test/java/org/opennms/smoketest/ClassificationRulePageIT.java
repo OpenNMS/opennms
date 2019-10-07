@@ -46,19 +46,18 @@ import org.junit.Test;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
+import org.opennms.smoketest.ui.framework.DeleteAllButton;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
-public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
+public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     private static int DEFAULT_WAIT_TIME = 2000;
 
@@ -74,7 +73,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() {
-        uiPage = new Page(getBaseUrl());
+        uiPage = new Page(getBaseUrlInternal());
         expectedTabs = Lists.newArrayList(
                 new Tab(uiPage, Tabs.SETTINGS, "Settings", 0, false),
                 new Tab(uiPage, Tabs.USER_DEFINED, "User-defined Rules", 0, true),
@@ -115,11 +114,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         final Group userDefinedGroup = settings.getGroup(Tabs.USER_DEFINED);
         assertThat(userDefinedGroup.isEditable(), is(true));
         assertThat(userDefinedGroup.isEnabled(), is(true));
+        assertThat(userDefinedGroup.getPosition(), is(0));
 
         // Verify pre-defined group
         final Group preDefinedGroup = settings.getGroup(Tabs.PRE_DEFINED);
         assertThat(preDefinedGroup.isEditable(), is(false));
         assertThat(preDefinedGroup.isEnabled(), is(true));
+        assertThat(preDefinedGroup.getPosition(), is(1));
 
         // Verify disable groups
         userDefinedGroup.setEnabled(false);
@@ -310,24 +311,24 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         uiPage.classify(classificationRequest);
 
         // Error should be displayed, but response should not
-        assertThat(true, is(m_driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
-        assertThat(false, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
+        assertThat(true, is(driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
+        assertThat(false, is(driver.findElement(By.id("classification-response")).isDisplayed()));
 
         // fix classification request and retry
         classificationRequest.setDstPort("80");
         uiPage.classify(classificationRequest);
 
         // Verify visibility is inverted
-        assertThat(false, is(m_driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
-        assertThat(true, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
+        assertThat(false, is(driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
+        assertThat(true, is(driver.findElement(By.id("classification-response")).isDisplayed()));
 
         // make an invalid request and try again
         classificationRequest.setDstPort("x");
         uiPage.classify(classificationRequest);
 
         // Error should be displayed, but response should not
-        assertThat(true, is(m_driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
-        assertThat(false, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
+        assertThat(true, is(driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
+        assertThat(false, is(driver.findElement(By.id("classification-response")).isDisplayed()));
     }
 
     @Test
@@ -385,11 +386,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
                     .withDstPort("8980")
                     .withProtocol("udp,tcp")
                     .withExporterFilter("categoryName == 'Routers'")
+                    .withPosition(0)
                     .build());
             groupTab.addNewRule(new RuleDTOBuilder()
                     .withName("OpenNMS")
                     .withDstPort("8980")
                     .withProtocol("udp,tcp")
+                    .withPosition(1)
                     .build());
 
             final ClassificationRequestDTO classificationRequest = new ClassificationRequestDTO();
@@ -419,8 +422,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         }
 
         public Page open() {
-            m_driver.get(url);
-            new WebDriverWait(m_driver, 5).until((Predicate<WebDriver>) (driver) -> getTabs().size() == expectedTabs.size());
+            driver.get(url);
+            new WebDriverWait(driver, 15).until((driver) -> getTabs().size() == expectedTabs.size());
             return this;
         }
 
@@ -440,13 +443,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         public List<Tab> getTabs() {
             return execute(() -> {
-                final List<WebElement> tabElements = m_driver.findElements(By.xpath("//ul[@id='tabs']//li/a[@data-name]"));
+                final List<WebElement> tabElements = driver.findElements(By.xpath("//ul[@id='tabs']//li/a[@data-name]"));
                 return tabElements.stream().map(eachTab -> {
                     final String name = eachTab.getAttribute("data-name");
-                    final List<WebElement> spanElements = m_driver.findElements(By.xpath("//ul[@id='tabs']//li/a[@data-name='" + name + "']/span"));
+                    final List<WebElement> spanElements = driver.findElements(By.xpath("//ul[@id='tabs']//li/a[@data-name='" + name + "']/span"));
                     final int count = spanElements.isEmpty() ? 0 : Integer.parseInt(spanElements.get(0).getText());
                     final String label = spanElements.isEmpty() ? eachTab.getText() : eachTab.getText().replace(spanElements.get(0).getText(), "");
-                    boolean isSelected = eachTab.findElement(By.xpath("..")).getAttribute("class").contains("active");
+                    boolean isSelected = eachTab.getAttribute("class").contains("active");
                     return new Tab(this, name.trim(), label.trim(), count, isSelected);
                 }).collect(Collectors.toList());
             });
@@ -516,11 +519,11 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         public void click() {
             getElement().click();
-            new WebDriverWait(m_driver, 5).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
+            new WebDriverWait(driver, 5).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
         }
 
         public WebElement getElement() {
-            return execute(() -> m_driver.findElement(By.xpath("//ul[@id='tabs']//li/a[@data-name='" + name + "']")));
+            return execute(() -> driver.findElement(By.xpath("//ul[@id='tabs']//li/a[@data-name='" + name + "']")));
         }
 
         public boolean isActive() {
@@ -553,7 +556,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         }
 
         public List<Group> getGroups() {
-            return execute(() -> m_driver.findElements(By.xpath("//table/tbody/tr[@data-row]"))
+            return execute(() -> driver.findElements(By.xpath("//table/tbody/tr[@data-row]"))
                     .stream()
                     .map(row -> {
                         final List<WebElement> columns = row.findElements(By.xpath("./td"));
@@ -571,7 +574,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         }
 
         public void refresh() {
-            m_driver.findElement(By.id("action.refresh")).click();
+            driver.findElement(By.id("action.refresh")).click();
             sleep(DEFAULT_WAIT_TIME);
         }
     }
@@ -585,8 +588,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             this.name = name;
         }
 
-        public int getPriority() {
-            return getGroupData().getPriority();
+        public int getPosition() {
+            return getGroupData().getPosition();
         }
 
         public String getName() {
@@ -601,8 +604,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             if (isEnabled() != enabled) {
                 execute(() -> {
                     // Toggle
-                    final WebElement toggleElement = m_driver.findElement(By.id(String.format("action.%s.toggle", name)));
-                    Actions actions = new Actions(m_driver);
+                    final WebElement toggleElement = driver.findElement(By.id(String.format("action.%s.toggle", name)));
+                    Actions actions = new Actions(driver);
                     actions.moveToElement(toggleElement);
                     actions.click();
                     actions.perform();
@@ -612,8 +615,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
                     sleep(DEFAULT_WAIT_TIME);
 
                     // Verify the tab was actually enabled/disabled
-                    new WebDriverWait(m_driver, 5)
-                            .until((Predicate<WebDriver>) input -> {
+                    new WebDriverWait(driver, 5)
+                            .until(input -> {
                                 final Group group = tab.getGroup(name);
                                 return enabled == group.isEnabled();
                             });
@@ -624,13 +627,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         private GroupData getGroupData() {
             return execute(() -> {
-                final List<WebElement> columns = m_driver.findElements(By.xpath("//table/tbody/tr[@data-row='" + this.name + "']/td"));
-                final int priority = Integer.parseInt(columns.get(0).getText());
+                final List<WebElement> columns = driver.findElements(By.xpath("//table/tbody/tr[@data-row='" + this.name + "']/td"));
+                final int position = Integer.parseInt(columns.get(0).getText());
                 final String name = columns.get(1).getText();
                 final String description = columns.get(2).getText();
                 final boolean editable = Boolean.valueOf(columns.get(3).getText());
                 final boolean enabled = columns.get(4).findElements(By.xpath(".//toggle/div[contains(@class, 'off')]")).isEmpty(); // the off class indicates the toggle is off
-                return new GroupData(name, priority, description, editable, enabled);
+                return new GroupData(name, position, description, editable, enabled);
             });
         }
 
@@ -646,13 +649,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
     private class GroupData {
         private final String name;
         private final String description;
-        private final int priority;
+        private final int position;
         private final boolean editable;
         private final boolean enabled;
 
-        private GroupData(String name, int priority, String description, boolean editable, boolean enabled) {
+        private GroupData(String name, int position, String description, boolean editable, boolean enabled) {
             this.name = Objects.requireNonNull(name);
-            this.priority = priority;
+            this.position = position;
             this.description = Objects.requireNonNull(description);
             this.editable = editable;
             this.enabled = enabled;
@@ -666,8 +669,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             return description;
         }
 
-        public int getPriority() {
-            return priority;
+        public int getPosition() {
+            return position;
         }
 
         public boolean isEditable() {
@@ -701,7 +704,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
             // remove all protocols
             execute(() -> {
-                m_driver.findElements(By.xpath("//span/a[@name='remove-protocol']")).forEach(element -> element.click());
+                driver.findElements(By.xpath("//span/a[@name='remove-protocol']")).forEach(element -> element.click());
                 return null;
             });
 
@@ -740,7 +743,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         // Ensure dialog closes
         private void ensureClosed() {
-            execute(() -> new WebDriverWait(m_driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id("ruleModal"), 0)));
+            execute(() -> new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id("ruleModal"), 0)));
         }
 
         private void setInput(String id, String input) {
@@ -773,7 +776,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         }
 
         public boolean isEditable() {
-            return execute(() -> m_driver.findElement(By.id("action.addRule"))).isDisplayed();
+            return execute(() -> driver.findElement(By.id("action.addRule"))).isDisplayed();
         }
 
         public void addNewRule(RuleDTO rule) {
@@ -787,7 +790,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
                     .open(() -> {
                         // Click add rule button
                         findElementById("action.addRule").click();
-                        new WebDriverWait(m_driver, 5).until(pageContainsText("Create Classification Rule"));
+                        new WebDriverWait(driver, 5).until(pageContainsText("Create Classification Rule"));
                     });
         }
 
@@ -796,7 +799,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
                     .open(() -> {
                         // click edit button
                         findElementById("action." + position + ".edit").click();
-                        new WebDriverWait(m_driver, 5).until(pageContainsText("Edit Classification Rule"));
+                        new WebDriverWait(driver, 5).until(pageContainsText("Edit Classification Rule"));
                     });
         }
 
@@ -812,7 +815,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         public List<RuleData> getRules() {
             return execute(() -> {
-                    final List<WebElement> rows = m_driver.findElements(By.xpath("//div//table/tbody/tr"));
+                    final List<WebElement> rows = driver.findElements(By.xpath("//div//table/tbody/tr"));
                     return IntStream.range(0, rows.size()).mapToObj(index -> getRuleData(index)).collect(Collectors.toList());
             });
         }
@@ -837,30 +840,28 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             execute(() -> {
                 final String deleteActionId = "action." + position + ".delete";
                 findElementById(deleteActionId).click();
-                new WebDriverWait(m_driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id(deleteActionId), 0));
+                new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id(deleteActionId), 0));
                 return null;
             });
         }
 
         public void navigateToPage(int page) {
             // Navigate to next page
-            execute(() -> findElementByXpath("//li[contains(@class, 'pagination-page')]/a[contains(text(), '" + page + "')]")).click();
+            execute(() -> findElementByXpath("//li[contains(@class, 'page-item')]/a[contains(text(), '" + page + "')]")).click();
 
             // The next page is active even if the data is not yet loaded, waiting reduced the likelihood of returning before
             // the page was refreshed. See HZN-1289.
             sleep(DEFAULT_WAIT_TIME);
 
             // Verify the page is actually active
-            execute(() -> new WebDriverWait(m_driver, 5).until(
+            execute(() -> new WebDriverWait(driver, 5).until(
                             ExpectedConditions.visibilityOf(
                                     findElementByXpath("//li[contains(@class, 'active')]/a[contains(text(), '" + page + "')]"))));
         }
 
         public void deleteAll() {
-            final WebElement deleteAllButton = execute(() -> findElementById("action.deleteAll"));
-            if (deleteAllButton.isDisplayed() && deleteAllButton.isEnabled()) {
-                deleteAllButton.click();
-                execute(() -> findElementByXpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]")).click();
+            if (!getRules().isEmpty()) {
+                new DeleteAllButton(driver).click();
                 sleep(DEFAULT_WAIT_TIME);
             }
         }

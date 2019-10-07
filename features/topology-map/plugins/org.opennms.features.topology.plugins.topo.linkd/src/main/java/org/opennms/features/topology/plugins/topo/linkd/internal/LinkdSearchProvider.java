@@ -42,6 +42,7 @@ import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +70,9 @@ public class LinkdSearchProvider implements SearchProvider {
             if(searchQuery.matches(vertex.getLabel())) {
                 searchResults.add(new SearchResult(vertex, false, false));
             }
+            if(searchResults.size() > 50) {
+                break; // make sure we don't display too many results => its slows the display down and makes it unusuable
+            }
         }
 
         LOG.debug("SearchProvider->query: found {} search results.", searchResults.size());
@@ -93,7 +97,7 @@ public class LinkdSearchProvider implements SearchProvider {
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return AbstractSearchProvider.supportsPrefix(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD+"=", searchPrefix);
+        return AbstractSearchProvider.supportsPrefix(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD+"=", searchPrefix);
     }
 
     @Override

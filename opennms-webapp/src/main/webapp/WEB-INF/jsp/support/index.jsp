@@ -49,11 +49,11 @@
             <c:when test="${!results.needsLogin}">
                 <!-- we have a login session, show support details -->
 
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Commercial Support</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <span>Commercial Support</span>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
 
                         <c:if test="${not empty results.message}">
                             <div class="something">
@@ -69,25 +69,25 @@
                         <p>You may elect to include a basic system report to help the support engineer who works your
                             ticket diagnose the problem more quickly.</p>
 
-                        <form method="post" action="support/index.htm" id="signout">
+                        <form method="post" action="support/index.htm" id="signout" class="form">
                             <input type="hidden" name="operation" value="logout"/>
                         </form>
                         <form role="form" class="form-horizontal" method="post" action="support/index.htm">
                             <div class="form-group">
                                 <div class="col-md-2">
-                                    <label for="sign-out" class="control-label">Username:</label>
+                                    <label for="sign-out" class="col-form-label">Username:</label>
                                 </div>
                                 <div class="col-md-2">
                                     <p class="form-control-static"><c:out value="${results.username}"/></p>
                                 </div>
                                 <div class="col-md-8">
-                                    <input id="sign-out" class="btn btn-default pull-right" value="Sign Out"
+                                    <input id="sign-out" class="btn btn-secondary pull-right" value="Sign Out"
                                            onClick="document.forms['signout'].submit();"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-2">
-                                    <label class="control-label">Queue:</label>
+                                    <label class="col-form-label">Queue:</label>
                                 </div>
                                 <div class="col-md-2">
                                     <p class="form-control-static"><c:out value="${results.queue}"/></p>
@@ -95,14 +95,14 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <label for="subject" class="control-label">Subject:</label>
+                                    <label for="subject" class="col-form-label">Subject:</label>
                                     <input id="subject" class="form-control" type="text" name="subject"
                                            value="${sessionScope.errorReportSubject}"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <label for="details" class="control-label">Details:</label>
+                                    <label for="details" class="col-form-label">Details:</label>
                                     <textarea id="details" class="form-control" name="text"
                                               rows="15">${sessionScope.errorReportDetails}</textarea>
                                 </div>
@@ -116,8 +116,8 @@
                                         </label>
                                     </div>
                                     <div class="pull-right">
-                                        <input class="btn btn-default" type="reset" value="Clear"/>
-                                        <input class="btn btn-default" type="submit" value="Create Ticket"/>
+                                        <input class="btn btn-secondary" type="reset" value="Clear"/>
+                                        <input class="btn btn-secondary" type="submit" value="Create Ticket"/>
                                     </div>
                                 </div>
                             </div>
@@ -144,11 +144,11 @@
 
             <c:otherwise>
                 <!-- no account session found, ask for login -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Commercial Support</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <span>Commercial Support</span>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
 
                         <p>
                             Enter your OpenNMS Group commercial support login to open a support ticket or view your open
@@ -158,20 +158,20 @@
                             If you do not have a commercial support agreement, see
                             <a href="https://www.opennms.com/support/">the OpenNMS.com support page</a> for more details.
                         </p>
-                        <form role="form" method="post" action="support/index.htm">
+                        <form role="form" method="post" action="support/index.htm" class="form">
                             <div class="form-group">
-                                <label for="username" class="control-label">Username:</label>
+                                <label for="username" class="col-form-label">Username</label>
                                 <input type="text" name="username" class="form-control" id="username"
                                        placeholder="Username">
                             </div>
                             <div class="form-group">
-                                <label for="password" class="control-label">Password:</label>
+                                <label for="password" class="col-form-label">Password</label>
                                 <input type="password" name="password" class="form-control" id="password"
                                        placeholder="Password">
                             </div>
                             <div class="form-group">
-                                <button type="reset" class="btn btn-default">Clear</button>
-                                <button type="submit" class="btn btn-default">Log in</button>
+                                <button type="reset" class="btn btn-secondary">Clear</button>
+                                <button type="submit" class="btn btn-primary">Log in</button>
                                 <input type="hidden" name="operation" value="login"/>
                             </div>
                         </form>

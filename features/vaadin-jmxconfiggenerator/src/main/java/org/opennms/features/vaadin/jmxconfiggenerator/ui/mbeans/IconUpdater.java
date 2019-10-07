@@ -28,7 +28,7 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import com.vaadin.data.Item;
+import com.vaadin.v7.data.Item;
 import org.opennms.features.vaadin.jmxconfiggenerator.Config;
 
 class IconUpdater {

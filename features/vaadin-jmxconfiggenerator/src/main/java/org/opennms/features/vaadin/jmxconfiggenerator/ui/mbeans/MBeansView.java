@@ -53,8 +53,8 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Tree;
+import com.vaadin.v7.ui.VerticalLayout;
 
 public class MBeansView extends VerticalLayout implements ClickListener, View {
 

@@ -28,111 +28,111 @@
 
 package org.opennms.features.geocoder.nominatim;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import net.simon04.jelementtree.ElementTree;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.features.geocoder.Coordinates;
-import org.opennms.features.geocoder.GeocoderException;
+import org.opennms.features.geocoder.GeocoderConfigurationException;
+import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class NominatimGeocoderService implements GeocoderService {
-    private static final String GEOCODE_URL = "http://open.mapquestapi.com/nominatim/v1/search?format=xml";
-    private final HttpClientWrapper m_clientWrapper;
 
-    private String m_emailAddress;
-    private String m_referer;
+    private static final Logger LOG = LoggerFactory.getLogger(NominatimGeocoderService.class);
 
-    private Logger m_log = LoggerFactory.getLogger(getClass());
+    private final NominatimConfiguration configuration;
 
-    public NominatimGeocoderService() {
-        m_clientWrapper = HttpClientWrapper.create()
-                .dontReuseConnections()
-                .useSystemProxySettings();
+    public NominatimGeocoderService(NominatimConfiguration configuration) {
+        this.configuration = Objects.requireNonNull(configuration);
     }
 
-    public void onInit() {
-        if (m_emailAddress == null || "".equals(m_emailAddress)) {
-            throw new UnsupportedOperationException("You must specify an email address for the Nominatim geocoder!");
+    @Override
+    public String getId() {
+        return "nominatim";
+    }
+
+    @Override
+    public GeocoderResult resolveAddress(final String address) throws GeocoderConfigurationException {
+        configuration.validate();
+        LOG.debug("Configuration: {}", configuration.asMap());
+        try (HttpClientWrapper clientWrapper = HttpClientWrapper.create().dontReuseConnections()) {
+            if (configuration.isUseSystemProxy()) {
+                clientWrapper.useSystemProxySettings();
+            }
+            final String url = buildUrl(configuration.getEmailAddress(), address);
+            final HttpUriRequest method = new HttpGet(url);
+            if (!Strings.isNullOrEmpty(configuration.getUserAgent())) {
+                method.addHeader("User-Agent", configuration.getUserAgent());
+            }
+            if (!Strings.isNullOrEmpty(configuration.getReferer())) {
+                method.addHeader("Referer", configuration.getReferer());
+            }
+
+            try (CloseableHttpResponse response = clientWrapper.execute(method)) {
+                final StatusLine statusLine = response.getStatusLine();
+                LOG.trace("Invoking URL {} returned {}:{} => {}", url, statusLine.getStatusCode(), statusLine.getReasonPhrase(), statusLine.getStatusCode() == 200 ? "OK" : "NOK" );
+                if (statusLine.getStatusCode() != 200) {
+                    return GeocoderResult.error(String.format("Nominatim returned a non-OK response code: %s: %s",
+                            statusLine.getStatusCode(),
+                            statusLine.getReasonPhrase())).build();
+                }
+                final InputStream responseStream = response.getEntity().getContent();
+                final JSONTokener tokener = new JSONTokener(responseStream);
+                final JSONArray results = new JSONArray(tokener);
+                if (results.length() > 0) {
+                    LOG.trace("API returned {} of results. If multiple, the first is used.", results.length());
+                    final JSONObject result = results.getJSONObject(0);
+                    if (result.has("lat") && result.has("lon")) {
+                        final Float longitude = result.getFloat("lon");
+                        final Float latitude = result.getFloat("lat");
+                        LOG.trace("API returned a result with valid long/lat fields: {}/{}", longitude, latitude);
+                        return GeocoderResult.success(address, longitude, latitude).build();
+                    } else {
+                        LOG.trace("API returned a result which does not contain lon/lat fields: {}", result);
+                    }
+                } else {
+                    LOG.trace("API returned an empty result");
+                }
+                LOG.debug("Couldn't resolve coordinates for address {}", address);
+                return GeocoderResult.noResult(address).build();
+            }
+        } catch (IOException e) {
+            return GeocoderResult.error(e).build();
         }
     }
 
     @Override
-    public Coordinates getCoordinates(final String address) throws GeocoderException {
-        final HttpUriRequest method = new HttpGet(getUrl(address));
-        method.addHeader("User-Agent", "OpenNMS-NominatimGeocoderService/1.0");
-        if (m_referer != null && !"".equals(m_referer)) {
-            method.addHeader("Referer", m_referer);
-        }
-
-        InputStream responseStream = null;
-        CloseableHttpResponse response = null;
-        try {
-            response = m_clientWrapper.execute(method);
-            final StatusLine statusLine = response.getStatusLine();
-            if (statusLine.getStatusCode() != 200) {
-                throw new GeocoderException("Nominatim returned a non-OK response code: " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase());
-            }
-            responseStream = response.getEntity().getContent();
-            final ElementTree tree = ElementTree.fromStream(responseStream);
-            if (tree == null) {
-                throw new GeocoderException("an error occurred connecting to the Nominatim geocoding service (no XML tree was found)");
-            }
-
-            final List<ElementTree> places = tree.findAll("//place");
-            if (places.size() > 1) {
-                m_log.warn("More than one location returned for query: {}", address);
-            } else if (places.size() == 0) {
-                throw new GeocoderException("Nominatim returned an OK status code, but no places");
-            }
-            final ElementTree place = places.get(0);
-
-            final Float longitude = Float.valueOf(place.getAttribute("lon"));
-            final Float latitude  = Float.valueOf(place.getAttribute("lat"));
-            return new Coordinates(longitude, latitude);
-        } catch (final GeocoderException e) {
-            throw e;
-        } catch (final Throwable e) {
-            throw new GeocoderException("unable to get lon/lat from Nominatim", e);
-        } finally {
-            IOUtils.closeQuietly(responseStream);
-            m_clientWrapper.close(response);
-        }
+    public NominatimConfiguration getConfiguration() {
+        return configuration;
     }
 
-    private String getUrl(final String geolocation) throws GeocoderException {
-        try {
-            return GEOCODE_URL + "&email=" + URLEncoder.encode(geolocation, StandardCharsets.UTF_8.name()) + "&q=" + URLEncoder.encode(geolocation, StandardCharsets.UTF_8.name());
-        } catch (final UnsupportedEncodingException e) {
-            throw new GeocoderException("unable to URL-encode query string", e);
-        }
+    @Override
+    public void validateConfiguration(Map<String, Object> properties) throws GeocoderConfigurationException {
+        NominatimConfiguration.fromMap(properties).validate();
     }
 
-    public String getEmailAddress() {
-        return m_emailAddress;
+    private String buildUrl(final String emailAddress, final String addressToResolve) throws UnsupportedEncodingException {
+        Objects.requireNonNull(emailAddress);
+        Objects.requireNonNull(addressToResolve);
+        final String url = configuration.getUrlTemplate()
+                                .replaceAll("\\{email\\}", URLEncoder.encode(emailAddress, "UTF-8"))
+                                .replaceAll("\\{query\\}", URLEncoder.encode(addressToResolve, "UTF-8"));
+        return url;
     }
 
-    public void setEmailAddress(final String emailAddress) {
-        m_emailAddress = emailAddress;
-    }
-
-    public String getReferer() {
-        return m_referer;
-    }
-
-    public void setReferer(final String referer) {
-        m_referer = referer;
-    }
 }

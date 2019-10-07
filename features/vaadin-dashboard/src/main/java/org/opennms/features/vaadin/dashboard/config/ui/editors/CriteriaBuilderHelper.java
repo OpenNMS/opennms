@@ -28,19 +28,33 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
-import com.google.gwt.thirdparty.guava.common.primitives.Primitives;
+import java.beans.Introspector;
+import java.lang.annotation.Annotation;
+import java.net.InetAddress;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.net.UnknownHostException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.beans.Introspector;
-import java.lang.annotation.Annotation;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.*;
+import com.google.common.primitives.Primitives;
 
 /**
  * This class is used to construct a criteria model based on the OpenNMS' model classes.
@@ -118,15 +132,44 @@ public class CriteriaBuilderHelper {
         });
 
         setCriteriaParser(Date.class, new CriteriaParser<Date>() {
+            final DateTimeFormatter parserFormatter = new DateTimeFormatterBuilder()
+                    .append(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                    .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                    .toFormatter();
+
+            final String DELTA_PATTERN = "^[+-]\\d+$";
+
+            private ZonedDateTime parseZonedDateTinme(final String string) {
+                if ("0".equals(string)) {
+                    return ZonedDateTime.now();
+                } else {
+                    if (string.matches(DELTA_PATTERN)) {
+                        final long delta = Long.parseLong(string.substring(1));
+                        if (string.charAt(0) == '+') {
+                            return ZonedDateTime.now().plus(delta, ChronoUnit.SECONDS);
+                        } else {
+                            return ZonedDateTime.now().minus(delta, ChronoUnit.SECONDS);
+                        }
+                    } else {
+                        try {
+                            return ZonedDateTime.parse(string, parserFormatter);
+                        } catch (DateTimeParseException ex) {
+                            return null;
+                        }
+                    }
+                }
+            }
+
             @Override
             public Date parse(String string) {
-                Date date = null;
-                try {
-                    date = DateFormat.getDateInstance().parse(string);
-                } catch (ParseException e) {
+                final ZonedDateTime zonedDateTime = parseZonedDateTinme(string);
+
+                if (zonedDateTime == null) {
                     return null;
+                } else {
+                    return Date.from(zonedDateTime.toInstant());
                 }
-                return date;
             }
 
             @Override
@@ -226,9 +269,20 @@ public class CriteriaBuilderHelper {
 
         for (String entry : entries) {
             String[] entryParts = entry.split("(?<!\\\\)[\\(\\),]", -1);
+            for (int i = 0; i < entryParts.length; i++) {
+                entryParts[i] = decode(entryParts[i]);
+            }
             CriteriaRestriction criteriaRestriction = CriteriaRestriction.valueOfIgnoreCase(entryParts[0]);
             criteriaRestriction.addRestrictionToCriteriaBuilder(this, criteriaBuilder, Arrays.copyOfRange(entryParts, 1, entryParts.length));
         }
+    }
+
+    public static String decode(final String string) {
+        return URLDecoder.decode(string);
+    }
+
+    public static String encode(final String string) {
+        return URLEncoder.encode(string).replace("%7C", "|");
     }
 
     /**

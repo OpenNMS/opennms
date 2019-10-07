@@ -177,7 +177,8 @@ public class SupportController extends AbstractController implements Initializin
         final String username = request.getParameter("username").trim();
         final String password = request.getParameter("password").trim();
 
-        final RequestTracker rt = new RequestTracker(m_configDao.getBaseURL(), username, password, m_configDao.getTimeout(), m_configDao.getRetry());
+        final RequestTracker rt = new RequestTracker(m_configDao.getBaseURL(), username, password, m_configDao.getTimeout(),
+                m_configDao.getRetry(), m_configDao.getUseSystemProxy());
         LOG.debug("tracker = {}", rt);
 
         final SupportResults results = new SupportResults();

@@ -63,7 +63,7 @@ public abstract class SnmpInformantOidResolver extends JRDefaultScriptlet {
         if (string2convert.length() > 0) {
             length = string2convert.length();
         } else {
-            logger.error("String to convert ['{}'] has no length and is forced to 0.");
+            logger.error("String to convert ['{}'] has no length and is forced to 0.", string2convert);
         }
 
         char[] origin = string2convert.toCharArray();

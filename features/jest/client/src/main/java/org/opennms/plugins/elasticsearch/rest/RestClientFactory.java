@@ -29,8 +29,11 @@
 package org.opennms.plugins.elasticsearch.rest;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +47,9 @@ import java.util.stream.Collectors;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
+import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.protocol.HttpContext;
 import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsParser;
 import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider;
 import org.opennms.plugins.elasticsearch.rest.executors.LimitedRetriesRequestExecutor;
@@ -83,6 +88,7 @@ public class RestClientFactory {
 	private int m_timeout = 0;
 	private int m_retries = 0;
 	private JestClient client;
+	private boolean httpCompression = false;
 	private Supplier<RequestExecutor> requestExecutorSupplier = () -> new LimitedRetriesRequestExecutor(m_timeout, m_retries);
 
 	public RestClientFactory(final String elasticSearchURL) throws MalformedURLException {
@@ -116,6 +122,7 @@ public class RestClientFactory {
 					.multiThreaded(true)
 					.defaultMaxTotalConnectionPerRoute(DEFAULT_MAX_TOTAL_CONNECTION_PER_ROUTE)
 					.maxTotalConnection(DEFAULT_MAX_TOTAL_CONNECTION)
+					.requestCompressionEnabled(httpCompression)
 					.gson(gson);
 
 		// Apply optional credentials
@@ -262,6 +269,10 @@ public class RestClientFactory {
 			final URL proxyURL = new URL(proxy);
 			clientConfigBuilder.proxy(new HttpHost(proxyURL.getHost(), proxyURL.getPort(), proxyURL.getProtocol()));
 		}
+	}
+
+	public void setHttpCompression(boolean httpCompression) {
+		this.httpCompression = httpCompression;
 	}
 
 	public void setRequestExecutorFactory(RequestExecutorFactory requestExecutorFactory) {

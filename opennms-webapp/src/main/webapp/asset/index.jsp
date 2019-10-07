@@ -74,67 +74,67 @@
   <div class="col-md-6">
     <div class="row">
       <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Search Asset Information</h3>
+        <div class="card">
+          <div class="card-header">
+            <span>Search Asset Information</span>
           </div>
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-md-6 col-xs-6">
+          <div class="card-body">
+            <div>
                 <ul class="list-unstyled">
-                  <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
+                <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
                 </ul>
-              </div> <!-- column -->
-              <div class="col-md-6 col-xs-6">
-                <form role="form" class="form-inline text-right" action="asset/nodelist.jsp" method="get">
-                  <div class="form-group">
-                    <label for="input_searchvalue">Assets in category:</label>
-                    <select class="form-control" id="input_searchvalue" name="searchvalue">
+            </div> <!-- row -->
+            <div>
+                <form role="form" class="form-group" action="asset/nodelist.jsp" method="get">
+                  <label for="input_searchvalue">Assets in category</label>
+                  <div class="input-group">
+                    <select class="form-control custom-select" id="input_searchvalue" name="searchvalue">
                       <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
                         <option><%=Asset.CATEGORIES[i]%></option>
                       <% } %>
                     </select>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                    </div>
                   </div>
                   <input type="hidden" name="column" value="category" />
-                  <button type="submit" class="btn btn-default">Search</button>
                 </form>
-              </div> <!-- column -->
             </div> <!-- row -->
-          </div> <!-- panel-body -->
+          </div> <!-- card-body -->
         </div> <!-- panel -->
       </div> <!-- column -->
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Assets with Asset Numbers</h3>
+        <div class="card">
+          <div class="card-header">
+            <span>Assets with Asset Numbers</span>
           </div>
-          <div class="panel-body">
-            <ul class="list-unstyled" style="width:48%; margin-right:2%; float:left;">
+          <div class="card-body">
+            <ul class="list-unstyled mb-0" style="width:48%; margin-right:2%; float:left;">
             <% for( int i=0; i < middle; i++ ) {%>
               <%  Asset asset = (Asset)assetsList.get(i); %>
               <li> <%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
             <% } %>
             </ul>
-            <ul class="list-unstyled" style="width:50%; float:left;">
+            <ul class="list-unstyled mb-0" style="width:50%; float:left;">
             <% for( int i=middle; i < assetCount; i++ ) {%>
               <%  Asset asset = (Asset)assetsList.get(i); %>
               <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
             <% } %>
             </ul>
-          </div> <!-- panel-body -->
+          </div> <!-- card-body -->
         </div> <!-- panel -->
       </div>
     </div>
   </div>
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Assets Inventory</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Assets Inventory</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>The OpenNMS system provides a means for you to easily track and share 
             important information about capital assets in your organization.  This 
             data, when coupled with the information about your network that the 
@@ -159,7 +159,7 @@
             asset numbers, simply click on the <b>List all nodes with asset information</b> 
             link.
         </p>
-       </div> <!-- panel-body -->
+       </div> <!-- card-body -->
      </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

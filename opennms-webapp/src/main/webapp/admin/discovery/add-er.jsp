@@ -81,32 +81,32 @@ function doAddExcludeRange(){
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Add Range to Exclude from Discovery</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Add Range to Exclude from Discovery</span>
       </div>
-      <div class="panel-body">
-        <form role="form" class="form-horizontal">
-          <div class="form-group">
-            <label for="begin" class="control-label col-sm-2">Begin IP Address:</label>
+      <div class="card-body">
+        <form role="form" class="form">
+          <div class="form-group form-row">
+            <label for="begin" class="col-form-label col-sm-2">Begin IP Address</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="begin" name="begin" value=''/>
             </div>
           </div>
-          <div class="form-group">
-            <label for="end" class="control-label col-sm-2">End IP Address:</label>
+          <div class="form-group form-row">
+            <label for="end" class="col-form-label col-sm-2">End IP Address</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="end" name="end" value=''/>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group form-row">
             <div class="col-sm-12">
-              <button type="button" class="btn btn-default" name="addExcludeRange" id="addExcludeRange" onclick="doAddExcludeRange();">Add</button>
-              <button type="button" class="btn btn-default" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
+              <button type="button" class="btn btn-secondary" name="addExcludeRange" id="addExcludeRange" onclick="doAddExcludeRange();">Add</button>
+              <button type="button" class="btn btn-secondary" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
             </div>
           </div>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

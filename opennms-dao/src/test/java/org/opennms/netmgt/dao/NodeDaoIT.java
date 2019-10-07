@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -56,14 +57,13 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -194,64 +194,6 @@ public class NodeDaoIT implements InitializingBean {
                 System.out.println("nodeid: " +nodeid);
             }
         }
-        
-        OnmsNode dbnode1 = getNodeDao().get(nodeid);
-        assertNotNull(dbnode1);
-        
-        if (dbnode1.getLldpElement() == null ) {
-	        LldpElement lldpElement = new LldpElement();
-	        lldpElement.setLldpChassisId("abc123456");
-	        lldpElement.setLldpChassisIdSubType(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
-	        lldpElement.setLldpSysname("prova");
-	        lldpElement.setNode(node);
-	        lldpElement.setLldpNodeLastPollTime(lldpElement.getLldpNodeCreateTime());
-	        dbnode1.setLldpElement(lldpElement);
-    	}
-        getNodeDao().save(dbnode1);
-        getNodeDao().flush();
-
-        OnmsNode dbnode2 = getNodeDao().get(nodeid);
-        assertNotNull(dbnode2);
-        assertNotNull(dbnode2.getLldpElement());
-
-        System.out.println("lldp element id: " + dbnode2.getLldpElement().getId());
-        System.out.println("lldp element create time: " + dbnode2.getLldpElement().getLldpNodeCreateTime());
-        System.out.println("lldp element last poll time: " + dbnode2.getLldpElement().getLldpNodeLastPollTime());
-        assertEquals("abc123456", dbnode2.getLldpElement().getLldpChassisId());
-        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, dbnode2.getLldpElement().getLldpChassisIdSubType());
-        assertEquals("prova", dbnode2.getLldpElement().getLldpSysname());
-        assertNotNull(dbnode2.getLldpElement().getLldpNodeCreateTime());
-        assertNotNull(dbnode2.getLldpElement().getLldpNodeLastPollTime());
-        
-        System.out.println("---------");
-        Thread.sleep(1000);
-        System.out.println("---------");
-
-        LldpElement lldpUpdateElement = new LldpElement();
-        lldpUpdateElement.setLldpChassisId("abc012345");
-        lldpUpdateElement.setLldpChassisIdSubType(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
-        lldpUpdateElement.setLldpSysname("prova");
-
-        LldpElement dbLldpElement = dbnode2.getLldpElement();
-        dbLldpElement.merge(lldpUpdateElement);
-        dbnode2.setLldpElement(dbLldpElement);
-
-        getNodeDao().save(dbnode2);
-        getNodeDao().flush();
-
-        OnmsNode dbnode3 = getNodeDao().get(nodeid);
-        assertNotNull(dbnode3);
-        assertNotNull(dbnode3.getLldpElement());
-
-        System.out.println("lldp element id: " + dbnode3.getLldpElement().getId());
-        System.out.println("lldp element create time: " + dbnode3.getLldpElement().getLldpNodeCreateTime());
-        System.out.println("lldp element last poll time: " + dbnode3.getLldpElement().getLldpNodeLastPollTime());
-        assertEquals("abc012345", dbnode3.getLldpElement().getLldpChassisId());
-        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, dbnode3.getLldpElement().getLldpChassisIdSubType());
-        assertEquals("prova", dbnode3.getLldpElement().getLldpSysname());
-        assertNotNull(dbnode3.getLldpElement().getLldpNodeCreateTime());
-        assertNotNull(dbnode3.getLldpElement().getLldpNodeLastPollTime());
-
         
     }    
 
@@ -730,6 +672,53 @@ public class NodeDaoIT implements InitializingBean {
         m_nodeDao.saveOrUpdate(node2);
         List<OnmsNode> nodes2 = m_nodeDao.findByForeignIdForLocation("TheOpenNMSGroup", location.getLocationName());
         assertEquals(nodes2.get(0), node2);
-        
+    }    
+
+    @Test
+    public void testSaveWithMetaData() {
+        final int nodeId = m_transTemplate.execute((ts) -> {
+            OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "SomeNode");
+            node.addMetaData("ctx", "key", "val");
+            getNodeDao().save(node);
+            getNodeDao().flush();
+
+            return node.getId();
+        });
+
+        m_transTemplate.execute((ts) -> {
+            OnmsNode node = getNodeDao().get(nodeId);
+            node.addMetaData("ctx", "key", "val");
+            getNodeDao().update(node);
+            getNodeDao().flush();
+
+            return node.getId();
+        });
+
+        m_transTemplate.execute((ts) -> {
+            OnmsNode node = getNodeDao().get(nodeId);
+            assertEquals(1, node.getMetaData().size());
+            assertEquals("ctx", node.getMetaData().iterator().next().getContext());
+            assertEquals("key", node.getMetaData().iterator().next().getKey());
+            assertEquals("val", node.getMetaData().iterator().next().getValue());
+            return null;
+        });
+
+        m_transTemplate.execute((ts) -> {
+            OnmsNode node = getNodeDao().get(nodeId);
+            node.setMetaData(Arrays.asList(new OnmsMetaData("ctx", "foo", "bar")));
+            getNodeDao().update(node);
+            getNodeDao().flush();
+
+            return node.getId();
+        });
+
+        m_transTemplate.execute((ts) -> {
+            OnmsNode node = getNodeDao().get(nodeId);
+            assertEquals(1, node.getMetaData().size());
+            assertEquals("ctx", node.getMetaData().iterator().next().getContext());
+            assertEquals("foo", node.getMetaData().iterator().next().getKey());
+            assertEquals("bar", node.getMetaData().iterator().next().getValue());
+            return null;
+        });
     }
 }

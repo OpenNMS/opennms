@@ -38,6 +38,7 @@
             <cm:property name="settings.index.number_of_replicas" value="" />
             <cm:property name="settings.index.refresh_interval" value="" />
             <cm:property name="settings.index.routing_partition_size" value="" />
+            <cm:property name="indexPrefix" value="" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -74,6 +75,7 @@
     </bean>
 
     <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
+        <property name="indexPrefix" value="${indexPrefix}"/>
         <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
         <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
         <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
@@ -93,5 +95,17 @@
 		<argument ref="elasticFeedbackRepositoryInitializer" />
     </bean>
     <service interface="org.opennms.features.situationfeedback.api.FeedbackRepository" ref="elasticFeedbackRepository" />
+    <reference-list interface="org.opennms.features.situationfeedback.api.AlarmFeedbackListener"
+                    availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="elasticFeedbackRepository"/>
+    </reference-list>
+
+    <!-- Health Check -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.plugins.elasticsearch.rest.ElasticHealthCheck" >
+            <argument ref="jestClient"/>
+            <argument value="Situation Feedback"/>
+        </bean>
+    </service>
 
 </blueprint>

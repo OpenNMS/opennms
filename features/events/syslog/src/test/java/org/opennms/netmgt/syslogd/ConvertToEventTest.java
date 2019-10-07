@@ -28,8 +28,12 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
@@ -46,7 +50,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -535,8 +538,8 @@ public class ConvertToEventTest {
                 .getContent());
         assertEquals(componentId, event.getParm("ComponentId").getValue()
                 .getContent());
-        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(Calendar.getInstance()
-                .get(Calendar.YEAR) + " " + date);
+        int expectedYear = SyslogMessageTest.getExpectedYear(date);
+        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(expectedYear + " " + date);
         assertEquals(expectedDate, event.getTime());
         assertEquals(processName, event.getParm("process").getValue().getContent());
         assertEquals(processId, event.getParm("processid").getValue().getContent());
@@ -561,8 +564,8 @@ public class ConvertToEventTest {
                 event.getParm("severity").getValue().getContent());
         assertEquals(sequenceNum, event.getParm("SequenceNum").getValue()
                 .getContent());
-        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(Calendar.getInstance()
-                .get(Calendar.YEAR) + " " + date);
+        int expectedYear = SyslogMessageTest.getExpectedYear(date);
+        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(expectedYear + " " + date);
         assertEquals(expectedDate, event.getTime());
         assertEquals(messageContent, event.getLogmsg().getContent());
     }
@@ -633,5 +636,77 @@ public class ConvertToEventTest {
         assertEquals(testIp, event.getParm("hostname").getValue().getContent());
 
         RadixTreeSyslogParser.setRadixParser(oldRadixParser);
+    }
+
+    /**
+     * Make sure the ${WHITESPACE:} matching works.
+     */
+    @Test
+    public void testPatternWithWhitespace() {
+        String syslogMessage = "<123>123456: Jan   \t1 01:10:10.123 CDT: %BGP-5-ADJCHANGE: neighbor 1.2.3.4 vpn " +
+                "vrf abc-def Up";
+        Event event = parseSyslog("testPatternWithWhitespace", radixConfig, syslogMessage, new Date());
+        assertThat(event.getLogmsg().getContent().startsWith("%BGP"), is(equalTo(true)));
+    }
+
+    /**
+     * Make sure ignore parameters via ${BLAH:ignore} works.
+     */
+    @Test
+    public void testIgnoreParms() {
+        String ignoredParmValue = "00123456";
+        String syslogMessage = "<123>456: " + ignoredParmValue + ": Jan  1 1:10:10.123 CDT: %SYS-5-CONFIG_I: " +
+                "Configured from console by hostname123 on vty2 (1.2.3.4)";
+        Event event = parseSyslog("testIgnoreParms", radixConfig, syslogMessage, new Date());
+        boolean hasParmValue =
+                event.getParmCollection().stream().anyMatch(parm -> parm.getValue()
+                        .getContent().equals(ignoredParmValue));
+        assertThat(event.getLogmsg().getContent().startsWith("%SYS"), is(equalTo(true)));
+        assertThat(hasParmValue, is(equalTo(false)));
+    }
+
+    /**
+     * Test that Cisco syslog messages are successfully parsed such that their log message starts with a given mnemonic.
+     */
+    @Test
+    public void testNewAuditPatterns() {
+        testAuditPattern("<189>98485: Nov  1 11:09:04: %SYS-5-CONFIG_I: Configured from console by hostname123 on " +
+                "vty1 (1.2.3.4)", "%SYS-5-CONFIG_I");
+        testAuditPattern("<189>414: 000414: Nov  1 11:07:45.159 CDT: %SYS-5-CONFIG_I: Configured from console by " +
+                "hostname123 on vty2 (1.2.3.4)", "%SYS-5-CONFIG_I");
+        testAuditPattern("<189>Nov  1 10:57:48.136 CDT:  10948: RP/0/RSP0/CPU0:Nov  1 10:57:48.136 CDT: bgp[1234]: " +
+                "%ROUTING-BGP-5-ADJCHANGE : neighbor 1.2.3.4 Up (VRF: abc) (AS: 12345)", "%ROUTING-BGP-5-ADJCHANGE");
+        testAuditPattern("<189>104897820: 104894003: Nov  1 01:46:05: %HSRP-5-STATECHANGE: Vlan123 Grp 123 state " +
+                "Speak -> Standby", "%HSRP-5-STATECHANGE");
+        testAuditPattern("<189>17460: Nov  1 01:14:41.474 CDT: %BGP-5-ADJCHANGE: neighbor 1.2.3.4 vpn vrf abc-def Up"
+                , "%BGP-5-ADJCHANGE");
+        testAuditPattern("<189>: 2019 Feb  1 00:17:15 cst: %ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface Ethernet1/15 is down (Link failure)"
+                , "%ETHPORT-5-IF_DOWN_LINK_FAILURE");
+    }
+
+    private void testAuditPattern(String syslog, String mnemonic) {
+        Event event = parseSyslog("testAuditPattern", radixConfig, syslog, new Date());
+        assertThat(event.getLogmsg().getContent(), startsWith(mnemonic));
+    }
+    
+    @Test
+    public void canIncludeRawSyslogmessage() {
+        String rawMessage = "<123>123456: Jan 1 01:10:10.123 CDT: %BGP-5-ADJCHANGE: neighbor 1.2.3.4 vpn " +
+                "vrf abc-def Up";
+        // Test that default behavior is to not include
+        boolean existingConfig = radixConfig.shouldIncludeRawSyslogmessage();
+        
+        if(existingConfig) {
+            fail("Default configuration for including raw syslog messages was true instead of false");
+        }
+
+        Event event = parseSyslog("canIncludeRawSyslogmessage", radixConfig, rawMessage, new Date());
+        assertThat(event.getParm("rawSyslogmessage"), equalTo(null));
+
+        // Once configured we should include a new event parameter containing the raw message
+        radixConfig.setIncludeRawSyslogmessage(true);
+        event = parseSyslog("canIncludeRawSyslogmessage", radixConfig, rawMessage, new Date());
+        assertThat(event.getParm("rawSyslogmessage").getValue().getContent(), equalTo(rawMessage));
+        radixConfig.setIncludeRawSyslogmessage(existingConfig);
     }
 }

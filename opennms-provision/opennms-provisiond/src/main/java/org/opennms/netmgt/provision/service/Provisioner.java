@@ -423,9 +423,10 @@ public class Provisioner implements SpringServiceDaemon {
      * @param resource a {@link org.springframework.core.io.Resource} object.
      * @param rescanExisting a {@link java.lang.String} object - Valid values are "true", "false" and "dbonly".
      * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object.
+     * @return the imported requesition
      * @throws java.lang.Exception if any.
      */
-    protected void importModelFromResource(final Resource resource, final String rescanExisting, final ProvisionMonitor monitor) throws Exception {
+    protected RequisitionImport importModelFromResource(final Resource resource, final String rescanExisting, final ProvisionMonitor monitor) throws Exception {
         final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
         doImport.setAttribute("resource", resource);
         doImport.setAttribute("rescanExisting", rescanExisting);
@@ -435,6 +436,7 @@ public class Provisioner implements SpringServiceDaemon {
         if (ri.isAborted()) {
             throw new ModelImportException("Import failed for resource " + resource.toString(), ri.getError());
         }
+        return ri;
     }
 
     /**
@@ -521,11 +523,15 @@ public class Provisioner implements SpringServiceDaemon {
             
             send(importStartedEvent(resource, rescanExisting));
     
-            importModelFromResource(resource, rescanExisting, m_stats);
-    
+            final RequisitionImport ri = importModelFromResource(resource, rescanExisting, m_stats);
+            String foreignSource = null;
+            if (ri != null && ri.getRequisition() != null) {
+                foreignSource = ri.getRequisition().getForeignSource();
+            }
+
             LOG.info("Finished Importing: {}", m_stats);
     
-            send(importSuccessEvent(m_stats, url, rescanExisting));
+            send(importSuccessEvent(m_stats, url, rescanExisting, foreignSource));
     
         } catch (final Throwable t) {
             final String msg = "Exception importing "+url;
@@ -851,6 +857,21 @@ public class Provisioner implements SpringServiceDaemon {
         
         return rescanExisting;
     }
+
+    /**
+     * Strips credentials from the given resource URL. See issue NMS-9535.
+     *
+     * @param string the URL
+     * @return the URL with masked username/password values
+     */
+    static String stripCredentials(final String string) {
+        if (string == null) {
+            return null;
+        } else {
+            return string.replaceAll("(username=)[^;&]*(;&)?", "$1***$2")
+                         .replaceAll("(password=)[^;&]*(;&)?", "$1***$2");
+        }
+    }
     
     /**
      * <p>getStats</p>
@@ -859,12 +880,13 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
 
-    private Event importSuccessEvent(final TimeTrackingMonitor stats, final String url, final String rescanExisting) {
+    private Event importSuccessEvent(final TimeTrackingMonitor stats, final String url, final String rescanExisting, final String foreignSource) {
     
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
+            .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(url) )
             .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
             .addParam( EventConstants.PARM_IMPORT_STATS, stats.toString() )
+            .addParam( EventConstants.PARM_FOREIGN_SOURCE, foreignSource )
             .getEvent();
     }
 
@@ -875,7 +897,7 @@ public class Provisioner implements SpringServiceDaemon {
     private Event importFailedEvent(final String msg, final String url, final String rescanExisting) {
     
         return new EventBuilder( EventConstants.IMPORT_FAILED_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
+            .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(url) )
             .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
             .addParam( EventConstants.PARM_FAILURE_MESSAGE, msg )
             .getEvent();
@@ -884,7 +906,7 @@ public class Provisioner implements SpringServiceDaemon {
     private Event importStartedEvent(final Resource resource, final String rescanExisting) {
     
         return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
+            .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(resource.toString()) )
             .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
             .getEvent();
     }

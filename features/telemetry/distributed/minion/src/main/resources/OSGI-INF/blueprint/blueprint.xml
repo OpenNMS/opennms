@@ -13,11 +13,13 @@
 
     <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
     <reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
+    <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" />
 
     <bean id="listenerManager" class="org.opennms.netmgt.telemetry.distributed.minion.ListenerManager" init-method="init" destroy-method="destroy">
         <property name="distPollerDao" ref="distPollerDao"/>
         <property name="messageDispatcherFactory" ref="messageDispatcherFactory" />
         <property name="bundleContext" ref="blueprintBundleContext"/>
+        <property name="telemetryRegistry" ref="telemetryRegistry" />
     </bean>
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="listenerManager">
         <service-properties>

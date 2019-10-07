@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.camel.client;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,9 +42,16 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.camel.CamelSinkConstants;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.opennms.core.tracing.api.TracerConstants;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
+import org.opennms.distributed.core.api.Identity;
 import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.codahale.metrics.JmxReporter;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * Message dispatcher that sends messages via JMS.
@@ -59,6 +68,11 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     private BundleContext bundleContext;
 
+    @Autowired
+    private TracerRegistry tracerRegistry;
+
+    private Identity identity;
+
     public <S extends Message, T extends Message> Map<String, Object> getModuleMetadata(SinkModule<S, T> module) {
         // Pre-compute the JMS headers instead of recomputing them every dispatch
         final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
@@ -70,12 +84,32 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     @Override
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Map<String, Object> headers, T message) {
-        template.sendBodyAndHeaders(endpoint, module.marshal((T)message), headers);
+        final Map<String, Object> messageHeaders = new HashMap<>(headers);
+        module.getRoutingKey(message).ifPresent(id -> messageHeaders.put(CamelSinkConstants.JMS_XGROUP_ID, id));
+
+        byte[] sinkMessageBytes = module.marshal(message);
+        // Add tracing info to jms headers
+        final Tracer tracer = tracerRegistry.getTracer();
+        if (tracer.activeSpan() != null) {
+            TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+            tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+            tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, identity.getLocation());
+            tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+            if (messageHeaders.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER) instanceof String) {
+                tracer.activeSpan().setTag(TracerConstants.TAG_TOPIC, (String) messageHeaders.get(CamelSinkConstants.JMS_QUEUE_NAME_HEADER));
+            }
+            tracer.activeSpan().setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageBytes.length);
+            String tracingInfo = TracingInfoCarrier.marshalTracingInfo(tracingInfoCarrier.getTracingInfoMap());
+            if (tracingInfo != null) {
+                messageHeaders.put(CamelSinkConstants.JMS_SINK_TRACING_INFO, tracingInfo);
+            }
+        }
+        template.sendBodyAndHeaders(endpoint, sinkMessageBytes, messageHeaders);
     }
 
     @Override
     public String getMetricDomain() {
-        return CamelLocalMessageDispatcherFactory.class.getPackage().getName();
+        return SINK_METRIC_PRODUCER_DOMAIN;
     }
 
     @Override
@@ -84,6 +118,9 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     }
 
     public void init() {
+        if (tracerRegistry != null && identity != null) {
+            tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
+        }
         onInit();
     }
 
@@ -93,5 +130,29 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        if (getTracerRegistry() != null) {
+            return getTracerRegistry().getTracer();
+        }
+        return GlobalTracer.get();
+    }
+
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        this.tracerRegistry = tracerRegistry;
+    }
+
+    public Identity getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
     }
 }

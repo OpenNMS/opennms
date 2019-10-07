@@ -41,6 +41,7 @@ import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
@@ -49,7 +50,6 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -62,7 +62,7 @@ public class DocumentEnricher {
 
     private final InterfaceToNodeCache interfaceToNodeCache;
 
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
 
     private final ClassificationEngine classificationEngine;
 
@@ -72,11 +72,11 @@ public class DocumentEnricher {
     private final Timer nodeLoadTimer;
 
     public DocumentEnricher(MetricRegistry metricRegistry, NodeDao nodeDao, InterfaceToNodeCache interfaceToNodeCache,
-                            TransactionOperations transactionOperations, ClassificationEngine classificationEngine,
+                            SessionUtils sessionUtils, ClassificationEngine classificationEngine,
                             CacheConfig cacheConfig) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
 
         this.nodeInfoCache = new CacheBuilder()
@@ -96,7 +96,7 @@ public class DocumentEnricher {
             return;
         }
 
-        transactionOperations.execute(callback -> {
+        sessionUtils.withTransaction(() -> {
             documents.forEach(document -> {
                 // Metadata from message
                 document.setHost(source.getSourceAddress());
@@ -125,9 +125,6 @@ public class DocumentEnricher {
                     document.setFlowLocality(Locality.PRIVATE);
                 }
 
-                // Conversation tagging
-                document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
-
                 final ClassificationRequest classificationRequest = createClassificationRequest(document);
 
                 // Check whether classification is possible
@@ -135,6 +132,9 @@ public class DocumentEnricher {
                     // Apply Application mapping
                     document.setApplication(classificationEngine.classify(classificationRequest));
                 }
+
+                // Conversation tagging
+                document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
             });
             return null;
         });
@@ -173,7 +173,7 @@ public class DocumentEnricher {
 
                     return Optional.of(nodeInfo);
                 } else {
-                    LOG.warn("Node with id: {} at location: {} with IP address: {} is in the interface to node cache, but wasn't found in the database.");
+                    LOG.warn("Node with id: {} at location: {} with IP address: {} is in the interface to node cache, but wasn't found in the database.", nodeId, location, ipAddress);
                 }
             }
         }

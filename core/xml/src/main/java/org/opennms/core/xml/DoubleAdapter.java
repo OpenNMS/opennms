@@ -42,9 +42,6 @@ public class DoubleAdapter extends XmlAdapter<String, Double> {
         if (v == null) {
             return null;
         }
-        if (!v.isNaN() && !v.isInfinite() && v == Math.rint(v)) {
-            return String.valueOf(v.intValue());
-        }
         return v.toString();
     }
 

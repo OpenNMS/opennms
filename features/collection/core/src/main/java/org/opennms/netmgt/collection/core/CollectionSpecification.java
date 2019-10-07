@@ -50,10 +50,10 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,13 +75,15 @@ public class CollectionSpecification {
     private Map<String, Object> m_parameters;
     private final CollectionInstrumentation m_instrumentation;
     private final LocationAwareCollectorClient m_locationAwareCollectorClient;
+    private final ReadablePollOutagesDao m_pollOutagesDao;
 
-    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient) {
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao) {
         m_package = Objects.requireNonNull(wpkg);
         m_svcName = Objects.requireNonNull(svcName);
         m_collector = Objects.requireNonNull(collector);
         m_instrumentation = Objects.requireNonNull(instrumentation);
         m_locationAwareCollectorClient = Objects.requireNonNull(locationAwareCollectorClient);
+        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
 
         initializeParameters();
     }
@@ -309,7 +311,8 @@ public class CollectionSpecification {
                     } else if (t.getCause() != null && t.getCause() instanceof CollectionException) {
                         return (CollectionException)t.getCause();
                     }
-                    return new CollectionException("Collection failed.", t);
+                    return new CollectionException("Collection failed : " + t.getClass().getName() +
+                            ": " + t.getMessage(), t);
                 }
             });
             m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, ce);
@@ -328,8 +331,6 @@ public class CollectionSpecification {
     public boolean scheduledOutage(CollectionAgent agent) {
         boolean outageFound = false;
 
-        PollOutagesConfigFactory outageFactory = PollOutagesConfigFactory.getInstance();
-
         /*
          * Iterate over the outage names defined in the interface's package.
          * For each outage...if the outage contains a calendar entry which
@@ -339,10 +340,10 @@ public class CollectionSpecification {
          */ 
         for (String outageName : m_package.getOutageCalendars()) {
             // Does the outage apply to the current time?
-            if (outageFactory.isCurTimeInOutage(outageName)) {
+            if (m_pollOutagesDao.isCurTimeInOutage(outageName)) {
                 // Does the outage apply to this interface?
-                if ((outageFactory.isNodeIdInOutage(agent.getNodeId(), outageName)) ||
-                        (outageFactory.isInterfaceInOutage(agent.getHostAddress(), outageName)))
+                if ((m_pollOutagesDao.isNodeIdInOutage(agent.getNodeId(), outageName)) ||
+                        (m_pollOutagesDao.isInterfaceInOutage(agent.getHostAddress(), outageName)))
                 {
                     LOG.debug("scheduledOutage: configured outage '{}' applies, interface {} will not be collected for {}", outageName, agent.getHostAddress(), this);
                     outageFound = true;
@@ -357,7 +358,7 @@ public class CollectionSpecification {
     /**
      * <p>refresh</p>
      *
-     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
+     * @param collectorConfigDao a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
      */
     public void refresh(CollectdConfigFactory collectorConfigDao) {
         Package refreshedPackage = collectorConfigDao.getPackage(getPackageName());

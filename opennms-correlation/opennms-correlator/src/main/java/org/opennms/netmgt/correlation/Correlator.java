@@ -55,6 +55,8 @@ import org.springframework.util.Assert;
 public class Correlator extends AbstractServiceDaemon implements CorrelationEngineRegistrar {
 	private static final Logger LOG = LoggerFactory.getLogger(Correlator.class);
 
+	// when reloading daemon, set this event param to "false" to not to reload state ( default, it reloads previous state.)
+	public static final String EVENT_PARM_PERSIST_STATE = "persistState";
 	private EventIpcManager m_eventIpcManager;
 	private Map<String,CorrelationEngine> m_engines = new HashMap<>();
 	private final List<EngineAdapter> m_adapters = new LinkedList<>();
@@ -105,6 +107,9 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		}
 
 		private void handleReloadEvent(Event e) {
+			boolean engineNameMatched = false;
+			// By default always persist state.
+			boolean persistState = true;
 		    List<Parm> parmCollection = e.getParmCollection();
 		    for (Parm parm : parmCollection) {
 		        String parmName = parm.getParmName();
@@ -114,13 +119,21 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		                return;
 		            }
 		            if (parm.getValue().getContent().contains(getName())) {
-		                m_eventIpcManager.removeEventListener(this);
-		                m_engine.reloadConfig();
-		                registerEventListeners();
-		                return;
+						engineNameMatched = true;
 		            }
 		        }
+		        if(parmName.equals(EVENT_PARM_PERSIST_STATE)) {
+		        	if(parm.getValue() != null && parm.getValue().getContent() != null && parm.getValue().getContent().equals("false")) {
+						persistState = false;
+					}
+				}
 		    }
+		    if (engineNameMatched) {
+				m_eventIpcManager.removeEventListener(this);
+				m_engine.reloadConfig(persistState);
+				registerEventListeners();
+			}
+			return;
 		}
 	}
 

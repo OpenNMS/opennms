@@ -146,7 +146,9 @@ public class CollectCommand implements Action {
         final CompletableFuture<CollectionSet> future = locationAwareCollectorClient.collect()
                 .withAgent(agent)
                 .withSystemId(systemId)
-                .withCollector(collector)
+                // For Service collectors that implement integration api will have proxy collectors.
+                // fetching class name from proxy won't match with class name in collector registry.
+                .withCollectorClassName(className)
                 .withTimeToLive(ttlInMs)
                 .withAttributes(parse(attributes))
                 .execute();
@@ -184,9 +186,7 @@ public class CollectCommand implements Action {
                         System.out.printf("The collector requires a valid node and interface. Try specifying a valid node using the --node option.\n", e);
                         break;
                     }
-                    System.out.printf("\nCollect failed with:", e);
-                    e.printStackTrace();
-                    System.out.println();
+                    System.out.printf("\nCollect failed with: %s \n", e);
                 }
                 break;
             } catch (TimeoutException e) {
@@ -250,10 +250,6 @@ public class CollectCommand implements Action {
                     properties.put(key, value);
                 }
             }
-        }
-        //SnmpCollector uses proxy rpc, so need to pass ttl in params.
-        if(ttlInMs != null) {
-            properties.put("SERVICE_INTERVAL", ttlInMs);
         }
         return properties;
     }

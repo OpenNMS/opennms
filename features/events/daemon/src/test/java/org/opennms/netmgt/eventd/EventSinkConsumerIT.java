@@ -44,15 +44,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.camel.JmsQueueNameFactory;
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
+import org.opennms.core.ipc.sink.model.SinkMessageProtos;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.XmlHandler;
 import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.eventd.sink.EventModule;
+import org.opennms.features.events.sink.module.EventSinkModule;
 import org.opennms.netmgt.eventd.sink.EventSinkConsumer;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -60,6 +61,8 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.protobuf.ByteString;
 
 /**
  * @author Malatesh Sudarshan
@@ -112,14 +115,23 @@ public class EventSinkConsumerIT {
     @Test
     public void verifyEventSinkConsumerWithKafka() throws Exception {
         final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaSinkConstants.KAFKA_TOPIC_PREFIX,
-                EventModule.MODULE_ID);
+                EventSinkModule.MODULE_ID);
         XmlHandler<Log> xmlHandler = new XmlHandler<>(Log.class);
         String marshalledEvent = xmlHandler.marshal(getEventLog());
+        byte[] sinkMessageInBytes = wrapMessageToProto("1", marshalledEvent.getBytes(StandardCharsets.UTF_8));
         ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<String, byte[]>(topicNameFactory.getName(),
-                marshalledEvent.getBytes(StandardCharsets.UTF_8));
+                sinkMessageInBytes);
         producer.send(producerRecord);
         m_eventMgr.getEventAnticipator().anticipateEvent(buildEvent());
         m_eventMgr.getEventAnticipator().verifyAnticipated(15000, 0, 0, 0, 0);
+    }
+
+    private byte[] wrapMessageToProto(String messageId, byte[] messageInBytes) {
+        SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.newBuilder()
+                .setMessageId(messageId)
+                .setContent(ByteString.copyFrom(messageInBytes))
+                .build();
+        return sinkMessage.toByteArray();
     }
 
     private Log getEventLog() throws UnknownHostException {

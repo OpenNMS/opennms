@@ -47,7 +47,7 @@ import org.opennms.netmgt.config.collectd.jmx.CompMember;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
 
-import com.vaadin.data.Item;
+import com.vaadin.v7.data.Item;
 
 /**
  * Controls the "MbeansView".

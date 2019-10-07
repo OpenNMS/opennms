@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 export DH_VERBOSE=1
-export JAVA_HOME=$(shell bin/find-java.sh 1.8 1.8.9999)
+export JAVA_HOME=$(shell bin/find-java.sh 1.8 11.9999)
 export PACKAGE_NAME="opennms-sentinel"
 
 export SENTINEL_PREFIX=/usr/share/sentinel
@@ -13,6 +13,9 @@ export ETCDIR=/etc/sentinel
 
 %:
 	dh $@
+
+# disable these
+override_dh_update_autotools_config override_dh_strip_nondeterminism:
 
 override_dh_auto_install:
 	# make all the target directories
@@ -50,7 +53,7 @@ override_dh_auto_install:
 		&& rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/sentinel.conf
 	
 	# change the logging directory to /var/log/sentinel
-	sed -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,karaf.log,sentinel.log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
+	sed -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,/karaf.log,/sentinel.log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
 	
 	# install the init script
 	dh_installinit --package=$(PACKAGE_NAME) --name=sentinel --no-start -u"defaults 21 19"

@@ -66,6 +66,21 @@ public class RuleDTOBuilder {
         return this;
     }
 
+    public RuleDTOBuilder withOmnidirectional(boolean omnidirectional) {
+        this.ruleDTO.setOmnidirectional(omnidirectional);
+        return this;
+    }
+
+    public RuleDTOBuilder withPosition(int position) {
+        this.ruleDTO.setPosition(position);
+        return this;
+    }
+
+    public RuleDTOBuilder withGroup(GroupDTO group) {
+        this.ruleDTO.setGroup(group);
+        return this;
+    }
+
     public RuleDTO build() {
         return ruleDTO;
     }

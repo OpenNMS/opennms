@@ -26,6 +26,7 @@
             <cm:property name="nodeDiscoveryFrequency" value="0" />
             <cm:property name="proxy" value=""/>
             <cm:property name="retryCooldown" value="500" />
+            <cm:property name="httpCompression" value="false"/>
             <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
@@ -43,6 +44,7 @@
             <cm:property name="settings.index.number_of_replicas" value="" />
             <cm:property name="settings.index.refresh_interval" value="" />
             <cm:property name="settings.index.routing_partition_size" value="" />
+            <cm:property name="indexPrefix" value="" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -74,6 +76,7 @@
         <property name="discovery" value="${nodeDiscovery}" />
         <property name="discoveryFrequency" value="${nodeDiscoveryFrequency}" />
         <property name="proxy" value="${proxy}" />
+        <property name="httpCompression" value="${httpCompression}" />
         <property name="credentials" ref="credentialsProvider" />
         <property name="requestExecutorFactory" ref="requestExecutorFactory" />
         <property name="connTimeout" value="${connTimeout}" />
@@ -89,6 +92,7 @@
     </bean>
 
     <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
+        <property name="indexPrefix" value="${indexPrefix}"/>
         <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
         <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
         <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
@@ -99,14 +103,15 @@
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
-    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
     <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
+    <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
     <bean id="documentEnricher" class="org.opennms.netmgt.flows.elastic.DocumentEnricher">
         <argument ref="flowRepositoryMetricRegistry" />
         <argument ref="classificationEngine" />
         <argument ref="nodeDao" />
         <argument ref="interfaceToNodeCache" />
-        <argument ref="transactionOperations" />
+        <argument ref="sessionUtils" />
         <argument ref="nodeCacheConfig" />
     </bean>
 
@@ -124,16 +129,22 @@
           init-method="start"
           destroy-method="stop" />
 
+    <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
     <!-- The repository -->
-    <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository">
+    <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
+          init-method="start">
         <argument ref="flowRepositoryMetricRegistry"/>
         <argument ref="jestClient"/>
         <argument ref="indexStrategy"/>
         <argument ref="documentEnricher"/>
         <argument ref="classificationEngine"/>
-        <argument ref="transactionOperations"/>
+        <argument ref="sessionUtils"/>
         <argument ref="nodeDao"/>
         <argument ref="snmpInterfaceDao"/>
+        <argument ref="identity"/>
+        <argument ref="tracerRegistry"/>
+        <argument ref="indexSettings"/>
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
     </bean>
@@ -148,8 +159,11 @@
 
     <!-- Health Check -->
     <service interface="org.opennms.core.health.api.HealthCheck">
-        <bean class="org.opennms.netmgt.flows.elastic.health.ElasticHealthCheck" >
+        <bean class="org.opennms.plugins.elasticsearch.rest.RequireConfigurationElasticHealthCheck" >
             <argument ref="jestClient"/>
+            <argument value="Flows"/>
+            <argument ref="configurationAdmin"/>
+            <argument value="org.opennms.features.flows.persistence.elastic" />
         </bean>
     </service>
 

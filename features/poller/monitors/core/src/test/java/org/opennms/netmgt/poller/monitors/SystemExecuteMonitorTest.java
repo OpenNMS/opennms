@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,16 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
-
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SystemExecuteMonitorTest {
 
@@ -69,27 +68,5 @@ public class SystemExecuteMonitorTest {
         parameters.put("script", "");
         PollStatus pollStatus = monitor.poll(svc, parameters);
         Assert.assertEquals("Unknown", pollStatus.getStatusName());
-    }
-
-    //TODO add test files to test/resources
-    @Test
-    @Ignore
-    public void testPollScriptParameterNotExecutable() {
-        monitor = new SystemExecuteMonitor();
-        parameters.put("script", "/tmp/log.log");
-        PollStatus pollStatus = monitor.poll(svc, parameters);
-        Assert.assertEquals("Unknown", pollStatus.getStatusName());
-    }
-
-    //TODO system dependent
-    @Test
-    @Ignore
-    public void testPollScriptParameterNotExecutableFoo() {
-        monitor = new SystemExecuteMonitor();
-        parameters.put("script", "/tmp/loadspeed.sh");
-        parameters.put("timeout", "30000");
-        parameters.put("args", "http://${nodelabel} ${timeout}");
-        PollStatus pollStatus = monitor.poll(svc, parameters);
-        Assert.assertEquals("Up", pollStatus.getStatusName());
     }
 }

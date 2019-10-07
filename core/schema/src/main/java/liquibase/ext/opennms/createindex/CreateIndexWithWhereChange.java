@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,41 +28,44 @@
 
 package liquibase.ext.opennms.createindex;
 
+import liquibase.change.ChangeMetaData;
+import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
-import liquibase.logging.LogFactory;
+import liquibase.logging.LogService;
+import liquibase.logging.Logger;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.CreateIndexStatement;
 
+@DatabaseChange(name="createIndex", description = "Creates an index on an existing column or set of columns.", priority = ChangeMetaData.PRIORITY_DEFAULT + 1, appliesTo = "index")
 public class CreateIndexWithWhereChange extends liquibase.change.core.CreateIndexChange {
+    private static final Logger LOG = LogService.getLog(CreateIndexWithWhereChange.class);
+    private String m_where;
 
-	private String m_where;
+    public CreateIndexWithWhereChange() {
+        super();
+    }
 
-	public CreateIndexWithWhereChange() {
-		super();
-		setPriority(getChangeMetaData().getPriority() + 1);
-	}
+    public String getWhere() {
+        return m_where;
+    }
 
-	public String getWhere() {
-		return m_where;
-	}
-	
-	public void setWhere(final String where) {
-		m_where = where;
-	}
-	
-	@Override
-	public SqlStatement[] generateStatements(final Database database) {
-		final SqlStatement[] superStatements = super.generateStatements(database);
-		if (m_where == null) return superStatements;
-		
-		if (superStatements.length != 1) {
-			LogFactory.getLogger().warning("expected 1 create index statement, but got " + superStatements.length);
-			return superStatements;
-		}
-		
-	    return new SqlStatement[]{
-	    		new CreateIndexWithWhereStatement((CreateIndexStatement)superStatements[0], m_where)
-	    };
+    public void setWhere(final String where) {
+        m_where = where;
+    }
+
+    @Override
+    public SqlStatement[] generateStatements(final Database database) {
+        final SqlStatement[] superStatements = super.generateStatements(database);
+        if (m_where == null) return superStatements;
+
+        if (superStatements.length != 1) {
+            LOG.warning("expected 1 create index statement, but got " + superStatements.length);
+            return superStatements;
+        }
+
+        return new SqlStatement[]{
+                new CreateIndexWithWhereStatement((CreateIndexStatement)superStatements[0], m_where)
+        };
     }
 
 }

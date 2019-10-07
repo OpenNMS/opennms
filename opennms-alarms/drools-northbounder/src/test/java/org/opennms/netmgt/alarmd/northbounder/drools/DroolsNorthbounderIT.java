@@ -84,7 +84,7 @@ public class DroolsNorthbounderIT {
      */
     @After
     public void shutdown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     /**
@@ -92,7 +92,7 @@ public class DroolsNorthbounderIT {
      *
      * @throws Exception the exception
      */
-    @Test
+    @Test(timeout=5*60*1000)
     public void testNorthbounder() throws Exception {
         // Setup test node
         OnmsNode node = new OnmsNode();

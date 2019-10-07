@@ -44,6 +44,7 @@ public class RuleDTO {
     private String srcAddress;
     private String srcPort;
     private String exporterFilter;
+    private boolean omnidirectional;
 
     private GroupDTO group;
     private Integer position;
@@ -133,6 +134,14 @@ public class RuleDTO {
         this.exporterFilter = exporterFilter;
     }
 
+    public boolean isOmnidirectional() {
+        return this.omnidirectional;
+    }
+
+    public void setOmnidirectional(final boolean omnidirectional) {
+        this.omnidirectional = omnidirectional;
+    }
+
     public void setGroup(GroupDTO group) {
         this.group = group;
     }
@@ -154,12 +163,13 @@ public class RuleDTO {
                 && Objects.equals(srcPort, that.srcPort)
                 && Objects.equals(protocols, that.protocols)
                 && Objects.equals(exporterFilter, that.exporterFilter)
+                && Objects.equals(omnidirectional, that.omnidirectional)
                 && Objects.equals(group, that.group)
                 && Objects.equals(position, that.position);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, dstAddress, dstPort, srcAddress, srcPort, protocols, exporterFilter, group, position);
+        return Objects.hash(id, name, dstAddress, dstPort, srcAddress, srcPort, protocols, exporterFilter, omnidirectional, group, position);
     }
 }

@@ -13,9 +13,7 @@
       <directory>${project.build.directory}/classes</directory>
       <outputDirectory>sentinel-${project.version}</outputDirectory>
       <includes>
-        <include>debian/opennms-sentinel.sentinel.init</include>
         <include>debian/rules</include>
-        <include>etc/sentinel.init</include>
         <include>bin/scvcli</include>
       </includes>
       <fileMode>0755</fileMode>
@@ -24,14 +22,15 @@
       <directory>${project.build.directory}/classes</directory>
       <outputDirectory>sentinel-${project.version}</outputDirectory>
       <excludes>
-        <exclude>debian/opennms-sentinel.sentinel.init</exclude>
         <exclude>debian/rules</exclude>
-        <exclude>etc/sentinel.init</exclude>
       </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/unpacked/sentinel-${project.version}</directory>
       <outputDirectory>sentinel-${project.version}</outputDirectory>
+      <excludes>
+        <exclude>**/container.*</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/unpacked/base-assembly/bin</directory>
@@ -39,6 +38,20 @@
     </fileSet>
   </fileSets>
   <files>
+    <file>
+      <source>${project.build.directory}/unpacked/sentinel-${project.version}/etc/container.init</source>
+      <outputDirectory>sentinel-${project.version}/etc</outputDirectory>
+      <destName>sentinel.init</destName>
+      <fileMode>0755</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>${project.build.directory}/unpacked/sentinel-${project.version}/etc/container.conf</source>
+      <outputDirectory>sentinel-${project.version}/etc</outputDirectory>
+      <destName>sentinel.conf</destName>
+      <fileMode>0640</fileMode>
+      <filtered>true</filtered>
+    </file>
     <file>
       <source>../../COPYING</source>
       <outputDirectory>sentinel-${project.version}</outputDirectory>

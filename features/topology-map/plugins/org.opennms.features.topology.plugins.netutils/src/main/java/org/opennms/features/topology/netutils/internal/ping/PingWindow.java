@@ -34,20 +34,21 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingStringUtils;
 import org.opennms.netmgt.icmp.proxy.PingSummary;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.TextArea;
+import com.vaadin.v7.ui.ProgressBar;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**
@@ -98,7 +99,7 @@ public class PingWindow extends Window {
      * @param defaultIp The default ip to pre-select from the ip addresses. Ensure <code>defaultIp</code> is also available in the <code>ipAddresses</code> list.
      * @param pingClient The LocationAwarePingClient to ping. Must not be null.
      */
-    public PingWindow(LocationAwarePingClient pingClient, List<String> locations, List<InetAddress> ipAddresses, String defaultLocation, InetAddress defaultIp, String caption) {
+    public PingWindow(LocationAwarePingClient pingClient, List<String> locations, List<String> ipAddresses, String defaultLocation, String defaultIp, String caption) {
         Objects.requireNonNull(pingClient);
         Objects.requireNonNull(ipAddresses);
         Objects.requireNonNull(defaultIp);
@@ -132,13 +133,19 @@ public class PingWindow extends Window {
         pingButton = new Button("Ping");
         pingButton.addClickListener((event) -> {
             try {
-                final PingRequest pingRequest = pingForm.getPingRequest();
-
                 resultArea.setValue(""); // Clear
-                setRunning(true);
                 getUI().setPollInterval(POLL_INTERVAL);
 
-                pingFuture = pingClient.ping(pingRequest.getInetAddress())
+                final PingRequest pingRequest = pingForm.getPingRequest();
+                final InetAddress inetAddress = convertToInetAddress(pingRequest.getIpAddress());
+                if (inetAddress == null) {
+                    final String error = "'" + pingRequest.getIpAddress() + "' is not a valid IP Address";
+                    Notification.show(error);
+                    resultArea.setValue(error);
+                    return;
+                }
+                setRunning(true);
+                pingFuture = pingClient.ping(inetAddress)
                         .withRetries(pingRequest.getRetries())
                         .withPacketSize(pingRequest.getPacketSize())
                         .withTimeout(pingRequest.getTimeout(), TimeUnit.MILLISECONDS)
@@ -193,6 +200,14 @@ public class PingWindow extends Window {
             cancel(pingFuture);
             UI.getCurrent().setPollInterval(initialPollInterval);
         });
+    }
+
+    private InetAddress convertToInetAddress(String ipAddress) {
+        try {
+            return InetAddressUtils.getInetAddress(ipAddress);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     private static void cancel(CompletableFuture pingFuture) {

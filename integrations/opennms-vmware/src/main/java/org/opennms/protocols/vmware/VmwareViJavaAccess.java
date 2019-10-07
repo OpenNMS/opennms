@@ -106,6 +106,7 @@ import com.vmware.vim25.ws.Client;
  */
 public class VmwareViJavaAccess {
 
+    public final static int DEFAULT_TIMEOUT = 3000;
     /**
      * logging for VMware library VI Java
      */
@@ -131,6 +132,8 @@ public class VmwareViJavaAccess {
     private Map<HostSystem, String> m_hostSystemCimUrls = new HashMap<HostSystem, String>();
 
     private static ServiceInstancePool m_serviceInstancePool = new ServiceInstancePool();
+
+    private int m_timeout = DEFAULT_TIMEOUT;
 
     /**
      * Constructor for creating a instance for a given server and credentials.
@@ -194,6 +197,10 @@ public class VmwareViJavaAccess {
         m_password = vmwareServer.getPassword();
     }
 
+    public int getTimeout() {
+        return m_timeout;
+    }
+
     /**
      * Connects to the server.
      *
@@ -222,6 +229,8 @@ public class VmwareViJavaAccess {
                     if (client != null) {
                         client.setConnectTimeout(timeout);
                         client.setReadTimeout(timeout);
+                        m_timeout = timeout;
+                        logger.debug("Set VMware service instance timeout to " + timeout + " ms.");
                         return true;
                     }
                 }
@@ -632,5 +641,9 @@ public class VmwareViJavaAccess {
                 }
             }
         }
+    }
+
+    public static void setServiceInstancePool(final ServiceInstancePool serviceInstancePool) {
+        m_serviceInstancePool = serviceInstancePool;
     }
 }

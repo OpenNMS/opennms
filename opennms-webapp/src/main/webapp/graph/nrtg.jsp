@@ -64,18 +64,20 @@ pageContext.setAttribute("resourceId", resourceId);
 </jsp:include>
 
 <div class="row-fluid">
-    <div class="col-md-12 text-center">
-      <div class="panel panel-default text-center">
-      <div class="panel-heading">
-        <h3 class="panel-title">NRTG Graph for <c:out value="${report}"/> on <c:out value="${resourceId}"/> </h3>
-      </div> <!-- panel-heading -->
-      <div class="panel-body">
+    <div class="col-md-12">
+        <div class="card">
+      <div class="card-header text-center">
+        <span>NRTG Graph for <c:out value="${report}"/> on <c:out value="${resourceId}"/> </span>
+      </div> <!-- card-header -->
+            <div class="card-body text-center">
         <div class="graph-container" data-graph-report="<c:out value="${report}"/>" data-graph-resource="<c:out value="${resourceId}"/>"></div>
-        <hr/>
-        <form class="form-inline">
-            <div class="form-group">
-                <label for="nrtgInterval">Interval</label>
-                <select id="nrtgInterval" class="form-control">
+            </div>
+            <div class="card-footer">
+             <form>
+              <div class="form-row align-items-center">
+               <div class="col-auto my-1">
+                <label class="mr-sm-2" for="nrtgInterval">Preference</label>
+                <select class="custom-select mr-sm-2" id="nrtgInterval">
                     <option value="250">0.25s</option>
                     <option value="1000">1.00s</option>
                     <option value="5000">5.00s</option>
@@ -83,19 +85,22 @@ pageContext.setAttribute("resourceId", resourceId);
                     <option value="30000">30.00s</option>
                     <option value="60000">60.00s</option>
                 </select>
-            </div>
-            <div class="checkbox">
-                <label>
-                    <input id="nrtgPause" type="checkbox"> Pause
-                </label>
-            </div>
-            <div class="checkbox">
-                <label>
-                    <input id="nrtgCompress" type="checkbox"> Compress
-                </label>
-            </div>
-        </form>
-      </div> <!-- panel-body -->
+               </div>
+               <div class="col-auto my-1">
+                   <div class="custom-control custom-checkbox mr-sm-2">
+                        <input class="form-check-input" type="checkbox" value="" id="nrtgPause">
+                            <label class="form-check-label" for="nrtgPause">Pause</label>
+                          </div>
+                      </div>
+                      <div class="col-auto my-1">
+                          <div class="custom-control custom-checkbox mr-sm-2">
+                              <input class="form-check-input" type="checkbox" value="" id="nrtgCompress">
+                              <label class="form-check-label" for="nrtgCompress">Compress</label>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div> <!-- card-footer -->
       </div> <!-- panel -->
     </div> <!-- col-md-12 -->
 </div> <!-- row -->

@@ -5,7 +5,7 @@
         <relativePath>../../poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>26.0.0-SNAPSHOT</version>
     </parent>
     <properties>
         <bundle.symbolicName>org.opennms.features.topology.plugins.browsers</bundle.symbolicName>
@@ -69,9 +69,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
-            <artifactId>opennms-topology-api</artifactId>
-            <type>pom</type>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features</groupId>

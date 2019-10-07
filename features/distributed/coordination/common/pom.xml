@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>coordination-parent</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>26.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>coordination-common</artifactId>
@@ -35,6 +35,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.integration.api</groupId>
+            <artifactId>api</artifactId>
+            <version>${opennmsApiVersion}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
@@ -50,4 +56,14 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <repositories>
+      <repository>
+        <id>sonatype.org-snapshot</id>
+        <name>Sonatype OSS Snapshots Repository</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+      </repository>
+    </repositories>
 </project>

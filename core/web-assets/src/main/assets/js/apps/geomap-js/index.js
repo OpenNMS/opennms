@@ -1,6 +1,7 @@
 'use strict';
 
 /* eslint no-console: 0 */
+/* eslint @typescript-eslint/no-use-before-define: 0 */
 
 const jquery = require('vendor/jquery-js');
 const L = require('vendor/leaflet-js');
@@ -326,7 +327,7 @@ const render = function(options) {
                 applySeverity(severities[index]);
             });
 
-            var filterLabel = createButton('', '', container, function() {});
+            var filterLabel = createButton('', '', container, function() {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
             // Decrase severity button
             createButton('Decrease severity filter', 'fa fa-angle-down', container, function() {

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -39,7 +39,6 @@
     <module>nrtcollector</module>
     <module>protocolcollector</module>
     <module>web</module>
-    <module>features</module>
     <module>jar</module>
   </modules>
   <build>

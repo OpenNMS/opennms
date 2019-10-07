@@ -33,14 +33,21 @@ import static org.opennms.core.utils.InetAddressUtils.toInteger;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -68,7 +75,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.hibernate.annotations.Where;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 @XmlRootElement(name = "service")
 @Entity
@@ -109,6 +117,8 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
     private Set<OnmsOutage> m_currentOutages = new LinkedHashSet<>();
 
     private Set<OnmsApplication> m_applications = new LinkedHashSet<>();
+
+    private List<OnmsMetaData> m_metaData = new ArrayList<>();
 
     public static final Map<String, String> STATUS_MAP;
 
@@ -343,6 +353,63 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
         m_notify = notify;
     }
 
+    @JsonIgnore
+    @XmlTransient
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="ifServices_metadata", joinColumns = @JoinColumn(name = "id"))
+    public List<OnmsMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(final List<OnmsMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
+    public void addMetaData(final String context, final String key, final String value) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+
+        final Optional<OnmsMetaData> entry = getMetaData().stream()
+                .filter(m -> m.getContext().equals(context))
+                .filter(m -> m.getKey().equals(key))
+                .findFirst();
+
+        // Update the value if present, otherwise create a new entry
+        if (entry.isPresent()) {
+            entry.get().setValue(value);
+        } else {
+            getMetaData().add(new OnmsMetaData(context, key, value));
+        }
+    }
+
+    public void removeMetaData(final String context, final String key) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext()) && key.equals(onmsNodeMetaData.getKey())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public void removeMetaData(final String context) {
+        Objects.requireNonNull(context);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext())) {
+                iterator.remove();
+            }
+        }
+    }
+
     /**
      * <p>getIpInterface</p>
      *
@@ -405,19 +472,19 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("id", m_id)
-        .append("lastGood", m_lastGood)
-        .append("lastFail", m_lastFail)
-        .append("qualifier", m_qualifier)
-        .append("status", m_status)
-        .append("source", m_source)
-        .append("notify", m_notify)
-        .append("serviceType", m_serviceType)
+        return MoreObjects.toStringHelper(this)
+        .add("id", m_id)
+        .add("lastGood", m_lastGood)
+        .add("lastFail", m_lastFail)
+        .add("qualifier", m_qualifier)
+        .add("status", m_status)
+        .add("source", m_source)
+        .add("notify", m_notify)
+        .add("serviceType", m_serviceType)
         // cannot include these since the require db queries
-//        .append("ipInterface", m_ipInterface)
-//        .append("currentOutages", m_currentOutages)
-//        .append("applications", m_applications)
+//        .add("ipInterface", m_ipInterface)
+//        .add("currentOutages", m_currentOutages)
+//        .add("applications", m_applications)
         .toString();
     }
 
@@ -585,6 +652,12 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
             setNotify(scanned.getNotify());
         }
 
+    }
+
+    public void mergeMetaData(OnmsMonitoredService scanned) {
+        if (!getMetaData().equals(scanned.getMetaData())) {
+            setMetaData(scanned.getMetaData());
+        }
     }
 
 	private boolean hasNewStatusValue(String newStatus, String oldStatus) 

@@ -42,11 +42,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Configure Notifications</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Configure Notifications</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           <a href="admin/notification/noticeWizard/eventNotices.htm">Configure Event Notifications</a>
         </p>
@@ -56,29 +56,29 @@
         <p>
           <a href="admin/notification/noticeWizard/buildPathOutage.jsp?newRule=IPADDR+IPLIKE+*.*.*.*&showNodes=on">Configure Path Outages</a>
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Event Notifications</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Event Notifications</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           Each event can be configured to send a notification whenever that event is
           triggered. This wizard will walk you through the steps needed for
           configuring an event to send a notification.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Destination Paths</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Destination Paths</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           A destination path describes what users or groups will receive
           notifications, how the notifications will be sent, and who to notify
@@ -86,14 +86,14 @@
           a resuable list of who to contact and how to contact them, 
           which are used in the event configuration.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Path Outages</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Path Outages</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           Configuring a path outage consists of selecting an IP address/service pair
           which defines the critical path to a group of nodes.  When a node down
@@ -102,7 +102,7 @@
           critical path service is typically ICMP, and at this time ICMP is the only
           critical path service supported.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

@@ -42,12 +42,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
-import org.opennms.core.ipc.sink.kafka.server.config.OnmsKafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffset;
 import org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -55,7 +55,9 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/applicationContext-test-ipc-sink-kafka.xml" })
+        "classpath:/applicationContext-test-ipc-sink-kafka.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
+        "classpath:/META-INF/opennms/applicationContext-opennms-identity.xml"})
 @JUnitConfigurationEnvironment
 public class KafkaOffsetIT {
 
@@ -71,7 +73,7 @@ public class KafkaOffsetIT {
         System.setProperty(String.format("%sauto.offset.reset", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
                 "earliest");
         // offsetProvider needs system properties
-        offsetProvider = new KafkaOffsetProvider(new OnmsKafkaConfigProvider());
+        offsetProvider = new KafkaOffsetProvider();
         offsetProvider.start();
     }
 
@@ -103,7 +105,7 @@ public class KafkaOffsetIT {
                 }
                 List<String> groupNames = kafkaOffsetMonitors.stream().map(offset -> offset.getConsumerGroupName())
                         .collect(Collectors.toList());
-                return groupNames.contains("OpenNMS");
+                return groupNames.contains(SystemInfoUtils.getInstanceId());
             }
         };
     }

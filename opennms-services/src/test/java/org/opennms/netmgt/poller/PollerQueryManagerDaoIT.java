@@ -222,13 +222,14 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setNetwork(network);
 		m_poller.setQueryManager(m_queryManager);
 		m_poller.setPollerConfig(m_pollerConfig);
-		m_poller.setPollOutagesConfig(m_pollerConfig);
+		m_poller.setPollOutagesDao(m_pollerConfig);
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		m_eventMgr.finishProcessingEvents();
+		m_eventMgr.reset();
 		stopDaemons();
 		sleep(200);
 		m_db.drop();
@@ -247,6 +248,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         pkg.setName("SFO");
         pkg.setRemote(true);
         Poller poller = new Poller();
+		poller.setPollerConfig(new MockPollerConfig(m_network));
         assertFalse(poller.pollableServiceInPackage(null, null, pkg));
         poller = null;
     }

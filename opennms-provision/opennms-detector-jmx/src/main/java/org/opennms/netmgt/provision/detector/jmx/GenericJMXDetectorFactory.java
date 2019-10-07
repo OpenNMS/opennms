@@ -56,8 +56,8 @@ public class GenericJMXDetectorFactory<T extends JMXDetector> extends GenericSer
 
     @SuppressWarnings("unchecked")
     @Override
-    public T createDetector() {
-        return (T)super.createDetector();
+    public T createDetector(Map<String, String> properties) {
+        return (T)super.createDetector(properties);
     }
 
     @Override

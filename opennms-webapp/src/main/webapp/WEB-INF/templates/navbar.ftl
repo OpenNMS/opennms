@@ -1,122 +1,265 @@
 <#assign currentDate = .now>
-<nav class="navbar navbar-inverse navbar-fixed-top" id="header" role="navigation">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/horizon_logo.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/horizon_logo_small.png'" />
-      </a>
-    </div>
+    <a class="navbar-brand" href="${baseHref}index.jsp">
+        <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS Horizon Logo" width="20px" height="20px" onerror="this.src='${baseHref}images/o-green-trans.png'" />
+        <span style="vertical-align: middle" class="text-horizon ml-2">Horizon</span>
+    </a>
+    <button type="button" title="Toggle navigation" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <#if request.remoteUser?has_content >
-      <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">
-        ${formattedTime}
-        <span class="fa-stack" style="text-shadow:none">
-        <#if noticeStatus = 'Unknown'>
-            <!-- Gray circle with bell inside -->
-            <i class="fa fa-circle fa-stack-2x text-muted"></i>
-            <i class="fa fa-circle-thin fa-stack-2x"></i>
-            <i class="fa fa-bell fa-stack-1x"></i>
+    <div id="navbar" class="navbar-collapse collapse">
+        <#if request.remoteUser?has_content >
+            <ul class="navbar-nav ml-1">
+                <li class="nav-item">
+                    <span class="navbar-text">${formattedTime}</span>
+                </li>
+                <li class="nav-item">
+                    <span class="navbar-text ml-1">
+                        <#if noticeStatus = 'Unknown'>
+                            <!-- Gray circle with bell inside -->
+                            <i class="fa fa-bell text-secondary"></i>
+                        </#if>
+                        <#if noticeStatus = 'Off'>
+                            <i class="fa fa-bell-slash text-danger" title="Notices: Off"></i>
+                        </#if>
+                        <#if noticeStatus = 'On'>
+                            <i class="fa fa-bell text-horizon" title="Notices: On"></i>
+                        </#if>
+                    </span>
+                </li>
+            </ul>
         </#if>
-        <#if noticeStatus = 'Off'>
-            <!-- Bell with red slash over it -->
-            <i class="fa fa-bell fa-stack-1x"></i>
-            <i class="fa fa-ban fa-stack-2x text-danger"></i>
-        </#if>
-        <#if noticeStatus = 'On'>
-            <!-- Green circle with bell inside -->
-            <i class="fa fa-circle fa-stack-2x text-success"></i>
-            <i class="fa fa-circle-thin fa-stack-2x"></i>
-            <i class="fa fa-bell fa-stack-1x"></i>
-        </#if>
-        </span>
-      </div>
-    </#if>
-
-    <div style="margin-right: 15px" id="navbar" class="navbar-collapse collapse">
-		<ul class="nav navbar-nav navbar-right">
+        <ul class="navbar-nav ml-auto">
 		<#if request.remoteUser?has_content >
 		  <#list model.entryList as entry>
-		    <#assign item=entry.getKey()>
-		    <#assign display=entry.getValue()>
+              <#assign item=entry.getKey()>
+              <#assign display=entry.getValue()>
 
-            <#if shouldDisplay(item, display) >
-		      <#if item.entries?has_content >
-		        <#-- has sub-entries, draw menu drop-downs -->
-		        <li class="dropdown">
+              <#if shouldDisplay(item, display) >
+                  <#if item.entries?has_content >
+                  <#-- has sub-entries, draw menu drop-downs -->
+		        <li class="nav-item dropdown">
 		          <#if item.url?has_content && item.url != "#">
-		            <a href="${baseHref}${item.url}" name="nav-${item.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
-		          <#else>
-		            <a href="#" name="nav-${item.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
-		          </#if>
-		          <ul class="dropdown-menu" role="menu">
+		            <a href="${baseHref}${item.url}" name="nav-${item.name}-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name}</a>
+                  <#else>
+		            <a href="#" name="nav-${item.name}-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name}</a>
+                  </#if>
+                    <div class="dropdown-menu dropdown-menu-right" role="menu">
 		            <#list item.entries as subItem>
 		              <#if shouldDisplay(subItem) >
-		              <li>
-		                <#if subItem.url?has_content >
-		                  <a name="nav-${item.name}-${subItem.name}" href="${baseHref}${subItem.url}">${subItem.name}</a>
-		                <#else>
-		                  <a name="nav-${item.name}-${subItem.name}" href="#">${subItem.name}</a>
-		                </#if>
-		              </li>
-		              </#if>
-		            </#list>
-		          </ul>
-		        </li>
-		      <#else>
-		        <#if item.url?has_content >
-		          <li><a name="nav-${item.name}-top" href="${baseHref}${item.url}">${item.name}</a></li>
-		        <#else>
-		          <a name="nav-${item.name}-top" href="#">${item.name}</a>
-		        </#if>
-		      </#if>
-		    </#if>
-		  </#list>
-		  <li class="dropdown">
-            <a name="nav-admin-top" href="${baseHref}account/selfService/index.jsp" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-              <#if request.remoteUser?has_content >
-                <span class="glyphicon glyphicon-user"></span>
-                ${request.remoteUser}
-              <#else>
-                &hellip;
+                          <#if subItem.url?has_content >
+		                  <a class="dropdown-item" name="nav-${item.name}-${subItem.name}" href="${baseHref}${subItem.url}">${subItem.name}</a>
+                          <#else>
+		                  <a class="dropdown-item" name="nav-${item.name}-${subItem.name}" href="#">${subItem.name}</a>
+                          </#if>
+                      </#if>
+                    </#list>
+                    </div>
+                </li>
+                  <#else>
+                      <#if item.url?has_content >
+		          <li class="nav-item"><a class="nav-link" name="nav-${item.name}-top" href="${baseHref}${item.url}">${item.name}</a></li>
+                      <#else>
+		          <a class="nav-link" name="nav-${item.name}-top" href="#">${item.name}</a>
+                      </#if>
+                  </#if>
               </#if>
-              <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a name="nav-admin-notice-status" href="#" style="white-space: nowrap">Notices: <b id="notification${noticeStatus}">${noticeStatus}</b></a></li>
-              <#if isAdmin >
-                <li><a name="nav-admin-admin" href="${baseHref}admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a></li>
-              </#if>
-              <#if isAdmin || isProvision >
-                <li><a name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" style="white-space: nowrap">Quick-Add Node</a></li>
-              </#if>
-              <#if isAdmin >
-                <li><a name="nav-admin-support" href="${baseHref}support/index.htm">Support</a></li>
-              </#if>
-              <#if request.remoteUser?has_content >
-                <li><a name="nav-admin-self-service" href="${baseHref}account/selfService/index.jsp">Change Password</a>
-                <li><a name="nav-admin-logout" href="${baseHref}j_spring_security_logout" style="white-space: nowrap">Log Out</a></li>
-              </#if>
-              <li><a name="nav-admin-help" href="${baseHref}help/index.jsp" style="white-space: nowrap">Help</a></li>
-              <li><a name="nav-admin-about" href="${baseHref}about/index.jsp" style="white-space: nowrap">About</a></li>
+          </#list>
+            <li class="nav-item dropdown">
+                <a name="nav-help-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help</a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" name="nav-admin-help" href="${baseHref}help/index.jsp">
+                        <i class="fa fa-fw fa-question-circle"></i>&nbsp; Help
+                    </a>
+                    <a class="dropdown-item" name="nav-admin-about" href="${baseHref}about/index.jsp">
+                        <i class="fa fa-fw fa-info-circle"></i>&nbsp; About
+                    </a>
+                    <#if isAdmin >
+                        <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.htm" title="Support">
+                            <i class="fa fa-fw fa-life-ring"></i>&nbsp; Support
+                        </a>
+                    </#if>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a name="nav-user-top" href="${baseHref}account/selfService/index.jsp" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                    <span class="fa fa-user"></span>
+                    ${request.remoteUser}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    <a class="dropdown-item" name="nav-admin-self-service" href="${baseHref}account/selfService/newPasswordEntry">
+                        <i class="fa fa-key"></i>&nbsp; Change Password</a>
+                    <a class="dropdown-item" name="nav-admin-logout" href="${baseHref}j_spring_security_logout" style="white-space: nowrap">
+                        <i class="fa fa-sign-out"></i>&nbsp; Log Out
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link" data-toggle="dropdown" role="button" aria-expanded="false">
+                    <span class="badge badge-pill userNotificationCount" id="userNotificationsBadge"></span>
+                    <span class="badge badge-pill teamNotificationCount" id="teamNotificationsBadge"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack&amp;filter=user==${request.remoteUser}">
+                        <i class="fa fa-fw fa-user"></i>&nbsp; <span class="userNotificationCount">0</span> notices assigned to you
+                    </a>
+                    <div id="headerNotifications" style="min-width: 500px"></div>
+
+
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack">
+                        <i class="fa fa-fw fa-users"></i>&nbsp; <span class="teamNotificationCount">0</span> of <span class="totalNotificationCount"></span> assigned to anyone but you
+                    </a>
+                    <a class="dropdown-item" href="${baseHref}roles">
+                        <i class="fa fa-fw fa-calendar"></i>&nbsp; On-Call Schedule
+                    </a>
+                </div>
+            </li>
             </ul>
-          </li>
-		</#if>
-		</ul>
+            <ul class="navbar-nav mr-4">
+            <#if isAdmin || isProvision >
+                <li class="nav-item">
+                    <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" title="Quick-Add Node">
+                        <i class="fa fa-plus-circle"></i>
+                    </a>
+                </li>
+            </#if>
+            <#if isFlow >
+                <li class="nav-item">
+                    <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-flow" href="${baseHref}admin/classification/index.jsp" title="Flow Management">
+                        <i class="fa fa-minus-circle"></i>
+                    </a>
+                </li>
+            </#if>
+            <#if isAdmin >
+                <li class="nav-item">
+                    <a class="nav-link" style="font-size: 1.25rem" title="Configure OpenNMS" href="${baseHref}admin/index.jsp"><i class="fa fa-cogs"></i></a>
+                </li>
+            </#if>
+        </#if>
+        </ul>
     </div>
 </nav>
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->
 <script type='text/javascript'>
-if (window.location != window.parent.location && window.name.indexOf("-with-header") == -1) {
-  // Hide the header
-  $("#header").hide();
-  // Remove any padding from the body
-  $("body.fixed-nav").attr('style', 'padding-top: 0px !important');
-}
+    if (window.location != window.parent.location && window.name.indexOf("-with-header") == -1) {
+        // Hide the header
+        $("#header").hide();
+        // Remove any padding from the body
+        $("body.fixed-nav").attr('style', 'padding-top: 0px !important');
+    }
 </script>
+
+<#-- Notification gathering -->
+<#if request.remoteUser?has_content >
+<script type="text/javascript">
+    var currentUser = "${request.remoteUser}";
+    var baseHref = "${baseHref}";
+
+    var updateNotificationIndicators = function(summary) {
+        if (summary === undefined) {
+            summary = {
+                totalCount: 0,
+                totalUnacknowledgedCount:0,
+                userUnacknowledgedCount: 0,
+                teamUnacknowledgedCount: 0,
+                userUnacknowledgedNotifications: {
+                    offset: 0,
+                    count: 0,
+                    totalCount: 0,
+                    notification: []
+                }
+            };
+        };
+        updateNotificationBadges(summary);
+        updateNotificationList(summary);
+    };
+
+    var updateNotificationBadges = function(summary) {
+        // Update text
+        $(".userNotificationCount").text(summary.userUnacknowledgedCount);
+        $(".teamNotificationCount").text(summary.teamUnacknowledgedCount);
+        $(".totalNotificationCount").text(summary.totalUnacknowledgedCount);
+
+        // Update badges
+        $("#teamNotificationsBadge").attr("class", "badge badge-pill teamNotificationCount");
+        $("#userNotificationsBadge").attr("class", "badge badge-pill userNotificationCount");
+
+        if (summary.teamUnacknowledgedCount === 0) {
+            $("#teamNotificationsBadge").addClass("badge-severity-cleared");
+        } else {
+            $("#teamNotificationsBadge").addClass("badge-info");
+        }
+
+        // Set severity for user notifications
+        var userNotifications = summary.userUnacknowledgedNotifications.notification;
+        if (userNotifications.length === 0) {
+            $("#userNotificationsBadge").addClass("badge-severity-cleared");
+        } else {
+            var severities = ["CLEARED", "INDETERMINATE", "WARNING", "MINOR", "MAJOR", "CRITICAL"];
+            var severityIndexList = userNotifications.map(function(notification) {
+                return severities.indexOf(notification.severity);
+            });
+            var maxSeverityIndex = Math.max.apply(Math, severityIndexList);
+            var maxSeverity = severities[maxSeverityIndex].toLowerCase();
+            $("#userNotificationsBadge").addClass("badge-severity-" + maxSeverity);
+        }
+    };
+
+    var updateNotificationList = function(summary) {
+        $("#headerNotifications").empty();
+        var notifications = summary.userUnacknowledgedNotifications.notification;
+        notifications.forEach(function(notification, index) {
+            // Determine time
+            var date = new Date(notification.pageTime);
+            var dateTime = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+            var nodeLabel = notification.nodeLabel ? notification.nodeLabel : "";
+            var ipAddress = notification.ipAddress ? notification.ipAddress : "";
+            var serviceName = notification.serviceType && notification.serviceType.name ? notification.serviceType.name : "";
+            var severity = notification.severity ? notification.severity.toLowerCase() : "indeterminate";
+
+            $('<a class="dropdown-item" id="notification-"' + notification.id + '" href="' + baseHref + 'notification/detail.jsp?notice=' + notification.id + '">' +
+                '            <div class="row align-items-center">' +
+                '                <div class="col-1"><span class="fa fa-circle text-severity-'+ severity +'"></span></div>' +
+                '                <div class="col-11">' +
+                '                    <div class="row">' +
+                '                        <div class="col"><span class="font-weight-bold">' + dateTime + '</span></div>' +
+                '                    </div>' +
+                '                    <div class="row">' +
+                '                        <div class="col">' + notification.notificationName + '</div>' +
+                '                        <div class="col">' + nodeLabel + '</div>' +
+                '                        <div class="col">' + ipAddress + '</div>' +
+                '                        <div class="col">' + serviceName + '</div>' +
+                '                    </div>' +
+                '                </div>' +
+                '            </div>' +
+                '        </a>').appendTo("#headerNotifications");
+
+            // Add Divider
+            if (index < notifications.length - 1) {
+                $('<div class="dropdown-divider"></div>').appendTo("#headerNotifications");
+            }
+        });
+
+        if (summary.userUnacknowledgedCount > notifications.length) {
+            var moreLink = baseHref + "notification/browse?acktype=unack&amp;filter=user==" + currentUser;
+            $('<div class="dropdown-divider"></div><a class="dropdown-item" href="' + moreLink + '">Show more ...</a>').appendTo("#headerNotifications");
+        }
+    };
+
+    $(document).ready(function() {
+        updateNotificationIndicators();
+
+        // Load notification summary for current user
+        $.get(baseHref + "rest/notifications/summary", function(response) {
+            if (response) {
+                updateNotificationIndicators(response);
+            }
+        });
+    });
+
+</script>
+</#if>

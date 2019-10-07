@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.itests;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertTrue;
 
@@ -37,9 +38,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,18 +59,17 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
-import org.opennms.netmgt.telemetry.config.model.Adapter;
-import org.opennms.netmgt.telemetry.config.model.Filter;
-import org.opennms.netmgt.telemetry.config.model.Listener;
-import org.opennms.netmgt.telemetry.config.model.Package;
+import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
+import org.opennms.netmgt.telemetry.config.model.ListenerConfig;
+import org.opennms.netmgt.telemetry.config.model.PackageConfig;
 import org.opennms.netmgt.telemetry.config.model.Parameter;
-import org.opennms.netmgt.telemetry.config.model.Protocol;
-import org.opennms.netmgt.telemetry.config.model.Rrd;
-import org.opennms.netmgt.telemetry.config.model.TelemetrydConfiguration;
+import org.opennms.netmgt.telemetry.config.model.ParserConfig;
+import org.opennms.netmgt.telemetry.config.model.QueueConfig;
+import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.telemetry.daemon.Telemetryd;
-import org.opennms.netmgt.telemetry.listeners.udp.UdpListener;
+import org.opennms.netmgt.telemetry.listeners.UdpListener;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -89,9 +93,14 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
         "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
-        "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
+        "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
+        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class JtiIT {
 
@@ -110,11 +119,14 @@ public class JtiIT {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
+    public File scriptFile;
+
     private File rrdBaseDir;
 
     @Before
     public void setUp() throws IOException {
         rrdBaseDir = tempFolder.newFolder("rrd");
+        scriptFile  = tempFolder.newFile("script-file.groovy");
 
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("R1")
@@ -144,51 +156,110 @@ public class JtiIT {
         final byte[] jtiMsgBytes = Resources.toByteArray(Resources.getResource("jti_15.1F4_ifd_ae_40000.raw"));
         InetAddress address = InetAddressUtils.getLocalHostAddress();
         DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, address, port);
-        DatagramSocket socket = new DatagramSocket();
-        socket.send(packet);
+        try (DatagramSocket socket = new DatagramSocket();) {
+            socket.send(packet);
+        }
 
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
                 .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
     }
 
-    private void updateDaoWithConfig(TelemetrydConfiguration config) throws IOException {
+    @Test
+    public void testScriptFileReload() throws Exception {
+        final int port = 50001;
+
+        // Use our custom configuration
+        updateDaoWithConfig(getConfig(port));
+
+        // Start the daemon
+        telemetryd.start();
+
+        String content = new String(Files.readAllBytes(scriptFile.toPath()), StandardCharsets.UTF_8);
+        Assert.assertThat(content, containsString("ifOutOctets"));
+
+        // Send a JTI payload via a UDP socket
+        final byte[] jtiMsgBytes = Resources.toByteArray(Resources.getResource("jti_15.1F4_ifd_ae_40000.raw"));
+        InetAddress address = InetAddressUtils.getLocalHostAddress();
+        DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, address, port);
+        try (DatagramSocket socket = new DatagramSocket();) {
+            socket.send(packet);
+        }
+
+        // Wait until the JRB archive is created
+        await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
+                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
+
+        // now change script file
+        content = content.replaceAll("ifOutOctets", "FooBar");
+        Files.write(scriptFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
+        //Files.setLastModifiedTime(newFile.toPath(), FileTime.fromMillis(System.currentTimeMillis()));
+
+        await().pollDelay(1, TimeUnit.SECONDS).atMost(30, TimeUnit.SECONDS).until(() -> {
+            final InetAddress newAddress = InetAddressUtils.getLocalHostAddress();
+            final DatagramPacket newPacket = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, newAddress, port);
+            try (final DatagramSocket newSocket = new DatagramSocket();) {
+                newSocket.send(newPacket);
+            }
+
+            return rrdBaseDir.toPath()
+                    .resolve(Paths.get("1", "ge_0_0_3", "FooBar.jrb"))
+                    .toFile()
+                    .canRead();
+        }, equalTo(true));
+    }
+
+    private void updateDaoWithConfig(TelemetrydConfig config) throws IOException {
         final File tempFile = tempFolder.newFile();
         JaxbUtils.marshal(config, tempFile);
         telemetrydConfigDao.setConfigResource(new FileSystemResource(tempFile));
         telemetrydConfigDao.afterPropertiesSet();
     }
 
-    private TelemetrydConfiguration getConfig(int port) {
-        TelemetrydConfiguration telemetrydConfig = new TelemetrydConfiguration();
+    private TelemetrydConfig getConfig(int port) throws IOException {
+        TelemetrydConfig telemetrydConfig = new TelemetrydConfig();
 
-        Protocol jtiProtocol = new Protocol();
-        jtiProtocol.setName("JTI");
-        jtiProtocol.setDescription("Junos Telemetry Interface (JTI)");
-        telemetrydConfig.getProtocols().add(jtiProtocol);
+        QueueConfig jtiQueue = new QueueConfig();
+        jtiQueue.setName("JTI");
+        telemetrydConfig.getQueues().add(jtiQueue);
 
-        Listener udpListener = new Listener();
-        udpListener.setName("JTI-UDP-" + port);
-        udpListener.setClassName(UdpListener.class.getCanonicalName());
-        udpListener.getParameters().add(new Parameter("port", Integer.toString(port)));
-        jtiProtocol.getListeners().add(udpListener);
+        ListenerConfig jtiListener = new ListenerConfig();
+        jtiListener.setEnabled(true);
+        jtiListener.setName("JTI");
+        jtiListener.setClassName(UdpListener.class.getCanonicalName());
+        jtiListener.getParameters().add(new Parameter("port", Integer.toString(port)));
+        telemetrydConfig.getListeners().add(jtiListener);
 
-        Adapter jtiGbpAdapter = new Adapter();
+        ParserConfig jtiParser = new ParserConfig();
+        jtiParser.setName("JTI-UDP-" + port);
+        jtiParser.setClassName(org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser.class.getCanonicalName());
+        jtiParser.setQueue(jtiQueue);
+        jtiListener.getParsers().add(jtiParser);
+
+        Files.copy(
+                Paths.get(System.getProperty("opennms.home"),
+                        "etc",
+                        "telemetryd-adapters",
+                        "junos-telemetry-interface.groovy"),
+                scriptFile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING
+        );
+
+        assertTrue("Can't read: " + scriptFile.getAbsolutePath(), scriptFile.canRead());
+
+        AdapterConfig jtiGbpAdapter = new AdapterConfig();
+        jtiGbpAdapter.setEnabled(true);
         jtiGbpAdapter.setName("JTI-GBP");
         jtiGbpAdapter.setClassName(JtiGpbAdapter.class.getCanonicalName());
+        jtiGbpAdapter.getParameters().add(new Parameter("script", scriptFile.getAbsolutePath()));
+        jtiQueue.getAdapters().add(jtiGbpAdapter);
 
-        File script = Paths.get(System.getProperty("opennms.home"),
-                "etc", "telemetryd-adapters", "junos-telemetry-interface.groovy").toFile();
-        assertTrue("Can't read: " + script.getAbsolutePath(), script.canRead());
-        jtiGbpAdapter.getParameters().add(new Parameter("script", script.getAbsolutePath()));
-        jtiProtocol.getAdapters().add(jtiGbpAdapter);
-
-        Package jtiDefaultPkg = new Package();
+        PackageConfig jtiDefaultPkg = new PackageConfig();
         jtiDefaultPkg.setName("JTI-Default");
-        jtiDefaultPkg.setFilter(new Filter("IPADDR != '0.0.0.0'"));
-        jtiProtocol.getPackages().add(jtiDefaultPkg);
+        jtiDefaultPkg.setFilter(new PackageConfig.Filter("IPADDR != '0.0.0.0'"));
+        jtiGbpAdapter.getPackages().add(jtiDefaultPkg);
 
-        Rrd rrd = new Rrd();
+        PackageConfig.Rrd rrd = new PackageConfig.Rrd();
         rrd.setStep(300);
         rrd.setBaseDir(rrdBaseDir.getAbsolutePath());
         rrd.getRras().add("RRA:AVERAGE:0.5:1:2016");

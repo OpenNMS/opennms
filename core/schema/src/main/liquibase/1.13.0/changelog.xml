@@ -38,9 +38,7 @@
             <tableExists tableName="filterfavorites"/>
             <columnExists tableName="filterfavorites" columnName="filterid"/>
         </preConditions>
-        <opennms:setSequence sequenceName="filternextid">
-            <opennms:table column="filterid" name="filterfavorites"/>
-        </opennms:setSequence>
+	<opennms:setSequence tableName="filterfavorites" column="filterid" sequenceName="filternextid" />
     </changeSet>
 
     <changeSet author="MVR" id="1.13.0-addIndex-for-filters">

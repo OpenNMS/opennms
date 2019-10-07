@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.bsm</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>26.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features.bsm</groupId>
     <artifactId>vaadin-adminpage</artifactId>
@@ -25,20 +25,8 @@
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                        <Vaadin-Widgetsets>org.opennms.vaadin.DefaultWidgetset</Vaadin-Widgetsets>
                     </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <bundles>
-                        <bundle>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}</bundle>
-                    </bundles>
-                    <features>
-                        <feature>vaadin</feature>
-                        <feature>org.opennms.features.bsm.service.api</feature>
-                    </features>
                 </configuration>
             </plugin>
         </plugins>
@@ -52,6 +40,11 @@
         <dependency>
             <groupId>org.opennms.features.vaadin-components</groupId>
             <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>widgetset</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

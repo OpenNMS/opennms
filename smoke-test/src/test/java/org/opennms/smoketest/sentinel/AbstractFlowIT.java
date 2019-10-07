@@ -28,39 +28,42 @@
 
 package org.opennms.smoketest.sentinel;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.opennms.smoketest.flow.FlowStackIT.TEMPLATE_NAME;
-import static org.opennms.smoketest.flow.FlowStackIT.sendNetflowPacket;
-import static org.opennms.smoketest.flow.FlowStackIT.verify;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.preemptive;
+import static org.awaitility.Awaitility.await;
 
-import java.io.PrintStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.smoketest.flow.FlowStackIT;
-import org.opennms.test.system.api.NewTestEnvironment;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
+import org.opennms.netmgt.flows.rest.classification.GroupDTO;
+import org.opennms.netmgt.flows.rest.classification.RuleDTO;
+import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
+import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.NetworkProtocol;
+import org.opennms.smoketest.stacks.StackModel;
+import org.opennms.smoketest.stacks.TimeSeriesStrategy;
+import org.opennms.smoketest.telemetry.FlowTestBuilder;
+import org.opennms.smoketest.telemetry.FlowTester;
+import org.opennms.smoketest.telemetry.Packets;
+import org.opennms.smoketest.utils.KarafShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
-import io.searchbox.indices.template.GetTemplate;
+import io.searchbox.indices.DeleteIndex;
 
 public abstract class AbstractFlowIT {
 
@@ -68,111 +71,161 @@ public abstract class AbstractFlowIT {
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
     @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
+    public final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withSentinel()
+            .withIpcStrategy(getIpcStrategy())
+            .withTimeSeriesStrategy(TimeSeriesStrategy.NEWTS)
+            .withTelemetryProcessing()
+            .build());
+
+    protected abstract IpcStrategy getIpcStrategy();
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected abstract String getSentinelReadyString();
 
-    protected abstract void customizeTestEnvironment(TestEnvironmentBuilder builder);
-
-    protected TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder();
-
-            // Enable Flow-Listeners
-            builder.withMinionEnvironment()
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg")
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50001.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50001.cfg")
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50002.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50002.cfg")
-                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50003.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50003.cfg")
-            ;
-
-            customizeTestEnvironment(builder);
-
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            return builder.build();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
-
     @Test
     public void verifyFlowStack() throws Exception {
         // Determine endpoints
-        final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_6, 9200, "tcp");
-        final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        final InetSocketAddress minionNetflow5ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.NETFLOW5_LISTENER_UDP_PORT, "udp");
-        final InetSocketAddress minionNetflow9ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.NETFLOW9_LISTENER_UDP_PORT, "udp");
-        final InetSocketAddress minionIpfixListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.IPFIX_LISTENER_UDP_PORT, "udp");
-        final InetSocketAddress minionSflowListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.SFLOW_LISTENER_UDP_PORT, "udp");
-        final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
+        final InetSocketAddress elasticRestAddress = stack.elastic().getRestAddress();
+        final InetSocketAddress sentinelSshAddress = stack.sentinel().getSshAddress();
+        final InetSocketAddress minionFlowAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
 
         waitForSentinelStartup(sentinelSshAddress);
 
+        final FlowTester flowTester = new FlowTestBuilder()
+                .withNetflow5Packet(minionFlowAddress)
+                .withNetflow9Packet(minionFlowAddress)
+                .withIpfixPacket(minionFlowAddress)
+                .withSFlowPacket(minionFlowAddress)
+                .verifyBeforeSendingFlows(theTester -> {
+                    // We don't know in which order the the tests are executed so we delete all previously created flows
+                    try {
+                        theTester.getJestClient().execute(new DeleteIndex.Builder("netflow-*").build());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .build(elasticRestAddress);
+
+        flowTester.verifyFlows();
+    }
+
+    // Verifies that the classification engine is reloaded periodically on sentinel.
+    // See NMS-12259 for more details
+    @Test
+    public void verifyClassificationEngineReloads() throws IOException {
+        final InetSocketAddress sentinelSshAddress = stack.sentinel().getSshAddress();
+        final InetSocketAddress minionFlowAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
+        final InetSocketAddress opennmsWebAddress = stack.opennms().getWebAddress();
+        final String elasticRestUrl = stack.elastic().getRestAddressString();
+
+        waitForSentinelStartup(sentinelSshAddress);
+
+        // Enable faster reloading on sentinel, default is 5 minutes.
+        final KarafShell karafShell = new KarafShell(sentinelSshAddress);
+        karafShell.runCommand(
+                "config:edit org.opennms.features.flows.classification\n" +
+                        "config:property-set sentinel.cache.engine.reloadInterval 5\n" + // 5 Seconds
+                        "config:update");
+
         // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
-        try (final JestClient client = factory.getObject()) {
-            // Verify that at this point no flows are persisted
-            verify(() -> {
-                final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
-                return response.isSucceeded() && response.getTotal() == 0L;
+        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl)
+                .connTimeout(5000)
+                .readTimeout(10000)
+                .multiThreaded(true).build());
+        try (JestClient client = factory.getObject()) {
+            // Delete flows before doing anything else
+            client.execute(new DeleteIndex.Builder("netflow-*").build());
+
+            // Verify nothing is created yet
+            await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> {
+                final Search query = new Search.Builder("").addIndex("netflow-*").build();
+                final SearchResult result = client.execute(query);
+                return SearchResultUtils.getTotal(result) == 0;
             });
 
-            // Send flow packet to minion
-            sendNetflowPacket(minionNetflow5ListenerAddress, "/flows/netflow5.dat"); // 2 records
-            sendNetflowPacket(minionNetflow9ListenerAddress, "/flows/netflow9.dat"); // 7 records
-            sendNetflowPacket(minionIpfixListenerAddress, "/flows/ipfix.dat"); // 6 records
-            sendNetflowPacket(minionSflowListenerAddress, "/flows/sflow.dat"); // 1 record
+            // Send flow
+            Packets.Netflow5.setDestinationAddress(minionFlowAddress);
+            Packets.Netflow5.send();
 
-            // Ensure that the template has been created
-            verify(() -> {
-                final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
-                return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
+            // Verify it was classified properly
+            await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> {
+                // Verify it has been created properly
+                final Search query = new Search.Builder(buildApplicationQuery("ssh")).addIndex("netflow-*").build();
+                final SearchResult result = client.execute(query);
+                return SearchResultUtils.getTotal(result) == 2;
             });
 
-            // Verify directly at elastic that the flows have been created
-            verify(() -> {
-                final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
-                return response.isSucceeded() && response.getTotal() == 16L;
+            // Update rule definitions
+            createCustomRule(opennmsWebAddress);
+
+            // Verify that sentinel reloaded the rules
+            new KarafShell(sentinelSshAddress).runCommand(
+                    "opennms-classification:classify --protocol tcp --srcAddress 127.0.0.1 --srcPort 55000 --dstAddress 8.8.8.8 --destPort 22 --exporterAddress 127.0.0.1",
+                    output -> output.contains("custom-rule")
+            );
+
+            // Send Flow again
+            Packets.Netflow5.send();
+
+            // Verify it was classified according the new rule
+            await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> {
+                // Verify it has been created properly
+                final Search query = new Search.Builder(buildApplicationQuery("custom-rule")).addIndex("netflow-*").build();
+                final SearchResult result = client.execute(query);
+                return SearchResultUtils.getTotal(result) == 2;
             });
         }
     }
 
-    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) throws Exception {
-        // Ensure we are actually started the sink and are ready to listen for messages
-        await().atMost(5, MINUTES)
-                .pollInterval(5, SECONDS)
-                .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
-                        final PrintStream pipe = sshClient.openShell();
-                        pipe.println("log:display");
-                        pipe.println("logout");
+    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) {
+        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> {
+            final String sentinelReadyString = getSentinelReadyString();
+            final boolean routeStarted = shellOutput.contains(sentinelReadyString);
+            return routeStarted;
+        });
+    }
 
-                        // Wait for karaf to process the commands
-                        await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
+    private static String buildApplicationQuery(String application) {
+        final String query = String.format("{\n" +
+                "  \"query\": {\n" +
+                "    \"match\": {\n" +
+                "      \"netflow.application\": {\n" +
+                "        \"query\": \"%s\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", application);
+        return query;
+    }
 
-                        // Read stdout and verify
-                        final String shellOutput = sshClient.getStdout();
-                        final String sentinelReadyString = getSentinelReadyString();
-                        final boolean routeStarted = shellOutput.contains(sentinelReadyString);
+    private static void createCustomRule(InetSocketAddress opennmsWebAddress) {
+        // Configure RestAssured
+        RestAssured.baseURI = "http://" + opennmsWebAddress.getHostName();
+        RestAssured.port = opennmsWebAddress.getPort();
+        RestAssured.basePath = "/opennms/rest/classifications";
+        RestAssured.authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
 
-                        logger.info("log:display");
-                        logger.info("{}", shellOutput);
-                        return routeStarted;
-                    } catch (Exception ex) {
-                        logger.error("Error while trying to verify sentinel startup: {}", ex.getMessage());
-                        return false;
-                    }
-                });
+        // Fetch Group
+        final GroupDTO group =  given().get("groups/2") // user-defined group
+                .then().log().body(true)
+                .assertThat().statusCode(200)
+                .extract().response().as(GroupDTO.class);
+
+        // Create new custom Rule
+        final RuleDTO ruleDTO = new RuleDTOBuilder()
+                .withName("custom-rule")
+                .withDstPort("22")
+                .withOmnidirectional(true)
+                .withGroup(group)
+                .build();
+
+        // Persist new rule
+        given().contentType(ContentType.JSON)
+                .body(ruleDTO)
+                .post().then().assertThat().statusCode(201);
     }
 }

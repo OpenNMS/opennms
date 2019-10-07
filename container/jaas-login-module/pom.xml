@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>26.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
@@ -30,16 +30,6 @@
                         </Import-Package>
                         <Export-Package>org.opennms.container.jaas.*</Export-Package>
                     </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <name>opennms-jaas-login-module</name>
-                    <bundles>
-                        <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module/${project.version}</bundle>
-                    </bundles>
                 </configuration>
             </plugin>
         </plugins>

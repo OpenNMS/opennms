@@ -28,12 +28,15 @@
 
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.get
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getDouble
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt64
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.get
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getDouble
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getInt64
 
 
 NodeLevelResource nodeLevelResource = new NodeLevelResource(agent.getNodeId())
+
+// Set a sequence number if we can find one
+getInt64(msg, "sequence_number").ifPresent { sn -> builder.withSequenceNumber(sn) }
 
 get(msg, "counters", "0:2003").ifPresent { doc ->
     builder.withGauge(nodeLevelResource, "host-cpu", "load_avg_1min", getDouble(doc, "load_one").get())

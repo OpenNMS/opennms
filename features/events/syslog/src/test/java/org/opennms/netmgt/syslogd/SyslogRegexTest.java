@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,11 +34,11 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.springframework.test.annotation.IfProfileValue;
 
 @RunWith(Parameterized.class)
 public class SyslogRegexTest {
@@ -80,7 +80,7 @@ public class SyslogRegexTest {
     }
 
     @Test
-    @Ignore
+    @IfProfileValue(name="runBenchmarkTests", value="true")
     public void testRegex() {
         String logMessage = m_logMessage;
         String matchPattern = m_matchPattern;

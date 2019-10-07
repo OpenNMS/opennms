@@ -28,14 +28,14 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * This component is used to construct criterias.

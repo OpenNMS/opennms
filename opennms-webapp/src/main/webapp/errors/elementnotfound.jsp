@@ -37,21 +37,20 @@
 %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 
-<%
-     ElementNotFoundException enfe = null;
-    
-    if( exception instanceof ElementNotFoundException ) {
-        enfe = (ElementNotFoundException)exception;
+<%!
+    public ElementNotFoundException findElementNotFoundException(Throwable throwable) {
+        if (throwable == null) {
+            return null;
+        }
+        if (throwable instanceof ElementNotFoundException) {
+            return (ElementNotFoundException) throwable;
+        }
+        return findElementNotFoundException(throwable.getCause());
     }
-    else if( exception instanceof ServletException ) {
-        enfe = (ElementNotFoundException)((ServletException)exception).getRootCause();
-    }
-    else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
-    }
-    
 %>
-
+<%
+    final ElementNotFoundException enfe = findElementNotFoundException(exception);
+%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
@@ -69,14 +68,14 @@
   <p>
   To search again by <%=enfe.getElemType()%> ID, enter the ID here:
   </p>
-  <form role="form" method="get" action="<%=enfe.getDetailUri()%>">
+  <form role="form" method="get" action="<%=enfe.getDetailUri()%>" class="form">
     <div class="row">
       <div class="form-group col-md-2">
-        <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=enfe.getElemType()%>&nbsp;:</label>
+        <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=enfe.getElemType()%></label>
         <input type="text" class="form-control" id="input_text" name="<%=enfe.getDetailParam()%>"/>
       </div>
     </div>
-    <button type="submit" class="btn btn-default">Search</button>
+    <button type="submit" class="btn btn-secondary">Search</button>
   </form>
   <% } %>
   

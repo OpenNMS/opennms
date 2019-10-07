@@ -494,5 +494,10 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         return Collections.emptyList();
     }
 
+    @Override
+    public OnmsNode getDefaultFocusPoint() {
+        return null;
+    }
+
 
 }

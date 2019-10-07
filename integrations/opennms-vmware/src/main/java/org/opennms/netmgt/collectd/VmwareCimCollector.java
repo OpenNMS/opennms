@@ -332,7 +332,6 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
     /**
      * Initializes this instance with a given parameter map.
      *
-     * @param parameters the parameter map to use
      * @throws CollectionInitializationException
      *
      */
@@ -420,12 +419,6 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
         builder.withStatus(CollectionStatus.FAILED);
 
         VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareServer);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", -1);
-        if (timeout > 0) {
-            if (!vmwareViJavaAccess.setTimeout(timeout)) {
-                logger.warn("Error setting connection timeout for VMware management server '{}'", vmwareManagementServer);
-            }
-        }
 
         if (collection.getVmwareCimGroup().length < 1) {
             logger.info("No groups to collect. Returning empty collection set.");
@@ -441,6 +434,11 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
         } catch (RemoteException e) {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return builder.build();
+        }
+
+        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", VmwareViJavaAccess.DEFAULT_TIMEOUT);
+        if (!vmwareViJavaAccess.setTimeout(timeout)) {
+            logger.warn("Error setting connection timeout for VMware management server '{}'", vmwareManagementServer);
         }
 
         HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);

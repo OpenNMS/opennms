@@ -92,48 +92,39 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
-              'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
+              'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</span>
       </div>
-          <table class="table table-condensed">
+          <table class="table table-sm">
             <tr>
               <td width="10%">Current Rule:
               </td>
               <td align="left"> <%=newRule%>
               </td>
           </table>
+        <form method="post" name="addresses" action="admin/notification/noticeWizard/notificationWizard">
+            <%=Util.makeHiddenTags(request)%>
+            <input type="hidden" name="userAction" value=""/>
+            <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE%>"/>
+            <table class="table table-sm">
+                <tr>
+                    <th>
+                        Interfaces
+                    </th>
+                    <th>
+                        Services Associated with the Interfaces
+                    </th>
+                </tr>
+                <%=buildInterfaceTable(newRule, services, notServices)%>
+            </table>
+            <div class="card-footer">
+                        <a class="btn btn-secondary" href="javascript:rebuild()"><i class="fa fa-arrow-left"></i> Rebuild</a>
+                        <a class="btn btn-secondary" href="javascript:next()">Next <i class="fa fa-arrow-right"></i></a>
+            </div>
+        </form>
     </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
-
-<div class="row">
-  <div class="col-md-6">
-      <form method="post" name="addresses" action="admin/notification/noticeWizard/notificationWizard">
-        <%=Util.makeHiddenTags(request)%>
-        <input type="hidden" name="userAction" value=""/>
-        <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE%>"/>
-        <table class="table table-condensed">
-          <tr>
-            <th>
-              Interfaces
-            </th>
-            <th>
-              Services Associated with the Interfaces
-            </th>
-          </tr>
-          <%=buildInterfaceTable(newRule, services, notServices)%>
-        </table>
-        <table class="table">
-         <tr> 
-          <td>
-           <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;
-           <a HREF="javascript:next()">Next &#155;&#155;&#155;</a>
-          </td>
-        </tr>
-        </table>
-      </form>
   </div> <!-- column -->
 </div> <!-- row -->
 

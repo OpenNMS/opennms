@@ -19,7 +19,6 @@ The following packages will be automatically installed:
 * _jicmp6_ and _jicmp_: _Java_ bridge to allow sending _ICMP messages_ from _{opennms-product-name}_ repository.
 * _opennms-core_: _{opennms-product-name}_ core services, e.g. _Provisiond_, _Pollerd_ and _Collectd_ from _{opennms-product-name}_ repository.
 * _opennms-webapp-jetty_: _{opennms-product-name}_ web application from _{opennms-product-name}_ repository
-* _jdk1.8_: _Oracle Java SE Development Kit 8_ environment from _{opennms-product-name}_ respository
 * _postgresql_: _PostgreSQL_ database server from distribution repository
 * _postgresql-libs_: _PostgreSQL_ database from distribution repository
 

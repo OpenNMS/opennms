@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.opennms.core.web.HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined;
+
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
@@ -180,6 +182,8 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
                 if (strUser != null && strPasswd != null) {
                     clientWrapper.addBasicCredentials(strUser, strPasswd);
                 }
+
+                setUseSystemProxyIfDefined(clientWrapper, parameters);
 
                 try {
                     postReq = new StringEntity(strPayload, ContentType.create(strMimetype, strCharset));

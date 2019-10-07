@@ -120,11 +120,11 @@
 
 </script>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">View On-Call Role</h3>
+<div class="card">
+  <div class="card-header">
+    <span>View On-Call Role</span>
   </div>
-  <table class="table table-condensed">
+  <table class="table table-sm">
     <tr>
       <th>Name</th>
         <td><c:out value="${role.name}"/></td>
@@ -157,16 +157,16 @@
 <form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
   <input type="hidden" name="operation" value="editDetails"/>
   <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
-  <button type="submit" class="btn btn-default">Value Details</button>
+  <button type="submit" class="btn btn-secondary">Value Details</button>
 </form>
 
-<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
-  <button type="submit" class="btn btn-default">Done</button>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm" class="my-4">
+  <button type="submit" class="btn btn-secondary">Done</button>
 </form>
 
-<div class="panel panel-default top-buffer">
-  <div class="panel-heading">
-    <h3 class="panel-title">On-Call Role Schedule</h3>
+<div class="card top-buffer">
+  <div class="card-header">
+    <span>On-Call Role Schedule</span>
   </div>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
 					<input type="hidden" name="operation" value="view"/>
@@ -217,10 +217,10 @@
 				  </tr>
 				</c:forEach>
 			</table>
-</div> <!-- panel-title -->
+</div>
 
-<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
-  <button type="submit" class="btn btn-default">Done</button>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm" class="mb-4">
+  <button type="submit" class="btn btn-secondary">Done</button>
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -10,6 +10,7 @@ const angular = require('vendor/angular-js');
 const jQuery = require('vendor/jquery-js');
 require('vendor/bootstrap-js');
 
+const editInPlaceTemplate = require('../templates/angular-onms-elementList-editInPlace.html');
 const editListInPlaceTemplate = require('../templates/angular-onms-elementList-editListInPlace.html');
 const editMapInPlaceTemplate = require('../templates/angular-onms-elementList-editMapInPlace.html');
 
@@ -19,6 +20,43 @@ const editMapInPlaceTemplate = require('../templates/angular-onms-elementList-ed
 const appendTransform = (defaultTransform, transform) => {
 	const t = angular.isArray(defaultTransform) ? defaultTransform : [ defaultTransform ];
 	return t.concat(transform);
+};
+
+/**
+ * Escape FIQL reserved characters by URL-encoding them. Reserved characters are:
+ * <ul>
+ * <li>!</li>
+ * <li>$</li>
+ * <li>'</li>
+ * <li>(</li>
+ * <li>)</li>
+ * <li>*</li>
+ * <li>+</li>
+ * <li>,</li>
+ * <li>;</li>
+ * <li>=</li>
+ * </ul>
+ * @param value
+ * @returns String with reserved characters URL-encoded
+ */
+const escapeSearchValue = (value) => {
+	if (typeof value === 'string') {
+			return value
+					.replace('!', '%21')
+					.replace('$', '%24')
+					.replace('\'', '%27')
+					.replace('(', '%28')
+					.replace(')', '%29')
+					// People are going to type this in as a wildcard, so I
+					// guess they'll have to type in '%2A' if they want to
+					// match an asterisk...
+					//.replace('*', '%2A')
+					.replace('+', '%2B')
+					.replace(',', '%2C')
+					.replace(';', '%3B')
+					.replace('=', '%3D');
+	}
+	return value;
 };
 
 /**
@@ -137,43 +175,6 @@ const parseContentRange = (contentRange) => {
 	};
 };
 
-/**
- * Escape FIQL reserved characters by URL-encoding them. Reserved characters are:
- * <ul>
- * <li>!</li>
- * <li>$</li>
- * <li>'</li>
- * <li>(</li>
- * <li>)</li>
- * <li>*</li>
- * <li>+</li>
- * <li>,</li>
- * <li>;</li>
- * <li>=</li>
- * </ul>
- * @param value
- * @returns String with reserved characters URL-encoded
- */
- const escapeSearchValue = (value) => {
-    if (typeof value === 'string') {
-        return value
-            .replace('!', '%21')
-            .replace('$', '%24')
-            .replace('\'', '%27')
-            .replace('(', '%28')
-            .replace(')', '%29')
-            // People are going to type this in as a wildcard, so I
-            // guess they'll have to type in '%2A' if they want to
-            // match an asterisk...
-            //.replace('*', '%2A')
-            .replace('+', '%2B')
-            .replace(',', '%2C')
-            .replace(';', '%3B')
-            .replace('=', '%3D');
-    }
-    return value;
-};
-
 const normalizeOffset = (offset, maxOffset, limit) => {
 	let newOffset = offset;
 
@@ -239,7 +240,7 @@ angular.module('onmsListFilters', [])
 // List module
 angular.module(MODULE_NAME, [])
 
-.config(function($locationProvider) {
+.config(/* @ngInject */ function($locationProvider) {
 	$locationProvider.html5Mode({
 		// Use HTML5 
 		enabled: true,
@@ -248,7 +249,7 @@ angular.module(MODULE_NAME, [])
 	});
 })
 
-.directive('onmsListEditInPlace', function() {
+.directive('onmsListEditInPlace', /* @ngInject */ function() {
 	return {
 		controller: function($scope) {
 			$scope.editing = false;
@@ -296,12 +297,12 @@ angular.module(MODULE_NAME, [])
 			step: '=',
 			onSubmit: '&onSubmit'
 		},
-		templateUrl: editListInPlaceTemplate,
+		templateUrl: editInPlaceTemplate,
 		transclude: true
 	};
 })
 
-.directive('onmsListEditListInPlace', function($window) {
+.directive('onmsListEditListInPlace', /* @ngInject */ function($window) {
 	return {
 		controller: function($scope) {
 			$scope.editing = false;
@@ -359,7 +360,7 @@ angular.module(MODULE_NAME, [])
 	};
 })
 
-.directive('onmsListEditMapInPlace', function($window) {
+.directive('onmsListEditMapInPlace', /* @ngInject */ function($window) {
 	return {
 		controller: function($scope) {
 			$scope.editing = false;

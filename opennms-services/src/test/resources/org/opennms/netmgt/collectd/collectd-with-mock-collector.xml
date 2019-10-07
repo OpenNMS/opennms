@@ -1,0 +1,11 @@
+<collectd-configuration xmlns="http://xmlns.opennms.org/xsd/config/collectd" threads="50">
+   <package name="test">
+      <filter>IPADDR != '0.0.0.0'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="Mock" interval="5000" user-defined="false" status="on">
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+   </package>
+   <collector service="Mock" class-name="org.opennms.netmgt.collectd.MockServiceCollector"/>
+</collectd-configuration>

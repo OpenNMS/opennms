@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xmlns.opennms.org/xsd/config/telemetryd-config" elementFormDefault="qualified" targetNamespace="http://xmlns.opennms.org/xsd/config/telemetryd-config" version="1.0">
 
+  <xs:element name="queue" type="tns:queue"/>
+
   <xs:element name="adapter" type="tns:adapter"/>
 
   <xs:element name="filter" type="tns:filter"/>
@@ -11,7 +13,7 @@
 
   <xs:element name="parameter" type="tns:parameter"/>
 
-  <xs:element name="protocol" type="tns:protocol"/>
+  <xs:element name="parser" type="tns:parser"/>
 
   <xs:element name="rrd" type="tns:rrd"/>
 
@@ -37,27 +39,20 @@
     <xs:attribute name="base-directory" type="xs:string"/>
   </xs:complexType>
 
-  <xs:complexType name="protocol">
-    <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:listener"/>
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:adapter"/>
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:package"/>
-    </xs:sequence>
+  <xs:complexType name="parser">
     <xs:attribute name="name" type="xs:string"/>
-    <xs:attribute name="description" type="xs:string"/>
-    <xs:attribute name="enabled" type="xs:boolean"/>
-    <xs:attribute name="num-threads" type="xs:int"/>
-    <xs:attribute name="batch-size" type="xs:int"/>
-    <xs:attribute name="batch-interval-ms" type="xs:int"/>
-    <xs:attribute name="queue-size" type="xs:int"/>
+    <xs:attribute name="class-name" type="xs:string"/>
+    <xs:attribute name="queue" type="xs:IDREF"/>
   </xs:complexType>
 
   <xs:complexType name="listener">
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:parameter"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:parser"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string"/>
     <xs:attribute name="class-name" type="xs:string"/>
+    <xs:attribute name="enabled" type="xs:boolean"/>
   </xs:complexType>
 
   <xs:complexType name="parameter">
@@ -69,14 +64,24 @@
   <xs:complexType name="adapter">
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:parameter"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:package"/>
     </xs:sequence>
-    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="name" type="xs:ID"/>
     <xs:attribute name="class-name" type="xs:string"/>
+    <xs:attribute name="enabled" type="xs:boolean"/>
+  </xs:complexType>
+
+  <xs:complexType name="queue">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:adapter"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:ID"/>
   </xs:complexType>
 
   <xs:complexType name="telemetrydConfiguration">
-    <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:protocol"/>
-    </xs:sequence>
+    <xs:choice maxOccurs="unbounded" minOccurs="0" >
+      <xs:element ref="tns:listener"/>
+      <xs:element ref="tns:queue"/>
+    </xs:choice>
   </xs:complexType>
 </xs:schema>

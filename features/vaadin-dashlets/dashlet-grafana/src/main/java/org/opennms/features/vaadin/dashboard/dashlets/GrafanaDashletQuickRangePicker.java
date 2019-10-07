@@ -37,7 +37,7 @@ import java.util.TreeMap;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.v7.ui.themes.BaseTheme;
 
 /**
  * This class implements a simple range picker for Grafna Quick Ranges.

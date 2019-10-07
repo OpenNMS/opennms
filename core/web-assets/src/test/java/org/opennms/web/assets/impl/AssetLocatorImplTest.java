@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -45,6 +46,7 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.web.assets.api.AssetResource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 
@@ -136,7 +138,7 @@ public class AssetLocatorImplTest {
 
     @Test
     public void testResolveFromClasspath() throws Exception {
-        final Resource location = new ClassPathResource("/assets/", AssetLocatorImpl.class);
+        final Resource location = new ClassPathResource("/assets/");
         final String requestPath = "test-asset.js";
         final Resource actual = m_locator.resolveResource(null, requestPath, Arrays.asList(location), null);
         assertNotNull(actual);
@@ -147,11 +149,13 @@ public class AssetLocatorImplTest {
 
     @Test
     public void testResolveFromFileystem() throws Exception {
-        final Resource location = new ClassPathResource("/assets/", AssetLocatorImpl.class);
+        final AssetLocatorImpl locator = new AssetLocatorImpl();
+        locator.m_filesystemPath = Paths.get("src", "test", "resources", "assets").toAbsolutePath().toString();
         final String requestPath = "test.js";
-        final Resource actual = m_locator.resolveResource(null, requestPath, Arrays.asList(location), null);
+        final Resource actual = locator.resolveResource(null, requestPath, Arrays.asList(new ClassPathResource("/assets/")), null);
         assertNotNull(actual);
-        final URL expected = location.createRelative("test.js").getURL();
+        assertTrue(actual instanceof FileSystemResource);
+        final URL expected = new FileSystemResource(locator.m_filesystemPath + "/").createRelative("test.js").getURL();
         final URL found = actual.getURL();
         assertEquals(expected, found);
    }

@@ -28,6 +28,7 @@
 
 package org.opennms.distributed.core.impl;
 
+import org.opennms.core.health.api.Context;
 import org.opennms.distributed.core.api.RestClient;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
@@ -47,7 +48,7 @@ public class RestConnectionHealthCheck implements HealthCheck {
     }
 
     @Override
-    public Response perform() throws Exception {
+    public Response perform(Context context) throws Exception {
         restClient.ping();
         return new Response(Status.Success);
     }

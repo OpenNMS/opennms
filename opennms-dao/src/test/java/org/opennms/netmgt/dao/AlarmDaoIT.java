@@ -29,9 +29,7 @@
 package org.opennms.netmgt.dao;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
@@ -44,7 +42,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -69,6 +66,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.alarm.SituationSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
@@ -77,6 +75,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -286,6 +286,107 @@ public class AlarmDaoIT implements InitializingBean {
 		Assert.assertEquals(alarm.getSeverity().getId(), sum.getMaxSeverity().getId());
 		Assert.assertNotSame("N/A", sum.getFuzzyTimeDown());
 	}
+
+	@Test
+	@Transactional
+	public void testSituationSummary() {
+		final OnmsEvent event = new OnmsEvent();
+		event.setEventLog("Y");
+		event.setEventDisplay("Y");
+		event.setEventCreateTime(new Date());
+		event.setDistPoller(m_distPollerDao.whoami());
+		event.setEventTime(new Date());
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+		event.setEventUei("uei://org/opennms/test/EventDaoTest");
+		event.setEventSource("test");
+		m_eventDao.save(event);
+
+		final OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+		final OnmsAlarm alarm1 = new OnmsAlarm();
+		alarm1.setNode(node);
+		alarm1.setUei(event.getEventUei());
+		alarm1.setSeverityId(event.getEventSeverity());
+		alarm1.setFirstEventTime(event.getEventTime());
+		alarm1.setLastEvent(event);
+		alarm1.setCounter(1);
+		alarm1.setDistPoller(m_distPollerDao.whoami());
+		m_alarmDao.save(alarm1);
+
+		final OnmsAlarm alarm2 = new OnmsAlarm();
+		alarm2.setNode(node);
+		alarm2.setUei(event.getEventUei());
+		alarm2.setSeverityId(event.getEventSeverity());
+		alarm2.setFirstEventTime(event.getEventTime());
+		alarm2.setLastEvent(event);
+		alarm2.setCounter(1);
+		alarm2.setDistPoller(m_distPollerDao.whoami());
+		alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
+		m_alarmDao.save(alarm2);
+
+		m_alarmDao.findAll();
+
+		final List<SituationSummary> summaries = m_alarmDao.getSituationSummaries();
+		Assert.assertNotNull(summaries);
+		Assert.assertEquals(1, summaries.size());
+		Assert.assertEquals(OnmsSeverity.CRITICAL, summaries.get(0).getSituationSeverity());
+		Assert.assertEquals(1, summaries.get(0).getRelatedAlarms());
+	}
+
+	@Test
+	@Transactional
+	public void testSituationSeverities() {
+		final OnmsEvent event = new OnmsEvent();
+		event.setEventLog("Y");
+		event.setEventDisplay("Y");
+		event.setEventCreateTime(new Date());
+		event.setDistPoller(m_distPollerDao.whoami());
+		event.setEventTime(new Date());
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+		event.setEventUei("uei://org/opennms/test/EventDaoTest");
+		event.setEventSource("test");
+		m_eventDao.save(event);
+
+		final OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+		final OnmsAlarm alarm1 = new OnmsAlarm();
+		alarm1.setNode(node);
+		alarm1.setUei(event.getEventUei());
+		alarm1.setSeverityId(event.getEventSeverity());
+		alarm1.setFirstEventTime(event.getEventTime());
+		alarm1.setLastEvent(event);
+		alarm1.setCounter(1);
+		alarm1.setDistPoller(m_distPollerDao.whoami());
+		m_alarmDao.save(alarm1);
+
+		for(OnmsSeverity onmsSeverity : OnmsSeverity.values()) {
+			final OnmsAlarm situation = new OnmsAlarm();
+			situation.setNode(node);
+			situation.setUei(event.getEventUei());
+			situation.setSeverityId(onmsSeverity.getId());
+			situation.setFirstEventTime(event.getEventTime());
+			situation.setLastEvent(event);
+			situation.setCounter(1);
+			situation.setDistPoller(m_distPollerDao.whoami());
+			situation.setRelatedAlarms(Sets.newHashSet(alarm1));
+			m_alarmDao.save(situation);
+		}
+
+		m_alarmDao.findAll();
+
+		final List<SituationSummary> summaries = m_alarmDao.getSituationSummaries();
+		Assert.assertNotNull(summaries);
+		Assert.assertEquals(4, summaries.size());
+		Assert.assertEquals(1, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.CRITICAL)).count());
+		Assert.assertEquals(1, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.MAJOR)).count());
+		Assert.assertEquals(1, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.MINOR)).count());
+		Assert.assertEquals(1, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.WARNING)).count());
+		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.NORMAL)).count());
+		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.CLEARED)).count());
+		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.INDETERMINATE)).count());
+		Assert.assertEquals(1, summaries.get(0).getRelatedAlarms());
+	}
+
 
 	@Test
 	@Transactional

@@ -6,14 +6,26 @@ require('angular-bootstrap-confirm');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css');
 require('angular-ui-router');
+require('angular-ui-sortable');
 
 const indexTemplate  = require('./views/index.html');
 const configTemplate = require('./views/config.html');
 const groupTemplate  = require('./views/group.html');
 
 const newRuleModalTemplate = require('./views/modals/new-rule-modal.html');
+const newGroupModalTemplate = require('./views/modals/new-group-modal.html');
 const importModalTemplate  = require('./views/modals/import-modal.html');
 const exportModalTemplate  = require('./views/modals/export-modal.html');
+
+const confirmTopoverTemplate = require('./views/modals/popover.html');
+
+const handleErrorResponse = function(response) {
+    if (response && response.data) {
+        var error = response.data;
+        $scope.error = {};
+        $scope.error[error.context] = error.message;
+    }
+};
 
 (function() {
     'use strict';
@@ -27,11 +39,15 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             'ui.bootstrap',
             'ui.checkbox',
             'ui.toggle',
+            'ui.sortable',
             'onms.http',
             'onms.elementList',
             'mwl.confirm',
             'onms.pagination'
         ])
+        .run(function(confirmationPopoverDefaults) {
+            confirmationPopoverDefaults.templateUrl = confirmTopoverTemplate;
+        })
 
         .config( ['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
@@ -63,24 +79,24 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             }
         })
 
-        .factory('ClassificationService', function($resource) {
+        .factory('ClassificationService', /* @ngInject */ function($resource) {
             return $resource('rest/classifications/', {},
                 {
                     'classify': { method: 'POST', url:'rest/classifications/classify'}
                 }
             );
         })
-        .factory('ClassificationGroupService', function($resource) {
+        .factory('ClassificationGroupService', /* @ngInject */ function($resource) {
             return $resource('rest/classifications/groups/:id', {id: '@id'},
                 {
                     'get': {method: 'GET'},
                     'update': {method: 'PUT'},
                     'query': {method: 'GET', isArray: true},
-                    'delete': {method: 'DELETE', params: {id: -1 /*force to -1 to prevent accidentally deleting all groups*/}}
+                    'delete': {method: 'DELETE'},
                 }
             );
         })
-        .factory('ClassificationRuleService', function($resource) {
+        .factory('ClassificationRuleService', /* @ngInject */ function($resource) {
             return $resource('rest/classifications/:id', {id: '@id'},
                 {
                     'get': {method: 'GET'},
@@ -92,7 +108,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             );
         })
 
-        .factory('ProtocolService', function($resource) {
+        .factory('ProtocolService', /* @ngInject */ function($resource) {
             return $resource('rest/classifications/protocols');
         })
         .controller('ClassificationController', ['$scope', '$state', 'ClassificationService', 'ClassificationGroupService', 'ProtocolService', function($scope, $state, ClassificationService, ClassificationGroupService, ProtocolService) {
@@ -118,14 +134,17 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             };
 
             $scope.refreshTabs = function(navigateToFirstGroup) {
-                return ClassificationGroupService.query({}, function(response) {
+                return ClassificationGroupService.query({
+                    limit: 1000, // override default limit (we want to show as many groups as possible)
+                    orderBy: 'position',
+                }, function(response) {
                     // Remove disabled groups
                     $scope.groups = response.filter(function(group) {
                         return group.enabled === true
                     });
-                    // Sort by priority (highest first)
+                    // Sort by position (lowest first)
                     $scope.groups = $scope.groups.sort(function(l, r) {
-                        return l.priority - r.priority;
+                        return r.position - l.position;
                     });
                     $scope.groups = $scope.groups.reverse();
 
@@ -159,26 +178,110 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             $scope.refreshTabs(true);
 
         }])
-        .controller('ClassificationConfigController', ['$scope', '$rootScope', '$location', '$log', 'ClassificationGroupService', function($scope, $rootScope, $location, $log, ClassificationGroupService) {
+        .controller('ClassificationConfigController', ['$scope', '$rootScope', '$uibModal', '$location', '$log', 'ClassificationGroupService', function($scope, $rootScope, $uibModal, $location, $log, ClassificationGroupService) {
             $scope.groups = [];
             $scope.query = {
                 page: 1,
                 limit: 20,
                 totalItems: 0,
-                orderBy: 'priority',
-                order: 'desc'
             };
             $scope.updateGroup = function(group) {
                 group.$update({}, function() {
                     $scope.refreshTabs();
+                    $scope.refresh();
+                });
+            };
+            $scope.deleteGroup = function(group) {
+                group.$delete().then(function() {
+                    $scope.refreshTabs();
+                    $scope.refresh();
+                });
+            };
+            var openModal = function(group) {
+                return $uibModal.open({
+                    backdrop: false,
+                    controller: 'GroupModalController',
+                    templateUrl: newGroupModalTemplate,
+                    size: 'lg',
+                    resolve: {
+                        group: function() {
+                            return group;
+                        },
+                        groups: function () {
+                            return $scope.groups;
+                        },
+                        groupsTotalAmount: function () {
+                            return $scope.query.totalItems;
+                        }
+                    }
+                });
+            };
+            $scope.editGroup = function(group) {
+                var modalInstance = openModal(group);
+                modalInstance.closed.then(function () {
+                    $scope.refreshTabs();
+                    $scope.refresh();
+                }, function() {
+                    // modal was dismissed
+                    $scope.refresh();
+                });
+            };
+            $scope.addGroup = function(group) {
+                var modalInstance = openModal(group);
+                modalInstance.closed.then(function () {
+                    $scope.refreshTabs();
+                    $scope.refresh();
                 });
             };
             $scope.refresh = function() {
-                ClassificationGroupService.query({}, function(result, headers) {
+                var parameters = $scope.query || {};
+                ClassificationGroupService.query({
+                    limit: 20,
+                    offset: (parameters.page -1) * parameters.limit || 0,
+                    orderBy: 'position',
+                    order: 'asc'
+                }, function(result, headers) {
                     $scope.groups = result;
                     var contentRange = elementList.parseContentRange(headers('Content-Range'));
                     $scope.query.totalItems = contentRange.total;
                 });
+            };
+            // for drag and drop of groups (redefining position)
+            $scope.sortableGroups = {
+                start: function(e, ui) {
+                    // remember old index before moving
+                    angular.element(ui.item).data('oldIndex', ui.item.index());
+                },
+                stop: function(e, ui) {
+
+                    // Check Precondition:  item was actually moved
+                    var oldIndex =  angular.element(ui.item).data().oldIndex;
+                    var newIndex =  ui.item.index();
+                    if(oldIndex !== newIndex) {
+                        // Calculate and set new position (index + offset)
+                        var parameters = $scope.query || {};
+                        var offset = (parameters.page - 1) * parameters.limit || 0;
+                        var group = $scope.groups[newIndex];
+                        var position;
+                        if (newIndex - 1 < 0) {
+                            // we are already at the beginning of the visible paged list
+                            position = offset;
+                        } else {
+                            var previousGroup = $scope.groups[newIndex - 1];
+                            position = (newIndex > oldIndex) ? previousGroup.position : previousGroup.position + 1;
+                        }
+                        group.position = position;
+
+                        // Update backend
+                        var refreshCallback = function () {
+                            $scope.refreshTabs();
+                            $scope.refresh();
+                        };
+
+                        ClassificationGroupService.update(group, refreshCallback, handleErrorResponse);
+                    }
+                },
+                items: "tr:not(.unsortable)"
             };
             $scope.refresh();
         }])
@@ -220,6 +323,13 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
             $scope.refresh = function() {
                 var parameters = $scope.query || {};
+                var editPositionOfRuleEnabled = !($scope.group.readOnly) && ($scope.query.orderBy === 'position' && $scope.query.order === 'asc');
+                var sortable =  angular.element( '.ui-sortable' );
+                if(editPositionOfRuleEnabled === true) {
+                    sortable.sortable('enable');
+                } else {
+                    sortable.sortable('disable');
+                }
                 return ClassificationRuleService.query( {
                     limit: parameters.limit || 20,
                     offset: (parameters.page -1) * parameters.limit || 0,
@@ -276,22 +386,28 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                 });
             };
 
-            var openModal = function(classification) {
+            var openModal = function(classification, group) {
                 return $uibModal.open({
                     backdrop: false,
                     controller: 'ClassificationModalController',
                     templateUrl: newRuleModalTemplate,
-                    size: 'md',
+                    size: 'lg',
                     resolve: {
                         classification: function() {
                             return classification;
+                        },
+                        group: function() {
+                            return group;
+                        },
+                        groups: function () {
+                            return $scope.groups;
                         }
                     }
                 });
             };
 
             $scope.editRule = function(rule) {
-                var modalInstance = openModal(rule);
+                var modalInstance = openModal(rule, rule.group);
                 modalInstance.closed.then(function () {
                     $scope.refreshAll();
                 }, function() {
@@ -300,15 +416,51 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                 });
             };
 
-            $scope.addRule = function() {
-                var modalInstance = openModal();
+            $scope.addRule = function(group) {
+                var modalInstance = openModal(null, group);
                 modalInstance.closed.then(function () {
                     $scope.refreshAll();
                 });
             };
 
+            // for drag and drop of rules (redefining position)
+            $scope.sortableRules = {
+                start: function(e, ui) {
+                    // remember old index before moving
+                    angular.element(ui.item).data('oldIndex', ui.item.index());
+                },
+                stop: function(e, ui) {
+                    // Check Precondition: item was actually moved
+                    var oldIndex =  angular.element(ui.item).data().oldIndex;
+                    var newIndex =  ui.item.index();
+                    if(oldIndex !== newIndex) {
+                        // Calculate and set new position (index + offset)
+                        var parameters = $scope.query || {};
+                        var offset = (parameters.page - 1) * parameters.limit || 0;
+                        var rule = $scope.rules[newIndex];
+                        var position;
+                        if (newIndex - 1 < 0) {
+                            // we are already at the beginning of the visible paged list
+                            position = offset;
+                        } else {
+                            var previousRule = $scope.rules[newIndex - 1];
+                            position = (newIndex > oldIndex) ? previousRule.position : previousRule.position + 1;
+                        }
+                        rule.position = position;
+
+                        // Update backend
+                        var refreshCallback = function () {
+                            $scope.refreshAll();
+                        };
+
+                        ClassificationRuleService.update(rule, refreshCallback, handleErrorResponse);
+                    }
+                }
+            };
+
             $scope.importRules = function() {
                 var modalInstance = $uibModal.open({
+                    size: 'lg',
                     backdrop: false,
                     controller: 'ClassificationImportController',
                     templateUrl: importModalTemplate,
@@ -369,7 +521,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                     $scope.errors = [];
                     $scope.failedRows = [];
                     $http({
-                        url: 'rest/classifications',
+                        url: 'rest/classifications/groups/'+group.id,
                         method: 'POST',
                         data: reader.result,
                         params: {'hasHeader': $scope.containsHeader, 'deleteExistingRules' : $scope.deleteExistingRules},
@@ -411,7 +563,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             function($scope, $http, $uibModalInstance, group, $window) {
                 $scope.group = group;
                 $scope.export = {};
-                $scope.export.requestedFileName = group.id + '_rules.csv';
+                $scope.export.requestedFileName = group.name + '_rules.csv';
                 $scope.exportGroup = function() {
                     var requestedFileName = $scope.export.requestedFileName.trim();
                     $window.location = 'rest/classifications/groups/' + $scope.group.id +'?filename='
@@ -420,12 +572,15 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             };
 
         }])
-        .controller('ClassificationModalController', ['$scope', '$uibModalInstance', 'ProtocolService', 'ClassificationRuleService', 'classification', function($scope, $uibModalInstance, ProtocolService, ClassificationRuleService, classification) {
-            $scope.classification = classification || {};
+        .controller('ClassificationModalController', ['$scope', '$uibModalInstance', 'ProtocolService', 'ClassificationRuleService', 'classification', 'group', 'groups', function($scope, $uibModalInstance, ProtocolService, ClassificationRuleService, classification, group, groups) {
+            $scope.classification = classification || {group:group};
             $scope.protocols = [];
             $scope.currentSelection = undefined;
             $scope.selectedProtocols = [];
             $scope.buttonName = $scope.classification.id ? 'Update' : 'Create';
+            $scope.group = group;
+            $scope.maxPosition = (classification === null) ? group.ruleCount : group.ruleCount-1;
+            $scope.selectableGroups = groups.filter((group) => group.readOnly === false);
 
             var convertStringArrayToProtocolsArray = function(string) {
                 return string.map(function(protocol) {
@@ -437,14 +592,6 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                 return protocols.map(function(protocol) {
                     return protocol.keyword;
                 });
-            };
-
-            var handleErrorResponse = function(response) {
-                if (response && response.data) {
-                    var error = response.data;
-                    $scope.error = {};
-                    $scope.error[error.context] = error.message;
-                }
             };
 
             $scope.save = function() {
@@ -490,6 +637,30 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
             $scope.loadProtocols();
 
+        }])
+        .controller('GroupModalController', ['$scope', '$uibModalInstance', 'ClassificationGroupService', 'group', 'groups', 'groupsTotalAmount', function($scope, $uibModalInstance, ClassificationGroupService, group, groups, groupsTotalAmount) {
+            $scope.group = group || {enabled:true};
+            $scope.currentSelection = undefined;
+            $scope.buttonName = $scope.group.id ? 'Update' : 'Create';
+            $scope.groups = groups;
+            $scope.groupsTotalAmount = groupsTotalAmount;
+            $scope.maxPosition = (group === undefined) ? groupsTotalAmount-1 : groupsTotalAmount-2; // pre-defined group has always the last position
+
+            $scope.save = function() {
+                // Close modal afterwards
+                var closeCallback = function() {
+                    $uibModalInstance.close();
+                };
+                if ($scope.group.id) {
+                    ClassificationGroupService.update($scope.group, closeCallback, handleErrorResponse);
+                } else {
+                    ClassificationGroupService.save($scope.group, closeCallback, handleErrorResponse);
+                }
+            };
+
+            $scope.cancel = function() {
+                $uibModalInstance.dismiss('Cancelled by User');
+            };
         }])
     ;
 }());

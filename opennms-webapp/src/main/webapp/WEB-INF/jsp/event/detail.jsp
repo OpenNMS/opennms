@@ -91,17 +91,17 @@
     <p>Event not found in database.</p>
 <% } else { %>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Event <%=event.getId()%></h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Event <%=event.getId()%></span>
       </div>
 
-      <table class="table table-condensed severity">
-        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
-          <th class="col-md-1">Severity</th>
-          <td class="col-md-3 bright"><%= event.getSeverity().getLabel() %></td>
-          <th class="col-md-1">Node</th>
-          <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-md-3' : 'col-md-7'}">
+      <table class="table table-sm severity">
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <th class="col-1">Severity</th>
+          <td class="col-3 bright"><%= event.getSeverity().getLabel() %></td>
+          <th class="col-1">Node</th>
+          <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-3' : 'col-7'}">
             <% if( event.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=event.getNodeLabel()%></a>
             <% } else {%>
@@ -109,21 +109,21 @@
             <% } %>
           </td>
           <c:if test="${acknowledgeEvent}">
-            <th class="col-md-1">Acknowledged&nbsp;By</th>
-            <td class="col-md-3"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
+            <th class="col-1">Acknowledged&nbsp;By</th>
+            <td class="col-4"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
           </c:if>
         </tr>
-          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
-              <th class="col-md-1">Event Source Location</th>
-              <td class="col-md-3"><%=event.getLocation()%> (<%= event.getSystemId() %>)</td>
-              <th class="col-md-1">Node Location</th>
-              <td class="col-md-3"><%= event.getNodeLocation() %></td>
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+              <th class="col-1">Event Source Location</th>
+              <td class="col-3"><%=event.getLocation()%> (<%= event.getSystemId() %>)</td>
+              <th class="col-1">Node Location</th>
+              <td class="col-3"><%= event.getNodeLocation() %></td>
           </tr>
-          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
-          <th class="col-md-1">Time</th>
-          <td class="col-md-3"><onms:datetime date="<%=event.getTime()%>" /></td>
-          <th class="col-md-1">Interface</th>
-          <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-md-3' : 'col-md-7'}">
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <th class="col-1">Time</th>
+          <td class="col-3"><onms:datetime date="<%=event.getTime()%>" /></td>
+          <th class="col-1">Interface</th>
+          <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-3' : 'col-7'}">
             <% if( event.getIpAddress() != null ) { %>
               <% if( event.getNodeId() > 0 ) { %>
                 <c:url var="interfaceLink" value="element/interface.jsp">
@@ -139,8 +139,8 @@
             <% } %>
           </td>
           <c:if test="${acknowledgeEvent}">
-          <th class="col-md-1">Time&nbsp;Acknowledged</th>
-          <td class="col-md-3">
+          <th class="col-1">Time&nbsp;Acknowledged</th>
+          <td class="col-3">
           <c:choose>
             <c:when test="<%=event.getAcknowledgeTime() != null%>">
               <onms:datetime date="<%=event.getAcknowledgeTime()%>" />
@@ -152,11 +152,10 @@
           </td>
           </c:if>
         </tr>
-        
-        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
-          <th class="col-md-1">Service</th>
-          <!-- If the node is not provisioned, then expand the service row out with colspan 5, col-md-11 -->
-          <td ${provisioned ? '' : 'colspan="5"'} class="${provisioned ? 'col-md-3' : 'col-md-11'}">
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <th class="col-1">Service</th>
+          <!-- If the node is not provisioned, then expand the service row out with colspan 5, col-11 -->
+          <td ${provisioned ? '' : 'colspan="5"'} class="${provisioned ? 'col-3' : 'col-11'}">
             <% if( event.getServiceName() != null ) { %>
               <% if( event.getIpAddress() != null && event.getNodeId() > 0 ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -173,14 +172,14 @@
             <% } %>
           </td>
           <c:if test="${provisioned}">
-            <th class="col-md-1">Location&nbsp;Monitor&nbsp;ID</th>
-            <td colspan="3" class="col-md-7"><a href="distributed/locationMonitorDetails.htm?monitorId=<%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)%>"><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></a></td>
+            <th class="col-1">Location&nbsp;Monitor&nbsp;ID</th>
+            <td colspan="3" class="col-7"><a href="distributed/locationMonitorDetails.htm?monitorId=<%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)%>"><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></a></td>
           </c:if>
-        </tr> 
-          
-        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
-          	<th class="col-md-1">UEI</th>
-                <td colspan="5" class="col-md-11">
+        </tr>
+
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          	<th class="col-1">UEI</th>
+                <td colspan="5" class="col-11">
           	<% if( event.getUei() != null ) { %>
           	      <%=event.getUei()%>
           	<% } else {%>
@@ -190,9 +189,9 @@
         </tr>
 
           <% if (event.getAlarmId() != null && event.getAlarmId().intValue() != 0) { %>
-            <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
-              <th class="col-md-1">Alarm ID</th>
-              <td colspan="5" class="col-md-11">
+            <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+              <th class="col-1">Alarm ID</th>
+              <td colspan="5" class="col-11">
                   <a href="alarm/detail.htm?id=<%=event.getAlarmId()%>"><%=event.getAlarmId()%></a>
               </td>
             </tr>
@@ -201,29 +200,29 @@
       </table>
     </div>
 
-    <div class="panel panel-default severity">
-      <div class="panel-heading">
-        <h3 class="panel-title">Log&nbsp;Message</h3>
+    <div class="card severity">
+      <div class="card-header">
+        <span>Log&nbsp;Message</span>
       </div>
-      <div class="panel-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
         <%=WebSecurityUtils.sanitizeString(event.getLogMessage(), true)%>
       </div>
     </div>
 
-    <div class="panel panel-default severity">
-      <div class="panel-heading">
-        <h3 class="panel-title">Description</h3>
+    <div class="card severity">
+      <div class="card-header">
+        <span>Description</span>
       </div>
-      <div class="panel-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
         <%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%>
       </div>
     </div>
 
-    <div class="panel panel-default severity">
-      <div class="panel-heading">
-        <h3 class="panel-title">Operator&nbsp;Instructions</h3>
+    <div class="card severity">
+      <div class="card-header">
+        <span>Operator&nbsp;Instructions</span>
       </div>
-      <div class="panel-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
         <% if (event.getOperatorInstruction()==null) { %>
           No instructions available.
         <% } else { %>

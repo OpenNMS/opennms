@@ -140,9 +140,23 @@ public class RadixTreeSyslogParser extends SyslogParser {
 				}
 			}
 			setTimezoneIfNeeded(retval);
+			setYearIfNeeded(retval);
 		}
 
 		return retval;
+	}
+
+	private void setYearIfNeeded(SyslogMessage message) {
+	    boolean hasTimeinformation =
+	            message.getMonth() != null ||
+	            message.getDayOfMonth() != null ||
+	            message.getHourOfDay() != null ||
+	            message.getMinute() != null ||
+	            message.getSecond() != null ||
+	            message.getMillisecond() != null;
+	    if (hasTimeinformation && message.getYear() == null) {
+	    	SyslogYearCompleter.complete(message);
+	    }
 	}
 
 	private void setTimezoneIfNeeded(SyslogMessage message){

@@ -1,7 +1,21 @@
 package org.opennms.vaadin.extender.internal.extender;
 
+import static org.opennms.vaadin.extender.internal.extender.PaxVaadinBundleTracker.findWidgetset;
+
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.opennms.vaadin.extender.ApplicationFactory;
 import org.opennms.vaadin.extender.Constants;
+import org.opennms.vaadin.extender.internal.servlet.OSGiUIProvider;
 import org.opennms.vaadin.extender.internal.servlet.VaadinOSGiServlet;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -10,21 +24,14 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.vaadin.server.UIProvider;
+import com.vaadin.ui.UI;
 
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-public class ApplicationFactoryServiceTracker extends ServiceTracker {
+public class ApplicationFactoryServiceTracker extends ServiceTracker<ApplicationFactory, ApplicationFactory> {
     
     private Map<ApplicationFactory, ServiceRegistration> m_serviceRegistration = new HashMap<ApplicationFactory, ServiceRegistration>();
     private final Logger logger = LoggerFactory.getLogger(ApplicationFactoryServiceTracker.class.getName());
+    private final OSGiUIProvider uiProvider = new OSGiUIProvider();
     
     public ApplicationFactoryServiceTracker(BundleContext context) {
         super(context, ApplicationFactory.class.getName(), null);
@@ -32,39 +39,77 @@ public class ApplicationFactoryServiceTracker extends ServiceTracker {
     
     @SuppressWarnings({"unchecked"})
     @Override
-    public Object addingService(ServiceReference reference) {
-        ApplicationFactory factory = (ApplicationFactory) super.addingService(reference);
+    public ApplicationFactory addingService(ServiceReference reference) {
+        final ApplicationFactory factory = super.addingService(reference);
         if (factory == null) return null;
-        FactoryServlet servlet = new FactoryServlet(factory, reference.getBundle().getBundleContext());
-        Dictionary props = new Properties();
+        final FactoryServlet servlet = new FactoryServlet(uiProvider, factory, reference.getBundle().getBundleContext());
+        final Dictionary props = new Properties();
         
         for(String key : reference.getPropertyKeys()) {
             props.put(key, reference.getProperty(key));
         }
-        
-        if(props.get(Constants.ALIAS) == null) {
-            logger.warn("You have not set the alias property for ApplicationFactory: " + factory);
+
+        // Alias is no longer supported, use new pattern key
+        if (props.get(Constants.ALIAS) != null && props.get(Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN) == null) {
+            logger.warn("{} is deprecated. Please use {} instead. For now I am going to do that for you", Constants.ALIAS, Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN);
+            props.put(Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN, props.get(Constants.ALIAS));
         }
+
+        // Ensure we have the servlet.pattern defined
+        if(props.get(Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN) == null) {
+            logger.warn("You have not set the {} property for ApplicationFactory: {}", Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN, factory);
+        }
+
+        // Support the old way of defining the widgetset as well
+        if (props.get("init.widgetset") != null) {
+            logger.warn("Property {} is deprecated. Please use {} instead. For now I am going to do that for you", "init.widgetset", "servlet.init.widgetset");
+            props.put("servlet.init.widgetset", props.get("init.widgetset"));
+        }
+
+        // Auto-detect widgetset if not set manually
+        if (props.get("servlet.init.widgetset") != null) {
+            logger.debug("Widgetset configured to be used: {}", props.get("servlet.init.widgetset"));
+        } else {
+            // No widget set defined, try to auto-detect it
+            final String widgetset = findWidgetset(reference.getBundle());
+            if (widgetset != null) {
+                logger.debug("Widgetset found: {}", widgetset);
+                props.put("servlet.init.widgetset", widgetset);
+            }
+        }
+
+        // Ensure uiClass is set
+        final Class<? extends UI> uiClass = factory.getUIClass();
+        if (uiClass == null) {
+            throw new IllegalStateException("Cannot register ApplicationFactory as getUIClass() returned null");
+        }
+
+        // Set uiClass value for Vaadin Deployment Configuration to later on match the ui providers to the application class properly
+        props.put("servlet.init.ui.class", uiClass.getCanonicalName());
+
+        // Register ApplicationFactory
+        logger.debug("Found factory for ui class {}, with the following headers {} and service properties {}.", uiClass, factory.getAdditionalHeaders(), props);
         m_serviceRegistration.put(factory, context.registerService(Servlet.class.getName(), servlet, props));
-        
+
+        // Add application factory so it can be used for vaadin ui creation
+        uiProvider.addApplicationFactory(factory);
         return factory;
     }
 
     @Override
-    public void modifiedService(ServiceReference reference, Object service) {
+    public void modifiedService(ServiceReference reference, ApplicationFactory service) {
         //TODO: When does this get called
         super.modifiedService(reference, service);
     }
 
     @Override
-    public void removedService(ServiceReference reference, Object service) {
-        
-        ApplicationFactory factory = (ApplicationFactory) context.getService(reference);
+    public void removedService(ServiceReference reference, ApplicationFactory service) {
+        final ApplicationFactory factory = (ApplicationFactory) context.getService(reference);
         final ServiceRegistration servletRegistration = m_serviceRegistration.remove(factory);
         if (servletRegistration != null) {
             servletRegistration.unregister();
         }
-
+        uiProvider.removeApplicationFactory(factory);
         super.removedService(reference, service);
     }
     
@@ -73,8 +118,8 @@ public class ApplicationFactoryServiceTracker extends ServiceTracker {
 
         private ApplicationFactory m_factory;
 
-        public FactoryServlet(ApplicationFactory factory, BundleContext context) {
-            super(factory, context);
+        public FactoryServlet(UIProvider uiProvider, ApplicationFactory factory, BundleContext context) {
+            super(uiProvider, context);
             m_factory = factory;
         }
 

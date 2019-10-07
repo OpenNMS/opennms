@@ -39,6 +39,7 @@
     final String baseHref = Util.calculateUrlBase(request);
 %>
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -46,6 +47,10 @@
     <meta http-equiv="Content-Style-Type" content="text/css"/>
     <meta http-equiv="Content-Script-Type" content="text/javascript"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <c:if test="${param.nobase != 'true' }">
+        <base href="<%= baseHref %>" />
+    </c:if>
 
     <jsp:include page="/assets/load-assets.jsp" flush="false">
       <jsp:param name="asset" value="manifest" />

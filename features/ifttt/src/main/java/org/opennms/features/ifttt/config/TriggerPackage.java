@@ -35,11 +35,17 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+import com.google.common.base.Strings;
+
 public class TriggerPackage {
     /**
      * category filter
      */
-    private String categoryFilter;
+    private String categoryFilter = "";
+    /**
+     * uei filter
+     */
+    private String reductionKeyFilter = "";
     /**
      * trigger sets for firing IFTTT events
      */
@@ -51,11 +57,20 @@ public class TriggerPackage {
 
     @XmlAttribute
     public String getCategoryFilter() {
-        return categoryFilter != null ? categoryFilter : ".*";
+        return categoryFilter;
     }
 
     public void setCategoryFilter(final String categoryFilter) {
         this.categoryFilter = categoryFilter;
+    }
+
+    @XmlAttribute
+    public String getReductionKeyFilter() {
+        return reductionKeyFilter;
+    }
+
+    public void setReductionKeyFilter(final String reductionKeyFilter) {
+        this.reductionKeyFilter = reductionKeyFilter;
     }
 
     @XmlAttribute
@@ -93,12 +108,27 @@ public class TriggerPackage {
         final TriggerPackage that = (TriggerPackage) o;
 
         return Objects.equals(categoryFilter, that.categoryFilter) &&
-               Objects.equals(triggerSets, that.triggerSets) &&
-               Objects.equals(onlyUnacknowledged, that.onlyUnacknowledged);
+                Objects.equals(reductionKeyFilter, that.reductionKeyFilter) &&
+                Objects.equals(triggerSets, that.triggerSets) &&
+                Objects.equals(onlyUnacknowledged, that.onlyUnacknowledged);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(categoryFilter, triggerSets, onlyUnacknowledged);
+        return Objects.hash(categoryFilter, reductionKeyFilter, triggerSets, onlyUnacknowledged);
+    }
+
+    public String getFilterKey() {
+        return getCategoryFilter() + " / " + getReductionKeyFilter();
+    }
+
+    @Override
+    public String toString() {
+        return "TriggerPackage{" +
+                "categoryFilter='" + categoryFilter + '\'' +
+                ", reductionKeyFilter='" + reductionKeyFilter + '\'' +
+                ", triggerSets=" + triggerSets +
+                ", onlyUnacknowledged=" + onlyUnacknowledged +
+                '}';
     }
 }

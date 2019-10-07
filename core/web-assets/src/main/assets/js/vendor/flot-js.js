@@ -9,7 +9,8 @@ require('flot-legend/jquery.flot.legend');
 require('flot.axislabels');
 require('jquery.flot.tooltip/js/jquery.flot.tooltip');
 require('flot.saveas');
-require('flot/jquery.flot.navigate');
+// this is our patched version, rather than the upstream jquery.flot.navigate
+require('flot.navigate');
 require('flot-datatable/jquery.flot.datatable.js');
 
 console.log('init: flot-js'); // eslint-disable-line no-console

@@ -45,6 +45,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.Value;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum StandardExpandableParameterResolvers implements ExpandableParameterResolver {
@@ -234,6 +235,28 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
             if (addr != null) {
                 return addr.getHostName();
             }
+            return null;
+        }
+    },
+
+    PRIMARY_INTERFACE {
+
+        @Override
+        public boolean matches(final String parm) {
+            return AbstractEventUtil.TAG_PRIMARY_INTERFACE_ADDRESS.equals(parm);
+        }
+
+        @Override
+        public String getValue(final String parm, final String parsedParm, final Event event, final EventUtil eventUtil) {
+            if (event.getNodeid() != null) {
+                try {
+                    return eventUtil.getPrimaryInterface(event.getNodeid());
+                } catch (SQLException ex) {
+                    // do nothing
+                    LOG.info("primary interface ipaddr unavailable for node with id: {}", event.getNodeid(), ex);
+                }
+            }
+
             return null;
         }
     },
@@ -634,7 +657,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     nodeLabel = eventUtil.getNodeLabel(event.getNodeid());
                 } catch (SQLException e) {
                     // do nothing
-                    LoggerFactory.getLogger(getClass()).info("Node Label unavailable for node with id: {}", event.getNodeid(), e);
+                    LOG.info("Node Label unavailable for node with id: {}", event.getNodeid(), e);
                 }
             }
             if (nodeLabel != null) {
@@ -666,7 +689,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     nodeLocation = eventUtil.getNodeLocation(event.getNodeid());
                 } catch (SQLException e) {
                     // do nothing
-                    LoggerFactory.getLogger(getClass()).info("Node Location unavailable for node with id: {}", event.getNodeid(), e);
+                    LOG.info("Node Location unavailable for node with id: {}", event.getNodeid(), e);
                 }
             }
             if (nodeLocation != null) {
@@ -700,7 +723,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     }
                 } catch (SQLException ex) {
                     // do nothing
-                    LoggerFactory.getLogger(getClass()).info("ForeignSource unavailable for node with id:", event.getNodeid(), ex);
+                    LOG.info("ForeignSource unavailable for node with id: {}", event.getNodeid(), ex);
                 }
             }
             return "";
@@ -729,7 +752,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     }
                 } catch (SQLException ex) {
                     // do nothing
-                    LoggerFactory.getLogger(getClass()).info("ForeignId unavailable for node with id:", event.getNodeid(), ex);
+                    LOG.info("ForeignId unavailable for node with id: {}", event.getNodeid(), ex);
                 }
             }
             return "";
@@ -755,7 +778,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     return eventUtil.getIfAlias(event.getNodeid(), event.getInterface());
                 } catch (SQLException e) {
                     // do nothing
-                    LoggerFactory.getLogger(getClass()).info("ifAlias Unavailable for {}:{}", event.getNodeid(), event.getInterface(), e);
+                    LOG.info("ifAlias Unavailable for {}:{}", event.getNodeid(), event.getInterface(), e);
                 }
             }
             return event.getInterface();
@@ -765,8 +788,9 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         public boolean requiresTransaction() {
             return true;
         }
-
     };
+
+    private static final Logger LOG = LoggerFactory.getLogger(StandardExpandableParameterResolvers.class);
 
     // By default we don't perform any additional parsing
     @Override
@@ -779,5 +803,4 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
     public boolean requiresTransaction() {
         return false;
     }
-
 }

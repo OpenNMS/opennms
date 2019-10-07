@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -89,6 +90,7 @@ import org.opennms.features.topology.app.internal.service.DefaultTopologyService
 import org.opennms.features.topology.app.internal.support.AlarmHopCriteria;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.IpLikeHopCriteria;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -356,6 +358,7 @@ public class BundleContextHistoryManagerTest  {
         // Initializing available (initial) SearchProviders
         final DefaultTopologyService topologyService = new DefaultTopologyService();
         topologyService.setServiceLocator(serviceLocatorMock);
+        topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
 
         this.startingProviders.put(CriteriaTypes.category, new CategorySearchProvider(topologyService, vertexProvider));
         this.startingProviders.put(CriteriaTypes.ipLike, new IpLikeSearchProvider(ipInterfaceProvider));

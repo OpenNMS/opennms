@@ -45,11 +45,11 @@
 
 <div class="row">
   <div class="col-md-5">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Reports</h3>
+    <div class="card">
+        <div class="card-header">
+            <span>Reports</span>
         </div>
-        <div class="panel-body" id="onms-search">
+        <div class="card-body" id="onms-search">
             <div class="row">
                 <div class="col-md-12">
                     <div class="pull-right">
@@ -86,7 +86,7 @@
                         <li><a href="charts/index.jsp">Charts</a></li>
                         <li><a href="graph/index.jsp">Resource Graphs</a></li>
                         <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domains</a></li>
-                        <li><a href="report/database/index.htm">Database Reports</a></li>
+                        <li><a href="report/database/index.jsp">Database Reports</a></li>
                         <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
                         <li><a href="inventory/rancidReport.htm">Inventory</a></li>
                         <% }%>
@@ -100,11 +100,11 @@
   </div>
 
   <div class="col-md-7">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Descriptions</h3>
+    <div class="card">
+        <div class="card-header">
+            <span>Descriptions</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <p><b>Resource Graphs</b> provide an easy way to visualize the critical
                 SNMP, response time, and other data collected from managed nodes
                 throughout your network.
@@ -149,6 +149,8 @@
 </div>
   <hr />
 
-<jsp:include page="/js/angular.min.jsp" flush="false" />
-<jsp:include page="/js/search.min.jsp" flush="false" />
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="search" />
+</jsp:include>
+
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

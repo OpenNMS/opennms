@@ -164,6 +164,10 @@ public class Configuration implements Serializable {
     @XmlAttribute(name="port")
     private Integer m_port;
 
+
+    @XmlAttribute(name="ttl")
+    private Long m_ttl;
+
     public Configuration() {
         super();
     }
@@ -345,7 +349,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'Port'.
      */
     public final Integer getPort() {
-        return m_port == null? 0 : m_port;
+        return m_port == null? 161 : m_port;
     }
 
     /**
@@ -511,6 +515,15 @@ public class Configuration implements Serializable {
      */
     public boolean hasTimeout() {
         return m_timeout != null;
+    }
+
+
+    /**
+     *
+     * @return true if there is ttl defined
+     */
+    public boolean hasTTL() {
+        return m_ttl != null;
     }
 
     /**
@@ -740,6 +753,14 @@ public class Configuration implements Serializable {
      */
     public final void setWriteCommunity(final String writeCommunity) {
         m_writeCommunity = writeCommunity == null? null : writeCommunity.intern();
+    }
+
+    public Long getTTL() {
+        return m_ttl;
+    }
+
+    public void setTTL(Long ttl) {
+        m_ttl = ttl;
     }
 
     @Override

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.opennms.core.web.HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -77,6 +79,7 @@ public class WebMonitor extends AbstractServiceMonitor {
     public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
         PollStatus pollStatus = PollStatus.unresponsive();
         HttpClientWrapper clientWrapper = HttpClientWrapper.create();
+        setUseSystemProxyIfDefined(clientWrapper, map);
 
         try {
             final String hostAddress = InetAddressUtils.str(svc.getAddress());

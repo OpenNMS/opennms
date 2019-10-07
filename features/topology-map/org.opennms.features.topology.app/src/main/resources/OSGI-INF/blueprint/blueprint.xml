@@ -20,6 +20,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     <reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
     <reference id="layoutDao" interface="org.opennms.netmgt.topology.persistence.api.LayoutDao" availability="mandatory" />
     <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+    <reference id="topologyEntityCache" interface="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache" availability="mandatory"/>
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="operationManager"/>
@@ -29,7 +30,6 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
         <argument ref="layoutManager"/>
         <argument ref="transactionOperations"/>
         <property name="widgetManager" ref="widgetManager"/>
-        <property name="headerProvider" ref="onmsHeaderProvider" />
         <property name="showHeader" value="${showHeader}" />
         <property name="serviceManager" ref="blueprintBundleContext"/>
     </bean>
@@ -40,9 +40,6 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
         <property name="topologyService" ref="topologyService" />
         <property name="layoutManager" ref="layoutManager" />
     </bean>
-
-    <!--  Header reference -->
-    <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
 
     <bean id="defaultAutoRefreshSupport" class="org.opennms.features.topology.app.internal.DefaultAutoRefreshSupport" scope="prototype">
         <property name="interval" value="${autoRefresh.interval}"/>
@@ -101,8 +98,8 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="topologyUIFactory">
         <service-properties>
-            <entry key="alias" value="/topology"/>
-            <entry key="init.widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/topology/*"/>
+            <entry key="servlet.init.widgetset" value="org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet"/>
         </service-properties>
     </service>
     
@@ -139,6 +136,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     <bean id="topologyService" class="org.opennms.features.topology.app.internal.service.DefaultTopologyService" >
         <argument value="${topologyServiceCacheTimeout}"/>
         <property name="serviceLocator" ref="bundleContextServiceLocator"/>
+        <property name="topologyEntityCache" ref="topologyEntityCache"/>
     </bean>
     <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
 

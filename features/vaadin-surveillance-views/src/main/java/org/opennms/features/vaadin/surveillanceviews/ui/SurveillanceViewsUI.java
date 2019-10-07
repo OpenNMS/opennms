@@ -38,10 +38,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The surveillance view application's "main" class
@@ -127,7 +126,7 @@ public class SurveillanceViewsUI extends UI {
 
         setContent(rootLayout);
 
-        Page.getCurrent().getJavaScript().execute("function receiveMessage(event){\n" +
+        getUI().getPage().getJavaScript().execute("function receiveMessage(event){\n" +
                 "if(event.origin !== window.location.origin){ return; }\n" +
                 "\n" +
                 "event.source.postMessage( (document.getElementById('surveillance-window').offsetHeight + 17) + 'px', window.location.origin )\n" +

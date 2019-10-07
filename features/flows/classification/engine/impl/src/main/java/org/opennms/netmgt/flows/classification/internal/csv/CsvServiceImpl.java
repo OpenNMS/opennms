@@ -37,6 +37,7 @@ import java.util.Objects;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.BooleanUtils;
 import org.opennms.netmgt.flows.classification.csv.CsvImportResult;
 import org.opennms.netmgt.flows.classification.csv.CsvService;
 import org.opennms.netmgt.flows.classification.error.Error;
@@ -45,11 +46,12 @@ import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.exception.CSVImportException;
 import org.opennms.netmgt.flows.classification.exception.InvalidRuleException;
 import org.opennms.netmgt.flows.classification.internal.validation.RuleValidator;
+import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class CsvServiceImpl implements CsvService {
 
-    public static final String[] HEADERS = {"name","protocol","srcAddress","srcPort", "dstAddress", "dstPort", "exporterFilter"};
+    public static final String[] HEADERS = {"name","protocol","srcAddress","srcPort", "dstAddress", "dstPort", "exporterFilter", "omnidirectional"};
 
     public static final String HEADERS_STRING = String.join(";", HEADERS) + "\n";
 
@@ -62,7 +64,7 @@ public class CsvServiceImpl implements CsvService {
     }
 
     @Override
-    public CsvImportResult parseCSV(InputStream inputStream, boolean hasHeader) throws CSVImportException {
+    public CsvImportResult parseCSV(Group group, InputStream inputStream, boolean hasHeader) throws CSVImportException {
         Objects.requireNonNull(inputStream);
         final CsvImportResult result = new CsvImportResult();
         try {
@@ -82,9 +84,11 @@ public class CsvServiceImpl implements CsvService {
                 final String dstAddress = record.get(4);
                 final String dstPort = record.get(5);
                 final String exportFilter = record.get(6);
+                final String omnidirectional = record.get(7);
 
                 // Set values
                 final Rule rule = new Rule();
+                rule.setGroup(group);
                 rule.setName("".equals(name) ? null : name);
                 rule.setDstPort("".equals(dstPort) ? null : dstPort);
                 rule.setDstAddress("".equals(dstAddress) ? null : dstAddress);
@@ -92,6 +96,7 @@ public class CsvServiceImpl implements CsvService {
                 rule.setSrcAddress("".equals(srcAddress) ? null : srcAddress);
                 rule.setProtocol("".equals(protocol) ? null : protocol);
                 rule.setExporterFilter("".equals(exportFilter) ? null : exportFilter);
+                rule.setOmnidirectional(BooleanUtils.toBoolean(omnidirectional));
 
                 // Ensure it is a valid rule
                 try {

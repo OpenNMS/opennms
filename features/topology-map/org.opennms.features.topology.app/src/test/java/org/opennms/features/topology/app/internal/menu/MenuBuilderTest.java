@@ -32,12 +32,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.features.topology.app.internal.TestOperationContext;
-import org.vaadin.peter.contextmenu.client.ContextMenuState;
 
 import com.google.common.collect.Lists;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.UI;
 
 public class MenuBuilderTest {
 
@@ -129,16 +130,16 @@ public class MenuBuilderTest {
         builder.addMenuItem(createEmptyMenuItem("Test"), "Layout");
 
         MenuBar menubar = builder.build(Lists.newArrayList(), new TestOperationContext(null));
-        TopologyContextMenu contextMenu = new TopologyContextMenu(menubar);
+        TopologyContextMenu contextMenu = new TopologyContextMenu(EasyMock.niceMock(UI.class), menubar);
 
-        List<ContextMenuState.ContextMenuItemState> contextMenuItems = contextMenu.getItems();
+        final List<com.vaadin.contextmenu.MenuItem> contextMenuItems = contextMenu.getItems();
         assertEquals(1, contextMenuItems.size());
-        assertEquals("Layout", contextMenuItems.get(0).caption);
+        assertEquals("Layout", contextMenuItems.get(0).getText());
 
-        List<ContextMenuState.ContextMenuItemState> subMenuItems = contextMenuItems.get(0).getChildren();
+        final List<com.vaadin.contextmenu.MenuItem> subMenuItems = contextMenuItems.get(0).getChildren();
         assertEquals(1, subMenuItems.size());
-        ContextMenuState.ContextMenuItemState submenuItem = subMenuItems.get(0);
-        assertEquals("Test", submenuItem.caption);
+        final com.vaadin.contextmenu.MenuItem submenuItem = subMenuItems.get(0);
+        assertEquals("Test", submenuItem.getText());
     }
 
     private static TestOperationContext createTestOperationContext() {

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -30,6 +30,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>features</module>
     <module>poms</module>
     <module>provision</module>
     <module>org.opennms.features.topology.api</module>
@@ -37,9 +38,7 @@
     <module>org.opennms.features.topology.link</module>
     <module>org.opennms.features.topology.persistence</module>
     <module>org.opennms.features.topology.shell</module>
-    <module>org.opennms.features.topology.widgetset</module>
     <module>plugins</module>
-    <module>features</module>
     <module>themes</module>
   </modules>
 

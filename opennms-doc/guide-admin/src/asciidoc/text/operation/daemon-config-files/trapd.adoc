@@ -19,5 +19,5 @@ Trapd daemon can also be reloaded with following shell command on karaf.
 ----
 $ ssh -p 8101 admin@localhost
 ...
-admin@opennms> reload:daemon Trapd
+admin@opennms> reload:daemon trapd
 ----

@@ -36,4 +36,5 @@ public interface EdgeEntityVisitor<T> {
 
     T visit(IPServiceEdgeEntity edgeEntity);
 
+    T visit(ApplicationEdgeEntity applicationEdgeEntity);
 }

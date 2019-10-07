@@ -13,9 +13,7 @@
       <directory>${project.build.directory}/classes</directory>
       <outputDirectory>minion-${project.version}</outputDirectory>
       <includes>
-        <include>debian/opennms-minion.minion.init</include>
         <include>debian/rules</include>
-        <include>etc/minion.init</include>
         <include>bin/scvcli</include>
       </includes>
       <fileMode>0755</fileMode>
@@ -24,14 +22,15 @@
       <directory>${project.build.directory}/classes</directory>
       <outputDirectory>minion-${project.version}</outputDirectory>
       <excludes>
-        <exclude>debian/opennms-minion.minion.init</exclude>
         <exclude>debian/rules</exclude>
-        <exclude>etc/minion.init</exclude>
       </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/unpacked/minion-${project.version}</directory>
       <outputDirectory>minion-${project.version}</outputDirectory>
+      <excludes>
+        <exclude>**/container.*</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/unpacked/repositories</directory>
@@ -43,6 +42,20 @@
     </fileSet>
   </fileSets>
   <files>
+    <file>
+      <source>${project.build.directory}/unpacked/minion-${project.version}/etc/container.init</source>
+      <outputDirectory>minion-${project.version}/etc</outputDirectory>
+      <destName>minion.init</destName>
+      <fileMode>0755</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>${project.build.directory}/unpacked/minion-${project.version}/etc/container.conf</source>
+      <outputDirectory>minion-${project.version}/etc</outputDirectory>
+      <destName>minion.conf</destName>
+      <fileMode>0640</fileMode>
+      <filtered>true</filtered>
+    </file>
     <file>
       <source>../../COPYING</source>
       <outputDirectory>minion-${project.version}</outputDirectory>

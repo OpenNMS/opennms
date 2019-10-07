@@ -35,14 +35,13 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionOperations;
 
 @Command(scope = "kafka-producer", name = "evaluate-filter", description = "Compiles the given expression and optionally test it against an object.")
 @Service
@@ -53,7 +52,7 @@ public class EvaluateFilter implements Action {
     private AlarmDao alarmDao;
 
     @Reference
-    private TransactionOperations transactionOperations;
+    private SessionUtils sessionUtils;
 
     @Option(name = "-a", aliases = "--alarm-id", description = "Lookup an alarm by id and apply the given expression against it.")
     private Integer alarmId;
@@ -69,7 +68,7 @@ public class EvaluateFilter implements Action {
         final Expression expression = SPEL_PARSER.parseExpression(spelExpression);
         System.out.printf("SPEL Expression: %s\n", expression.getExpressionString());
         if (alarmId != null) {
-            transactionOperations.execute((TransactionCallback<Void>) status -> {
+            sessionUtils.withReadOnlyTransaction(() -> {
                 if (alarmId != null) {
                     final OnmsAlarm alarm = alarmDao.get(alarmId);
                     if (alarm == null) {

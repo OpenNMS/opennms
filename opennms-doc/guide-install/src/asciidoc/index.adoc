@@ -9,12 +9,10 @@
 
 [[gi]]
 = Installation Guide
-:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
-
-include::text/java-environment.adoc[]
 
 // Basic Setup OpenNMS
 include::text/basic-setup-opennms/setting-up-opennms.adoc[]

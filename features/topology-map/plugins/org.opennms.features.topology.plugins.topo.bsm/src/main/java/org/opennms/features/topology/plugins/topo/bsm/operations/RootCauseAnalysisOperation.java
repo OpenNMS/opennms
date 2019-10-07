@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.topo.bsm.operations;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.opennms.features.topology.plugins.topo.bsm.ApplicationVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertexVisitor;
 import org.opennms.features.topology.plugins.topo.bsm.IpServiceVertex;
@@ -58,6 +59,11 @@ public class RootCauseAnalysisOperation extends AbstractAnalysisOperation {
             public Boolean visit(ReductionKeyVertex vertex) {
                 return false;
             }
+
+            @Override
+            public Boolean visit(ApplicationVertex vertex) {
+                return false;
+            }
         };
     }
 
@@ -77,6 +83,11 @@ public class RootCauseAnalysisOperation extends AbstractAnalysisOperation {
 
             @Override
             public Collection<GraphVertex> visit(ReductionKeyVertex vertex) {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public Collection<GraphVertex> visit(ApplicationVertex vertex) {
                 return Collections.emptyList();
             }
         };

@@ -42,12 +42,14 @@
    <relatedAlarms id="32" type="2" severity="MAJOR">
       <reductionKey>ALARM2</reductionKey>
       <label>OpenNMS-defined node event: interfaceDown</label>
+      <nodeLabel>n2</nodeLabel>
       <logMessage>logit again</logMessage>
    </relatedAlarms>
    <relatedAlarms id="34" type="2" severity="CRITICAL">
       <reductionKey>ALARM1</reductionKey>
       <description>ALARM1-DESC</description>
       <label>OpenNMS-defined node event: interfaceDown</label>
+      <nodeLabel>n1</nodeLabel>
       <logMessage>logit</logMessage>
    </relatedAlarms>
    <affectedNodeCount>2</affectedNodeCount>

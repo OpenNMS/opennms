@@ -5,6 +5,7 @@ const moment = require('moment');
 const JSJoda = require('js-joda');
 require('js-joda-timezone');
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 function OnmsDateFormatter() {
 }
 

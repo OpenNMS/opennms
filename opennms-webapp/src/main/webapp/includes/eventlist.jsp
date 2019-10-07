@@ -166,12 +166,12 @@
     <input type="hidden" name="actionCode" value="<%=org.opennms.web.event.AcknowledgeType.ACKNOWLEDGED.getShortName() %>" />
 <% } %>
 
-<div id="include-eventlist" class="panel panel-default">
+<div id="include-eventlist" class="card">
 
-<div class="panel-heading">
-<h3 class="panel-title"><%=header%></h3>
+<div class="card-header">
+<span><%=header%></span>
 </div>
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
 
 <%
    String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
@@ -200,8 +200,8 @@
      <tr>
        <td class="standard" colspan="2">
            <nobr>
-             <input type="button" value="Acknowledge" onclick="submitAck()">
-             <input TYPE="reset" />
+             <input type="button" class="btn btn-secondary" value="Acknowledge" onclick="submitAck()">
+             <input TYPE="reset" class="btn btn-secondary" />
            </nobr>
        </td>
 
@@ -211,7 +211,7 @@
 </table>
 
 <% if( moreUrl != null ) { %>
-  <div class="panel-footer">
+  <div class="card-footer">
     <a href="<c:out value="<%=moreUrl%>"/>">More...</a>
   </div>
 <% } %>

@@ -66,7 +66,7 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 			"kar",
 			"deployer",
 			"opennms-jaas-login-module",
-			"opennms-health",
+			"opennms-health-rest",
 			"datachoices",
 			"opennms-topology-runtime-browsers",
 			"opennms-topology-runtime-linkd",
@@ -93,7 +93,6 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 			"dashlet-surveillance",
 			"vaadin-surveillance-views",
 			"vaadin-jmxconfiggenerator",
-			"vaadin-opennms-pluginmanager",
 			"vaadin-adminpage",
 			"org.opennms.features.bsm.shell-commands"
 		}) {

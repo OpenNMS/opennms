@@ -32,8 +32,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
+import org.opennms.core.rpc.mock.MockEntityScopeProvider;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.rpc.utils.RpcTargetHelper;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -54,6 +56,7 @@ import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -70,11 +73,16 @@ public abstract class CollectorTestUtils {
         final LocationAwareCollectorClientImpl locationAwareCollectorClient = new LocationAwareCollectorClientImpl(rpcClientFactory);
         locationAwareCollectorClient.setRpcModule(collectorClientRpcModule);
         locationAwareCollectorClient.setRpcTargetHelper(new RpcTargetHelper());
+        locationAwareCollectorClient.setEntityScopeProvider(new MockEntityScopeProvider());
         locationAwareCollectorClient.afterPropertiesSet();
         return locationAwareCollectorClient;
     }
 
-    public static CollectionSpecification createCollectionSpec(String svcName, ServiceCollector svcCollector, String collectionName) {
+    public static CollectionSpecification createCollectionSpec(String svcName, ServiceCollector svcCollector,
+                                                               String collectionName,
+                                                               ReadablePollOutagesDao pollOutagesDao) {
+        Objects.requireNonNull(pollOutagesDao);
+        
         Package pkg = new Package();
         Filter filter = new Filter();
         filter.setContent("IPADDR IPLIKE *.*.*.*");
@@ -88,7 +96,7 @@ public abstract class CollectorTestUtils {
         pkg.addService(service);
 
         CollectionSpecification spec = new CollectionSpecification(pkg, svcName, svcCollector, new DefaultCollectdInstrumentation(),
-                createLocationAwareCollectorClient());
+                createLocationAwareCollectorClient(), pollOutagesDao);
         return spec;
     }
 

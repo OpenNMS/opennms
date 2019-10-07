@@ -37,6 +37,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -85,15 +86,8 @@ public class KafkaPersisterFactory implements PersisterFactory {
         // Overwrite the serializers
         producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
         producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
-
-        final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            // Class-loader hack for accessing the org.apache.kafka.common.serialization.*
-            Thread.currentThread().setContextClassLoader(null);
-            producer = new KafkaProducer<>(producerConfig);
-        } finally {
-            Thread.currentThread().setContextClassLoader(currentClassLoader);
-        }
+        // Class-loader hack for accessing the kafka classes when initializing producer.
+        producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(producerConfig), KafkaProducer.class.getClassLoader());
         LOG.info(" kafka producer initialized with {} ", producerConfig);
     }
 

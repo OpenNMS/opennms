@@ -13,7 +13,7 @@
 
     <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
     <reference id="messageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
-    <reference id="telemetryAdapterRegistry" interface="org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry" />
+    <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" />
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" />
@@ -21,7 +21,7 @@
     <bean id="adapterManager" class="org.opennms.netmgt.telemetry.distributed.sentinel.AdapterManager" init-method="init" destroy-method="destroy">
         <property name="distPollerDao" ref="distPollerDao"/>
         <property name="messageConsumerManager" ref="messageConsumerManager" />
-        <property name="telemetryAdapterRegistry" ref="telemetryAdapterRegistry" />
+        <property name="telemetryRegistry" ref="telemetryRegistry" />
         <property name="bundleContext" ref="blueprintBundleContext" />
     </bean>
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="adapterManager">

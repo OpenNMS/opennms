@@ -30,11 +30,13 @@ package org.opennms.features.topology.plugins.topo.bsm.operations;
 
 import java.util.Collection;
 
+import org.opennms.features.topology.plugins.topo.bsm.ApplicationVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertexVisitor;
 import org.opennms.features.topology.plugins.topo.bsm.IpServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.ReductionKeyVertex;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
@@ -58,6 +60,11 @@ public class ImpactAnalysisOperation extends AbstractAnalysisOperation {
             public Boolean visit(ReductionKeyVertex vertex) {
                 return true;
             }
+
+            @Override
+            public Boolean visit(ApplicationVertex vertex) {
+                return true;
+            }
         };
     }
 
@@ -79,6 +86,12 @@ public class ImpactAnalysisOperation extends AbstractAnalysisOperation {
             @Override
             public Collection<GraphVertex> visit(ReductionKeyVertex vertex) {
                 return stateMachine.calculateImpact(vertex.getReductionKey());
+            }
+
+            @Override
+            public Collection<GraphVertex> visit(ApplicationVertex vertex) {
+                final Application application = getBusinessServiceManager().getApplicationById(vertex.getApplicationId());
+                return stateMachine.calculateImpact(application);
             }
         };
     }

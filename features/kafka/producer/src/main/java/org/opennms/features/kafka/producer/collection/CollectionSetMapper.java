@@ -41,13 +41,12 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.base.Strings;
 
@@ -58,11 +57,11 @@ public class CollectionSetMapper {
     @Autowired
     private NodeDao nodeDao;
 
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
 
-    public CollectionSetMapper(NodeDao nodeDao, TransactionOperations transactionOperations) {
+    public CollectionSetMapper(NodeDao nodeDao, SessionUtils sessionUtils) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 
     public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet) {
@@ -136,7 +135,7 @@ public class CollectionSetMapper {
                             .newBuilder();
                     attributeBuilder.setGroup(lastGroupName);
                     attributeBuilder.setName(attribute.getName());
-                    attributeBuilder.setValue(attribute.getNumericValue().longValue());
+                    attributeBuilder.setValue(attribute.getNumericValue().doubleValue());
                     attributeBuilder.setType((attribute.getType() == AttributeType.GAUGE) ? Type.GAUGE : Type.COUNTER);
                     collectionSetResourceBuilder.addNumeric(attributeBuilder);
                 }
@@ -234,7 +233,7 @@ public class CollectionSetMapper {
     public CollectionSetProtos.NodeLevelResource.Builder buildNodeLevelResourceForProto(String nodeCriteria) {
         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = CollectionSetProtos.NodeLevelResource
                 .newBuilder();
-        transactionOperations.execute((TransactionCallback<Void>) status -> {
+        sessionUtils.withReadOnlyTransaction(() -> {
             try {
                 OnmsNode node = nodeDao.get(nodeCriteria);
                 if (node != null) {

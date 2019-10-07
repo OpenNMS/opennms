@@ -33,17 +33,17 @@ import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.opennms.features.vaadin.dashboard.ui.dashboard.DashboardView;
 import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
 
-import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.UI;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.NativeSelect;
 
 /**
  * The top heading layout for the wallboard view.
@@ -101,7 +101,7 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 UI.getCurrent().getNavigator().addViewChangeListener(HeaderLayout.this);
-                UI.getCurrent().getNavigator().navigateTo("dashboard/" + m_nativeSelect.getContainerProperty(m_nativeSelect.getValue(), "title"));
+                UI.getCurrent().getNavigator().navigateTo("dashboard/" + m_nativeSelect.getContainerProperty(m_nativeSelect.getValue(), "title").getValue());
             }
         });
         m_dashboardButton.setDescription("Ops Panel view");
@@ -135,7 +135,7 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 UI.getCurrent().getNavigator().addViewChangeListener(HeaderLayout.this);
-                UI.getCurrent().getNavigator().navigateTo("wallboard/" + m_nativeSelect.getContainerProperty(m_nativeSelect.getValue(), "title"));
+                UI.getCurrent().getNavigator().navigateTo("wallboard/" + m_nativeSelect.getContainerProperty(m_nativeSelect.getValue(), "title").getValue());
             }
         });
         m_wallboardButton.setDescription("Ops Board view");
@@ -154,6 +154,11 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
     public void gotoWallboard(Wallboard wallboard) {
         m_nativeSelect.setValue(wallboard);
         UI.getCurrent().getNavigator().navigateTo("wallboard/" + wallboard.getTitle());
+    }
+
+    public void setWallboard(final String wallboardName) {
+        final Wallboard wallboard = WallboardProvider.getInstance().getWallboard(wallboardName);
+        m_nativeSelect.setValue(wallboard);
     }
 
     private void updatePauseButton() {

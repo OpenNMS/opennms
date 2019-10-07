@@ -46,8 +46,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
@@ -63,6 +65,9 @@ import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.AbstractEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ApplicationEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ApplicationEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ApplicationResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.EdgeRequestDTOVisitor;
@@ -137,6 +142,12 @@ public class BusinessServiceRestService {
                 response.getChildren().add(transform(edge));
                 return null;
             }
+
+            @Override
+            public Void visit(ApplicationEdge edge) {
+                response.getApplications().add(transform(edge));
+                return null;
+            }
         }));
         return Response.ok(response).build();
     }
@@ -174,6 +185,14 @@ public class BusinessServiceRestService {
                         rkEdge.getWeight(),
                         rkEdge.getFriendlyName());
             }
+
+            @Override
+            public void visit(ApplicationEdgeRequestDTO rkEdge) {
+                service.addApplicationEdge(
+                        getManager().getApplicationById(rkEdge.getApplicationId()),
+                        transform(rkEdge.getMapFunction()),
+                        rkEdge.getWeight());
+            }
         }));
         getManager().saveBusinessService(service);
 
@@ -198,6 +217,7 @@ public class BusinessServiceRestService {
         service.setReduceFunction(transform(request.getReduceFunction()));
         service.setReductionKeyEdges(Sets.newHashSet());
         service.setIpServiceEdges(Sets.newHashSet());
+        service.setApplicationEdges(Sets.newHashSet());
         service.setChildEdges(Sets.newHashSet());
 
         request.getEdges().forEach(eachEdge -> eachEdge.accept(new EdgeRequestDTOVisitor() {
@@ -228,6 +248,15 @@ public class BusinessServiceRestService {
                     transform(rkEdge.getMapFunction()),
                     rkEdge.getWeight(),
                     rkEdge.getFriendlyName());
+            }
+
+            @Override
+            public void visit(ApplicationEdgeRequestDTO applicationEdge) {
+                getManager().addApplicationEdge(
+                        service,
+                        getManager().getApplicationById(applicationEdge.getApplicationId()),
+                        transform(applicationEdge.getMapFunction()),
+                        applicationEdge.getWeight());
             }
         }));
         getManager().saveBusinessService(service);
@@ -358,6 +387,13 @@ public class BusinessServiceRestService {
         return response;
     }
 
+    private ApplicationResponseDTO transform(Application input) {
+        ApplicationResponseDTO response = new ApplicationResponseDTO();
+        response.setId(input.getId());
+        response.setApplicationName(input.getApplicationName());
+        return response;
+    }
+
     private AbstractEdgeResponseDTO transform(Edge edge) {
         Objects.requireNonNull(edge);
         return edge.accept(new EdgeVisitor<AbstractEdgeResponseDTO>() {
@@ -376,7 +412,23 @@ public class BusinessServiceRestService {
             public AbstractEdgeResponseDTO visit(ChildEdge edge) {
                 return transform(edge);
             }
+
+            @Override
+            public AbstractEdgeResponseDTO visit(ApplicationEdge edge) {
+                return transform(edge);
+            }
         });
+    }
+
+    private ApplicationEdgeResponseDTO transform(ApplicationEdge edge) {
+        final ApplicationEdgeResponseDTO response = new ApplicationEdgeResponseDTO();
+        response.setId(edge.getId());
+        response.setOperationalStatus(edge.getOperationalStatus());
+        response.setReductionKeys(edge.getReductionKeys());
+        response.setMapFunction(transform(edge.getMapFunction()));
+        response.setWeight(edge.getWeight());
+        response.setApplication(transform(edge.getApplication()));
+        return response;
     }
 
     private IpServiceEdgeResponseDTO transform(IpServiceEdge edge) {

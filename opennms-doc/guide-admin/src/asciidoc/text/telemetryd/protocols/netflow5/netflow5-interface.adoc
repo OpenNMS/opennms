@@ -1,4 +1,0 @@
-
-==== NetFlow v5 Interface
-
-See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.

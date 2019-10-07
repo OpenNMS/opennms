@@ -22,11 +22,12 @@
 		</rollback>
 	</changeSet>
 	<changeSet author="brozow" id="1.7.1-add-last-capsd-poll">
+		<validCheckSum>3:4a08fa054ca528a4acc63ecbffa7e7cd</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="snmpinterface" columnName="snmplastcapsdpoll" /></not>
 		</preConditions>
 		<addColumn tableName="snmpinterface">
-			<column name="snmplastcapsdpoll" type="DATETIME" />
+			<column name="snmplastcapsdpoll" type="TIMESTAMP WITH TIME ZONE" />
 		</addColumn>
 		<rollback>
 			<dropColumn tableName="snmpinterface" columnName="snmplastcapsdpoll" />

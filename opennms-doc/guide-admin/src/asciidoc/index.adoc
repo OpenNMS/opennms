@@ -10,7 +10,7 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -90,6 +90,7 @@ include::text/service-assurance/polling-packages.adoc[]
 [[ga-service-monitors]]
 === Service monitors
 include::text/service-assurance/monitors/introduction.adoc[]
+include::text/service-assurance/monitors/ActiveMQMonitor.adoc[]
 include::text/service-assurance/monitors/AvailabilityMonitor.adoc[]
 include::text/service-assurance/monitors/BgpSessionMonitor.adoc[]
 include::text/service-assurance/monitors/BSFMonitor.adoc[]
@@ -128,6 +129,7 @@ include::text/service-assurance/monitors/Pop3Monitor.adoc[]
 include::text/service-assurance/monitors/PrTableMonitor.adoc[]
 include::text/service-assurance/monitors/RadiusAuthMonitor.adoc[]
 include::text/service-assurance/monitors/SmbMonitor.adoc[]
+include::text/service-assurance/monitors/SmtpMonitor.adoc[]
 include::text/service-assurance/monitors/SnmpMonitor.adoc[]
 include::text/service-assurance/monitors/SshMonitor.adoc[]
 include::text/service-assurance/monitors/SSLCertMonitor.adoc[]
@@ -136,6 +138,7 @@ include::text/service-assurance/monitors/TcpMonitor.adoc[]
 include::text/service-assurance/monitors/SystemExecuteMonitor.adoc[]
 include::text/service-assurance/monitors/VmwareCimMonitor.adoc[]
 include::text/service-assurance/monitors/VmwareMonitor.adoc[]
+include::text/service-assurance/monitors/WebMonitor.adoc[]
 include::text/service-assurance/monitors/Win32ServiceMonitor.adoc[]
 include::text/service-assurance/monitors/WsManMonitor.adoc[]
 include::text/service-assurance/monitors/XmpMonitor.adoc[]
@@ -166,7 +169,12 @@ include::text/performance-data-collection/collectors/xmp.adoc[]
 === Shell Commands
 include::text/performance-data-collection/shell/introduction.adoc[]
 include::text/performance-data-collection/shell/adhoc-collection.adoc[]
+include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
+
+[[ga-performance-mgmt-thresholds]]
+== Thresholding
+include::text/thresholds/thresholding.adoc[]
 
 [[ga-events]]
 == Events
@@ -189,6 +197,7 @@ include::text/alarms/alarmd.adoc[]
 include::text/alarms/configuring-alarms.adoc[]
 include::text/alarms/alarm-notes.adoc[]
 include::text/alarms/alarm-sound-flash.adoc[]
+include::text/alarms/history.adoc[]
 
 [[ga-notifications]]
 == Notifications
@@ -209,13 +218,16 @@ include::text/provisioning/getting-started.adoc[]
 include::text/provisioning/import-handler.adoc[]
 include::text/provisioning/examples.adoc[]
 include::text/provisioning/adapters.adoc[]
+include::text/provisioning/meta-data.adoc[]
 include::text/provisioning/integration.adoc[]
 include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
+include::text/provisioning/snmp-profile.adoc[]
 
 [[ga-provisioning-detectors]]
 === Service Detectors
+include::text/provisioning/detectors.adoc[]
 include::text/provisioning/detectors/HttpDetector.adoc[]
 include::text/provisioning/detectors/HttpsDetector.adoc[]
 include::text/provisioning/detectors/SnmpDetector.adoc[]
@@ -265,12 +277,16 @@ include::text/enlinkd/layer-3-discovery.adoc[]
 include::text/enlinkd/layer-3/ospf-discovery.adoc[]
 include::text/enlinkd/layer-3/is-is-discovery.adoc[]
 
+
+[[ga-opennms-opentracing]]
+== OpenTracing
+include::text/opentracing/setup.adoc[]
+
 [[ga-opennms-operation]]
 == Operation
 include::text/operation/ssl/ssl.adoc[]
 include::text/operation/request-logging.adoc[]
 include::text/operation/geocoder.adoc[]
-include::text/operation/resourcecli.adoc[]
 include::text/operation/newts-repository-converter.adoc[]
 
 [[ga-opennms-operation-newts]]
@@ -293,7 +309,7 @@ include::text/operation/daemon-config-files/trapd.adoc[]
 == System Properties
 include::text/system-properties/introduction.adoc[]
 include::text/system-properties/opennms-properties.adoc[]
-
+include::text/system-properties/system-proxies.adoc[]
 
 [[ga-ticketing]]
 == Ticketing
@@ -308,30 +324,22 @@ include::text/ticketing/tsrm.adoc[]
 == Enabling RMI
 include::text/rmi.adoc[]
 
-ifndef::opennms-prime[]
 [[ga-minion]]
 == Minion
 include::text/minion/system-properties.adoc[]
+include::text/minion/jms.adoc[]
 include::text/minion/kafka.adoc[]
 include::text/minion/aws-sqs.adoc[]
-endif::opennms-prime[]
+include::text/minion/offheap.adoc[]
+include::text/minion/jdbc-driver.adoc[]
+include::text/minion/ttl.adoc[]
 
 [[ga-sentinel]]
 == Sentinel
 include::text/sentinel/sentinel.adoc[]
 
-[[ga-opennms-plugin-manager]]
-== Plugin Manager
-include::text/plugin-manager/introduction.adoc[]
-include::text/plugin-manager/setting-karaf-instance-data.adoc[]
-include::text/plugin-manager/installing-available-plugins.adoc[]
-include::text/plugin-manager/internal-plugins-repository.adoc[]
-include::text/plugin-manager/installing-licences.adoc[]
-include::text/plugin-manager/licence-structure.adoc[]
-
 == Internal Plugins
 include::text/plugins/introduction.adoc[]
-include::text/plugins/alarm-change-notifier.adoc[]
 include::text/plugins/opennms-es-rest.adoc[]
 
 [[ga-special-cases-and-workarounds]]
@@ -342,29 +350,28 @@ include::text/workarounds/snmp.adoc[]
 == IFTTT Integration
 include::text/ifttt/ifttt-integration.adoc[]
 
+
+[[ga-dnsresolver]]
+== DNS Resolver
+include::text/dnsresolver/introduction.adoc[]
+
 [[ga-telemetryd]]
 == Telemetry Daemon
 include::text/telemetryd/introduction.adoc[]
 
-[[ga-telemetryd-protocols]]
-=== Protocol Reference
-include::text/telemetryd/protocols/ipfix/ipfix-interface.adoc[]
-include::text/telemetryd/protocols/ipfix/ipfix-adapter.adoc[]
-include::text/telemetryd/protocols/jti/junos-telemetry-interface.adoc[]
-include::text/telemetryd/protocols/jti/jti-adapter.adoc[]
-include::text/telemetryd/protocols/netflow5/netflow5-interface.adoc[]
-include::text/telemetryd/protocols/netflow5/netflow5-adapter.adoc[]
-include::text/telemetryd/protocols/netflow9/netflow9-interface.adoc[]
-include::text/telemetryd/protocols/netflow9/netflow9-adapter.adoc[]
-include::text/telemetryd/protocols/nxos/cisco-nxos-telemetry.adoc[]
-include::text/telemetryd/protocols/nxos/nxos-adapter.adoc[]
-include::text/telemetryd/protocols/sflow/sflow-interface.adoc[]
-include::text/telemetryd/protocols/sflow/sflow-adapter.adoc[]
-
 [[ga-telemetryd-listener]]
 === Listener Reference
-include::text/telemetryd/listener/udp-listener.adoc[]
-include::text/telemetryd/listener/flow-listeners.adoc[]
+include::text/telemetryd/listener/tcp.adoc[]
+include::text/telemetryd/listener/udp.adoc[]
+
+[[ga-telemetryd-protocols]]
+=== Protocol Reference
+include::text/telemetryd/protocols/ipfix.adoc[]
+include::text/telemetryd/protocols/jti.adoc[]
+include::text/telemetryd/protocols/netflow5.adoc[]
+include::text/telemetryd/protocols/netflow9.adoc[]
+include::text/telemetryd/protocols/nxos.adoc[]
+include::text/telemetryd/protocols/sflow.adoc[]
 
 [[ga-elasticsearch-integration]]
 == Elasticsearch Integration
@@ -373,10 +380,12 @@ include::text/elasticsearch/introduction.adoc[]
 [[ga-elasticsearch-integration-features]]
 === Features
 include::text/elasticsearch/features/introduction.adoc[]
-include::text/elasticsearch/features/alarm-event-forwarder.adoc[]
-include::text/elasticsearch/features/alarm-event-forwarder-mapping.adoc[]
-include::text/elasticsearch/features/alarm-event-forwarder-mapping-table.adoc[]
+include::text/elasticsearch/features/event-forwarder.adoc[]
+include::text/elasticsearch/features/event-forwarder-mapping.adoc[]
+include::text/elasticsearch/features/event-forwarder-mapping-table.adoc[]
 include::text/elasticsearch/features/flows.adoc[]
+include::text/elasticsearch/features/situation-feedback.adoc[]
+include::text/elasticsearch/features/alarm-history.adoc[]
 
 [[ga-flow-support]]
 == Flow Support
@@ -387,3 +396,11 @@ include::text/flows/classification-engine.adoc[]
 [[ga-kafka-producer]]
 == Kafka Producer
 include::text/kafka-producer/kafka-producer.adoc[]
+
+[[ga-alarm-correlation]]
+== Alarm Correlation
+include::text/alarm-correlation/situation-feedback.adoc[]
+
+[[ga-meta-data]]
+== Meta-Data
+include::text/meta-data.adoc[]

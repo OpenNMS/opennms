@@ -33,8 +33,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
-import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasCounter;
-import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
+import static org.opennms.netmgt.alarmd.AlarmMatchers.hasCounter;
+import static org.opennms.netmgt.alarmd.AlarmMatchers.hasSeverity;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -49,6 +49,7 @@ import java.util.concurrent.Callable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Criteria;
@@ -82,6 +83,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  *
  * @author jwhite
  */
+@Ignore("flapping - see NMS-12309")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -97,7 +99,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         // Reduce the default snapshot interval so that the tests can finish in a reasonable time
         AlarmLifecycleListenerManager.ALARM_SNAPSHOT_INTERVAL_MS_SYS_PROP+"=5000"
 })
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<MockDatabase>, AlarmLifecycleListener {
 
     @Autowired
@@ -111,7 +113,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
     @Autowired
     private AlarmDao m_alarmDao;
-    
+
     @Autowired
     private AlarmPersisterImpl m_alarmPersisterImpl;
 
@@ -160,6 +162,10 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
     @After
     public void tearDown() {
+        // Unregister!
+        m_alarmLifecycleListenerManager.onListenerUnregistered(this, Collections.emptyMap());
+
+        // Destroy!
         m_alarmd.destroy();
     }
 
@@ -288,6 +294,16 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
                 alarms.stream().map(OnmsAlarm::getReductionKey).collect(Collectors.toSet())))
                 .forEach(r -> m_alarmsByReductionKey.remove(r));
        */
+    }
+
+    @Override
+    public void preHandleAlarmSnapshot() {
+        // pass
+    }
+
+    @Override
+    public void postHandleAlarmSnapshot() {
+        // pass
     }
 
     @Override

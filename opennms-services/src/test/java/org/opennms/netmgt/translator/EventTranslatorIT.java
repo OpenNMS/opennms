@@ -89,7 +89,6 @@ public class EventTranslatorIT {
 
     @Before
     public void setUp() throws Exception {
-//        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockLogAppender.setupLogging();
 
         createMockNetwork();
@@ -122,8 +121,6 @@ public class EventTranslatorIT {
         sleep(200);
         MockLogAppender.assertNoWarningsOrGreater();
         m_db.drop();
-//        MockUtil.println("------------ End Test "+getName()+" --------------------------");
-//        super.tearDown();
     }
     
 
@@ -135,6 +132,12 @@ public class EventTranslatorIT {
         m_db = new MockDatabase();
         m_db.populate(m_network);
         DataSourceFactory.setInstance(m_db);
+
+        final Connection c = m_db.getConnection();
+        final Statement stmt = c.createStatement();
+        stmt.executeUpdate("update snmpinterface set snmpifname = 'david', snmpifalias = 'p-brane' WHERE nodeid = 1 and snmpifindex = 2");
+        stmt.close();
+        c.close();
     }
 
     private void createMockNetwork() {
@@ -192,35 +195,35 @@ public class EventTranslatorIT {
     public void testIsTranslationEvent() throws Exception {
         // test non matching uei match fails
         Event pse = createTestEvent("someOtherUei", "Router", "192.168.1.1", "ICMP", "Down");
-        assertFalse(m_config.isTranslationEvent(pse));
+        assertTrue(m_config.translateEvent(pse).isEmpty());
         
         // test matchin uei succeeds
         Event te = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
-        assertTrue(m_config.isTranslationEvent(te));
+        assertFalse(m_config.translateEvent(te).isEmpty());
         
         // test null parms fails
         Event teWithNullParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
         teWithNullParms.setParmCollection(null);
-        assertFalse(m_config.isTranslationEvent(teWithNullParms));
+        assertTrue(m_config.translateEvent(teWithNullParms).isEmpty());
         
         // test empty  parm list fails
         Event teWithNoParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
         teWithNoParms.setParmCollection(new ArrayList<Parm>());
-        assertFalse(m_config.isTranslationEvent(teWithNoParms));
+        assertTrue(m_config.translateEvent(teWithNoParms).isEmpty());
 
         // test missing a parm fails
         Event teWithWrongParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
         List<Parm> p = teWithWrongParms.getParmCollection();
         p.get(2).setParmName("unmatching"); // change the name for the third parm so it fails to match
-        assertFalse(m_config.isTranslationEvent(teWithWrongParms));
+        assertTrue(m_config.translateEvent(teWithWrongParms).isEmpty());
 
         // that a matching parm value succeeds
         Event te2 = createTestEvent("translationTest", "Router", "xxx192.168.1.1xxx", "ICMP", "Down");
-        assertTrue(m_config.isTranslationEvent(te2));
+        assertFalse(m_config.translateEvent(te2).isEmpty());
         
         // that a matching parm value succeeds
         Event te3 = createTestEvent("translationTest", "Router", "xxx192.168.1.2", "ICMP", "Down");
-        assertFalse(m_config.isTranslationEvent(te3));
+        assertTrue(m_config.translateEvent(te3).isEmpty());
     }
     
     @Test
@@ -273,16 +276,10 @@ public class EventTranslatorIT {
         m_translator = EventTranslator.getInstance();
         m_translator.setEventManager(m_eventMgr);
         m_translator.setConfig(EventTranslatorConfigFactory.getInstance());
-        //m_translator.setDataSource(m_db);
-        
-        
-        Connection c = m_db.getConnection();
-        Statement stmt = c.createStatement();
-        stmt.executeUpdate("update snmpinterface set snmpifname = 'david', snmpifalias = 'p-brane' WHERE nodeid = 1 and snmpifindex = 2");
-        stmt.close();
-        c.close();
-        
-        List<Event> translatedEvents = m_config.translateEvent(createLinkDownEvent());
+
+        // nodeId=1, ifIndex=2 will match in db
+        final List<Event> translatedEvents = m_config.translateEvent(createLinkDownEvent(1,2));
+
         assertNotNull(translatedEvents);
         assertEquals(1, translatedEvents.size());
         assertEquals(3, translatedEvents.get(0).getParmCollection().size());
@@ -293,8 +290,106 @@ public class EventTranslatorIT {
         assertEquals("p-brane", translatedEvents.get(0).getParmCollection().get(2).getValue().getContent());
     }
 
-	private String getLinkDownTranslation() {
-	    String linkDownConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+    @Test
+    public void testTranslateLinkDownWithDefaults() throws SQLException, IOException {
+        final InputStream rdr = new ByteArrayInputStream(getLinkDownTranslation("foo", "bar").getBytes(StandardCharsets.UTF_8));
+        m_config = new EventTranslatorConfigFactory(rdr, m_db);
+        EventTranslatorConfigFactory.setInstance(m_config);
+
+        m_translator = EventTranslator.getInstance();
+        m_translator.setEventManager(m_eventMgr);
+        m_translator.setConfig(EventTranslatorConfigFactory.getInstance());
+
+        // nodeId=1, ifIndex=2 will match in db
+        final List<Event> translatedEvents1 = m_config.translateEvent(createLinkDownEvent(1,2));
+
+        assertNotNull(translatedEvents1);
+        assertEquals(1, translatedEvents1.size());
+        assertEquals(3, translatedEvents1.get(0).getParmCollection().size());
+        assertEquals(".1.3.6.1.2.1.2.2.1.1.2", translatedEvents1.get(0).getParmCollection().get(0).getParmName());
+        assertEquals("ifName", translatedEvents1.get(0).getParmCollection().get(1).getParmName());
+        assertEquals("ifAlias", translatedEvents1.get(0).getParmCollection().get(2).getParmName());
+        assertEquals("david", translatedEvents1.get(0).getParmCollection().get(1).getValue().getContent());
+        assertEquals("p-brane", translatedEvents1.get(0).getParmCollection().get(2).getValue().getContent());
+
+        // nodeId=3, ifIndex=4 will not match in db
+        final List<Event> translatedEvents2 = m_config.translateEvent(createLinkDownEvent(3,4));
+
+        assertNotNull(translatedEvents2);
+        assertEquals(1, translatedEvents2.size());
+        assertEquals(3, translatedEvents2.get(0).getParmCollection().size());
+        assertEquals(".1.3.6.1.2.1.2.2.1.1.2", translatedEvents2.get(0).getParmCollection().get(0).getParmName());
+        assertEquals("ifName", translatedEvents2.get(0).getParmCollection().get(1).getParmName());
+        assertEquals("ifAlias", translatedEvents2.get(0).getParmCollection().get(2).getParmName());
+        assertEquals("foo", translatedEvents2.get(0).getParmCollection().get(1).getValue().getContent());
+        assertEquals("bar", translatedEvents2.get(0).getParmCollection().get(2).getValue().getContent());
+    }
+
+    @Test
+    public void testTranslateLinkDownWithSomeDefaults() throws SQLException, IOException {
+        final InputStream rdr = new ByteArrayInputStream(getLinkDownTranslation("foo", null).getBytes(StandardCharsets.UTF_8));
+        m_config = new EventTranslatorConfigFactory(rdr, m_db);
+        EventTranslatorConfigFactory.setInstance(m_config);
+
+        m_translator = EventTranslator.getInstance();
+        m_translator.setEventManager(m_eventMgr);
+        m_translator.setConfig(EventTranslatorConfigFactory.getInstance());
+
+        // nodeId=1, ifIndex=2 will match in db
+        final List<Event> translatedEvents1 = m_config.translateEvent(createLinkDownEvent(1,2));
+
+        assertNotNull(translatedEvents1);
+        assertEquals(1, translatedEvents1.size());
+        assertEquals(3, translatedEvents1.get(0).getParmCollection().size());
+        assertEquals(".1.3.6.1.2.1.2.2.1.1.2", translatedEvents1.get(0).getParmCollection().get(0).getParmName());
+        assertEquals("ifName", translatedEvents1.get(0).getParmCollection().get(1).getParmName());
+        assertEquals("ifAlias", translatedEvents1.get(0).getParmCollection().get(2).getParmName());
+        assertEquals("david", translatedEvents1.get(0).getParmCollection().get(1).getValue().getContent());
+        assertEquals("p-brane", translatedEvents1.get(0).getParmCollection().get(2).getValue().getContent());
+
+        // nodeId=3, ifIndex=4 will not match in db, but only one default set...
+        final List<Event> translatedEvents2 = m_config.translateEvent(createLinkDownEvent(3,4));
+        assertNotNull(translatedEvents2);
+        assertEquals(0, translatedEvents2.size());
+    }
+
+    @Test
+    public void testTranslateLinkDownWithoutDefaults() throws SQLException, IOException {
+        final InputStream rdr = new ByteArrayInputStream(getLinkDownTranslation().getBytes(StandardCharsets.UTF_8));
+        m_config = new EventTranslatorConfigFactory(rdr, m_db);
+        EventTranslatorConfigFactory.setInstance(m_config);
+
+        m_translator = EventTranslator.getInstance();
+        m_translator.setEventManager(m_eventMgr);
+        m_translator.setConfig(EventTranslatorConfigFactory.getInstance());
+
+        // nodeId=1, ifIndex=2 will match in db
+        final List<Event> translatedEvents1 = m_config.translateEvent(createLinkDownEvent(1,2));
+
+        assertNotNull(translatedEvents1);
+        assertEquals(1, translatedEvents1.size());
+        assertEquals(3, translatedEvents1.get(0).getParmCollection().size());
+        assertEquals(".1.3.6.1.2.1.2.2.1.1.2", translatedEvents1.get(0).getParmCollection().get(0).getParmName());
+        assertEquals("ifName", translatedEvents1.get(0).getParmCollection().get(1).getParmName());
+        assertEquals("ifAlias", translatedEvents1.get(0).getParmCollection().get(2).getParmName());
+        assertEquals("david", translatedEvents1.get(0).getParmCollection().get(1).getValue().getContent());
+        assertEquals("p-brane", translatedEvents1.get(0).getParmCollection().get(2).getValue().getContent());
+
+        // nodeId=3, ifIndex=4 will not match in db, but no defaults set...
+        final List<Event> translatedEvents2 = m_config.translateEvent(createLinkDownEvent(3,4));
+        assertNotNull(translatedEvents2);
+        assertEquals(0, translatedEvents2.size());
+    }
+
+    private String getLinkDownTranslation() {
+        return getLinkDownTranslation(null, null);
+    }
+
+	private String getLinkDownTranslation(String ifName, String ifAlias) {
+        final String defaultIfName = (ifName == null ? "" : " default=\"" + ifName + "\"");
+        final String defaultIfAlias = (ifAlias == null ? "" : " default=\"" + ifAlias + "\"");
+
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 	    		"<event-translator-configuration xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
 	    		"  xsi:schemaLocation=\"http://xmlns.opennms.org/xsd/translator-configuration http://www.opennms.org/xsd/config/translator-configuration.xsd \">\n" + 
 	    		"  <translation>\n" + 
@@ -303,13 +398,13 @@ public class EventTranslatorIT {
 	    		"    <event-translation-spec uei=\"uei.opennms.org/generic/traps/SNMP_Link_Down\">\n" + 
 	    		"      <mappings>\n" + 
 	    		"        <mapping>\n" + 
-	    		"          <assignment name=\"ifName\" type=\"parameter\">\n" + 
+	    		"          <assignment name=\"ifName\" type=\"parameter\"" + defaultIfName + ">\n" +
 	    		"            <value type=\"sql\" result=\"SELECT snmp.snmpIfName FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer\" >\n" + 
                 "              <value type=\"field\" name=\"nodeid\" matches=\".*\" result=\"${0}\" />\n" + 
 	    		"              <value type=\"parameter\" name=\"~^\\.1\\.3\\.6\\.1\\.2\\.1\\.2\\.2\\.1\\.1\\.([0-9]*)$\" matches=\".*\" result=\"${0}\" />\n" + 
 	    		"            </value>\n" + 
 	    		"          </assignment>\n" + 
-                "          <assignment name=\"ifAlias\" type=\"parameter\">\n" + 
+                "          <assignment name=\"ifAlias\" type=\"parameter\"" + defaultIfAlias + ">\n" +
                 "            <value type=\"sql\" result=\"SELECT snmp.snmpIfAlias FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer\" >\n" + 
                 "              <value type=\"field\" name=\"nodeid\" matches=\".*\" result=\"${0}\" />\n" + 
                 "              <value type=\"parameter\" name=\"~^\\.1\\.3\\.6\\.1\\.2\\.1\\.2\\.2\\.1\\.1\\.([0-9]*)$\" matches=\".*\" result=\"${0}\" />\n" + 
@@ -320,7 +415,6 @@ public class EventTranslatorIT {
 	    		"    </event-translation-spec>\n" + 
 	    		"  </translation>\n" + 
 	    		"</event-translator-configuration>";
-	    return linkDownConfig;
     }
 
     private void validateTranslatedEvent(Event event) {
@@ -341,10 +435,10 @@ public class EventTranslatorIT {
     		assertTrue(ueis.contains("uei.opennms.org/services/translationTest"));
     }
     
-    private Event createLinkDownEvent() {
+    private Event createLinkDownEvent(int nodeId, int ifIndex) {
         EventBuilder builder = new EventBuilder("uei.opennms.org/generic/traps/SNMP_Link_Down", "Trapd");
-        builder.setField("nodeid", "1");
-        builder.addParam(".1.3.6.1.2.1.2.2.1.1.2", "2");
+        builder.setField("nodeid", String.valueOf(nodeId));
+        builder.addParam(".1.3.6.1.2.1.2.2.1.1.2", String.valueOf(ifIndex));
         return builder.getEvent();
     }
 

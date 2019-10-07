@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ public class KafkaMessageConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaMessageConsumer.class);
 
-    private final String groupName = "OpenNMS";
+    private final String groupName = SystemInfoUtils.getInstanceId();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 

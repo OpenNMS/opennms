@@ -84,7 +84,13 @@ public class DefaultPollContext implements PollContext, EventListener {
         EventConstants.NODE_DOWN_EVENT_UEI,
         EventConstants.NODE_UP_EVENT_UEI
     };
-    
+
+    /**
+     * Poll timestamps are updated using a DB transaction in the same thread and immediately following the poll.
+     * This may cause unnecessary overhead in extreme cases, so we add the ability to disable this functionality.
+     */
+    public static final boolean DISABLE_POLL_TIMESTAMP_TRACKING = Boolean.getBoolean("org.opennms.netmgt.poller.disablePollTimestampTracking");
+
     private volatile PollerConfig m_pollerConfig;
     private volatile QueryManager m_queryManager;
     private volatile EventIpcManager m_eventManager;
@@ -434,6 +440,17 @@ public class DefaultPollContext implements PollContext, EventListener {
             // If the event was not completed and it is still pending, then don't do anything to it
         }
         LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", event, event.getUei(), event.getDbid());
+    }
+
+    @Override
+    public void trackPoll(PollableService service, PollStatus result) {
+        try {
+            if (!result.isUnknown() && !DISABLE_POLL_TIMESTAMP_TRACKING) {
+                getQueryManager().updateLastGoodOrFail(service.getNodeId(), service.getAddress(), service.getSvcName(), result);
+            }
+        } catch (Exception e) {
+            LOG.warn("Error occurred while tracking poll for service: {}", service, e);
+        }
     }
 
     private static void processPending(final PendingPollEvent pollEvent) {

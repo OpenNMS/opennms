@@ -80,6 +80,7 @@ public abstract class SearchProperties {
 
 	static final SortedSet<SearchProperty> ALARM_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty(OnmsAlarm.class, "id", "ID", INTEGER),
+		new SearchProperty(OnmsAlarm.class, null, "affectedNodeCount", null, "affectedNodeCount", INTEGER, false, false, null),
 		new SearchProperty(OnmsAlarm.class, "alarmAckTime", "Acknowledged Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "alarmAckUser", "Acknowledging User", STRING),
 		new SearchProperty(OnmsAlarm.class, "alarmType", "Alarm Type", INTEGER, ImmutableMap.<String,String>builder()
@@ -94,8 +95,9 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAlarm.class, "firstAutomationTime", "First Automation Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "firstEventTime", "First Event Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "ifIndex", "SNMP Interface Index", INTEGER),
-        new SearchProperty(OnmsAlarm.class, null, "isSituation", null, "Is Situation", BOOLEAN, false, false, TRUE_OR_FALSE_VALUES),
-        new SearchProperty(OnmsAlarm.class, null, "isInSituation", null, "Is in a Situation", BOOLEAN, false, false, TRUE_OR_FALSE_VALUES),
+		new SearchProperty(OnmsAlarm.class, null, "isAcknowledged", null, "Is Acknowledged", BOOLEAN, false, false, TRUE_OR_FALSE_VALUES),
+		new SearchProperty(OnmsAlarm.class, null, "isSituation", null, "Is Situation", BOOLEAN, false, false, TRUE_OR_FALSE_VALUES),
+		new SearchProperty(OnmsAlarm.class, null, "isInSituation", null, "Is in a Situation", BOOLEAN, false, false, TRUE_OR_FALSE_VALUES),
 		new SearchPropertyBuilder().entityClass(OnmsAlarm.class).id("ipAddr").name("IP Address").type(IP_ADDRESS).iplike(true).build(),
 		new SearchProperty(OnmsAlarm.class, "lastAutomationTime", "Last Automation Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "lastEventTime", "Last Event Time", TIMESTAMP),
@@ -108,6 +110,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAlarm.class, "qosAlarmState", "QoS Alarm State", STRING),
 		new SearchProperty(OnmsAlarm.class, "reductionKey", "Reduction Key", STRING),
 		new SearchProperty(OnmsAlarm.class, "severity", "Severity", INTEGER, ONMS_SEVERITIES),
+		new SearchProperty(OnmsAlarm.class, null, "situationAlarmCount", null, "situationAlarmCount", INTEGER, false, false, null),
 		new SearchProperty(OnmsAlarm.class, "suppressedTime", "Suppressed Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "suppressedUntil", "Suppressed Until", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "suppressedUser", "Suppressed User", STRING),

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.api;
 
+import java.util.Optional;
+
 public interface Flow {
     int IPV4_PROTOCOL_VERSION = 4;
     int IPV6_PROTOCOL_VERSION = 6;
@@ -76,9 +78,14 @@ public interface Flow {
     String getDstAddr();
 
     /**
+     * Destination address hostname.
+     */
+    Optional<String> getDstAddrHostname();
+
+    /**
      * Destination autonomous system (AS).
      */
-    Integer getDstAs();
+    Long getDstAs();
 
     /**
      * The number of contiguous bits in the source address subnet mask.
@@ -99,6 +106,12 @@ public interface Flow {
      * Type of flow-switching engine.
      */
     Integer getEngineType();
+
+    /**
+     * Unix timestamp in ms at which the previous exported packet
+     * associated with this flow was switched.
+     */
+    Long getDeltaSwitched();
 
     /**
      * Unix timestamp in ms at which the first packet
@@ -138,6 +151,11 @@ public interface Flow {
     String getNextHop();
 
     /**
+     * Next hop hostname
+     */
+    Optional<String> getNextHopHostname();
+
+    /**
      * SNMP ifIndex
      */
     Integer getOutputSnmp();
@@ -168,9 +186,14 @@ public interface Flow {
     String getSrcAddr();
 
     /**
+     * Source address hostname.
+     */
+    Optional<String> getSrcAddrHostname();
+
+    /**
      * Source autonomous system (AS).
      */
-    Integer getSrcAs();
+    Long getSrcAs();
 
     /**
      * The number of contiguous bits in the destination address subnet mask.

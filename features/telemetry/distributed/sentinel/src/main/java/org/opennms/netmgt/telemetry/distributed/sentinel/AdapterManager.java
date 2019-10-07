@@ -36,16 +36,16 @@ import java.util.Map;
 
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.telemetry.config.api.Adapter;
-import org.opennms.netmgt.telemetry.config.api.Protocol;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
 import org.opennms.netmgt.telemetry.daemon.TelemetryMessageConsumer;
+import org.opennms.netmgt.telemetry.distributed.common.AdapterDefinitionParser;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedAdapterDef;
-import org.opennms.netmgt.telemetry.distributed.common.AdapterConfigurationParser;
-import org.opennms.netmgt.telemetry.distributed.common.MapBasedProtocolDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapUtils;
-import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
+import org.opennms.netmgt.telemetry.distributed.common.MapBasedQueueDef;
+import org.opennms.netmgt.telemetry.distributed.common.PropertyTree;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
@@ -70,7 +70,7 @@ public class AdapterManager implements ManagedServiceFactory {
     private Map<String, TelemetryMessageConsumer> consumersById = new LinkedHashMap<>();
     private Map<String, List<ServiceRegistration<HealthCheck>>> healthChecksById = new LinkedHashMap<>();
 
-    private TelemetryAdapterRegistry telemetryAdapterRegistry;
+    private TelemetryRegistry telemetryRegistry;
 
     private MessageConsumerManager messageConsumerManager;
 
@@ -91,17 +91,15 @@ public class AdapterManager implements ManagedServiceFactory {
             LOG.info("Creating new consumer for pid: {}", pid);
         }
 
-        // Convert the dictionary to a map
-        final Map<String, String> parameters = MapUtils.fromDict(properties);
+        // Build the queue and adapter definitions
+        final PropertyTree propertyTree = PropertyTree.from(properties);
+        final QueueDefinition queueDefinition = new MapBasedQueueDef(propertyTree);
+        final List<AdapterDefinition> adapterDefinitions = new AdapterDefinitionParser().parse(propertyTree);
 
-        // Build the protocol and adapter definitions
-        final Protocol protocolDef = new MapBasedProtocolDef(parameters);
-        final List<Adapter> adapterDefinitions = new AdapterConfigurationParser().parse(parameters);
-
-        // Register health check
+        // Register health checks
         healthChecksById.putIfAbsent(pid, new ArrayList<>());
         final List<AdapterHealthCheck> healthChecks = new ArrayList<>(); // we need this temporarily, to mark the health check as success or failed afterwards
-        for (Adapter eachAdapter : adapterDefinitions) {
+        for (AdapterDefinition eachAdapter : adapterDefinitions) {
             final AdapterHealthCheck healthCheck = new AdapterHealthCheck(eachAdapter);
             healthChecks.add(healthCheck);
 
@@ -111,12 +109,12 @@ public class AdapterManager implements ManagedServiceFactory {
 
         try {
             // Create the Module
-            final TelemetrySinkModule sinkModule = new TelemetrySinkModule(protocolDef);
+            final TelemetrySinkModule sinkModule = new TelemetrySinkModule(queueDefinition);
             sinkModule.setDistPollerDao(distPollerDao);
 
             // Create the consumer
-            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(protocolDef, adapterDefinitions, sinkModule);
-            consumer.setAdapterRegistry(telemetryAdapterRegistry);
+            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(queueDefinition, adapterDefinitions, sinkModule);
+            consumer.setRegistry(telemetryRegistry);
             consumer.init();
             messageConsumerManager.registerConsumer(consumer);
             consumersById.put(pid, consumer);
@@ -163,8 +161,8 @@ public class AdapterManager implements ManagedServiceFactory {
         this.distPollerDao = distPollerDao;
     }
 
-    public void setTelemetryAdapterRegistry(TelemetryAdapterRegistry telemetryAdapterRegistry) {
-        this.telemetryAdapterRegistry = telemetryAdapterRegistry;
+    public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
+        this.telemetryRegistry = telemetryRegistry;
     }
 
     public void setMessageConsumerManager(MessageConsumerManager messageConsumerManager) {

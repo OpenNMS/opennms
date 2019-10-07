@@ -70,7 +70,7 @@
 
       <attribute name="proxy-host" type="string" use="optional">
         <annotation>
-          <documentation>The proxy host to use when communiciating with this
+          <documentation>The proxy host to use when communicating with this
           agent</documentation>
         </annotation>
       </attribute>
@@ -110,6 +110,12 @@
           encoded into an individual SNMP PDU request by Collectd. Provides a
           means to limit the size of outgoing PDU requests. Default is 65535, must be 
           at least 484.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="ttl" type="long" use="optional">
+        <annotation>
+          <documentation>Default ttl when Minion handles the request (in milliseconds)</documentation>
         </annotation>
       </attribute>
 
@@ -209,6 +215,12 @@
                     (retries, timeouts...)</documentation>
               </annotation>
             </element>
+            <element maxOccurs="1" minOccurs="0" ref="this:profiles">
+              <annotation>
+                <documentation>Set of SNMP profiles that consist of SNMP parmeters
+                  (retries, timeouts...) and a filter expression</documentation>
+              </annotation>
+            </element>
           </sequence>
           
         </extension>
@@ -258,6 +270,49 @@
 
         </extension>
       </complexContent>
+    </complexType>
+  </element>
+
+  <element name="profile">
+    <annotation>
+      <documentation>Provides one set of SNMP parameters and a filter expression
+        that used to match a given IP address/Hostname.</documentation>
+    </annotation>
+
+    <complexType>
+      <complexContent>
+        <extension base="this:configuration">
+          <sequence>
+            <element type="string" name="label">
+              <annotation>
+                <documentation>A unique label to identify Snmp profile</documentation>
+              </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" type="string" name="filter">
+              <annotation>
+                <documentation>expression that can be used to filter SNMP profiles
+                  for a given IP address/Hostname.</documentation>
+              </annotation>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="profiles">
+    <annotation>
+      <documentation>Provides a set of snmp profiles.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:profile">
+          <annotation>
+            <documentation>snmp profile</documentation>
+          </annotation>
+        </element>
+      </sequence>
     </complexType>
   </element>
 

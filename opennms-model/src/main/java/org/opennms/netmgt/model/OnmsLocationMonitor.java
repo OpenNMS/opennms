@@ -36,7 +36,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 
 /**
  * Represents the current status of a location monitor from the
@@ -100,9 +100,9 @@ public class OnmsLocationMonitor extends OnmsMonitoringSystem implements Compara
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("id", getId())
-        .append("status", m_status)
+        return MoreObjects.toStringHelper(this)
+        .add("id", getId())
+        .add("status", m_status)
         .toString();
     }
 

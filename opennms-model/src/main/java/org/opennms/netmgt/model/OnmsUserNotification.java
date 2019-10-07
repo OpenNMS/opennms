@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 
 
 @Entity
@@ -259,13 +259,13 @@ public class OnmsUserNotification implements Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("userId", getUserId())
-            .append("notifyTime", getNotifyTime())
-            .append("media", getMedia())
-            .append("contactInfo", getContactInfo())
-            .append("autoNotify", getAutoNotify())
-            .append("id", getId())
+        return MoreObjects.toStringHelper(this)
+            .add("userId", getUserId())
+            .add("notifyTime", getNotifyTime())
+            .add("media", getMedia())
+            .add("contactInfo", getContactInfo())
+            .add("autoNotify", getAutoNotify())
+            .add("id", getId())
             .toString();
     }
 

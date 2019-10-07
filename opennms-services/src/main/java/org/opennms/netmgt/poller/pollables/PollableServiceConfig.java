@@ -28,26 +28,29 @@
 
 package org.opennms.netmgt.poller.pollables;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,51 +64,50 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private static final Logger LOG = LoggerFactory.getLogger(PollableServiceConfig.class);
 
     private PollerConfig m_pollerConfig;
-    private PollOutagesConfig m_pollOutagesConfig;
     private PollableService m_service;
     private Map<String,Object> m_parameters = null;
     private Package m_pkg;
     private Timer m_timer;
     private Service m_configService;
+    private ServiceMonitor m_serviceMonitor;
+
+    private Map<String, String> m_patternVariables = Collections.emptyMap();
+
     private final LocationAwarePollerClient m_locationAwarePollerClient;
     private final LatencyStoringServiceMonitorAdaptor m_latencyStoringServiceMonitorAdaptor;
     private final InvertedStatusServiceMonitorAdaptor m_invertedStatusServiceMonitorAdaptor = new InvertedStatusServiceMonitorAdaptor();
-    private final ServiceMonitor m_serviceMonitor;
 
+    private final ReadablePollOutagesDao m_pollOutagesDao;
+    
     /**
      * <p>Constructor for PollableServiceConfig.</p>
      *
      * @param svc a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
-     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */
-    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer, PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao, LocationAwarePollerClient locationAwarePollerClient) {
+    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
+                                 ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient, ReadablePollOutagesDao pollOutagesDao) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
-        m_pollOutagesConfig = pollOutagesConfig;
         m_pkg = pkg;
         m_timer = timer;
-        m_configService = findService(pkg);
         m_locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
-        m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, resourceStorageDao);
-        m_serviceMonitor = pollerConfig.getServiceMonitor(svc.getSvcName());
+        m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, thresholdingService);
+        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+
+        this.findService();
     }
 
-    /**
-     * @param pkg
-     * @return
-     */
-    private synchronized Service findService(Package pkg) {
-        for (Service s : m_pkg.getServices()) {
-            if (s.getName().equalsIgnoreCase(m_service.getSvcName())) {
-                return s;
-            }
-        }
+    private synchronized void findService() {
+        final Package.ServiceMatch service = m_pkg.findService(m_service.getSvcName())
+                .orElseThrow(() -> new RuntimeException("Service name not part of package!"));
 
-        throw new RuntimeException("Service name not part of package!");
+        m_configService = service.service;
+        m_patternVariables = service.patternVariables;
 
+        m_serviceMonitor = m_pollerConfig.getServiceMonitor(m_configService.getName());
     }
 
     /**
@@ -122,16 +124,23 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             LOG.debug("Polling {} with TTL {} using pkg {}",
                     m_service, ttlInMs, packageName);
 
-            PollStatus result = m_locationAwarePollerClient.poll()
+            CompletableFuture<PollerResponse> future = m_locationAwarePollerClient.poll()
                 .withService(m_service)
                 .withMonitor(m_serviceMonitor)
                 .withTimeToLive(ttlInMs)
                 .withAttributes(getParameters())
                 .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
                 .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
-                .execute()
-                .get().getPollStatus();
+                .withPatternVariables(m_patternVariables)
+                .execute();
+
+            PollerResponse response = future.get();
+            PollStatus result = response.getPollStatus();
             LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
+
+            // Track the results of the poll
+            m_service.getContext().trackPoll(m_service, result);
+
             return result;
         } catch (Throwable e) {
             return RpcExceptionUtils.handleException(e, new RpcExceptionHandler<PollStatus>() {
@@ -176,15 +185,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             LOG.warn("Package named {} no longer exists.", m_pkg.getName());
         }
         m_pkg = newPkg;
-        m_configService = findService(m_pkg);
-    }
 
-    /**
-     * Should be called when thresholds configuration has been reloaded
-     */
-    @Override
-    public synchronized void refreshThresholds() {
-        m_latencyStoringServiceMonitorAdaptor.refreshThresholds();
+        this.findService();
     }
 
     private synchronized Map<String,Object> getParameters() {
@@ -282,12 +284,12 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         long nodeId=m_service.getNodeId();
         for (String outageName : m_pkg.getOutageCalendars()) {
             // Does the outage apply to the current time?
-            if (m_pollOutagesConfig.isTimeInOutage(m_timer.getCurrentTime(), outageName)) {
+            if (m_pollOutagesDao.isTimeInOutage(m_timer.getCurrentTime(), outageName)) {
                 // Does the outage apply to this interface?
 
-                if (m_pollOutagesConfig.isNodeIdInOutage(nodeId, outageName) || 
-                        (m_pollOutagesConfig.isInterfaceInOutage(m_service.getIpAddr(), outageName)) || 
-                        (m_pollOutagesConfig.isInterfaceInOutage("match-any", outageName))) {
+                if (m_pollOutagesDao.isNodeIdInOutage(nodeId, outageName) || 
+                        (m_pollOutagesDao.isInterfaceInOutage(m_service.getIpAddr(), outageName)) || 
+                        (m_pollOutagesDao.isInterfaceInOutage("match-any", outageName))) {
                     LOG.debug("scheduledOutage: configured outage '{}' applies, {} will not be polled.", outageName, m_configService);
                     return true;
                 }

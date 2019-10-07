@@ -34,9 +34,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.collect.Maps;
 
@@ -44,15 +43,15 @@ public class NodeCache {
 
     private final NodeDao nodeDao;
 
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
 
     private final Map<Long, Long> lastUpdatedByNodeId = Maps.newHashMap();
 
     private long timeoutInMs = TimeUnit.MINUTES.toMillis(5);
 
-    public NodeCache(NodeDao nodeDao, TransactionOperations transactionOperations) {
+    public NodeCache(NodeDao nodeDao, SessionUtils sessionUtils) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 
     public synchronized void triggerIfNeeded(long nodeId, Consumer<OnmsNode> consumer) {
@@ -63,7 +62,7 @@ public class NodeCache {
             return;
         }
 
-        transactionOperations.execute((TransactionCallback<Void>) status -> {
+        sessionUtils.withReadOnlyTransaction(() -> {
             // Lookup the node
             final OnmsNode node = nodeDao.get((int)nodeId);
 

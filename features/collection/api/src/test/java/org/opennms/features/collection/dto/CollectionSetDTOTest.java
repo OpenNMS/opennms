@@ -69,30 +69,30 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
                 "   <agent store-by-fs=\"false\" node-id=\"0\" sys-up-time=\"0\"/>\n" +
                 "   <collection-resource>\n" +
                 "      <node-level-resource node-id=\"1\"/>\n" +
-                "      <numeric-attribute group=\"ucd-sysstat\" name=\"CpuRawIdle\" type=\"gauge\" value=\"99\"/>\n" +
+                "      <numeric-attribute group=\"ucd-sysstat\" name=\"CpuRawIdle\" type=\"gauge\" value=\"99.0\"/>\n" +
                 "   </collection-resource>\n" +
                 "   <collection-resource>\n" +
                 "      <node-level-resource node-id=\"1\" path=\"opennns-jvm\"/>\n" +
-                "      <numeric-attribute group=\"opennms-jvm\" name=\"heap\" type=\"gauge\" value=\"2048\"/>\n" +
+                "      <numeric-attribute group=\"opennms-jvm\" name=\"heap\" type=\"gauge\" value=\"2048.0\"/>\n" +
                 "   </collection-resource>\n" +
                 "   <collection-resource>\n" +
                 "      <interface-level-resource if-name=\"eth0\">\n" +
                 "         <node-level-resource node-id=\"1\"/>\n" +
                 "      </interface-level-resource>\n" +
-                "      <numeric-attribute group=\"mib2-X-interfaces\" name=\"ifHCInOctets\" type=\"counter\" value=\"1001\"/>\n" +
+                "      <numeric-attribute group=\"mib2-X-interfaces\" name=\"ifHCInOctets\" type=\"counter\" value=\"1001.0\"/>\n" +
                 "      <string-attribute group=\"mib2-X-interfaces\" name=\"ifDescr\" type=\"string\" value=\"LAN\"/>\n" +
                 "   </collection-resource>\n" +
                 "   <collection-resource>\n" +
                 "      <generic-type-resource name=\"Charles\" instance=\"id\">\n" +
                 "         <node-level-resource node-id=\"1\"/>\n" +
                 "      </generic-type-resource>\n" +
-                "      <numeric-attribute group=\"net-snmp-disk\" name=\"ns-dsk1\" type=\"gauge\" identifier=\"some-oid\" value=\"1024\"/>\n" +
+                "      <numeric-attribute group=\"net-snmp-disk\" name=\"ns-dsk1\" type=\"gauge\" identifier=\"some-oid\" value=\"1024.0\"/>\n" +
                 "   </collection-resource>\n" +
                 "   <collection-resource>\n" +
                 "      <generic-type-resource name=\"Charles\" instance=\"idx\" timestamp=\"" + StringUtils.iso8601OffsetString(new Date(0), ZoneId.systemDefault(), ChronoUnit.SECONDS) + "\">\n" +
                 "         <node-level-resource node-id=\"1\"/>\n" +
                 "      </generic-type-resource>\n" +
-                "      <numeric-attribute group=\"net-snmp-disk\" name=\"ns-dskTotal\" type=\"gauge\" identifier=\"some-oid\" value=\"1024\"/>\n" +
+                "      <numeric-attribute group=\"net-snmp-disk\" name=\"ns-dskTotal\" type=\"gauge\" identifier=\"some-oid\" value=\"1024.0\"/>\n" +
                 "   </collection-resource>\n" +
                 "</collection-set>"
             },
@@ -102,16 +102,16 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
                         "   <agent store-by-fs=\"false\" node-id=\"0\" sys-up-time=\"0\"/>\n" +
                         "   <collection-resource>\n" +
                         "      <node-level-resource node-id=\"1\"/>\n" +
-                        "      <numeric-attribute group=\"double\" name=\"zero\" type=\"gauge\" value=\"0\"/>\n" +
+                        "      <numeric-attribute group=\"double\" name=\"zero\" type=\"gauge\" value=\"0.0\"/>\n" +
                         "      <numeric-attribute group=\"double\" name=\"pi\" type=\"gauge\" value=\"3.141592653589793\"/>\n" +
-                        "      <numeric-attribute group=\"double\" name=\"max\" type=\"gauge\" value=\"2147483647\"/>\n" +
+                        "      <numeric-attribute group=\"double\" name=\"max\" type=\"gauge\" value=\"1.7976931348623157E308\"/>\n" +
                         "      <numeric-attribute group=\"double\" name=\"min\" type=\"gauge\" value=\"4.9E-324\"/>\n" +
                         "      <numeric-attribute group=\"double\" name=\"+inf\" type=\"gauge\" value=\"Infinity\"/>\n" +
                         "      <numeric-attribute group=\"double\" name=\"-inf\" type=\"gauge\" value=\"-Infinity\"/>\n" +
                         "      <numeric-attribute group=\"double\" name=\"-inf\" type=\"gauge\" value=\"-Infinity\"/>\n" +
                         "      <numeric-attribute group=\"double\" name=\"NaN\" type=\"gauge\" value=\"NaN\"/>\n" +
-                        "      <numeric-attribute group=\"long\" name=\"max long\" type=\"gauge\" value=\"-1\"/>\n" +
-                        "      <numeric-attribute group=\"long\" name=\"min long\" type=\"gauge\" value=\"0\"/>\n" +
+                        "      <numeric-attribute group=\"long\" name=\"max long\" type=\"gauge\" value=\"9.223372036854776E18\"/>\n" +
+                        "      <numeric-attribute group=\"long\" name=\"min long\" type=\"gauge\" value=\"-9.223372036854776E18\"/>\n" +
                         "   </collection-resource>\n" +
                         "</collection-set>"
             }

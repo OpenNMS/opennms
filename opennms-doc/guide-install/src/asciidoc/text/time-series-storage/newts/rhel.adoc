@@ -11,7 +11,7 @@ After that install the package with _yum_ and the _Cassandra_ service is managed
 
 NOTE: This description was built on _CentOS 7.2_.
 
-NOTE: Cassandra 3.x requires Java 8+. See <<gi-install-oracle-java-rhel,installing Java on RHEL>> for instructions.
+NOTE: Cassandra 3.x requires Java 8+.
 
 .Add the DataStax repository
 [source, bash]

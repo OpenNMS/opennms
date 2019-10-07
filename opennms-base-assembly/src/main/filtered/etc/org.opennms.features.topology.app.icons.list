@@ -29,6 +29,10 @@ IP_service
 business_service
 reduction_key
 
+# Sextant Icons
+situation
+interface
+
 # vmware_icons
 vmware-datacenter
 vmware-cluster

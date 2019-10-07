@@ -50,6 +50,8 @@ import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -61,9 +63,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @author mvrueden
  */
 public class DefaultHealthCheckService implements HealthCheckService {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultHealthCheckService.class);
 
     // HealthChecks are performed asynchronously with this executor.
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setNameFormat("health-check-%d").build());
+    private final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("health-check-%d").build());
 
     // Context to load the services
     private BundleContext bundleContext;
@@ -73,7 +76,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     // Resolve all HealthChecks from the OSGi registry
-    private List<HealthCheck> getHealthChecks() throws InvalidSyntaxException {
+    protected List<HealthCheck> getHealthChecks() throws InvalidSyntaxException {
         final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
         return serviceReferences.stream()
                 .sorted(Comparator.comparingLong(ref -> ref.getBundle().getBundleId()))
@@ -115,12 +118,14 @@ public class DefaultHealthCheckService implements HealthCheckService {
                 }
                 currentFuture = executorService.submit(() -> {
                     try {
-                        final Response response = check.perform();
+                        final Response response = check.perform(context);
                         if (response == null) {
                             return new Response(Status.Unknown);
                         }
                         return response;
                     } catch (Exception ex) {
+                        // Log the stack trace
+                        LOG.warn("Health check {} failed with exception: {}", check, ex.getMessage(), ex);
                         return new Response(ex);
                     }
                 });

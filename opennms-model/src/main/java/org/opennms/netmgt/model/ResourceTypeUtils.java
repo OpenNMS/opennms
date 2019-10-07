@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -42,6 +43,13 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 public abstract class ResourceTypeUtils {
     
     private static final Logger LOG = LoggerFactory.getLogger(ResourceTypeUtils.class);
+
+    /**
+     * Default folder where RRD files are stored.
+     *
+     * Working directory defaults to $OPENNMS_HOME, so we can find these in $OPENNMS_HOME/share/rrd.
+     */
+    public static final File DEFAULT_RRD_ROOT = Paths.get("share", "rrd").toAbsolutePath().toFile();
 
     /**
      * Directory name of where latency data is stored.
@@ -121,6 +129,37 @@ public abstract class ResourceTypeUtils {
 
         // Grab the entity
         final OnmsEntity entity = resource.getEntity();
+        if (entity == null) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, "Resource entity must be non-null: " + resource);
+        }
+
+        // Type check
+        if (!(entity instanceof OnmsNode)) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, "Resource entity must be an instance of OnmsNode: " + resource);
+        }
+
+        return (OnmsNode)entity;
+    }
+
+    /**
+     * Convenience method for retrieving the OnmsNode entity from
+     * an abstract resource's ancestor.
+     *
+     * @throws ObjectRetrievalFailureException on failure
+     */
+    public static OnmsNode getNodeFromResourceRoot(final OnmsResource resource) {
+        OnmsResource res = resource;
+        while (res != null && res.getParent() != null) {
+            res = res.getParent();
+        }
+
+        // Null check
+        if (res == null) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, "Resource must be non-null.");
+        }
+
+        // Grab the entity
+        final OnmsEntity entity = res.getEntity();
         if (entity == null) {
             throw new ObjectRetrievalFailureException(OnmsNode.class, "Resource entity must be non-null: " + resource);
         }

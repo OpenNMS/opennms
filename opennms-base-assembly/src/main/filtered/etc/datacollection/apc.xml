@@ -15,11 +15,16 @@
    <group name="APC-RackPDU" ifType="all">
       <mibObj oid=".1.3.6.1.4.1.318.1.1.12.2.3.1.1.2" instance="rPDULoadStatusIndex" alias="rPDULoadStatusLoad" type="Gauge"/>
    </group>
+   <group name="APC-RackPDU2" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.318.1.1.26.11.2" instance="0" alias="rPDU2TotalPower" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.318.1.1.26.11.3" instance="0" alias="rPDU2TotalEnergy" type="Gauge32"/>
+   </group>
    <systemDef name="APC UPS">
       <sysoidMask>.1.3.6.1.4.1.318.</sysoidMask>
       <collect>
          <includeGroup>APC</includeGroup>
          <includeGroup>APC-RackPDU</includeGroup>
+         <includeGroup>APC-RackPDU2</includeGroup>
          <includeGroup>mib2-ups-rfc1628</includeGroup>
       </collect>
    </systemDef>

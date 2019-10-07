@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,6 @@ package org.opennms.web.rest.v1;
 
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -42,8 +41,6 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
-
-import com.google.common.collect.Maps;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +62,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.google.common.collect.Maps;
+
 /**
  * Used to make calls to an instance of MeasurementRestService.
  *
@@ -82,6 +81,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath*:/META-INF/opennms/component-measurement.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-postgresJsonStore.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
@@ -175,7 +175,10 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String json = sendRequest(request, 200);
 
         assertThat(xml, containsString("<columns>"));
+        assertThat(xml, containsString("<resources>"));
+        assertThat(xml, containsString("<resource id="));
         assertThat(json, containsString("\"columns\":"));
+        assertThat(json, containsString("\"resources\":"));
     }
 
     /**
@@ -205,7 +208,7 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertThat(filtersXml, containsString("Chomp"));
 
         // Retrieve a specific filter by name
-        String filterXml = sendRequest(GET, "/measurements/filters/chomp", 200);
+        filtersXml = sendRequest(GET, "/measurements/filters/chomp", 200);
         assertThat(filtersXml, containsString("Chomp"));
     }
 }

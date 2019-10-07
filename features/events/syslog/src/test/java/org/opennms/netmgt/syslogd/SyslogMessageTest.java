@@ -37,9 +37,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -54,7 +57,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.time.ZonedDateTimeBuilder;
+import org.opennms.core.time.YearGuesser;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,21 +117,16 @@ public class SyslogMessageTest {
         final SyslogParser parser = new CustomSyslogParser(config, SyslogdTestUtils.toByteBuffer("<173>Dec  7 12:02:06 10.13.110.116 mgmtd[8326]: [mgmtd.NOTICE]: Configuration saved to database initial"));
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
-        final Calendar calendar = new GregorianCalendar();
-        calendar.set(Calendar.YEAR, ZonedDateTimeBuilder.getBestYearForMonth(Month.DECEMBER.getValue()));
-        calendar.set(Calendar.MONTH, Calendar.DECEMBER);
-        calendar.set(Calendar.DATE, 7);
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 2);
-        calendar.set(Calendar.SECOND, 6);
-        calendar.set(Calendar.MILLISECOND, 0);
-        final Date date = calendar.getTime();
+
+        LocalDateTime localeDateTime = LocalDateTime.of(0, Month.DECEMBER, 7, 12, 2, 6);
+        localeDateTime = YearGuesser.guessYearForDate(localeDateTime);
+        Date date = Date.from(localeDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         LOG.debug("got message: {}", message);
 
         assertEquals(SyslogFacility.LOCAL5, message.getFacility());
         assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
-        assertEquals(null, message.getMessageID());
+        assertNull(message.getMessageID());
         assertEquals(date, message.getDate());
         assertEquals("10.13.110.116", message.getHostName());
         assertEquals("mgmtd", message.getProcessName());
@@ -170,7 +168,7 @@ public class SyslogMessageTest {
             final SyslogMessage message = parser.parse();
             LOG.debug("message = {}", message);
             final Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.YEAR, ZonedDateTimeBuilder.getBestYearForMonth(Month.MARCH.getValue()));
+            cal.set(Calendar.YEAR, getExpectedYear("Mar 14 17:10:25"));
             cal.set(Calendar.MONTH, Calendar.MARCH);
             cal.set(Calendar.DAY_OF_MONTH, 14);
             cal.set(Calendar.HOUR_OF_DAY, 17);
@@ -245,15 +243,10 @@ public class SyslogMessageTest {
         final SyslogParser parser = new SyslogNGParser(m_config, SyslogdTestUtils.toByteBuffer("<173>Dec  7 12:02:06 10.13.110.116 mgmtd[8326]: [mgmtd.NOTICE]: Configuration saved to database initial"));
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
-        final Calendar calendar = new GregorianCalendar();
-        calendar.set(Calendar.YEAR, ZonedDateTimeBuilder.getBestYearForMonth(Month.DECEMBER.getValue()));
-        calendar.set(Calendar.MONTH, Calendar.DECEMBER);
-        calendar.set(Calendar.DATE, 7);
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 2);
-        calendar.set(Calendar.SECOND, 6);
-        calendar.clear(Calendar.MILLISECOND);
-        final Date date = calendar.getTime();
+
+        LocalDateTime localeDateTime = LocalDateTime.of(0, Month.DECEMBER, 7, 12, 2, 6);
+        localeDateTime = YearGuesser.guessYearForDate(localeDateTime);
+        Date date = Date.from(localeDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         assertEquals(SyslogFacility.LOCAL5, message.getFacility());
         assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
@@ -392,16 +385,16 @@ public class SyslogMessageTest {
     }
 
     @Test
-    public void shouldHonorTimezoneWithConfiguredDefault() throws IOException {
+    public void shouldHonorTimezoneWithConfiguredDefault() throws IOException, NumberFormatException, ParseException {
         checkDateParserWith(TimeZone.getTimeZone("CET"), "timezone=\"CET\" ");
     }
 
     @Test
-    public void shouldHonorTimezoneWithoutConfiguredDefault() throws IOException {
+    public void shouldHonorTimezoneWithoutConfiguredDefault() throws IOException, NumberFormatException, ParseException {
         checkDateParserWith(TimeZone.getDefault(), "");
     }
 
-    private void checkDateParserWith(TimeZone expectedTimeZone, String timezoneProperty) throws IOException {
+    private void checkDateParserWith(TimeZone expectedTimeZone, String timezoneProperty) throws IOException, ParseException {
         String configuration = "<syslogd-configuration>" +
                 "<configuration " +
                 "syslog-port=\"10514\" " +
@@ -414,17 +407,23 @@ public class SyslogMessageTest {
         assertTrue(parser.find());
 
         // Date Format 1:
-        int currentYear = ZonedDateTime.now(expectedTimeZone.toZoneId()).getYear();
-        LocalDateTime expectedLocalDateTime = LocalDateTime.of(currentYear, 2, 3 , 12, 21, 20);
+        String dateString = "Feb 03 12:21:20";
+        int expectedYear = getExpectedYear(dateString);
+        LocalDateTime expectedLocalDateTime = LocalDateTime.of(expectedYear, 2, 3 , 12, 21, 20);
         ZonedDateTime expectedDateTime = ZonedDateTime.of(expectedLocalDateTime, expectedTimeZone.toZoneId());
-        Date parsedDate = parser.parseDate("Feb 03 12:21:20");
+        Date parsedDate = parser.parseDate(dateString);
         assertEquals(expectedDateTime.toInstant(), parsedDate.toInstant());
 
         // Date Format 2:
-        LocalDate expectedLocalDate = LocalDate.of(currentYear, 2, 3 );
+        LocalDate expectedLocalDate = LocalDate.of(expectedYear, 2, 3 );
         expectedDateTime = expectedLocalDate.atStartOfDay(expectedTimeZone.toZoneId());
         parsedDate = parser.parseDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(expectedDateTime));
         assertEquals(expectedDateTime.toInstant(), parsedDate.toInstant());
+    }
+
+    static int getExpectedYear(String dateFragment) throws ParseException {
+        Date date = new SimpleDateFormat("yyyy MMM dd hh:mm:ss", Locale.ENGLISH).parse("0000 " + dateFragment);
+        return YearGuesser.guessYearForDate(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()).getYear();
     }
 
 }

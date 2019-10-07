@@ -115,6 +115,12 @@ public abstract class EventConstants {
      * The node updated event UEI (added for the ProvisioningAdapter integration).
      */
     public static final String NODE_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeUpdated";
+
+
+    /**
+     * The node location changed event UEI.
+     */
+    public static final String NODE_LOCATION_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLocationChanged";
     
 	/**
 	 * The node category membership changed UEI.
@@ -386,6 +392,11 @@ public abstract class EventConstants {
     public static final String RELOAD_TOPOLOGY_UEI = "uei.opennms.org/internal/reloadTopology";
 
     /**
+     * Reload Drools Correlation Engine.
+     */
+    public static final String DROOLS_ENGINE_ENCOUNTERED_EXCEPTION = "uei.opennms.org/internal/droolsEngineException";
+
+    /**
      * Reload Daemon configuration UEI.
      */
     public static final String RELOAD_DAEMON_CONFIG_UEI = "uei.opennms.org/internal/reloadDaemonConfig";
@@ -495,7 +506,6 @@ public abstract class EventConstants {
     public static final String KSC_REPORT_UPDATED_UEI = "uei.opennms.org/internal/kscReportUpdated";
     public static final String PARAM_REPORT_TITLE = "reportTitle";
     public static final String PARAM_REPORT_GRAPH_COUNT = "graphCount";
-
 
     public static final String MONITORING_SYSTEM_ADDED_UEI = "uei.opennms.org/internal/monitoringSystemAdded";
     public static final String MONITORING_SYSTEM_LOCATION_CHANGED_UEI = "uei.opennms.org/internal/monitoringSystemLocationChanged";
@@ -611,6 +621,16 @@ public abstract class EventConstants {
      * The nodeLabel from the node table when sent as an event parm.
      */
     public static final String PARM_NODE_LABEL = "nodelabel";
+
+    /**
+     * The prev location for the node when sent as an event parm.
+     */
+    public static final String PARM_NODE_PREV_LOCATION = "nodePrevLocation";
+
+    /**
+     * The current location for the node table when sent as an event parm.
+     */
+    public static final String PARM_NODE_CURRENT_LOCATION = "nodeCurrentLocation";
 
     /**
      * The nodeLabelSource from the node table when sent as an event parm.
@@ -767,6 +787,11 @@ public abstract class EventConstants {
      * The SNMP write community string when sent as an event parm.
      */
     public static final String PARM_SNMP_LOCATION = "location";
+
+    /**
+     * The ttl when sent as an event parm.
+     */
+    public static final String PARM_TTL = "ttl";
 
     /**
      * Service monitor qualifier when sent as an event parm
@@ -942,13 +967,6 @@ public abstract class EventConstants {
     public static final String PARM_NEW_SEVERITY_LABEL = "newSeverityLabel";
     public static final String PARM_PREV_SEVERITY_ID = "prevSeverityId";
     public static final String PARM_PREV_SEVERITY_LABEL = "prevSeverityLabel";
-
-    //
-    // for NCS service
-    //
-    public static final String COMPONENT_ADDED_UEI   = "uei.opennms.org/internal/ncs/componentAdded";
-    public static final String COMPONENT_DELETED_UEI = "uei.opennms.org/internal/ncs/componentDeleted";
-    public static final String COMPONENT_UPDATED_UEI = "uei.opennms.org/internal/ncs/componentUpdated";
 
     //
     // For Trapd

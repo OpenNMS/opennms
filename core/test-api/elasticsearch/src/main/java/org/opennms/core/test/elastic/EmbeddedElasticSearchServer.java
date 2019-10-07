@@ -96,8 +96,8 @@ public class EmbeddedElasticSearchServer {
 
     private static class PluginNode extends Node {
         public PluginNode(Settings settings, Collection<Class<? extends Plugin>> plugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null) , plugins);
+            super(InternalSettingsPreparer.prepareEnvironment(settings, Collections.emptyMap(),
+                    null, null) , plugins, false);
         }
-
     }
 }

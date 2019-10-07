@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
@@ -57,7 +58,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
+        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
+        "classpath:/META-INF/opennms/mockSinkConsumerManager.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -256,5 +258,14 @@ public class EventUtilHibernateIT {
         // Access the field by regex
         hwfield = eventUtilDaoImpl.getHardwareFieldValue("hardware[~%Cha%:entPhysicalDescr]", node1.getId());
         assertEquals("some-physical-d3scr", hwfield);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testPrimaryInterface() {
+        final String testString = "This string has a primary interface set to %primaryinterface% and the interface set to %interface%.";
+        final Event event = new EventBuilder("testUei", "testSource").setNodeid(1).setInterface(InetAddressUtils.addr("10.10.10.10")).getEvent();
+        final String string = eventUtilDaoImpl.expandParms(testString, event);
+        assertEquals("This string has a primary interface set to 192.168.1.1 and the interface set to 10.10.10.10.", string);
     }
 }

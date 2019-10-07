@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,8 +35,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
 import org.opennms.netmgt.config.statsd.model.PackageReport;
 import org.opennms.netmgt.config.statsd.model.StatsdPackage;
@@ -57,6 +55,8 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
+
+import junit.framework.TestCase;
 
 /**
  * 
@@ -166,7 +166,8 @@ public class ReportDefinitionTest extends TestCase {
         FetchResults results = new FetchResults(new long[] {report.getStartTime()},
                                                 Collections.singletonMap("result", new double[] {100.0}),
                                                 report.getEndTime() - report.getStartTime(),
-                                                Collections.emptyMap());
+                                                Collections.emptyMap(),
+                                                null);
         EasyMock.expect(m_fetchStrategy.fetch(report.getStartTime(),
                                               report.getEndTime(),
                                               1,
@@ -256,7 +257,8 @@ public class ReportDefinitionTest extends TestCase {
         FetchResults results = new FetchResults(new long[] {report.getStartTime()},
                                                 Collections.singletonMap("result", new double[] {100.0}),
                                                 report.getEndTime() - report.getStartTime(),
-                                                Collections.emptyMap());
+                                                Collections.emptyMap(),
+                                                null);
         EasyMock.expect(m_fetchStrategy.fetch(report.getStartTime(),
                                               report.getEndTime(),
                                               1,

@@ -158,6 +158,11 @@ public abstract class AbstractEventUtil implements EventUtil {
 	protected static final String TAG_INTERFACE_RESOLVE = "interfaceresolve";
 
 	/**
+	 * The primary interface
+	 */
+	protected static final String TAG_PRIMARY_INTERFACE_ADDRESS = "primaryinterface";
+
+	/**
 	 * The reverse DNS lookup of the interface
 	 */
 	protected static final String TAG_IFALIAS = "ifalias";
@@ -840,7 +845,7 @@ public abstract class AbstractEventUtil implements EventUtil {
                 offsetH = octetStringValue.and(new BigInteger("000000000000000000ff00", 16)).shiftRight(1*8);
                 offsetM = octetStringValue.and(new BigInteger("00000000000000000000ff", 16));
 	    } else {
-	        LOG.warn("Not sure what to do with the DateAndTime value '{}'. Using current time instead.");
+	        LOG.warn("Not sure what to do with the DateAndTime value '{}'. Using current time instead.", octetStringValue);
 	        return null;
 	    }
 

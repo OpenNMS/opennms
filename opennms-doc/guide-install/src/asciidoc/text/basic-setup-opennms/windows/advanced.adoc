@@ -1,8 +1,0 @@
-
-=== Advanced Installation Options for Windows
-
-include::advanced/javasdk.adoc[]
-
-==== Time-Series Database Engine
-include::advanced/rrdtool.adoc[]
-include::advanced/newts.adoc[]

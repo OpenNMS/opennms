@@ -7,7 +7,7 @@
 
 <div class="modal-body">
   <form name="quickAddNodeForm">
-    <uib-tabset justified="true">
+    <uib-tabset>
 
       <uib-tab heading="Basic Attributes" id="tab-basic-information">
         <ng-include src="quickAddPanelBasicView"/>
@@ -35,7 +35,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" id="provision" ng-click="modalProvision()" ng-disabled="isInvalid()">Provision</button>
-  <button type="button" class="btn btn-default" id="cancel" ng-click="modalCancel()">Cancel</button>
+  <button type="button" class="btn btn-secondary" id="cancel" ng-click="modalCancel()">Cancel</button>
 </div>
 
 </div>

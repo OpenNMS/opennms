@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.net.InetAddress;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
@@ -82,25 +83,24 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
 
             @Override
             public Object key(TrapInformationWrapper message) {
-                return message.getTrapInformation().getTrapAddress();
+                return message.getTrapAddress();
             }
 
             @Override
             public TrapLogDTO aggregate(TrapLogDTO accumulator, TrapInformationWrapper newMessage) {
                 final TrapInformation trapInfo = newMessage.getTrapInformation();
+                TrapDTO trapDTO;
+                InetAddress trapAddress;
+                if(trapInfo != null) {
+                    trapDTO = transformTrapInfo(trapInfo);
+                    trapAddress = TrapUtils.getEffectiveTrapAddress(trapInfo, config.shouldUseAddressFromVarbind());
+                } else {
+                    trapDTO = newMessage.getTrapDTO();
+                    trapAddress = newMessage.getTrapAddress();
+                }
                 if (accumulator == null) { // no log created yet
-                    accumulator = new TrapLogDTO(distPoller.getId(), distPoller.getLocation(), TrapUtils.getEffectiveTrapAddress(trapInfo, config.shouldUseAddressFromVarbind()));
+                    accumulator = new TrapLogDTO(distPoller.getId(), distPoller.getLocation(), trapAddress);
                 }
-                final TrapDTO trapDTO = new TrapDTO(trapInfo);
-
-                // include the raw message, if configured
-                if(config.isIncludeRawMessage()) {
-                    byte[] rawMessage = convertToRawMessage(trapInfo);
-                    if (rawMessage != null) {
-                        trapDTO.setRawMessage(convertToRawMessage(trapInfo));
-                    }
-                }
-
                 accumulator.addMessage(trapDTO);
                 return accumulator;
             }
@@ -111,6 +111,28 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
             }
         };
     }
+
+
+    private TrapDTO transformTrapInfo(TrapInformation trapInfo) {
+        final TrapDTO trapDTO = new TrapDTO(trapInfo);
+        // include the raw message, if configured
+        if (config.isIncludeRawMessage()) {
+            byte[] rawMessage = convertToRawMessage(trapInfo);
+            if (rawMessage != null) {
+                trapDTO.setRawMessage(convertToRawMessage(trapInfo));
+            }
+        }
+        return trapDTO;
+    }
+
+    @Override
+    public TrapInformationWrapper unmarshalSingleMessage(byte[] bytes) {
+        TrapLogDTO trapLogDTO = unmarshal(bytes);
+        TrapInformationWrapper trapInfo = new TrapInformationWrapper(trapLogDTO.getMessages().get(0));
+        trapInfo.setTrapAddress(trapLogDTO.getTrapAddress());
+        return trapInfo;
+    }
+
 
     @Override
     public AsyncPolicy getAsyncPolicy() {
@@ -142,7 +164,7 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
     private static byte[] convertToRawMessage(TrapInformation trapInfo) {
         // Raw message conversion is not implemented for JoeSnmp, as the usage of that strategy is deprecated
         if (!(trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV1TrapInformation)
-                 && !(trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV2TrapInformation)) {
+                && !(trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV2TrapInformation)) {
             LOG.warn("Unable to convert TrapInformation of type {} to raw message. " +
                             "Please use {} as snmp strategy to include raw messages",
                     trapInfo.getClass(), Snmp4JStrategy.class);

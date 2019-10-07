@@ -108,15 +108,15 @@ public class IfTttDaemonTest {
             ResultEntry that = (ResultEntry) o;
 
             return Objects.equals(oldCount, that.oldCount) &&
-                   Objects.equals(newCount, that.newCount) &&
-                   Objects.equals(oldSeverity, that.oldSeverity) &&
-                   Objects.equals(newSeverity,that.newSeverity) &&
-                   Objects.equals(event, that.event);
+                    Objects.equals(newCount, that.newCount) &&
+                    Objects.equals(oldSeverity, that.oldSeverity) &&
+                    Objects.equals(newSeverity, that.newSeverity) &&
+                    Objects.equals(event, that.event);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(oldSeverity,newSeverity,oldCount,newCount,event);
+            return Objects.hash(oldSeverity, newSeverity, oldCount, newCount, event);
         }
     }
 
@@ -124,11 +124,11 @@ public class IfTttDaemonTest {
     private Map<Integer, OnmsAlarm> alarmMap;
     private Map<String, OnmsCategory> categoryMap;
 
-    private void addCategory(String category) {
+    private void addCategory(final String category) {
         categoryMap.put(category, new OnmsCategory(category));
     }
 
-    private void addNode(Integer id, String label, String... categories) {
+    private void addNode(final Integer id, final String label, final String... categories) {
         final OnmsNode onmsNode = new OnmsNode();
         onmsNode.setId(id);
         onmsNode.setLabel(label);
@@ -136,18 +136,15 @@ public class IfTttDaemonTest {
         nodeMap.put(id, onmsNode);
     }
 
-    private void addAlarm(Integer id, Integer nodeId, OnmsSeverity onmsSeverity) {
-        addAlarm(id, nodeId, onmsSeverity, false);
-    }
-
-    private void addAlarm(Integer id, Integer nodeId, OnmsSeverity onmsSeverity, final boolean acknowledged) {
-        final OnmsAlarm onmsAlarm = new OnmsAlarm(id, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, null, null, onmsSeverity.getId(), new Date(), new OnmsEvent()) {
+    private void addAlarm(final Integer id, final Integer nodeId, final String reductionKey, final OnmsSeverity onmsSeverity, final boolean acknowledged) {
+        final OnmsAlarm onmsAlarm = new OnmsAlarm(id, "dummy.uei", null, null, onmsSeverity.getId(), new Date(), new OnmsEvent()) {
             @Override
             public boolean isAcknowledged() {
                 return acknowledged;
             }
         };
         onmsAlarm.setNode(nodeMap.get(nodeId));
+        onmsAlarm.setReductionKey(reductionKey);
         alarmMap.put(id, onmsAlarm);
     }
 
@@ -168,74 +165,86 @@ public class IfTttDaemonTest {
         addNode(5, "Node5", "Bar");
         addNode(6, "Node6", "Xyz");
 
-        // Foo: nodes 1,2,4 -> MINOR, 5 alarms
-        // Bar: nodes 2,4,5 -> MINOR, 6 alarms
-        // Foo|Bar: nodes 1,2,3,4,5 -> MINOR, 8 alarms
-
         alarmMap = new HashMap<>();
-        addAlarm(1, 1, OnmsSeverity.NORMAL);        // foo
-        addAlarm(2, 2, OnmsSeverity.INDETERMINATE); // foo, bar
-        addAlarm(3, 3, OnmsSeverity.MINOR);         // bar
 
-        addAlarm(4, 4, OnmsSeverity.WARNING);       // foo, bar
-        addAlarm(5, 5, OnmsSeverity.CLEARED);       // bar
-        addAlarm(6, 6, OnmsSeverity.CRITICAL);
+        addAlarm(1, 1, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.NORMAL, false);
+        addAlarm(2, 2, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.INDETERMINATE, false);
+        addAlarm(3, 3, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MINOR, false);
 
-        addAlarm(7, 1, OnmsSeverity.MINOR);         // foo
-        addAlarm(8, 2, OnmsSeverity.WARNING);       // foo, bar
-        addAlarm(9, 3, OnmsSeverity.MINOR);         // bar
+        addAlarm(4, 4, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.WARNING, false);
+        addAlarm(5, 5, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CLEARED, false);
+        addAlarm(6, 6, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CRITICAL, false);
 
-        addAlarm(10, null, OnmsSeverity.CRITICAL);  // -
+        addAlarm(7, 1, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MINOR, false);
+        addAlarm(8, 2, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.WARNING, false);
+        addAlarm(9, 3, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MINOR, false);
 
-        addAlarm(11, 2, OnmsSeverity.CRITICAL, true);  // -
+        addAlarm(10, null, null, OnmsSeverity.CRITICAL, false);
+
+        addAlarm(11, 2, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CRITICAL, true);
+
+        addAlarm(12, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.MINOR, false);
+        addAlarm(13, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.CRITICAL, false);
+        addAlarm(14, null, null, OnmsSeverity.CRITICAL, false);
+        addAlarm(15, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.MAJOR, false);
     }
 
     @Test
-    public void ifTttDaemonTestFoo() throws Exception {
+    public void ifTttDaemonTest() throws Exception {
         final Map<String, List<ResultEntry>> resultEntries = runIfTttDaemonTest(4, 4);
 
-        List<ResultEntry> foo = resultEntries.get("Foo");
-        List<ResultEntry> bar = resultEntries.get("Bar");
-        List<ResultEntry> foobar = resultEntries.get("Foo|Bar");
+        List<ResultEntry> foo = resultEntries.get("Foo / uei.opennms.org/nodes/nodeLost.*");
+        List<ResultEntry> bar = resultEntries.get("Bar / uei.opennms.org/nodes/nodeLostService");
+        List<ResultEntry> foobar = resultEntries.get("Foo|Bar / uei.opennms.org/nodes/node.*");
+        List<ResultEntry> bsm1 = resultEntries.get("Foo|Bar / uei.opennms.org/bsm/serviceProblem");
+        List<ResultEntry> bsm2 = resultEntries.get(" / uei.opennms.org/bsm/serviceProb.*");
 
         Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), foo.get(0));
         Assert.assertEquals(new ResultEntry("MINOR", "INDETERMINATE", 0, "MINOR", 5), foo.get(1));
         Assert.assertEquals(new ResultEntry("MAJOR", "MINOR", 5, "MAJOR", 6), foo.get(2));
         Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), foo.get(3));
+
         Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bar.get(0));
         Assert.assertEquals(new ResultEntry("CRITICAL", "INDETERMINATE", 0, "CRITICAL", 7), bar.get(1));
         Assert.assertEquals(new ResultEntry("CRITICAL", "CRITICAL", 7, "CRITICAL", 8), bar.get(2));
         Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bar.get(3));
+
         Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), foobar.get(0));
         Assert.assertEquals(new ResultEntry("MINOR", "INDETERMINATE", 0, "MINOR", 8), foobar.get(1));
         Assert.assertEquals(new ResultEntry("MAJOR", "MINOR", 8, "MAJOR", 9), foobar.get(2));
         Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), foobar.get(3));
+
+        Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bsm1.get(0));
+        Assert.assertEquals(new ResultEntry("NORMAL", "INDETERMINATE", 0, "NORMAL", 0), bsm1.get(1));
+        Assert.assertEquals(new ResultEntry("MAJOR", "NORMAL", 0, "MAJOR", 1), bsm1.get(2));
+        Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bsm1.get(3));
+
+        Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bsm2.get(0));
+        Assert.assertEquals(new ResultEntry("CRITICAL", "INDETERMINATE", 0, "CRITICAL", 3), bsm2.get(1));
+        Assert.assertEquals(new ResultEntry("CRITICAL", "CRITICAL", 3, "CRITICAL", 4), bsm2.get(2));
+        Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bsm2.get(3));
     }
 
-    public Map<String, List<ResultEntry>> runIfTttDaemonTest(int timeout, int entryCount) throws Exception {
+    public Map<String, List<ResultEntry>> runIfTttDaemonTest(final int timeout, final int entryCount) throws Exception {
         final AlarmDao alarmDao = mock(AlarmDao.class);
         when(alarmDao.findMatching((Criteria) Matchers.anyObject())).thenReturn(alarmMap.values().stream().collect(Collectors.toList()));
 
         final TransactionOperations transactionOperations = mock(TransactionOperations.class);
-        when(transactionOperations.execute(Matchers.anyObject())).thenAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                TransactionCallbackWithoutResult transactionCallbackWithoutResult = invocationOnMock.getArgumentAt(0, TransactionCallbackWithoutResult.class);
-                transactionCallbackWithoutResult.doInTransaction(null);
-                return null;
-            }
+        when(transactionOperations.execute(Matchers.anyObject())).thenAnswer((Answer<Void>) invocationOnMock -> {
+            TransactionCallbackWithoutResult transactionCallbackWithoutResult = invocationOnMock.getArgumentAt(0, TransactionCallbackWithoutResult.class);
+            transactionCallbackWithoutResult.doInTransaction(null);
+            return null;
         });
 
-        //final List<ResultEntry> receivedEntries = new ArrayList<>();
         final Map<String, List<ResultEntry>> receivedEntries = new HashMap<>();
 
         final IfTttDaemon ifTttDaemon = new IfTttDaemon(alarmDao, transactionOperations, new File("src/test/resources/etc/ifttt-config.xml")) {
             @Override
-            protected void fireIfTttTriggerSet(IfTttConfig ifTttConfig, String categoryFilter, String name, VariableNameExpansion variableNameExpansion) {
-                if (!receivedEntries.containsKey(categoryFilter)) {
-                    receivedEntries.put(categoryFilter, new ArrayList<>());
+            protected void fireIfTttTriggerSet(IfTttConfig ifTttConfig, String filterKey, String name, VariableNameExpansion variableNameExpansion) {
+                if (!receivedEntries.containsKey(filterKey)) {
+                    receivedEntries.put(filterKey, new ArrayList<>());
                 }
-                receivedEntries.get(categoryFilter).add(new ResultEntry(name, variableNameExpansion));
+                receivedEntries.get(filterKey).add(new ResultEntry(name, variableNameExpansion));
             }
         };
 
@@ -244,7 +253,8 @@ public class IfTttDaemonTest {
         await().atMost(timeout, SECONDS).until(() -> allEntrySizesMatch(receivedEntries, entryCount - 2));
         LOG.debug("#1: {}", receivedEntries);
 
-        addAlarm(12, 4, OnmsSeverity.MAJOR);
+        addAlarm(100, 4, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.MAJOR, false);
+        addAlarm(101, 4, "uei.opennms.org/bsm/serviceProblem", OnmsSeverity.MAJOR, false);
         when(alarmDao.findMatching((Criteria) Matchers.anyObject())).thenReturn(alarmMap.values().stream().collect(Collectors.toList()));
 
         await().atMost(timeout, SECONDS).until(() -> allEntrySizesMatch(receivedEntries, entryCount - 1));

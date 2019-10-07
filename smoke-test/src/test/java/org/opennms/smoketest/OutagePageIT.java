@@ -40,7 +40,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class OutagePageIT extends OpenNMSSeleniumTestCase {
+public class OutagePageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         outagePage();
@@ -48,9 +48,9 @@ public class OutagePageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(2, countElementsMatchingCss("h3.panel-title"));
-        findElementByXpath("//h3[text()='Outage Menu']");
-        findElementByXpath("//h3[text()='Outages and Service Level Availability']");
+        assertEquals(2, countElementsMatchingCss("div.card-header"));
+        findElementByXpath("//span[text()='Outage Menu']");
+        findElementByXpath("//span[text()='Outages and Service Level Availability']");
         findElementByName("outageIdForm").findElement(By.name("id"));
     }  
 

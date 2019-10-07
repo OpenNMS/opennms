@@ -30,8 +30,10 @@ package org.opennms.netmgt.provision.persist;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 
 /**
@@ -44,6 +46,7 @@ public class OnmsMonitoredServiceRequisition {
 
     private RequisitionMonitoredService m_svc;
     private final List<OnmsServiceCategoryRequisition> m_categoryReqs;
+    private final List<OnmsServiceMetaDataRequisition> m_metaDataReqs;
 
     /**
      * <p>Constructor for OnmsMonitoredServiceRequisition.</p>
@@ -53,6 +56,7 @@ public class OnmsMonitoredServiceRequisition {
     public OnmsMonitoredServiceRequisition(RequisitionMonitoredService svc) {
         m_svc = svc;
         m_categoryReqs = constructCategoryReqs();
+        m_metaDataReqs = constructMetaDataRequistions();
     }
     
     private List<OnmsServiceCategoryRequisition> constructCategoryReqs() {
@@ -61,8 +65,14 @@ public class OnmsMonitoredServiceRequisition {
             reqs.add(new OnmsServiceCategoryRequisition(cat));
         }
         return reqs;
-
     }
+
+    private List<OnmsServiceMetaDataRequisition> constructMetaDataRequistions() {
+        return m_svc.getMetaData().stream()
+                .map(OnmsServiceMetaDataRequisition::new)
+                .collect(Collectors.toList());
+    }
+
     /**
      * @return the svc
      */
@@ -80,6 +90,9 @@ public class OnmsMonitoredServiceRequisition {
         for (OnmsServiceCategoryRequisition cat : m_categoryReqs) {
             cat.visit(visitor);
         }
+
+        m_metaDataReqs.forEach(r -> r.visit(visitor));
+
         visitor.completeMonitoredService(this);
     }
 

@@ -10,6 +10,7 @@ maintained
   <service>
     <name>OpenNMS:Name=Manager</name>
     <class-name>org.opennms.netmgt.vmmgr.Manager</class-name>
+    <invoke at="start" pass="0" method="init"/>
     <invoke at="stop" pass="1" method="doSystemExit"/>
   </service>
   <service>
@@ -85,15 +86,6 @@ maintained
     <name>OpenNMS:Name=Queued</name>
     <class-name>org.opennms.netmgt.queued.jmx.Queued</class-name>
     <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <!--  Dhcpd is now distributed separately. You will need to ensure
-        it is installed before you enable it here. -->
-  <service enabled="false">
-    <name>OpenNMS:Name=Dhcpd</name>
-    <class-name>org.opennms.netmgt.dhcpd.jmx.Dhcpd</class-name>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>

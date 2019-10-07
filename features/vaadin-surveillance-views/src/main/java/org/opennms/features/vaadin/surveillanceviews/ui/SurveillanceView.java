@@ -39,16 +39,16 @@ import org.opennms.netmgt.config.surveillanceViews.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Property;
 import com.vaadin.event.UIEvents;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This class is the base component for displaying a surveillance view and the dashboard.
@@ -270,7 +270,7 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
      */
     @Override
     protected String getCss(Component c) {
-        return "padding-left: 0px;";
+        return "padding-left: 0px; vertical-align: top";
     }
 
     /**
@@ -388,21 +388,21 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
             resultsSidebar.setPrimaryStyleName("resource-graphs-sidebar hidden-print hidden-xs hidden-sm sidebar-fixed");
             resultsSidebar.setId("results-sidebar");
 
-            resultsSidebar.addComponent(new Label("<ul class=\"nav nav-stacked\">\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#surveillanceview\" data-target=\"#surveillanceview\">Surveillance View</a>\n" +
+            resultsSidebar.addComponent(new Label("<ul class=\"nav flex-column\">\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#surveillanceview\" data-target=\"#surveillanceview\">Surveillance View</a>\n" +
                     "                </li>\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#alarms\" data-target=\"#alarms\">Alarms</a>\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#alarms\" data-target=\"#alarms\">Alarms</a>\n" +
                     "                </li>\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#notifications\" data-target=\"#notifications\">Notifications</a>\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#notifications\" data-target=\"#notifications\">Notifications</a>\n" +
                     "                </li>\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#outages\" data-target=\"#outages\">Outages</a>\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#outages\" data-target=\"#outages\">Outages</a>\n" +
                     "                </li>\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#resourcegraphs\" data-target=\"#resourcegraphs\">Resource Graphs</a>\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#resourcegraphs\" data-target=\"#resourcegraphs\">Resource Graphs</a>\n" +
                     "                </li>\n" +
                     "            </ul>" +
                     "<script type=\"text/javascript\">\n" +

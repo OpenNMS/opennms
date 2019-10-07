@@ -1,0 +1,15 @@
+syntax = "proto2";
+option java_package = "org.opennms.core.ipc.sink.model";
+option java_outer_classname = "SinkMessageProtos";
+
+message TracingInfo {
+required string key = 1;
+required string value = 2;
+}
+message SinkMessage {
+required string message_id = 1;
+required bytes  content = 2;
+optional int32  current_chunk_number = 5;
+optional int32  total_chunks = 6;
+repeated TracingInfo tracing_info = 7;
+}

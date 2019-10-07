@@ -34,7 +34,7 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Table;
 
 public class BusinessServicesTableCellStyleGenerator implements Table.CellStyleGenerator {
     private static final long serialVersionUID = -9103202434825185405L;

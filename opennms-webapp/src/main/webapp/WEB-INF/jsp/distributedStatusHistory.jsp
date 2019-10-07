@@ -39,10 +39,10 @@
 	<jsp:param name="breadcrumb" value="History" />
 </jsp:include>
 
-<div class="panel panel-default">
+<div class="card">
 
-  <div class="panel-heading">
-    <h3 class="panel-title">Distributed Status History for ${historyModel.chosenApplication.name} from ${historyModel.chosenMonitor.name} over ${historyModel.chosenPeriod.name}</h3>
+  <div class="card-header">
+    <span>Distributed Status History for ${historyModel.chosenApplication.name} from ${historyModel.chosenMonitor.name} over ${historyModel.chosenPeriod.name}</span>
   </div>
 
   <c:if test="${!empty historyModel.errors}">
@@ -53,14 +53,14 @@
     </ul>
   </c:if>
 
-  <div class="panel-body">
+  <div class="card-body">
     <br/>
-    <form name="chooseForm" action="distributedStatusHistory.htm" role="form" class="form-horizontal">
+    <form name="chooseForm" action="distributedStatusHistory.htm" role="form" class="form">
       <input type="hidden" name="previousLocation" value="${historyModel.chosenLocation.locationName}"/>
       <div class="form-group">
-        <label class="col-md-2 control-label" for="location">Location</label>
+        <label class="col-md-2 col-form-label" for="location">Location</label>
         <div class="col-md-4">
-          <select class="form-control" name="location" id="location" onChange="document.chooseForm.submit();">
+          <select class="form-control custom-select" name="location" id="location" onChange="document.chooseForm.submit();">
             <c:forEach items="${historyModel.locations}" var="location">
               <c:choose>
                 <c:when test="${location.locationName == historyModel.chosenLocation.locationName}">
@@ -75,14 +75,14 @@
         </div>
     	</div>
       <div class="form-group">
-        <label class="col-md-2 control-label" for="monitorId">Remote Poller</label>
+        <label class="col-md-2 col-form-label" for="monitorId">Remote Poller</label>
         <div class="col-md-4">
           <c:choose>
             <c:when test="${empty historyModel.monitors}">
               <p class="form-control-static">No remote pollers have registered for this location.</p>
             </c:when>
         	  <c:otherwise>
-              <select class="form-control" name="monitorId" id="monitor" onChange="document.chooseForm.submit();">
+              <select class="form-control custom-select" name="monitorId" id="monitor" onChange="document.chooseForm.submit();">
                 <c:forEach items="${historyModel.monitors}" var="monitor">
                   <c:choose>
                     <c:when test="${monitor.id == historyModel.chosenMonitor.id}">
@@ -103,9 +103,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="col-md-2 control-label" for="application">Application</label>
+        <label class="col-md-2 col-form-label" for="application">Application</label>
         <div class="col-md-4">
-          <select class="form-control" name="application" id="application" onChange="document.chooseForm.submit();">
+          <select class="form-control custom-select" name="application" id="application" onChange="document.chooseForm.submit();">
             <c:forEach items="${historyModel.applications}" var="application">
               <c:choose>
                 <c:when test="${application == historyModel.chosenApplication}">
@@ -120,9 +120,9 @@
         </div>
     	</div>
       <div class="form-group">
-        <label class="col-md-2 control-label" for="timeSpan">Time Span</label>
+        <label class="col-md-2 col-form-label" for="timeSpan">Time Span</label>
         <div class="col-md-4">
-      	  <select class="form-control" name="timeSpan" id="timeSpan" onChange="document.chooseForm.submit();">
+      	  <select class="form-control custom-select" name="timeSpan" id="timeSpan" onChange="document.chooseForm.submit();">
       	    <c:forEach items="${historyModel.periods}" var="period">
                 <c:choose>
                   <c:when test="${period == historyModel.chosenPeriod}">
@@ -138,7 +138,7 @@
       </div>
       <div class="form-group">
         <div class="col-md-offset-2 col-md-4">
-          <button type="button" class="btn btn-default" onClick="document.viewStatusDetails.submit();">View Status Details</button>
+          <button type="button" class="btn btn-secondary" onClick="document.viewStatusDetails.submit();">View Status Details</button>
         </div>
       </div>
     </form>
@@ -206,7 +206,7 @@
       </script>
     </c:if>
 
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 
 </div> <!-- panel -->
 

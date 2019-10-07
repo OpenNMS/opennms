@@ -80,6 +80,7 @@ public class SnmpEventInfo {
     private String m_enterpriseId = null;
     private String m_proxyHost = null;
     private String m_location = null;
+    private Long m_ttl = null;
     
     private static int computeIntValue(String parmContent) throws IllegalArgumentException {
         int val = 0;
@@ -167,6 +168,8 @@ public class SnmpEventInfo {
                 	setPrivProtocol(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_SNMP_PROXY_HOST)) {
                 	setProxyHost(parmContent);
+                } else if (parmName.equals(EventConstants.PARM_TTL)) {
+                    setTTL(computeLongValue(parmContent));
                 }
             } catch (UnknownHostException e) {
                 LOG.error("SnmpEventInfo constructor", e);
@@ -468,10 +471,18 @@ public class SnmpEventInfo {
         this.m_location = location;
     }
 
+    public Long getTTL() {
+        return m_ttl;
+    }
+
+    public void setTTL(Long ttl) {
+        m_ttl = ttl;
+    }
+
     /**
      * <p>getRange</p>
      *
-     * @return a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a {@link org.opennms.netmgt.config.snmp.Range} object.
      */
     public Range getRange() {
         if (isSpecific()) {
@@ -530,6 +541,7 @@ public class SnmpEventInfo {
 	    if (!StringUtils.isEmpty(getVersion())) bldr.addParam(EventConstants.PARM_VERSION, getVersion());
 	    if (!StringUtils.isEmpty(getWriteCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING, getWriteCommunityString());
 	    if (!StringUtils.isEmpty(getLocation())) bldr.addParam(EventConstants.PARM_SNMP_LOCATION, getLocation());
+        if (getTTL() != null) bldr.addParam(EventConstants.PARM_TTL, getTTL());
 	    
 	    return bldr.getEvent();
     }
@@ -551,6 +563,7 @@ public class SnmpEventInfo {
     	if (getMaxRequestSize() != 0) definition.setMaxRequestSize(Integer.valueOf(getMaxRequestSize()));
     	if (StringUtils.isNotEmpty(getProxyHost())) definition.setProxyHost(getProxyHost());
         if (StringUtils.isNotEmpty(getLocation())) definition.setLocation(getLocation());
+        if (getTTL() != null) definition.setTTL(getTTL());
 
         // version dependend parameters
         if (getVersion() != null && getVersion().equals("v3")) {
@@ -586,6 +599,19 @@ public class SnmpEventInfo {
         }
         LOG.debug("createDef: created new Definition from: {}", this);
         return definition;
+    }
+
+    private static Long computeLongValue(String parmContent) throws IllegalArgumentException {
+        Long val = null;
+        if (parmContent != null) {
+            try {
+                val = Long.parseLong(parmContent);
+            } catch (NumberFormatException e) {
+                LOG.error("computeIntValue: parm value passed in the event isn't a valid number.", e);
+                throw new IllegalArgumentException(e.getLocalizedMessage());
+            }
+        }
+        return val;
     }
     
     @Override

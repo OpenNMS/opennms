@@ -29,28 +29,31 @@
 package org.opennms.smoketest;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The Test Class for the Choose Resources Page.
- * 
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class ChooseResourcesPageIT extends OpenNMSSeleniumTestCase {
+public class ChooseResourcesPageIT extends OpenNMSSeleniumIT {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(ChooseResourcesPageIT.class);
 
     // See NMS-8886
     @Test
+    @Ignore
     public void verifyGraphAll() throws Exception {
         try {
             // INITIALIZE
-            String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+            String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">" +
                     "   <node foreign-id=\"localhost\" node-label=\"localhost\">" +
                     "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
                     "           <monitored-service service-name=\"OpenNMS-JVM\"/>" +
@@ -58,12 +61,13 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumTestCase {
                     "   </node>" +
                     "</model-import>";
             createRequisition(REQUISITION_NAME, requisitionXML, 1);
-            m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SeleniumTestGroup:localhost");
+            driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SeleniumTestGroup:localhost");
 
             // VERIFY
             findElementByLink("Resource Graphs").click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(), \"Graph All\")]")));
             findElementByXpath("//button[contains(text(), \"Graph All\")]").click();
-            Assert.assertTrue("There should be graphs visible, but could not find any", !m_driver.findElements(By.xpath("//div[@id='graph-results']//div[@class='graph-container']")).isEmpty());
+            Assert.assertTrue("There should be graphs visible, but could not find any", !driver.findElements(By.xpath("//div[@id='graph-results']//div[@class='graph-container']")).isEmpty());
         } finally {
             // CLEANUP
             deleteTestRequisition();
@@ -118,7 +122,7 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumTestCase {
                 LOG.debug("interface created!");
             }
 
-            m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
+            driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
 
             // VERIFY
             // Go to the resources page

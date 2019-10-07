@@ -4,17 +4,6 @@
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
   http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
 
-  <!-- 
-    Available implementations:
-
-      org.opennms.core.db.C3P0ConnectionFactory
-        - Uses C3P0 (http://sourceforge.net/projects/c3p0/).
-          This data source is not XA-capable but is available because it was the default
-          datasource on OpenNMS 1.12. It is well tested as a reliable database pool.
-
-      org.opennms.core.db.HikariCPConnectionFactory
-        - Uses HikariCP (http://brettwooldridge.github.io/HikariCP/), a lightweight and extremely fast connection pool
-   -->
   <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
     idleTimeout="600"
     loginTimeout="3"

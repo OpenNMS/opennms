@@ -79,7 +79,8 @@ public class RtTicketerPlugin implements Plugin {
 	    m_queue = dao.getQueue();
 	    m_requestor = dao.getRequestor();
 
-	    m_requestTracker = new RequestTracker(dao.getBaseURL(), dao.getUsername(), dao.getPassword(), dao.getTimeout(), dao.getRetry());
+	    m_requestTracker = new RequestTracker(dao.getBaseURL(), dao.getUsername(), dao.getPassword(), dao.getTimeout(),
+				dao.getRetry(), dao.getUseSystemProxy());
 	}
     
 	/**

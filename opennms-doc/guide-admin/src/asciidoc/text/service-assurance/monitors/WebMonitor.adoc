@@ -1,0 +1,24 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== WebMonitor
+
+TODO: add proper description
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.WebMonitor`
+|===
+
+===== Configuration and Usage
+
+.Configuration parameters
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                                                          | Required | Default value
+| `use-system-proxy` | Should the system wide proxy settings be used? The system proxy settings can be configured via
+                    link:#ga-opennms-system-properties[system properties]                                                 | optional | `false`
+|===

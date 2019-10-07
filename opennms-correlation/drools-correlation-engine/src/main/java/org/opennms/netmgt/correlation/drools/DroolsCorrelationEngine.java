@@ -40,7 +40,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.drools.compiler.compiler.DroolsParserException;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
@@ -72,6 +80,10 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.io.ByteStreams;
+import com.google.common.util.concurrent.SimpleTimeLimiter;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.common.util.concurrent.TimeLimiter;
+import com.google.common.util.concurrent.UncheckedTimeoutException;
 
 /**
  * <p>DroolsCorrelationEngine class.</p>
@@ -80,7 +92,14 @@ import com.google.common.io.ByteStreams;
  * @version $Id: $
  */
 public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
+
     private static final Logger LOG = LoggerFactory.getLogger(DroolsCorrelationEngine.class);
+    // If state need to be reloaded in case of engine being reloaded because of exception in rules engine, set this system property to true.
+    public static final String RELOAD_STATE_AFTER_EXCEPTION = "org.opennms.netmgt.correlation.drools.reloadStateAfterException";
+
+    private static final ExecutorService s_sessionDisposeExecutor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+            .setNameFormat("DroolsCorrelationEngine-Dispose-Pool-%d").build());
+    private static TimeLimiter s_timeLimiter = new SimpleTimeLimiter(s_sessionDisposeExecutor);
 
     private KieBase m_kieBase;
     private KieSession m_kieSession;
@@ -96,7 +115,24 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private Boolean m_persistState;
     private Resource m_configPath;
     private ApplicationContext m_configContext;
-    
+    private List<Object> factObjects;
+
+    /**
+     * Holds a reference to the thread that calls {@link KieSession#fireUntilHalt()}
+     */
+    private Thread m_streamThread;
+
+    /**
+     * Used to let the "stream thread" known that we're shutting down and that it should not
+     * treat {@link InterruptedException}s as errors.
+     */
+    private final AtomicBoolean m_shuttingDownStreamThread = new AtomicBoolean(false);
+
+    /**
+     * Used to marshall/unmarshall the session.
+     */
+    private Marshaller m_marshaller;
+
     public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry, final Resource configPath, final ApplicationContext configContext) {
         this.m_name = name;
         this.m_configPath = configPath;
@@ -120,9 +156,17 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     /** {@inheritDoc} */
     @Override
     public synchronized void correlate(final Event e) {
+        if (m_kieSession == null) {
+            LOG.info("No valid session, Event with id: {} and UEI: {} will not be added as a fact.", e.getDbid(), e.getUei());
+            return;
+        }
         LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
         m_kieSession.insert(e);
-        if (!m_isStreaming) m_kieSession.fireAllRules();
+        try {
+            if (!m_isStreaming) m_kieSession.fireAllRules();
+        } catch (Exception e1) {
+            LOG.error("Exception while firing rules ", e1);
+        }
         m_eventsMeter.mark();
         LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
     }
@@ -130,10 +174,18 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     /** {@inheritDoc} */
     @Override
     protected synchronized void timerExpired(final Integer timerId) {
+        if (m_kieSession == null) {
+            LOG.info("No valid session, Timer with Id {} will not be added as a fact.", timerId);
+            return;
+        }
         LOG.info("Begin correlation for Timer {}", timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
         m_kieSession.insert(expiration);
-        if (!m_isStreaming) m_kieSession.fireAllRules();
+        try {
+            if (!m_isStreaming) m_kieSession.fireAllRules();
+        } catch (Exception e) {
+            LOG.error("Exception while firing rules ", e);
+        }
         LOG.debug("Begin correlation for Timer {}", timerId);
     }
 
@@ -186,6 +238,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
             LOG.warn("Unable to initialize Drools engine: {}", kbuilder.getResults().getMessages(Level.ERROR));
             throw new IllegalStateException("Unable to initialize Drools engine: " + kbuilder.getResults().getMessages(Level.ERROR));
         }
+
         KieContainer kContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
 
         AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_assertBehaviour);
@@ -200,6 +253,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         ruleBaseConfig.setEventProcessingMode(eventProcessingOption);
 
         m_kieBase = kContainer.newKieBase(ruleBaseConfig);
+
+        final KieMarshallers kMarshallers = KieServices.Factory.get().getMarshallers();
+        final ObjectMarshallingStrategy oms = kMarshallers.newSerializeMarshallingStrategy();
+        m_marshaller = kMarshallers.newMarshaller( m_kieBase, new ObjectMarshallingStrategy[]{ oms } );
+
         m_kieSession = m_kieBase.newKieSession();
         m_kieSession.setGlobal("engine", this);
 
@@ -208,15 +266,50 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         }
 
         if (m_persistState != null && m_persistState) {
-            unmarshallStateFromDisk(true);
+            unmarshallStateFromDisk();
+        }
+
+        if (factObjects != null) {
+            factObjects.forEach(fact -> m_kieSession.insert(fact));
+            factObjects.clear();
         }
 
         if (m_isStreaming) {
-            new Thread(() -> {
+            m_shuttingDownStreamThread.set(false);
+            m_streamThread = new Thread(() -> {
                 Logging.putPrefix(getClass().getSimpleName() + '-' + getName());
-                m_kieSession.fireUntilHalt();
-            }, "FireTask").start();
+                try {
+                    m_kieSession.fireUntilHalt();
+                } catch (Exception e) {
+                    if (m_shuttingDownStreamThread.get()) {
+                        // We're shutting down, don't trigger a reload!
+                        return;
+                    }
+                    LOG.error("Exception while running rules, reloading engine ", e);
+                    doReload(e);
+                }
+            }, "FireTask [" + m_name + "]");
+            m_streamThread.start();
         }
+
+    }
+
+    // This will send drools exception event which should result into Alarm and send reload event.
+    private void doReload(Exception exception) {
+        // Trigger an alarm with the specific exception
+        EventBuilder eventBldr = new EventBuilder(EventConstants.DROOLS_ENGINE_ENCOUNTERED_EXCEPTION, getName());
+        eventBldr.addParam("enginename", getName());
+        eventBldr.addParam("stacktrace", ExceptionUtils.getStackTrace(exception));
+        sendEvent(eventBldr.getEvent());
+        // Send reload daemon event.
+        EventBuilder reloadEventBldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, getName());
+        // Correlator.EngineAdapter uses this pattern for the engine name.
+        reloadEventBldr.addParam(EventConstants.PARM_DAEMON_NAME, this.getClass().getSimpleName() + "-" + getName());
+        // By default, no need to persist state after exception, but if this property is set, persist state.
+        if(!Boolean.getBoolean(RELOAD_STATE_AFTER_EXCEPTION)) {
+            reloadEventBldr.addParam("persistState", "false");
+        }
+        sendEvent(reloadEventBldr.getEvent());
     }
 
     private void loadRules(final KieFileSystem kfs) throws DroolsParserException, IOException {
@@ -240,57 +333,88 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
                 LOG.error("Cannot marshall state because there are pending time based tasks running.");
                 shutDownKieSession();
             } else {
-                marshallStateToDisk(true);
+                marshallStateToDisk();
             }
         } else {
             shutDownKieSession();
         }
     }
 
-    private void shutDownKieSession() {
+    private synchronized void shutDownKieSession() {
+        shutDownKieSession(null);
+    }
+
+    private synchronized void shutDownKieSession(Runnable postHaltPreDispose) {
+        if (m_kieSession == null) {
+            return;
+        }
+        m_shuttingDownStreamThread.set(true);
         m_kieSession.halt();
-        m_kieSession.dispose();
-        m_kieSession.destroy();
+        if (postHaltPreDispose != null) {
+            postHaltPreDispose.run();
+        }
+
+        try {
+            LOG.debug("Disposing KieSession for engine: {}", m_name);
+            // Calls to dispose have been known to cause us deadlocks - see NMS-12201
+            // Wrap it with a timeout to make sure this doesn't happen
+            s_timeLimiter.callWithTimeout(() -> {
+                m_kieSession.dispose();
+                m_kieSession.destroy();
+                LOG.debug("Successfully disposed KieSession for engine: {}", m_name);
+                return null;
+            },  10, TimeUnit.SECONDS, true);
+        }  catch (UncheckedTimeoutException e) {
+            LOG.info("KieSession for engine named '{}' was not disposed within the given timeout.", m_name);
+            if (m_streamThread != null) {
+                // If we're streaming, interrupt the thread, this has been found to clean things up properly
+                // when calling dispose() blocks.
+                LOG.info("Interrupting the stream thread for engine: {}", m_name);
+                m_streamThread.interrupt();
+            }
+        } catch (Exception e) {
+            LOG.warn("Error occurred while disposing KieSession for engine: {}", m_name, e);
+        }
+
+        m_kieSession = null;
+        m_streamThread = null;
     }
 
     private Path getPathToState() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "opennms.drools." + m_name + ".state");
     }
 
-    private void marshallStateToDisk(boolean serialize) {
+    private synchronized void marshallStateToDisk() {
+        if (m_kieSession == null) {
+            return;
+        }
         final File stateFile = getPathToState().toFile();
         LOG.debug("Saving state for engine {} in {} ...", m_name, stateFile);
-        final KieMarshallers kMarshallers = KieServices.Factory.get().getMarshallers();
-        final ObjectMarshallingStrategy oms = serialize ?
-                kMarshallers.newSerializeMarshallingStrategy() : kMarshallers.newIdentityMarshallingStrategy();
-        final Marshaller marshaller = kMarshallers.newMarshaller( m_kieBase, new ObjectMarshallingStrategy[]{ oms } );
         try (FileOutputStream fos = new FileOutputStream(stateFile)) {
-            m_kieSession.halt();
-            marshaller.marshall( fos, m_kieSession );
-            m_kieSession.dispose();
-            m_kieSession.destroy();
-            LOG.info("Sucessfully save state for engine {} in {}.", m_name, stateFile);
-        } catch (IOException e) {
+            shutDownKieSession(() -> {
+                try {
+                    m_marshaller.marshall(fos, m_kieSession);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            LOG.info("Successfully saved state for engine {} in {}.", m_name, stateFile);
+        } catch (Exception e) {
             LOG.error("Failed to save state for engine {} in {}.", m_name, stateFile, e);
         }
     }
 
-    private void unmarshallStateFromDisk(boolean serialize) {
+    private void unmarshallStateFromDisk() {
         final File stateFile = getPathToState().toFile();
         if (!stateFile.exists()) {
             LOG.error("Can't restore state from {} because the file doesn't exist", stateFile);
             return;
         }
         LOG.debug("Restoring state for engine {} from {} ...", m_name, stateFile);
-        final KieMarshallers kMarshallers = KieServices.Factory.get().getMarshallers();
-        final ObjectMarshallingStrategy oms = serialize ?
-                kMarshallers.newSerializeMarshallingStrategy() : kMarshallers.newIdentityMarshallingStrategy();
-        final Marshaller marshaller = kMarshallers.newMarshaller( m_kieBase, new ObjectMarshallingStrategy[]{ oms } );
-
         try (FileInputStream fin = new FileInputStream(stateFile)) {
-            marshaller.unmarshall( fin, m_kieSession );
+            m_marshaller.unmarshall( fin, m_kieSession );
             stateFile.delete();
-            LOG.info("Sucessfully restored state for engine {} from {}.", m_name, stateFile);
+            LOG.info("Successfully restored state for engine {} from {}.", m_name, stateFile);
         } catch (IOException | ClassNotFoundException e) {
             LOG.error("Failed to restore state for engine {} from {}.", m_name, stateFile, e);
         }
@@ -350,7 +474,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     }
 
     @Override
-    public void reloadConfig() {
+    public void reloadConfig(boolean persistState) {
         EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
         ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "DroolsCorrelationEngine-" + m_name);
         try {
@@ -358,7 +482,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
             EngineConfiguration cfg = JaxbUtils.unmarshal(EngineConfiguration.class, m_configPath);
             Optional<RuleSet> opt = cfg.getRuleSetCollection().stream().filter(rs -> rs.getName().equals(getName())).findFirst();
             if (opt.isPresent()) {
-                marshallStateToDisk(true);
+                if (persistState) {
+                    saveFacts();
+                } else {
+                    shutDownKieSession();
+                }
                 opt.get().updateEngine(this);
                 initialize();
             } else {
@@ -371,6 +499,23 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         } finally {
             sendEvent(ebldr.getEvent());
         }
+    }
+
+    void saveFacts( ) {
+        shutDownKieSession(() -> {
+            try {
+                // Capture the current set of facts
+                factObjects  = m_kieSession.getFactHandles().stream()
+                        .map(fact -> m_kieSession.getObject(fact))
+                        .collect(Collectors.toList());
+            } catch (Exception e) {
+                LOG.warn("Failed to save facts", e);
+            }
+        });
+    }
+
+    List<Object> getFactObjects() {
+        return factObjects;
     }
 
 }

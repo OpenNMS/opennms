@@ -41,6 +41,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * The Mask for event configuration: The mask contains one
  *  or more 'maskelements' which uniquely identify an event.
@@ -63,7 +65,6 @@ public class Mask implements Serializable {
      */
     @XmlElement(name="varbind")
     private List<Varbind> m_varbinds = new ArrayList<>();
-
 
     public List<Maskelement> getMaskelements() {
         return m_maskElements;
@@ -149,5 +150,11 @@ public class Mask implements Serializable {
         return element == null ? null : element.getMevalues();
     }
 
-
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("mask", m_maskElements)
+                .add("varbinds", m_varbinds)
+                .toString();
+    }
 }

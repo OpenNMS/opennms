@@ -282,4 +282,30 @@ public abstract class ParameterMap {
             return defValue;
         }
     }
+
+    public static Long getLongValue(String key, Object value, Long defaultValue) {
+        if (value != null && value instanceof String) {
+            try {
+                String valueAsString = (String) value;
+                return Long.parseLong(valueAsString);
+            } catch (NumberFormatException e) {
+                LOG.warn("The value = {} associated with key = {}  is not a number", value, key, e);
+            }
+        }
+        return defaultValue;
+    }
+
+    public static Integer getIntValue(String key, Object value, Integer defaultValue) {
+        if (value != null && value instanceof String) {
+            try {
+                String valueAsString = (String) value;
+                return Integer.parseInt(valueAsString);
+            } catch (NumberFormatException e) {
+                LOG.warn("The value = {} associated with key = {}  is not a number", value, key, e);
+            }
+        }
+        return defaultValue;
+    }
+
+
 }

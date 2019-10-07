@@ -34,7 +34,7 @@ import com.google.common.collect.Lists;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import org.opennms.features.vaadin.components.graph.InlineGraphContainer;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Label;
 
 public class InfoPanel extends CssLayout {
 

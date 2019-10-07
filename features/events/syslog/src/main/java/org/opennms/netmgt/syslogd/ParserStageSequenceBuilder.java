@@ -209,6 +209,11 @@ public class ParserStageSequenceBuilder {
 		return this;
 	}
 
+	public ParserStageSequenceBuilder character(BiConsumer<ParserState, String> consumer) {
+		addStage(new MatchAny(consumer, 1));
+		return this;
+	}
+
 	public ParserStageSequenceBuilder character(char character) {
 		addStage(new MatchChar(character));
 		return this;
@@ -252,6 +257,11 @@ public class ParserStageSequenceBuilder {
 
 	public ParserStageSequenceBuilder stringUntilWhitespace(BiConsumer<ParserState,String> consumer) {
 		addStage(new MatchStringUntil(consumer, MatchUntil.WHITESPACE));
+		return this;
+	}
+
+	public ParserStageSequenceBuilder stringUntilNonWhitespace(BiConsumer<ParserState,String> consumer) {
+		addStage(new MatchUntilNot<>(consumer, new char[]{' ', '\t'}));
 		return this;
 	}
 
@@ -755,6 +765,45 @@ public class ParserStageSequenceBuilder {
 		}
 	}
 
+	/**
+	 * Match a string terminated by any character other than the provided characters.
+	 */
+	static class MatchUntilNot<R> extends AbstractParserStage<R> {
+		private final char[] m_accepted;
+
+		public MatchUntilNot(BiConsumer<ParserState, R> resultConsumer, char[] acceptedChars) {
+			super(resultConsumer);
+			m_accepted = acceptedChars;
+		}
+
+		@Override
+		public AcceptResult acceptChar(ParserStageState state, char c) {
+			for (char acceptable : m_accepted) {
+				if (c == acceptable) {
+					accumulate(state, c);
+					return AcceptResult.CONTINUE;
+				}
+			}
+
+			return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			MatchUntilNot<?> that = (MatchUntilNot<?>) o;
+			return m_accepted == that.m_accepted;
+		}
+
+		@Override
+		public String toString() {
+			return "MatchUntilNot{" +
+					"m_accepted=" + m_accepted +
+					"} " + super.toString();
+		}
+	}
+	
 	/**
 	 * Match a string terminated by a character in a list of end tokens.
 	 */

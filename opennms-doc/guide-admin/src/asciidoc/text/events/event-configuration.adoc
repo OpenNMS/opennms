@@ -95,7 +95,7 @@ Not all events will have values for all tokens, and some refer specifically to i
 `%host%`::
 `%interface%`::
     The IP interface associated with the event, if any.
-`%interfaceresolv%`::
+`%interfaceresolve%`::
     Does a reverse lookup on the `%interface%` and returns its name if available.
 `%service%`::
     The service associated with the event, if any.
@@ -123,6 +123,8 @@ Not all events will have values for all tokens, and some refer specifically to i
     The operator instructions for the event.
 `%mouseovertext%`::
     The mouse over text for the event.
+`%primaryinterface%`::
+The primary interface IP address for the node given in `%nodeid%` if available.
 
 .Parameter tokens
 Many events carry additional information in *parameters* (see <<ga-events-anatomy-of-an-event,Anatomy of an Event>>).
@@ -182,3 +184,15 @@ At level `DEBUG`, `Eventd` will log a verbose description of every event it hand
 On busy systems, this setting may create so much noise as to be impractical.
 In these cases, you can get terse event summaries by setting `Eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `OPENNMS_HOME/etc/eventd-configuration.xml`.
 Note that changes to `eventd-configuration.xml` require a full restart of {opennms-product-name}.
+
+==== Karaf Shell
+
+The `events:show-event-config` command can be used to render the event definition for one or more event UEIs (matching a substring) to _XML_.
+This command is useful for displaying event definitions which may not be easily accessible on disk, or verifying that particular events were actually loaded.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> events:show-event-config -u uei.opennms.org/alarms
+----

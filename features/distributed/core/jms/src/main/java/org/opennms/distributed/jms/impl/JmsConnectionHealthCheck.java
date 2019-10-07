@@ -35,6 +35,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
+import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
@@ -63,7 +64,7 @@ public class JmsConnectionHealthCheck implements HealthCheck {
     }
 
     @Override
-    public Response perform() {
+    public Response perform(Context context) {
         final ServiceReference<ConnectionFactory> connectionFactoryRef = bundleContext.getServiceReference(ConnectionFactory.class);
         if (connectionFactoryRef != null) {
             try {

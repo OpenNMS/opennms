@@ -308,6 +308,11 @@ public class ConvertToEvent {
             LOG.trace("got syslog message {}", SyslogParser.fromByteBuffer(buffer));
         }
 
+        if (config.shouldIncludeRawSyslogmessage()) {
+            // Set the raw syslog message as a parm
+            message.addParameter("rawSyslogmessage", SyslogParser.fromByteBuffer(buffer));
+        }
+
         // If no host name was provided we will use the source IP address
         if(message.getHostName() == null)
         {

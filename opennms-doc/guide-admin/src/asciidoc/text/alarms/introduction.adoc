@@ -9,7 +9,7 @@ In _{opennms-product-name}_, the state of these problems are characterized as _A
 .In the beginning, there were Events
 Before Alarmd was created, OpenNMS' Events (or messages) were used not only as interprocess communication messages (IPC), but also as indications of problems in _the network_.
 Even today, OpenNMS Events still carry problem state attributes such as: Acknowledgement and Severity.
-However, these attributes have long since been functionally deprecated now that Alarms are used as _the_ indicator for problems in the network, (see also Situations and <<ga_bsm_introduction, Business Services>>).
+However, these attributes have long since been functionally deprecated now that Alarms are used as _the_ indicator for problems in the network, (see also Situations and <<ga-bsm-introduction, Business Services>>).
 
 IMPORTANT: A significant change occurred with the release of Horizon 23.0.0 (H23).
 Prior to H23 and since the introduction of Alarms in OpenNMS, Alarmd was designed and configured to track the state of a problem using two Alarms; a _Down_ and an _Up_ Alarm.

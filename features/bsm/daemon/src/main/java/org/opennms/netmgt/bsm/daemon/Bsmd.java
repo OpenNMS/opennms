@@ -127,6 +127,16 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     }
 
     @Override
+    public void preHandleAlarmSnapshot() {
+        // pass, nothing to do here
+    }
+
+    @Override
+    public void postHandleAlarmSnapshot() {
+        // pass, nothing to do here
+    }
+
+    @Override
     public void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
         final AlarmWrapperImpl alarmWrapper = new AlarmWrapperImpl(alarm);
         LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {} and status: {}", alarm.getId(), alarm.getReductionKey(), alarm.getSeverity(), alarmWrapper.getStatus());
@@ -176,7 +186,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     private void verifyReductionKey(String uei, String expectedReductionKey) {
         List<org.opennms.netmgt.xml.eventconf.Event> eventsForUei = m_eventConfDao.getEvents(uei);
         if (eventsForUei == null) {
-            LOG.warn("Could not find an event with uei '{}'.");
+            LOG.warn("Could not find an event with uei '{}'.", uei);
             return;
         }
         if (eventsForUei.size() != 1) {

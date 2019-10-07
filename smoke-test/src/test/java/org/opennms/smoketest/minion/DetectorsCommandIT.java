@@ -41,16 +41,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.NullTestEnvironment;
-import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.utils.CommandTestUtils;
+import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,15 +64,18 @@ import com.google.common.collect.ImmutableMap;
  */
 public class DetectorsCommandIT {
 
-    private static TestEnvironment m_testEnvironment;
-
     private static final Logger LOG = LoggerFactory.getLogger(DetectorsCommandIT.class);
 
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+
     private ImmutableMap<String, String> expectedDetectors = ImmutableMap.<String, String> builder()
+            .put("ActiveMQ", "org.opennms.netmgt.provision.detector.jms.ActiveMQDetector")
             .put("BGP_Session", "org.opennms.netmgt.provision.detector.snmp.BgpSessionDetector")
             .put("BSF", "org.opennms.netmgt.provision.detector.bsf.BSFDetector")
             .put("CITRIX", "org.opennms.netmgt.provision.detector.simple.CitrixDetector")
             .put("Cisco_IP_SLA", "org.opennms.netmgt.provision.detector.snmp.CiscoIpSlaDetector")
+            .put("DHCP", "org.opennms.netmgt.provision.detector.dhcp.DhcpDetector")
             .put("DNS", "org.opennms.netmgt.provision.detector.datagram.DnsDetector")
             .put("Dell_OpenManageChassis", "org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector")
             .put("DiskUsage", "org.opennms.netmgt.provision.detector.snmp.DiskUsageDetector")
@@ -115,39 +113,19 @@ public class DetectorsCommandIT {
             .put("WEB", "org.opennms.netmgt.provision.detector.web.WebDetector")
             .put("WMI", "org.opennms.netmgt.provision.detector.wmi.WmiDetector")
             .put("WS-Man", "org.opennms.netmgt.provision.detector.wsman.WsManDetector")
-            .put("WsManWQLService", "org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector")
+            .put("WSManWQL", "org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector")
             .put("Win32Service", "org.opennms.netmgt.provision.detector.snmp.Win32ServiceDetector").build();
-
-    @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().all();
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            m_testEnvironment = builder.build();
-            return m_testEnvironment;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
 
     @Test
     public void canLoadDetectorsOnMinion() throws Exception {
-        final InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
+        final InetSocketAddress sshAddr = stack.minion().getSshAddress();
         await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
             .until(() -> listAndVerifyDetectors("Minion", sshAddr), hasSize(0));
     }
 
     @Test
     public void canLoadDetectorsOnOpenNMS() throws Exception {
-        final InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
+        final InetSocketAddress sshAddr = stack.opennms().getSshAddress();
         await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
             .until(() -> listAndVerifyDetectors("OpenNMS", sshAddr), hasSize(0));
     }

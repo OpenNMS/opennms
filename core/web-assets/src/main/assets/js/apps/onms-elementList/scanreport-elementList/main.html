@@ -7,15 +7,15 @@
 			<div class="modal-content">
 				<div class="modal-body">
 					<!-- Filter form -->
-					<label>Add Filter:</label>
+					<label>Add Filter</label>
 					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
-						<div class="form-group">
-						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
+						<div class="input-group">
+						<select class="form-control custom-select" ng-model="clause.property" ng-init="clause.property = 'id'">
 							<option value="id">ID</option>
 							<option value="timestamp">Timestamp</option>
 							<option value="location">Location</option>
 						</select>
-						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+						<select class="form-control custom-select" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
 							<option value="NE">!=</option>
 							<option value="LT">&lt;</option>
@@ -26,8 +26,7 @@
 						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'timestamp'" />
 						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'timestamp'"/>
 						</div>
-						<br/><br/>
-						<button class="btn btn-default" type="submit">Submit</button>
+						<button class="btn btn-secondary btn-sm mt-2" type="submit">Submit</button>
 					</form>
 				</div>
 			</div>
@@ -89,20 +88,20 @@
 	</div>
 
 	<!-- Filter list -->
-	<div class="well well-sm">
-		<span class="h4" style="line-height:2.8;">
+	<div class="mb-4">
+		<span class="h6" style="line-height:2.8;">
 			Filters&nbsp;&nbsp;
-			<a onClick="$('#filterModal').modal()"><i class="fa fa-search-plus fa-lg"></i></a>
+			<a onClick="$('#filterModal').modal()" href><i class="fa fa-search-plus fa-lg"></i></a>
 			&nbsp;
-			<a onClick="$('#helpModal').modal()"><i class="fa fa-question-circle fa-lg"></i></a>
+			<a onClick="$('#helpModal').modal()" href><i class="fa fa-question-circle fa-lg"></i></a>
 			&nbsp;
-			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
+			<a ng-click="clearSearch()" href><i class="fa fa-ban fa-lg"></i></a>
 			&nbsp;
 		</span>
 		<span ng-hide="query.searchClauses.length == 0">
 			<span ng-repeat="clause in query.searchClauses">
 				<div class="btn-group" style="margin:3px;">
-					<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
+					<button class="btn btn-primary btn-sm" ng-click="removeSearchClause(clause)">
 						{{clause.property | property}}
 						{{clause.operator | operator : clause.value}}
 						{{clause.value | value : clause.property}}
@@ -117,91 +116,97 @@
 	<!-- Paging controls -->
 	<div>
 		<div class="btn-toolbar">
-			<div class="btn-group">
-				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
+			<div class="btn-group mr-1">
+				<a class="btn btn-secondary {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
 					<i class="fa fa-backward"></i>&nbsp;&nbsp;First
 				</a>
 			</div>
-			<div class="btn-group">
-				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
+			<div class="btn-group mr-1">
+				<a class="btn btn-secondary {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
 					<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
 				</a>
 			</div>
 
 			<div class="btn-group">
-				<a class="btn btn-default" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
 					{{(query.offset/query.limit) - 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
 					{{(query.offset/query.limit) - 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
 					{{query.offset/query.limit}}
 				</a>
-				<a class="btn btn-default active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
+				<a class="btn btn-secondary active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
 					{{(query.offset/query.limit) + 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 3}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 4}}
 				</a>
+			</div>
+
+			<div class="mx-auto my-auto">
+				<span class="" ng-show="query.maxOffset &lt; 0">No items found</span>
+				<span class="" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</span>
 			</div>
 
 			<div class="pull-right">
 				<!-- Add 1 to each offset since they are zero-based -->
 				<form class="form-inline" ng-submit="setLimit(query.newLimit)">
-					<div class="input-group" style="margin-left:10px;">
-						<span class="input-group-addon"><i class="fa fa-th-list"></i></span>
+					<div class="input-group mr-1">
+						<div class="input-group-prepend">
+							<div class="input-group-text">
+								<i class="fa fa-th-list"></i>
+							</div>
+						</div>
 						<input class="form-control" type="number" ng-model="query.newLimit"/>
 					</div>
 
-					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
+					<div class="btn-group mr-1">
+						<a class="btn btn-secondary {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
 							Next&nbsp;&nbsp;<i class="fa fa-play"></i>
 						</a>
 					</div>
 
-					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
+					<div class="btn-group">
+						<a class="btn btn-secondary {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
 							Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
 						</a>
 					</div>
 				</form>
 			</div>
-
-			<h5 class="pull-right" ng-show="query.maxOffset &lt; 0">No items found.</h5>
-			<h5 class="pull-right" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
 		</div>
 	</div>
 
 	<br/>
 
-	<div class="panel panel-default">
+	<div class="card">
 		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
 		<table class="table table-bordered severity" style="font-size:100%">
 			<tbody>
 				<tr>
-					<th class="col-sm-2 text-nowrap">
+					<th class="text-nowrap">
 						<a ng-click="changeOrderBy('id')">ID</a>
 						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2 text-nowrap">
+					<th class="text-nowrap">
 						<a ng-click="changeOrderBy('location')">Location</a>
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2 text-nowrap">
+					<th class="text-nowrap">
 						<a ng-click="changeOrderBy('applications')">Application</a>
 						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-4 text-nowrap">
+					<th class="text-nowrap">
 						<a ng-click="changeOrderBy('timestamp')">Scan Time</a>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
@@ -211,7 +216,7 @@
 						Properties
 					</th>
 					-->
-					<th class="col-sm-2 text-nowrap">
+					<th class="text-nowrap">
 						Logs
 					</th>
 				</tr>
@@ -248,7 +253,7 @@
 					</td>
 					-->
 					<td>
-						<button class="btn btn-default" ng-click="selectScanReport(item)" onClick="$('#scanReportLogsModal').modal()">View</button>
+						<button class="btn btn-secondary" ng-click="selectScanReport(item)" onClick="$('#scanReportLogsModal').modal()">View</button>
 					</td>
 				</tr>
 			</tbody>

@@ -1,0 +1,41 @@
+<wsman-asset-adapter-configuration xmlns="http://xmlns.opennms.org/xsd/config/wsmanasset/adapter">
+   <package name="some_package">
+        <vendor>Microsoft Corporation</vendor>
+         <assetField name="description" formatString="${descrip}">
+                 <wqlQueries>
+                         <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT dnsHostName FROM Win32_ComputerSystem" alias="descrip"/>
+                 </wqlQueries>
+         </assetField>
+         <assetField name="ram" formatString="${TotalPhysicalMemory}">
+                 <wqlQueries>
+                         <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT TotalPhysicalMemory FROM Win32_ComputerSystem" alias="TotalPhysicalMemory"/>
+                 </wqlQueries>
+         </assetField>
+         <assetField name="serialNumber" formatString="${modelo}">
+                 <wqlQueries>
+                         <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT Model FROM Win32_ComputerSystem" alias="modelo"/>
+                 </wqlQueries>
+         </assetField>
+         <assetField name="operatingSystem" formatString="${operatingsystem}">
+                 <wqlQueries>
+                         <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT caption FROM Win32_OperatingSystem" alias="operatingsystem"/>
+                 </wqlQueries>
+         </assetField>
+         <assetField name="additionalhardware" formatString="Hypervisor Present: ${hpv}">
+                 <wqlQueries>
+			 <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT HypervisorPresent FROM Win32_ComputerSystem" alias="hpv"/>
+                 </wqlQueries>
+         </assetField>
+         <assetField name="cpu" formatString="Socket(s): ${numCPUs} Core(s): ${numCores}">
+                 <wqlQueries>
+                         <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT NumberOfProcessors FROM Win32_ComputerSystem" alias="numCPUs"/>
+                         <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*" query="SELECT NumberOfLogicalProcessors FROM Win32_ComputerSystem" alias="numCores"/>
+                 </wqlQueries>
+         </assetField>
+         <assetField name="comment" formatString="Part of Cluster: ${cluster}\n">
+                 <wqlQueries>
+                         <wql resourceUri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/MSCluster/*" query="SELECT Name FROM MSCluster_Cluster" alias="cluster"/>
+                 </wqlQueries>
+         </assetField>
+   </package>
+</wsman-asset-adapter-configuration>

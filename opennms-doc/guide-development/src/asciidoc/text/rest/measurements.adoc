@@ -61,6 +61,14 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/measurements/node%5B1%5D
     ...
   </columns>
   <labels>CpuRawUser</labels>
+  <metadata>
+    <resources>
+      ...
+    </resources>
+    <nodes>
+      ...
+    </nodes>
+  </metadata>
   <timestamps>1425581100000</timestamps>
   <timestamps>1425581400000</timestamps>
   <timestamps>1425581700000</timestamps>
@@ -157,7 +165,33 @@ curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" 
                 ...
             ]
         }
-    ]
+    ],
+    "metadata": {
+        "resources": [
+            {
+                "id": "nodeSource[Servers:1424038123222].interfaceSnmp[eth0-04013f75f101]",
+                "label": "eth0-04013f75f101",
+                "name": "eth0-04013f75f101",
+                "parent-id": "nodeSource[Servers:1424038123222]",
+                "node-id": 1
+            },
+            {
+                "id": "nodeSource[Servers:1424038123222].interfaceSnmp[eth0-04013f75f101]",
+                "label": "eth0-04013f75f101",
+                "name": "eth0-04013f75f101",
+                "parent-id": "nodeSource[Servers:1424038123222]",
+                "node-id": 1
+            }
+            ],
+            "nodes": [
+            {
+                "id": 1,
+                "label": "Test Server",
+                "foreign-source": "Servers",
+                "foreign-id": "1424038123222"
+            }
+        ]
+    }
 }
 ----
 ===== More Advanced Expressions
@@ -189,6 +223,9 @@ Several constants and arrays are also predefined as references in the context by
 
 |__diff_time
 |Time span between start and end of samples
+
+|__step
+|Difference in time between subsequent values
 
 |__i
 |Index into the samples array which the present calculation is referencing

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>26.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>datachoices</artifactId>
@@ -27,22 +27,6 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Karaf-Commands>*</Karaf-Commands>
                     </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <features>
-                        <feature>guava</feature>
-                        <feature>hibernate36</feature> <!-- Required by opennms-web-api -->
-                        <feature>javax.servlet</feature>
-                        <feature>quartz</feature> <!-- Required by opennms-web-api -->
-                    </features>
-                    <bundles>
-                        <bundle>mvn:org.opennms.features/datachoices/${project.version}</bundle>
-                        <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
-                    </bundles>
                 </configuration>
             </plugin>
         </plugins>

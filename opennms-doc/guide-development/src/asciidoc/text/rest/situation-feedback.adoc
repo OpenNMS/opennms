@@ -1,0 +1,102 @@
+
+[[gs-situation-feedback]]
+
+==== Situation Feedback
+
+Situation Feedback is an optional feature that allows for the management of User Contributed Feedback regarding Correlation of Alarms.
+
+It is a simple API that allows for the submission and retrieval of Correlation Feedback.
+
+===== GETs (Reading Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter                 | Description
+| `/situation-feedback/{situationId}` | Get Situation Feedback for the Situation with AlarmId = {situationId}.
+|===
+
+NOTE: _situationId_ is the same as the _AlarmId_ for the Situation.
+
+===== Usage examples with curl
+
+.Retrieve Situation Feedback for the Situaiton with AlarmId == 210
+[source,bash]
+----
+curl -u admin:admin "http://localhost:8980/opennms/rest/situation-feedback/210"
+----
+
+.Response
+[source,json]
+----
+[
+    {
+        "situationKey": "uei.opennms.org/alarms/trigger:localhost:0.0.0.0:FEEDBACK_A",
+        "situationFingerprint": "NDg3ZjdiMjJmNjgzMTJkMmMxYmJjOTNiMWFlYTQ0NWI=",
+        "alarmKey": "uei.opennms.org/alarms/trigger:localhost:0.0.0.0:ALARM_A",
+        "feedbackType": "CORRECT",
+        "reason": "okay",
+        "user": "admin",
+        "timestamp": 1535057676107
+    },
+    {
+        "situationKey": "uei.opennms.org/alarms/trigger:localhost:0.0.0.0:FEEDBACK_A",
+        "situationFingerprint": "NDg3ZjdiMjJmNjgzMTJkMmMxYmJjOTNiMWFlYTQ0NWI=",
+        "alarmKey": "uei.opennms.org/alarms/trigger:localhost:0.0.0.0:ALARM_B",
+        "feedbackType": "CORRECT",
+        "reason": "okay",
+        "user": "admin",
+        "timestamp": 1535057676107
+    }
+]
+
+----
+
+
+===== POSTs (Adding Data)
+
+POST requires using application/json as a Content-Type.
+
+On a successful request, the Feedback will be persisted 
+
+[options="header", cols="5,10"]
+|===
+| Resource                               | Description
+| `/situation-feedback/{situationId}` | Submits feedback for the Situation identitified with AlarmId = {situationId}.
+|===
+
+===== Usage examples with curl
+
+.Submit positve Feedback for a Situation with 2 alarms.
+[source,bash]
+----
+curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" -u admin:admin  -d @feedback.json  http://127.0.0.1:8980/opennms/rest/situation-feedback/210
+----
+
+.Contents of feedback.json
+[source,javascript]
+----
+[
+    {
+        "situationKey": "uei.opennms.org/alarms/trigger:localhost:0.0.0.0:FEEDBACK_A",
+        "situationFingerprint": "NDg3ZjdiMjJmNjgzMTJkMmMxYmJjOTNiMWFlYTQ0NWI=",
+        "alarmKey": "uei.opennms.org/alarms/trigger:localhost:0.0.0.0:ALARM_A",
+        "feedbackType": "CORRECT",
+        "reason": "okay",
+        "user": "admin",
+        "timestamp": 1535057676107
+    },
+    {
+        "situationKey": "uei.opennms.org/alarms/trigger:localhost:0.0.0.0:FEEDBACK_A",
+        "situationFingerprint": "NDg3ZjdiMjJmNjgzMTJkMmMxYmJjOTNiMWFlYTQ0NWI=",
+        "alarmKey": "uei.opennms.org/alarms/trigger:localhost:0.0.0.0:ALARM_B",
+        "feedbackType": "CORRECT",
+        "reason": "okay",
+        "user": "admin",
+        "timestamp": 1535057676107
+    }
+]
+----
+
+.Response
+204 No Content
+

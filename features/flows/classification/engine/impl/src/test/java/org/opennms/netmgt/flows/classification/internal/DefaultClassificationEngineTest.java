@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.classification.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.stream.IntStream;
@@ -52,11 +53,11 @@ public class DefaultClassificationEngineTest {
     public void verifyRuleEngineBasic() {
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() ->
             Lists.newArrayList(
-                    new RuleBuilder().withName("rule1").withSrcPort(80).build(),
-                    new RuleBuilder().withName("rule2").withDstPort(443).build(),
-                    new RuleBuilder().withName("rule3").withSrcPort(8888).withDstPort(9999).build(),
-                    new RuleBuilder().withName("rule4").withSrcPort(8888).withDstPort(80).build(),
-                    new RuleBuilder().withName("rule5").build()
+                    new RuleBuilder().withName("rule1").withPosition(1).withSrcPort(80).build(),
+                    new RuleBuilder().withName("rule2").withPosition(2).withDstPort(443).build(),
+                    new RuleBuilder().withName("rule3").withPosition(3).withSrcPort(8888).withDstPort(9999).build(),
+                    new RuleBuilder().withName("rule4").withPosition(4).withSrcPort(8888).withDstPort(80).build(),
+                    new RuleBuilder().withName("rule5").withPosition(5).build()
             ), FilterService.NOOP);
 
         assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(443).build()));
@@ -65,16 +66,43 @@ public class DefaultClassificationEngineTest {
     }
 
     @Test
+    public void verifyRuleEngineWithOmnidirectionals() {
+        DefaultClassificationEngine engine = new DefaultClassificationEngine(() ->
+                Lists.newArrayList(
+                        new RuleBuilder().withName("rule1").withSrcPort(80).withOmnidirectional(true).build(),
+                        new RuleBuilder().withName("rule2").withDstPort(443).withOmnidirectional(true).build(),
+                        new RuleBuilder().withName("rule3").withSrcPort(8080).withDstPort(8443).withOmnidirectional(true).build(),
+                        new RuleBuilder().withName("rule4").withSrcPort(1337).build(),
+                        new RuleBuilder().withName("rule5").withDstPort(7331).build()
+                ), FilterService.NOOP);
+
+        assertEquals("rule1", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(80).build()));
+        assertEquals("rule1", engine.classify(new ClassificationRequestBuilder().withSrcPort(80).withDstPort(9999).build()));
+
+        assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(443).withDstPort(9999).build()));
+        assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(443).build()));
+
+        assertEquals("rule3", engine.classify(new ClassificationRequestBuilder().withSrcPort(8080).withDstPort(8443).build()));
+        assertEquals("rule3", engine.classify(new ClassificationRequestBuilder().withSrcPort(8443).withDstPort(8080).build()));
+
+        assertEquals("rule4", engine.classify(new ClassificationRequestBuilder().withSrcPort(1337).withDstPort(9999).build()));
+        assertNull(engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(1337).build()));
+
+        assertEquals("rule5", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(7331).build()));
+        assertNull(engine.classify(new ClassificationRequestBuilder().withSrcPort(7331).withDstPort(9999).build()));
+    }
+
+    @Test
     public void verifyRuleEngineExtended() {
         // Define Rule set
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> Lists.newArrayList(
-                new Rule("SSH", "22"),
-                new Rule("HTTP", "80"),
-                new Rule("HTTP_CUSTOM", "192.168.0.1", "80"),
-                new Rule("DUMMY", "192.168.1.*", "8000-9000,80,8080"),
-                new Rule("RANGE-TEST", "7000-8000"),
-                new Rule("OpenNMS", "8980"),
-                new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").build()
+                new RuleBuilder().withName("SSH").withDstPort("22").withPosition(1).build(),
+                new RuleBuilder().withName("HTTP_CUSTOM").withDstAddress("192.168.0.1").withDstPort("80").withPosition(2).build(),
+                new RuleBuilder().withName("HTTP").withDstPort("80").withPosition(3).build(),
+                new RuleBuilder().withName("DUMMY").withDstAddress("192.168.1.*").withDstPort("8000-9000,80,8080").withPosition(4).build(),
+                new RuleBuilder().withName("RANGE-TEST").withDstPort("7000-8000").withPosition(5).build(),
+                new RuleBuilder().withName("OpenNMS").withDstPort("8980").withPosition(6).build(),
+                new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").withPosition(7).build()
             ), FilterService.NOOP
         );
 

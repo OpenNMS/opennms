@@ -28,7 +28,7 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
-import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.v7.data.validator.RegexpValidator;
 
 /**
  *

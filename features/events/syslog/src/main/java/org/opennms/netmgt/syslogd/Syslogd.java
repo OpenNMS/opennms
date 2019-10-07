@@ -56,7 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
-@EventListener(name=Syslogd.NAME, logPrefix=Syslogd.LOG4J_CATEGORY)
+@EventListener(name=Syslogd.LOG4J_CATEGORY, logPrefix=Syslogd.LOG4J_CATEGORY)
 public class Syslogd extends AbstractServiceDaemon {
 
     private static final Logger LOG = LoggerFactory.getLogger(Syslogd.class);
@@ -64,7 +64,6 @@ public class Syslogd extends AbstractServiceDaemon {
     /**
      * The name of the logging category for Syslogd.
      */
-    public static final String NAME = "Syslogd";
     public static final String LOG4J_CATEGORY = "syslogd";
 
     @Autowired
@@ -74,7 +73,7 @@ public class Syslogd extends AbstractServiceDaemon {
      * <p>Constructor for Syslogd.</p>
      */
     public Syslogd() {
-        super(NAME);
+        super(LOG4J_CATEGORY);
     }
 
     public SyslogReceiver getSyslogReceiver() {
@@ -140,6 +139,6 @@ public class Syslogd extends AbstractServiceDaemon {
 
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadEvent(Event e) {
-        DaemonTools.handleReloadEvent(e, Syslogd.NAME, (event) -> handleConfigurationChanged());
+        DaemonTools.handleReloadEvent(e, Syslogd.LOG4J_CATEGORY, (event) -> handleConfigurationChanged());
     }
 }

@@ -39,6 +39,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
 import org.opennms.netmgt.jmx.connection.JmxConnectionConfigBuilder;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
@@ -63,6 +64,7 @@ public class DefaultJmxConnector implements JmxServerConnector {
     }
 
     public JmxServerConnectionWrapper createConnection(JmxConnectionConfig config) throws JmxServerConnectionException {
+        JMXConnector connector = null;
         try {
             // If we're trying to create a connection to a localhost address...
             if (config.isLocalConnection()) {
@@ -81,10 +83,11 @@ public class DefaultJmxConnector implements JmxServerConnector {
             config.getPasswordStategy().apply(env, config);
 
             // Create connection and connect
-            final JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, env);
+            connector = JMXConnectorFactory.newJMXConnector(url, env);
             try {
                 connector.connect(env);
             } catch (SecurityException x) {
+                IOUtils.closeQuietly(connector);
                 throw new JmxServerConnectionException("Security exception: bad credentials", x);
             }
 
@@ -92,9 +95,8 @@ public class DefaultJmxConnector implements JmxServerConnector {
             MBeanServerConnection connection = connector.getMBeanServerConnection();
             JmxServerConnectionWrapper connectionWrapper = new DefaultConnectionWrapper(connector, connection);
             return connectionWrapper;
-        } catch (MalformedURLException e) {
-            throw new JmxServerConnectionException(e);
         } catch (IOException e) {
+            IOUtils.closeQuietly(connector);
             throw new JmxServerConnectionException(e);
         }
     }

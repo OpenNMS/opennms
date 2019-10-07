@@ -37,6 +37,7 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.HashMap;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -95,7 +96,7 @@ public class Jsr160DetectorTest implements InitializingBean {
     @Before
     public void setUp() throws IOException {
         MockLogAppender.setupLogging();
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
         assertNotNull(m_detector);
 
         JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9123/server");

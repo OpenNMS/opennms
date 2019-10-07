@@ -30,6 +30,8 @@ package org.opennms.netmgt.config.threshd;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -130,6 +132,15 @@ public class Group implements Serializable {
         return m_expressions.remove(expression);
     }
 
+    public Collection<Basethresholddef> getThresholdsAndExpressions() {
+        Collection<Basethresholddef> result = new ArrayList<>();
+
+        result.addAll(getThresholds());
+        result.addAll(getExpressions());
+
+        return Collections.unmodifiableCollection(result);
+    }
+    
     @Override
     public int hashCode() {
         return Objects.hash(m_name, 

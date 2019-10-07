@@ -30,16 +30,24 @@ package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
 
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class DefaultAlarmTicketerService implements AlarmTicketerService {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmTicketerService.class);
 
     private static final boolean ALARM_TROUBLE_TICKET_ENABLED = Boolean.getBoolean("opennms.alarmTroubleTicketEnabled");
+
+    @Autowired
+    private AlarmDao alarmDao;
 
     @Autowired
     private EventForwarder eventForwarder;
@@ -53,6 +61,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
     }
 
     @Override
+    @Transactional
     public void createTicket(OnmsAlarm alarm, Date now) {
         /*
             <action-event name="createTicket" for-each-result="true" >
@@ -75,6 +84,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
     }
 
     @Override
+    @Transactional
     public void updateTicket(OnmsAlarm alarm, Date now) {
         /*
             <action-event name="updateTicket" for-each-result="true" >
@@ -99,6 +109,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
     }
 
     @Override
+    @Transactional
     public void closeTicket(OnmsAlarm alarm, Date now) {
         /*
             <action-event name="closeTicket" for-each-result="true" >
@@ -123,9 +134,15 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
     }
 
     private void updateLastAutomationTime(OnmsAlarm alarm, Date now) {
+        final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
+        if (alarmInTrans == null) {
+            LOG.warn("Alarm disappeared: {}. lastAutomationTime will not be updated.", alarm);
+            return;
+        }
+
         // Update the lastAutomationTime
-        final Date previousLastAutomationTime = alarm.getLastAutomationTime();
-        alarm.setLastAutomationTime(now);
-        alarmEntityNotifier.didUpdateLastAutomationTime(alarm, previousLastAutomationTime);
+        final Date previousLastAutomationTime = alarmInTrans.getLastAutomationTime();
+        alarmInTrans.setLastAutomationTime(now);
+        alarmEntityNotifier.didUpdateLastAutomationTime(alarmInTrans, previousLastAutomationTime);
     }
 }

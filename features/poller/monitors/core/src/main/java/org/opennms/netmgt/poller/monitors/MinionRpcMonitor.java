@@ -35,10 +35,16 @@ import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
+import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
+import org.opennms.core.rpc.utils.MetadataConstants;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.rpc.utils.mate.FallbackScope;
+import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -56,26 +62,30 @@ import com.google.common.base.Suppliers;
 @Distributable(DistributionContext.DAEMON)
 public class MinionRpcMonitor extends AbstractServiceMonitor implements RpcExceptionHandler<PollStatus> {
     private final Supplier<NodeDao> nodeDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class));
+    private final Supplier<EntityScopeProvider> entityScopeProvider = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class));
     private final Supplier<RpcClientFactory> rpcClientFactory = Suppliers.memoize(() ->    BeanUtils.getBeanFactory("daoContext").getFactory().getBean(RpcClientFactory.class));
 
-    private final static int DEFAULT_TTL_IN_MS = -1;
     private final static int DEFAULT_MESSAGE_SIZE = 1024;
+    private final static String MESSAGE_SIZE = "message-size";
 
     @Override
-    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {  
-        Long ttlInMs = ParameterMap.getKeyedLong(parameters, "ttl", DEFAULT_TTL_IN_MS);
-        if (ttlInMs < 1) {
-            // Use the global default
-            ttlInMs = null;
-        }
-
-        int messageSize = ParameterMap.getKeyedInteger(parameters, "message-size", DEFAULT_MESSAGE_SIZE);
-        if (messageSize < 0) {
-            messageSize = 0;
-        }
+    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
 
         // Create the client
         final RpcClient<EchoRequest, EchoResponse> client = rpcClientFactory.get().getClient(EchoRpcModule.INSTANCE);
+
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(parameters, new FallbackScope(
+                entityScopeProvider.get().getScopeForNode(svc.getNodeId()),
+                entityScopeProvider.get().getScopeForInterface(svc.getNodeId(), svc.getIpAddr()),
+                entityScopeProvider.get().getScopeForService(svc.getNodeId(), svc.getAddress(), svc.getSvcName())
+        ));
+
+        Long ttlInMs = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), null);
+
+        int messageSize = ParameterMap.getIntValue( MESSAGE_SIZE, interpolatedAttributes.get(MESSAGE_SIZE), DEFAULT_MESSAGE_SIZE);
+        if (messageSize < 0) {
+            messageSize = 0;
+        }
 
         // Build the request
         final OnmsNode node = nodeDao.get().get(svc.getNodeId());
@@ -85,6 +95,10 @@ public class MinionRpcMonitor extends AbstractServiceMonitor implements RpcExcep
         request.setLocation(node.getLocation().getLocationName());
         request.setSystemId(node.getForeignId());
         request.setTimeToLiveMs(ttlInMs);
+        request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(node.getId()));
+        request.addTracingInfo(RpcRequest.TAG_NODE_LABEL, node.getLabel());
+        request.addTracingInfo(RpcRequest.TAG_CLASS_NAME, MinionRpcMonitor.class.getCanonicalName());
+        request.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(svc.getAddress()));
 
         try {
             final EchoResponse response = client.execute(request).get();

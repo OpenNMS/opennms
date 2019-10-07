@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.aws.sqs.client;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -44,6 +46,9 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * A factory for creating AwsRemoteMessageDispatcher objects.
@@ -108,12 +113,18 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
 
     @Override
     public String getMetricDomain() {
-        return AmazonSQSLocalMessageDispatcherFactory.class.getPackage().getName();
+        return SINK_METRIC_PRODUCER_DOMAIN;
     }
 
     @Override
     public BundleContext getBundleContext() {
         return bundleContext;
+    }
+
+
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
     }
 
     /**

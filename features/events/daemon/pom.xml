@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.events</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.events</groupId>
@@ -36,12 +36,21 @@
       <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.events.sink</groupId>
+      <artifactId>org.opennms.features.events.sink.dispatcher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
     </dependency>
 
     <!-- Test dependencies -->
@@ -94,10 +103,6 @@
       <scope>test</scope>
     </dependency>
 	<dependency>
-	  <groupId>org.opennms.core.ipc.sink</groupId>
-	  <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
-	</dependency>
-	<dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.kafka</artifactId>
       <version>${project.version}</version>
@@ -114,14 +119,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.sink.kafka</groupId>
-      <artifactId>org.opennms.core.ipc.sink.kafka.common</artifactId>
+      <groupId>org.opennms.core.ipc.common</groupId>
+      <artifactId>org.opennms.core.ipc.common.kafka</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.sink.kafka</groupId>
       <artifactId>org.opennms.core.ipc.sink.kafka.server</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.mock-impl</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

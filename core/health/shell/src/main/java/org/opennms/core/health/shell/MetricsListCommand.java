@@ -51,9 +51,13 @@ public class MetricsListCommand implements Action {
             return null;
         }
 
-        System.out.println("Name\tDescription");
+        // Determine the length of the name
+        int maxNameLength = metricSets.stream().mapToInt(m -> m.getName().length()).max().getAsInt();
+        final String format = String.format("%%-%ds\t%%s\n", maxNameLength);
+
+        System.out.printf(format, "Name", "Description");
         for (NamedMetricSet namedMetricSet : metricSets) {
-            System.out.printf("%s\t%s\n", namedMetricSet.getName(),
+            System.out.printf(format, namedMetricSet.getName(),
                     namedMetricSet.hasDescription() ? namedMetricSet.getDescription() : "(No description)");
         }
         System.out.println();

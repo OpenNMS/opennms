@@ -58,11 +58,11 @@
 
       <%-- Panel 1 --%>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Choose the current resource</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>Choose the current resource</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p ng-show="level == 0">
             You are currently at the top-level resources.
             Select a child resource.
@@ -79,36 +79,36 @@
               <li ng-repeat="(key,graph) in selectedResource.rrdGraphAttributes" name="graph.{{ key }}">{{ key }}</li>
             </ul>
             <br/>
-            <button class="btn btn-default" type="button" ng-click="chooseResource()">Choose this resource</button>
+            <button class="btn btn-secondary" type="button" ng-click="chooseResource()">Choose this resource</button>
           </div>
         </div>
       </div>
 
       <%-- Panel 2 --%>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">View child resources</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>View child resources</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p ng-show="resources.length == 0">
             No child resources found on this resource.
           </p>
           <div class="table-responsive" ng-show="resources.length > 0 && level < 2">
             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-search"></span>
+              <span class="input-group-prepend">
+                <span class="input-group-text"><span class="fa fa-search"></span></span>
               </span>
               <input class="form-control" type="text" placeholder="Search/Filter Reports" ng-model="resourceFilter"></input>
             </div>
-            <table class="table table-condensed table-hover ">
+            <table class="table table-sm table-hover">
               <thead>
                 <tr>
                   <th>Resources</th>
                 </tr>
               </thead>
               <tbody>
-                <tr name="subresource:{{ resource.typeLabel }}:{{ resource.label }}" ng-class="{success: resource.id == selectedResource.id}" ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                <tr name="subresource:{{ resource.typeLabel }}:{{ resource.label }}" ng-class="{'table-active': resource.id == selectedResource.id}" ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
                   <td>{{ resource.typeLabel }} : {{ resource.label }}</td>
                 </tr>
               </tbody>
@@ -124,19 +124,19 @@
         </div>
         <div class="pabel-footer">
           <div class="btn-group" role="group"ng-show=" resources.length > 0 && level < 2">
-            <button type="button" class="btn btn-default" ng-click="viewResource()">View Child Resource</button>
-            <button type="button" class="btn btn-default" ng-click="chooseResource()">Choose Child Resource</button>
+            <button type="button" class="btn btn-secondary" ng-click="viewResource()">View Child Resource</button>
+            <button type="button" class="btn btn-secondary" ng-click="chooseResource()">Choose Child Resource</button>
           </div> 
         </div>
       </div>
 
       <%-- Panel 3 --%>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">View the parent resource</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>View the parent resource</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p ng-show="level == 0">
             This resource has no parent.  You are looking at the top-level resources.
           </p>
@@ -145,10 +145,10 @@
               This resource has no parent.  You can use the "View top-level resources"
               button to see all top-level resources.
             </p>
-            <button type="button" class="btn btn-default" ng-click="goBack()">View top-level resources</button>
+            <button type="button" class="btn btn-secondary" ng-click="goBack()">View top-level resources</button>
           </div>
           <div ng-show="level == 2">
-            <button type="button" class="btn btn-default" ng-click="goBack()">View the parent resource</button>
+            <button type="button" class="btn btn-secondary" ng-click="goBack()">View the parent resource</button>
           </div> 
         </div>
       </div>
@@ -157,11 +157,11 @@
 
     <div class="col-md-6">
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Descriptions</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>Descriptions</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>
             The menu on the left lets you choose a specific resource that you want
             to use in a graph.

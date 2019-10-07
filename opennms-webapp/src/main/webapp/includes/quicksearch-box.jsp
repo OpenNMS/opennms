@@ -42,41 +42,54 @@
   pageContext.setAttribute("serviceNameMap", new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap()).entrySet());
 %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Quick Search</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Quick Search</span>
   </div>
-  <div class="panel-body">
-    <form class="form-inline" action="element/nodeList.htm" method="get">
-      <label for="nodeId">Node ID:</label><br/>
-      <input type="hidden" name="listInterfaces" value="false"/>
-      <input class="form-control" type="text" name="nodeId" />
-      <input name="nodeIdSearchButton" class="form-control btn btn-default" type="submit" value="Search"/>
+  <div class="card-body">
+    <form class="form-group" action="element/nodeList.htm" method="get">
+      <label for="nodeId" class=" col-form-label ">Node ID</label>
+      <div class="input-group">
+        <input class="form-control" type="text" id="nodeId" name="nodeId" placeholder="Node ID"/>
+        <input type="hidden" name="listInterfaces" value="false"/>
+        <div class="input-group-append">
+          <button name="nodeIdSearchButton" class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
     </form>
-    <br/>
-    <form class="form-inline" action="element/nodeList.htm" method="get">
-      <label for="nodename">Node label like:</label><br/>
-      <input type="hidden" name="listInterfaces" value="true"/>
-      <input class="form-control" type="text" name="nodename" />
-      <input class="form-control btn btn-default" type="submit" value="Search"/>
+    <form class="form-group" action="element/nodeList.htm" method="get">
+      <label for="nodename" class=" col-form-label ">Node label</label>
+      <div class="input-group">
+        <input class="form-control" type="text" id="nodename" name="nodename" placeholder="localhost"/>
+        <input type="hidden" name="listInterfaces" value="true"/>
+        <div class="input-group-append">
+          <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
     </form>
-    <br/>
-    <form class="form-inline" action="element/nodeList.htm" method="get">
-      <label for="iplike">TCP/IP Address like:</label><br/>
-      <input type="hidden" name="listInterfaces" value="false"/>
-      <input class="form-control" type="text" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*" />
-      <input class="form-control btn btn-default" type="submit" value="Search"/>
+    <form class="form-group" action="element/nodeList.htm" method="get">
+      <label for="iplike" class=" col-form-label ">TCP/IP Address</label>
+      <div class="input-group">
+        <input class="form-control" type="text" id="iplike" name="iplike" placeholder="*.*.*.* or *:*:*:*:*:*:*:*"/>
+        <input type="hidden" name="listInterfaces" value="false"/>
+        <div class="input-group-append">
+          <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
     </form>
-    <br/>
-    <form class="form-inline" action="element/nodeList.htm" method="get">
-      <label for="service">Providing service:</label><br/>
-      <input type="hidden" name="listInterfaces" value="false"/>
-      <select class="form-control" name="service">
-      <c:forEach var="serviceNameId" items="${serviceNameMap}">
-        <option value="${serviceNameId.value}">${serviceNameId.key}</option>
-      </c:forEach>
-      </select>
-      <input class="form-control btn btn-default" type="submit" value="Search"/>
+    <form class="form-group" action="element/nodeList.htm" method="get">
+      <label for="service" class=" col-form-label ">Providing service</label>
+      <div class="input-group">
+        <select class="custom-select" id="service" name="service">
+          <c:forEach var="serviceNameId" items="${serviceNameMap}">
+            <option value="${serviceNameId.value}">${serviceNameId.key}</option>
+          </c:forEach>
+        </select>
+        <input type="hidden" name="listInterfaces" value="false"/>
+        <div class="input-group-append">
+          <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
     </form>
   </div>
 </div>

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.net.InetSocketAddress;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
@@ -117,6 +118,14 @@ public class SyslogSinkModule extends AbstractXmlSinkModule<SyslogConnection, Sy
                 return true;
             }
         };
+    }
+
+    @Override
+    public SyslogConnection unmarshalSingleMessage(byte[] bytes) {
+        SyslogMessageLogDTO syslogMessageLogDTO = unmarshal(bytes);
+        SyslogMessageDTO syslogMessageDTO = syslogMessageLogDTO.getMessages().get(0);
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(syslogMessageLogDTO.getSourceAddress(), syslogMessageLogDTO.getSourcePort());
+        return new SyslogConnection(inetSocketAddress, syslogMessageDTO.getBytes());
     }
 
     /**

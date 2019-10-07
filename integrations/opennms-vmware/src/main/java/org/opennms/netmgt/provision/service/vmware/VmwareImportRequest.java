@@ -139,6 +139,12 @@ public class VmwareImportRequest implements RequisitionRequest {
     @XmlJavaTypeAdapter(RequisitionXmlAdapter.class)
     private Requisition existingRequisition;
 
+    @XmlAttribute(name="timeout")
+    private int timeout = 3000;
+
+    @XmlAttribute(name="cim-timeout")
+    private int cimTimeout = 3000;
+
     public VmwareImportRequest() { }
 
     public VmwareImportRequest(Map<String, String> params) {
@@ -146,6 +152,22 @@ public class VmwareImportRequest implements RequisitionRequest {
         setUsername(params.get("username"));
         setPassword(params.get("password"));
         setLocation(params.get("location"));
+
+        if (params.containsKey("timeout")) {
+            try {
+                setTimeout(Integer.parseInt(params.get("timeout")));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error parsing timeout parameter", e);
+            }
+        }
+
+        if (params.containsKey("cimTimeout")) {
+            try {
+                setCimTimeout(Integer.parseInt(params.get("cimTimeout")));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error parsing cimTimeout parameter", e);
+            }
+        }
 
         boolean importVMOnly = queryParameter(params, "importVMOnly", false);
         boolean importHostOnly = queryParameter(params, "importHostOnly", false);
@@ -400,14 +422,30 @@ public class VmwareImportRequest implements RequisitionRequest {
     public void setExistingRequisition(Requisition existingRequisition) {
         this.existingRequisition = existingRequisition;
     }
-    
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    public int getCimTimeout() {
+        return cimTimeout;
+    }
+
+    public void setCimTimeout(int cimTimeout) {
+        this.cimTimeout = cimTimeout;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(hostname, username, password, location, foreignSource, importVMPoweredOn, importVMPoweredOff,
                 importVMSuspended, importHostPoweredOn, importHostPoweredOff, importHostStandBy, importHostUnknown,
                 persistIPv4, persistIPv6, persistVMs, persistHosts, topologyPortGroups, topologyNetworks,
                 topologyDatastores, hostSystemServices, virtualMachineServices, customAttributes, oldKey, oldValue,
-                existingRequisition);
+                existingRequisition, timeout, cimTimeout);
     }
 
     @Override
@@ -439,7 +477,9 @@ public class VmwareImportRequest implements RequisitionRequest {
                 && Objects.equals(virtualMachineServices, castOther.virtualMachineServices)
                 && Objects.equals(customAttributes, castOther.customAttributes)
                 && Objects.equals(oldKey, castOther.oldKey) && Objects.equals(oldValue, castOther.oldValue)
-                && Objects.equals(existingRequisition, castOther.existingRequisition);
+                && Objects.equals(existingRequisition, castOther.existingRequisition)
+                && Objects.equals(timeout, castOther.timeout)
+                && Objects.equals(cimTimeout, castOther.cimTimeout);
     }
 
     private static boolean queryParameter(Map<String, String> parms, String key, boolean defaultValue) {

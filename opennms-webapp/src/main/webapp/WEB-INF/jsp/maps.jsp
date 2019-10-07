@@ -37,13 +37,13 @@
     <jsp:param name="breadcrumb" value="Maps" />
 </jsp:include>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Maps</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Maps</span>
     </div>
 
-    <div class="panel-body">
-      <ul class="list-unstyled">
+    <div class="card-body">
+      <ul class="list-unstyled mb-0">
         <c:forEach var="entry" items="${entries.entries}">
           <c:if test="${entry.value.display}">
             <li>

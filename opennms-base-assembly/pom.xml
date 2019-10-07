@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -18,6 +18,20 @@
         <filtering>true</filtering>
         <directory>src/main/filtered</directory>
       </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>${project.build.directory}/cli</directory>
+        <excludes>
+          <exclude>bin/_lib.sh</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <filtering>false</filtering>
+        <directory>${project.build.directory}/cli</directory>
+        <includes>
+          <include>bin/_lib.sh</include>
+        </includes>
+      </resource>
     </resources>
     <plugins>
       <plugin>
@@ -30,6 +44,43 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+          <execution>
+            <id>unpack-cli-tools</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/cli</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.core</groupId>
+                  <artifactId>org.opennms.core.cli</artifactId>
+                  <version>${project.version}</version>
+                  <excludes>META-INF,META-INF/**/*</excludes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-cli-tests</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/shunit</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.core</groupId>
+                  <artifactId>org.opennms.core.cli</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>shunit</classifier>
+                  <type>tar.gz</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
           <execution>
             <id>unpack-remote-poller</id>
             <phase>process-resources</phase>
@@ -160,6 +211,37 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <activation>
+        <os><family>!windows</family></os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <executions>
+              <execution>
+                <id>shell script tests</id>
+                <phase>test</phase>
+                <goals><goal>exec</goal></goals>
+                <configuration>
+                  <executable>${project.build.directory}/shunit/run-tests.sh</executable>
+                  <arguments>
+                    <argument>${project.basedir}/src/test/shell</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <dependencies>
     <!-- Dependencies to put into the endorsed classpath -->
 
@@ -268,6 +350,13 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-reportd</artifactId>
     </dependency>
+    <!-- just here to be able to unpack it into the assembly tarball -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.cli</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.upgrade</artifactId>
@@ -308,6 +397,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-dhcp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-generic</artifactId>
     </dependency>
     <dependency>
@@ -317,6 +410,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-jmx</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-jms</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -497,11 +594,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>resource-cli</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>newts-repository-converter</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -582,11 +674,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>net.simon04.jelementtree</groupId>
-      <artifactId>jelementtree</artifactId>
-      <version>20100506</version>
-    </dependency>
-    <dependency>
       <groupId>opensymphony</groupId>
       <artifactId>ognl</artifactId>
     </dependency>
@@ -602,11 +689,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>gwt-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
@@ -719,6 +801,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.endpoints.grafana.persistence</groupId>
+      <artifactId>org.opennms.features.endpoints.grafana.persistence.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.timeformat</groupId>
       <artifactId>org.opennms.features.timeformat.api</artifactId>
       <version>${project.version}</version>
@@ -789,8 +876,33 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.offheap</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.registry</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.jaeger-tracer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.opennms-identity</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.profile-mapper</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -927,23 +1039,72 @@
       </dependency>
     <!-- Telemetryd -->
     <dependency>
-      <groupId>org.opennms.features.telemetry.listeners</groupId>
-      <artifactId>org.opennms.features.telemetry.listeners.flow</artifactId>
+      <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.listeners</groupId>
-      <artifactId>org.opennms.features.telemetry.listeners.sflow</artifactId>
+      <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.netflow.parser</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.listeners</groupId>
-      <artifactId>org.opennms.features.telemetry.listeners.udp</artifactId>
+      <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.sflow.parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.nxos</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.nxos.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.jti.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.listeners</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.telemetry</groupId>
       <artifactId>org.opennms.features.telemetry.daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Topologies -->
+    <dependency>
+      <groupId>org.opennms.features.topologies</groupId>
+      <artifactId>org.opennms.features.topologies.service.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Enlinkd -->
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.persistence.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.service.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- HTTP Rest-Bridge -->
+    <dependency>
+      <groupId>org.opennms.container.bridge</groupId>
+      <artifactId>org.opennms.container.bridge.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- JSON KV Store using Postgres -->
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
@@ -960,11 +1121,19 @@
 
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>http://central.maven.org/maven2/</url>
+    </repository>
+    <repository>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <id>servicemix</id>
+      <name>ServiceMix Repository</name>
+      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
     </repository>
     <repository>
       <snapshots><enabled>true</enabled></snapshots>
@@ -972,6 +1141,18 @@
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Snapshots</name>
+      <url>http://maven.opennms.org/content/groups/sonatype.org-snapshot/</url>
+    </repository>
+    <repository>
+      <id>ibiblio</id>
+      <name>Maven Central (ibiblio)</name>
+      <url>http://central.maven.org/maven2/</url>
     </repository>
   </repositories>
 

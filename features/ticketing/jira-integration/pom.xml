@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.ticketing</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>26.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jira-troubleticketer</artifactId>
@@ -21,15 +21,6 @@
               <Karaf-Commands>*</Karaf-Commands>
             </instructions>
           </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.opennms.maven.plugins</groupId>
-            <artifactId>features-maven-plugin</artifactId>
-            <configuration>
-                <bundles>
-                    <bundle>mvn:org.opennms.features/jira-troubleticketer/${project.version}</bundle>
-                </bundles>
-            </configuration>
         </plugin>
       </plugins>
     </build>

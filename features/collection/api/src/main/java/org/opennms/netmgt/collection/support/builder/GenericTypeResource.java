@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -128,14 +128,14 @@ public class GenericTypeResource extends DeferredGenericTypeResource {
 
     @Override
     public String toString() {
-        return String.format("GenericTypeResource[node=%s, instance=%s, resourceType=%s,"
-                + "storageStrategy=%s, persistenceSelectorStrategy=%s]",
-                getParent(), getInstance(), m_resourceType, m_storageStrategy, m_persistenceSelectorStrategy);
+        return String.format("GenericTypeResource[node=%s, instance=%s, unmodified-instance=%s, "
+                + "resourceType=%s, storageStrategy=%s, persistenceSelectorStrategy=%s]",
+                getParent(), getInstance(), getUnmodifiedInstance(), m_resourceType, m_storageStrategy, m_persistenceSelectorStrategy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getParent(), getInstance(), m_resourceType, getTimestamp());
+        return Objects.hash(getParent(), getInstance(), getUnmodifiedInstance(), m_resourceType, getTimestamp());
     }
 
     @Override

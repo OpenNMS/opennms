@@ -60,11 +60,11 @@
 	}
 %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Database Update Complete After Management Changes</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Database Update Complete After Management Changes</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
       These changes take effect immediately. OpenNMS does not need to be restarted.
     </p>
@@ -83,7 +83,7 @@
       <a href="element/node.jsp?node=<%= node.getId() %>">Return to node page</a>
     </p>
     <% } %>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

@@ -28,11 +28,17 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.model.*;
 
 /**
  * This class implements a {@link Dashlet} for displaying the node map application.
@@ -55,7 +61,7 @@ public class MapDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
         if (m_dashletComponent == null) {
             m_dashletComponent = new AbstractDashletComponent() {
                 private VerticalLayout m_verticalLayout = new VerticalLayout();
@@ -76,6 +82,7 @@ public class MapDashlet extends AbstractDashlet {
 
                     BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/node-maps#search/" + searchString));
                     browserFrame.setSizeFull();
+                    browserFrame.setId("opsboard-map-iframe");
                     m_verticalLayout.addComponent(browserFrame);
                 }
 
@@ -90,7 +97,7 @@ public class MapDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
-        return getWallboardComponent();
+    public DashletComponent getDashboardComponent(final UI ui) {
+        return getWallboardComponent(ui);
     }
 }

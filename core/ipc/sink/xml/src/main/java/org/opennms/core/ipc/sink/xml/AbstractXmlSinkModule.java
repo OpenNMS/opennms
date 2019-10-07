@@ -49,6 +49,7 @@ public abstract class AbstractXmlSinkModule<S extends Message, T extends Message
      */
     private final ThreadLocal<XmlHandler<T>> messageXmlHandler = new ThreadLocal<>();
 
+
     public AbstractXmlSinkModule(Class<T> messageClazz) {
         this.messageClazz = Objects.requireNonNull(messageClazz);
     }
@@ -61,6 +62,18 @@ public abstract class AbstractXmlSinkModule<S extends Message, T extends Message
     @Override
     public T unmarshal(byte[] bytes) {
         return getXmlHandler().unmarshal(new String(bytes, StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public byte[] marshalSingleMessage(S message) {
+        return marshal((T)getAggregationPolicy().aggregate(null, message));
+    }
+
+    /** Modules with different aggregated message should override this method **/
+    @Override
+    public S unmarshalSingleMessage(byte[] bytes) {
+        T log = unmarshal(bytes);
+        return (S)log;
     }
 
     @Override

@@ -37,7 +37,9 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
@@ -137,6 +139,25 @@ public class DefaultSelectionManager implements SelectionManager {
 
 	@Override
 	public void selectionChanged(SelectionContext selectionContext) {
+		// Before committing change, ensure that all selected vertices are shown
+		// If not, add the missing vertex to focus
+		if (!selectionContext.getSelectedVertexRefs().isEmpty()) {
+			final Collection<Vertex> currentlyVisibleVertices = getGraphContainer().getGraph().getDisplayVertices();
+			boolean fireGraphChanged = false;
+			for (VertexRef eachSelectedVertex : getSelectedVertexRefs()) {
+				if (!currentlyVisibleVertices.contains(eachSelectedVertex)) {
+					final VertexHopGraphProvider.DefaultVertexHopCriteria focusCriteria = new VertexHopGraphProvider.DefaultVertexHopCriteria(eachSelectedVertex);
+					fireGraphChanged = true;
+					getGraphContainer().addCriteria(focusCriteria);
+				}
+			}
+			// Only fire event if we actually changed the container (by adding criteria)
+			if (fireGraphChanged) {
+				getGraphContainer().fireGraphChanged();
+			}
+		}
+
+		// Now notify
 		for(SelectionListener listener : m_listeners) {
 			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on: {}, {}", listener.getClass().getName(), listener);
 			listener.selectionChanged(selectionContext);

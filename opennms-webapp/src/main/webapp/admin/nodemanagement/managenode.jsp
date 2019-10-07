@@ -188,11 +188,11 @@
     
 <form method="post" name="manageAll" action="admin/manageNode" onsubmit="return applyChanges();">
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Manage and Unmanage Interfaces and Services</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Manage and Unmanage Interfaces and Services</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <!--
     <p>
       The two tables below represent each managed and unmanged interface,
@@ -225,17 +225,17 @@
     <input type="hidden" name="node" value="<%= nodeId %>"/>
 
     <div class="form-group">
-      <input type="submit" class="btn btn-default" value="Apply Changes"/>
-      <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
-      <input type="button" class="btn btn-default" value="Select All" onclick="checkAll()"/>
-      <input type="button" class="btn btn-default" value="Unselect All" onclick="uncheckAll()"/>
-      <input type="reset" class="btn btn-default" />
+      <input type="submit" class="btn btn-secondary" value="Apply Changes"/>
+      <input type="button" class="btn btn-secondary" value="Cancel" onclick="cancel()"/>
+      <input type="button" class="btn btn-secondary" value="Select All" onclick="checkAll()"/>
+      <input type="button" class="btn btn-secondary" value="Unselect All" onclick="uncheckAll()"/>
+      <input type="reset" class="btn btn-secondary" />
     </div>
 
     <div class="row">
     <% if (interfaces.size() > 0) { %>
       <div class="col-md-6">
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th class="text-center" width="5%">Managed</th>
             <th class="text-center" width="10%">Interface</th>
@@ -250,7 +250,7 @@
     <%-- See if there is a second column to draw --%>
     <% if (midInterfaceIndex < interfaces.size()) { %>
       <div class="col-md-6">
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th class="text-center" width="5%">Managed</th>
             <th class="text-center" width="10%">Interface</th>
@@ -264,13 +264,13 @@
     </div>
 
     <div class="form-group">
-      <input type="submit" class="btn btn-default" value="Apply Changes"/>
-      <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
-      <input type="button" class="btn btn-default" value="Select All" onclick="checkAll()"/>
-      <input type="button" class="btn btn-default" value="Unselect All" onclick="uncheckAll()"/>
-      <input type="reset" class="btn btn-default" />
+      <input type="submit" class="btn btn-secondary" value="Apply Changes"/>
+      <input type="button" class="btn btn-secondary" value="Cancel" onclick="cancel()"/>
+      <input type="button" class="btn btn-secondary" value="Select All" onclick="checkAll()"/>
+      <input type="button" class="btn btn-secondary" value="Unselect All" onclick="uncheckAll()"/>
+      <input type="reset" class="btn btn-secondary" />
     </div>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </form>

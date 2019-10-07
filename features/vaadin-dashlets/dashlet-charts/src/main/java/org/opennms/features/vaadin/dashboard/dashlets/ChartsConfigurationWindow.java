@@ -28,11 +28,8 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.data.Property;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
-import com.vaadin.ui.*;
+import java.util.Iterator;
+
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
@@ -40,7 +37,18 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.web.charts.ChartUtils;
 
-import java.util.Iterator;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.NativeSelect;
 
 /**
  * This class represents the configuration window for charts dashlets.
@@ -145,7 +153,12 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
 
         formLayout.addComponent(m_chartSelect);
 
-        Page.getCurrent().getStyles().add(".preview { width:225px; }");
+        addAttachListener(new AttachListener() {
+            @Override
+            public void attach(AttachEvent attachEvent) {
+                getUI().getPage().getStyles().add(".preview { width:225px; }");
+            }
+        });
 
         m_chartSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override

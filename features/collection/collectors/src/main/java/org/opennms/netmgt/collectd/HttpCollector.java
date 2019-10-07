@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.opennms.core.web.HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -241,6 +243,8 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
             }
             Integer retryCount = ParameterMap.getKeyedInteger(collectorAgent.getParameters(), key, DEFAULT_RETRY_COUNT);
             clientWrapper.setRetries(retryCount);
+
+            setUseSystemProxyIfDefined(clientWrapper, collectorAgent.getParameters());
 
             method = buildHttpMethod(collectorAgent);
             method.setProtocolVersion(httpVersion);

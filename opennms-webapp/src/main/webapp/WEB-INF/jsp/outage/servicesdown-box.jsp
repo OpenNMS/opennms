@@ -46,20 +46,20 @@
 
 <!-- outage/servicesdown-box.htm -->
 <c:url var="headingLink" value="outage/list.htm"/>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><a href="${headingLink}">Nodes with Outages</a></h3>
+<div class="card">
+  <div class="card-header">
+    <span><a href="${headingLink}">Nodes with Outages</a></span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <c:choose>
       <c:when test="${empty summaries}">
-        <p class="noBottomMargin">
+        <p class="mb-0">
           There are no current outages
         </p>
       </c:when>
 
       <c:otherwise>
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
           <c:forEach var="summary" items="${summaries}">
             <c:url var="nodeLink" value="element/node.jsp">
               <c:param name="node" value="${summary.nodeId}"/>
@@ -72,7 +72,7 @@
     </c:choose>
   </div>
   <c:if test="${moreCount > 0}">
-    <div class="panel-footer text-right">
+    <div class="card-footer text-right">
       <c:url var="moreLink" value="outage/list.htm"/>
       <a href="${moreLink}">${moreCount} more nodes with outages...</a>
     </div>

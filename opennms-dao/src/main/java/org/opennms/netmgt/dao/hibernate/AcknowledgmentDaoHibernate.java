@@ -28,16 +28,22 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.hibernate.ObjectNotFoundException;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
+import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -221,6 +227,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                 case CLEAR:
                     LOG.debug("processAck: Clearing ackable: {}...", ackable);
                     if (isAlarm) {
+                        ((OnmsAlarm) ackable).getRelatedAlarms().forEach(relatedAlarm -> clearRelatedAlarm(relatedAlarm));
                         final OnmsSeverity previousSeverity = ackable.getSeverity();
                         callback = (alarm) -> alarmEntityNotifier.didUpdateAlarmSeverity(alarm, previousSeverity);
                     }
@@ -253,5 +260,40 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
             
         }
         LOG.info("processAck: Found and processed acknowledgables for the acknowledgement: {}", ack);
+    }
+
+    private void clearRelatedAlarm(OnmsAlarm alarm) {
+        OnmsAcknowledgment clear = new OnmsAcknowledgment(alarm);
+        clear.setAckAction(AckAction.CLEAR);
+        processAck(clear);
+    }
+
+    @Override
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public List<OnmsAcknowledgment> findLatestAcks(Date from) {
+        final String hqlQuery = "SELECT acks FROM OnmsAcknowledgment acks " +
+                "WHERE acks.ackTime = (" +
+                    "SELECT MAX(filteredAcks.ackTime) " +
+                    "FROM OnmsAcknowledgment filteredAcks " +
+                    "WHERE filteredAcks.refId = acks.refId) " +
+                "AND acks.id = (" +
+                    "SELECT MAX(filteredAcks.id) FROM OnmsAcknowledgment filteredAcks " +
+                    "WHERE filteredAcks.refId = acks.refId) " +
+                "AND acks.ackTime >= (:minAckTimeParm)";
+        return (List<OnmsAcknowledgment>) getHibernateTemplate().findByNamedParam(hqlQuery, "minAckTimeParm", from);
+    }
+
+    @Override
+    @Transactional
+    public Optional<OnmsAcknowledgment> findLatestAckForRefId(Integer refId) {
+        CriteriaBuilder builder = new CriteriaBuilder(OnmsAcknowledgment.class)
+                .eq("refId", refId)
+                .limit(1)
+                .orderBy("ackTime").desc()
+                .orderBy("id").desc();
+        List<OnmsAcknowledgment> acks = findMatching(builder.toCriteria());
+
+        return acks.size() == 1 ? Optional.of(acks.get(0)) : Optional.empty();
     }
 }

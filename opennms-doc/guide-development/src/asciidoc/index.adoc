@@ -8,7 +8,7 @@
 :numbered:
 
 = Developers Guide
-:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -23,7 +23,6 @@ ifndef::opennms-prime[]
 == Minion development
 include::text/minion/introduction.adoc[]
 include::text/minion/container.adoc[]
-include::text/minion/packaging.adoc[]
 include::text/minion/guidelines.adoc[]
 include::text/minion/testing.adoc[]
 endif::opennms-prime[]
@@ -32,6 +31,7 @@ endif::opennms-prime[]
 include::text/topology/introduction.adoc[]
 include::text/topology/infopanel.adoc[]
 include::text/topology/graphml.adoc[]
+include::text/topology/update.adoc[]
 
 == CORS Support
 include::text/rest/CORS.adoc[]
@@ -47,6 +47,7 @@ include::text/rest/osgi.adoc[]
 include::text/rest/acknowledgements.adoc[]
 include::text/rest/alarm_statistics.adoc[]
 include::text/rest/alarms.adoc[]
+include::text/rest/alarm_history.adoc[]
 include::text/rest/events.adoc[]
 include::text/rest/categories.adoc[]
 include::text/rest/flows.adoc[]
@@ -58,6 +59,7 @@ include::text/rest/ifservices.adoc[]
 include::text/rest/ksc_reports.adoc[]
 include::text/rest/maps.adoc[]
 include::text/rest/measurements.adoc[]
+include::text/rest/meta-data.adoc[]
 include::text/rest/nodes.adoc[]
 include::text/rest/notifications.adoc[]
 include::text/rest/outage_timeline.adoc[]
@@ -68,12 +70,14 @@ include::text/rest/rtc.adoc[]
 include::text/rest/scheduled_outages.adoc[]
 include::text/rest/snmp_configuration.adoc[]
 include::text/rest/users.adoc[]
+include::text/rest/user-defined-links.adoc[]
 include::text/rest/snmptrapnbi-config.adoc[]
 include::text/rest/emailnbi-config.adoc[]
 include::text/rest/javamail-config.adoc[]
 include::text/rest/syslognbi-config.adoc[]
 include::text/bsm/bsm-development.adoc[]
 include::text/rest/discovery.adoc[]
+include::text/rest/situation-feedback.adoc[]
 
 === ReST API Examples
 include::text/rest/examples.adoc[]

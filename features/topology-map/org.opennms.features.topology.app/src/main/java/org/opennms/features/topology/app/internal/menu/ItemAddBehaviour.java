@@ -28,16 +28,15 @@
 
 package org.opennms.features.topology.app.internal.menu;
 
-import org.vaadin.peter.contextmenu.ContextMenu;
-
 /**
  * Vaadin's API for the menus is not ideal.
- * In order to create the menus for the {@link ContextMenu} and the {@link com.vaadin.ui.MenuBar}
+ *
+ * In order to create the menus for the {@link com.vaadin.contextmenu.ContextMenu} and the {@link com.vaadin.ui.MenuBar}
  * it is required to add menu items to the root element (e.g. {@link com.vaadin.ui.MenuBar} and
  * the items (e.g. {@link com.vaadin.ui.MenuBar.MenuItem}) itself. By default they are not compatible.
  * This interface allows to encapsulate the "add item logic" in order to allow the same logic to create the menu items.
  *
- * @param <T> The type of the created Menu Item (e.g. {@link ContextMenu.ContextMenuItem , or {@link com.vaadin.ui.MenuBar.MenuItem}}
+ * @param <T> The type of the created Menu Item (e.g. {@link com.vaadin.contextmenu.MenuItem , or {@link com.vaadin.ui.MenuBar.MenuItem}}
  * @author mvrueden
  */
 interface ItemAddBehaviour<T> {

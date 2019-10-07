@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.netutils.internal.operations;
 
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -75,10 +74,10 @@ public class PingOperation extends AbstractOperation {
                 ? node.get().getLocation().getLocationName()
                 : MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
 
-        final List<InetAddress> ipAddresses = node.isPresent()
-                ? Lists.newArrayList(node.get().getIpInterfaces()).stream().map(OnmsIpInterface::getIpAddress).collect(Collectors.toList())
-                : Lists.newArrayList(InetAddressUtils.addr(vertex.getIpAddress()));
-        final InetAddress defaultIp = getDefaultIp(vertex, node);
+        final List<String> ipAddresses = node.isPresent()
+                ? Lists.newArrayList(node.get().getIpInterfaces()).stream().map(eachInterface -> InetAddressUtils.str(eachInterface.getIpAddress())).collect(Collectors.toList())
+                : Lists.newArrayList(vertex.getIpAddress());
+        final String defaultIp = getDefaultIp(vertex, node);
 
         final String caption = String.format("Ping - %s (%s)", vertex.getLabel(), vertex.getIpAddress());
         new PingWindow(pingClient,
@@ -88,15 +87,15 @@ public class PingOperation extends AbstractOperation {
                 .open();
     }
 
-    private InetAddress getDefaultIp(Vertex vertex, Optional<OnmsNode> node) {
+    private String getDefaultIp(Vertex vertex, Optional<OnmsNode> node) {
         if (hasValidIpAddress(vertex)) {
-            return InetAddressUtils.addr(vertex.getIpAddress());
+            return vertex.getIpAddress();
         }
         if (node.isPresent() && node.get().getPrimaryInterface() != null) {
-            return node.get().getPrimaryInterface().getIpAddress();
+            return InetAddressUtils.str(node.get().getPrimaryInterface().getIpAddress());
         }
         if (node.isPresent()) {
-            return node.get().getIpInterfaces().iterator().next().getIpAddress();
+            return InetAddressUtils.str(node.get().getIpInterfaces().iterator().next().getIpAddress());
         }
         throw new IllegalStateException("The vertex does not have a ip address or a node assigned.");
     }
@@ -135,16 +134,10 @@ public class PingOperation extends AbstractOperation {
 
     private boolean hasValidIpAddress(Vertex vertexItem) {
         // Only enable if we actually have something to ping
-        final String ipAddress = vertexItem.getIpAddress();
-        if (!Strings.isNullOrEmpty(ipAddress)) {
-            try {
-                InetAddressUtils.getInetAddress(ipAddress);
-                return true;
-            } catch (IllegalArgumentException ex) {
-                return false;
-            }
-        }
-        return false;
+        // Be aware that originally the ip address was also resolved via InetAddressUtils.getInetAddress(ipAddress)
+        // but in cases were the ipAddress is not reachable, the response thread would block and causing
+        // the ui to build the menubar very slowly. Therefore this was changed. See NMS-10452
+        return !Strings.isNullOrEmpty(vertexItem.getIpAddress());
     }
 
     /**

@@ -48,6 +48,7 @@ public class MattermostNotificationStrategy extends AbstractSlackCompatibleNotif
     private static final String MM_ICONURL_PROPERTY = "org.opennms.netmgt.notifd.mattermost.iconURL";
     private static final String MM_ICONEMOJI_PROPERTY = "org.opennms.netmgt.notifd.mattermost.iconEmoji";
     private static final String MM_CHANNEL_PROPERTY = "org.opennms.netmgt.notifd.mattermost.channel";
+	private static final String MM_USE_SYSTEM_PROXY = "org.opennms.netmgt.notifd.mattermost.useSystemProxy";
     
     @Override
 	protected String formatWebhookErrorResponse(int statusCode, String contents) {
@@ -95,7 +96,12 @@ public class MattermostNotificationStrategy extends AbstractSlackCompatibleNotif
 	protected String getUrlPropertyName() {
     	return MM_URL_PROPERTY;
     }
-    
+
+    @Override
+    protected String getUseSystemProxyPropertyName() {
+        return MM_USE_SYSTEM_PROXY;
+    }
+
     @Override
 	protected String getUsernamePropertyName() {
     	return MM_USERNAME_PROPERTY;

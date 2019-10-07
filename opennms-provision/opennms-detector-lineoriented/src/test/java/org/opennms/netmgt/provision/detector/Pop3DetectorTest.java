@@ -31,6 +31,8 @@ package org.opennms.netmgt.provision.detector;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -107,7 +109,7 @@ public class Pop3DetectorTest {
     }
 
     private Pop3Detector createDetector(int port) {
-        Pop3Detector detector = m_detectorFactory.createDetector();
+        Pop3Detector detector = m_detectorFactory.createDetector(new HashMap<>());
         detector.setServiceName("POP3");
         detector.setTimeout(500);
         detector.setPort(port);

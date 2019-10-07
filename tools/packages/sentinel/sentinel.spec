@@ -12,14 +12,14 @@
 %{!?sentinelrepoprefix:%define sentinelrepoprefix /opt/sentinel/repositories}
 
 # Description
-%{!?_name:%define _name "opennms"}
-%{!?_descr:%define _descr "OpenNMS"}
+%{!?_name:%define _name opennms}
+%{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java jre-1.8.0}
+%{!?_java:%define _java jre-11}
 
-%{!?extrainfo:%define extrainfo }
-%{!?extrainfo2:%define extrainfo2 }
+%{!?extrainfo:%define extrainfo %{nil}}
+%{!?extrainfo2:%define extrainfo2 %{nil}}
 %{!?skip_compile:%define skip_compile 0}
 %{!?enable_snapshots:%define enable_snapshots 1}
 
@@ -48,6 +48,9 @@ Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
 URL:           http://www.opennms.org/wiki/Sentinel
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
+BuildRequires:	%{_java}
+BuildRequires:	libxslt
+
 #Requires:       jicmp >= 2.0.0
 #Requires(pre):  jicmp >= 2.0.0
 #Requires:       jicmp6 >= 2.0.0
@@ -55,8 +58,8 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 Requires:       openssh
 Requires(post): util-linux
 Requires:       util-linux
-Requires(pre):  %{_java}
-Requires:       %{_java}
+#Requires(pre):  %{_java}
+#Requires:       %{_java}
 Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
 Requires(pre):  /usr/sbin/useradd
@@ -96,6 +99,10 @@ if [ "%{enable_snapshots}" = 1 ]; then
 	EXTRA_ARGS="-s"
 fi
 
+if [ "%{skip_compile}" = 1 ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -c"
+fi
+
 tools/packages/sentinel/create-sentinel-assembly.sh $EXTRA_ARGS
 
 # Extract the sentinel assembly
@@ -118,12 +125,30 @@ mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconf
 # sentinel package files
 find %{buildroot}%{sentinelinstprefix} ! -type d | \
     grep -v %{sentinelinstprefix}/bin | \
+    grep -v %{sentinelinstprefix}/etc | \
     grep -v %{sentinelrepoprefix} | \
     sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) |" | \
     sort > %{_tmppath}/files.sentinel
+
+# org.apache.karaf.features.cfg and org.ops4j.pax.logging.cfg should
+# be special-cased to not be replaced by default (and create .rpmnew files)
+find %{buildroot}%{sentinelinstprefix}/etc ! -type d | \
+    grep -E 'etc/(org.apache.karaf.features.cfg|org.ops4j.pax.logging.cfg)$' | \
+    sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) %config(noreplace) |" | \
+    sort >> %{_tmppath}/files.sentinel
+
+# all other etc files should replace by default (and create .rpmsave files)
+find %{buildroot}%{sentinelinstprefix}/etc ! -type d | \
+    grep -v etc/org.apache.karaf.features.cfg | \
+    grep -v etc/org.ops4j.pax.logging.cfg | \
+    grep -v etc/featuresBoot.d | \
+    sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) %config |" | \
+    sort >> %{_tmppath}/files.sentinel
+
 find %{buildroot}%{sentinelinstprefix}/bin ! -type d | \
     sed -e "s|^%{buildroot}|%attr(755,sentinel,sentinel) |" | \
     sort >> %{_tmppath}/files.sentinel
+
 # Exclude subdirs of the repository directory
 find %{buildroot}%{sentinelinstprefix} -type d | \
     grep -v %{sentinelrepoprefix}/ | \
@@ -134,9 +159,10 @@ find %{buildroot}%{sentinelinstprefix} -type d | \
 rm -rf %{buildroot}
 
 %files -f %{_tmppath}/files.sentinel
-%defattr(664 root root 775)
+%defattr(664 sentinel sentinel 775)
 %attr(755,sentinel,sentinel) %{_initrddir}/sentinel
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme
 
 %pre
 ROOT_INST="${RPM_INSTALL_PREFIX0}"
@@ -155,17 +181,23 @@ ROOT_INST="${RPM_INSTALL_PREFIX0}"
 # Clean out the data directory
 if [ -d "${ROOT_INST}/data" ]; then
     find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print0 | xargs -0 rm -rf
-    find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+    if [ -d "${ROOT_INST}/data/tmp"  ]; then
+        find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+    fi
 fi
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${ROOT_INST}/repositories/.local"
+rm -rf "${ROOT_INST}/.m2"
 
 # Generate an SSH key if necessary
 if [ ! -f "${ROOT_INST}/etc/host.key" ]; then
-    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
+    /usr/bin/ssh-keygen -m PEM -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
     chown sentinel:sentinel "${ROOT_INST}/etc/"host.key*
 fi
+
+# Set up ICMP for non-root users
+"${ROOT_INST}/bin/ensure-user-ping.sh" "sentinel" >/dev/null 2>&1 || echo "WARNING: Unable to enable ping by the 'sentinel' user. If you intend to run ping-related commands from the Sentinel container without running as root, try running ${ROOT_INST}/bin/ensure-user-ping.sh manually."
 
 %preun -p /bin/bash
 ROOT_INST="${RPM_INSTALL_PREFIX0}"

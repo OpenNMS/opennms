@@ -10,7 +10,7 @@ The first step is to download the graphical installer and register _Cassandra_ a
 
 NOTE: This description was built on _Windows Server 2012_.
 
-NOTE: Cassandra 3.x requires Java 8+. See <<gi-install-oracle-java-windows,installing Java on Windows>> for instructions.
+NOTE: Cassandra 3.x requires Java 8+.
 
 .Download the _DataStax_ graphical installer for _Cassandra_ from _PowerShell_ or a Browser
 [source]

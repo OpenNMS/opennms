@@ -95,6 +95,7 @@ if (!window.org_opennms_features_topology_app_internal_ui_icons_IconSelectionCom
         });
 
         // At this point we do not react on changes from server side
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         this.onStateChange = function onStateChange() {
         };
 

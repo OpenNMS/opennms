@@ -28,23 +28,24 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.event.FieldEvents;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import java.util.Objects;
+
 import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionChangedListener;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionValueChangedListener;
-import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.NameValidator;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
-import java.util.Objects;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.event.FieldEvents;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 
 
 /**
@@ -76,7 +77,6 @@ public class NameEditForm extends VerticalLayout implements SelectionChangedList
         addComponent(captionLabel);
         addComponent(contentLayout);
         setWidth(100, Unit.PERCENTAGE);
-        setImmediate(true);
     }
 
     protected void setParameter(FormParameter parameter) {

@@ -1,0 +1,32 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+    <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" availability="mandatory" />
+
+    <!-- TCP Listener Factory -->
+    <bean id="tcpListenerFactory" class="org.opennms.netmgt.telemetry.listeners.factory.TcpListenerFactory">
+        <argument ref="telemetryRegistry" />
+    </bean>
+    <service ref="tcpListenerFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+    <!-- UDP Listener Factory -->
+    <bean id="udpListenerFactory" class="org.opennms.netmgt.telemetry.listeners.factory.UdpListenerFactory">
+        <argument ref="telemetryRegistry" />
+    </bean>
+    <service ref="udpListenerFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+</blueprint>

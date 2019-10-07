@@ -39,7 +39,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
+public class QuickAddNodeIT extends OpenNMSSeleniumIT {
 
     /** The Constant NODE_LABEL. */
     private static final String NODE_LABEL = "localNode";
@@ -55,7 +55,6 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
     public void setUp() throws Exception {
         deleteTestRequisition();
         createTestRequisition();
-        provisioningPage();
     }
 
     /**
@@ -82,7 +81,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testQuickAddNode() throws Exception {
         adminPage();
-        clickMenuItem("name=nav-admin-top", "Quick-Add Node", "admin/ng-requisitions/quick-add-node.jsp");
+        findElementByXpath("//nav//a[contains(@title, 'Quick-Add Node') and contains(@href, 'admin/ng-requisitions/quick-add-node.jsp')]").click();
 
         Thread.sleep(5000);
 
@@ -98,7 +97,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
         // Add a category to the node
         findElementById("add-category").click();
         findElementByCss("input[name='categoryName'");
-        enterTextAutocomplete(By.cssSelector("input[name='categoryName']"), NODE_CATEGORY, Keys.ENTER);
+        enterTextAutocomplete(By.cssSelector("input[name='categoryName']"), NODE_CATEGORY);
 
         wait.until(ExpectedConditions.elementToBeClickable(By.id("provision"))).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog button[data-bb-handler='main']"))).click();
@@ -107,7 +106,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
     }
 
     protected WebElement enterTextAutocomplete(final By selector, final CharSequence... text) throws InterruptedException {
-        final WebElement element = m_driver.findElement(selector);
+        final WebElement element = driver.findElement(selector);
         element.clear();
         element.click();
         Thread.sleep(500);
@@ -117,7 +116,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
         Thread.sleep(100);
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
-            final List<WebElement> matching = m_driver.findElements(By.cssSelector("a[title='"+text+"']"));
+            final List<WebElement> matching = driver.findElements(By.cssSelector("a[title='"+text+"']"));
             if (!matching.isEmpty()) {
                 findElementByCss("a[title='"+text+"']").click();
             }

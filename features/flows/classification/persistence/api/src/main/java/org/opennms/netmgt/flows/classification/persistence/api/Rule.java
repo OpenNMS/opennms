@@ -106,11 +106,14 @@ public class Rule implements RuleDefinition {
 
     /**
      * The position of the rule within it's group.
-     * Global order must consider group.priority as well.
-     * See {@link RulePriorityComparator}.
+     * Global order must consider group.position as well.
+     * See {@link RulePositionComparator}.
      */
     @Column(name="position", nullable = false)
     private int position;
+
+    @Column(name="omnidirectional")
+    private boolean omnidirectional;
 
     public Rule() {
         
@@ -188,6 +191,14 @@ public class Rule implements RuleDefinition {
         this.protocol = protocol;
     }
 
+    public boolean isOmnidirectional() {
+        return this.omnidirectional;
+    }
+
+    public void setOmnidirectional(final boolean omnidirectional) {
+        this.omnidirectional = omnidirectional;
+    }
+
     public void setPosition(int position) {
         this.position = position;
     }
@@ -210,8 +221,8 @@ public class Rule implements RuleDefinition {
     }
 
     @Override
-    public int getGroupPriority() {
-        return group == null ? 0 : group.getPriority();
+    public int getGroupPosition() {
+        return group == null ? 0 : group.getPosition();
     }
 
     public void setGroup(Group group) {
@@ -228,6 +239,7 @@ public class Rule implements RuleDefinition {
             .add("srcPort", srcPort)
             .add("exporterFilter", exporterFilter)
             .add("protocol", protocol)
+            .add("omnidirectional", omnidirectional)
             .add("position", position)
             .add("group", group)
             .toString();

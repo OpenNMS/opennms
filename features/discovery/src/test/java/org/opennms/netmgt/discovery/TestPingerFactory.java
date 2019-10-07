@@ -30,6 +30,7 @@ package org.opennms.netmgt.discovery;
 
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.TestPinger;
 
 public class TestPingerFactory implements PingerFactory {
 

@@ -1,6 +1,5 @@
 <div ng-controller="ListCtrl">
 <div ng-controller="MonitoringLocationsListCtrl">
-
 	<!-- Modal form for adding filters -->
 	<div id="filterModal" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
@@ -10,7 +9,7 @@
 					<label>Add Filter:</label>
 					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
 						<div class="form-group">
-						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'locationName'">
+						<select class="form-control custom-select" ng-model="clause.property" ng-init="clause.property = 'locationName'">
 							<option value="locationName">Location Name</option>
 							<option value="monitoringArea">Monitoring Area</option>
 							<option value="geolocation">Geolocation</option>
@@ -18,7 +17,7 @@
 							<option value="longitude">Longitude</option>
 							<option value="priority">Priority</option>
 						</select>
-						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+						<select class="form-control custom-select" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
 							<option value="NE">!=</option>
 							<option value="LT">&lt;</option>
@@ -32,7 +31,7 @@
 						<input name="clause-value-longitude" class="form-control" type="number" step="any" ng-model="clause.value" min="-180.0" max="180.0" ng-if="clause.property === 'longitude'" />
 						</div>
 						<br/><br/>
-						<button class="btn btn-default" type="submit">Submit</button>
+						<button class="btn btn-secondary" type="submit">Submit</button>
 					</form>
 				</div>
 			</div>
@@ -72,7 +71,7 @@
 							<label for="priority">Priority</label>
 							<input class="form-control" type="number" ng-model="newItem.priority"/>
 						</div>
-						<button class="btn btn-default" type="submit">Submit</button>
+						<button class="btn btn-secondary" type="submit">Submit</button>
 					</form>
 				</div>
 			</div>
@@ -114,13 +113,13 @@
 
 	<!-- Filter list -->
 	<div class="well well-sm">
-		<span class="h4" style="line-height:2.8;">
+		<span class="h5" style="line-height:2.8;">
 			Filters&nbsp;&nbsp;
-			<a onClick="$('#filterModal').modal()"><i class="fa fa-search-plus fa-lg"></i></a>
+			<a href onClick="$('#filterModal').modal()"><i class="fa fa-search-plus fa-lg"></i></a>
 			&nbsp;
-			<a onClick="$('#helpModal').modal()"><i class="fa fa-question-circle fa-lg"></i></a>
+			<a href onClick="$('#helpModal').modal()"><i class="fa fa-question-circle fa-lg"></i></a>
 			&nbsp;
-			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
+			<a href ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
 			&nbsp;
 		</span>
 		<span ng-hide="query.searchClauses.length == 0">
@@ -140,38 +139,34 @@
 
 	<!-- Paging controls -->
 	<div>
-		<div class="btn-toolbar">
-			<div class="btn-group">
-				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
-					<i class="fa fa-backward"></i>&nbsp;&nbsp;First
-				</a>
-			</div>
-			<div class="btn-group">
-				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
-					<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
-				</a>
-			</div>
+		<div class="">
+			<button type="button" role="button" class="btn btn-secondary {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
+				<i class="fa fa-backward"></i>&nbsp;&nbsp;First
+			</button>
+			<button type="button" role="button" class="btn btn-secondary ml-2 {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
+				<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
+			</button>
 
 			<div class="btn-group">
-				<a class="btn btn-default" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
 					{{(query.offset/query.limit) - 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
 					{{(query.offset/query.limit) - 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
 					{{query.offset/query.limit}}
 				</a>
-				<a class="btn btn-default active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
+				<a class="btn btn-secondary active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
 					{{(query.offset/query.limit) + 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 3}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 4}}
 				</a>
 			</div>
@@ -180,70 +175,68 @@
 				<!-- Add 1 to each offset since they are zero-based -->
 				<form class="form-inline" ng-submit="setLimit(query.newLimit)">
 					<div class="input-group" style="margin-left:10px;">
-						<span class="input-group-addon"><i class="fa fa-th-list"></i></span>
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fa fa-th-list"></i></span>
+						</div>
 						<input class="form-control" type="number" ng-model="query.newLimit"/>
 					</div>
 
-					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
-							Next&nbsp;&nbsp;<i class="fa fa-play"></i>
-						</a>
-					</div>
+					<button type="button" role="button" class="btn btn-secondary mx-2 {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
+						Next&nbsp;&nbsp;<i class="fa fa-play"></i>
+					</button>
 
-					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
-							Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
-						</a>
-					</div>
+					<button type="button" role="button" class="btn btn-secondary {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
+						Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
+					</button>
 				</form>
 			</div>
 
-			<h5 class="pull-right" ng-show="query.maxOffset &lt; 0">No items found.</h5>
-			<h5 class="pull-right" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
+			<h5 class="pull-right col-form-label" ng-show="query.maxOffset &lt; 0">No items found.</h5>
+			<h5 class="pull-right col-form-label" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
 		</div>
 	</div>
 
 	<br/>
 
-	<div class="panel panel-default">
+	<div class="card">
 		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
 		<table class="table table-bordered table-striped" style="font-size:100%">
 			<tbody>
 				<tr>
-					<th class="col-sm-2 text-nowrap">
-						<a ng-click="changeOrderBy('locationName')">Location Name</a>
+					<th>
+						<a href ng-click="changeOrderBy('locationName')">Location Name</a>
 						<i ng-show="query.orderBy === 'locationName' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'locationName' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-1 text-nowrap">
-						<a ng-click="changeOrderBy('monitoringArea')">Monitoring Area</a>
+					<th>
+						<a href ng-click="changeOrderBy('monitoringArea')">Monitoring Area</a>
 						<i ng-show="query.orderBy === 'monitoringArea' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'monitoringArea' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2 text-nowrap">
-						<a ng-click="changeOrderBy('geolocation')">Geolocation</a>
+					<th>
+						<a href ng-click="changeOrderBy('geolocation')">Geolocation</a>
 						<i ng-show="query.orderBy === 'geolocation' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'geolocation' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-1 text-nowrap">
-						<a ng-click="changeOrderBy('latitude')">Latitude</a>
+					<th>
+						<a href ng-click="changeOrderBy('latitude')">Latitude</a>
 						<i ng-show="query.orderBy === 'latitude' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'latitude' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-1 text-nowrap">
-						<a ng-click="changeOrderBy('longitude')">Longitude</a>
+					<th>
+						<a href ng-click="changeOrderBy('longitude')">Longitude</a>
 						<i ng-show="query.orderBy === 'longitude' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'longitude' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-1 text-nowrap">
-						<a ng-click="changeOrderBy('priority')">Priority</a>
+					<th>
+						<a href ng-click="changeOrderBy('priority')">Priority</a>
 						<i ng-show="query.orderBy === 'priority' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'priority' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2 text-nowrap">
+					<th>
 						Polling Packages
 					</th>
-					<th class="col-sm-2 text-nowrap">
+					<th>
 						Collection Packages
 					</th>
 				</tr>
@@ -251,43 +244,43 @@
 				<tr ng-repeat="item in items">
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item['location-name']}}
-						<a style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'EQ',value:item['location-name']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'NE',value:item['location-name']})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						<a href style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"/></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'EQ',value:item['location-name']})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'NE',value:item['location-name']})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['monitoring-area']" value-type="'text'" on-submit="update(item)">
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'EQ',value:item['monitoring-area']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'NE',value:item['monitoring-area']})"><i class="fa fa-minus-square-o fa-lg"/></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'EQ',value:item['monitoring-area']})"><i class="fa fa-plus-square-o fa-lg"/></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'NE',value:item['monitoring-area']})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['geolocation']" value-type="'text'" on-submit="update(item)">
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'EQ',value:item['geolocation']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'NE',value:item['geolocation']})"><i class="fa fa-minus-square-o fa-lg"/></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'EQ',value:item['geolocation']})"><i class="fa fa-plus-square-o fa-lg"/></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'NE',value:item['geolocation']})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['latitude']" value-type="'number'" step="'any'" on-submit="update(item)">
 							<span ng-show="item['latitude'] !== null">
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square-o fa-lg"/></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square-o fa-lg"/></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square-o fa-lg"/></a>
 							</span>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['longitude']" value-type="'number'" step="'any'" on-submit="update(item)">
 							<span ng-show="item['longitude'] !== null">
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square-o fa-lg"/></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square-o fa-lg"/></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square-o fa-lg"/></a>
 							</span>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						<onms-list-edit-in-place item="item" value="item['priority']" value-type="'number'" on-submit="update(item)">
 							<span ng-show="item['priority'] !== null">
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'EQ',value:item['priority']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square-o fa-lg"/></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'EQ',value:item['priority']})"><i class="fa fa-plus-square-o fa-lg"/></a>
+								<a href style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square-o fa-lg"/></a>
 							</span>
 						</onms-list-edit-in-place>
 					</td>
@@ -301,6 +294,6 @@
 			</tbody>
 		</table>
 	</div>
-	<a class="btn btn-default" onClick="$('#addLocationModal').modal()">Add a new location</a>
+	<button type="button" role="button" class="btn btn-secondary mb-2" onClick="$('#addLocationModal').modal()">Add a new location</button>
 </div>
 </div>

@@ -4,27 +4,13 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.jest</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>26.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features.jest</groupId>
     <artifactId>opennms-jest</artifactId>
     <name>OpenNMS :: Features :: Jest :: Feature definition</name>
     <description>Feature definition for Jest (ElasticSearch Java ReST Client)</description>
     <packaging>pom</packaging>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <bundles>
-                        <bundle>wrap:mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
-                        <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/4.4.6</bundle>
-                    </bundles>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <!-- Versions below should match versions defined in module "jest-complete-osgi" to avoid problems -->
     <dependencies>
         <dependency>
