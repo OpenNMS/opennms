@@ -82,7 +82,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         }
 
         public ThresholdEvaluatorStateAbsoluteChange(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
-            super(threshold, thresholdingSession);
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateAbsoluteChange.State.class);
             setThresholdConfig(threshold);
         }
 

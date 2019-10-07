@@ -89,7 +89,7 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
         }
 
         public ThresholdEvaluatorStateRelativeChange(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
-            super(threshold, thresholdingSession);
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateRelativeChange.State.class);
             setThresholdConfig(threshold);
         }
 

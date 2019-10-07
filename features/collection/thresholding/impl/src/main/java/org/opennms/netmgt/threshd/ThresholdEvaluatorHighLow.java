@@ -107,7 +107,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         private CollectionResourceWrapper m_lastCollectionResourceUsed;
 
         public ThresholdEvaluatorStateHighLow(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
-            super(threshold, thresholdingSession);
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateHighLow.State.class);
             setThresholdConfig(threshold);
         }
 
