@@ -27,6 +27,7 @@
         <url>admin/classification/index.jsp</url>
         <roles>
             <role>ROLE_ADMIN</role>
+            <role>ROLE_FLOW_MANAGER</role>
         </roles>
     </action>
     <action>
@@ -44,11 +45,18 @@
             <role>ROLE_ADMIN</role>
         </roles>
     </action>
+    <action>
+        <label>Configure Grafana Endpoints</label>
+        <url>admin/endpoint/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
 
     <!-- Normal User Actions -->
     <action>
         <label>Database Reports</label>
-        <url>report/database/index.htm</url>
+        <url>report/database/index.jsp</url>
     </action>
     <action>
         <icon>fa fa-power-off</icon>
