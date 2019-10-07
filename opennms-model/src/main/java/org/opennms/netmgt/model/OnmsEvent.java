@@ -413,22 +413,21 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	@XmlElementWrapper(name="parameters")
 	@XmlElement(name="parameter")
-	@OneToMany(mappedBy="event", cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
 	public List<OnmsEventParameter> getEventParameters() {
-		if(this.m_eventParameters != null) {
-			// make sure they are sorted (could have come from db in wrong order). We can't do the sorting in the setter,
-			// hibernate will complain
-			this.m_eventParameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
-		}
-		return this.m_eventParameters;
+	    return this.m_eventParameters;
 	}
 
 	public void setEventParameters(List<OnmsEventParameter> eventParameters) {
 		this.m_eventParameters = eventParameters;
-		// we want to set the positions on the parameters only if they weren't set already to preserve what comes out of
-		// the database
+
+		// set the positions on the parameters if they aren't set already
 		if(eventParameters != null && eventParameters.size() > 1 && eventParameters.stream().noneMatch(p -> p.getPosition() > 0)) {
 			setPositionsOnParameters(m_eventParameters);
+
+		// sort the list by the positions if they are already set, e.g. coming from the database
+		} else if (eventParameters != null && eventParameters.size() > 1 && eventParameters.stream().anyMatch(p -> p.getPosition() > 0)) {
+			m_eventParameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
 		}
 	}
 
@@ -446,7 +445,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		if (m_eventParameters.contains(parameter)) {
 			m_eventParameters.remove(parameter);
 		}
-		parameter.setPosition(m_eventParameters.size());
 		m_eventParameters.add(parameter);
         setPositionsOnParameters(m_eventParameters);
 	}
@@ -464,10 +462,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
             }
         }
     }
-
-    private void sortParametersByPosition(List<OnmsEventParameter> parameters) {
-		parameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
-	}
 
 	/**
 	 * <p>getEventCreateTime</p>
