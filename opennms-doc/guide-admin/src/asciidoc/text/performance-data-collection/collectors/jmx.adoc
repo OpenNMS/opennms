@@ -147,7 +147,7 @@ In order to successfully collect data the following steps may be required:
     <parameter key="username" value="admin"/>
     <parameter key="password" value="admin"/>
     <parameter key="rrd-base-name" value="java"/>
-    <parameter key="collection" value="jsr160"/>
+    <parameter key="collection" value="jmx-wildfly"/>
     <parameter key="thresholding-enabled" value="true"/>
     <parameter key="ds-name" value="jmx-wildfly"/>
     <parameter key="friendly-name" value="jmx-wildfly"/>
