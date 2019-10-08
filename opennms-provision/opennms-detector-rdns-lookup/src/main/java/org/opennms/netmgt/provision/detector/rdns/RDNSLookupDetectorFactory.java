@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.daemon;
+package org.opennms.netmgt.provision.detector.rdns;
 
-public enum DaemonReloadEnum {
+import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
+import org.springframework.stereotype.Component;
 
-    EVENTD("Eventd"),
-    NOTIFD("Notifd"),
-    POLLERD("Pollerd"),
-    SYSLOGD("syslogd"),
-    TELEMETRYD("Telemetryd"),
-    TRAPD("trapd"),
-    Discovery("Discovery");
+@Component
+public class RDNSLookupDetectorFactory extends GenericServiceDetectorFactory<ReverseDNSLookupDetector> {
 
-    private String daemonName;
-
-    DaemonReloadEnum(String daemonName) {
-        this.daemonName = daemonName;
-    }
-
-    public String getDaemonName() {
-       return this.daemonName;
+    public RDNSLookupDetectorFactory() {
+        super(ReverseDNSLookupDetector.class);
     }
 }

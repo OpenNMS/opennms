@@ -24,7 +24,8 @@
     <constructor-arg ref="unmanagedInterfaceFilter"/>
   </bean>
   
-  <bean id="discoveryTaskExecutor" class="org.opennms.netmgt.discovery.DiscoveryTaskExecutorImpl" />
+  <bean id="discoveryTaskExecutor" class="org.opennms.netmgt.discovery.DiscoveryTaskExecutorImpl">
+  </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.discovery.DiscoveryTaskExecutor" ref="discoveryTaskExecutor"/>
 

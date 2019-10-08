@@ -1,0 +1,16 @@
+<discovery-configuration xmlns="http://xmlns.opennms.org/xsd/config/discovery" packets-per-second="100" initial-sleep-time="0" restart-sleep-time="86400000" retries="1" timeout="2000">
+  <!-- see examples/discovery-configuration.xml for options -->
+
+  <definition>
+    <detectors>
+      <detector name="mock-detector" class-name="org.opennms.netmgt.discovery.MockServiceDetector">
+      </detector>
+    </detectors>
+    <include-range>
+      <begin>192.168.0.1</begin>
+      <end>192.168.0.254</end>
+    </include-range>
+  </definition>
+
+
+</discovery-configuration>

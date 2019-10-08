@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.daemon;
+package org.opennms.netmgt.discovery;
 
-public enum DaemonReloadEnum {
+import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
 
-    EVENTD("Eventd"),
-    NOTIFD("Notifd"),
-    POLLERD("Pollerd"),
-    SYSLOGD("syslogd"),
-    TELEMETRYD("Telemetryd"),
-    TRAPD("trapd"),
-    Discovery("Discovery");
+public class MockServiceDetectorFactory extends GenericServiceDetectorFactory<MockServiceDetector> {
 
-    private String daemonName;
-
-    DaemonReloadEnum(String daemonName) {
-        this.daemonName = daemonName;
-    }
-
-    public String getDaemonName() {
-       return this.daemonName;
+    public MockServiceDetectorFactory() {
+        super(MockServiceDetector.class);
     }
 }

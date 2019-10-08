@@ -228,6 +228,11 @@
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-rdns-lookup</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-ssh</artifactId>
         </dependency>
         <dependency>

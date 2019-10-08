@@ -35,13 +35,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.discovery.Detector;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.Parameter;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
@@ -49,6 +56,7 @@ import org.opennms.netmgt.icmp.proxy.PingSweepRequestBuilder;
 import org.opennms.netmgt.icmp.proxy.PingSweepSummary;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,10 +75,16 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
     @Autowired
     private EventForwarder eventForwarder;
 
+    @Autowired(required = false)
+    private LocationAwareDetectorClient locationAwareDetectorClient;
+
     private final AtomicInteger taskIdTracker = new AtomicInteger();
+
+    private DiscoveryConfigFactory configFactory;
 
     @Override
     public CompletableFuture<Void> handleDiscoveryTask(DiscoveryConfiguration config) {
+        this.configFactory = new DiscoveryConfigFactory(config);
         // Use the range chunker to generate a series of jobs, keyed by location
         final Map<String, List<DiscoveryJob>> jobsByLocation = rangeChunker.chunk(config);
 
@@ -147,12 +161,14 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
                     if (summary != null) {
                         LOG.debug("Job {} of {} at location {} (on task #{}) completed succesfully.",
                                 jobIndex, totalNumberOfJobs, location, taskId);
+                        // Perform detection if there are any detectors associated with these IP addresses.
+                        Map<InetAddress, Double> responses = performDetection(job.getLocation(), summary);
                         // Generate an event log containing a newSuspect event for every host
                         // that responded to our pings
-                        final Log eventLog = toNewSuspectEvents(job, summary);
+                        final Log eventLog = toNewSuspectEvents(job, responses);
                         // Avoid forwarding an empty log
                         if (eventLog.getEvents() != null && eventLog.getEvents().getEventCount() >= 1) {
-                            eventForwarder.sendNow(toNewSuspectEvents(job, summary));
+                            eventForwarder.sendNow(eventLog);
                         }
                     } else {
                         LOG.error("An error occurred while processing job {} of {} at location {} (on task #{})."
@@ -166,9 +182,9 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
         });
     }
 
-    protected static Log toNewSuspectEvents(DiscoveryJob job, PingSweepSummary summary) {
+    protected static Log toNewSuspectEvents(DiscoveryJob job, Map<InetAddress, Double> responses) {
         final Log eventLog = new Log();
-        for (Entry<InetAddress, Double> entry : summary.getResponses().entrySet()) {
+        for (Entry<InetAddress, Double> entry : responses.entrySet()) {
             EventBuilder eb = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, Discovery.DAEMON_NAME);
             eb.setInterface(entry.getKey());
             eb.addParam("RTT", entry.getValue());
@@ -179,8 +195,76 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
                 eb.addParam(EventConstants.PARM_LOCATION, job.getLocation());
             }
             eventLog.addEvent(eb.getEvent());
+
         }
         return eventLog;
+    }
+
+    private Map<InetAddress, Double> performDetection(String location, PingSweepSummary summary) {
+        return summary.getResponses().entrySet().stream()
+                .filter(entry -> launchDetectors(entry.getKey(), location))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+    }
+
+
+    private boolean launchDetectors(InetAddress inetAddress, String location) {
+        Optional<List<Detector>> detectorsOptional = configFactory.getListOfDetectors(inetAddress, location);
+
+        if (detectorsOptional.isPresent()) {
+            List<Detector> detectors = detectorsOptional.get();
+            // Run all the detectors.
+            try {
+                List<CompletableFuture<Boolean>> futures = detectors.stream().map(detector ->
+                        detect(detector, inetAddress, location)).collect(Collectors.toList());
+                // Combine all futures.
+                CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+                CompletableFuture<List<Boolean>> futureList = allFutures.thenApply(result -> {
+                    return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+                });
+                CompletableFuture<Boolean> future = futureList.thenApply((results) -> {
+                    return results.stream().allMatch(result -> result);
+                });
+                // Resolve the future.
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Exception while performing detection in discovery.", e);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private CompletableFuture<Boolean> detect(Detector detector, InetAddress inetAddress, String location) {
+
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        try {
+            Map<String, String> attributes = detector.getParameters().stream()
+                    .collect(Collectors.toMap(Parameter::getKey, Parameter::getValue));
+            CompletableFuture<Boolean> result = getLocationAwareDetectorClient().detect()
+                    .withAddress(inetAddress)
+                    .withClassName(detector.getClassName())
+                    .withLocation(location)
+                    .withAttributes(attributes)
+                    .execute();
+            result.whenComplete((response, ex) -> {
+                if (ex != null) {
+                    // Don't throw exception as Future join won't like.
+                    LOG.error("Exception while detecting {} service on IP Address {} at location {} ",
+                            detector.getName(), inetAddress.getHostAddress(), location, ex);
+                    future.complete(false);
+                } else {
+                    LOG.info("Detected service {} on IP Address {} at location {}",
+                            detector.getName(), inetAddress.getHostAddress(), location);
+                    future.complete(response);
+                }
+            });
+        } catch (Exception e) {
+            LOG.error("Exception while detecting {} service on IP Address {} at location {} ",
+                    detector.getName(), inetAddress.getHostAddress(), location, e);
+            future.complete(false);
+        }
+        return future;
     }
 
     public void setRangeChunker(RangeChunker rangeChunker) {
@@ -193,5 +277,16 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
 
     public void setEventForwarder(EventForwarder eventForwarder) {
         this.eventForwarder = eventForwarder;
+    }
+
+    public void setLocationAwareDetectorClient(LocationAwareDetectorClient locationAwareDetectorClient) {
+        this.locationAwareDetectorClient = locationAwareDetectorClient;
+    }
+
+    public LocationAwareDetectorClient getLocationAwareDetectorClient() {
+        if (this.locationAwareDetectorClient == null) {
+            return BeanUtils.getBean("provisiondContext", "locationAwareDetectorClient", LocationAwareDetectorClient.class);
+        }
+        return locationAwareDetectorClient;
     }
 }

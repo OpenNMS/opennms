@@ -41,8 +41,10 @@ The requisition schema (XSD) can be found at the following location. http://xmln
 
 Auto discovery is the term used by {opennms-product-name} to characterize the automatic provisioning of nodes entities.
 Currently, {opennms-product-name} uses an ICMP ping sweep to find IP address on the network.
-For the IPs that respond and that are not currently in the DB, {opennms-product-name} generates a new suspect event.
+link:#ga-provisioning-auto-discovery-detectors][Auto-discovery-with-detectors] will allow defining specific detectors for auto discovery to succeed.
+For the IPs that succeeds and that are not currently in the DB, {opennms-product-name} generates a new suspect event.
 When this event is received by Provisiond, it creates a node and it begins a node scan based on the default foreign source definition.
+
 
 ===== Directed Discovery
 

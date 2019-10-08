@@ -31,7 +31,9 @@ package org.opennms.netmgt.config.api;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
+import org.opennms.netmgt.config.discovery.Detector;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
@@ -102,7 +104,7 @@ public interface DiscoveryConfigurationFactory {
 	 * @param an Iterator<IPPollAddress>
 	 * @return an Iterator<IPPollAddress>
 	 */
-	Iterator<IPPollAddress> getExcludingInterator(final Iterator<IPPollAddress> it);
+	Iterator<IPPollAddress> getExcludingIterator(final Iterator<IPPollAddress> it);
 	
 	/**
 	 * <p>getConfiguredAddresses</p>
@@ -110,6 +112,9 @@ public interface DiscoveryConfigurationFactory {
 	 * @return an Iterable<IPPollAddress>
 	 */
 	Iterable<IPPollAddress> getConfiguredAddresses();
+
+
+	Optional<List<Detector>> getListOfDetectors(InetAddress inetAddress, String location);
 	
 	/**
 	 * <p>getRestartSleepTime</p>
