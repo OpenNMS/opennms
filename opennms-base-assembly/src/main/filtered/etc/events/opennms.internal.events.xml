@@ -245,4 +245,11 @@
       <alarm-data reduction-key="%uei%:%parm[monitoringSystemLocation]%:%interface%" alarm-type="3" auto-clean="true" />
       <severity>Warning</severity>
    </event>
+   <event>
+      <uei>uei.opennms.org/internal/applicationDeleted</uei>
+      <event-label>OpenNMS-defined application event: applicationDeleted</event-label>
+      <descr>&lt;p>Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.&lt;/p></descr>
+      <logmsg dest="logndisplay">Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.</logmsg>
+      <severity>Warning</severity>
+   </event>
 </events>

@@ -47,6 +47,9 @@ import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSDESCRIPT
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSNAME;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_RESCAN_EXISTING;
 import static org.opennms.netmgt.events.api.EventConstants.SERVICE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
+import static org.opennms.netmgt.events.api.EventConstants.APPLICATION_DELETED_EVENT_UEI;
 
 import java.net.InetAddress;
 import java.util.Collection;
@@ -238,6 +241,26 @@ public abstract class EventUtils {
         bldr.setNodeid(nodeId);
         bldr.setInterface(addr);
         bldr.setService(service);
+
+        return bldr.getEvent();
+    }
+
+    /**
+     * Constructs a applicationDeleted Event for a given application id and name
+     * @param source
+     *              the source of the event
+     * @param applicationId
+     *              the id of the deleted application
+     * @param applicationName
+     *              the name of the deleted application
+     * @return an Event that represents the applicationDeleted event for the given id and name
+     */
+    public static Event createApplicationDeletedEvent(String source, int applicationId, String applicationName) {
+        debug("createApplicationDeletedEvent for nodeid:  %d", applicationId);
+
+        final EventBuilder bldr = new EventBuilder(APPLICATION_DELETED_EVENT_UEI, source);
+        bldr.addParam(PARM_APPLICATION_ID, applicationId);
+        bldr.addParam(PARM_APPLICATION_NAME, applicationName);
 
         return bldr.getEvent();
     }

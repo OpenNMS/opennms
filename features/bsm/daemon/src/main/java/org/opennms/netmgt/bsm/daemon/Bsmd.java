@@ -31,7 +31,6 @@ package org.opennms.netmgt.bsm.daemon;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -104,7 +103,23 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     private boolean m_verifyReductionKeys = true;
 
-    private ScheduledExecutorService scheduledExecutorService = null;
+    private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+    {
+        {
+            scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    if (reloadConfigurationAt > 0L && reloadConfigurationAt < System.currentTimeMillis()) {
+                        reloadConfigurationAt = 0L;
+                        final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "bsmd");
+                        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+                        m_eventIpcManager.sendNow(eventBuilder.getEvent());
+                    }
+                }
+            }, RELOAD_DELAY, RELOAD_DELAY, TimeUnit.MILLISECONDS);
+        }
+    }
 
     private long reloadConfigurationAt = 0L;
 
@@ -170,30 +185,14 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         });
     }
 
-    @EventHandler(ueis = {EventConstants.SERVICE_DELETED_EVENT_UEI, EventConstants.INTERFACE_DELETED_EVENT_UEI, EventConstants.NODE_DELETED_EVENT_UEI})
+    @EventHandler(ueis = {EventConstants.SERVICE_DELETED_EVENT_UEI, EventConstants.INTERFACE_DELETED_EVENT_UEI, EventConstants.NODE_DELETED_EVENT_UEI, EventConstants.APPLICATION_DELETED_EVENT_UEI})
     public void serviceInterfaceOrNodeDeleted(Event e) {
-        if (scheduledExecutorService == null) {
-            scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-            scheduledExecutorService.scheduleWithFixedDelay(new TimerTask() {
-                @Override
-                public void run() {
-                    if (reloadConfigurationAt == 0L || reloadConfigurationAt > System.currentTimeMillis()) {
-                        return;
-                    }
-
-                    reloadConfigurationAt = 0L;
-                    final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "bsmd");
-                    eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
-                    m_eventIpcManager.sendNow(eventBuilder.getEvent());
-                }
-            }, RELOAD_DELAY, RELOAD_DELAY, TimeUnit.MILLISECONDS);
-        }
-
         final Set<String> reductionKeys = m_stateMachine.getGraph().getReductionKeys();
 
-        if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid())) ||
-            EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/interfaceDown::%d:%s", e.getNodeid(), e.getInterface())) ||
-            EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService()))) {
+        if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid()))
+                || EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/interfaceDown::%d:%s", e.getNodeid(), e.getInterface()))
+                || EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService()))
+                || EventConstants.APPLICATION_DELETED_EVENT_UEI.equals(e.getUei()) && m_stateMachine.getGraph().getVertexByApplicationId(Integer.parseInt(e.getParm("applicationId").getValue().getContent())) != null) {
 
             reloadConfigurationAt = System.currentTimeMillis() + RELOAD_DELAY;
         }
