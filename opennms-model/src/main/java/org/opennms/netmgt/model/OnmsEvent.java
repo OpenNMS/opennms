@@ -413,7 +413,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	@XmlElementWrapper(name="parameters")
 	@XmlElement(name="parameter")
-	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="event", cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	public List<OnmsEventParameter> getEventParameters() {
 	    return this.m_eventParameters;
 	}
