@@ -42,9 +42,8 @@ public class ClearAll extends AbstractThresholdStateCommand {
     @Reference
     ThresholdStateMonitor thresholdStateMonitor;
 
-    @Option(name = "-m", aliases = "--memory", description = "When set, clears the in-memory state in addition to the" +
-            " persisted state")
-    private boolean clearMemory;
+    @Option(name = "-p", aliases = "--persisted-only", description = "When set, clears only the persisted state")
+    private boolean clearPersistedOnly;
 
     @Override
     public Object execute() throws InterruptedException {
@@ -52,13 +51,13 @@ public class ClearAll extends AbstractThresholdStateCommand {
 
         CompletableFuture<Void> clearFuture;
 
-        if (clearMemory) {
+        if (clearPersistedOnly) {
+            clearFuture = blobStore.truncateContextAsync(THRESHOLDING_KV_CONTEXT);
+        } else {
             clearFuture = CompletableFuture.supplyAsync(() -> {
                 thresholdStateMonitor.reinitializeStates();
                 return null;
             });
-        } else {
-            clearFuture = blobStore.truncateContextAsync(THRESHOLDING_KV_CONTEXT);
         }
 
         while (!clearFuture.isDone()) {

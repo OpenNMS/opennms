@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -50,7 +51,7 @@ public class BlobStoreAwareMonitor implements ThresholdStateMonitor {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final Lock readLock = readWriteLock.readLock();
     private final Lock writeLock = readWriteLock.writeLock();
-    private final Map<String, ReinitializableState> stateMap = new HashMap<>();
+    private final Map<String, ReinitializableState> stateMap = new ConcurrentHashMap<>();
     private final BlobStore blobStore;
 
     public BlobStoreAwareMonitor(BlobStore blobStore) {

@@ -40,21 +40,19 @@ public class Clear extends AbstractKeyOrIndexCommand {
     @Reference
     ThresholdStateMonitor thresholdStateMonitor;
 
-    @Option(name = "-m", aliases = "--memory", description = "When set, clears the in-memory state in addition to the" +
-            " persisted state")
-    private boolean clearMemory;
+    @Option(name = "-p", aliases = "--persisted-only", description = "When set, clears only the persisted state")
+    private boolean clearPersistedOnly;
 
     @Override
     public Object execute() {
         String key = getKey();
 
-        if (clearMemory) {
-            thresholdStateMonitor.reinitializeState(key);
-
+        if (clearPersistedOnly) {
+            blobStore.delete(key, THRESHOLDING_KV_CONTEXT);
             return null;
         }
 
-        blobStore.delete(key, THRESHOLDING_KV_CONTEXT);
+        thresholdStateMonitor.reinitializeState(key);
 
         return null;
     }
