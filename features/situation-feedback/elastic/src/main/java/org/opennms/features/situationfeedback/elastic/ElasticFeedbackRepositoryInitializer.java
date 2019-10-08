@@ -27,10 +27,10 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.elastic;
 
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateInitializer;
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
-import org.opennms.plugins.elasticsearch.rest.template.MergingTemplateLoader;
+import org.opennms.features.jest.client.template.DefaultTemplateInitializer;
+import org.opennms.features.jest.client.template.DefaultTemplateLoader;
+import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.features.jest.client.template.MergingTemplateLoader;
 import org.osgi.framework.BundleContext;
 
 import io.searchbox.client.JestClient;
