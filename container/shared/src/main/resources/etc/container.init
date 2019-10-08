@@ -130,12 +130,12 @@ get_root_pid() {
 }
 
 is_running() {
-  PID=$(get_root_pid)
-  if [ "$PID" -ne "0" ] && ps p "$PID" > /dev/null; then
-    return 0
-  else
-    return 1
-  fi
+	PID=$(get_root_pid)
+	if [ "$PID" -ne "0" ] && ps p "$PID" > /dev/null; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 stop_process() {
@@ -208,11 +208,12 @@ case "$COMMAND" in
 		if is_running; then
 			printf "Stopping %s: " "$DESC"
 			STOP_ATTEMPTS=0
+			stop_process
 			while [ "$STOP_ATTEMPTS" -lt "$STOP_RETRIES" ]; do
-				stop_process
+				sleep $STOP_WAIT
 				if is_running; then
 					STOP_ATTEMPTS="$((STOP_ATTEMPTS + 1))"
-					sleep $STOP_WAIT
+					kill_process # SIGTERM, "nice" kill
 				else
 					echo "OK"
 					rm -f "$PIDFILE"
@@ -221,18 +222,9 @@ case "$COMMAND" in
 			done
 			echo "FAILED"
 
-			printf "Killing %s: " "$DESC"
-			kill_process
-			if is_running; then
-				echo "FAILED"
-			else
-				echo "OK"
-				rm -f "$PIDFILE"
-				exit 0
-			fi
-
 			printf "Force-killing %s: " "$DESC"
 			kill_process -9
+			sleep $STOP_WAIT
 			if is_running; then
 				echo "FAILED"
 				exit 1
