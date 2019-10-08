@@ -82,6 +82,7 @@ import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -107,6 +108,7 @@ import com.google.common.collect.Lists;
 @JUnitConfigurationEnvironment(systemProperties={// We don't need a real pinger here
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
+@DirtiesContext
 public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
 
     private CollectdConfigFactory collectdConfigFactory;

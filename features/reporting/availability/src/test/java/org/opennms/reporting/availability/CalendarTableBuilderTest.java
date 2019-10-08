@@ -57,14 +57,14 @@ public class CalendarTableBuilderTest extends TestCase {
 		CalendarTableBuilder builder = new CalendarTableBuilder(2005,05);
 		CalendarTable section = builder.getTable();
 		DaysOfWeek days = section.getDaysOfWeek();
-		assertEquals(days.getDayName(0),"lun.");
+		assertEquals("dim.", days.getDayName(0));
 		}
 	public void testLocaleEnUs() {
 		Locale.setDefault(Locale.US);
 		CalendarTableBuilder builder = new CalendarTableBuilder(2005,05);
 		CalendarTable section = builder.getTable();
 		DaysOfWeek days = section.getDaysOfWeek();
-		assertEquals(days.getDayName(0),"Sun");
+		assertEquals("Sun", days.getDayName(0));
 		}
 	public void testVisibleDays() {
 		testVisibleDays(Locale.US, 2004, Calendar.FEBRUARY, 1);
