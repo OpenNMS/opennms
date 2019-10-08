@@ -857,6 +857,7 @@
             <!-- Turn off queuing in the RRD output -->
             <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>
             <java.awt.headless>true</java.awt.headless>
+            <java.locale.providers>CLDR,COMPAT</java.locale.providers>
             <mock.debug>${mock.debug}</mock.debug>
             <mock.rundbtests>${mock.rundbtests}</mock.rundbtests>
             <mock.leaveDatabase>${mock.leaveDatabase}</mock.leaveDatabase>
@@ -892,6 +893,7 @@
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
+            <java.locale.providers>CLDR,COMPAT</java.locale.providers>
             <!-- The javax.net.ssl ones are used by integrations/opennms-jasper-extensions -->
             <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
             <javax.net.ssl.keyStorePassword>password</javax.net.ssl.keyStorePassword>
@@ -1072,6 +1074,9 @@
     <runPingTests>true</runPingTests> -->
 
     <maxCpus>2</maxCpus>
+
+    <!-- make sure CLDR is the default locale provider anywhere in the maven process -->
+    <java.locale.providers>CLDR,COMPAT</java.locale.providers>
 
     <build.skip.tarball>false</build.skip.tarball>
 
