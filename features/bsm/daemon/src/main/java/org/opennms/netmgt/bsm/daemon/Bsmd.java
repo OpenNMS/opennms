@@ -65,6 +65,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 /**
  * This daemon is responsible for driving the Business Service state machine by:
  *  1) Updating the state machine with Alarms when they are created, deleted or updated
@@ -103,11 +105,11 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     private boolean m_verifyReductionKeys = true;
 
-    private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService daemonReloadScheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("bsm-daemon-reload-%d").build());
 
     {
         {
-            scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+            daemonReloadScheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
                     if (reloadConfigurationAt > 0L && reloadConfigurationAt < System.currentTimeMillis()) {
@@ -121,7 +123,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         }
     }
 
-    private long reloadConfigurationAt = 0L;
+    private volatile long reloadConfigurationAt = 0L;
 
     @Override
     public void afterPropertiesSet() throws Exception {
