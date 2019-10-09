@@ -603,8 +603,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testSpotlightStaticActionsConfig() {
-        ignoreConfigFile("spotlight-actions.xml");
+    public void testStaticSearchActionsConfig() {
+        ignoreConfigFile("search-actions.xml");
     }
 
     @Test

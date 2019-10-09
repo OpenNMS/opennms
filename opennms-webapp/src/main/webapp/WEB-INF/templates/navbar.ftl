@@ -32,7 +32,7 @@
             </ul>
         </#if>
 
-        <onms-spotlight class="ml-auto"></onms-spotlight>
+        <onms-central-search class="ml-auto"></onms-central-search>
 
         <ul class="navbar-nav ml-auto">
 		<#if request.remoteUser?has_content >

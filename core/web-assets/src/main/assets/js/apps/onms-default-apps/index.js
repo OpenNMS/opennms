@@ -1,7 +1,7 @@
 const angular = require('vendor/angular-js');
-const spotlight = require('apps/onms-spotlight');
 const search = require('apps/search');
+const centralSearch = require('apps/onms-central-search');
 
 const MODULE_NAME = 'onms.default.apps';
 
-angular.module(MODULE_NAME, [ 'onms.spotlight', 'onms-search' ]);
+angular.module(MODULE_NAME, [ 'onms.central.search', 'onms-search' ]);

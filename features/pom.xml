@@ -139,7 +139,7 @@
     <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
-    <module>spotlight</module>
+    <module>search</module>
     <module>springframework-security</module>
     <module>status</module>
     <module>system-report</module>
