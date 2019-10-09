@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.bsm.daemon;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -48,9 +47,7 @@ import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
-import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
-import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -194,6 +191,19 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         });
     }
 
+    private Collection<BusinessService> searchPredecessors(final GraphVertex leaf) {
+        final Set<BusinessService> businessServices = new HashSet<>();
+        final Collection<GraphVertex> predecessors = m_stateMachine.getGraph().getPredecessors(leaf);
+        for(final GraphVertex graphVertex : predecessors) {
+            if (graphVertex.getBusinessService() != null) {
+                businessServices.add(graphVertex.getBusinessService());
+            } else {
+                businessServices.addAll(searchPredecessors(graphVertex));
+            }
+        }
+        return businessServices;
+    }
+
     @EventHandler(ueis = {EventConstants.SERVICE_DELETED_EVENT_UEI, EventConstants.INTERFACE_DELETED_EVENT_UEI, EventConstants.NODE_DELETED_EVENT_UEI, EventConstants.APPLICATION_DELETED_EVENT_UEI})
     public void serviceInterfaceOrNodeDeleted(Event e) {
         final Set<String> reductionKeys = m_stateMachine.getGraph().getReductionKeys();
@@ -203,69 +213,46 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                 || EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService()))
                 || EventConstants.APPLICATION_DELETED_EVENT_UEI.equals(e.getUei()) && m_stateMachine.getGraph().getVertexByApplicationId(Integer.parseInt(e.getParm("applicationId").getValue().getContent())) != null) {
 
-            final Set<BusinessService> businessServices = m_stateMachine.getGraph().getVertices().stream().filter(v -> v.getBusinessService() != null).map(v -> v.getBusinessService()).collect(Collectors.toSet());
             final Set<BusinessService> affectedBusinessServices = new HashSet<>();
+            String cause = "an associated entity";
 
             if (EventConstants.APPLICATION_DELETED_EVENT_UEI.equals(e.getUei())) {
-                final Map<String, Set<BusinessService>> applicationIdToBusinessService = new TreeMap<>();
+                final GraphVertex vertex = m_stateMachine.getGraph().getVertexByApplicationId(Integer.parseInt(e.getParm("applicationId").getValue().getContent()));
+                affectedBusinessServices.addAll(searchPredecessors(vertex));
+                cause = "application '" + e.getParm("applicationName").getValue().getContent() + "'";
+            }
 
-                for (final BusinessService businessService : businessServices) {
-                    // map application ids to business services
-                    for(final ApplicationEdge edge : businessService.getApplicationEdges()) {
-                        if (!applicationIdToBusinessService.containsKey(String.valueOf(edge.getApplication().getId()))) {
-                            applicationIdToBusinessService.put(String.valueOf(edge.getApplication().getId()), new HashSet<>());
-                        }
-                        applicationIdToBusinessService.get(String.valueOf(edge.getApplication().getId())).add(businessService);
-                    }
-                }
+            if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei())) {
+                final GraphVertex vertex = m_stateMachine.getGraph().getVertexByReductionKey(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid()));
+                affectedBusinessServices.addAll(searchPredecessors(vertex));
+                cause = "node '" + e.getNodeid() + "'";
+            }
 
-                affectedBusinessServices.addAll(applicationIdToBusinessService.get(e.getParm("applicationId").getValue().getContent()));
-            } else {
-                final Map<String, Set<BusinessService>> reductionKeyToBusinessService = new TreeMap<>();
+            if (EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(e.getUei())) {
+                final GraphVertex vertex = m_stateMachine.getGraph().getVertexByReductionKey(String.format("uei.opennms.org/nodes/interfaceDown::%d:%s", e.getNodeid(), e.getInterface()));
+                affectedBusinessServices.addAll(searchPredecessors(vertex));
+                cause = "interface '" + e.getNodeid() + "/" + e.getInterface() + "'";
+            }
 
-                for (final BusinessService businessService : businessServices) {
-                    // map ip services edge keys to business services
-                    for(final IpServiceEdge edge : businessService.getIpServiceEdges()) {
-                        for (final String reductionKey : edge.getReductionKeys()) {
-                            if (!reductionKeyToBusinessService.containsKey(reductionKey)) {
-                                reductionKeyToBusinessService.put(reductionKey, new HashSet<>());
-                            }
-                            reductionKeyToBusinessService.get(reductionKey).add(businessService);
-                        }
-                    }
-                    // map reduction key edge keys to business services
-                    for(final ReductionKeyEdge edge : businessService.getReductionKeyEdges()) {
-                        for (final String reductionKey : edge.getReductionKeys()) {
-                            if (!reductionKeyToBusinessService.containsKey(reductionKey)) {
-                                reductionKeyToBusinessService.put(reductionKey, new HashSet<>());
-                            }
-                            reductionKeyToBusinessService.get(reductionKey).add(businessService);
-                        }
-                    }
-                }
-
-                if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei())) {
-                    affectedBusinessServices.addAll(reductionKeyToBusinessService.get(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid())));
-                }
-
-                if (EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(e.getUei())) {
-                    affectedBusinessServices.addAll(reductionKeyToBusinessService.get(String.format("uei.opennms.org/nodes/interfaceDown::%d:%s", e.getNodeid(), e.getInterface())));
-                }
-
-                if (EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei())) {
-                    affectedBusinessServices.addAll(reductionKeyToBusinessService.get(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService())));
-                }
+            if (EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei())) {
+                final GraphVertex vertex = m_stateMachine.getGraph().getVertexByReductionKey(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService()));
+                affectedBusinessServices.addAll(searchPredecessors(vertex));
+                cause = "service '" + e.getNodeid() + "/" + e.getInterface() + "/" + e.getService() + "'";
             }
 
             reloadConfigurationAt = System.currentTimeMillis() + RELOAD_DELAY;
 
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "bsmd");
-            eventBuilder.addParam("businessServiceNames", affectedBusinessServices.stream().map(b -> String.valueOf(b.getName())).sorted().collect(Collectors.toList()));
-            final Event event = eventBuilder.getEvent();
-            try {
-                m_eventIpcManager.send(event);
-            } catch (EventProxyException ex) {
-                LOG.error("Cannot send event " + event.getUei(), ex);
+            for (final BusinessService businessService : affectedBusinessServices) {
+                final EventBuilder eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "bsmd");
+                eventBuilder.addParam("businessServiceId", businessService.getId());
+                eventBuilder.addParam("businessServiceName", businessService.getName());
+                eventBuilder.addParam("cause", cause);
+                final Event event = eventBuilder.getEvent();
+                try {
+                    m_eventIpcManager.send(event);
+                } catch (EventProxyException ex) {
+                    LOG.error("Cannot send event " + event.getUei(), ex);
+                }
             }
         }
     }

@@ -36,11 +36,10 @@
     <event>
         <uei>uei.opennms.org/bsm/graphInvalidated</uei>
         <event-label>Business Service Monitoring: Graph invalidated</event-label>
-        <descr>&lt;p>One or more business services are affected by the deletion of associated entities. A reload of the BMS daemon is scheduled.
-            args(%parm[##]%): %parm[all]%&lt;/p></descr>
-        <logmsg dest="logndisplay">One or more business services are affected by the deletion of associated entities. A reload of the BMS daemon is scheduled.</logmsg>
+        <descr>&lt;p>Business service '%parm[businessServiceName]%' with ID '%parm[businessServiceId]%' is affected by the deletion of %parm[cause]%. A reload of the BMS daemon is scheduled.&lt;/p></descr>
+        <logmsg dest="logndisplay">Business service '%parm[businessServiceName]%' with ID '%parm[businessServiceId]%' is affected by the deletion of %parm[cause]%. A reload of the BMS daemon is scheduled.</logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%parm[businessServiceNames]%" alarm-type="1" auto-clean="false">
+        <alarm-data reduction-key="%uei%:%parm[businessServiceId]%" alarm-type="1" auto-clean="false">
         </alarm-data>
     </event>
 

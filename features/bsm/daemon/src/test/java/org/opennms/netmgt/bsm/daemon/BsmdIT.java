@@ -30,8 +30,10 @@ package org.opennms.netmgt.bsm.daemon;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
@@ -39,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -316,6 +319,9 @@ public class BsmdIT {
         eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
         m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
         eventBuilder = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "test")
                 .setNodeid(m_databasePopulator.getNode1().getId())
                 .setInterface(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getIpAddress())
@@ -325,7 +331,7 @@ public class BsmdIT {
 
         final Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
-        assertEquals(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().get(0).getParm("businessServiceNames").getValue().getContent(),"BS2,BS4");
+        assertThat(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream().map(e -> e.getParm("businessServiceName").getValue().getContent()).collect(Collectors.toSet()), containsInAnyOrder("BS2", "BS4"));
     }
 
     @Test
@@ -333,6 +339,9 @@ public class BsmdIT {
         EventBuilder eventBuilder;
         createComplexTree();
         m_bsmd.start();
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
         eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
         m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
@@ -345,7 +354,7 @@ public class BsmdIT {
 
         final Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
-        assertEquals(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().get(0).getParm("businessServiceNames").getValue().getContent(),"BS1,BS2");
+        assertThat(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream().map(e -> e.getParm("businessServiceName").getValue().getContent()).collect(Collectors.toSet()), containsInAnyOrder("BS1", "BS2"));
     }
 
     @Test
@@ -357,6 +366,9 @@ public class BsmdIT {
         eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
         m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
         eventBuilder = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "test")
                 .setNodeid(m_databasePopulator.getNode1().getId());
 
@@ -364,7 +376,7 @@ public class BsmdIT {
 
         final Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
-        assertEquals(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().get(0).getParm("businessServiceNames").getValue().getContent(),"BS2,BS3");
+        assertThat(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream().map(e -> e.getParm("businessServiceName").getValue().getContent()).collect(Collectors.toSet()), containsInAnyOrder("BS2", "BS3"));
     }
 
     @Test
@@ -372,6 +384,9 @@ public class BsmdIT {
         EventBuilder eventBuilder;
         createComplexTree();
         m_bsmd.start();
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
         eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
         m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
@@ -384,7 +399,7 @@ public class BsmdIT {
 
         final Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
-        assertEquals(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().get(0).getParm("businessServiceNames").getValue().getContent(),"BS1,BS2");
+        assertThat(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream().map(e -> e.getParm("businessServiceName").getValue().getContent()).collect(Collectors.toSet()), containsInAnyOrder("BS1", "BS2"));
     }
 
     /**
