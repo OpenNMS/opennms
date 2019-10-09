@@ -50,7 +50,14 @@ public class Action {
 
     @XmlElementWrapper(name="roles")
     @XmlElement(name="role")
-    private final List<String> privilegedRoles = Lists.newArrayList();
+    private List<String> privilegedRoles = Lists.newArrayList();
+
+    @XmlElementWrapper(name="aliases")
+    @XmlElement(name="alias")
+    private List<String> aliases = Lists.newArrayList();
+
+    @XmlElement(name="weight")
+    private int weight;
 
     public Action() {
 
@@ -82,5 +89,25 @@ public class Action {
 
     public List<String> getPrivilegedRoles() {
         return privilegedRoles;
+    }
+
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    public void setPrivilegedRoles(List<String> privilegedRoles) {
+        this.privilegedRoles = privilegedRoles;
+    }
+
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 }

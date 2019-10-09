@@ -64,7 +64,7 @@ public class StaticActionSearchProvider implements SearchProvider {
         final String input = query.getInput();
         final List<SearchResultItem> allItemsForUser = actions.getActions().stream()
                 .filter(action -> action.getPrivilegedRoles().isEmpty() || action.getPrivilegedRoles().stream().anyMatch(query::isUserInRole))
-                .filter(action -> QueryUtils.matches(action.getLabel(), input))
+                .filter(action -> QueryUtils.matches(action.getLabel(), input) || QueryUtils.matches(action.getAliases(), input))
                 .sorted(Comparator.comparing(Action::getLabel)) // TODO MVR we probably want admin actions to show up first
                 .map(action -> {
                     final SearchResultItem searchResultItem = new SearchResultItem();
@@ -74,6 +74,11 @@ public class StaticActionSearchProvider implements SearchProvider {
                     searchResultItem.setIdentifier(action.getUrl());
                     if (!Strings.isNullOrEmpty(action.getIcon())) {
                         searchResultItem.setIcon(action.getIcon());
+                    }
+                    if (action.getWeight() != 0) {
+                        searchResultItem.setWeight(action.getWeight());
+                    } else if (action.getPrivilegedRoles().contains("ROLE_ADMIN")) {
+                        searchResultItem.setWeight(10); // Admin actions should be on top of the list
                     }
                     return searchResultItem;
                 })

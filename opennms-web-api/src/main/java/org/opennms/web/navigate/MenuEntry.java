@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,43 +28,23 @@
 
 package org.opennms.web.navigate;
 
-import java.io.File;
+import java.util.List;
 
 /**
- * <p>FileBasedNavBarEntry class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
+ * Simple representation of an entry in the menu.
+ * @author mvrueden
  */
-public class FileBasedNavBarEntry extends LocationBasedNavBarEntry {
-    private File m_file; 
-    
-    /** {@inheritDoc} */
-    @Override
-    public DisplayStatus evaluate(MenuContext context) {
-        if (m_file.exists()) {
-            return super.evaluate(context);
-        } else {
-            return DisplayStatus.NO_DISPLAY;
-        }
-    }
+public interface MenuEntry {
+    String getName();
+
+    String getUrl();
+
+    DisplayStatus getDisplayStatus();
 
     /**
-     * <p>getFile</p>
+     * If the list is null or empty, the {@link MenuEntry} is a leaf element and actually clickable.
      *
-     * @return a {@link java.io.File} object.
+     * @return The number of sub elements if this {@link MenuEntry} is a parent element. Otherwise an empty list or null.
      */
-    public File getFile() {
-        return m_file;
-    }
-
-    /**
-     * <p>setFile</p>
-     *
-     * @param file a {@link java.io.File} object.
-     */
-    public void setFile(File file) {
-        m_file = file;
-    }
+    List<MenuEntry> getEntries();
 }

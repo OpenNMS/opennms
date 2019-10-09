@@ -50,6 +50,13 @@ public class QueryUtils {
         return checkMe.toLowerCase().contains(input.toLowerCase());
     }
 
+    public static boolean matches(List<String> checkMe, String input) {
+        if (checkMe != null) {
+            return checkMe.stream().anyMatch(it -> matches(it, input));
+        }
+        return false;
+    }
+
     public static <T> List<T> shrink(List<T> input, int maxResults) {
         Objects.requireNonNull(input);
         final List<T> subList = input.subList(0, Math.min(maxResults, input.size()));

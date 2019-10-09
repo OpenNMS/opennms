@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,43 +28,43 @@
 
 package org.opennms.web.navigate;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * <p>FileBasedNavBarEntry class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public class FileBasedNavBarEntry extends LocationBasedNavBarEntry {
-    private File m_file; 
-    
-    /** {@inheritDoc} */
+public class DefaultMenuEntry implements MenuEntry {
+
+    private final String name;
+    private final String url;
+    private final DisplayStatus displayStatus;
+    private final List<MenuEntry> entries = new ArrayList<>();
+
+    public DefaultMenuEntry(String name, String url, DisplayStatus displayStatus) {
+        this.name = name;
+        this.url = url;
+        this.displayStatus = displayStatus;
+    }
+
     @Override
-    public DisplayStatus evaluate(MenuContext context) {
-        if (m_file.exists()) {
-            return super.evaluate(context);
-        } else {
-            return DisplayStatus.NO_DISPLAY;
-        }
+    public String getName() {
+        return name;
     }
 
-    /**
-     * <p>getFile</p>
-     *
-     * @return a {@link java.io.File} object.
-     */
-    public File getFile() {
-        return m_file;
+    @Override
+    public String getUrl() {
+        return url;
     }
 
-    /**
-     * <p>setFile</p>
-     *
-     * @param file a {@link java.io.File} object.
-     */
-    public void setFile(File file) {
-        m_file = file;
+    @Override
+    public List<MenuEntry> getEntries() {
+        return entries;
+    }
+
+    @Override
+    public DisplayStatus getDisplayStatus() {
+        return displayStatus;
+    }
+
+    public void addEntries(List<MenuEntry> entries) {
+        this.entries.addAll(entries);
     }
 }

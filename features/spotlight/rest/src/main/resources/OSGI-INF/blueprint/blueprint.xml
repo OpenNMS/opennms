@@ -15,6 +15,7 @@
     <reference id="genericPersistenceAccessor"  interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor"   availability="mandatory"/>
     <reference id="kscReportService"            interface="org.opennms.web.svclayer.api.KscReportService"           availability="mandatory"/>
     <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="mandatory"/>
+    <reference id="menuProvider"                interface="org.opennms.web.api.MenuProvider"                        availability="mandatory"/>
 
     <!-- Node Providers -->
     <bean id="nodeSearchProvider" class="org.opennms.netmgt.spotlight.providers.node.NodeLabelSearchProvider">
@@ -55,6 +56,16 @@
     <!-- Action Providers -->
     <bean id="actionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.StaticActionSearchProvider" />
     <service ref="actionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <bean id="menuActionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.MenuActionSearchProvider" >
+        <argument ref="menuProvider" />
+    </bean>
+    <service ref="menuActionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <bean id="adminPageNavEntrySearchProvider" class="org.opennms.netmgt.spotlight.providers.action.AdminPageNavEntrySearchProvider" >
+        <argument ref="blueprintBundleContext"/>
+    </bean>
+    <service ref="adminPageNavEntrySearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
     <bean id="serviceActionSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.ServiceSearchProvider">
         <argument ref="serviceTypeDao" />

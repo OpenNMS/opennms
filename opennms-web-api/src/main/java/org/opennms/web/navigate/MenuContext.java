@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,43 +28,14 @@
 
 package org.opennms.web.navigate;
 
-import java.io.File;
-
 /**
- * <p>FileBasedNavBarEntry class.</p>
+ * The context of the current menu to help building it.
+ * Originally an HttpServletRequest was used instead, which makes it harder to pass it around.
+ * The idea of the {@link MenuContext} is to provide all required properties/methods to build the menu.
  *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
+ * @author mvrueden
  */
-public class FileBasedNavBarEntry extends LocationBasedNavBarEntry {
-    private File m_file; 
-    
-    /** {@inheritDoc} */
-    @Override
-    public DisplayStatus evaluate(MenuContext context) {
-        if (m_file.exists()) {
-            return super.evaluate(context);
-        } else {
-            return DisplayStatus.NO_DISPLAY;
-        }
-    }
-
-    /**
-     * <p>getFile</p>
-     *
-     * @return a {@link java.io.File} object.
-     */
-    public File getFile() {
-        return m_file;
-    }
-
-    /**
-     * <p>setFile</p>
-     *
-     * @param file a {@link java.io.File} object.
-     */
-    public void setFile(File file) {
-        m_file = file;
-    }
+public interface MenuContext {
+    String getLocation();
+    boolean isUserInRole(String role);
 }

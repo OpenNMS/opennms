@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,45 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.web.api;
 
-import java.io.File;
+import java.util.List;
 
-/**
- * <p>FileBasedNavBarEntry class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public class FileBasedNavBarEntry extends LocationBasedNavBarEntry {
-    private File m_file; 
-    
-    /** {@inheritDoc} */
-    @Override
-    public DisplayStatus evaluate(MenuContext context) {
-        if (m_file.exists()) {
-            return super.evaluate(context);
-        } else {
-            return DisplayStatus.NO_DISPLAY;
-        }
-    }
+import org.opennms.web.navigate.MenuContext;
+import org.opennms.web.navigate.MenuEntry;
 
-    /**
-     * <p>getFile</p>
-     *
-     * @return a {@link java.io.File} object.
-     */
-    public File getFile() {
-        return m_file;
-    }
+public interface MenuProvider {
 
-    /**
-     * <p>setFile</p>
-     *
-     * @param file a {@link java.io.File} object.
-     */
-    public void setFile(File file) {
-        m_file = file;
-    }
+    List<MenuEntry> getMenu(MenuContext context);
 }
