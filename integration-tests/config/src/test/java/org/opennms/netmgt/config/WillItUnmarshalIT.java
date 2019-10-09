@@ -255,7 +255,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, false, null);
         addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, true, null);
         addFile(Source.CONFIG, "statsd-configuration.xml", StatisticsDaemonConfiguration.class, false, null);
-        addFile(Source.CONFIG, "spotlight-actions.xml", Actions.class, true, null);
+        addFile(Source.CONFIG, "spotlight-actions.xml", Actions.class, false, null);
         addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, true, null);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "syslogd-configuration.xml", SyslogdConfiguration.class, false, null);
