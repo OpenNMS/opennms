@@ -75,9 +75,16 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
 
             @Override
             public String toString() {
-                return "lastSample=" + m_lastSample +
-                        "\npreviousTriggeringSample=" + m_previousTriggeringSample +
-                        "\n" + super.toString();
+                StringBuilder sb = new StringBuilder();
+                sb.append("lastSample=").append(m_lastSample);
+                sb.append("\npreviousTriggeringSample=").append(m_previousTriggeringSample);
+                String superString = super.toString();
+
+                if (superString != null) {
+                    sb.append("\n").append(superString);
+                }
+
+                return sb.toString();
             }
         }
 

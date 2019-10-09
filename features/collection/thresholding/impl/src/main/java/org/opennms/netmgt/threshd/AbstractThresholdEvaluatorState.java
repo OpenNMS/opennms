@@ -32,14 +32,12 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import org.joda.time.Duration;
 import org.nustaq.serialization.FSTConfiguration;
@@ -57,7 +55,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-import com.google.common.util.concurrent.AtomicDouble;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
@@ -141,13 +138,12 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
         @Override
         public String toString() {
-            return "interpolatedExpression='" + interpolatedExpression + "'";
+            return getInterpolatedExpression().map(ie -> "interpolatedExpression=" + ie).orElse(null);
         }
     }
-    
-    @SuppressWarnings("unchecked")
-    public AbstractThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold,
-                                           ThresholdingSession thresholdingSession) {
+
+    AbstractThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold,
+                                    ThresholdingSession thresholdingSession, Class<T> stateType) {
         Objects.requireNonNull(threshold);
         Objects.requireNonNull(thresholdingSession);
         Objects.requireNonNull(thresholdingSession.getBlobStore());
