@@ -26,7 +26,6 @@
     </plugins>
   </build>
   <dependencies>
-    <!-- TODO MVr this should go somewhere else -->
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi.core</artifactId>
@@ -52,13 +51,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <!-- TODO MVr this should go somewhere else -->
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guavaVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

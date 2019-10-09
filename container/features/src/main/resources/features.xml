@@ -1445,6 +1445,8 @@
     <feature name="opennms-spotlight" version="${project.version}" description="OpenNMS :: Features :: Spotlight">
         <details>OpenNMS :: Features :: Spotlight</details>
         <bundle>mvn:org.opennms.features.spotlight/org.opennms.features.spotlight.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.spotlight/org.opennms.features.spotlight.providers/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.spotlight/org.opennms.features.spotlight.service/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.spotlight/org.opennms.features.spotlight.rest/${project.version}</bundle>
     </feature>
     <feature name="ifttt-integration" version="${project.version}" description="OpenNMS :: Features :: IFTTT Integration">

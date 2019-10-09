@@ -162,7 +162,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.spotlight</groupId>
-      <artifactId>org.opennms.features.spotlight.rest</artifactId>
+      <artifactId>org.opennms.features.spotlight.providers</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

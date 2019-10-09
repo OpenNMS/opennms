@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.spotlight.impl;
+package org.opennms.netmgt.spotlight.service;
 
 import java.util.Collections;
 import java.util.Comparator;

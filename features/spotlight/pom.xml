@@ -12,7 +12,9 @@
   <name>OpenNMS :: Features :: Spotlight (Parent)</name>
   <modules>
     <module>api</module>
+    <module>providers</module>
     <module>rest</module>
+    <module>service</module>
   </modules>
   <dependencies>
     <dependency>
