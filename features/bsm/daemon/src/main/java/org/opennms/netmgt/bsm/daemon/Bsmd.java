@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.bsm.daemon;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -45,11 +48,15 @@ import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -196,7 +203,70 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                 || EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService()))
                 || EventConstants.APPLICATION_DELETED_EVENT_UEI.equals(e.getUei()) && m_stateMachine.getGraph().getVertexByApplicationId(Integer.parseInt(e.getParm("applicationId").getValue().getContent())) != null) {
 
+            final Set<BusinessService> businessServices = m_stateMachine.getGraph().getVertices().stream().filter(v -> v.getBusinessService() != null).map(v -> v.getBusinessService()).collect(Collectors.toSet());
+            final Set<BusinessService> affectedBusinessServices = new HashSet<>();
+
+            if (EventConstants.APPLICATION_DELETED_EVENT_UEI.equals(e.getUei())) {
+                final Map<String, Set<BusinessService>> applicationIdToBusinessService = new TreeMap<>();
+
+                for (final BusinessService businessService : businessServices) {
+                    // map application ids to business services
+                    for(final ApplicationEdge edge : businessService.getApplicationEdges()) {
+                        if (!applicationIdToBusinessService.containsKey(String.valueOf(edge.getApplication().getId()))) {
+                            applicationIdToBusinessService.put(String.valueOf(edge.getApplication().getId()), new HashSet<>());
+                        }
+                        applicationIdToBusinessService.get(String.valueOf(edge.getApplication().getId())).add(businessService);
+                    }
+                }
+
+                affectedBusinessServices.addAll(applicationIdToBusinessService.get(e.getParm("applicationId").getValue().getContent()));
+            } else {
+                final Map<String, Set<BusinessService>> reductionKeyToBusinessService = new TreeMap<>();
+
+                for (final BusinessService businessService : businessServices) {
+                    // map ip services edge keys to business services
+                    for(final IpServiceEdge edge : businessService.getIpServiceEdges()) {
+                        for (final String reductionKey : edge.getReductionKeys()) {
+                            if (!reductionKeyToBusinessService.containsKey(reductionKey)) {
+                                reductionKeyToBusinessService.put(reductionKey, new HashSet<>());
+                            }
+                            reductionKeyToBusinessService.get(reductionKey).add(businessService);
+                        }
+                    }
+                    // map reduction key edge keys to business services
+                    for(final ReductionKeyEdge edge : businessService.getReductionKeyEdges()) {
+                        for (final String reductionKey : edge.getReductionKeys()) {
+                            if (!reductionKeyToBusinessService.containsKey(reductionKey)) {
+                                reductionKeyToBusinessService.put(reductionKey, new HashSet<>());
+                            }
+                            reductionKeyToBusinessService.get(reductionKey).add(businessService);
+                        }
+                    }
+                }
+
+                if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei())) {
+                    affectedBusinessServices.addAll(reductionKeyToBusinessService.get(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid())));
+                }
+
+                if (EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(e.getUei())) {
+                    affectedBusinessServices.addAll(reductionKeyToBusinessService.get(String.format("uei.opennms.org/nodes/interfaceDown::%d:%s", e.getNodeid(), e.getInterface())));
+                }
+
+                if (EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei())) {
+                    affectedBusinessServices.addAll(reductionKeyToBusinessService.get(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService())));
+                }
+            }
+
             reloadConfigurationAt = System.currentTimeMillis() + RELOAD_DELAY;
+
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "bsmd");
+            eventBuilder.addParam("businessServiceNames", affectedBusinessServices.stream().map(b -> String.valueOf(b.getName())).sorted().collect(Collectors.toList()));
+            final Event event = eventBuilder.getEvent();
+            try {
+                m_eventIpcManager.send(event);
+            } catch (EventProxyException ex) {
+                LOG.error("Cannot send event " + event.getUei(), ex);
+            }
         }
     }
 
