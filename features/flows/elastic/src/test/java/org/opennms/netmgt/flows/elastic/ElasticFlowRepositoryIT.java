@@ -41,8 +41,8 @@ import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;

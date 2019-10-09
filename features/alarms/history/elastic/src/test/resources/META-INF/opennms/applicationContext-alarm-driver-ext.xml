@@ -9,7 +9,7 @@
 
     <context:annotation-config />
 
-    <bean id="restClientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
+    <bean id="restClientFactory" class="org.opennms.features.jest.client.RestClientFactory">
         <!-- Match the port used by the server spawned in the test case -->
         <constructor-arg value="http://localhost:9205"/>
         <property name="retries" value="1"/>

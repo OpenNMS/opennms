@@ -48,7 +48,8 @@ fi
 
 
 # Run the tests
-mvn verify -P'!checkstyle' \
+mvn \
+           -P'!checkstyle' \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
@@ -59,5 +60,6 @@ mvn verify -P'!checkstyle' \
            -fae \
            -Dtest="$(< target/surefire_classnames paste -s -d, -)" \
            -Dit.test="$(< target/failsafe_classnames paste -s -d, -)" \
-           -pl "$(< target/test_projects paste -s -d, -)"
-
+           -pl "$(< target/test_projects paste -s -d, -)" \
+           "$@" \
+           verify
