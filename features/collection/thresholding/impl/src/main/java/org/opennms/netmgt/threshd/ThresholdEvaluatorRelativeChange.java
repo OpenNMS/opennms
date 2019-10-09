@@ -214,10 +214,10 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
         public boolean isTriggered() {
             return false;
         }
-        
-        // FIXME This must be implemented correctly
+
         @Override
         public void clearStateBeforePersist() {
+            initializeState();
         }
 
     }

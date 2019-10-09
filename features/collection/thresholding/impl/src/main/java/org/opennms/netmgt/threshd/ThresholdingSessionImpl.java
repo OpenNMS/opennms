@@ -34,6 +34,7 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 import org.slf4j.Logger;
@@ -56,9 +57,12 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     private final BlobStore blobStore;
     
     private final boolean isDistributed;
+    
+    private final ThresholdStateMonitor thresholdStateMonitor;
 
     public ThresholdingSessionImpl(ThresholdingServiceImpl service, ThresholdingSessionKey sessionKey, ResourceStorageDao resourceStorageDao, RrdRepository rrdRepository,
-                                   ServiceParameters serviceParams, BlobStore blobStore, boolean isDistributed) {
+                                   ServiceParameters serviceParams, BlobStore blobStore, boolean isDistributed,
+                                   ThresholdStateMonitor thresholdStateMonitor) {
         this.service = service;
         this.sessionKey = sessionKey;
         this.resourceStorageDao = resourceStorageDao;
@@ -66,6 +70,7 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
         this.serviceParameters = serviceParams;
         this.blobStore = blobStore;
         this.isDistributed = isDistributed;
+        this.thresholdStateMonitor = thresholdStateMonitor;
     }
 
     @Override
@@ -122,5 +127,10 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     @Override
     public boolean isDistributed() {
         return isDistributed;
+    }
+
+    @Override
+    public ThresholdStateMonitor getThresholdStateMonitor() {
+        return thresholdStateMonitor;
     }
 }

@@ -39,6 +39,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
@@ -47,6 +49,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdType;
+import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,12 +68,24 @@ import org.springframework.test.context.ContextConfiguration;
 public class ThresholdStateIT {
     @Autowired
     private BlobStore blobStore;
+
+    private final ThresholdingSession thresholdingSession = MockSession.getSession();
+    private ThresholdStateMonitor monitor;
+
+    @Before
+    public void setup() {
+        monitor = new BlobStoreAwareMonitor(blobStore);
+        when(thresholdingSession.getThresholdStateMonitor()).thenReturn(monitor);
+        when(thresholdingSession.getBlobStore()).thenReturn(blobStore);
+    }
+    
+    @After
+    public void cleanup() {
+        blobStore.truncateContext(AbstractThresholdEvaluatorState.THRESHOLDING_KV_CONTEXT);
+    }
     
     @Test
     public void canResumeWithState() {
-        ThresholdingSession thresholdingSession = MockSession.getSession();
-        when(thresholdingSession.getBlobStore()).thenReturn(blobStore);
-        
         // The following test simulates Sentinel A thresholding a high-low threshold with an exceeded value then going
         // down
         // Sentinel B then evaluates the same threshold with another exceeded value and since it retrieved state first
@@ -91,8 +106,8 @@ public class ThresholdStateIT {
     
     @Test
     public void onlyAlwaysFetchesWhenDistributed() {
-        ThresholdingSession thresholdingSession = MockSession.getSession();
         BlobStore mockBlobStore = mock(BlobStore.class);
+        when(thresholdingSession.getBlobStore()).thenReturn(mockBlobStore);
         
         // Set up the mock so that any type of fetch operation will increment a counter
         AtomicInteger fetchesPerformed = new AtomicInteger(0);
@@ -129,6 +144,30 @@ public class ThresholdStateIT {
         assertThat(fetchesPerformed.get(), greaterThan(1));
     }
     
+    @Test
+    public void canRetriggerAfterClear() {
+        ThresholdEvaluatorState item = new ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow(getWrapper(),
+                thresholdingSession);
+
+        // Two evaluations exceeding the threshold should trigger
+        ThresholdEvaluatorState.Status status = item.evaluate(100.0);
+        assertEquals("first threshold evaluation status", ThresholdEvaluatorState.Status.NO_CHANGE, status);
+        status = item.evaluate(100.0);
+        assertEquals("second threshold evaluation status", ThresholdEvaluatorState.Status.TRIGGERED, status);
+
+        // A third evaluation exceeding the threshold should result in no change since the evaluator is already
+        // triggered
+        status = item.evaluate(100.0);
+        assertEquals("third threshold evaluation status", ThresholdEvaluatorState.Status.NO_CHANGE, status);
+
+        // After performing a state clear we should now see the threshold get triggered again if we exceed the threshold
+        // twice again
+        monitor.reinitializeStates();
+        item.evaluate(100.0);
+        status = item.evaluate(100.0);
+        assertEquals("third threshold evaluation status", ThresholdEvaluatorState.Status.TRIGGERED, status);
+    }
+
     private ThresholdConfigWrapper getWrapper() {
         Threshold threshold = new Threshold();
         threshold.setType(ThresholdType.HIGH);
