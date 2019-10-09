@@ -38,7 +38,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.spotlight.api.Contexts;
 import org.opennms.netmgt.spotlight.api.Match;
@@ -49,6 +49,7 @@ import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 import org.opennms.netmgt.spotlight.providers.SearchResultItemBuilder;
+import org.slf4j.LoggerFactory;
 
 public class NodeGeolocationSearchProvider implements SearchProvider {
 
@@ -88,19 +89,19 @@ public class NodeGeolocationSearchProvider implements SearchProvider {
         final List<SearchResultItem> results = matchingNodes.stream()
             .map(node -> {
                 final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node).build();
-                final OnmsAssetRecord record = node.getAssetRecord();
-                // TODO MVR this is ugly as hell ... and a copy of NodeAssetSearchProvider \o/
-                for (Method method : OnmsAssetRecord.class.getMethods()) {
+                final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
+                // TODO MVR maybe rework this
+                for (Method method : OnmsGeolocation.class.getMethods()) {
                     if (method.getName().startsWith("get")
                             && method.getReturnType() == String.class
                             && method.getParameterCount() == 0) {
                         try {
-                            Object returnedValue = method.invoke(record);
+                            Object returnedValue = method.invoke(geolocation);
                             if (returnedValue != null && QueryUtils.matches(returnedValue.toString(), input)) {
                                 result.addMatch(new Match(method.getName(), method.getName().replace("get", ""), returnedValue.toString()));
                             }
                         } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace(); // TODO MVR ignore for now
+                            LoggerFactory.getLogger(getClass()).error("Could not read property via method {}: {}", method.getName(), e.getMessage(), e);
                         }
                     }
                 }

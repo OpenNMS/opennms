@@ -35,6 +35,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Each {@link SearchResult} contains 0 to n {@link SearchResultItem}s which represent an item for the context,
+ * e.g. a Node, or Action.
+ *
+ * @author mvrueden
+ */
 public class SearchResultItem {
     private SearchContext context; // TODO MVR remove me?
     private String identifier;
@@ -138,5 +144,16 @@ public class SearchResultItem {
 
     public int getWeight() {
         return weight;
+    }
+
+    public void merge(SearchResultItem mergeMe) {
+        // Merge attributes
+        getProperties().putAll(mergeMe.getProperties());
+
+        // Merge Matches
+        mergeMe.getMatches().forEach(m -> addMatch(m));
+
+        // Adjust weight
+        setWeight(Math.max(getWeight(), mergeMe.getWeight()));
     }
 }

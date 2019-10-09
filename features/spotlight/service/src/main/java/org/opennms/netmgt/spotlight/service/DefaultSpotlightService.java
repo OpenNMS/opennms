@@ -64,7 +64,7 @@ public class DefaultSpotlightService implements SpotlightService {
     public List<SearchResult> query(final SearchQuery query) {
         Objects.requireNonNull(query);
         if (query.getMaxResults() <= 0) {
-            query.setMaxResults(10); // TODO MVR magic number ...
+            query.setMaxResults(SearchQuery.DEFAULT_MAX_RESULT);
         }
 
         // Enforce minimum length, otherwise don't query
@@ -86,7 +86,7 @@ public class DefaultSpotlightService implements SpotlightService {
                                 final SearchResult mergedResult = resultMap.get(providerResult.getContext());
                                 for (SearchResultItem eachItem : providerResult.getResults()) {
                                     mergedResult.setMore(providerResult.hasMore() || mergedResult.hasMore());
-                                    mergedResult.merge(eachItem);
+                                    mergedResult.addItem(eachItem);
                                 }
                             } else {
                                 resultMap.put(providerResult.getContext(), providerResult);

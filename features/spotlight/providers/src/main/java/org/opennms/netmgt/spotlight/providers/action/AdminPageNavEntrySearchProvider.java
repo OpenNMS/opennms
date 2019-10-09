@@ -44,6 +44,7 @@ import org.opennms.web.navigate.PageNavEntry;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -68,7 +69,6 @@ public class AdminPageNavEntrySearchProvider implements SearchProvider {
     @Override
     public SearchResult query(final SearchQuery query) {
         final List<PageNavEntry> totalMatchingEntries = getPageNavEntries(query);
-
         final List<SearchResultItem> resultItems = totalMatchingEntries.stream().map(e -> {
                 final SearchResultItem searchResultItem = new SearchResultItem();
                 searchResultItem.setContext(Contexts.Action);
@@ -103,7 +103,7 @@ public class AdminPageNavEntrySearchProvider implements SearchProvider {
                 }
             }
         } catch (InvalidSyntaxException e) {
-            e.printStackTrace(); // TODO MVR ignore for now
+            LoggerFactory.getLogger(getClass()).error("An error occurred while performing the search: {}", e.getMessage(), e);
         }
         return totalMatches;
     }

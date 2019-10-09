@@ -48,6 +48,7 @@ import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 import org.opennms.netmgt.spotlight.providers.SearchResultItemBuilder;
+import org.slf4j.LoggerFactory;
 
 public class NodeAssetSearchProvider implements SearchProvider {
 
@@ -132,7 +133,7 @@ public class NodeAssetSearchProvider implements SearchProvider {
             .map(node -> {
                 final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node).build();
                 final OnmsAssetRecord record = node.getAssetRecord();
-                // TODO MVR this is ugly as hell ...
+                // TODO MVR maybe rework this
                 for (Method method : OnmsAssetRecord.class.getMethods()) {
                     if (method.getName().startsWith("get")
                             && !method.getName().toLowerCase().contains("topology")
@@ -144,7 +145,7 @@ public class NodeAssetSearchProvider implements SearchProvider {
                                 result.addMatch(new Match(method.getName(), method.getName().replace("get", ""), returnedValue.toString()));
                             }
                         } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace(); // TODO MVR ignore for now
+                            LoggerFactory.getLogger(getClass()).error("Could not read property via method {}: {}", method.getName(), e.getMessage(), e);
                         }
                     }
                 }

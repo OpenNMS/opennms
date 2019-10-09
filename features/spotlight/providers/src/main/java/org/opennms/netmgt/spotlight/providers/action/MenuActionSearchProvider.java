@@ -41,8 +41,8 @@ import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 import org.opennms.web.api.MenuProvider;
-import org.opennms.web.navigate.MenuContext;
 import org.opennms.web.navigate.DisplayStatus;
+import org.opennms.web.navigate.MenuContext;
 import org.opennms.web.navigate.MenuEntry;
 
 /**
@@ -50,6 +50,7 @@ import org.opennms.web.navigate.MenuEntry;
  *
  * @author mvrueden
  */
+// TODO MVR here we can optimize a bit, as we always load the menu entry
 public class MenuActionSearchProvider implements SearchProvider {
 
     private MenuProvider menuProvider;

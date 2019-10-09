@@ -28,8 +28,18 @@
 
 package org.opennms.netmgt.spotlight.api;
 
+/**
+ * A {@link SearchProvider} is responsible for implementing the search logic.
+ *
+ * @author mvrueden
+ */
 public interface SearchProvider {
 
+    /**
+     * The Context this {@link SearchProvider} is providing results to.
+     *
+     * @return the Context this {@link SearchProvider} is providing results to.
+     */
     SearchContext getContext();
 
     SearchResult query(SearchQuery query);

@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.spotlight.api;
 
+/**
+ * Holds all pre-defined search contexts.
+ *
+ * @author mvrueden
+ */
 public interface Contexts {
     int NODE_WEIGHT = -1000;
     int ACTION_WEIGHT = 1000;

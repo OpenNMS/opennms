@@ -45,6 +45,7 @@ import org.opennms.netmgt.spotlight.api.SearchProvider;
 import org.opennms.netmgt.spotlight.api.SearchQuery;
 import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.api.SearchResultItem;
+import org.slf4j.LoggerFactory;
 
 public class FilterSearchProvider implements SearchProvider {
 
@@ -81,8 +82,8 @@ public class FilterSearchProvider implements SearchProvider {
                     .collect(Collectors.toList());
             return new SearchResult(Contexts.Node).withResults(searchResultItems).withMore(nodeMap.size() > matchingNodes.size());
         } catch (FilterParseException ex) {
-            // TODO MVR Ignore for now
-            return SearchResult.EMPTY;
+            LoggerFactory.getLogger(getClass()).error("Cannot parse expression: {}: {}", query.getInput(), ex.getMessage(), ex);
         }
+        return SearchResult.EMPTY;
     }
 }

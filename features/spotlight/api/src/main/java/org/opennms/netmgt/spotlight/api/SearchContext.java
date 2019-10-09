@@ -30,8 +30,17 @@ package org.opennms.netmgt.spotlight.api;
 
 import java.util.Objects;
 
+/**
+ * The search results are grouped by context.
+ * In order to visualize it accordingly each context must have a name and weight.
+ *
+ * @author mvrueden
+ */
 public class SearchContext {
+    /** The name of the context */
     private final String name;
+
+    /** The weight of the context.*/
     private final int weight;
 
     public SearchContext(String name) {

@@ -32,7 +32,14 @@ import java.security.Principal;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * The query the user performed plus some additional data to perform the search.
+ *
+ * @author mvrueden
+ */
 public class SearchQuery {
+    public static final int DEFAULT_MAX_RESULT = 10;
+
     private String input;
     private int maxResults;
     private Principal principal;

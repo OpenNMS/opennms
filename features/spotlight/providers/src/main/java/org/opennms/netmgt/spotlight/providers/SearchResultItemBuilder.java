@@ -68,7 +68,7 @@ public class SearchResultItemBuilder {
     }
 
     public SearchResultItem build() {
-        return searchResultItem; // TODO MVR create clone?
+        return searchResultItem;
     }
 
 }

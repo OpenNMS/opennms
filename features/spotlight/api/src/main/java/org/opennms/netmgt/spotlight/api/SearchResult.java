@@ -34,6 +34,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Represents the complete result set of a search for a given {@link SearchContext}.
+ *
+ * @author mvrueden
+ */
 public class SearchResult {
 
     public static SearchResult EMPTY = new SearchResult("$EMPTY$");
@@ -51,7 +56,13 @@ public class SearchResult {
     }
 
     public void addItem(SearchResultItem item) {
-        this.results.add(item);
+        Objects.requireNonNull(item);
+        final Optional<SearchResultItem> existingItem = results.stream().filter(r -> r.getIdentifier().equals(item.getIdentifier())).findAny();
+        if (existingItem.isPresent()) {
+            existingItem.get().merge(item);
+        } else {
+            results.add(item);
+        }
     }
 
     public SearchContext getContext() {
@@ -93,19 +104,4 @@ public class SearchResult {
         return this;
     }
 
-    // TODO MVR move to item instead
-    public void merge(SearchResultItem mergeMe) {
-        Objects.requireNonNull(mergeMe);
-        final Optional<SearchResultItem> existingItem = results.stream().filter(r -> r.getUrl().equals(mergeMe.getUrl())).findAny();// TODO MVR should be identifier instead
-        if (existingItem.isPresent()) {
-            // Merge attributes
-            existingItem.get().getProperties().putAll(mergeMe.getProperties());
-            // Merge Matches
-            mergeMe.getMatches().forEach(m -> existingItem.get().addMatch(m));
-            // Adjust weight
-            existingItem.get().setWeight(Math.max(existingItem.get().getWeight(), mergeMe.getWeight()));
-        } else {
-            results.add(mergeMe);
-        }
-    }
 }

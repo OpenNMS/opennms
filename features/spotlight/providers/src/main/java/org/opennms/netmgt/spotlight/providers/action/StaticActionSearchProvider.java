@@ -47,6 +47,12 @@ import org.opennms.netmgt.spotlight.providers.QueryUtils;
 
 import com.google.common.base.Strings;
 
+/**
+ * Searches entries in <code>${OPENNMS_HOME}/etc/spotlight-actions.xml</code>.
+ *
+ * @author mvrueden
+ */
+// TODO MVR do not reload all the time
 public class StaticActionSearchProvider implements SearchProvider {
 
     @Override
@@ -57,15 +63,13 @@ public class StaticActionSearchProvider implements SearchProvider {
     @Override
     public SearchResult query(SearchQuery query) {
         Objects.requireNonNull(query.getPrincipal());
-
-        // TODO MVR do not reload all the time
         final Path etc = Paths.get(System.getProperty("opennms.home"), "etc", "spotlight-actions.xml");
         final Actions actions = JAXB.unmarshal(etc.toFile(), Actions.class);
         final String input = query.getInput();
         final List<SearchResultItem> allItemsForUser = actions.getActions().stream()
                 .filter(action -> action.getPrivilegedRoles().isEmpty() || action.getPrivilegedRoles().stream().anyMatch(query::isUserInRole))
                 .filter(action -> QueryUtils.matches(action.getLabel(), input) || QueryUtils.matches(action.getAliases(), input))
-                .sorted(Comparator.comparing(Action::getLabel)) // TODO MVR we probably want admin actions to show up first
+                .sorted(Comparator.comparing(Action::getLabel))
                 .map(action -> {
                     final SearchResultItem searchResultItem = new SearchResultItem();
                     searchResultItem.setContext(Contexts.Action);
@@ -80,6 +84,7 @@ public class StaticActionSearchProvider implements SearchProvider {
                     } else if (action.getPrivilegedRoles().contains("ROLE_ADMIN")) {
                         searchResultItem.setWeight(10); // Admin actions should be on top of the list
                     }
+                    // TODO MVR we probably want aliases or label to be shown if either of those matches, but label is selected as label
                     return searchResultItem;
                 })
                 .collect(Collectors.toList());

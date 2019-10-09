@@ -32,9 +32,23 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Represents a search match, allowing some additional feedback to the user.
+ *
+ * A node for example can be found either by label, category, ip address or asset field.
+ * The {@link SearchResultItem} however may represent the same node. For the user however it would be useful which
+ * criteria of the node actually matched the search input query. A {@link Match} allows to do that.
+ *
+ * @author mvrueden
+ */
 public class Match {
+    /** Unique ID */
     private String id;
+
+    /** User friendly label */
     private String label;
+
+    /** A Match may contain multiple matches, represented by the value which actually matched. */
     private Set<String> values = new HashSet<>();
 
     public Match() {
