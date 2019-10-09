@@ -73,7 +73,7 @@
     </bean>
     <service ref="serviceActionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
-    <bean id="actionLocationSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.LocationSearchServiceProvider">
+    <bean id="actionLocationSearchProvider" class="org.opennms.netmgt.spotlight.providers.action.LocationSearchProvider">
         <argument ref="monitoringLocationDao" />
     </bean>
     <service ref="actionLocationSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />

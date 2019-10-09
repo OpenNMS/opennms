@@ -44,11 +44,11 @@ import org.opennms.netmgt.spotlight.api.SearchResult;
 import org.opennms.netmgt.spotlight.api.SearchResultItem;
 import org.opennms.netmgt.spotlight.providers.QueryUtils;
 
-public class LocationSearchServiceProvider implements SearchProvider {
+public class LocationSearchProvider implements SearchProvider {
 
     private final MonitoringLocationDao monitoringLocationDao;
 
-    public LocationSearchServiceProvider(final MonitoringLocationDao monitoringLocationDao) {
+    public LocationSearchProvider(final MonitoringLocationDao monitoringLocationDao) {
         this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
     }
 
@@ -56,6 +56,7 @@ public class LocationSearchServiceProvider implements SearchProvider {
     public SearchContext getContext() {
         return Contexts.Action;
     }
+
     @Override
     public SearchResult query(final SearchQuery query) {
         final String input = query.getInput();
