@@ -180,8 +180,8 @@ case "$COMMAND" in
 
 		if [ ! -d "$CONTAINER_HOME/data/tmp" ]; then
 			install -d -m 755 "$CONTAINER_HOME/data/tmp"
-			chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data"
 		fi
+		chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data"
 		run_as "$CONTAINER_HOME"/bin/start
 		sleep 5
 		RET="$?"
@@ -196,6 +196,8 @@ case "$COMMAND" in
 		for COUNT in $(seq 1 6); do
 			if is_running; then
 				get_root_pid > "$PIDFILE"
+				chown "$RUNAS:$RUNAS" "$PIDFILE"
+				chmod 640 "$PIDFILE"
 				exit "$RET"
 			fi
 			sleep 5
