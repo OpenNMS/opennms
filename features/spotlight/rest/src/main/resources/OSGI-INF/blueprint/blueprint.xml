@@ -9,6 +9,7 @@
 	">
 
     <reference id="filterDao"                   interface="org.opennms.netmgt.filter.api.FilterDao"                 availability="mandatory"/>
+    <reference id="categoryDao"                 interface="org.opennms.netmgt.dao.api.CategoryDao"                  availability="mandatory"/>
     <reference id="nodeDao"                     interface="org.opennms.netmgt.dao.api.NodeDao"                      availability="mandatory"/>
     <reference id="serviceTypeDao"              interface="org.opennms.netmgt.dao.api.ServiceTypeDao"               availability="mandatory"/>
     <reference id="monitoringLocationDao"       interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"        availability="mandatory"/>
@@ -81,6 +82,11 @@
         <argument ref="requisitionAccessService" />
     </bean>
     <service ref="requisitionSearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
+
+    <bean id="categorySearchProvider" class="org.opennms.netmgt.spotlight.providers.action.CategorySearchProvider">
+        <argument ref="categoryDao" />
+    </bean>
+    <service ref="categorySearchProvider" interface="org.opennms.netmgt.spotlight.api.SearchProvider" />
 
     <!-- Filter Provider -->
     <bean id="filterSearchProvider" class="org.opennms.netmgt.spotlight.providers.FilterSearchProvider">
