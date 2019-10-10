@@ -179,9 +179,9 @@ case "$COMMAND" in
 		esac
 
 		if [ ! -d "$CONTAINER_HOME/data/tmp" ]; then
-			install -d -m 755 "$CONTAINER_HOME/data/tmp"
+			install -d -m 755 -o "$RUNAS" -g "$RUNAS" "$CONTAINER_HOME/data/tmp"
 		fi
-		chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data"
+		chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data/"
 		run_as "$CONTAINER_HOME"/bin/start
 		sleep 5
 		RET="$?"
