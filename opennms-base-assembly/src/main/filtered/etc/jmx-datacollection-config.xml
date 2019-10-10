@@ -474,6 +474,28 @@
             <attrib name="999thPercentile" alias="Duration999" type="gauge"/>
          </mbean>
          
+         <!-- Alarmd -->
+         <mbean name="drools.alarmd.facts" objectname="org.opennms.features.drools.alarmd:name=facts">
+            <attrib name="Value" alias="DroolsAlarmdFacts" type="gauge"/>
+         </mbean>
+         <mbean name="drools.alarmd.actions" objectname="org.opennms.features.drools.alarmd:name=atomicActionsInFlight">
+            <attrib name="Value" alias="DroolsAlarmdActions" type="gauge"/>
+         </mbean>
+         <mbean name="drools.alarmd.alarms" objectname="org.opennms.features.drools.alarmd:name=numAlarmsFromLastSnapshot">
+            <attrib name="Value" alias="DroolsAlarmdAlarms" type="gauge"/>
+         </mbean>
+         <mbean name="drools.alarmd.situations" objectname="org.opennms.features.drools.alarmd:name=numSituationsFromLastSnapshot">
+            <attrib name="Value" alias="DroolsAlarmdSitu" type="gauge"/>
+         </mbean>
+         <mbean name="drools.alarmd.liveness" objectname="org.opennms.features.drools.alarmd:name=liveness">
+            <attrib name="50thPercentile" alias="DroolsAlarmdLv50" type="gauge"/>
+            <attrib name="75thPercentile" alias="DroolsAlarmdLv75" type="gauge"/>
+            <attrib name="95thPercentile" alias="DroolsAlarmdLv95" type="gauge"/>
+            <attrib name="98thPercentile" alias="DroolsAlarmdLv98" type="gauge"/>
+            <attrib name="99thPercentile" alias="DroolsAlarmdLv99" type="gauge"/>
+            <attrib name="999thPercentile" alias="DroolsAlarmdLv999" type="gauge"/>
+         </mbean>
+
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>

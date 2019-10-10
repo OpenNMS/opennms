@@ -34,16 +34,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -65,6 +63,11 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 /**
  * This class focuses on providing a Drools context which loads a set of rules
  * from the filesystem and can be dynamically reloaded.
@@ -76,6 +79,10 @@ import org.slf4j.LoggerFactory;
 public class ManagedDroolsContext {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
+    private static final String JMX_DOMAIN_PREFIX = "org.opennms.features.drools.";
+    private static final long LIVENESS_CHECK_INTERVAL_MS = TimeUnit.SECONDS.toMillis(5);
+
+    private final MetricRegistry metrics;
     private final File rulesFolder;
     private final String kbaseName;
     private final String kSessionName;
@@ -96,17 +103,23 @@ public class ManagedDroolsContext {
 
     private SessionPseudoClock clock;
 
-    /**
-     * Ensure that this lock is fair so that ordering is respected.
-     */
-    private final ReentrantLock lock = new ReentrantLock(true);
+    protected AtomicLong fireThreadId = new AtomicLong(-1);
 
     private Consumer<KieSession> onNewKiewSessionCallback;
+
+    private JmxReporter metricsReporter;
+    private java.util.Timer livenessTimer;
+    private Timer livenessTimerMetric;
 
     public ManagedDroolsContext(File rulesFolder, String kbaseName, String kSessionSuffixName) {
         this.rulesFolder = Objects.requireNonNull(rulesFolder);
         this.kbaseName = Objects.requireNonNull(kbaseName);
         this.kSessionName = String.format("%s-%s", kbaseName, Objects.requireNonNull(kSessionSuffixName));
+        this.metrics = new MetricRegistry();
+
+        // Register metrics
+        metrics.register("facts", (Gauge<Long>) () -> kieSession != null ? kieSession.getFactCount() : -1);
+        livenessTimerMetric = metrics.timer("liveness");
     }
 
     public synchronized void start() {
@@ -119,6 +132,15 @@ public class ManagedDroolsContext {
         final ReleaseId kieModuleReleaseId = buildKieModule();
         // Fire it up
         startWithModuleAndFacts(kieModuleReleaseId, Collections.emptyList());
+
+        metricsReporter = JmxReporter.forRegistry(metrics)
+                .inDomain(JMX_DOMAIN_PREFIX + kbaseName)
+                .build();
+        try {
+            metricsReporter.start();
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Failed to start metrics reporter. JMX metrics may not be available or accurate for kbase: {}", kbaseName);
+        }
     }
 
     public void onStart() {
@@ -149,11 +171,33 @@ public class ManagedDroolsContext {
         // We're started!
         started.set(true);
 
+        // Schedule the liveness check
+        livenessTimer = new java.util.Timer();
+        livenessTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    if (kieSession != null) {
+                        final Timer.Context ctx = livenessTimerMetric.time();
+                        final CountDownLatch latch = new CountDownLatch(1);
+                        kieSession.submit(kieSession -> {
+                            latch.countDown();
+                            ctx.close();
+                        });
+                        latch.await();
+                    }
+                } catch (Exception e) {
+                    LOG.error("Exception occurred while performing liveness check.", e);
+                }
+            }
+        }, LIVENESS_CHECK_INTERVAL_MS, LIVENESS_CHECK_INTERVAL_MS);
+
         // Allow the base classes to seed the context before we start ticking
         onStart();
 
         if (!useManualTick) {
             thread = new Thread(() -> {
+                fireThreadId.set(Thread.currentThread().getId());
                 while (started.get()) {
                     try {
                         LOG.debug("Firing until halt.");
@@ -301,6 +345,13 @@ public class ManagedDroolsContext {
 
     public synchronized void stop() {
         started.set(false);
+        if (metricsReporter != null) {
+            metricsReporter.close();
+        }
+        if (livenessTimer != null) {
+            livenessTimer.cancel();
+            livenessTimer = null;
+        }
         if (kieSession != null) {
             kieSession.halt();
             kieSession = null;
@@ -323,6 +374,10 @@ public class ManagedDroolsContext {
             }
             thread = null;
         }
+    }
+
+    public MetricRegistry getMetrics() {
+        return metrics;
     }
 
     public boolean isStarted() {
