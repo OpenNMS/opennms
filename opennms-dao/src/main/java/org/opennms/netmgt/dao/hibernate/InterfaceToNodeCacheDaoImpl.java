@@ -32,12 +32,15 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -390,5 +393,21 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         } finally {
             m_lock.writeLock().unlock();
         }
+    }
+
+    @Override
+    public boolean removeInterfacesForNode(int nodeId) {
+
+        List<Map.Entry<Key, Value>> keyValues = m_managedAddresses.entries().stream()
+                .filter(keyValueEntry -> keyValueEntry.getValue().getNodeId() == nodeId)
+                .collect(Collectors.toList());
+        keyValues.forEach(keyValue -> {
+            boolean succeeded = m_managedAddresses.remove(keyValue.getKey(), keyValue.getValue());
+            if (succeeded) {
+                LOG.debug("removeInterfaesForNode: removed IP address from cache: {}", str(keyValue.getKey().getIpAddress()));
+            }
+        });
+
+        return true;
     }
 }
