@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.api.DetailedFlowException;
-import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
+import org.opennms.features.jest.client.bulk.FailedItem;
 
 public class PersistenceException extends DetailedFlowException {
 

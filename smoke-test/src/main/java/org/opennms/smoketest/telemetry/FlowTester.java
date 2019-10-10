@@ -47,7 +47,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
-import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
+import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

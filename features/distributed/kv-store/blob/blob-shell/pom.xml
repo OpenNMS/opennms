@@ -45,5 +45,10 @@
             <version>${dropwizardMetricsVersion}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-retry</artifactId>
+            <version>${resilience4jVersion}</version>
+        </dependency>
     </dependencies>
 </project>

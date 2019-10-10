@@ -41,6 +41,8 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.opennms.features.distributed.cassandra.api.CassandraSchemaManagerFactory;
 import org.opennms.features.distributed.cassandra.api.CassandraSession;
@@ -54,6 +56,7 @@ import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Statement;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * A {@link BlobStore} that is backed by Cassandra.
@@ -80,6 +83,11 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
     private final PreparedStatement timestampStmt;
     private final PreparedStatement enumerateStatement;
     private final PreparedStatement deleteStatement;
+    
+    // The cardinality of this thread pool will be limited by the limited number (expected) of requests that end up
+    // using it
+    private final Executor asyncDeleteExecutor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+            .setNameFormat("cassandra-async-delete-%d").build());
 
     public CassandraBlobStore(CassandraSessionFactory sessionFactory,
                               CassandraSchemaManagerFactory cassandraSchemaManagerFactory) throws IOException {
@@ -358,29 +366,26 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
 
         CompletableFuture<Void> truncateFuture = new CompletableFuture<>();
 
-        enumerateContextAsync(context).whenComplete((enumerateResult, enumerateThrowable) -> {
+        // The below ends up doing deletes synchronously so we move processing off of the Cassandra session thread and
+        // onto our own
+        enumerateContextAsync(context).whenCompleteAsync((enumerateResult, enumerateThrowable) -> {
             if (enumerateThrowable != null) {
                 truncateFuture.completeExceptionally(enumerateThrowable);
                 return;
             }
 
-            Set<String> keys = enumerateResult.keySet();
-            Iterator<String> keysIterator = keys.iterator();
-            CompletableFuture<?>[] deleteFutures = new CompletableFuture[keys.size()];
-
-            for (int i = 0; i < keys.size(); i++) {
-                deleteFutures[i] = deleteAsync(keysIterator.next(), context);
-            }
-
-            CompletableFuture.allOf(deleteFutures).whenComplete((deleteResult, deleteThrowable) -> {
-                if (deleteThrowable != null) {
-                    truncateFuture.completeExceptionally(deleteThrowable);
-                    return;
+            // It would be nice to fire off a bunch of deleteAsync here instead of sync deletes, however that has the
+            // tendency to overwhelm the Cassandra connection pool therefore we will just tie this thread up until we
+            // are done deleting synchronously
+            enumerateResult.keySet().forEach(key -> {
+                try {
+                    delete(key, context);
+                } catch (Exception e) {
+                    truncateFuture.completeExceptionally(e);
                 }
-
-                truncateFuture.complete(deleteResult);
             });
-        });
+            truncateFuture.complete(null);
+        }, asyncDeleteExecutor);
 
         return truncateFuture;
     }
