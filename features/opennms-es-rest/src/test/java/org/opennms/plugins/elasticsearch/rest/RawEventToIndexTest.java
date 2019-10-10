@@ -40,9 +40,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.features.jest.client.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
