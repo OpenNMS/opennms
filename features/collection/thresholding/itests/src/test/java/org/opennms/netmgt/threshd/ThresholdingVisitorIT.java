@@ -28,11 +28,9 @@
 
 package org.opennms.netmgt.threshd;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
@@ -58,6 +56,7 @@ import java.util.Set;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.collection.test.MockCollectionAgent;
@@ -129,6 +128,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingVisitor;
 import org.opennms.netmgt.xml.event.Event;
@@ -255,8 +255,21 @@ public class ThresholdingVisitorIT {
         }
     };
 
+    @BeforeClass
+    public static void setUpMonitor() {
+        // Use a real impl for the blobstore and monitor instead of no-op so tests can retrieve results
+        ThresholdingSession mockSession = MockSession.getSession();
+        InMemoryMapBlobStore blobStore = InMemoryMapBlobStore.withDefaultTicks();
+        when(mockSession.getBlobStore()).thenReturn(blobStore);
+        ThresholdStateMonitor monitor = new BlobStoreAwareMonitor(mockSession.getBlobStore());
+        when(mockSession.getThresholdStateMonitor()).thenReturn(monitor);
+    }
+    
     @Before
     public void setUp() throws Exception {
+        // Clear the states between every test
+        MockSession.getSession().getThresholdStateMonitor().reinitializeStates();
+
         // Resets Counters Cache Data
         CollectionResourceWrapper.s_cache.clear();
 
@@ -1632,12 +1645,6 @@ public class ThresholdingVisitorIT {
      */
     @Test
     public void testThresholdFiltersOnGenericResourceWithSiblingColumnStorageStrategy() throws Exception {
-        // We need to verify that the persisted states are keyed correctly as well so we need to use something besides
-        // the no-op store so we can query it after the test
-        ThresholdingSession mockSession = MockSession.getSession();
-        InMemoryMapBlobStore blobStore = InMemoryMapBlobStore.withDefaultTicks();
-        when(mockSession.getBlobStore()).thenReturn(blobStore);
-
         initFactories("/threshd-configuration.xml", "/test-thresholds-wsman.xml");
         ThresholdingVisitor visitor = createVisitor();
 
@@ -1691,7 +1698,9 @@ public class ThresholdingVisitorIT {
         // NMS-12329: Previously the persisted states were not keyed correctly and collided resulting in there being
         // fewer persisted states than expected that ended up getting shared. To verify this is no longer happening we 
         // enumerate the persisted states to check that the correct number of individual states were persisted.
-        Set<String> persistedKeys = blobStore.enumerateContext(AbstractThresholdEvaluatorState.THRESHOLDING_KV_CONTEXT)
+        Set<String> persistedKeys = MockSession.getSession()
+                .getBlobStore()
+                .enumerateContext(AbstractThresholdEvaluatorState.THRESHOLDING_KV_CONTEXT)
                 .keySet();
         // We expect 4 persisted states with keys like the following:
         // *wmiLogicalDisk-wmiLDPctFreeSpace*HarddiskVolume16
