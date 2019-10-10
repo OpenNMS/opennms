@@ -67,7 +67,7 @@ override_dh_auto_install:
 		&& rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/$(CONTAINER_TYPE).conf
 	
 	# change the logging directory
-	sed -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,/karaf.log,/$(CONTAINER_TYPE).log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
+	sed -e "s,.{karaf.log},$(LOGDIR),g" -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,/karaf.log,/$(CONTAINER_TYPE).log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
 	
 	# install the startup scripts
 	dh_systemd_enable --name=$(CONTAINER_TYPE) --no-enable debian/$(CONTAINER_TYPE).service
