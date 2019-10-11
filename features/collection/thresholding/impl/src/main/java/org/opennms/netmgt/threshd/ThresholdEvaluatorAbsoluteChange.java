@@ -200,9 +200,9 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             return false;
         }
 
-        // FIXME This must be implemented correctly
         @Override
         public void clearStateBeforePersist() {
+            initializeState();
         }
     }
 

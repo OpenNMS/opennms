@@ -959,6 +959,7 @@ public abstract class EventConstants {
     public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsm/serviceOperationalStatusChanged";
     public static final String BUSINESS_SERVICE_PROBLEM_UEI = "uei.opennms.org/bsm/serviceProblem";
     public static final String BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI = "uei.opennms.org/bsm/serviceProblemResolved";
+    public static final String APPLICATION_DELETED_EVENT_UEI = "uei.opennms.org/internal/applicationDeleted";
 
     public static final String PARM_BUSINESS_SERVICE_ID = "businessServiceId";
     public static final String PARM_BUSINESS_SERVICE_NAME = "businessServiceName";
@@ -966,6 +967,8 @@ public abstract class EventConstants {
     public static final String PARM_NEW_SEVERITY_LABEL = "newSeverityLabel";
     public static final String PARM_PREV_SEVERITY_ID = "prevSeverityId";
     public static final String PARM_PREV_SEVERITY_LABEL = "prevSeverityLabel";
+    public static final String PARM_APPLICATION_ID = "applicationId";
+    public static final String PARM_APPLICATION_NAME = "applicationName";
 
     //
     // For Trapd
