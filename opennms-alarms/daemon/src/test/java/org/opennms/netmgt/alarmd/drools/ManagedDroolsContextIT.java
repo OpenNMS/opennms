@@ -123,10 +123,16 @@ public class ManagedDroolsContextIT {
         // A single rule should have triggered against "oops"
         assertThat(notificationService.getSent(), contains(notifA));
 
+        // Verify the number of facts
+        assertThat(droolsCtx.getKieSession().getFactCount(), equalTo(3L));
+
         // Now let's update our ruleset
         generatedUpdatedRuleset();
         notificationService.clearSent();
         droolsCtx.reload();
+
+        // Verify the number of facts
+        assertThat(droolsCtx.getKieSession().getFactCount(), equalTo(3L));
 
         // Tick
         droolsCtx.tick();
