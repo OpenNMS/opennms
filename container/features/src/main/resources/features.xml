@@ -1519,6 +1519,7 @@
     </feature>
 
     <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">
+        <feature>resilience4j</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.shell/${project.version}</bundle>
     </feature>
 

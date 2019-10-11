@@ -61,11 +61,13 @@ import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -108,6 +110,9 @@ public class BsmdIT {
 
     @Autowired
     private AlarmDao m_alarmDao;
+
+    @Autowired
+    private ApplicationDao m_applicationDao;
 
     @Autowired
     private DatabasePopulator m_databasePopulator;
@@ -223,6 +228,82 @@ public class BsmdIT {
         Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
         reloadBsmd();
         Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+    }
+
+    public void verifyReloadBySendingEventUei(final String uei) throws Exception {
+        final BusinessServiceEntity businessService1 = createBusinessService("service1");
+        m_bsmd.start();
+        Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService1)));
+
+        final BusinessServiceEntity businessService2 = createBusinessService("service2");
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+
+        final EventBuilder eventBuilder = new EventBuilder(uei, "test")
+                .setNodeid(m_databasePopulator.getNode1().getId())
+                .setInterface(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getIpAddress())
+                .setService(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getMonitoredServices().iterator().next().getServiceName());
+
+        m_eventMgr.sendNow(eventBuilder.getEvent(), true);
+
+        await().atMost(5, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)), equalTo(Status.NORMAL));
+    }
+
+    @Test
+    public void verifyDelayedReload() throws Exception {
+        final BusinessServiceEntity businessService1 = createBusinessService("service1");
+        m_bsmd.start();
+        Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService1)));
+
+        final BusinessServiceEntity businessService2 = createBusinessService("service2");
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "test")
+                .setNodeid(m_databasePopulator.getNode1().getId())
+                .setInterface(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getIpAddress())
+                .setService(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getMonitoredServices().iterator().next().getServiceName());
+
+        for (int i = 0; i < 5; i++) {
+            m_eventMgr.sendNow(eventBuilder.getEvent(), true);
+            Thread.sleep(Bsmd.RELOAD_DELAY / 2);
+            Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+        }
+
+        await().atMost(5, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)), equalTo(Status.NORMAL));
+    }
+
+    @Test
+    public void verifyReloadByDeletionOfService() throws Exception {
+        verifyReloadBySendingEventUei(EventConstants.SERVICE_DELETED_EVENT_UEI);
+    }
+
+    @Test
+    public void verifyReloadByDeletionOfInterface() throws Exception {
+        verifyReloadBySendingEventUei(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+    }
+
+    @Test
+    public void verifyReloadByDeletionOfNode() throws Exception {
+        verifyReloadBySendingEventUei(EventConstants.NODE_DELETED_EVENT_UEI);
+    }
+
+    @Test
+    public void verifyReloadByDeletionOfApplication() throws Exception {
+        final BusinessServiceEntity businessService1 = createBusinessServiceWithApplicationEdge("service1");
+        m_bsmd.start();
+        Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService1)));
+
+        OnmsApplication onmsApplication = m_applicationDao.findByName("myApp");
+
+        final BusinessServiceEntity businessService2 = createBusinessService("service2");
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.APPLICATION_DELETED_EVENT_UEI, "test")
+                .setParam("applicationId", onmsApplication.getId())
+                .setParam("applicationName", "myApp");
+
+        m_eventMgr.sendNow(eventBuilder.getEvent(), true);
+
+        await().atMost(5, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)), equalTo(Status.NORMAL));
     }
 
     /**
@@ -365,6 +446,33 @@ public class BsmdIT {
         alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setReductionKey(String.format("%s::1:192.168.1.1:ICMP", EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
         return alarm;
+    }
+
+
+    private BusinessServiceEntity createBusinessServiceWithApplicationEdge(String name) {
+        final OnmsApplication onmsApplication = new OnmsApplication();
+
+        onmsApplication.setName("myApp");
+
+        final OnmsMonitoredService ipService = m_databasePopulator.getNode1()
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+
+        onmsApplication.addMonitoredService(ipService);
+        int id = m_applicationDao.save(onmsApplication);
+        m_applicationDao.flush();
+
+        final BusinessServiceEntity bs = new BusinessServiceEntity();
+        bs.setName(name);
+        bs.setReductionFunction(new HighestSeverityEntity());
+        bs.setAttribute("my-attr-key", "my-attr-value");
+        bs.addApplicationEdge(m_applicationDao.get(id), new IdentityEntity());
+
+        // Persist
+        m_businessServiceDao.save(bs);
+        m_businessServiceDao.flush();
+
+        return bs;
     }
 
     private BusinessServiceEntity createBusinessService(String name) {
