@@ -73,8 +73,7 @@ public class MockInterfaceToNodeCache extends AbstractInterfaceToNodeCache {
     }
 
     @Override
-    public boolean removeInterfacesForNode(int nodeId) {
-        return true;
+    public void removeInterfacesForNode(int nodeId) {
     }
 
     private static class Key {

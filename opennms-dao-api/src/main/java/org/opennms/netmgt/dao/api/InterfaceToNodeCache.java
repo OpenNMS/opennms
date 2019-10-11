@@ -50,6 +50,6 @@ public interface InterfaceToNodeCache {
 
 	Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr);
 
-	boolean removeInterfacesForNode(int nodeId);
+	void removeInterfacesForNode(int nodeId);
 
 }

@@ -396,7 +396,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     }
 
     @Override
-    public boolean removeInterfacesForNode(int nodeId) {
+    public void removeInterfacesForNode(int nodeId) {
 
         List<Map.Entry<Key, Value>> keyValues = m_managedAddresses.entries().stream()
                 .filter(keyValueEntry -> keyValueEntry.getValue().getNodeId() == nodeId)
@@ -408,6 +408,5 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             }
         });
 
-        return true;
     }
 }
