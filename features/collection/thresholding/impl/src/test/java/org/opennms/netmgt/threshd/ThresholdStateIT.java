@@ -106,8 +106,12 @@ public class ThresholdStateIT {
     
     @Test
     public void onlyAlwaysFetchesWhenDistributed() {
+        // This test needs to use a non-default blobstore so we can count blobstore operations
         BlobStore mockBlobStore = mock(BlobStore.class);
         when(thresholdingSession.getBlobStore()).thenReturn(mockBlobStore);
+        // We also need to explicitly clear the existing serdes that are in use since they will have been built using
+        // the other blobstore impl
+        AbstractThresholdEvaluatorState.clearSerdesMap();
         
         // Set up the mock so that any type of fetch operation will increment a counter
         AtomicInteger fetchesPerformed = new AtomicInteger(0);
