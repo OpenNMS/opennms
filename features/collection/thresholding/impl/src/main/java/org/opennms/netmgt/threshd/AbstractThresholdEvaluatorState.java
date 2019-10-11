@@ -53,6 +53,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
@@ -425,5 +426,10 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
         this.instance = instance;
         key = String.format("%s-%s", key, instance);
+    }
+    
+    @VisibleForTesting
+    static void clearSerdesMap() {
+        serdesMap.clear();
     }
 }
