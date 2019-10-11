@@ -32,13 +32,11 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import org.joda.time.Duration;
 import org.nustaq.serialization.FSTConfiguration;
@@ -55,7 +53,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-import com.google.common.util.concurrent.AtomicDouble;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
@@ -97,7 +94,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     
     protected final ThresholdingSession thresholdingSession;
     
-    private static final String THRESHOLDING_KV_CONTEXT = "thresholding";
+    static final String THRESHOLDING_KV_CONTEXT = "thresholding";
     
     private final int stateTTL;
     
@@ -180,29 +177,31 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
     @SuppressWarnings("unchecked")
     private void fetchState() {
-        // Fetch the state to make sure we have the latest if we are thresholding in a distributed environment or if
-        // this is the first time we are evaluating this evaluator
-        //
-        // If both of those conditions are false, then we must be on a standalone instance of OpenNMS and have the state
-        // already in memory so there is no need to fetch it
-        if (!isDistributed() && !firstEvaluation) {
-            return;
-        }
-
-        try {
-            Long lastKnownUpdate = lastUpdatedCache.get(key);
-
-            // If we don't have a record of when this was last updated locally, get it from the store
-            if (lastKnownUpdate == null) {
-                kvStore.get(key, THRESHOLDING_KV_CONTEXT).ifPresent(v -> state = v);
-            } else {
-                // Otherwise get it from the store only if our record is stale
-                kvStore.getIfStale(key, THRESHOLDING_KV_CONTEXT, lastKnownUpdate)
-                        .ifPresent(o -> o.ifPresent(v -> state = v));
+        thresholdingSession.getThresholdStateMonitor().withReadLock(() -> {
+            // Fetch the state to make sure we have the latest if we are thresholding in a distributed environment or if
+            // this is the first time we are evaluating this evaluator
+            //
+            // If both of those conditions are false, then we must be on a standalone instance of OpenNMS and have the
+            // state already in memory so there is no need to fetch it
+            if (!isDistributed() && !firstEvaluation) {
+                return;
             }
-        } catch (RuntimeException e) {
-            RATE_LIMITED_LOGGER.warn("Failed to retrieve state for threshold {}", key, e);
-        }
+
+            try {
+                Long lastKnownUpdate = lastUpdatedCache.get(key);
+
+                // If we don't have a record of when this was last updated locally, get it from the store
+                if (lastKnownUpdate == null) {
+                    kvStore.get(key, THRESHOLDING_KV_CONTEXT).ifPresent(v -> state = v);
+                } else {
+                    // Otherwise get it from the store only if our record is stale
+                    kvStore.getIfStale(key, THRESHOLDING_KV_CONTEXT, lastKnownUpdate)
+                            .ifPresent(o -> o.ifPresent(v -> state = v));
+                }
+            } catch (RuntimeException e) {
+                RATE_LIMITED_LOGGER.warn("Failed to retrieve state for threshold {}", key, e);
+            }
+        });
     }
 
     /**
@@ -217,7 +216,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     }
 
     @Override
-    public Status evaluate(double dsValue, Long sequenceNumber) {
+    public synchronized Status evaluate(double dsValue, Long sequenceNumber) {
         if (sequenceNumber != null) {
             // If a sequence number was provided, only fetch the state if this is the first sequence number we have seen
             // or if this was not the next sequence number (indicating someone else processed the last one)
@@ -231,6 +230,12 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
         }
 
         Status status = evaluateAfterFetch(dsValue);
+        if (firstEvaluation) {
+            firstEvaluation = false;
+            // We don't bother advertising ourselves until the first time we perform an evaluation since we will have
+            // default values until that point (being reinitialized would have no effect)
+            thresholdingSession.getThresholdStateMonitor().trackState(key, this);
+        }
         // Persist the state if it has changed and is now dirty
         persistStateIfNeeded();
         firstEvaluation = false;
@@ -262,6 +267,12 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     public void clearState() {
         clearStateBeforePersist();
         persistStateIfNeeded();
+    }
+
+    @Override
+    public synchronized void reinitialize() {
+        firstEvaluation = true;
+        clearStateBeforePersist();
     }
 
     protected abstract void clearStateBeforePersist();
