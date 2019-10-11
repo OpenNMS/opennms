@@ -385,7 +385,15 @@ public final class ThresholdEntity implements Cloneable {
             //Create the new list
             result=new LinkedList<ThresholdEvaluatorState>();
             for(ThresholdEvaluatorState state: defaultList) {
-                result.add(state.getCleanClone());
+                ThresholdEvaluatorState instancedState = state.getCleanClone();
+
+                if (instance != null) {
+                    // We need to set the instance on the evaluator state so that it can update its key to avoid
+                    // collisions and this seems to be the only convenient spot to do that
+                    instancedState.setInstance(instance);
+                }
+
+                result.add(instancedState);
             }
             
             //Store the new list with the instance as the key
