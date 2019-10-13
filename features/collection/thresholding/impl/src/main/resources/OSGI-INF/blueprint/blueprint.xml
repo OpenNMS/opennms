@@ -7,6 +7,7 @@
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+    <reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore"/>
 
     <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl">
         <property name="nodeDao" ref="nodeDao"/>
@@ -23,13 +24,18 @@
         <property name="entityScopeProvider" ref="entityScopeProvider"/>
     </bean>
     
+    <bean id="thresholdStateMonitor" class="org.opennms.netmgt.threshd.BlobStoreAwareMonitor">
+        <argument ref="blobStore"/>
+    </bean>
+    <service ref="thresholdStateMonitor" interface="org.opennms.netmgt.threshd.api.ThresholdStateMonitor"/>
+    
     <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
-    <reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore"/>
     <service interface="org.opennms.netmgt.threshd.api.ThresholdingService">
         <bean class="org.opennms.netmgt.threshd.ThresholdingServiceImpl" init-method="initOsgi">
             <property name="eventProxy" ref="eventForwarder"/>
             <property name="thresholdingSetPersister" ref="thresholdingSetPersister"/>
             <property name="kvStore" ref="blobStore"/>
+            <property name="thresholdStateMonitor" ref="thresholdStateMonitor"/>
         </bean>
     </service>
 </blueprint>

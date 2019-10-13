@@ -51,6 +51,7 @@ import javax.persistence.Transient;
 
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 import com.google.common.collect.Maps;
@@ -215,6 +216,21 @@ public class BusinessServiceEntity {
         BusinessServiceChildEdgeEntity edge = new BusinessServiceChildEdgeEntity();
         edge.setBusinessService(this);
         edge.setChild(Objects.requireNonNull(child));
+        edge.setWeight(weight);
+        edge.setMapFunction(Objects.requireNonNull(mapFunction));
+        addEdge(edge);
+        return this;
+    }
+
+    public BusinessServiceEntity addApplicationEdge(OnmsApplication onmsApplication, AbstractMapFunctionEntity mapFunction) {
+        return addApplicationEdge(onmsApplication, mapFunction, 1);
+    }
+
+    public BusinessServiceEntity addApplicationEdge(OnmsApplication onmsApplication, AbstractMapFunctionEntity mapFunction, int weight) {
+        ApplicationEdgeEntity edge = new ApplicationEdgeEntity();
+        edge.setBusinessService(this);
+        edge.setApplication(Objects.requireNonNull(onmsApplication));
+        edge.setWeight(weight);
         edge.setWeight(weight);
         edge.setMapFunction(Objects.requireNonNull(mapFunction));
         addEdge(edge);

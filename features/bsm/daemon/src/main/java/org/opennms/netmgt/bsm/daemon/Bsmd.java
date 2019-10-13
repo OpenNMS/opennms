@@ -30,6 +30,10 @@ package org.opennms.netmgt.bsm.daemon;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -61,6 +65,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 /**
  * This daemon is responsible for driving the Business Service state machine by:
  *  1) Updating the state machine with Alarms when they are created, deleted or updated
@@ -79,6 +85,8 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     public static final String NAME = "Bsmd";
 
+    public static final long RELOAD_DELAY = 1000;
+
     @Autowired
     @Qualifier("eventIpcManager")
     private EventIpcManager m_eventIpcManager;
@@ -96,6 +104,26 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     private BusinessServiceManager m_manager;
 
     private boolean m_verifyReductionKeys = true;
+
+    private ScheduledExecutorService daemonReloadScheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("bsm-daemon-reload-%d").build());
+
+    {
+        {
+            daemonReloadScheduler.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    if (reloadConfigurationAt > 0L && reloadConfigurationAt < System.currentTimeMillis()) {
+                        reloadConfigurationAt = 0L;
+                        final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "bsmd");
+                        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+                        m_eventIpcManager.sendNow(eventBuilder.getEvent());
+                    }
+                }
+            }, RELOAD_DELAY, RELOAD_DELAY, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private volatile long reloadConfigurationAt = 0L;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -157,6 +185,19 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                 return Status.INDETERMINATE;
             }
         });
+    }
+
+    @EventHandler(ueis = {EventConstants.SERVICE_DELETED_EVENT_UEI, EventConstants.INTERFACE_DELETED_EVENT_UEI, EventConstants.NODE_DELETED_EVENT_UEI, EventConstants.APPLICATION_DELETED_EVENT_UEI})
+    public void serviceInterfaceOrNodeDeleted(Event e) {
+        final Set<String> reductionKeys = m_stateMachine.getGraph().getReductionKeys();
+
+        if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid()))
+                || EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/interfaceDown::%d:%s", e.getNodeid(), e.getInterface()))
+                || EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService()))
+                || EventConstants.APPLICATION_DELETED_EVENT_UEI.equals(e.getUei()) && m_stateMachine.getGraph().getVertexByApplicationId(Integer.parseInt(e.getParm("applicationId").getValue().getContent())) != null) {
+
+            reloadConfigurationAt = System.currentTimeMillis() + RELOAD_DELAY;
+        }
     }
 
     /**
