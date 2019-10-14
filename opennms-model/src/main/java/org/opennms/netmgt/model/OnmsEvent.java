@@ -64,6 +64,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
+import org.hibernate.collection.PersistentBag;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.xml.event.Event;
@@ -415,20 +416,25 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	@XmlElement(name="parameter")
 	@OneToMany(mappedBy="event", cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	public List<OnmsEventParameter> getEventParameters() {
-	    return this.m_eventParameters;
+		if (m_eventParameters != null) {
+			// make sure we are sorted by out positions (when coming from database)
+			m_eventParameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
+		}
+		return m_eventParameters;
 	}
 
 	public void setEventParameters(List<OnmsEventParameter> eventParameters) {
 		this.m_eventParameters = eventParameters;
-
-		// set the positions on the parameters if they aren't set already
-		if(eventParameters != null && eventParameters.size() > 1 && eventParameters.stream().noneMatch(p -> p.getPosition() > 0)) {
+		if(!isCalledFromHibernate(eventParameters)) {
 			setPositionsOnParameters(m_eventParameters);
-
-		// sort the list by the positions if they are already set, e.g. coming from the database
-		} else if (eventParameters != null && eventParameters.size() > 1 && eventParameters.stream().anyMatch(p -> p.getPosition() > 0)) {
-			m_eventParameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
 		}
+		// we can't sort when called from hibernate, this will lead to an exception => we move the sorting to the getter
+	}
+
+	private boolean isCalledFromHibernate(List<OnmsEventParameter> eventParameters) {
+		// this is not very elegant, I would prefer to use @OrderColumn or the JPA Hook: @PrePersist but it doesn't
+		// seem to work in our context, see https://issues.opennms.org/browse/NMS-9827
+		return (eventParameters instanceof PersistentBag);
 	}
 
 	public void setEventParametersFromEvent(final Event event) {

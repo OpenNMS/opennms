@@ -30,11 +30,13 @@ package org.opennms.netmgt.model;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.hibernate.collection.PersistentBag;
 import org.junit.Test;
 
 public class OnmsEventTest {
@@ -51,31 +53,6 @@ public class OnmsEventTest {
         shouldOrderEventParams(params, "A", "B", "C", "D", "E");
     }
 
-    @Test
-    public void shouldOrderEventParamsWithFilledPositions() {
-        List<OnmsEventParameter> params = Arrays.asList(
-                param("C", 2),
-                param("A", 0),
-                param("E", 4),
-                param("D", 3),
-                param("B", 1)
-        );
-        shouldOrderEventParams(params, "A", "B", "C", "D", "E");
-    }
-
-    @Test
-    public void shouldOrderEventParamsWithDoublePositions() {
-        List<OnmsEventParameter> params = Arrays.asList(
-                param("C", 2),
-                param("A", 0),
-                param("E", 0),
-                param("D", 3),
-                param("B", 1),
-                param("F", 1)
-        );
-        shouldOrderEventParams(params, "A", "E", "B", "F", "C", "D");
-    }
-
 	@Test
 	public void shouldPreserveOrderFromDatabase() {
 		List<OnmsEventParameter> params = Arrays.asList(
@@ -90,10 +67,12 @@ public class OnmsEventTest {
 		params = event.getEventParameters();
 
 		// assume we are writing now to database and retrieve parameters out of order
-		Collections.shuffle(params, new Random(42));
+        List<OnmsEventParameter> shuffledParams = new ArrayList<>(params);
+        Collections.shuffle(shuffledParams, new Random(42));
+        PersistentBag listFromDatabase = new PersistentBag(null, shuffledParams);
 
 		// but the order should be ok again when invoking the getter
-		shouldOrderEventParams(params, "A", "B", "C", "D", "E");
+		shouldOrderEventParams(listFromDatabase, "A", "B", "C", "D", "E");
 	}
 
     private void shouldOrderEventParams(final List<OnmsEventParameter> params, final String ... expected) {
