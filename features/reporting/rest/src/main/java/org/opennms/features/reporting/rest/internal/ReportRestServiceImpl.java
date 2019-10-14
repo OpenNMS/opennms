@@ -29,6 +29,9 @@
 package org.opennms.features.reporting.rest.internal;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
@@ -60,6 +63,7 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.features.reporting.rest.ReportRestService;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.ReportCatalogDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.DeliveryOptions;
@@ -81,6 +85,7 @@ import org.opennms.web.utils.ResponseUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 
 public class ReportRestServiceImpl implements ReportRestService {
 
@@ -90,14 +95,22 @@ public class ReportRestServiceImpl implements ReportRestService {
     private final CategoryConfigDao categoryConfigDao;
     private final ReportStoreService reportStoreService;
     private final SchedulerService schedulerService;
+    private final ReportCatalogDao reportCatalogDao;
 
-    public ReportRestServiceImpl(DatabaseReportListService databaseReportListService, ReportWrapperService reportWrapperService, CategoryDao categoryDao, CategoryConfigDao categoryConfigDao, ReportStoreService reportStoreService, SchedulerService schedulerService) {
+    public ReportRestServiceImpl(DatabaseReportListService databaseReportListService,
+                                 ReportWrapperService reportWrapperService,
+                                 CategoryDao categoryDao,
+                                 CategoryConfigDao categoryConfigDao,
+                                 ReportStoreService reportStoreService,
+                                 SchedulerService schedulerService,
+                                 ReportCatalogDao reportCatalogDao) {
         this.databaseReportListService = Objects.requireNonNull(databaseReportListService);
         this.reportWrapperService = Objects.requireNonNull(reportWrapperService);
         this.categoryDao = Objects.requireNonNull(categoryDao);
         this.categoryConfigDao = Objects.requireNonNull(categoryConfigDao);
         this.reportStoreService = Objects.requireNonNull(reportStoreService);
         this.schedulerService = Objects.requireNonNull(schedulerService);
+        this.reportCatalogDao = Objects.requireNonNull(reportCatalogDao);
     }
 
     @Override
@@ -217,7 +230,6 @@ public class ReportRestServiceImpl implements ReportRestService {
         if (persistedReports.isEmpty()) {
             return Response.noContent().build();
         }
-
         final Map<String, Object> formatMap = reportStoreService.getFormatMap();
         final JSONArray jsonArray = new JSONArray();
         for (ReportCatalogEntry eachEntry : persistedReports) {
@@ -225,6 +237,12 @@ public class ReportRestServiceImpl implements ReportRestService {
             final List<ReportFormat> formats = (List<ReportFormat>)formatMap.get(eachEntry.getReportId());
             if (formats != null && !formats.isEmpty()) {
                 jsonObject.put("formats", new JSONArray(formats));
+            } else {
+                // Special Reportd behaviour:
+                // Reportd persists the reports as PDF/CSV and therefore formats is empty.
+                // In that case the format is the format of the file
+                final String format = eachEntry.getLocation().substring(eachEntry.getLocation().lastIndexOf(".") + 1);
+                jsonObject.put("formats", new JSONArray("[" + format.toUpperCase() +"]"));
             }
             jsonArray.put(jsonObject);
         }
@@ -348,25 +366,44 @@ public class ReportRestServiceImpl implements ReportRestService {
 
     @Override
     public Response downloadReport(final String format, final String locatorId) {
-        if (Strings.isNullOrEmpty(format)) {
-            return Response.status(Status.BAD_REQUEST)
-                    .type(MediaType.APPLICATION_JSON_TYPE)
-                    .entity(createErrorObject("entity", "Property 'format' is null or empty").toString())
-                    .build();
-        }
         if (Strings.isNullOrEmpty(locatorId)) {
             return Response.status(Status.BAD_REQUEST)
                     .type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(createErrorObject("entity", "Property 'locatorId' is null or empty").toString())
                     .build();
         }
+        final Integer reportCatalogEntryId = WebSecurityUtils.safeParseInt(locatorId);
+        final ReportCatalogEntry reportCatalogEntry = reportCatalogDao.get(reportCatalogEntryId);
+        if (reportCatalogEntry == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        // Some reports are persisted as jrprint and must be reran to download/view
+        boolean mustRender = reportCatalogEntry.getLocation().endsWith("jrprint");
+        if (mustRender) { // the format should be set if we need to re-render the report
+            if (Strings.isNullOrEmpty(format)) {
+                return Response.status(Status.BAD_REQUEST)
+                        .type(MediaType.APPLICATION_JSON_TYPE)
+                        .entity(createErrorObject("entity", "Property 'format' is null or empty").toString())
+                        .build();
+            }
+        }
         try {
-            final Integer reportCatalogEntryId = Integer.valueOf(WebSecurityUtils.safeParseInt(locatorId));
-            final ReportFormat reportFormat = parseReportFormat(format);
-            final StreamingOutput streamingOutput = outputStream -> {
-                reportStoreService.render(reportCatalogEntryId, reportFormat, outputStream);
-                outputStream.flush();
-            };
+            final String suffix = reportCatalogEntry.getLocation().substring(reportCatalogEntry.getLocation().lastIndexOf(".") + 1).toLowerCase();
+            final ReportFormat reportFormat = mustRender ? parseReportFormat(format) : parseReportFormat(suffix);
+            final String filename = mustRender ? reportCatalogEntryId.toString() + "." + reportFormat.name().toLowerCase() : Paths.get(reportCatalogEntry.getLocation()).getFileName().toString();
+            final StreamingOutput streamingOutput = mustRender
+                    // Rerender
+                    ?   outputStream -> {
+                            reportStoreService.render(reportCatalogEntryId, reportFormat, outputStream);
+                            outputStream.flush();
+                        }
+                    // Just download
+                    :   outputStream -> {
+                            try (FileInputStream input = new FileInputStream(new File(reportCatalogEntry.getLocation()))){
+                                ByteStreams.copy(input, outputStream);
+                            }
+                            outputStream.flush();
+                        };
             final Response.ResponseBuilder responseBuilder = Response.ok()
                     .header("Pragma", "public")
                     .header("Cache-Control", "cache")
@@ -374,12 +411,12 @@ public class ReportRestServiceImpl implements ReportRestService {
                     .entity(streamingOutput);
             if (ReportFormat.PDF == reportFormat || ReportFormat.SVG == reportFormat ) {
                 return responseBuilder.type("application/pdf;charset=UTF-8")
-                        .header("Content-disposition", "inline; filename=" + reportCatalogEntryId.toString() + ".pdf")
+                        .header("Content-disposition", "inline; filename=" + filename)
                         .build();
             }
             if (ReportFormat.CSV == reportFormat) {
                 responseBuilder.type("text/csv;charset=UTF-8")
-                .header("Content-disposition", "inline; filename=" + reportCatalogEntryId.toString() + ".csv");
+                .header("Content-disposition", "inline; filename=" + filename);
             }
             return responseBuilder.build();
         } catch (NumberFormatException e) {
