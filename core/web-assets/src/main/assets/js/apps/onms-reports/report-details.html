@@ -268,7 +268,7 @@
                 <div ng-show="report.errors.format" class="invalid-feedback">{{report.errors.format}}</div>
             </div>
             <div class="form-group ml-4">
-                <input type="checkbox" id="persistToggle" ng-model="report.deliveryOptions.persist" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist }"/>
+                <input type="checkbox" id="persistToggle" ng-model="report.deliveryOptions.persist" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }"/>
                 <label class="form-check-label"
                        data-toggle="tooltip"
                        data-placement="right"
@@ -278,13 +278,18 @@
                 </label>
             </div>
             <div class="form-group ml-4">
-                <input type="checkbox" id="sendMailToggle" ng-model="report.deliveryOptions.sendMail" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist }" />
+                <input type="checkbox" id="sendMailToggle" ng-model="report.deliveryOptions.sendMail" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }" />
                 <label class="form-check-label" for="sendMailToggle" data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
                     Email report
                 </label>
-                <div ng-show="report.errors.sendMail_persist" class="invalid-feedback">Please select at least one delivery method</div>
             </div>
-
+            <div class="form-group ml-4">
+                <input type="checkbox" id="webhookToggle" ng-model="report.deliveryOptions.webhook" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }" />
+                <label class="form-check-label" for="webhookToggle" data-toggle="tooltip" data-placement="right" title="Indicates wheter the generated report is pushed to an URL">
+                    Webhook
+                </label>
+                <div ng-show="report.errors.sendMail_persist_webhook" class="invalid-feedback">Please select at least one delivery method</div>
+            </div>
             <div class="form-group" ng-if="report.deliveryOptions.sendMail">
                 <label for="mailRecipient">Recipient</label>
                 <button class="btn btn-link text-secondary px-0"
@@ -306,6 +311,28 @@
                 />
                 <div ng-show="reportForm.mailRecipient.$invalid" class="invalid-feedback">Please provide a valid email.</div>
                 <div ng-show="report.errors.mailTo" class="invalid-feedback">{{report.errors.mailTo}}</div>
+            </div>
+            <div class="form-group" ng-if="report.deliveryOptions.webhook">
+                <label for="mailRecipient">Webhook URL</label>
+                <button class="btn btn-link text-secondary px-0"
+                        popover-trigger="'mouseenter'"
+                        uib-popover="TODO MVR.... blablab POST blabla"><i class="fa fa-info-circle"/>
+                </button>
+                <!-- TODO MVR url validation -->
+                <input id="webhookUrl"
+                       name="webhookUrl"
+                       ng-model="report.deliveryOptions.webhookUrl"
+                       placeholder="https://example.org/:reportId/?:instanceId"
+                       type="text"
+                       class="form-control"
+                       ng-class="{ 'is-invalid' : reportForm.webhookUrl.$invalid || report.errors.webhookUrl }"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       title="TODO MVR"
+                       required
+                />
+                <div ng-show="reportForm.webhookUrl.$invalid" class="invalid-feedback">Please provide a valid webhook url.</div>
+                <div ng-show="report.errors.webhookUrl" class="invalid-feedback">{{report.errors.webhookUrl}}</div>
             </div>
         </div>
         <hr class="mb-4"/>

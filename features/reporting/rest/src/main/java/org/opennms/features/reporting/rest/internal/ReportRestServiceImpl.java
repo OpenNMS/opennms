@@ -479,6 +479,10 @@ public class ReportRestServiceImpl implements ReportRestService {
         if (options.isSendMail() && jsonOptions.has("mailTo")) {
             options.setMailTo(jsonOptions.getString("mailTo"));
         }
+        options.setWebhook(jsonOptions.getBoolean("webhook"));
+        if (options.isWebhook() && jsonOptions.has("webhookUrl")) {
+            options.setWebhookUrl(jsonOptions.getString("webhookUrl"));
+        }
         options.setPersist(jsonOptions.getBoolean("persist"));
         options.setFormat(parseReportFormat(jsonOptions.getString("format")));
         return options;
