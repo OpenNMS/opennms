@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
@@ -50,10 +51,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.collection.test.MockCollectionAgent;
@@ -67,6 +70,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.distributed.kvstore.blob.inmemory.InMemoryMapBlobStore;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.GenericIndexResource;
 import org.opennms.netmgt.collectd.GenericIndexResourceType;
@@ -124,6 +128,8 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -249,8 +255,21 @@ public class ThresholdingVisitorIT {
         }
     };
 
+    @BeforeClass
+    public static void setUpMonitor() {
+        // Use a real impl for the blobstore and monitor instead of no-op so tests can retrieve results
+        ThresholdingSession mockSession = MockSession.getSession();
+        InMemoryMapBlobStore blobStore = InMemoryMapBlobStore.withDefaultTicks();
+        when(mockSession.getBlobStore()).thenReturn(blobStore);
+        ThresholdStateMonitor monitor = new BlobStoreAwareMonitor(mockSession.getBlobStore());
+        when(mockSession.getThresholdStateMonitor()).thenReturn(monitor);
+    }
+    
     @Before
     public void setUp() throws Exception {
+        // Clear the states between every test
+        MockSession.getSession().getThresholdStateMonitor().reinitializeStates();
+
         // Resets Counters Cache Data
         CollectionResourceWrapper.s_cache.clear();
 
@@ -1675,6 +1694,21 @@ public class ThresholdingVisitorIT {
 
         // Verify!
         verifyEvents(0);
+
+        // NMS-12329: Previously the persisted states were not keyed correctly and collided resulting in there being
+        // fewer persisted states than expected that ended up getting shared. To verify this is no longer happening we 
+        // enumerate the persisted states to check that the correct number of individual states were persisted.
+        Set<String> persistedKeys = MockSession.getSession()
+                .getBlobStore()
+                .enumerateContext(AbstractThresholdEvaluatorState.THRESHOLDING_KV_CONTEXT)
+                .keySet();
+        // We expect 4 persisted states with keys like the following:
+        // *wmiLogicalDisk-wmiLDPctFreeSpace*HarddiskVolume16
+        // *wmiLogicalDisk-wmiLDPctFreeMBytes*HarddiskVolume16
+        // *wmiLogicalDisk-wmiLDPctFreeMBytes*I
+        // *wmiLogicalDisk-wmiLDPctFreeSpace*I
+        int numExpectedPersistedKeys = 4;
+        assertEquals("Incorrect # of persisted states", numExpectedPersistedKeys, persistedKeys.size());
     }
 
     private ThresholdingVisitor createVisitor() throws ThresholdInitializationException {

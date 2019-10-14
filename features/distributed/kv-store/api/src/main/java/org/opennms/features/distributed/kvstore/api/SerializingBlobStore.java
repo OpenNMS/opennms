@@ -47,6 +47,11 @@ public final class SerializingBlobStore<V> {
         this.deserializer = Objects.requireNonNull(deserializer);
     }
 
+    public static <U> SerializingBlobStore<U> ofType(BlobStore blobStore, Serializer<U> serializer,
+                                                     Deserializer<U> deserializer) {
+        return new SerializingBlobStore<>(blobStore, serializer, deserializer);
+    }
+
     public long put(String key, V value, String context) {
         return blobStore.put(key, serializer.serialize(value), context);
     }
