@@ -92,23 +92,24 @@ public class BsmEventsIT {
     @Test
     public void testAlarmCleared() throws Exception {
         final RestClient restClient = stack.opennms().getRestClient();
-        restClient.sendEvent(getServiceProblemEvent(42, "Warning"));
+        restClient.sendEvent(getServiceProblemEvent(42, "Major"));
 
         final AlarmDao alarmDao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
 
         final OnmsAlarm onmsAlarm1 = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                         .eq("uei", "uei.opennms.org/bsm/serviceProblem")
+                        .eq("severity", OnmsSeverity.MAJOR)
                         .toCriteria()), notNullValue());
 
-        assertEquals(1L, (long) onmsAlarm1.getCounter());
-        assertEquals(OnmsSeverity.WARNING, onmsAlarm1.getSeverity());
+        assertEquals(OnmsSeverity.MAJOR, onmsAlarm1.getSeverity());
 
         restClient.sendEvent(getServiceDeletedEvent(42));
 
         final OnmsAlarm onmsAlarm2 = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                         .eq("uei", "uei.opennms.org/bsm/serviceProblem")
+                        .eq("id", onmsAlarm1.getId())
                         .toCriteria()), notNullValue());
 
         assertEquals(onmsAlarm1.getId(), onmsAlarm2.getId());
