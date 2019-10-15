@@ -241,8 +241,11 @@ public class ReportRestServiceImpl implements ReportRestService {
                 // Special Reportd behaviour:
                 // Reportd persists the reports as PDF/CSV and therefore formats is empty.
                 // In that case the format is the format of the file
+
                 final String format = eachEntry.getLocation().substring(eachEntry.getLocation().lastIndexOf(".") + 1);
-                jsonObject.put("formats", new JSONArray("[" + format.toUpperCase() +"]"));
+                final JSONArray formatsArray = new JSONArray();
+                formatsArray.put(format.toUpperCase());
+                jsonObject.put("formats", formatsArray);
             }
             jsonArray.put(jsonObject);
         }
