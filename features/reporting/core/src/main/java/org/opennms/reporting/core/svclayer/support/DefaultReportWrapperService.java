@@ -224,7 +224,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         ) {
             LOG.debug("Posting generated report with name {} to endpoint {} (input was {})", fileName, substitutedUrl, url);
             final HttpEntity entity = MultipartEntityBuilder.create()
-                    .addBinaryBody(deliveryOptions.getInstanceId(), inputStream, ContentType.DEFAULT_BINARY, fileName)
+                    .addBinaryBody("file", inputStream, ContentType.DEFAULT_BINARY, fileName)
                     .build();
             final HttpPost httpPost = new HttpPost(substitutedUrl);
             httpPost.setEntity(entity);
