@@ -14,6 +14,7 @@
     <reference id="reportWrapperService"    interface="org.opennms.reporting.core.svclayer.ReportWrapperService" availability="mandatory" />
     <reference id="reportStoreService"      interface="org.opennms.reporting.core.svclayer.ReportStoreService" availability="mandatory" />
     <reference id="reportSchedulerService"  interface="org.opennms.web.svclayer.SchedulerService" availability="mandatory" />
+    <reference id="reportCatalogDao"        interface="org.opennms.netmgt.dao.api.ReportCatalogDao" availability="mandatory" />
 
     <bean id="reportRestService" class="org.opennms.features.reporting.rest.internal.ReportRestServiceImpl">
         <argument ref="databaseReportService" />
@@ -22,6 +23,7 @@
         <argument ref="categoryConfigDao" />
         <argument ref="reportStoreService" />
         <argument ref="reportSchedulerService" />
+        <argument ref="reportCatalogDao" />
     </bean>
     <service interface="org.opennms.features.reporting.rest.ReportRestService" ref="reportRestService" >
         <service-properties>
