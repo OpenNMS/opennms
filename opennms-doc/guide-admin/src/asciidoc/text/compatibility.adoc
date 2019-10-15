@@ -1,0 +1,18 @@
+[[compatibility]]
+== Compatibility
+
+{opennms-product-name} {opennms-version} requires the following component versions:
+
+[options="header, autowidth"]
+|===
+| Component               | Version Compatibility
+| OpenNMS Integration API | 0.2.1
+| Java Development Kit    | OpenJDK 8, OpenJDK 11
+| PostgreSQL              | 10.x and 11.x
+| Cassandra               | 3.11+
+| Newts                   | 1.5.2
+| Helm                    | 3+
+| Kafka                   | 2.3.0
+| Elasticsearch           | 6.2.4 until 7.3.0
+| RRDTool                 | 1.7.x
+|===

@@ -15,6 +15,9 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
+[[ga-admin-compatibility]]
+include::text/compatibility.adoc[]
+
 [[ga-admin-datachoices]]
 == Data Choices
 include::text/datachoices.adoc[]
