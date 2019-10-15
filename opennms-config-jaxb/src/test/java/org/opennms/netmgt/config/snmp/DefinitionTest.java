@@ -56,7 +56,6 @@ public class DefinitionTest extends XmlTestNoCastor<Definition> {
 		def.addSpecific("192.168.1.1");
 		def.addIpMatch("10.0.0.*");
 		def.setLocation("MINION");
-		def.setProfileLabel("label1");
 
 		return Arrays.asList(new Object[][] { {
 				def,
@@ -64,7 +63,6 @@ public class DefinitionTest extends XmlTestNoCastor<Definition> {
 				+ "    read-community=\"public\" "
 				+ "    write-community=\"private\" "
 				+ "    location=\"MINION\""
-		        + "    profile-label=\"label1\""
 				+ "    version=\"v3\">" + "    <range "
 				+ "      begin=\"192.168.0.1\" "
 				+ "      end=\"192.168.0.255\"/>"

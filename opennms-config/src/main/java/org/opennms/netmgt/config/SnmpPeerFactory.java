@@ -329,7 +329,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         agentConfig.setEngineId(def.getEngineId());
         agentConfig.setContextEngineId(def.getContextEngineId());
         agentConfig.setEnterpriseId(def.getEnterpriseId());
-        agentConfig.setProfileLabel(def.getProfileLabel());
     }
 
     private void setCommonAttributes(final SnmpAgentConfig agentConfig, final Definition def, final int version) {
@@ -475,7 +474,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         //agent config always have one ip-address.
         String ipAddress = snmpAgentConfig.getAddress().getHostAddress();
         definition.setLocation(location);
-        definition.setProfileLabel(snmpAgentConfig.getProfileLabel());
         setDefinitionFromAgentConfig(definition, snmpAgentConfig);
         saveDefinition(definition);
         LOG.info("Definition saved for {} by module {}", ipAddress, module);

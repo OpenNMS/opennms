@@ -134,8 +134,7 @@ final class MergeableDefinition {
         		&& areEquals(getConfigDef().getSecurityLevel(), other.getConfigDef().getSecurityLevel())
         		&& areEquals(getConfigDef().getSecurityName(), other.getConfigDef().getSecurityName()) 
         		&& areEquals(getConfigDef().getWriteCommunity(), other.getConfigDef().getWriteCommunity())
-                && areEquals(getConfigDef().getTTL(), other.getConfigDef().getTTL())
-                && areEquals(getConfigDef().getProfileLabel(), other.getConfigDef().getProfileLabel());
+                && areEquals(getConfigDef().getTTL(), other.getConfigDef().getTTL());
     }
     
     boolean isEmpty(String s) {
