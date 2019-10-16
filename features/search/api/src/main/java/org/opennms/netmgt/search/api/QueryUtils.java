@@ -62,4 +62,9 @@ public class QueryUtils {
         final List<T> subList = input.subList(0, Math.min(maxResults, input.size()));
         return subList;
     }
+
+    public static String getFirstMatch(List<String> aliases, String input) {
+        return aliases.stream().filter(alias -> matches(alias, input)).findFirst()
+                .orElseThrow(() -> new RuntimeException("Could not find any match"));
+    }
 }

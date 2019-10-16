@@ -72,8 +72,14 @@ public class StaticActionSearchProvider implements SearchProvider {
                 .sorted(Comparator.comparing(Action::getLabel))
                 .map(action -> {
                     final SearchResultItem searchResultItem = new SearchResultItem();
+                    // If the label matches, use the label
+                    if (QueryUtils.matches(action.getLabel(), input)) {
+                        searchResultItem.setLabel(action.getLabel());
+                    } else {
+                        // Otherwise at least one alias matched, use it as label
+                        searchResultItem.setLabel(QueryUtils.getFirstMatch(action.getAliases(), input));
+                    }
                     searchResultItem.setContext(Contexts.Action);
-                    searchResultItem.setLabel(action.getLabel());
                     searchResultItem.setUrl(action.getUrl());
                     searchResultItem.setIdentifier(action.getUrl());
                     if (!Strings.isNullOrEmpty(action.getIcon())) {
@@ -84,7 +90,6 @@ public class StaticActionSearchProvider implements SearchProvider {
                     } else if (action.getPrivilegedRoles().contains("ROLE_ADMIN")) {
                         searchResultItem.setWeight(10); // Admin actions should be on top of the list
                     }
-                    // TODO MVR we probably want aliases or label to be shown if either of those matches, but label is selected as label
                     return searchResultItem;
                 })
                 .collect(Collectors.toList());
