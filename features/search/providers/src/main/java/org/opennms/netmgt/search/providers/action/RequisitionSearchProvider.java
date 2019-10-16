@@ -40,7 +40,7 @@ import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.providers.QueryUtils;
+import org.opennms.netmgt.search.api.QueryUtils;
 import org.opennms.web.svclayer.api.RequisitionAccessService;
 
 import com.google.common.collect.Lists;

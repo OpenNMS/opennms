@@ -39,7 +39,7 @@ import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.providers.QueryUtils;
+import org.opennms.netmgt.search.api.QueryUtils;
 import org.opennms.web.api.MenuProvider;
 import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.MenuContext;

@@ -138,6 +138,16 @@ public class SearchResultItem {
         }
     }
 
+    public void addMatches(List<Matcher> matcherList, String input) {
+        Objects.requireNonNull(matcherList);
+        Objects.requireNonNull(input);
+        matcherList.stream()
+                .filter(m -> !"".equals(m.getValue()) && m.getValue() != null)
+                .filter(m -> m.matches(input))
+                .map(m -> new Match(m.getLabel(), m.getLabel(), m.getValue()))
+                .forEach(m -> addMatch(m));
+    }
+
     public void setWeight(int weight) {
         this.weight = weight;
     }

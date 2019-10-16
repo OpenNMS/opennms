@@ -26,40 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.search.providers;
+package org.opennms.netmgt.search.api;
 
-import java.util.List;
 import java.util.Objects;
 
-public class QueryUtils {
-    public static Object ilike(String input) {
-        return String.format("%%%s%%", input);
+public class Matcher {
+    private final String label;
+    private final String valueToMatch;
+
+    public Matcher(String label, String valueToMatch) {
+        this.label = Objects.requireNonNull(label);
+        this.valueToMatch = Objects.requireNonNull(valueToMatch);
     }
 
-    public static boolean equals(Integer checkMe, String input) {
-        if (checkMe == null) {
-            return false;
-        }
-        return checkMe.toString().equals(input);
+    public boolean matches(String input) {
+        return QueryUtils.matches(input, valueToMatch);
     }
 
-    public static boolean matches(String checkMe, String input) {
-        if (checkMe == null) {
-            return false;
-        }
-        return checkMe.toLowerCase().contains(input.toLowerCase());
+    public String getLabel() {
+        return label;
     }
 
-    public static boolean matches(List<String> checkMe, String input) {
-        if (checkMe != null) {
-            return checkMe.stream().anyMatch(it -> matches(it, input));
-        }
-        return false;
-    }
-
-    public static <T> List<T> shrink(List<T> input, int maxResults) {
-        Objects.requireNonNull(input);
-        final List<T> subList = input.subList(0, Math.min(maxResults, input.size()));
-        return subList;
+    public String getValue() {
+        return valueToMatch;
     }
 }

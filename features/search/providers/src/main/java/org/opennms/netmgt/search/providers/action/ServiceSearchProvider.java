@@ -41,7 +41,7 @@ import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.providers.QueryUtils;
+import org.opennms.netmgt.search.api.QueryUtils;
 
 public class ServiceSearchProvider implements SearchProvider {
 

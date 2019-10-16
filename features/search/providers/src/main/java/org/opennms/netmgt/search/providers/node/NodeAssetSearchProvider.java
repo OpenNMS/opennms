@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.search.providers.node;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,15 +38,16 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.search.api.Contexts;
-import org.opennms.netmgt.search.api.Match;
+import org.opennms.netmgt.search.api.Matcher;
 import org.opennms.netmgt.search.api.SearchContext;
 import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.providers.QueryUtils;
+import org.opennms.netmgt.search.api.QueryUtils;
 import org.opennms.netmgt.search.providers.SearchResultItemBuilder;
-import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class NodeAssetSearchProvider implements SearchProvider {
 
@@ -93,7 +92,6 @@ public class NodeAssetSearchProvider implements SearchProvider {
                         Restrictions.ilike("assetRecord.vendorFax", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.vendorAssetNumber", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.username", QueryUtils.ilike(input)),
-                        Restrictions.ilike("assetRecord.password", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.connection", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.lease", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.leaseExpires", QueryUtils.ilike(input)),
@@ -133,22 +131,61 @@ public class NodeAssetSearchProvider implements SearchProvider {
             .map(node -> {
                 final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node).build();
                 final OnmsAssetRecord record = node.getAssetRecord();
-                // TODO MVR maybe rework this
-                for (Method method : OnmsAssetRecord.class.getMethods()) {
-                    if (method.getName().startsWith("get")
-                            && !method.getName().toLowerCase().contains("topology")
-                            && method.getReturnType() == String.class
-                            && method.getParameterCount() == 0) {
-                        try {
-                            Object returnedValue = method.invoke(record);
-                            if (returnedValue != null && QueryUtils.matches(returnedValue.toString(), input)) {
-                                result.addMatch(new Match(method.getName(), method.getName().replace("get", ""), returnedValue.toString()));
-                            }
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            LoggerFactory.getLogger(getClass()).error("Could not read property via method {}: {}", method.getName(), e.getMessage(), e);
-                        }
-                    }
-                }
+                final List<Matcher> matcherList = Lists.newArrayList(
+                        new Matcher("Category", record.getCategory()),
+                        new Matcher("ManuFacturer", record.getManufacturer()),
+                        new Matcher("Vendor", record.getVendor()),
+                        new Matcher("Model Number", record.getModelNumber()),
+                        new Matcher("Serial Number", record.getSerialNumber()),
+                        new Matcher("Description", record.getDescription()),
+                        new Matcher("Circuit Id", record.getCircuitId()),
+                        new Matcher("Asset Number", record.getAssetNumber()),
+                        new Matcher("OS", record.getOperatingSystem()),
+                        new Matcher("Rack", record.getRack()),
+                        new Matcher("Slot", record.getSlot()),
+                        new Matcher("Port", record.getPort()),
+                        new Matcher("Region", record.getRegion()),
+                        new Matcher("Division", record.getDivision()),
+                        new Matcher("Department", record.getDepartment()),
+                        new Matcher("Building", record.getBuilding()),
+                        new Matcher("Floor", record.getFloor()),
+                        new Matcher("Room", record.getRoom()),
+                        new Matcher("Vendor Phone", record.getVendorPhone()),
+                        new Matcher("Vendor Fax", record.getVendorFax()),
+                        new Matcher("Vendor Asset Number", record.getVendorAssetNumber()),
+                        new Matcher("Username", record.getUsername()),
+                        new Matcher("Connection", record.getConnection()),
+                        new Matcher("Lease", record.getLease()),
+                        new Matcher("Lease Expires", record.getLeaseExpires()),
+                        new Matcher("Support Phone", record.getSupportPhone()),
+                        new Matcher("Maint. Contract Expiration", record.getMaintContractExpiration()),
+                        new Matcher("Display Category", record.getDisplayCategory()),
+                        new Matcher("Poller Category", record.getPollerCategory()),
+                        new Matcher("Threshold Category", record.getThresholdCategory()),
+                        new Matcher("Comment", record.getComment()),
+                        new Matcher("CPU", record.getCpu()),
+                        new Matcher("Ram", record.getRam()),
+                        new Matcher("HDD1", record.getHdd1()),
+                        new Matcher("HDD2", record.getHdd2()),
+                        new Matcher("HDD3", record.getHdd3()),
+                        new Matcher("HDD4", record.getHdd4()),
+                        new Matcher("HDD5", record.getHdd5()),
+                        new Matcher("HDD6", record.getHdd6()),
+                        new Matcher("# Power Supplies", record.getNumpowersupplies()),
+                        new Matcher("Input Power", record.getInputpower()),
+                        new Matcher("Additional Hardware", record.getAdditionalhardware()),
+                        new Matcher("admin", record.getAdmin()),
+                        new Matcher("SNMP Community", record.getSnmpcommunity()),
+                        new Matcher("RU Height", record.getRackunitheight()),
+                        new Matcher("Managed Object Type", record.getManagedObjectType()),
+                        new Matcher("Managed Object Instance", record.getManagedObjectInstance()),
+                        new Matcher("VMware Managed Object Id", record.getVmwareManagedObjectId()),
+                        new Matcher("VMware Managed Entity Type", record.getVmwareManagedEntityType()),
+                        new Matcher("VMware Managed Server", record.getVmwareManagementServer()),
+                        new Matcher("VMware State", record.getVmwareState()),
+                        new Matcher("Storage Controller", record.getStoragectrl())
+                );
+                result.addMatches(matcherList, input);
                 return result;
             })
             .collect(Collectors.toList());

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.search.providers.node;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,15 +39,16 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.search.api.Contexts;
-import org.opennms.netmgt.search.api.Match;
+import org.opennms.netmgt.search.api.Matcher;
+import org.opennms.netmgt.search.api.QueryUtils;
 import org.opennms.netmgt.search.api.SearchContext;
 import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.providers.QueryUtils;
 import org.opennms.netmgt.search.providers.SearchResultItemBuilder;
-import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class NodeGeolocationSearchProvider implements SearchProvider {
 
@@ -90,21 +89,15 @@ public class NodeGeolocationSearchProvider implements SearchProvider {
             .map(node -> {
                 final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node).build();
                 final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
-                // TODO MVR maybe rework this
-                for (Method method : OnmsGeolocation.class.getMethods()) {
-                    if (method.getName().startsWith("get")
-                            && method.getReturnType() == String.class
-                            && method.getParameterCount() == 0) {
-                        try {
-                            Object returnedValue = method.invoke(geolocation);
-                            if (returnedValue != null && QueryUtils.matches(returnedValue.toString(), input)) {
-                                result.addMatch(new Match(method.getName(), method.getName().replace("get", ""), returnedValue.toString()));
-                            }
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            LoggerFactory.getLogger(getClass()).error("Could not read property via method {}: {}", method.getName(), e.getMessage(), e);
-                        }
-                    }
-                }
+                final List<Matcher> matcherList = Lists.newArrayList(
+                        new Matcher("Country", geolocation.getCountry()),
+                        new Matcher("City", geolocation.getCity()),
+                        new Matcher("State", geolocation.getState()),
+                        new Matcher("Zip", geolocation.getZip()),
+                        new Matcher("Address 1", geolocation.getAddress1()),
+                        new Matcher("Address 2", geolocation.getAddress2())
+                );
+                result.addMatches(matcherList, input);
                 return result;
             })
             .collect(Collectors.toList());
