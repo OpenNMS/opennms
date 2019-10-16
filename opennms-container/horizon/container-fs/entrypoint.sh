@@ -141,6 +141,7 @@ start() {
   -DisThreadContextMapInheritable=true
   -Dgroovy.use.classvalue=true
   -Djava.io.tmpdir=/opt/opennms/data/tmp
+  -Djava.locale.providers=CLDR,COMPAT
   -XX:+StartAttachListener"
   exec ${JAVA_HOME}/bin/java ${OPENNMS_JAVA_OPTS} ${JAVA_OPTS} -jar /opt/opennms/lib/opennms_bootstrap.jar start
 }

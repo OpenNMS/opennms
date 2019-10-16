@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
+import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;

@@ -16,6 +16,12 @@
 
     <bean name="thresholdingSetPersister" class="org.opennms.netmgt.threshd.DefaultThresholdingSetPersister"/>
 
+    <onmsgi:reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore" />
+    <bean name="thresholdStateMonitor" class="org.opennms.netmgt.threshd.BlobStoreAwareMonitor">
+        <constructor-arg ref="blobStore"/>
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.threshd.api.ThresholdStateMonitor" ref="thresholdStateMonitor"/>
+
     <bean id="thresholdingService" class="org.opennms.netmgt.threshd.ThresholdingServiceImpl">
         <property name="thresholdingSetPersister" ref="thresholdingSetPersister"/>
     </bean>

@@ -40,10 +40,10 @@ import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -28,9 +28,12 @@
 
 package org.opennms.features.distributed.kvstore.blob.shell;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
@@ -48,6 +51,9 @@ import org.opennms.features.distributed.kvstore.api.BlobStore;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
+
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
 
 @Command(scope = "opennms-kv-blob", name = "benchmark", description = "Benchmark the blob store's throughput")
 @Service
@@ -74,6 +80,16 @@ public class BlobStoreBenchmark implements Action {
     private final MetricRegistry metrics = new MetricRegistry();
 
     private byte[] writePayload;
+    
+    // benchmarking indicated using a single thread here performed better than a pool
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+
+    // Since this benchmark can overwhelm a blobstore's connection pool, we will use a retry to limit the rate we send
+    // async requests
+    private final Retry asyncRetry = Retry.of("blobStoreBenchmark", RetryConfig.custom()
+            .maxAttempts(Integer.MAX_VALUE)
+            .waitDuration(Duration.ofMillis(10))
+            .build());
 
     @Override
     public Object execute() throws InterruptedException {
@@ -98,7 +114,11 @@ public class BlobStoreBenchmark implements Action {
 
     private CompletableFuture<?> timeAsyncOperation(Histogram results, Supplier<CompletableFuture<?>> futureSupplier) {
         long start = System.currentTimeMillis();
-        return futureSupplier.get().thenAccept(v -> results.update(System.currentTimeMillis() - start));
+
+        return Retry.decorateCompletionStage(asyncRetry, executorService,
+                () -> futureSupplier.get()
+                        .thenAccept(v ->
+                                results.update(System.currentTimeMillis() - start))).get().toCompletableFuture();
     }
 
     private CompletableFuture<?> writeAsync(String key, Histogram results) {

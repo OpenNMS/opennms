@@ -31,22 +31,46 @@ package org.opennms.netmgt.threshd.shell;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 
 @Command(scope = "opennms-threshold-states", name = "clear-all", description = "Clears all threshold states")
 @Service
 public class ClearAll extends AbstractThresholdStateCommand {
+    @Reference
+    ThresholdStateMonitor thresholdStateMonitor;
+
+    @Option(name = "-p", aliases = "--persisted-only", description = "When set, clears only the persisted state")
+    private boolean clearPersistedOnly;
+
     @Override
     public Object execute() throws InterruptedException {
         System.out.print("Clearing all thresholding states...");
-        CompletableFuture<Void> clearFuture = blobStore.truncateContextAsync(THRESHOLDING_KV_CONTEXT);
+
+        CompletableFuture<Void> clearFuture;
+
+        if (clearPersistedOnly) {
+            clearFuture = blobStore.truncateContextAsync(THRESHOLDING_KV_CONTEXT);
+        } else {
+            clearFuture = CompletableFuture.supplyAsync(() -> {
+                thresholdStateMonitor.reinitializeStates();
+                return null;
+            });
+        }
 
         while (!clearFuture.isDone()) {
             Thread.sleep(1000);
             System.out.print('.');
         }
 
-        System.out.println("done");
+        try {
+            clearFuture.get();
+            System.out.println("done");
+        } catch (Exception e) {
+            System.out.println("Failed to clear all states" + e);
+        }
 
         return null;
     }
