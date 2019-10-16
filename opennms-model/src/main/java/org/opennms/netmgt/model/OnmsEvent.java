@@ -414,13 +414,15 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	@XmlElementWrapper(name="parameters")
 	@XmlElement(name="parameter")
-	@OneToMany(mappedBy="event", cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
 	public List<OnmsEventParameter> getEventParameters() {
-		if (m_eventParameters != null) {
-			// make sure we are sorted by out positions (when coming from database)
-			m_eventParameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
-		}
-		return m_eventParameters;
+	    return this.m_eventParameters;
+	}
+
+	public List<OnmsEventParameter> getEventParametersInOrder() {
+		List<OnmsEventParameter> sortedParams = new ArrayList<>(this.m_eventParameters);
+		sortedParams.sort(Comparator.comparing(OnmsEventParameter::getPosition));
+		return sortedParams;
 	}
 
 	public void setEventParameters(List<OnmsEventParameter> eventParameters) {
@@ -428,7 +430,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		if(!isCalledFromHibernate(eventParameters)) {
 			setPositionsOnParameters(m_eventParameters);
 		}
-		// we can't sort when called from hibernate, this will lead to an exception => we move the sorting to the getter
 	}
 
 	private boolean isCalledFromHibernate(List<OnmsEventParameter> eventParameters) {
