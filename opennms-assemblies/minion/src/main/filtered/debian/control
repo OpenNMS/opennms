@@ -3,7 +3,7 @@ Maintainer: Benjamin Reed <ranger@opennms.org>
 Section: contrib/net
 Priority: optional
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 9), oracle-java8-installer | openjdk-8-jdk-headless | openjdk-8-jdk | java8-jdk, rsync
+Build-Depends: debhelper (>= 9), dh-systemd, oracle-java8-installer | openjdk-8-jdk-headless | openjdk-8-jdk | java8-jdk, rsync
 
 Package: opennms-minion
 Architecture: all
