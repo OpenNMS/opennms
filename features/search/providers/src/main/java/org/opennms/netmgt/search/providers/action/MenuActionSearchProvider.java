@@ -30,33 +30,58 @@ package org.opennms.netmgt.search.providers.action;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.search.api.Contexts;
+import org.opennms.netmgt.search.api.QueryUtils;
 import org.opennms.netmgt.search.api.SearchContext;
 import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.api.QueryUtils;
 import org.opennms.web.api.MenuProvider;
 import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.MenuContext;
 import org.opennms.web.navigate.MenuEntry;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * This {@link SearchProvider} allows searching all clickable menu entries and presents them as a search result.
  *
  * @author mvrueden
  */
-// TODO MVR here we can optimize a bit, as we always load the menu entry
 public class MenuActionSearchProvider implements SearchProvider {
 
-    private MenuProvider menuProvider;
+    // Cache for the menu. Uses the user's name as key
+    private final LoadingCache<CacheKey, List<MenuEntry>> cache;
+
+    // MenuProvider to receive the menu
+    private final MenuProvider menuProvider;
 
     public MenuActionSearchProvider(MenuProvider menuProvider) {
         this.menuProvider = Objects.requireNonNull(menuProvider);
+        this.cache = CacheBuilder.newBuilder()
+                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .maximumSize(100)
+                .build(new CacheLoader<CacheKey, List<MenuEntry>>() {
+                    @Override
+                    public List<MenuEntry> load(CacheKey cacheKey) throws Exception {
+                        final Predicate<MenuEntry> menuFilter = e -> e.getEntries() == null || e.getEntries().isEmpty() && e.getDisplayStatus() == DisplayStatus.DISPLAY_LINK;
+                        final List<MenuEntry> menu = menuProvider.getMenu((MenuContext) cacheKey);
+                        final List<MenuEntry> actualMenuItems = menu.stream().filter(menuFilter).collect(Collectors.toList());
+                        menu.removeAll(actualMenuItems);
+
+                        final List<MenuEntry> otherTopLevelEntries = menu.stream().flatMap(e -> e.getEntries().stream()).filter(menuFilter).collect(Collectors.toList());
+                        actualMenuItems.addAll(otherTopLevelEntries);
+                        return actualMenuItems;
+                    }
+                });
     }
 
     @Override
@@ -83,18 +108,46 @@ public class MenuActionSearchProvider implements SearchProvider {
     }
 
     private List<MenuEntry> getSearchableMenuItems(final SearchQuery query) {
-        final MenuContext context = new MenuContext() {
-            @Override public String getLocation() { return null; }
-            @Override public boolean isUserInRole(String role) {  return query.isUserInRole(role); }
-        };
+        return cache.getUnchecked(new CacheKey(query.getPrincipal().getName(), role -> query.isUserInRole(role)));
+    }
 
-        final Predicate<MenuEntry> menuFilter = e -> e.getEntries() == null || e.getEntries().isEmpty() && e.getDisplayStatus() == DisplayStatus.DISPLAY_LINK;
-        final List<MenuEntry> menu = menuProvider.getMenu(context);
-        final List<MenuEntry> actualMenuItems = menu.stream().filter(menuFilter).collect(Collectors.toList());
-        menu.removeAll(actualMenuItems);
+    /**
+     * This {@link CacheKey} object is required as besides the principal name,
+     * we also require a delegate to the "isUserInRole"-Function.
+     *
+     * @author mvrueden
+     */
+    private static class CacheKey implements MenuContext {
+        private final String principal;
+        private final Function<String, Boolean> isUserInRoleFunction;
 
-        final List<MenuEntry> otherTopLevelEntries = menu.stream().flatMap(e -> e.getEntries().stream()).filter(menuFilter).collect(Collectors.toList());
-        actualMenuItems.addAll(otherTopLevelEntries);
-        return actualMenuItems;
+        private CacheKey(final String principal, Function<String, Boolean> isUserInRoleFunction) {
+            this.principal = Objects.requireNonNull(principal);
+            this.isUserInRoleFunction = Objects.requireNonNull(isUserInRoleFunction);
+        }
+
+        @Override
+        public String getLocation() {
+            return null;
+        }
+
+        @Override
+        public boolean isUserInRole(String role) {
+            Objects.requireNonNull(role);
+            return isUserInRoleFunction.apply(role);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final CacheKey cacheKey = (CacheKey) o;
+            return Objects.equals(principal, cacheKey.principal);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(principal);
+        }
     }
 }
