@@ -84,7 +84,6 @@ http://www.opennms.org/wiki/Minion
 %package container
 Summary:   Obsolete: Provided for Upgrade Compatibility
 Group:     Applications/System
-Obsoletes: %{name}-container < %{version}-%{release}
 
 %description container
 This package is obsolete, it only exists to ease upgrades.
@@ -92,7 +91,6 @@ This package is obsolete, it only exists to ease upgrades.
 %package features-core
 Summary:   Obsolete: Provided for Upgrade Compatibility
 Group:     Applications/System
-Obsoletes: %{name}-features-core < %{version}-%{release}
 
 %description features-core
 This package is obsolete, it only exists to ease upgrades.
@@ -100,7 +98,6 @@ This package is obsolete, it only exists to ease upgrades.
 %package features-default
 Summary:   Obsolete: Provided for Upgrade Compatibility
 Group:     Applications/System
-Obsoletes: %{name}-features-default < %{version}-%{release}
 
 %description features-default
 This package is obsolete, it only exists to ease upgrades.
