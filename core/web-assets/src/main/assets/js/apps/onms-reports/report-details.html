@@ -315,10 +315,20 @@
             <div class="form-group" ng-if="report.deliveryOptions.webhook">
                 <label for="mailRecipient">Webhook URL</label>
                 <button class="btn btn-link text-secondary px-0"
-                        popover-trigger="'mouseenter'"
-                        uib-popover="TODO MVR.... blablab POST blabla"><i class="fa fa-info-circle"/>
+                        popover-trigger="'outsideClick'"
+                        uib-popover-html="'
+                        <div>
+                            Posts the generated report to this http endpoint.
+                            If url parameters are required, substitution of the URL supports the following parameters: <br/> <br/>
+                            - <strong>format</strong> Format of the report <br/>
+                            - <strong>instanceId</strong> Unique name of the report <br/>
+                            - <strong>parameter_&lt;parameterName&gt;</strong> Any report parameter <br/> <br/>
+
+                            <strong>Example</strong> <br/>
+                            <span>http://localhost:8080/files?instanceId=:instanceId&format=:format&option=:parameter_option</pre>
+                        </div>'">
+                    <i class="fa fa-info-circle"></i>
                 </button>
-                <!-- TODO MVR url validation -->
                 <input id="webhookUrl"
                        name="webhookUrl"
                        ng-model="report.deliveryOptions.webhookUrl"
@@ -328,7 +338,7 @@
                        ng-class="{ 'is-invalid' : reportForm.webhookUrl.$invalid || report.errors.webhookUrl }"
                        data-toggle="tooltip"
                        data-placement="right"
-                       title="TODO MVR"
+                       title="The report is sent to this URL with an http post request after generated"
                        required
                 />
                 <div ng-show="reportForm.webhookUrl.$invalid" class="invalid-feedback">Please provide a valid webhook url.</div>
