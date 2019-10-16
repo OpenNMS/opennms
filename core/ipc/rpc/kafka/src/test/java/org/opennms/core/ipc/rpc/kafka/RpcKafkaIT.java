@@ -291,7 +291,7 @@ public class RpcKafkaIT {
     public void testLargeMessages() throws ExecutionException, InterruptedException {
         final EchoRequest request = new EchoRequest();
         request.setLocation(REMOTE_LOCATION_NAME);
-        String message = Strings.repeat("*", Integer.parseInt(MAX_BUFFER_SIZE));
+        String message = Strings.repeat("chandra-gorantla-opennms", Integer.parseInt(MAX_BUFFER_SIZE));
         request.setBody(message);
         EchoResponse expectedResponse = new EchoResponse();
         expectedResponse.setBody(message);
@@ -304,7 +304,7 @@ public class RpcKafkaIT {
         final EchoRequest request = new EchoRequest();
         request.setLocation(REMOTE_LOCATION_NAME);
         request.setSystemId(minionIdentity.getId());
-        String message = Strings.repeat("*", Integer.parseInt(MAX_BUFFER_SIZE));
+        String message = Strings.repeat("chandra-gorantla-opennms", Integer.parseInt(MAX_BUFFER_SIZE));
         request.setBody(message);
         EchoResponse expectedResponse = new EchoResponse();
         expectedResponse.setBody(message);
