@@ -28,26 +28,31 @@
 
 package org.opennms.netmgt.search.api;
 
-import java.util.Objects;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 
-public class Matcher {
-    private final String label;
-    private final String valueToMatch;
+import java.util.List;
 
-    public Matcher(String label, String valueToMatch) {
-        this.label = Objects.requireNonNull(label);
-        this.valueToMatch = valueToMatch;
+import org.junit.Test;
+
+import com.google.common.collect.Lists;
+
+public class SearchResultItemTest {
+
+    @Test
+    public void verifyGeolocationTest() {
+        final List<Matcher> matcherList = Lists.newArrayList(
+                new Matcher("Country", null),
+                new Matcher("City", "Fulda"),
+                new Matcher("State", null),
+                new Matcher("Zip", "36039"),
+                new Matcher("Address 1", "Leipziger Strasse 123"),
+                new Matcher("Address 2", null)
+        );
+
+        final SearchResultItem item = new SearchResultItem();
+        item.addMatches(matcherList, "Fuld");
+        assertThat(item.getMatches(), hasSize(1));
     }
 
-    public boolean matches(String input) {
-        return QueryUtils.matches(valueToMatch, input);
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public String getValue() {
-        return valueToMatch;
-    }
 }
