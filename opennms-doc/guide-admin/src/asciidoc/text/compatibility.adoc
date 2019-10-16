@@ -8,11 +8,11 @@
 | Component               | Version Compatibility
 | OpenNMS Integration API | 0.2.1
 | Java Development Kit    | OpenJDK 8, OpenJDK 11
-| PostgreSQL              | 10.x and 11.x
+| PostgreSQL              | 10.x - 11.x
 | Cassandra               | 3.11+
 | Newts                   | 1.5.2
 | Helm                    | 3+
 | Kafka                   | 2.3.0
-| Elasticsearch           | 6.2.4 until 7.3.0
+| Elasticsearch           | 7.2.x - 7.3.0
 | RRDTool                 | 1.7.x
 |===
