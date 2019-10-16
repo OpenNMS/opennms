@@ -39,7 +39,6 @@ import java.util.concurrent.ExecutionException;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
-import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.NodePolicy;
@@ -50,8 +49,6 @@ import org.opennms.netmgt.snmp.SnmpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
-
-import com.google.common.base.Strings;
 
 final class NodeInfoScan implements RunInBatch {
     private static final Logger LOG = LoggerFactory.getLogger(NodeInfoScan.class);
@@ -158,9 +155,11 @@ final class NodeInfoScan implements RunInBatch {
                 systemGroup.updateSnmpDataForNode(getNode());
             } catch (ExecutionException e) {
                 boolean succeeded = false;
-                if ((e.getCause() instanceof SnmpAgentTimeoutException ||
+                // If agent config is derived from definitions, we don't need to do process any profiles.
+                if (agentConfig.isDefault() &&
+                        (e.getCause() instanceof SnmpAgentTimeoutException ||
                          e.getCause() instanceof SnmpException)) {
-                    succeeded = peformScanWithMatchingProfile(agentConfig, primaryAddress);
+                    succeeded = peformScanWithMatchingProfile(primaryAddress);
                 }
                 if(!succeeded) {
                     abort("Aborting node scan : Agent failed while scanning the system table: " + e.getMessage());
@@ -202,35 +201,8 @@ final class NodeInfoScan implements RunInBatch {
         }
     }
 
-    private boolean isConfigValid(SnmpAgentConfig currentConfig, InetAddress address) {
-        String profileLabel = currentConfig.getProfileLabel();
-        // If this config is default, we should check if any of snmp profile matches.
-        if(currentConfig.isDefault()) {
-            return  false;
-        }
-        // Not a default config, but is this a definition without profile.
-        if (Strings.isNullOrEmpty(profileLabel)) {
-            return true;
-        } else {
-            // Is this definition with profile still valid
-            Optional<SnmpProfile> matchingProfile = getAgentConfigFactory().getProfiles().stream()
-                    .filter(profile -> profile.getLabel().equals(profileLabel))
-                    .findFirst();
-            if (matchingProfile.isPresent()) {
-                SnmpAgentConfig configFromProfile = getAgentConfigFactory().getAgentConfigFromProfile(matchingProfile.get(), address);
-                if (configFromProfile.equals(currentConfig)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
+    private boolean peformScanWithMatchingProfile(InetAddress primaryAddress) throws InterruptedException {
 
-    private boolean peformScanWithMatchingProfile(SnmpAgentConfig currentConfig, InetAddress primaryAddress) throws InterruptedException {
-
-        if (isConfigValid(currentConfig, primaryAddress)) {
-            return false;
-        }
         try {
             Optional<SnmpAgentConfig> validConfig = m_provisionService.getSnmpProfileMapper()
                                                         .getAgentConfigFromProfiles(primaryAddress, getLocationName())
@@ -255,6 +227,7 @@ final class NodeInfoScan implements RunInBatch {
         } catch (ExecutionException e) {
             LOG.error("Exception while trying to get SNMP profiles.", e);
         }
+
 
         return false;
     }
