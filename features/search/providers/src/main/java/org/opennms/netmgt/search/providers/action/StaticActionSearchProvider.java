@@ -33,27 +33,46 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXB;
 
 import org.opennms.netmgt.search.api.Contexts;
+import org.opennms.netmgt.search.api.QueryUtils;
 import org.opennms.netmgt.search.api.SearchContext;
 import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.api.QueryUtils;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * Searches entries in <code>${OPENNMS_HOME}/etc/search-actions.xml</code>.
  *
  * @author mvrueden
  */
-// TODO MVR do not reload all the time
 public class StaticActionSearchProvider implements SearchProvider {
+
+    private final LoadingCache<PrincipalCacheKey, Actions> cache;
+
+    public StaticActionSearchProvider() {
+        this.cache = CacheBuilder.newBuilder()
+                .maximumSize(100)
+                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .build(new CacheLoader<PrincipalCacheKey, Actions>() {
+                    @Override
+                    public Actions load(PrincipalCacheKey key) throws Exception {
+                        final Path etc = Paths.get(System.getProperty("opennms.home"), "etc", "search-actions.xml");
+                        final Actions actions = JAXB.unmarshal(etc.toFile(), Actions.class);
+                        return actions;
+                    }
+                });
+    }
 
     @Override
     public SearchContext getContext() {
@@ -63,8 +82,8 @@ public class StaticActionSearchProvider implements SearchProvider {
     @Override
     public SearchResult query(SearchQuery query) {
         Objects.requireNonNull(query.getPrincipal());
-        final Path etc = Paths.get(System.getProperty("opennms.home"), "etc", "search-actions.xml");
-        final Actions actions = JAXB.unmarshal(etc.toFile(), Actions.class);
+        final PrincipalCacheKey cacheKey = new PrincipalCacheKey(query);
+        final Actions actions = cache.getUnchecked(cacheKey);
         final String input = query.getInput();
         final List<SearchResultItem> allItemsForUser = actions.getActions().stream()
                 .filter(action -> action.getPrivilegedRoles().isEmpty() || action.getPrivilegedRoles().stream().anyMatch(query::isUserInRole))

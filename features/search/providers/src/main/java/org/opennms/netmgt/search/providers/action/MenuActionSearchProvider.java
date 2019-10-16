@@ -31,7 +31,6 @@ package org.opennms.netmgt.search.providers.action;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -59,7 +58,7 @@ import com.google.common.cache.LoadingCache;
 public class MenuActionSearchProvider implements SearchProvider {
 
     // Cache for the menu. Uses the user's name as key
-    private final LoadingCache<CacheKey, List<MenuEntry>> cache;
+    private final LoadingCache<PrincipalCacheKey, List<MenuEntry>> cache;
 
     // MenuProvider to receive the menu
     private final MenuProvider menuProvider;
@@ -69,9 +68,9 @@ public class MenuActionSearchProvider implements SearchProvider {
         this.cache = CacheBuilder.newBuilder()
                 .expireAfterWrite(5, TimeUnit.MINUTES)
                 .maximumSize(100)
-                .build(new CacheLoader<CacheKey, List<MenuEntry>>() {
+                .build(new CacheLoader<PrincipalCacheKey, List<MenuEntry>>() {
                     @Override
-                    public List<MenuEntry> load(CacheKey cacheKey) throws Exception {
+                    public List<MenuEntry> load(PrincipalCacheKey cacheKey) throws Exception {
                         final Predicate<MenuEntry> menuFilter = e -> e.getEntries() == null || e.getEntries().isEmpty() && e.getDisplayStatus() == DisplayStatus.DISPLAY_LINK;
                         final List<MenuEntry> menu = menuProvider.getMenu((MenuContext) cacheKey);
                         final List<MenuEntry> actualMenuItems = menu.stream().filter(menuFilter).collect(Collectors.toList());
@@ -108,46 +107,7 @@ public class MenuActionSearchProvider implements SearchProvider {
     }
 
     private List<MenuEntry> getSearchableMenuItems(final SearchQuery query) {
-        return cache.getUnchecked(new CacheKey(query.getPrincipal().getName(), role -> query.isUserInRole(role)));
+        return cache.getUnchecked(new PrincipalCacheKey(query));
     }
 
-    /**
-     * This {@link CacheKey} object is required as besides the principal name,
-     * we also require a delegate to the "isUserInRole"-Function.
-     *
-     * @author mvrueden
-     */
-    private static class CacheKey implements MenuContext {
-        private final String principal;
-        private final Function<String, Boolean> isUserInRoleFunction;
-
-        private CacheKey(final String principal, Function<String, Boolean> isUserInRoleFunction) {
-            this.principal = Objects.requireNonNull(principal);
-            this.isUserInRoleFunction = Objects.requireNonNull(isUserInRoleFunction);
-        }
-
-        @Override
-        public String getLocation() {
-            return null;
-        }
-
-        @Override
-        public boolean isUserInRole(String role) {
-            Objects.requireNonNull(role);
-            return isUserInRoleFunction.apply(role);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            final CacheKey cacheKey = (CacheKey) o;
-            return Objects.equals(principal, cacheKey.principal);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(principal);
-        }
-    }
 }
