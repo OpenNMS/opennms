@@ -6,6 +6,14 @@ require('angular-ui-router');
 
 const quickSearchTemplate  = require('./quicksearch.html');
 
+const globalErrorHandling = function(scope, errorResponse) {
+    if (errorResponse.data) {
+        scope.error = errorResponse.data;
+    } else {
+        scope.error = "An unexpected error occurred while handling the request";
+    }
+};
+
 (function() {
     'use strict';
 
@@ -100,7 +108,6 @@ const quickSearchTemplate  = require('./quicksearch.html');
                             // Ideally we would use scrollToView(), but that will also scroll the body, which
                             // results in the header scrolling down slightly, which looks weird when using the search
                             // So instead scrolling is implemented manually
-                            // TODO MVR make this more angular friendly
                             var parentComponent = document.getElementById('onms-search-result');
                             var parentHeight = parentComponent.clientHeight;
                             var resultHeight = element.clientHeight;
@@ -119,7 +126,9 @@ const quickSearchTemplate  = require('./quicksearch.html');
                         }
                         if (e.keyCode === KeyCodes.ENTER) {
                             if ($scope.results[$scope.selectedIndex].type === Types.More) {
-                                // Break out the current angular $apply cycle
+                                // Ensure next action is run in angular context
+                                // Do not use angular.$apply here, as it may fail on angular sites,
+                                // such as the requisition ui
                                 $timeout(function() {
                                     angular.element(element).triggerHandler('click');
                                 }, 0);
@@ -159,7 +168,6 @@ const quickSearchTemplate  = require('./quicksearch.html');
             };
 
             $scope.resetQuery = function() {
-                console.log('Reset input search query');
                 $scope.query = '';
                 $scope.results = [];
                 $scope.performSearchExecuted = false;
@@ -217,9 +225,9 @@ const quickSearchTemplate  = require('./quicksearch.html');
                     }
 
                     // Kick of the search
+                    $scope.error = undefined;
                     $scope.performSearchHandle = SearchResource.query({'_s' : $scope.query},
                         function(data) {
-                            console.log('Search result', data);
                             $scope.cancelRequest();
                             $scope.performSearchExecuted = true;
 
@@ -239,19 +247,6 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                 eachResult.results.forEach(function(item) {
                                     item.type = Types.Item;
                                     results.push(item);
-
-                                    // TODO MVR we first create this, and now we undo this, should be different
-                                    var matches = item.matches;
-                                    item.matches = [];
-                                    matches.forEach(function(eachMatch) {
-                                        eachMatch.values.forEach(function(eachValue) {
-                                            item.matches.push({
-                                                id: eachMatch.id,
-                                                label: eachMatch.label,
-                                                value: eachValue
-                                            });
-                                        });
-                                    });
                                 });
 
                                 if (eachResult.more === true) {
@@ -260,6 +255,7 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                         count: eachResult.results.length,
                                         type: Types.More,
                                         loadMore: function() {
+                                            $scope.error = undefined;
                                             SearchResource.query({'_s': $scope.query, '_l': this.count + 10, '_c' : this.context}, function(response) {
                                                 var endIndex = $scope.results.indexOf(showMoreElement);
 
@@ -267,21 +263,8 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                                 var searchResult = response[0];
                                                 var results = searchResult.results.slice(endIndex - 1); // Remove first elements, as they are already being showed
                                                 results.forEach(function(item, i) {
-                                                    item.type = Types.Item;
-
-                                                    // TODO MVR we first create this, and now we undo this, should be different
-                                                    var matches = item.matches;
-                                                    item.matches = [];
-                                                    matches.forEach(function(eachMatch) {
-                                                        eachMatch.values.forEach(function(eachValue) {
-                                                            item.matches.push({
-                                                                id: eachMatch.id,
-                                                                label: eachMatch.label,
-                                                                value: eachValue
-                                                            });
-                                                        });
-                                                    });
                                                     // Add item
+                                                    item.type = Types.Item;
                                                     $scope.results.splice(endIndex + i, 0, item);
                                                     showMoreElement.count++;
                                                 });
@@ -293,9 +276,9 @@ const quickSearchTemplate  = require('./quicksearch.html');
                                                 if (searchResult.more === false) {
                                                     $scope.results.splice($scope.results.indexOf(showMoreElement), 1);
                                                 }
-                                            }, function() {
-                                                // TODO MVR what do we do here?
-                                                console.log("ERROR");
+                                            }, function(response) {
+                                                $scope.performSearchExecuted = true;
+                                                globalErrorHandling($scope, response);
                                             });
                                         },
                                         selected: false
@@ -311,11 +294,11 @@ const quickSearchTemplate  = require('./quicksearch.html');
                         },
                         function(response) {
                             if (response.status >= 0) {
-                                // TODO MVR error handling
-                                console.log('ERROR', error);
+                                $scope.performSearchExecuted = true;
+                                globalErrorHandling($scope, response);
                                 $scope.cancelRequest();
                             } else {
-                                console.log('CANCELLED');
+                                // Request cancelled
                             }
                         }
                     );

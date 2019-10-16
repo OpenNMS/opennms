@@ -86,8 +86,11 @@
         </div>
 
         <!-- No Result -->
-        <div ng-if="results.length === 0" class="text-grey">
+        <div ng-if="!error && results.length === 0" class="text-grey">
             <span>No Results found</span>
+        </div>
+        <div ng-if="error" class="alert alert-danger mx-2 my-2">
+            <span>{{error}}</span>
         </div>
     </div>
 </form>

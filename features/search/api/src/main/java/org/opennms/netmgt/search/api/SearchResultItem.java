@@ -35,6 +35,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Each {@link SearchResult} contains 0 to n {@link SearchResultItem}s which represent an item for the context,
  * e.g. a Node, or Action.
@@ -42,6 +45,9 @@ import java.util.Optional;
  * @author mvrueden
  */
 public class SearchResultItem {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SearchResultItem.class);
+
     private String identifier;
     private String icon;
     private String label;
@@ -119,10 +125,10 @@ public class SearchResultItem {
 
     public void addMatch(Match match) {
         final Optional<Match> existingMatch = matches.stream()
-                .filter(m -> match.getId().equals(m.getId()) && match.getLabel().equals(m.getLabel()))
+                .filter(m -> match.getId().equals(m.getId()))
                 .findAny();
         if (existingMatch.isPresent()) {
-            existingMatch.get().getValues().addAll(match.getValues());
+            LOG.warn("A match with id {} already exists: {}. Will ignore Match {}", match.getId(), existingMatch.get(), match);
         } else {
             matches.add(match);
         }

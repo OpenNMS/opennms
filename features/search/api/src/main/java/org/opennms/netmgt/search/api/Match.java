@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.search.api;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Represents a search match, allowing some additional feedback to the user.
@@ -48,18 +46,17 @@ public class Match {
     /** User friendly label */
     private String label;
 
-    /** A Match may contain multiple matches, represented by the value which actually matched. */
-    private Set<String> values = new HashSet<>();
+    /** The value which actually matched. */
+    private String value;
 
     public Match() {
 
     }
 
     public Match(String id, String label, String value) {
-        Objects.requireNonNull(value);
         this.id = Objects.requireNonNull(id);
         this.label = Objects.requireNonNull(label);
-        values.add(value);
+        this.value = Objects.requireNonNull(value);
     }
 
     public String getId() {
@@ -78,7 +75,16 @@ public class Match {
         this.label = label;
     }
 
-    public Set<String> getValues() {
-        return values;
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("label", label)
+                .add("value", value)
+                .toString();
     }
 }
