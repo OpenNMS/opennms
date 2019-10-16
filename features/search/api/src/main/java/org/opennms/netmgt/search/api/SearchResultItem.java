@@ -42,7 +42,6 @@ import java.util.Optional;
  * @author mvrueden
  */
 public class SearchResultItem {
-    private SearchContext context; // TODO MVR remove me?
     private String identifier;
     private String icon;
     private String label;
@@ -50,14 +49,6 @@ public class SearchResultItem {
     private final Map<String, String> properties = new HashMap<>();
     private final List<Match> matches = new ArrayList<>();
     private int weight;
-
-    public SearchContext getContext() {
-        return context;
-    }
-
-    public void setContext(SearchContext context) {
-        this.context = context;
-    }
 
     public String getIdentifier() {
         return identifier;
@@ -110,8 +101,7 @@ public class SearchResultItem {
         if (o == null) return false;
         if (o instanceof SearchResultItem) {
             final SearchResultItem that = (SearchResultItem) o;
-            return Objects.equals(context, that.context)
-                    && Objects.equals(identifier, that.identifier)
+            return Objects.equals(identifier, that.identifier)
                     && Objects.equals(label, that.label)
                     && Objects.equals(url, that.url)
                     && Objects.equals(properties, that.properties)
@@ -124,7 +114,7 @@ public class SearchResultItem {
 
     @Override
     public int hashCode() {
-        return Objects.hash(context, identifier, label, properties, matches, url, icon, weight);
+        return Objects.hash(identifier, label, properties, matches, url, icon, weight);
     }
 
     public void addMatch(Match match) {

@@ -79,7 +79,6 @@ public class StaticActionSearchProvider implements SearchProvider {
                         // Otherwise at least one alias matched, use it as label
                         searchResultItem.setLabel(QueryUtils.getFirstMatch(action.getAliases(), input));
                     }
-                    searchResultItem.setContext(Contexts.Action);
                     searchResultItem.setUrl(action.getUrl());
                     searchResultItem.setIdentifier(action.getUrl());
                     if (!Strings.isNullOrEmpty(action.getIcon())) {

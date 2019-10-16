@@ -69,7 +69,6 @@ public class CategorySearchProvider implements SearchProvider {
         final List<OnmsCategory> matchingResult = categoryDao.findMatching(criteria);
         final List<SearchResultItem> searchResultItems = matchingResult.stream().map(category -> {
             final SearchResultItem searchResultItem = new SearchResultItem();
-            searchResultItem.setContext(Contexts.Action);
             searchResultItem.setIdentifier(category.getId().toString());
             searchResultItem.setLabel("Show nodes in category '" + category.getName() + "'");
             searchResultItem.setUrl("element/nodeList.htm?category1=" + category.getName());

@@ -71,7 +71,6 @@ public class MenuActionSearchProvider implements SearchProvider {
         final List<MenuEntry> subList = QueryUtils.shrink(menuEntries, query.getMaxResults());
         final List<SearchResultItem> resultItems = subList.stream().map(entry -> {
             final SearchResultItem searchResultItem = new SearchResultItem();
-            searchResultItem.setContext(Contexts.Action);
             searchResultItem.setIdentifier(entry.getUrl());
             searchResultItem.setUrl(entry.getUrl());
             searchResultItem.setLabel(String.format("Open %s", entry.getName()));

@@ -67,7 +67,6 @@ public class ServiceSearchProvider implements SearchProvider {
         final List<OnmsServiceType> matchingResult = serviceTypeDao.findMatching(builder.limit(query.getMaxResults()).toCriteria());
         final List<SearchResultItem> searchResultItems = matchingResult.stream().map(service -> {
             final SearchResultItem searchResultItem = new SearchResultItem();
-            searchResultItem.setContext(Contexts.Action);
             searchResultItem.setIdentifier(service.getId().toString());
             searchResultItem.setLabel("Show nodes with service '" + service.getName() + "'");
             searchResultItem.setUrl("element/nodeList.htm?service=" + service.getId());

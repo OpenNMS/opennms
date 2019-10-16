@@ -66,7 +66,6 @@ public class KscReportSearchProvider implements SearchProvider {
                 .sorted(Comparator.comparing(Report::getTitle))
                 .map(report -> {
                     final SearchResultItem result = new SearchResultItem();
-                    result.setContext(CONTEXT);
                     result.setLabel(report.getTitle());
                     result.setIdentifier(report.getTitle());
                     result.setUrl("KSC/customView.htm?type=custom&report=" + report.getId());

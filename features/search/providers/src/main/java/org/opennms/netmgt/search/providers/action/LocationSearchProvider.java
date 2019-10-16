@@ -69,7 +69,6 @@ public class LocationSearchProvider implements SearchProvider {
         final List<OnmsMonitoringLocation> matchingResult = monitoringLocationDao.findMatching(criteria);
         final List<SearchResultItem> searchResultItems = matchingResult.stream().map(monitoringLocation -> {
             final SearchResultItem searchResultItem = new SearchResultItem();
-            searchResultItem.setContext(Contexts.Action);
             searchResultItem.setIdentifier(monitoringLocation.getLocationName());
             searchResultItem.setLabel("Show nodes in location '" + monitoringLocation.getLocationName() + "'");
             searchResultItem.setUrl("element/nodeList.htm?monitoringLocation=" + monitoringLocation.getLocationName());

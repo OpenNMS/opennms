@@ -68,7 +68,6 @@ public class RequisitionSearchProvider implements SearchProvider {
                 .collect(Collectors.toList());
         final List<SearchResultItem> resultItems = requisitions.stream().map(r -> {
                 final SearchResultItem searchResultItem = new SearchResultItem();
-                searchResultItem.setContext(Contexts.Action);
                 searchResultItem.setIdentifier(r.getForeignSource());
                 searchResultItem.setUrl(String.format("admin/ng-requisitions/index.jsp#/requisitions/%s",r.getForeignSource()));
                 searchResultItem.setLabel(String.format("Edit Requisition '%s'", r.getForeignSource()));

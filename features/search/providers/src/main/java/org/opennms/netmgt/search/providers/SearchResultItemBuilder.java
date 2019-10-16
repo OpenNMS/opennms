@@ -31,7 +31,6 @@ package org.opennms.netmgt.search.providers;
 import java.util.Objects;
 
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.search.api.Contexts;
 import org.opennms.netmgt.search.api.Match;
 import org.opennms.netmgt.search.api.SearchResultItem;
 import org.opennms.netmgt.search.providers.node.NodeRef;
@@ -46,7 +45,6 @@ public class SearchResultItemBuilder {
         Objects.requireNonNull(node);
 
         final NodeRef nodeRef = new NodeRef(node);
-        searchResultItem.setContext(Contexts.Node);
         searchResultItem.setIdentifier(nodeRef.asString());
         searchResultItem.setUrl("element/node.jsp?node=" + node.getId());
         searchResultItem.setLabel(node.getLabel());

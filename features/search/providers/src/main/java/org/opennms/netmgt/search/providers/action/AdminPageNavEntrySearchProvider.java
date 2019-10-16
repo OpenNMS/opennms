@@ -71,7 +71,6 @@ public class AdminPageNavEntrySearchProvider implements SearchProvider {
         final List<PageNavEntry> totalMatchingEntries = getPageNavEntries(query);
         final List<SearchResultItem> resultItems = totalMatchingEntries.stream().map(e -> {
                 final SearchResultItem searchResultItem = new SearchResultItem();
-                searchResultItem.setContext(Contexts.Action);
                 searchResultItem.setLabel(e.getName());
                 searchResultItem.setIdentifier(e.getUrl());
                 searchResultItem.setUrl(e.getUrl());
