@@ -1671,7 +1671,7 @@ public class SnmpEventInfoTest {
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.24\"/>\n" +
                 "        <range begin=\"192.168.1.26\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
-                "    <definition version=\"v2c\">\n" +
+                "    <definition version=\"v2c\" profile-label=\"sample\">\n" +
                 "        <specific>192.168.1.25</specific>\n" +
                 "    </definition>\n" +
                 "       <profiles>" +
@@ -1702,7 +1702,7 @@ public class SnmpEventInfoTest {
 
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <definition version=\"v1\">\n" +
+                "    <definition version=\"v1\" profile-label=\"sample\">\n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.24\"/>\n" +
                 "        <range begin=\"192.168.1.26\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
@@ -1716,7 +1716,7 @@ public class SnmpEventInfoTest {
 
         String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <definition version=\"v1\">\n" +
+                "    <definition version=\"v1\" profile-label=\"sample\">\n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
                 "       <profiles>" +
@@ -1736,6 +1736,55 @@ public class SnmpEventInfoTest {
         String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
     }
+
+    /**
+     * Tests that a definition without profile label won't merge with other definition even if config is same.
+     * @throws IOException
+     */
+    @Test
+    public void testSnmpProfilesWithProfileLabelInDefinition() throws IOException {
+
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "    <definition version=\"v1\">\n" +
+                "        <range begin=\"192.168.1.15\" end=\"192.168.1.24\"/>\n" +
+                "        <range begin=\"192.168.1.26\" end=\"192.168.1.35\"/>\n" +
+                "    </definition>\n" +
+                "       <profiles>" +
+                "           <profile " + "version=\"v1\">" +
+                "             <label>sample</label>" +
+                "           </profile>\n" +
+                "       </profiles>\n" +
+                "</snmp-config>\n" +
+                "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "    <definition version=\"v1\">\n" +
+                "        <range begin=\"192.168.1.15\" end=\"192.168.1.24\"/>\n" +
+                "        <range begin=\"192.168.1.26\" end=\"192.168.1.35\"/>\n" +
+                "    </definition>\n" +
+                "    <definition version=\"v1\" profile-label=\"sample\">\n" +
+                "         <specific>192.168.1.25</specific>\n" +
+                "    </definition>\n" +
+                "       <profiles>" +
+                "           <profile " + "version=\"v1\">" +
+                "             <label>sample</label>" +
+                "           </profile>\n" +
+                "       </profiles>\n" +
+                "</snmp-config>\n" +
+                "";
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
+
+        SnmpProfile snmpProfile = SnmpPeerFactory.getInstance().getProfiles().get(0);
+        SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfigFromProfile(snmpProfile, InetAddress.getByName("192.168.1.25"));
+        assertFalse("Config should be not be default config", snmpAgentConfig.isDefault());
+        SnmpPeerFactory.getInstance().saveAgentConfigAsDefinition(snmpAgentConfig, null, "test");
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
+        assertXmlEquals(expectedConfig, actualConfig);
+    }
+
 
 
 
