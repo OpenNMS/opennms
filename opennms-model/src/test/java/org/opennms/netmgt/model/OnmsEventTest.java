@@ -42,25 +42,30 @@ import org.junit.Test;
 public class OnmsEventTest {
 
     @Test
-    public void shouldOrderEventParamsWithNullPositions() {
+    public void shouldSetPositionOnEventParameters() {
         List<OnmsEventParameter> params = Arrays.asList(
-                param("A", 0),
-                param("B", 0),
-                param("C", 0),
-                param("D", 0),
-                param("E", 0)
+                param("A"),
+                param("B"),
+                param("C"),
+                param("D"),
+                param("E")
         );
-        shouldOrderEventParams(params, "A", "B", "C", "D", "E");
+        OnmsEvent event = new OnmsEvent();
+        event.setEventParameters(params);
+        for(int i=0; i<5; i++) {
+            assertEquals(i, event.getEventParameters().get(i).getPosition());
+        }
+        checkOrder(event.getEventParameters(), "A", "B", "C", "D", "E");
     }
 
 	@Test
 	public void shouldPreserveOrderFromDatabase() {
 		List<OnmsEventParameter> params = Arrays.asList(
-				param("A", 0),
-				param("B", 0),
-				param("C", 0),
-				param("D", 0),
-				param("E", 0)
+				param("A"),
+				param("B"),
+				param("C"),
+				param("D"),
+				param("E")
 		);
 		OnmsEvent event = new OnmsEvent();
 		event.setEventParameters(params);
@@ -68,23 +73,22 @@ public class OnmsEventTest {
 
 		// assume we are writing now to database and retrieve parameters out of order
         List<OnmsEventParameter> shuffledParams = new ArrayList<>(params);
-        Collections.shuffle(shuffledParams, new Random(42));
-        PersistentBag listFromDatabase = new PersistentBag(null, shuffledParams);
+        Collections.shuffle(shuffledParams, new Random(41));
+        List<OnmsEventParameter> listFromDatabase = new PersistentBag(null, shuffledParams);
+        event = new OnmsEvent();
+        event.setEventParameters(listFromDatabase);
 
-		// but the order should be ok again when invoking the getter
-		shouldOrderEventParams(listFromDatabase, "A", "B", "C", "D", "E");
+		// but the order should be ok again when sorting by position
+        checkOrder(event.getEventParametersInOrder(), "A", "B", "C", "D", "E");
 	}
 
-    private void shouldOrderEventParams(final List<OnmsEventParameter> params, final String ... expected) {
-        OnmsEvent event = new OnmsEvent();
-        event.setEventParameters(params);
-        assertEquals(expected, event.getEventParameters().stream().map(OnmsEventParameter::getName).toArray());
+    private void checkOrder(final List<OnmsEventParameter> params, final String ... expected) {
+        assertEquals(expected, params.stream().map(OnmsEventParameter::getName).toArray());
     }
 
-    private OnmsEventParameter param(String name, int position) {
+    private OnmsEventParameter param(String name) {
         OnmsEventParameter param = new OnmsEventParameter();
         param.setName(name);
-        param.setPosition(position);
         return param;
     }
 }
