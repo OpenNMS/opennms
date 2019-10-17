@@ -33,7 +33,9 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
+import org.elasticsearch.common.Strings;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -76,6 +78,7 @@ public class BsmEventsIT {
                         .toCriteria()), notNullValue());
 
         assertEquals(1L, (long) onmsAlarm1.getCounter());
+        assertFalse(Strings.isNullOrEmpty(onmsAlarm1.getEventParameter("rootCause")));
         assertEquals(OnmsSeverity.WARNING, onmsAlarm1.getSeverity());
 
         restClient.sendEvent(getServiceProblemEvent(42, "Minor"));
@@ -86,6 +89,7 @@ public class BsmEventsIT {
                         .toCriteria()), notNullValue());
 
         assertEquals(2L, (long) onmsAlarm2.getCounter());
+        assertFalse(Strings.isNullOrEmpty(onmsAlarm2.getEventParameter("rootCause")));
         assertEquals(OnmsSeverity.MINOR, onmsAlarm2.getSeverity());
     }
 

@@ -45,6 +45,9 @@ import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
+import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
+import org.opennms.netmgt.bsm.service.model.graph.internal.GraphAlgorithms;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -248,7 +251,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
      * Called when the operational status of a business service was changed.
      */
     @Override
-    public void handleBusinessServiceStateChanged(BusinessService businessService, Status newStatus, Status prevStatus) {
+    public void handleBusinessServiceStateChanged(BusinessServiceGraph graph, BusinessService businessService, Status newStatus, Status prevStatus) {
         final OnmsSeverity newSeverity = SeverityMapper.toSeverity(newStatus);
         final OnmsSeverity prevSeverity = SeverityMapper.toSeverity(prevStatus);
 
@@ -270,6 +273,19 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
             ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
             ebldr.setSeverity(newSeverity.toString());
+            final List<GraphVertex> vertices = GraphAlgorithms.calculateRootCause(graph, graph.getVertexByBusinessServiceId(businessService.getId()));
+            final String rootCause = vertices.stream().map(v -> {
+                if (v.getBusinessService() != null) {
+                    return "business service '" + v.getBusinessService().getName() + "'";
+                } else if (v.getIpService() != null) {
+                    return "IP service '" + v.getIpService().getNodeLabel() + "/" + v.getIpService().getIpAddress() + "/" + v.getIpService().getServiceName() + "'";
+                } else if (v.getApplication() != null) {
+                    return "application '" + v.getApplication().getApplicationName() + "'";
+                } else {
+                    return "reduction key '" + v.getReductionKey() + "'";
+                }
+            }).collect(Collectors.joining(", "));
+            ebldr.addParam("rootCause", rootCause);
         } else {
             ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI, NAME);
             addBusinessServicesAttributesAsEventParms(businessService, ebldr);
