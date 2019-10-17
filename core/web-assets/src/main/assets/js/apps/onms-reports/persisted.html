@@ -36,8 +36,7 @@
                     <button class="btn btn-sm btn-danger" ng-click="delete(report)"><i class="fa fa-trash"></i></button>
                 </td>
                 <td>
-                    <a href="rest/reports/download?locatorId={{report.id}}&amp;format=PDF" class="mr-4"><i class="fa fa-file-pdf-o"></i> PDF</a>
-                    <a href="rest/reports/download?locatorId={{report.id}}&amp;format=CSV"><i class="fa fa-file-text-o"></i> CSV</a>
+                    <a ng-repeat="format in report.formats" href="rest/reports/download?locatorId={{report.id}}&amp;format={{format}}" class="mr-4"><i ng-class="{'fa-file-pdf-o': format === 'PDF', 'fa-file-text-o': format === 'CSV'}" class="fa"></i> {{format}}</a>
                 </td>
                 <td>{{report.title}}</td>
                 <td>{{report.reportId}}</td>
