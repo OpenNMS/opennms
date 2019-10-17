@@ -93,7 +93,7 @@ public abstract class EventMapper {
 
     @AfterMapping
     protected void fillEvent(OnmsEvent event, @MappingTarget EventDTO eventDTO) {
-        final List<OnmsEventParameter> eventParms = event.getEventParameters();
+        final List<OnmsEventParameter> eventParms = event.getEventParametersInOrder();
         if (eventParms != null) {
             eventDTO.setParameters(eventParms.stream()
                     .map(this::eventParameterToEventParameterDTO)

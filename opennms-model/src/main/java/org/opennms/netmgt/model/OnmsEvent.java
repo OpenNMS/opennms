@@ -419,7 +419,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	    return this.m_eventParameters;
 	}
 
+	@Transient // Ignore this method for hibernate
 	public List<OnmsEventParameter> getEventParametersInOrder() {
+	    if(this.m_eventParameters == null) {
+	        return null;
+        }
 		List<OnmsEventParameter> sortedParams = new ArrayList<>(this.m_eventParameters);
 		sortedParams.sort(Comparator.comparing(OnmsEventParameter::getPosition));
 		return sortedParams;

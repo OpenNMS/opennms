@@ -156,7 +156,7 @@ public class OnmsRestEventsClient {
 		
 		final List<Parm> parmColl = new ArrayList<>();
 		if (onmsEvent.getEventParameters()!=null) {
-			final List<OnmsEventParameter> params = onmsEvent.getEventParameters();
+			final List<OnmsEventParameter> params = onmsEvent.getEventParametersInOrder();
 			for(OnmsEventParameter onmsEventParameter:params){
 				final Value parmvalue = new Value();
 				parmvalue.setType(onmsEventParameter.getType());

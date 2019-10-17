@@ -103,7 +103,7 @@ function void copyEventParameters(OnmsEvent sourceEvent, EventBuilder targetEven
     if (sourceEvent == null) {
         return;
     }
-    for (OnmsEventParameter p : sourceEvent.getEventParameters()) {
+    for (OnmsEventParameter p : sourceEvent.getEventParametersInOrder()) {
         targetEventBuilder.setParam(p.getName(), p.getValue());
     }
 }

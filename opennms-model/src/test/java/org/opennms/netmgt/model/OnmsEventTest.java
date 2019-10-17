@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +60,7 @@ public class OnmsEventTest {
     }
 
 	@Test
-	public void shouldPreserveOrderFromDatabase() {
+	public void shouldPreserveParameterOrderFromDatabase() {
 		List<OnmsEventParameter> params = Arrays.asList(
 				param("A"),
 				param("B"),
@@ -81,6 +82,13 @@ public class OnmsEventTest {
 		// but the order should be ok again when sorting by position
         checkOrder(event.getEventParametersInOrder(), "A", "B", "C", "D", "E");
 	}
+
+    @Test
+    public void shouldBeResilientAgainstParameterNullList() {
+        OnmsEvent event = new OnmsEvent();
+        event.setEventParameters(null);
+        assertNull(event.getEventParametersInOrder());
+    }
 
     private void checkOrder(final List<OnmsEventParameter> params, final String ... expected) {
         assertEquals(expected, params.stream().map(OnmsEventParameter::getName).toArray());
