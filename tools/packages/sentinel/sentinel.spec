@@ -10,6 +10,8 @@
 %{!?sentinelinstprefix:%define sentinelinstprefix /opt/sentinel}
 # The path where the repositories will live 
 %{!?sentinelrepoprefix:%define sentinelrepoprefix /opt/sentinel/repositories}
+# Where Systemd files live
+%{!?_unitdir:%define _unitdir /lib/systemd/system}
 
 # Description
 %{!?_name:%define _name opennms}
@@ -118,6 +120,9 @@ sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" -e "s,^SE
 chmod 755 "%{buildroot}%{_initrddir}"/sentinel
 rm -f '%{buildroot}%{sentinelinstprefix}/etc/sentinel.init'
 
+mkdir -p "%{buildroot}%{_unitdir}"
+install -c -m 644 "%{buildroot}%{sentinelinstprefix}/etc/sentinel.service" "%{buildroot}%{_unitdir}/sentinel.service"
+
 # move sentinel.conf to the sysconfig dir
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
 mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconfdir}/sysconfig/sentinel"
@@ -161,6 +166,7 @@ rm -rf %{buildroot}
 %files -f %{_tmppath}/files.sentinel
 %defattr(664 sentinel sentinel 775)
 %attr(755,sentinel,sentinel) %{_initrddir}/sentinel
+%attr(644,sentinel,sentinel) %{_unitdir}/sentinel.service
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
 %attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme
 
