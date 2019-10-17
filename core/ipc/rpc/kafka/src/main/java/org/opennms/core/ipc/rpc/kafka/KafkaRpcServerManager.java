@@ -115,7 +115,7 @@ public class KafkaRpcServerManager {
     // Delay queue which caches rpcId and removes when rpcId reaches expiration time.
     private DelayQueue<RpcId> rpcIdQueue = new DelayQueue<>();
     private ExecutorService delayQueueExecutor = Executors.newSingleThreadExecutor();
-    private Map<String, Integer> chunkNumberMap = new ConcurrentHashMap<>();
+    private Map<String, Integer> currentChunkCache = new ConcurrentHashMap<>();
     private final TracerRegistry tracerRegistry;
 
     public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity, TracerRegistry tracerRegistry) {
@@ -144,7 +144,7 @@ public class KafkaRpcServerManager {
                 try {
                     RpcId rpcId = rpcIdQueue.take();
                     messageCache.remove(rpcId.getRpcId());
-                    chunkNumberMap.remove(rpcId.getRpcId());
+                    currentChunkCache.remove(rpcId.getRpcId());
                 } catch (InterruptedException e) {
                     LOG.error("Delay Queue has been interrupted ", e);
                     break;
@@ -227,7 +227,7 @@ public class KafkaRpcServerManager {
                 consumer.subscribe(Arrays.asList(topic));
                 LOG.info("subscribed to topic {}", topic);
                 while (!closed.get()) {
-                    ConsumerRecords<String, byte[]> records = consumer.poll(Long.MAX_VALUE);
+                    ConsumerRecords<String, byte[]> records = consumer.poll(java.time.Duration.ofMillis(Long.MAX_VALUE));
                     for (ConsumerRecord<String, byte[]> record : records) {  
                         try {
                             RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage
@@ -263,11 +263,10 @@ public class KafkaRpcServerManager {
                             // For larger messages which get split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
                                 // Avoid duplicate chunks. discard if chunk is repeated.
-                                chunkNumberMap.putIfAbsent(rpcId, 0);
-                                Integer chunkNum = chunkNumberMap.get(rpcId);
-                                if(chunkNum == rpcMessage.getCurrentChunkNumber()) {
-                                    chunkNumberMap.put(rpcId, ++chunkNum);
-                                } else {
+                                currentChunkCache.putIfAbsent(rpcId, 0);
+                                Integer chunkNumber = currentChunkCache.get(rpcId);
+                                if(chunkNumber != rpcMessage.getCurrentChunkNumber()) {
+                                    LOG.debug("Expected chunk = {} but got chunk = {}, ignoring.", chunkNumber, rpcMessage.getCurrentChunkNumber());
                                     continue;
                                 }
                                 ByteString byteString = messageCache.get(rpcId);
@@ -276,12 +275,14 @@ public class KafkaRpcServerManager {
                                 } else {
                                     messageCache.put(rpcId, rpcMessage.getRpcContent());
                                 }
-                                if (rpcMessage.getTotalChunks() != rpcMessage.getCurrentChunkNumber() + 1) {
+                                currentChunkCache.put(rpcId, ++chunkNumber);
+                                if (rpcMessage.getTotalChunks() != chunkNumber) {
                                     continue;
                                 }
                                 rpcContent = messageCache.get(rpcId);
+                                //Remove rpcId from cache.
                                 messageCache.remove(rpcId);
-                                chunkNumberMap.remove(rpcId);
+                                currentChunkCache.remove(rpcId);
                             }
                             //Build child span from rpcMessage.
                             Tracer.SpanBuilder spanBuilder = buildSpanFromRpcMessage(rpcMessage);

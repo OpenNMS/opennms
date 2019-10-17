@@ -145,8 +145,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
+    private Map<String, Integer> currentChunkCache = new ConcurrentHashMap<>();
+
     private MetricRegistry metrics = new MetricRegistry();
-    private Map<String, Integer> chunkNumberMap = new ConcurrentHashMap<>();
     private JmxReporter metricsReporter = null;
 
 
@@ -397,7 +398,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     failedMeter.mark();
                     rpcResponseMap.remove(rpcId);
                     messageCache.remove(rpcId);
-                    chunkNumberMap.remove(rpcId);
+                    currentChunkCache.remove(rpcId);
                 }
                 rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
                 span.finish();
@@ -472,12 +473,11 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             String rpcId = rpcMessage.getRpcId();
                             // For larger messages which get split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
-                                // Avoid duplicate chunks. discard if chunk is repeated.
-                                chunkNumberMap.putIfAbsent(rpcId, 0);
-                                Integer chunkNum = chunkNumberMap.get(rpcId);
-                                if(chunkNum == rpcMessage.getCurrentChunkNumber()) {
-                                    chunkNumberMap.put(rpcId, ++chunkNum);
-                                } else {
+                                // Avoid duplicate chunks. discard if chunk is repeated or not in order.
+                                currentChunkCache.putIfAbsent(rpcId, 0);
+                                Integer chunkNumber = currentChunkCache.get(rpcId);
+                                if(chunkNumber != rpcMessage.getCurrentChunkNumber()) {
+                                    LOG.debug("Expected chunk = {} but got chunk = {}, ignoring.", chunkNumber, rpcMessage.getCurrentChunkNumber());
                                     continue;
                                 }
                                 ByteString byteString = messageCache.get(rpcId);
@@ -486,7 +486,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                                 } else {
                                     messageCache.put(rpcId, rpcMessage.getRpcContent());
                                 }
-                                if (rpcMessage.getTotalChunks() != rpcMessage.getCurrentChunkNumber() + 1) {
+                                currentChunkCache.put(rpcId, ++chunkNumber);
+                                if (rpcMessage.getTotalChunks() != chunkNumber) {
                                     continue;
                                 }
                                 rpcContent = messageCache.get(rpcId);
@@ -497,13 +498,13 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             final String rpcMessageContent = rpcContent.toStringUtf8();
                             responseHandlerExecutor.execute(() ->
                                     responseCb.sendResponse(rpcMessageContent));
-                            // Clear maps so that duplicate response will not be handled.
+                            // Remove rpcId from the maps so that duplicate response will not be handled.
                             rpcResponseMap.remove(rpcId);
                             messageCache.remove(rpcId);
-                            chunkNumberMap.remove(rpcId);
+                            currentChunkCache.remove(rpcId);
                         } else {
-                            LOG.debug("Received a response for request with ID:{}, but no outstanding request was found with this id, " +
-                                            "The request may have timed out or the response may be duplicate", record.key());
+                            LOG.debug("Received a response for request with ID:{}, but no outstanding request was found with this id." +
+                                            "The request may have timed out or the response may be a duplicate.", record.key());
                         }
                     }
                 } catch (InvalidProtocolBufferException e) {
