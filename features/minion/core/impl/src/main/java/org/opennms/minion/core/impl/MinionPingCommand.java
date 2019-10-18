@@ -31,7 +31,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.distributed.core.shell.AbstractPingCommand;
 
-@Command(scope = "minion", name = "ping", description="Tests connectivity with the controller.")
+@Command(scope = "opennnms-minion", name = "ping", description="Tests connectivity with the controller.")
 @Service
 public class MinionPingCommand extends AbstractPingCommand {
 

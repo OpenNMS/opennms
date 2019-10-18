@@ -71,7 +71,7 @@ public class JMXCollectorIT {
 
             // Sanitize the output
             String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
-            shellOutput = StringUtils.substringAfter(shellOutput, "collection:collect");
+            shellOutput = StringUtils.substringAfter(shellOutput, "opennms-collection:collect");
             LOG.info("Collect output: {}", shellOutput);
 
             return shellOutput;

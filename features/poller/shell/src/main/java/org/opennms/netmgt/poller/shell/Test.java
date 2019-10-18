@@ -63,7 +63,7 @@ import org.springframework.transaction.support.TransactionOperations;
  * @author Alejandro Galue <agalue@opennms.org>
  * @author jwhite
  */
-@Command(scope = "poller", name = "test", description = "Execute a poller test from the command line using current settings from poller-configuration.xml")
+@Command(scope = "opennms-poller", name = "test", description = "Execute a poller test from the command line using current settings from poller-configuration.xml")
 @org.apache.karaf.shell.api.action.lifecycle.Service
 public class Test implements Action {
 

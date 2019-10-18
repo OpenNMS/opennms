@@ -51,8 +51,8 @@ import com.atlassian.jira.rest.client.api.domain.CimFieldInfo;
 import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 
-@Command(scope = "jira", name = "verify", description="Verifies the current configuration")
-@org.apache.karaf.shell.commands.Command(scope = "jira", name = "verify", description="Verifies the current configuration")
+@Command(scope = "opennms-jira", name = "verify", description="Verifies the current configuration")
+@org.apache.karaf.shell.commands.Command(scope = "opennms-jira", name = "verify", description="Verifies the current configuration")
 @Service
 public class VerifyCommand extends OsgiCommandSupport implements Action {
 
