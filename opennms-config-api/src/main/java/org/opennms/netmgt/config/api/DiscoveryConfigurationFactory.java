@@ -31,7 +31,6 @@ package org.opennms.netmgt.config.api;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import org.opennms.netmgt.config.discovery.Detector;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
@@ -114,7 +113,7 @@ public interface DiscoveryConfigurationFactory {
 	Iterable<IPPollAddress> getConfiguredAddresses();
 
 
-	Optional<List<Detector>> getListOfDetectors(InetAddress inetAddress, String location);
+	List<Detector> getListOfDetectors(InetAddress inetAddress, String location);
 	
 	/**
 	 * <p>getRestartSleepTime</p>

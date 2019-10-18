@@ -28,64 +28,13 @@
 
 package org.opennms.netmgt.discovery;
 
-import org.opennms.netmgt.provision.DetectRequest;
-import org.opennms.netmgt.provision.DetectResults;
-import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.support.DetectResultsImpl;
+import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
 
-public class MockServiceDetector implements SyncServiceDetector {
-    @Override
-    public void init() {
+public class MockServiceDetectorFactory2 extends GenericServiceDetectorFactory<MockServiceDetector2> {
 
-    }
-
-    @Override
-    public String getServiceName() {
-        return "mock-detector";
-    }
-
-    @Override
-    public void setServiceName(String serviceName) {
-
-    }
-
-    @Override
-    public int getPort() {
-        return 0;
-    }
-
-    @Override
-    public void setPort(int port) {
-
-    }
-
-    @Override
-    public int getTimeout() {
-        return 0;
-    }
-
-    @Override
-    public void setTimeout(int timeout) {
-
-    }
-
-    @Override
-    public String getIpMatch() {
-        return null;
-    }
-
-    @Override
-    public void setIpMatch(String ipMatch) {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    @Override
-    public DetectResults detect(DetectRequest request) {
-       return new DetectResultsImpl(true);
+    public MockServiceDetectorFactory2() {
+        super(MockServiceDetector2.class);
     }
 }
+
+

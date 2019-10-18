@@ -28,11 +28,32 @@
 
 package org.opennms.netmgt.discovery;
 
-import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.DetectResults;
+import org.opennms.netmgt.provision.support.DetectResultsImpl;
 
-public class MockServiceDetectorFactory extends GenericServiceDetectorFactory<MockServiceDetector> {
+public class MockServiceDetector2 extends MockServiceDetector1 {
 
-    public MockServiceDetectorFactory() {
-        super(MockServiceDetector.class);
+
+    @Override
+    public String getServiceName() {
+        return "mock-detector2";
+    }
+
+    @Override
+    public DetectResults detect(DetectRequest request) {
+        // This is to verify that detection is happening in parallel.
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(request.getAddress()), "192.168.0.50", "192.168.0.59")) {
+            return new DetectResultsImpl(false);
+        } else {
+            return new DetectResultsImpl(true);
+        }
+
     }
 }

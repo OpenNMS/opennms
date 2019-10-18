@@ -596,7 +596,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         }
     }
 
-    public Optional<List<Detector>> getListOfDetectors(InetAddress inetAddress, String location) {
+    public List<Detector> getListOfDetectors(InetAddress inetAddress, String location) {
 
         String ipAddress = InetAddressUtils.toIpAddrString(inetAddress);
         if (Strings.isNullOrEmpty(location)) {
@@ -638,7 +638,11 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             return true;
         }).findFirst();
 
-        return definition.map(Definition::getDetectors);
+        if (definition.isPresent()) {
+            return definition.get().getDetectors();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
 

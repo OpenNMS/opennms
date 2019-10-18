@@ -21,7 +21,7 @@
 
 
   <bean id="scanExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
-    <property name="poolSize" value="10" />
+    <property name="poolSize" value="200" />
   </bean>
 
 </beans>

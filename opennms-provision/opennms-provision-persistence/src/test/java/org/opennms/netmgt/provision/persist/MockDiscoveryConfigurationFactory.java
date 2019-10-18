@@ -31,7 +31,6 @@ package org.opennms.netmgt.provision.persist;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.Detector;
@@ -95,7 +94,7 @@ public class MockDiscoveryConfigurationFactory implements DiscoveryConfiguration
     }
 
     @Override
-    public Optional<List<Detector>> getListOfDetectors(InetAddress inetAddress, String location) {
+    public List<Detector> getListOfDetectors(InetAddress inetAddress, String location) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -86,7 +87,7 @@ public class DiscoveryWithDetectorsIT {
     private ServiceDetectorRegistryImpl serviceDetectorRegistry;
 
 
-    @Test
+    @Test(timeout = 30000)
     public void testDiscoveryWithMockDetector() throws IOException, InterruptedException {
         MockLogAppender.setupLogging(true, "INFO");
         m_discovery.setEventForwarder(m_eventIpcManager);
@@ -95,19 +96,27 @@ public class DiscoveryWithDetectorsIT {
         System.setProperty("opennms.home", etcPath.toString());
         DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory();
         m_discovery.setDiscoveryFactory(configFactory);
-        serviceDetectorRegistry.onBind(new MockServiceDetectorFactory(), new HashMap());
+        serviceDetectorRegistry.onBind(new MockServiceDetectorFactory1(), new HashMap());
+        serviceDetectorRegistry.onBind(new MockServiceDetectorFactory2(), new HashMap());
         // Anticipate newSuspect events for all of the addresses
         EventAnticipator anticipator = m_eventIpcManager.getEventAnticipator();
         StreamSupport.stream(configFactory.getConfiguredAddresses().spliterator(), false).forEach(addr -> {
-            System.out.println("ANTICIPATING: " + str(addr.getAddress()));
-            Event event = new Event();
-            event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-            event.setInterfaceAddress(addr.getAddress());
-            anticipator.anticipateEvent(event);
+            // Detection fails for IPAddresses greater than 192.168.0.120 in MockServiceDetector.
+            if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(addr.getAddress()),
+                    "192.168.0.1", "192.168.0.120") &&
+                    !InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(addr.getAddress()),
+                            "192.168.0.50", "192.168.0.59")) {
+                System.out.println("ANTICIPATING: " + str(addr.getAddress()));
+                Event event = new Event();
+                event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+                event.setInterfaceAddress(addr.getAddress());
+                anticipator.anticipateEvent(event);
+            }
         });
 
         m_discovery.start();
-        anticipator.waitForAnticipated(30000);
+        // Scan executor has 200 threads. So it should handle two jobs in sequence taking ~ 10 secs.
+        anticipator.waitForAnticipated(15000);
         anticipator.verifyAnticipated();
         m_discovery.stop();
     }

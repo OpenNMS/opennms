@@ -34,11 +34,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -162,32 +159,38 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
                         LOG.debug("Job {} of {} at location {} (on task #{}) completed succesfully.",
                                 jobIndex, totalNumberOfJobs, location, taskId);
                         // Perform detection if there are any detectors associated with these IP addresses.
-                        Map<InetAddress, Double> responses = performDetection(job.getLocation(), summary);
-                        // Generate an event log containing a newSuspect event for every host
-                        // that responded to our pings
-                        final Log eventLog = toNewSuspectEvents(job, responses);
-                        // Avoid forwarding an empty log
-                        if (eventLog.getEvents() != null && eventLog.getEvents().getEventCount() >= 1) {
-                            eventForwarder.sendNow(eventLog);
-                        }
+                        CompletableFuture<List<DiscoveryResult>> resultsFuture = performDetection(job.getLocation(), summary);
+
+                        //Send new suspect events after detection completed for all the IP addresses in the job.
+                        resultsFuture.whenComplete((results, throwable) -> {
+                            // Generate an event log containing a newSuspect event for every host
+                            // that responded to our pings and succeeded detection if there are any detectors associated with an IP Address.
+                            final Log eventLog = toNewSuspectEvents(job, results);
+                            // Avoid forwarding an empty log
+                            if (eventLog.getEvents() != null && eventLog.getEvents().getEventCount() >= 1) {
+                                eventForwarder.sendNow(eventLog);
+                            }
+                            // Recurse until the queue is empty
+                            triggerNextJobAsync(location, jobs, jobIndexTracker, totalNumberOfJobs, taskId, future);
+                        });
+
                     } else {
                         LOG.error("An error occurred while processing job {} of {} at location {} (on task #{})."
                                 + " No newSuspect events will be generated.", jobIndex, totalNumberOfJobs, location, taskId, ex);
+                        // Recurse until the queue is empty
+                        triggerNextJobAsync(location, jobs, jobIndexTracker, totalNumberOfJobs, taskId, future);
                     }
-
-                    // Recurse until the queue is empty
-                    triggerNextJobAsync(location, jobs, jobIndexTracker, totalNumberOfJobs, taskId, future);
                 }
             });
         });
     }
 
-    protected static Log toNewSuspectEvents(DiscoveryJob job, Map<InetAddress, Double> responses) {
+    private static Log toNewSuspectEvents(DiscoveryJob job, List<DiscoveryResult> results) {
         final Log eventLog = new Log();
-        for (Entry<InetAddress, Double> entry : responses.entrySet()) {
+        for (DiscoveryResult entry : results) {
             EventBuilder eb = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, Discovery.DAEMON_NAME);
-            eb.setInterface(entry.getKey());
-            eb.addParam("RTT", entry.getValue());
+            eb.setInterface(entry.getAddress());
+            eb.addParam("RTT", entry.getPingDuration());
             if (job.getForeignSource() != null) {
                 eb.addParam(EventConstants.PARM_FOREIGN_SOURCE, job.getForeignSource());
             }
@@ -200,19 +203,33 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
         return eventLog;
     }
 
-    private Map<InetAddress, Double> performDetection(String location, PingSweepSummary summary) {
-        return summary.getResponses().entrySet().stream()
-                .filter(entry -> launchDetectors(entry.getKey(), location))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    /**
+     *  This method performs detection for all the IP Addressed that succeeded ping in parallel and returns a
+     *  completable future with discovery results that succeeded detection.
+     */
+    private CompletableFuture<List<DiscoveryResult>> performDetection(String location, PingSweepSummary summary) {
 
+        List<CompletableFuture<DiscoveryResult>> futures = summary.getResponses().entrySet().stream()
+                .map(entry -> launchDetectors(entry.getKey(), entry.getValue(), location)).collect(Collectors.toList());
+        // Combine all futures.
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+        CompletableFuture<List<DiscoveryResult>> futureList = allFutures.thenApply(result -> {
+            return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        });
+        return futureList.thenApply((results) -> {
+             return results.stream().filter(DiscoveryResult::getDetectResult).collect(Collectors.toList());
+        });
     }
 
+    /**
+     * This method calls all the detectors in parallel for a given IP Address and combines the result of all detectors
+     * into single future.
+     */
+    private CompletableFuture<DiscoveryResult> launchDetectors(InetAddress inetAddress, Double pingDuration, String location) {
 
-    private boolean launchDetectors(InetAddress inetAddress, String location) {
-        Optional<List<Detector>> detectorsOptional = configFactory.getListOfDetectors(inetAddress, location);
-
-        if (detectorsOptional.isPresent()) {
-            List<Detector> detectors = detectorsOptional.get();
+        CompletableFuture<DiscoveryResult> future = new CompletableFuture<>();
+        List<Detector> detectors = configFactory.getListOfDetectors(inetAddress, location);
+        if (detectors.size() > 0) {
             // Run all the detectors.
             try {
                 List<CompletableFuture<Boolean>> futures = detectors.stream().map(detector ->
@@ -222,19 +239,25 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
                 CompletableFuture<List<Boolean>> futureList = allFutures.thenApply(result -> {
                     return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
                 });
-                CompletableFuture<Boolean> future = futureList.thenApply((results) -> {
-                    return results.stream().allMatch(result -> result);
+                future = futureList.thenApply((results) -> {
+                    boolean allResult = results.stream().allMatch(result -> result);
+                    return new DiscoveryResult(allResult, inetAddress, pingDuration);
                 });
-                // Resolve the future.
-                return future.get();
-            } catch (InterruptedException | ExecutionException e) {
+                return future;
+            } catch (Exception e) {
                 LOG.error("Exception while performing detection in discovery.", e);
-                return false;
+                future.complete(new DiscoveryResult(false, inetAddress, pingDuration));
             }
+        }  else {
+            //When there are no detectors, The discovery is just ping itself, make DiscoveryResult successful.
+            future.complete(new DiscoveryResult(true, inetAddress, pingDuration));
         }
-        return true;
+        return future;
     }
 
+    /**
+     * This calls detection asynchronously for a given detector and returns a completable future.
+     */
     private CompletableFuture<Boolean> detect(Detector detector, InetAddress inetAddress, String location) {
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();

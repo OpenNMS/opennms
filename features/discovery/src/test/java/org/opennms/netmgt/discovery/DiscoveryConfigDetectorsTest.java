@@ -29,15 +29,12 @@
 package org.opennms.netmgt.discovery;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
@@ -68,30 +65,27 @@ public class DiscoveryConfigDetectorsTest {
         configFactory.reload();
 
         //Test specifics from definition.
-        Optional<List<Detector>> detectors = configFactory.getListOfDetectors(InetAddressUtils.addr("10.0.0.3"), "Minion");
-        assertTrue(detectors.isPresent());
-        assertEquals(1, detectors.get().size());
+        List<Detector> detectors = configFactory.getListOfDetectors(InetAddressUtils.addr("10.0.0.3"), "Minion");
+        assertEquals(1, detectors.size());
 
         //Test range from definition.
         detectors = configFactory.getListOfDetectors(InetAddressUtils.addr("192.168.0.98"), "Minion");
-        assertTrue(detectors.isPresent());
-        assertEquals(1, detectors.get().size());
+        assertEquals(1, detectors.size());
 
         detectors = configFactory.getListOfDetectors(InetAddressUtils.addr("192.168.0.98"), null);
-        assertFalse(detectors.isPresent());
+        assertEquals(0, detectors.size());
 
         detectors = configFactory.getListOfDetectors(InetAddressUtils.addr("192.165.0.98"), null);
-        assertTrue(detectors.isPresent());
-        assertEquals(1, detectors.get().size());
+        assertEquals(1, detectors.size());
 
         //Test include urls.
         detectors = configFactory.getListOfDetectors(InetAddressUtils.addr("fe80:0000:0000:0000:ffff:eeee:dddd:cccc"), "Minion");
-        assertTrue(detectors.isPresent());
+        assertEquals(1, detectors.size());
 
         detectors = configFactory.getListOfDetectors(InetAddressUtils.addr("8.8.8.8"), "Minion");
-        assertTrue(detectors.isPresent());
+        assertEquals(1, detectors.size());
 
         detectors = configFactory.getListOfDetectors(InetAddressUtils.addr("::1"), "Minion");
-        assertTrue(detectors.isPresent());
+        assertEquals(1, detectors.size());
     }
 }
