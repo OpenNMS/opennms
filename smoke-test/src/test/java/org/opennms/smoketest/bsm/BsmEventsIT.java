@@ -51,16 +51,22 @@ public class BsmEventsIT {
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
-    public Event getEvent(final int businessServiceId, final String severity) {
+    public Event getServiceProblemEvent(final int businessServiceId, final String severity) {
         final EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/bsm/serviceProblem", "test")
                 .setParam("businessServiceId", businessServiceId).setSeverity(severity);
         return eventBuilder.getEvent();
     }
 
+    public Event getServiceDeletedEvent(final int businessServiceId) {
+        final EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/internal/serviceDeleted", "test")
+                .setParam("businessServiceId", businessServiceId);
+        return eventBuilder.getEvent();
+    }
+
     @Test
-    public void verifyClockSkewDetection() throws Exception {
+    public void testSeverityChange() throws Exception {
         final RestClient restClient = stack.opennms().getRestClient();
-        restClient.sendEvent(getEvent(42, "Warning"));
+        restClient.sendEvent(getServiceProblemEvent(42, "Warning"));
 
         final AlarmDao alarmDao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
 
@@ -72,7 +78,7 @@ public class BsmEventsIT {
         assertEquals(1L, (long) onmsAlarm1.getCounter());
         assertEquals(OnmsSeverity.WARNING, onmsAlarm1.getSeverity());
 
-        restClient.sendEvent(getEvent(42, "Minor"));
+        restClient.sendEvent(getServiceProblemEvent(42, "Minor"));
 
         final OnmsAlarm onmsAlarm2 = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
@@ -81,5 +87,32 @@ public class BsmEventsIT {
 
         assertEquals(2L, (long) onmsAlarm2.getCounter());
         assertEquals(OnmsSeverity.MINOR, onmsAlarm2.getSeverity());
+    }
+
+    @Test
+    public void testAlarmCleared() throws Exception {
+        final RestClient restClient = stack.opennms().getRestClient();
+        restClient.sendEvent(getServiceProblemEvent(42, "Major"));
+
+        final AlarmDao alarmDao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
+
+        final OnmsAlarm onmsAlarm1 = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+                .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
+                        .eq("uei", "uei.opennms.org/bsm/serviceProblem")
+                        .eq("severity", OnmsSeverity.MAJOR)
+                        .toCriteria()), notNullValue());
+
+        assertEquals(OnmsSeverity.MAJOR, onmsAlarm1.getSeverity());
+
+        restClient.sendEvent(getServiceDeletedEvent(42));
+
+        final OnmsAlarm onmsAlarm2 = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+                .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
+                        .eq("uei", "uei.opennms.org/bsm/serviceProblem")
+                        .eq("id", onmsAlarm1.getId())
+                        .toCriteria()), notNullValue());
+
+        assertEquals(onmsAlarm1.getId(), onmsAlarm2.getId());
+        assertEquals(OnmsSeverity.CLEARED, onmsAlarm2.getSeverity());
     }
 }
