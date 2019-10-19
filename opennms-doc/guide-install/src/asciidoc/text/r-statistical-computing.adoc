@@ -12,16 +12,22 @@ IMPORTANT: The _R_ integration is not currently supported on _Microsoft Windows_
 
 === Install R on RHEL
 
-.Install the EPEL repositories
+.Ensure the dnf plugin config-manager is installed
 [source, bash]
 ----
-yum install epel-release
+dnf -y install dnf-plugins-core
+----
+
+.Enable the PowerTools repositories
+[source, bash]
+----
+dnf config-manager --set-enabled PowerTools
 ----
 
 .Install R
 [source, bash]
 ----
-yum install R
+dnf -y install R
 ----
 
 === Install R on Debian
