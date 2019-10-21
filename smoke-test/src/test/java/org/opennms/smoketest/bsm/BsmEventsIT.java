@@ -31,11 +31,12 @@ package org.opennms.smoketest.bsm;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.text.IsEmptyString.isEmptyOrNullString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
-import org.elasticsearch.common.Strings;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -78,7 +79,7 @@ public class BsmEventsIT {
                         .toCriteria()), notNullValue());
 
         assertEquals(1L, (long) onmsAlarm1.getCounter());
-        assertFalse(Strings.isNullOrEmpty(onmsAlarm1.getEventParameter("rootCause")));
+        assertThat(onmsAlarm1.getEventParameter("rootCause"), not(isEmptyOrNullString()));
         assertEquals(OnmsSeverity.WARNING, onmsAlarm1.getSeverity());
 
         restClient.sendEvent(getServiceProblemEvent(42, "Minor"));
@@ -89,7 +90,7 @@ public class BsmEventsIT {
                         .toCriteria()), notNullValue());
 
         assertEquals(2L, (long) onmsAlarm2.getCounter());
-        assertFalse(Strings.isNullOrEmpty(onmsAlarm2.getEventParameter("rootCause")));
+        assertThat(onmsAlarm2.getEventParameter("rootCause"), not(isEmptyOrNullString()));
         assertEquals(OnmsSeverity.MINOR, onmsAlarm2.getSeverity());
     }
 
