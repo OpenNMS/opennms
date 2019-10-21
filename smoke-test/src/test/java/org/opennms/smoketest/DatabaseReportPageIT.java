@@ -395,7 +395,7 @@ public class DatabaseReportPageIT extends UiPageTest {
             final CheckBox recipientCheckbox = new CheckBox(getDriver(), "sendMailToggle");
             recipientCheckbox.setSelected(!options.emailRecipients.isEmpty());
             if (!options.emailRecipients.isEmpty()) {
-                final String emailRecipients = Strings.join(options.emailRecipients, ',');
+                final String emailRecipients = String.join(",", options.emailRecipients);
                 new TextInput(getDriver(), "mailRecipient").setInput(emailRecipients);
             }
 
