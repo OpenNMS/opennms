@@ -238,9 +238,6 @@ public class ReportRestIT extends AbstractRestIT {
 
         // Verify deleting scheduled reports work
         given().delete("scheduled").then().statusCode(403);
-
-        // TODO MVR verify delivering/scheduling reports does not work
-        // TODO MVR verify deleting persisted and scheduled reports does not work
     }
 
     private static JSONObject getUsers() {
