@@ -45,6 +45,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -222,13 +223,22 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
              final CloseableHttpClient client = HttpClients.createDefault();
         ) {
+            // Build Request
             LOG.debug("Posting generated report with name {} to endpoint {} (input was {})", fileName, substitutedUrl, url);
             final HttpEntity entity = MultipartEntityBuilder.create()
                     .addBinaryBody("file", inputStream, ContentType.DEFAULT_BINARY, fileName)
                     .build();
             final HttpPost httpPost = new HttpPost(substitutedUrl);
             httpPost.setEntity(entity);
-            client.execute(httpPost);
+
+            // Execute request and ensure it succeeded
+            try (CloseableHttpResponse response = client.execute(httpPost)) {
+                LOG.debug("Request performed. Received response: {}", response);
+                final int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode < 200 || statusCode >= 300) {
+                    throw new IOException("Expected status code of >= 200 and <= 300 but received: " + statusCode + ". Reason: " + response.getStatusLine().toString());
+                }
+            }
         } catch (IOException ex) {
             LOG.error("Error while posting data to endpoint {}: {}", url, ex.getMessage(), ex);
         }
