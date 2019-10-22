@@ -70,9 +70,9 @@ Requires(pre):  jicmp >= 2.0.0
 Requires:       jicmp6 >= 2.0.0
 Requires(pre):  jicmp6 >= 2.0.0
 
-Obsoletes:      %{name}-container        < %{version}-%{release}
-Obsoletes:      %{name}-features-core    < %{version}-%{release}
-Obsoletes:      %{name}-features-default < %{version}-%{release}
+Conflicts:      %{name}-container        < %{version}-%{release}
+Conflicts:      %{name}-features-core    < %{version}-%{release}
+Conflicts:      %{name}-features-default < %{version}-%{release}
 
 Prefix:         %{minioninstprefix}
 
