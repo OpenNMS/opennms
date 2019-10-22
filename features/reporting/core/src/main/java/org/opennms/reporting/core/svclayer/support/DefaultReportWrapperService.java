@@ -235,8 +235,8 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             try (CloseableHttpResponse response = client.execute(httpPost)) {
                 LOG.debug("Request performed. Received response: {}", response);
                 final int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode < 200 || statusCode >= 300) {
-                    throw new IOException("Expected status code of >= 200 and <= 300 but received: " + statusCode + ". Reason: " + response.getStatusLine().toString());
+                if (statusCode < 200 || statusCode > 299) {
+                    throw new IOException("Expected status code of >= 200 and <= 299 but received: " + statusCode + ". Reason: " + response.getStatusLine().getReasonPhrase());
                 }
             }
         } catch (IOException ex) {
