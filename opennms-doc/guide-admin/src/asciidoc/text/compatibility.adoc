@@ -10,7 +10,7 @@
 | OpenNMS Integration API | 0.2.x
 | Newts                   | 1.5.2
 | Cassandra               | 3.11.+
-| Elasticsearch           | 7.x - 7.3.0
+| Elasticsearch           | 7.x
 | Java Development Kit    | OpenJDK 8, OpenJDK 11
 | Kafka                   | 2.3.0
 | PostgreSQL              | 10.x - 11.x
