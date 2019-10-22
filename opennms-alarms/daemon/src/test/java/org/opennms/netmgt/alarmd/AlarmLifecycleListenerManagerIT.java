@@ -49,7 +49,6 @@ import java.util.concurrent.Callable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Criteria;
@@ -83,7 +82,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  *
  * @author jwhite
  */
-@Ignore("flapping - see NMS-12309")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",

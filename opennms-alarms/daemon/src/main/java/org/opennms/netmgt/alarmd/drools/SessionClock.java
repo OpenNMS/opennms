@@ -47,8 +47,9 @@ import com.google.common.cache.LoadingCache;
  * This clock is used to provide the current time as fact within the Drools engine.
  *
  * We use this as opposed to using STREAM mode since STREAM mode does not have
- * deterministic behavior when given out-of-order @events.
+ * deterministic behavior when given out-of-order events.
  *
+ * @author jwhite
  */
 public class SessionClock implements org.kie.api.time.SessionPseudoClock {
     /**

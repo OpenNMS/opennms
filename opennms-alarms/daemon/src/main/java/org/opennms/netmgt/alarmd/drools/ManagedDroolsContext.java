@@ -58,6 +58,7 @@ import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.time.SessionPseudoClock;
 import org.kie.internal.io.ResourceFactory;
+import org.opennms.core.sysprops.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +79,16 @@ public class ManagedDroolsContext {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
     private static final String JMX_DOMAIN_PREFIX = "org.opennms.features.drools.";
-    private static final long CLOCK_UPDATE_INTERVAL_MS = TimeUnit.SECONDS.toMillis(5);
+
+    /**
+     * Frequency at which the clock is updated in the session
+     */
+    private static final long CLOCK_UPDATE_INTERVAL_MS = SystemProperties.getLong(
+            "org.opennms.features.drools.clock_update_interval_ms", TimeUnit.SECONDS.toMillis(5));
+
+    /**
+     * Frequency at which the liveness check is scheduled
+     */
     private static final long LIVENESS_CHECK_INTERVAL_MS = TimeUnit.SECONDS.toMillis(5);
 
     private final MetricRegistry metrics;
