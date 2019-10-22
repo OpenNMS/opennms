@@ -54,7 +54,7 @@
             <div class="input-group-text"><i class="fa fa-search"></i></div>
         </div>
         <label class="form-control">
-            <input id="query" ng-change="onQueryChange()" ng-focus="input.focus=true" ng-blur="input.focus=false" ng-model="query" type="text" class="form-control" placeholder="Search..." aria-label="Search">
+            <input id="onms-search-query" ng-change="onQueryChange()" ng-focus="input.focus=true" ng-blur="input.focus=false" ng-model="query" type="text" class="form-control" placeholder="Search..." aria-label="Search">
             <small class="text-muted mr-4" ng-show="!input.focus">2x ⇧</small>
         </label>
         <!-- Loading Indicator -->
@@ -75,7 +75,7 @@
     <!-- Results -->
     <div ng-if="performSearchExecuted === true" class="bg-dark search-result rounded-bottom" id="onms-search-result">
         <div class="list-group" ng-if="results.length > 0">
-            <div ng-repeat-start="item in results track by $index" ng-if="item.type === 'Group'" class="list-group-item bg-dark text-grey border-0 pl-2">
+            <div id="onms-search-result-item-{{$index}}" ng-repeat-start="item in results track by $index" ng-if="item.type === 'Group'" class="list-group-item bg-dark text-grey border-0 pl-2">
                 <span ng-if="!item.t">{{item.label}}</span>
             </div>
             <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-if="item.type === 'More'" ng-click="item.loadMore()" class="list-group-item list-group-item-action" href ng-mouseover="select($index)">more...</a>

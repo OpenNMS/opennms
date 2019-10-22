@@ -83,8 +83,8 @@ const globalErrorHandling = function(scope, errorResponse) {
                 // Search Focus Field
                 $timeout(function() {
                     if (e.keyCode === KeyCodes.SHIFT && new Date() - $scope.shiftLastPressed <= 350) {
-                        angular.element('#query').focus();
-                        angular.element('#query').select();
+                        angular.element('#onms-search-query').focus();
+                        angular.element('#onms-search-query').select();
                         $scope.shiftLastPressed = undefined;
                     } else if(e.keyCode === KeyCodes.SHIFT) {
                         $scope.shiftLastPressed = new Date();
