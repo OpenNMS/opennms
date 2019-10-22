@@ -8,7 +8,6 @@
 | Component               | Version Compatibility
 | OpenNMS Helm            | 3+
 | OpenNMS Integration API | 0.2.x
-| Newts                   | 1.5.2
 | Cassandra               | 3.11.+
 | Elasticsearch           | 7.x
 | Java Development Kit    | OpenJDK 8, OpenJDK 11
