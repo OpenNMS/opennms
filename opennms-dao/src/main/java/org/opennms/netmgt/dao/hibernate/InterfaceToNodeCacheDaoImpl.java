@@ -397,16 +397,19 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     @Override
     public void removeInterfacesForNode(int nodeId) {
-
-        List<Map.Entry<Key, Value>> keyValues = m_managedAddresses.entries().stream()
-                .filter(keyValueEntry -> keyValueEntry.getValue().getNodeId() == nodeId)
-                .collect(Collectors.toList());
-        keyValues.forEach(keyValue -> {
-            boolean succeeded = m_managedAddresses.remove(keyValue.getKey(), keyValue.getValue());
-            if (succeeded) {
-                LOG.debug("removeInterfaesForNode: removed IP address from cache: {}", str(keyValue.getKey().getIpAddress()));
-            }
-        });
-
+        m_lock.writeLock().lock();
+        try {
+            List<Map.Entry<Key, Value>> keyValues = m_managedAddresses.entries().stream()
+                    .filter(keyValueEntry -> keyValueEntry.getValue().getNodeId() == nodeId)
+                    .collect(Collectors.toList());
+            keyValues.forEach(keyValue -> {
+                boolean succeeded = m_managedAddresses.remove(keyValue.getKey(), keyValue.getValue());
+                if (succeeded) {
+                    LOG.debug("removeInterfacesForNode: removed IP address from cache: {}", str(keyValue.getKey().getIpAddress()));
+                }
+            });
+        } finally {
+            m_lock.writeLock().unlock();
+        }
     }
 }
