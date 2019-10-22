@@ -167,7 +167,7 @@ public class KafkaRpcServerManager {
         }
     }
 
-    private void startConsumerForModule(RpcModule<RpcRequest, RpcResponse> rpcModule) {
+    protected void startConsumerForModule(RpcModule<RpcRequest, RpcResponse> rpcModule) {
         final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME, rpcModule.getId(),
                 minionIdentity.getLocation());
         KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaConsumer.class.getClassLoader());
@@ -186,7 +186,7 @@ public class KafkaRpcServerManager {
         }
     }
 
-    private void stopConsumerForModule(RpcModule<RpcRequest, RpcResponse> rpcModule) {
+    protected void stopConsumerForModule(RpcModule<RpcRequest, RpcResponse> rpcModule) {
         KafkaConsumerRunner kafkaConsumerRunner  = rpcModuleConsumers.remove(rpcModule);
         LOG.info("stopped kafka consumer for module : {}", rpcModule.getId());
         kafkaConsumerRunner.shutdown();
@@ -202,7 +202,7 @@ public class KafkaRpcServerManager {
     }
 
 
-    private class KafkaConsumerRunner implements Runnable {
+    class KafkaConsumerRunner implements Runnable {
 
         private final KafkaConsumer<String, byte[]> consumer;
         private final AtomicBoolean closed = new AtomicBoolean(false);
@@ -240,43 +240,24 @@ public class KafkaRpcServerManager {
                             }
                             boolean hasSystemId = !Strings.isNullOrEmpty(rpcMessage.getSystemId());
                             String minionId = minionIdentity.getId();
+
                             if (hasSystemId && !(minionId.equals(rpcMessage.getSystemId()))) {
                                 // directed RPC and not directed at this minion
                                 continue;
                             }
                             if (hasSystemId) {
                                 // directed RPC, there may be more than one request with same request Id, cache and allow only one.
-                                String messageId = rpcId;
-                                // If this message has more than one chunk, chunk number should be added to messageId to make it unique.
-                                if (rpcMessage.getTotalChunks() > 1) {
-                                    messageId = messageId + rpcMessage.getCurrentChunkNumber();
-                                }
-                                // If rpcId is already present in queue, no need to process it again.
-                                if (rpcIdQueue.contains(new RpcId(messageId, rpcMessage.getExpirationTime())) ||
-                                        rpcMessage.getExpirationTime() < System.currentTimeMillis()) {
+                                boolean messageProcessed = handleDirectedRPC(rpcMessage);
+                                if(messageProcessed) {
                                     continue;
-                                } else {
-                                    rpcIdQueue.offer(new RpcId(messageId, rpcMessage.getExpirationTime()));
                                 }
                             }
                             ByteString rpcContent = rpcMessage.getRpcContent();
                             // For larger messages which get split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
-                                // Avoid duplicate chunks. discard if chunk is repeated.
-                                currentChunkCache.putIfAbsent(rpcId, 0);
-                                Integer chunkNumber = currentChunkCache.get(rpcId);
-                                if(chunkNumber != rpcMessage.getCurrentChunkNumber()) {
-                                    LOG.debug("Expected chunk = {} but got chunk = {}, ignoring.", chunkNumber, rpcMessage.getCurrentChunkNumber());
-                                    continue;
-                                }
-                                ByteString byteString = messageCache.get(rpcId);
-                                if (byteString != null) {
-                                    messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
-                                } else {
-                                    messageCache.put(rpcId, rpcMessage.getRpcContent());
-                                }
-                                currentChunkCache.put(rpcId, ++chunkNumber);
-                                if (rpcMessage.getTotalChunks() != chunkNumber) {
+                                // Handle multiple chunks
+                                boolean allChunksReceived = handleChunks(rpcMessage);
+                                if(!allChunksReceived) {
                                     continue;
                                 }
                                 rpcContent = messageCache.get(rpcId);
@@ -284,20 +265,13 @@ public class KafkaRpcServerManager {
                                 messageCache.remove(rpcId);
                                 currentChunkCache.remove(rpcId);
                             }
-                            //Build child span from rpcMessage.
+                            //Build child span from rpcMessage and start minion span.
                             Tracer.SpanBuilder spanBuilder = buildSpanFromRpcMessage(rpcMessage);
-                            // Start minion span.
                             Span minionSpan = spanBuilder.start();
-                            // Retrieve custom tags from rpcMessage and add them as tags.
-                            rpcMessage.getTracingInfoList().forEach(tracingInfo -> {
-                                minionSpan.setTag(tracingInfo.getKey(), tracingInfo.getValue());
-                            });
+
                             RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
-                            // Set tags for minion span
-                            minionSpan.setTag(TAG_LOCATION, request.getLocation());
-                            if(request.getSystemId() != null) {
-                                minionSpan.setTag(TAG_SYSTEM_ID, request.getSystemId());
-                            }
+                            setTagsOnMinion(rpcMessage, request, minionSpan);
+
                             CompletableFuture<RpcResponse> future = module.execute(request);
                             future.whenComplete((res, ex) -> {
                                 final RpcResponse response;
@@ -313,39 +287,7 @@ public class KafkaRpcServerManager {
                                 }
                                 // Finish minion Span
                                 minionSpan.finish();
-                                try {
-                                    final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaRpcConstants.RPC_RESPONSE_TOPIC_NAME,
-                                            module.getId());
-                                    final String responseAsString = module.marshalResponse(response);
-                                    final byte[] messageInBytes = responseAsString.getBytes();
-                                    int totalChunks = IntMath.divide(messageInBytes.length, maxBufferSize, RoundingMode.UP);
-                                    // Divide the message in chunks and send each chunk as a different message with the same key.
-                                    RpcMessageProtos.RpcMessage.Builder builder = RpcMessageProtos.RpcMessage.newBuilder()
-                                                                                      .setRpcId(rpcId);
-                                    builder.setTotalChunks(totalChunks);
-                                    for (int chunk = 0; chunk < totalChunks; chunk++) {
-                                        // Calculate remaining bufferSize for each chunk.
-                                        int bufferSize = KafkaRpcConstants.getBufferSize(messageInBytes.length, maxBufferSize, chunk);
-                                        ByteString byteString = ByteString.copyFrom(messageInBytes, chunk * maxBufferSize, bufferSize);
-                                        RpcMessageProtos.RpcMessage rpcResponse = builder.setCurrentChunkNumber(chunk)
-                                                                                      .setRpcContent(byteString)
-                                                                                      .build();
-                                        final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(
-                                                topicNameFactory.getName(), rpcId, rpcResponse.toByteArray());
-                                        int chunkNum = chunk;
-                                        producer.send(producerRecord, (recordMetadata, e) -> {
-                                            if (e != null) {
-                                                RATE_LIMITED_LOG.error(" RPC response {} with id {} couldn't be sent to Kafka", rpcResponse, rpcId, e);
-                                            } else {
-                                                if (LOG.isTraceEnabled()) {
-                                                    LOG.trace("request with id {} executed, sending response {}, chunk number {} ", rpcId, responseAsString, chunkNum);
-                                                }
-                                            }
-                                        });
-                                    }
-                                } catch (Throwable t) {
-                                    LOG.error("Marshalling response in RPC module {} failed.", module, t);
-                                }
+                                sendResponse(rpcId, response);
                             });
                         } catch (InvalidProtocolBufferException e) {
                              LOG.error("error while parsing the request", e);
@@ -362,7 +304,87 @@ public class KafkaRpcServerManager {
             }
         }
 
-        private Tracer.SpanBuilder buildSpanFromRpcMessage( RpcMessageProtos.RpcMessage rpcMessage) {
+        private void sendResponse(String rpcId, RpcResponse response) {
+            try {
+                final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaRpcConstants.RPC_RESPONSE_TOPIC_NAME,
+                        module.getId());
+                final String responseAsString = module.marshalResponse(response);
+                final byte[] messageInBytes = responseAsString.getBytes();
+                int totalChunks = IntMath.divide(messageInBytes.length, maxBufferSize, RoundingMode.UP);
+
+                // Divide the message in chunks and send each chunk as a different message with the same key.
+                RpcMessageProtos.RpcMessage.Builder builder = RpcMessageProtos.RpcMessage.newBuilder()
+                        .setRpcId(rpcId);
+                builder.setTotalChunks(totalChunks);
+
+                for (int chunk = 0; chunk < totalChunks; chunk++) {
+                    // Calculate remaining bufferSize for each chunk.
+                    int bufferSize = KafkaRpcConstants.getBufferSize(messageInBytes.length, maxBufferSize, chunk);
+                    ByteString byteString = ByteString.copyFrom(messageInBytes, chunk * maxBufferSize, bufferSize);
+                    RpcMessageProtos.RpcMessage rpcMessage = builder.setCurrentChunkNumber(chunk)
+                            .setRpcContent(byteString)
+                            .build();
+                    sendMessageToKafka(rpcMessage, topicNameFactory.getName(), responseAsString);
+                }
+            } catch (Throwable t) {
+                LOG.error("Marshalling response in RPC module {} failed.", module, t);
+            }
+        }
+
+        void sendMessageToKafka(RpcMessageProtos.RpcMessage rpcMessage, String topic, String responseAsString) {
+            String rpcId = rpcMessage.getRpcId();
+            int chunkNum = rpcMessage.getCurrentChunkNumber();
+            final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(
+                    topic, rpcMessage.getRpcId(), rpcMessage.toByteArray());
+
+            producer.send(producerRecord, (recordMetadata, e) -> {
+                if (e != null) {
+                    RATE_LIMITED_LOG.error(" RPC response {} with id {} couldn't be sent to Kafka", rpcMessage, rpcId, e);
+                } else {
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("request with id {} executed, sending response {}, chunk number {} ", rpcId, responseAsString, chunkNum);
+                    }
+                }
+            });
+        }
+
+        private boolean handleDirectedRPC(RpcMessageProtos.RpcMessage rpcMessage) {
+            String messageId = rpcMessage.getRpcId();
+            // If this message has more than one chunk, chunk number should be added to messageId to make it unique.
+            if (rpcMessage.getTotalChunks() > 1) {
+                messageId = messageId + rpcMessage.getCurrentChunkNumber();
+            }
+            // If rpcId is already present in queue, no need to process it again.
+            if (rpcIdQueue.contains(new RpcId(messageId, rpcMessage.getExpirationTime())) ||
+                    rpcMessage.getExpirationTime() < System.currentTimeMillis()) {
+                return true;
+            } else {
+                rpcIdQueue.offer(new RpcId(messageId, rpcMessage.getExpirationTime()));
+            }
+            return false;
+        }
+
+        private boolean handleChunks(RpcMessageProtos.RpcMessage rpcMessage) {
+            // Avoid duplicate chunks. discard if chunk is repeated.
+            String rpcId = rpcMessage.getRpcId();
+            currentChunkCache.putIfAbsent(rpcId, 0);
+            Integer chunkNumber = currentChunkCache.get(rpcId);
+            if(chunkNumber != rpcMessage.getCurrentChunkNumber()) {
+                LOG.debug("Expected chunk = {} but got chunk = {}, ignoring.", chunkNumber, rpcMessage.getCurrentChunkNumber());
+                return false;
+            }
+            ByteString byteString = messageCache.get(rpcId);
+            if (byteString != null) {
+                messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
+            } else {
+                messageCache.put(rpcId, rpcMessage.getRpcContent());
+            }
+            currentChunkCache.put(rpcId, ++chunkNumber);
+
+            return rpcMessage.getTotalChunks() == chunkNumber;
+        }
+
+        private Tracer.SpanBuilder buildSpanFromRpcMessage(RpcMessageProtos.RpcMessage rpcMessage) {
             // Initializer tracer and extract parent tracer context from TracingInfo
             final Tracer tracer = tracerRegistry.getTracer();
             Tracer.SpanBuilder spanBuilder;
@@ -378,6 +400,19 @@ public class KafkaRpcServerManager {
             }
             return spanBuilder;
         }
+
+        private void setTagsOnMinion(RpcMessageProtos.RpcMessage rpcMessage, RpcRequest request, Span minionSpan) {
+            // Retrieve custom tags from rpcMessage and add them as tags.
+            rpcMessage.getTracingInfoList().forEach(tracingInfo -> {
+                minionSpan.setTag(tracingInfo.getKey(), tracingInfo.getValue());
+            });
+            // Set tags for minion span
+            minionSpan.setTag(TAG_LOCATION, request.getLocation());
+            if(request.getSystemId() != null) {
+                minionSpan.setTag(TAG_SYSTEM_ID, request.getSystemId());
+            }
+        }
+
 
     }
 
@@ -429,8 +464,23 @@ public class KafkaRpcServerManager {
         }
     }
 
-    public DelayQueue<RpcId> getRpcIdQueue() {
+    DelayQueue<RpcId> getRpcIdQueue() {
         return rpcIdQueue;
     }
 
+    Map<RpcModule<RpcRequest, RpcResponse>, KafkaConsumerRunner> getRpcModuleConsumers() {
+        return rpcModuleConsumers;
+    }
+
+    ExecutorService getExecutor() {
+        return executor;
+    }
+
+    Properties getKafkaConfig() {
+        return kafkaConfig;
+    }
+
+    Map<String, ByteString> getMessageCache() {
+        return messageCache;
+    }
 }

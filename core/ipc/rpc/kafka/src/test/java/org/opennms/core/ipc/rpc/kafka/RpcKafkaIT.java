@@ -40,8 +40,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL_PROPERTY;
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE_PROPERTY;
 
 import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
@@ -86,10 +84,6 @@ public class RpcKafkaIT {
     public static final String REMOTE_LOCATION_NAME = "remote";
     public static final String MAX_BUFFER_SIZE = "1000000";
 
-    static {
-        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, DEFAULT_TTL_PROPERTY), "20000");
-        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE);
-    }
 
     @Rule
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
@@ -108,7 +102,7 @@ public class RpcKafkaIT {
 
     private AtomicInteger count = new AtomicInteger(0);
 
-    private TracerRegistry tracerRegistry = new TracerRegistry() {
+    static TracerRegistry tracerRegistry = new TracerRegistry() {
         @Override
         public Tracer getTracer() {
             return GlobalTracer.get();

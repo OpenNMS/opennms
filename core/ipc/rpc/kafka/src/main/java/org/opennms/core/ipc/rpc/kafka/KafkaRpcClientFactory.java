@@ -473,21 +473,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             String rpcId = rpcMessage.getRpcId();
                             // For larger messages which get split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
-                                // Avoid duplicate chunks. discard if chunk is repeated or not in order.
-                                currentChunkCache.putIfAbsent(rpcId, 0);
-                                Integer chunkNumber = currentChunkCache.get(rpcId);
-                                if(chunkNumber != rpcMessage.getCurrentChunkNumber()) {
-                                    LOG.debug("Expected chunk = {} but got chunk = {}, ignoring.", chunkNumber, rpcMessage.getCurrentChunkNumber());
-                                    continue;
-                                }
-                                ByteString byteString = messageCache.get(rpcId);
-                                if (byteString != null) {
-                                    messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
-                                } else {
-                                    messageCache.put(rpcId, rpcMessage.getRpcContent());
-                                }
-                                currentChunkCache.put(rpcId, ++chunkNumber);
-                                if (rpcMessage.getTotalChunks() != chunkNumber) {
+                                boolean allChunksReceived = handleChunks(rpcMessage);
+                                if(!allChunksReceived) {
                                     continue;
                                 }
                                 rpcContent = messageCache.get(rpcId);
@@ -522,6 +509,25 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         public void stop() {
             closed.set(true);
             consumer.wakeup();
+        }
+
+        private boolean handleChunks(RpcMessageProtos.RpcMessage rpcMessage) {
+            // Avoid duplicate chunks. discard if chunk is repeated or not in order.
+            String rpcId = rpcMessage.getRpcId();
+            currentChunkCache.putIfAbsent(rpcId, 0);
+            Integer chunkNumber = currentChunkCache.get(rpcId);
+            if(chunkNumber != rpcMessage.getCurrentChunkNumber()) {
+                LOG.debug("Expected chunk = {} but got chunk = {}, ignoring.", chunkNumber, rpcMessage.getCurrentChunkNumber());
+                return false;
+            }
+            ByteString byteString = messageCache.get(rpcId);
+            if (byteString != null) {
+                messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
+            } else {
+                messageCache.put(rpcId, rpcMessage.getRpcContent());
+            }
+            currentChunkCache.put(rpcId, ++chunkNumber);
+            return rpcMessage.getTotalChunks() == chunkNumber;
         }
 
         private void waitTillFirstTopicIsAdded() {
