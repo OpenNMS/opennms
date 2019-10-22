@@ -104,7 +104,7 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
                         break;
                     }
 
-                    try (final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO event_parameters (eventid, name, value, type) VALUES  (?,?,?,?)");
+                    try (final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO event_parameters (eventid, name, value, type, position) VALUES  (?,?,?,?,?)");
                          final PreparedStatement nullifyStatement = connection.prepareStatement("UPDATE events SET eventparms=NULL WHERE eventid=?")) {
 
                         do {
