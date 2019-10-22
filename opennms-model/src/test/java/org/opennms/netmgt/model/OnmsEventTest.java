@@ -61,12 +61,12 @@ public class OnmsEventTest {
 
 	@Test
 	public void shouldPreserveParameterOrderFromDatabase() {
-		List<OnmsEventParameter> params = Arrays.asList(
+		List<OnmsEventParameter> params = new ArrayList<>(Arrays.asList(
 				param("A"),
 				param("B"),
 				param("C"),
 				param("D"),
-				param("E")
+				param("E"))
 		);
 		OnmsEvent event = new OnmsEvent();
 		event.setEventParameters(params);
@@ -75,19 +75,18 @@ public class OnmsEventTest {
 		// assume we are writing now to database and retrieve parameters out of order
         List<OnmsEventParameter> shuffledParams = new ArrayList<>(params);
         Collections.shuffle(shuffledParams, new Random(41));
-        List<OnmsEventParameter> listFromDatabase = new PersistentBag(null, shuffledParams);
-        event = new OnmsEvent();
-        event.setEventParameters(listFromDatabase);
+        params.clear();
+        params.addAll(shuffledParams);
 
 		// but the order should be ok again when sorting by position
-        checkOrder(event.getEventParametersInOrder(), "A", "B", "C", "D", "E");
+        checkOrder(event.getEventParameters(), "A", "B", "C", "D", "E");
 	}
 
     @Test
     public void shouldBeResilientAgainstParameterNullList() {
         OnmsEvent event = new OnmsEvent();
         event.setEventParameters(null);
-        assertNull(event.getEventParametersInOrder());
+        assertNull(event.getEventParameters());
     }
 
     private void checkOrder(final List<OnmsEventParameter> params, final String ... expected) {

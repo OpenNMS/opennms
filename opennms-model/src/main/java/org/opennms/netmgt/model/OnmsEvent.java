@@ -78,7 +78,7 @@ import com.google.common.base.MoreObjects;
 @Entity
 @Table(name="events")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "eventParametersInOrder"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	/**
@@ -116,7 +116,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	/** nullable persistent field */
 	private String m_eventSnmp;
 
-	private List<OnmsEventParameter> m_eventParameters;
+	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
+	private List<OnmsEventParameter> eventParameters;
 
 	/** persistent field */
 	private Date m_eventCreateTime;
@@ -414,50 +415,44 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	@XmlElementWrapper(name="parameters")
 	@XmlElement(name="parameter")
-	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
 	public List<OnmsEventParameter> getEventParameters() {
-	    return this.m_eventParameters;
+		if(this.eventParameters != null) {
+			this.eventParameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
+		}
+		return this.eventParameters;
 	}
 
 	@Transient // Ignore this method for hibernate
 	public List<OnmsEventParameter> getEventParametersInOrder() {
-	    if(this.m_eventParameters == null) {
+	    if(this.eventParameters == null) {
 	        return null;
         }
-		List<OnmsEventParameter> sortedParams = new ArrayList<>(this.m_eventParameters);
+		List<OnmsEventParameter> sortedParams = new ArrayList<>(this.eventParameters);
 		sortedParams.sort(Comparator.comparing(OnmsEventParameter::getPosition));
 		return sortedParams;
 	}
 
 	public void setEventParameters(List<OnmsEventParameter> eventParameters) {
-		this.m_eventParameters = eventParameters;
-		if(!isCalledFromHibernate(eventParameters)) {
-			setPositionsOnParameters(m_eventParameters);
-		}
-	}
-
-	private boolean isCalledFromHibernate(List<OnmsEventParameter> eventParameters) {
-		// this is not very elegant, I would prefer to use @OrderColumn or the JPA Hook: @PrePersist but it doesn't
-		// seem to work in our context, see https://issues.opennms.org/browse/NMS-9827
-		return (eventParameters instanceof PersistentBag);
+		this.eventParameters = eventParameters;
+		setPositionsOnParameters(this.eventParameters);
 	}
 
 	public void setEventParametersFromEvent(final Event event) {
-		this.m_eventParameters = EventParameterUtils.normalizePreserveOrder(event.getParmCollection()).stream()
+		this.eventParameters = EventParameterUtils.normalizePreserveOrder(event.getParmCollection()).stream()
 				.map(p -> new OnmsEventParameter(this, p))
 				.collect(Collectors.toList());
-		setPositionsOnParameters(m_eventParameters);
+		setPositionsOnParameters(eventParameters);
 	}
 
 	public void addEventParameter(OnmsEventParameter parameter) {
-		if (m_eventParameters == null) {
-			m_eventParameters = new ArrayList<>();
+		if (eventParameters == null) {
+			eventParameters = new ArrayList<>();
 		}
-		if (m_eventParameters.contains(parameter)) {
-			m_eventParameters.remove(parameter);
+		if (eventParameters.contains(parameter)) {
+			eventParameters.remove(parameter);
 		}
-		m_eventParameters.add(parameter);
-        setPositionsOnParameters(m_eventParameters);
+		eventParameters.add(parameter);
+        setPositionsOnParameters(eventParameters);
 	}
 
 	/**

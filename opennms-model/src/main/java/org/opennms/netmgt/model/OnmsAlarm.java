@@ -803,7 +803,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @XmlElementWrapper(name="parameters")
     @XmlElement(name="parameter")
     public List<OnmsEventParameter> getEventParameters() {
-        return m_lastEvent != null ? m_lastEvent.getEventParametersInOrder() : null;
+        return m_lastEvent != null ? m_lastEvent.getEventParameters() : null;
     }
 
     public Optional<OnmsEventParameter> findEventParameter(final String name) {

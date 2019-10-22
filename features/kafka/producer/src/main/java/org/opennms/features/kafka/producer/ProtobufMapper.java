@@ -264,7 +264,7 @@ public class ProtobufMapper {
                 builder.setNodeCriteria(toNodeCriteria(event.getNode()));
             }
 
-            for (OnmsEventParameter param : event.getEventParametersInOrder()) {
+            for (OnmsEventParameter param : event.getEventParameters()) {
                 if (param.getName() == null || param.getValue() == null) {
                     continue;
                 }

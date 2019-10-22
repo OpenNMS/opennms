@@ -100,7 +100,7 @@ public class EventRestService extends OnmsRestService {
             throw getException(Status.NOT_FOUND, "Event object {} was not found.", Integer.toString(eventId));
         }
         // Make sure we expose the params sorted:
-        e.setEventParameters(e.getEventParametersInOrder());
+        e.setEventParameters(e.getEventParameters());
         return e;
     }
 
