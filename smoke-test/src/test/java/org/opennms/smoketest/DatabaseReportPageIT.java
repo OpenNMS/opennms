@@ -498,8 +498,8 @@ public class DatabaseReportPageIT extends UiPageTest {
                 final ReportScheduleElement element = new ReportScheduleElement(getDriver());
                 element.setTemplateName(columns.get(1).getText());
                 element.setFormat(columns.get(2).getText());
-                element.setCronExpression(columns.get(5).getText());
-                element.setTriggerName(columns.get(6).getText());
+                element.setCronExpression(columns.get(6).getText());
+                element.setTriggerName(columns.get(7).getText());
                 results.add(element);
             }
             return results;
