@@ -26,7 +26,7 @@
                 <th ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">Action(s)</th>
                 <th>Template</th>
                 <th>Format</th>
-                <th colspan="2">Delivery Options</th>
+                <th colspan="3">Delivery Options</th>
                 <th>Cron Expression</th>
                 <th>Trigger Name</th>
                 <th>Next fire time</th>
@@ -49,8 +49,13 @@
                     </span>
                 </td>
                 <td>
-                    <span ng-if="schedule.deliveryOptions.sendMail || false" title="Mail to">
-                        <i class="fa fa-share"></i> <small>{{schedule.deliveryOptions.mailTo}}</small>
+                    <span ng-if="schedule.deliveryOptions.sendMail || false" title="Mail to {{schedule.deliveryOptions.mailTo}}">
+                        <i class="fa fa-envelope-o"></i>
+                    </span>
+                </td>
+                <td>
+                    <span ng-if="schedule.deliveryOptions.webhook || false" title="POST to {{schedule.deliveryOptions.webhookUrl}}">
+                        <i class="fa fa-paper-plane-o"></i>
                     </span>
                 </td>
                 <td>

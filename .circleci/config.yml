@@ -296,6 +296,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - mvr/health-rest-service
+                - jira/NMS-12153
       - smoke-test-minimal:
           requires:
             - horizon-package-build
@@ -311,6 +312,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - mvr/health-rest-service
+                - jira/NMS-12153
       - horizon-publish-oci:
           requires:
             - horizon-package-build
