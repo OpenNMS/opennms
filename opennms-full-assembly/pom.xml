@@ -586,6 +586,7 @@
                 <feature>opennms-blobstore-shell</feature>
                 <feature>opennms-jsonstore-shell</feature>
                 <feature>opennms-threshold-states-shell</feature>
+                <feature>opennms-core-tracing-jaeger</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
