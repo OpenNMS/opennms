@@ -17,25 +17,32 @@ const QuickNode = require('../../../../../src/main/assets/js/apps/onms-requisiti
 const Requisition = require('../../../../../src/main/assets/js/apps/onms-requisitions/lib/scripts/model/Requisition');
 const RequisitionNode = require('../../../../../src/main/assets/js/apps/onms-requisitions/lib/scripts/model/RequisitionNode');
 
+var deployedStatsTestNetwork = {
+  'name' : 'test-network',
+  'count': 2,
+  'totalCount': 2,
+  'foreign-id': [
+    '1001',
+    '1003'
+  ]
+};
+
+var deployedStatsTestMonitoring = {
+  'name' : 'test-monitoring',
+  'count': 1,
+  'totalCount': 1,
+  'foreign-id': [
+    'onms'
+  ]
+};
+
 var deployedStats = {
   'count': 2,
   'totalCount': 2,
-  'foreign-source': [{
-    'name' : 'test-network',
-    'count': 2,
-    'totalCount': 2,
-    'foreign-id': [
-      '1001',
-      '1003'
-    ]
-  },{
-    'name' : 'test-monitoring',
-    'count': 1,
-    'totalCount': 1,
-    'foreign-id': [
-      'onms'
-    ]
-  }]
+  'foreign-source': [
+    deployedStatsTestNetwork,
+    deployedStatsTestMonitoring
+  ]
 };
 
 var requisitions = {
@@ -347,10 +354,16 @@ test('Service: RequisitionsService: getRequisition', function() {
   var fs  = req['foreign-source'];
   var requisitionUrl = requisitionsService.internal.requisitionsUrl + '/' + fs;
   $httpBackend.expect('GET', requisitionUrl).respond(req);
+  var statsUrl = requisitionsService.internal.requisitionsUrl + '/deployed/stats/test-network';
+  $httpBackend.expect('GET', statsUrl).respond(deployedStatsTestNetwork);
 
   return runDigest(requisitionsService.getRequisition(fs).then(function(data) {
     expect(data).not.toBe(null);
     expect(data.nodes.length).toBe(3);
+    expect(data.nodesInDatabase).toBe(2);
+    expect(data.nodes[0].deployed).toBe(true);
+    expect(data.nodes[1].deployed).toBe(undefined);
+    expect(data.nodes[2].deployed).toBe(true);
   }, errorHandlerFn));
 });
 
