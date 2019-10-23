@@ -138,14 +138,14 @@ public class DefaultSchedulerServiceIT {
     }
 
     @Test
-    public void testEitherSendMailOrPersistMustBeSet() {
+    public void testEitherSendMailPersistOrWebhookMustBeSet() {
         deliveryOptions.setPersist(false);
 
         try {
             m_schedulerService.execute(new DeliveryConfig(reportParameters, deliveryOptions));
             fail("Expected exception, but wasn't thrown");
         } catch (org.opennms.web.svclayer.support.SchedulerContextException ex) {
-            assertThat(ex.getContext(), is("sendMail_persist"));
+            assertThat(ex.getContext(), is("sendMail_persist_webhook"));
         }
     }
 
