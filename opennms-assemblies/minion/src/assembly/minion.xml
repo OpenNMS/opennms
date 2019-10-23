@@ -43,6 +43,13 @@
   </fileSets>
   <files>
     <file>
+      <source>${project.build.directory}/unpacked/minion-${project.version}/etc/container.service</source>
+      <outputDirectory>minion-${project.version}/etc</outputDirectory>
+      <destName>minion.service</destName>
+      <fileMode>0644</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
       <source>${project.build.directory}/unpacked/minion-${project.version}/etc/container.init</source>
       <outputDirectory>minion-${project.version}/etc</outputDirectory>
       <destName>minion.init</destName>

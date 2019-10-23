@@ -163,7 +163,8 @@ public class DatabaseReportPageIT extends UiPageTest {
         new ScheduledReportsTab(getDriver())
                 .open()
                 .updateSchedule(EarlyMorningReport.id + " admin",
-                      DeliveryOptions.DEFAULTS,
+                      DeliveryOptions.DEFAULTS
+                              .emailRecipients(Lists.newArrayList("opennms-test@opennms.org")), // See NMS-12432 for more details
                       updatedCronExpression);
 
         // Verify it actually was persisted and the UI reloaded

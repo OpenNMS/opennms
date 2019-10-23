@@ -108,6 +108,8 @@ public interface ThresholdEvaluatorState extends ReinitializableState {
     public ThresholdEvaluatorState getCleanClone();
 
     ThresholdingSession getThresholdingSession();
+    
+    void setInstance(String instance);
 
     class ValueStatus {
         public final double value;
