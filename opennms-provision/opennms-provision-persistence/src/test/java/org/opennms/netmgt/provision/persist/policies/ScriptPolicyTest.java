@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.persist.policies;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -38,6 +39,9 @@ import java.net.InetAddress;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
@@ -102,6 +106,11 @@ public class ScriptPolicyTest {
         p.setLabel("~.*Foo$");
         p.setMatchBehavior("ALL_PARAMETERS");
         p.setScript("policy.groovy");
+        NodeDao mockNodeDao = Mockito.mock(NodeDao.class);
+        when(mockNodeDao.get(Mockito.eq(1))).thenReturn(node1);
+        when(mockNodeDao.get(Mockito.eq(2))).thenReturn(node2);
+        p.setNodeDao(mockNodeDao);
+        p.setSessionUtils(new MockSessionUtils());
 
         node1 = p.apply(node1);
 
@@ -155,6 +164,10 @@ public class ScriptPolicyTest {
         p.setLabel("~.*");
         p.setMatchBehavior("ALL_PARAMETERS");
         p.setScript(scriptFile.getAbsolutePath());
+        NodeDao mockNodeDao = Mockito.mock(NodeDao.class);
+        when(mockNodeDao.get(Mockito.eq(1))).thenReturn(node1);
+        p.setNodeDao(mockNodeDao);
+        p.setSessionUtils(new MockSessionUtils());
 
         // create script file's content and modify lastModified
         createScriptFile(scriptFile, 1, false);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,63 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.OnmsIpInterface
+import org.opennms.netmgt.model.OnmsSnmpInterface
+import org.opennms.netmgt.model.PrimaryType
 
-// Example script for modifying the primary interface and the monitoring location.
+import java.util.stream.Collectors
 
-for(OnmsIpInterface iface : node.getIpInterfaces()) {
+// Example script for modifying the primary interface
 
-    // In this case the 192.168.100.0/24 interface should be primary while the remaining should be set to SECONDARY
+List<String> interfaceNames = Arrays.asList("Lo0","lo0","lo0.0","loopback0","Lo222","Lo201"
+        ,"mgt0","mgmt0","mgmt","primary","bond0","eth0","Vl103","management");
 
-    if (iface.getIpAddressAsString().matches("^192\\.168\\.100\\..*")) {
-        LOG.warn(iface.getIpAddressAsString() + " set to PRIMARY")
-        iface.setIsSnmpPrimary(PrimaryType.PRIMARY)
-    } else {
-        LOG.warn(iface.getIpAddressAsString() + " set to SECONDARY")
-        iface.setIsSnmpPrimary(PrimaryType.SECONDARY)
+List<OnmsIpInterface> interfacesWithSNMP = node.getInterfacesWithService("SNMP");
+
+LOG.debug("Interfaces with SNMP service {}", interfacesWithSNMP);
+
+List<OnmsSnmpInterface> snmpInterfaces = interfacesWithSNMP.stream()
+        .map({iface -> iface.getSnmpInterface()}).collect(Collectors.toList());
+
+List<String> ifNames = snmpInterfaces.stream()
+        .filter({snmpInterface -> snmpInterface.getIfName() != null})
+        .map({snmpInterface -> snmpInterface.getIfName()}).collect(Collectors.toList());
+
+String matchedIfName = interfaceNames.stream()
+        .filter({ interfaceName -> ifNames.contains(interfaceName) })
+        .findFirst()
+        .orElse(null);
+
+if(matchedIfName != null) {
+
+    LOG.debug("Found a match for ifName = {}", matchedIfName);
+
+    OnmsSnmpInterface result = snmpInterfaces.stream()
+            .filter({snmpInterface -> snmpInterface.getIfName().equals(matchedIfName)})
+            .findFirst().orElse(null);
+
+    if(result != null) {
+        OnmsIpInterface ipInterface = interfacesWithSNMP.stream()
+                .filter({iface -> iface.getSnmpInterface().equals(result)})
+                .findFirst()
+                .orElse(null);
+
+        if(ipInterface != null) {
+
+            LOG.debug("Setting {} as primary on node {}  " + ipInterface.getIpAddress(), node.getId());
+
+            ipInterface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+            node.setLabel(ipInterface.getIpHostName());
+
+            interfacesWithSNMP.stream().filter({iface -> !iface.equals(ipInterface)}).forEach({iface ->
+                iface.setIsSnmpPrimary(PrimaryType.SECONDARY);
+                LOG.debug("Setting {} as secondary on node {}  ", iface.getIpAddress(), node.getId());
+            });
+        }
+
     }
 }
 
-// The location for this node will be set to a custom value.
-
-node.setLocation(new OnmsMonitoringLocation("Minneapolis", ""));
-
-// Return the node.
-
 return node;
+
+

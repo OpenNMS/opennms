@@ -270,6 +270,12 @@ public class NodeScan implements Scan {
                                         new RunInBatch() {
                                             @Override
                                             public void run(final BatchTask phase) {
+                                                applyNodePolicies(phase);
+                                            }
+                                        },
+                                        new RunInBatch() {
+                                            @Override
+                                            public void run(final BatchTask phase) {
                                                 scanCompleted(phase);
                                             }
                                         }
@@ -635,6 +641,7 @@ public class NodeScan implements Scan {
 
         @Override
         public void run(final ContainerTask<?> parent) {
+            //AgentScan
             parent.getBuilder().addSequence(
                                             new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), getLocation(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
                                             new RunInBatch() {
@@ -685,24 +692,6 @@ public class NodeScan implements Scan {
             m_node = node;
         }
 
-        private void applyNodePolicies(final BatchTask phase) {
-            final List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
-            LOG.debug("NodeScan.applyNodePolicies: {}", nodePolicies);
-
-            OnmsNode node = getNode();
-            for(final NodePolicy policy : nodePolicies) {
-                if (node != null) {
-                    node = policy.apply(node);
-                }
-            }
-
-            if (node == null) {
-                abort("Aborted scan of node due to configured policy");
-            } else {
-                setNode(node);
-            }
-
-        }
 
         void stampProvisionedInterfaces(final BatchTask phase) {
             if (!isAborted()) { 
@@ -732,13 +721,8 @@ public class NodeScan implements Scan {
 
         @Override
         public void run(final ContainerTask<?> parent) {
+            //NoAgentScan
             parent.getBuilder().addSequence(
-                                            new RunInBatch() {
-                                                @Override
-                                                public void run(final BatchTask phase) {
-                                                    applyNodePolicies(phase);
-                                                }
-                                            },
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
@@ -891,6 +875,25 @@ public class NodeScan implements Scan {
         currentPhase.add(createAgentScan(primaryIface.getIpAddress(), "SNMP"));
         setAgentFound(true);
     }
+
+
+
+    private void applyNodePolicies(final BatchTask currentPhase) {
+
+        final List<NodePolicy> nodePolicies = getProvisionService()
+                .getNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+        LOG.debug("NodeScan.applyNodePolicies: {}", nodePolicies);
+
+        OnmsNode node = m_provisionService.getNode(getNodeId());
+
+        for (final NodePolicy policy : nodePolicies) {
+            if (node != null) {
+                node = policy.apply(node);
+            }
+        }
+
+    }
+
 
     /**
      * <p>scanCompleted</p>
