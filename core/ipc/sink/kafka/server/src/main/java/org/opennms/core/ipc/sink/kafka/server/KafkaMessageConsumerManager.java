@@ -104,6 +104,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     private final KafkaConfigProvider configProvider;
     // Cache that stores chunks in large message.
     private Cache<String, ByteString> largeMessageCache;
+    private Cache<String, Integer> currentChunkCache;
 
     @Autowired
     private TracerRegistry tracerRegistry;
@@ -164,11 +165,21 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                             // Parse sink message content from protobuf.
                             SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.parseFrom(record.value());
                             byte[] messageInBytes = sinkMessage.getContent().toByteArray();
+                            String messageId = sinkMessage.getMessageId();
                             // Handle large message where there are multiple chunks of message.
                             if (sinkMessage.getTotalChunks() > 1) {
-                                String messageId = sinkMessage.getMessageId();
-                                if (largeMessageCache == null) {
-                                    LOG.error("LargeMessageCache config {}={} is invalid", MESSAGEID_CACHE_CONFIG, kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG));
+
+                                if (largeMessageCache == null || currentChunkCache == null) {
+                                    LOG.error("LargeMessageCache config {}={} is invalid", MESSAGEID_CACHE_CONFIG,
+                                            kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG));
+                                    continue;
+                                }
+                                // Avoid duplicate chunks. discard if chunk is repeated.
+                                if(currentChunkCache.getIfPresent(messageId) == null) {
+                                    currentChunkCache.put(messageId, 0);
+                                }
+                                Integer chunkNum = currentChunkCache.getIfPresent(messageId);
+                                if(chunkNum != null && chunkNum == sinkMessage.getCurrentChunkNumber()) {
                                     continue;
                                 }
                                 ByteString byteString = largeMessageCache.getIfPresent(messageId);
@@ -177,12 +188,19 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                                 } else {
                                     largeMessageCache.put(messageId, sinkMessage.getContent());
                                 }
+                                currentChunkCache.put(messageId, ++chunkNum);
                                 // continue till all chunks arrive.
-                                if (sinkMessage.getTotalChunks() > sinkMessage.getCurrentChunkNumber() + 1) {
+                                if (sinkMessage.getTotalChunks() != chunkNum) {
                                     continue;
                                 }
-                                messageInBytes = largeMessageCache.getIfPresent(messageId).toByteArray();
-                                largeMessageCache.invalidate(messageId);
+                                byteString = largeMessageCache.getIfPresent(messageId);
+                                if (byteString != null) {
+                                    messageInBytes = byteString.toByteArray();
+                                    largeMessageCache.invalidate(messageId);
+                                    currentChunkCache.invalidate(messageId);
+                                } else {
+                                    continue;
+                                }
                             }
                             // Update metrics.
                             messageSize.update(messageInBytes.length);
@@ -283,6 +301,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         LOG.info("KafkaMessageConsumerManager: consuming from Kafka using: {}", kafkaConfig);
         String cacheConfig = kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG, DEFAULT_MESSAGEID_CONFIG);
         largeMessageCache =  CacheBuilder.from(cacheConfig).build();
+        currentChunkCache = CacheBuilder.from(cacheConfig).build();
         if (identity != null && tracerRegistry != null) {
             tracerRegistry.init(identity.getId());
         }
