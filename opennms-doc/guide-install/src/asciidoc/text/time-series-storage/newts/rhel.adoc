@@ -5,40 +5,35 @@
 [[gi-install-cassandra-rhel]]
 ===== RHEL
 
-This section describes how to install the latest _Cassandra 3.0.x_ release on a _RHEL_ based systems for _Newts_.
+This section describes how to install the _Cassandra 3.11.x_ release on a _RHEL_ based systems for _Newts_.
 The first step is to add the _DataStax_ community repository and install the required _GPG Key_ to verify the integrity of the _RPM packages_.
 After that install the package with _yum_ and the _Cassandra_ service is managed by _Systemd_.
 
-NOTE: This description was built on _CentOS 7.2_.
+NOTE: This description was built on _CentOS 8_.
 
-NOTE: Cassandra 3.x requires Java 8+.
+NOTE: Cassandra 3.x requires Java 8.
 
-.Add the DataStax repository
+.Add the Cassandra repository
 [source, bash]
 ----
-vi /etc/yum.repos.d/datastax.repo
+vi /etc/yum.repos.d/cassandra.repo
 ----
 
-.Content of the datastax.repo file
+.Content of the cassandra.repo file
 [source, bash]
 ----
-[datastax]
-name = "DataStax Repo for Apache Cassandra"
-baseurl = https://rpm.datastax.com/community
-enabled = 1
-gpgcheck = 1
+[cassandra]
+name=Apache Cassandra
+baseurl=https://www.apache.org/dist/cassandra/redhat/311x/
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://www.apache.org/dist/cassandra/KEYS
 ----
 
-.Install GPG key to verify RPM packages
+.Accept the GPG keys and install Cassandra
 [source, bash]
 ----
-rpm --import https://rpm.datastax.com/rpm/repo_key
-----
-
-.Install latest Cassandra 3.0.x package
-[source, bash]
-----
-yum install dsc30
+dnf install -y cassandra
 ----
 
 .Enable Cassandra to start on system boot
@@ -54,3 +49,5 @@ service cassandra start
 ----
 
 TIP: Verify whether the _Cassandra_ service is automatically started after rebooting the server.
+
+NOTE: There is a bug reported with _Cassandra_ running with Systemd documented in link:https://issues.apache.org/jira/browse/CASSANDRA-15273[CASSANDRA-15273].

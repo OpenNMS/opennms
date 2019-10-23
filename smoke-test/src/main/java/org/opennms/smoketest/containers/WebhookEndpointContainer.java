@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.smoketest.containers;
 
-import java.net.InetAddress;
-import java.util.Optional;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-public interface InterfaceToNodeCache {
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 
-	void dataSourceSync();
+public class WebhookEndpointContainer extends GenericContainer<WebhookEndpointContainer> {
 
-	Iterable<Integer> getNodeId(String location, InetAddress ipAddr);
+    private static final String ALIAS = "opennms-dummy-http-endpoint";
+    private static final int PORT = 8080;
 
-	boolean setNodeId(String location, InetAddress ipAddr, int nodeId);
+    public WebhookEndpointContainer() {
+        super("opennms/dummy-http-endpoint:0.0.2");
+        addExposedPort(8080);
+        withNetwork(Network.SHARED);
+        withNetworkAliases(ALIAS);
+    }
 
-	boolean removeNodeId(String location, InetAddress ipAddr, int nodeId);
+    public int getWebPort() {
+        return getMappedPort(PORT);
+    }
 
-	int size();
-
-	/**
-	 * Should only be used for testing.
-	 */
-	void clear();
-
-	Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr);
-
-	void removeInterfacesForNode(int nodeId);
-
+    public URL getBaseUrlExternal() {
+        try {
+            return new URL(String.format("http://%s:%d/", getContainerIpAddress(), getMappedPort(PORT)));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

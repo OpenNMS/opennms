@@ -91,6 +91,7 @@
         "bower": "^1.8.8",
         "c3": "~0.4.18",
         "core-js": "^3.2.1",
+        "cross-env": "^6.0.3",
         "d3": "^3.5.17",
         "flot": "https://github.com/flot/flot.git#v0.8.3",
         "flot-datatable": "https://github.com/RangerRick/flot-datatable.git#master",
@@ -172,14 +173,14 @@
         ]
     },
     "scripts": {
-        "webpack": "webpack --colors --display-error-details --env=development",
-        "webpack-release": "webpack --colors --display-error-details --env=production",
+        "webpack": "cross-env NODE_OPTIONS=--max-old-space-size=4096 webpack --colors --display-error-details --env=development",
+        "webpack-release": "cross-env NODE_OPTIONS=--max-old-space-size=4096 webpack --colors --display-error-details --env=production",
         "build": "yarn run webpack",
         "build-release": "yarn run webpack-release",
-        "build-verbose": "yarn run lint && webpack --debug --colors --display-modules --display-chunks --display-error-details --display-origins --display-reasons --env=development",
+        "build-verbose": "yarn run lint && cross-env NODE_OPTIONS=--max-old-space-size=4096 webpack --debug --colors --display-modules --display-chunks --display-error-details --display-origins --display-reasons --env=development",
         "release": "yarn run lint && yarn run build-release",
-        "watch": "webpack --colors --display-error-details --watch --env=development",
-        "watch-release": "webpack --colors --display-error-details --watch --env=production",
+        "watch": "cross-env NODE_OPTIONS=--max-old-space-size=4096 webpack --colors --display-error-details --watch --env=development",
+        "watch-release": "cross-env NODE_OPTIONS=--max-old-space-size=4096 webpack --colors --display-error-details --watch --env=production",
         "lint": "eslint \"src/**/*.[jt]s\"",
         "maven-test": "jest --all --verbose --useStderr=false --color=false",
         "test": "jest"
