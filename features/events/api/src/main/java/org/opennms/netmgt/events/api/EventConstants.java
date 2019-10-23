@@ -961,6 +961,7 @@ public abstract class EventConstants {
     public static final String BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI = "uei.opennms.org/bsm/serviceProblemResolved";
     public static final String BUSINESS_SERVICE_DELETED_EVENT_UEI = "uei.opennms.org/internal/serviceDeleted";
     public static final String APPLICATION_DELETED_EVENT_UEI = "uei.opennms.org/internal/applicationDeleted";
+    public static final String BUSINESS_SERVICE_GRAPH_INVALIDATED = "uei.opennms.org/bsm/graphInvalidated";
 
     public static final String PARM_BUSINESS_SERVICE_ID = "businessServiceId";
     public static final String PARM_BUSINESS_SERVICE_NAME = "businessServiceName";
