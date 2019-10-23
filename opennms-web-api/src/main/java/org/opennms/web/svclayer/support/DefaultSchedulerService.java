@@ -30,6 +30,8 @@ package org.opennms.web.svclayer.support;
 
 import static org.opennms.api.reporting.ReportParameterBuilder.Intervals;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -264,8 +266,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 }
             }
 
-            if (!deliveryOptions.isSendMail() && !deliveryOptions.isPersist()) {
-                throw new SchedulerContextException("sendMail_persist", "Either sendMail or persist must be set");
+            if (!deliveryOptions.isSendMail() && !deliveryOptions.isPersist() && !deliveryOptions.isWebhook()) {
+                throw new SchedulerContextException("sendMail_persist_webhook", "Either sendMail, webhook or persist must be set");
             }
             if (deliveryOptions.getFormat() == null) {
                 throw new SchedulerContextException("format", PROVIDE_A_VALUE_TEXT);
@@ -279,6 +281,16 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                     InternetAddress.parse(deliveryOptions.getMailTo(), false);
                 } catch (AddressException e) {
                     throw new SchedulerContextException("mailTo", "Provided recipients could not be parsed: {0}", e.getMessage(), e);
+                }
+            }
+            if (deliveryOptions.isWebhook()) {
+                if (Strings.isNullOrEmpty(deliveryOptions.getWebhookUrl())) {
+                    throw new SchedulerContextException("webhookUrl", PROVIDE_A_VALUE_TEXT);
+                }
+                try {
+                    new URL(deliveryOptions.getWebhookUrl());
+                } catch (MalformedURLException ex) {
+                    throw new SchedulerContextException("webhookUrl", "The provided URL ''{0}'' is not valid: ''{1}''", deliveryOptions.getWebhookUrl(), ex.getMessage());
                 }
             }
         } catch (SchedulerException e) {
