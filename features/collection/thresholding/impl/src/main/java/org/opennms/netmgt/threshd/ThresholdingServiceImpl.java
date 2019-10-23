@@ -52,6 +52,7 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -96,6 +97,9 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     @Autowired
     private ReadableThresholdingDao thresholdingDao;
+    
+    @Autowired
+    private ThresholdStateMonitor thresholdStateMonitor;
 
     private static final ServiceLookup<Class<?>, String> SERVICE_LOOKUP = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
             .blocking()
@@ -190,7 +194,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         }
         ThresholdingSessionKey sessionKey = new ThresholdingSessionKeyImpl(nodeId, hostAddress, serviceName, resource);
         return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams,
-                kvStore.get(), isDistributed);
+                kvStore.get(), isDistributed, thresholdStateMonitor);
     }
 
     public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session, Long sequenceNumber) throws ThresholdInitializationException {
@@ -272,5 +276,9 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     @VisibleForTesting
     public void setDistributed(boolean distributed) {
         isDistributed = distributed;
+    }
+
+    public void setThresholdStateMonitor(ThresholdStateMonitor thresholdStateMonitor) {
+        this.thresholdStateMonitor = Objects.requireNonNull(thresholdStateMonitor);
     }
 }

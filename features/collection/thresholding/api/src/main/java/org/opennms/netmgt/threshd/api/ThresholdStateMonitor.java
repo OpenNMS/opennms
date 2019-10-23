@@ -26,34 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd.shell;
+package org.opennms.netmgt.threshd.api;
 
-import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Option;
-import org.apache.karaf.shell.api.action.lifecycle.Reference;
-import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
+/**
+ * An interface for tracking and reinitializing the in-memory values of thresholding states.
+ */
+public interface ThresholdStateMonitor {
+    /**
+     * Track the given state identified by the given key.
+     */
+    void trackState(String key, ReinitializableState state);
 
-@Command(scope = "opennms-threshold-states", name = "clear", description = "Clears a specific threshold state")
-@Service
-public class Clear extends AbstractKeyOrIndexCommand {
-    @Reference
-    ThresholdStateMonitor thresholdStateMonitor;
+    /**
+     * Run some arbitrary code while holding the lock to the state monitor. This is used to block reinitialization while
+     * the given {@link Runnable code} is running.
+     */
+    void withReadLock(Runnable r);
 
-    @Option(name = "-p", aliases = "--persisted-only", description = "When set, clears only the persisted state")
-    private boolean clearPersistedOnly;
+    /**
+     * Reinitialize a single state identified by the given key.
+     */
+    void reinitializeState(String stateKey);
 
-    @Override
-    public Object execute() {
-        String key = getKey();
-
-        if (clearPersistedOnly) {
-            blobStore.delete(key, THRESHOLDING_KV_CONTEXT);
-            return null;
-        }
-
-        thresholdStateMonitor.reinitializeState(key);
-
-        return null;
-    }
+    /**
+     * Reinitialize all states currently tracked by this monitor.
+     */
+    void reinitializeStates();
 }

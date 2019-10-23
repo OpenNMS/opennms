@@ -199,6 +199,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_thresholdingDao != null, "thresholdingDao property not set");
+        Assert.state(m_entityScopeProvider != null, "entityScopeProvider property not set");
     }
 
     public void setEventProxy(ThresholdingEventProxy eventProxy) {
