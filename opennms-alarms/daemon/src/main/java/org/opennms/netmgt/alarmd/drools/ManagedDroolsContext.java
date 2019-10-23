@@ -84,7 +84,7 @@ public class ManagedDroolsContext {
      * Frequency at which the clock is updated in the session
      */
     private static final long CLOCK_UPDATE_INTERVAL_MS = SystemProperties.getLong(
-            "org.opennms.features.drools.clock_update_interval_ms", TimeUnit.SECONDS.toMillis(5));
+            "org.opennms.features.drools.clock_update_interval_ms", TimeUnit.SECONDS.toMillis(15));
 
     /**
      * Frequency at which the liveness check is scheduled
