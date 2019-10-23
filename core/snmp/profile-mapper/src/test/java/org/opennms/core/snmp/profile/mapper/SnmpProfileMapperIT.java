@@ -35,10 +35,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +54,7 @@ import org.opennms.core.snmp.profile.mapper.impl.SnmpProfileMapperImpl;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -61,6 +64,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 
@@ -73,6 +77,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitSnmpAgent(host = "192.0.1.206", resource = "classpath:/snmpProfileTestData.properties")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SnmpProfileMapperIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpProfileMapperIT.class);
@@ -91,8 +96,9 @@ public class SnmpProfileMapperIT {
         // timeout and ttl from first profile.
         int timeout = 5000;
         long ttl = 10000;
-        try (InputStream configStream = getClass().getResource("/snmp-config1.xml").openStream()) {
-            setUpProfileMapper(configStream);
+        URL url = getClass().getResource("/snmp-config1.xml");
+        try (InputStream configStream = url.openStream()) {
+            setUpProfileMapper(configStream, url);
             CompletableFuture<Optional<SnmpAgentConfig>> future = profileMapper.getAgentConfigFromProfiles(InetAddress.getByName("192.0.1.206"),
                     null);
             Optional<SnmpAgentConfig> agentConfig = future.get();
@@ -114,8 +120,9 @@ public class SnmpProfileMapperIT {
         // timeout and ttl from profile.
         int timeout = 6000;
         long ttl = 7000;
-        try (InputStream configStream = getClass().getResource("/snmp-config2.xml").openStream()) {
-            setUpProfileMapper(configStream);
+        URL url = getClass().getResource("/snmp-config2.xml");
+        try (InputStream configStream = url.openStream()) {
+            setUpProfileMapper(configStream, url);
             CompletableFuture<Optional<SnmpAgentConfig>> future = profileMapper.getAgentConfigFromProfiles(InetAddress.getByName("192.0.1.206"),
                     "Minion", ".1.3.6.1.2.1.1.3.0");
             Optional<SnmpAgentConfig> agentConfig = future.get();
@@ -140,8 +147,9 @@ public class SnmpProfileMapperIT {
         int timeout = 6000;
         long ttl = 7000;
         SnmpAgentConfig snmpAgentConfig = null;
-        try (InputStream configStream = getClass().getResource("/snmp-config2.xml").openStream()) {
-            setUpProfileMapper(configStream);
+        URL url = getClass().getResource("/snmp-config3.xml");
+        try (InputStream configStream = url.openStream()) {
+            setUpProfileMapper(configStream, url);
             //Profile without filter expression should always match and that would be set.
             CompletableFuture<Optional<SnmpAgentConfig>> future = profileMapper.fitProfile("profile1", InetAddress.getByName("192.0.1.206"), "Minion", ".1.3.6.1.2.1.1.3.0");
             Optional<SnmpAgentConfig> agentConfig = future.get();
@@ -160,12 +168,13 @@ public class SnmpProfileMapperIT {
         }
     }
 
-    private void setUpProfileMapper(InputStream configStream) throws FileNotFoundException {
+    private void setUpProfileMapper(InputStream configStream, URL resourceURL) throws FileNotFoundException {
         snmpPeerFactory = new ProxySnmpAgentConfigFactory(configStream);
+        // This is to not override snmp-config from etc
+        SnmpPeerFactory.setFile(new File(resourceURL.getFile()));
         FilterDao filterDao = Mockito.mock(FilterDao.class);
         when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);
         profileMapper = new SnmpProfileMapperImpl(filterDao, snmpPeerFactory, locationAwareSnmpClient);
     }
-
 
 }

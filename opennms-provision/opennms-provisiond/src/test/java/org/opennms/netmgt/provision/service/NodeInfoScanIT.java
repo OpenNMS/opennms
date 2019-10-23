@@ -33,10 +33,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
@@ -63,6 +65,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -74,6 +77,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitSnmpAgent(host = "192.0.1.206", resource = "classpath:/snmpProfileTestData.properties")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class NodeInfoScanIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeInfoScanIT.class);
@@ -104,8 +108,11 @@ public class NodeInfoScanIT {
 
     @Test(timeout = 30000)
     public void testNodeInfoScanWithDefaultConfig() throws InterruptedException {
-        try (InputStream configStream = getClass().getResource("/snmp-config1.xml").openStream()) {
+        URL url =  getClass().getResource("/snmp-config1.xml");
+        try (InputStream configStream = url.openStream()) {
             snmpPeerFactory = new ProxySnmpAgentConfigFactory(configStream);
+            // This is to not override snmp-config from etc
+            SnmpPeerFactory.setFile(new File(url.getFile()));
             provisionService = Mockito.mock(ProvisionService.class);
             when(provisionService.getLocationAwareSnmpClient()).thenReturn(locationAwareSnmpClient);
             nodeInfoScan = new NodeInfoScan(node, InetAddressUtils.getInetAddress("192.0.1.206"),
@@ -122,9 +129,11 @@ public class NodeInfoScanIT {
 
     @Test(timeout = 60000)
     public void testNodeInfoScanWithProfile() throws InterruptedException {
-        try (InputStream configStream = getClass().getResource("/snmp-config1.xml").openStream()) {
+        URL url =  getClass().getResource("/snmp-config1.xml");
+        try (InputStream configStream = url.openStream()) {
             // Make default scan fail by setting wrong read community.
             snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(configStream);
+            SnmpPeerFactory.setFile(new File(url.getFile()));
             provisionService = Mockito.mock(ProvisionService.class);
             FilterDao filterDao = Mockito.mock(FilterDao.class);
             when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);
@@ -145,9 +154,11 @@ public class NodeInfoScanIT {
 
     @Test(timeout = 60000)
     public void testNodeInfoScanWithProfileThatsGotUpdated() throws InterruptedException {
-        try (InputStream configStream = getClass().getResource("/snmp-config1.xml").openStream()) {
+        URL url =  getClass().getResource("/snmp-config1.xml");
+        try (InputStream configStream = url.openStream()) {
             // Make default scan fail by setting wrong read community.
             snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension2(configStream);
+            SnmpPeerFactory.setFile(new File(url.getFile()));
             provisionService = Mockito.mock(ProvisionService.class);
             FilterDao filterDao = Mockito.mock(FilterDao.class);
             when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);
