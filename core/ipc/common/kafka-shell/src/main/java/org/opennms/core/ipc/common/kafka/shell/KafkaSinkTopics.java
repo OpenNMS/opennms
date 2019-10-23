@@ -46,7 +46,7 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
-@Command(scope = "kafka-sink", name = "topics", description = "List Sink Topics.")
+@Command(scope = "opennms-kafka-sink", name = "topics", description = "List Sink Topics used by current system.")
 @Service
 public class KafkaSinkTopics implements Action {
 

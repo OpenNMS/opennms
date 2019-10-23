@@ -238,7 +238,10 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     }
 
     public MetricRegistry getMetrics() {
-        return metrics != null ? metrics : new MetricRegistry();
+        if(metrics == null) {
+            metrics = new MetricRegistry();
+        }
+        return metrics;
     }
 
     public void setMetrics(MetricRegistry metrics) {

@@ -333,7 +333,10 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     }
 
     public MetricRegistry getMetricRegistry() {
-        return metricRegistry != null ? metricRegistry : new MetricRegistry();
+        if (metricRegistry == null) {
+            metricRegistry = new MetricRegistry();
+        }
+        return metricRegistry;
     }
 
     public void setMetricRegistry(MetricRegistry metricRegistry) {

@@ -49,7 +49,7 @@ import org.opennms.distributed.core.api.Identity;
 import org.opennms.distributed.core.api.SystemType;
 import org.osgi.service.cm.ConfigurationAdmin;
 
-@Command(scope = "kafka-rpc", name = "topics", description = "List RPC topics")
+@Command(scope = "opennms-kafka-rpc", name = "topics", description = "List RPC topics used by current system.")
 @Service
 public class KafkaRpcTopics implements Action {
 
@@ -90,6 +90,8 @@ public class KafkaRpcTopics implements Action {
                 if (!rpcRequestTopics.isEmpty()) {
                     System.out.println("\nRPC Request Topics:");
                     rpcRequestTopics.forEach(System.out::println);
+                } else {
+                    System.out.println("No RPC Request topics found.");
                 }
                 Set<String> rpcResponseTopics = topics.stream()
                         .filter(topic -> topic.contains(opennmsInstance))
@@ -97,6 +99,8 @@ public class KafkaRpcTopics implements Action {
                 if (!rpcRequestTopics.isEmpty()) {
                     System.out.println("\nRPC Response Topics:");
                     rpcResponseTopics.forEach(System.out::println);
+                } else {
+                    System.out.println("No RPC Response topics found.");
                 }
                 return null;
             }
