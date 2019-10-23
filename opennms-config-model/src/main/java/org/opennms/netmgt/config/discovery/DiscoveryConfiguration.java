@@ -312,11 +312,11 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setDefinitions(List<Definition> definitions) {
-        this.m_definitions = definitions;
+        m_definitions = definitions;
     }
 
     public void addDefinition(Definition definition) {
-        this.m_definitions.add(definition);
+        m_definitions.add(definition);
     }
 
     @Override

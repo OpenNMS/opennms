@@ -613,29 +613,31 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 return specific.getLocation().orElse(def.getLocation().orElse(defaultLocation)).equals(sourceLocation)
                         && specific.getAddress().equals(ipAddress);
             });
-            // Find match in url specifics
-            if (!specificMatch) {
-                boolean urlSpecficMatch = def.getIncludeUrls().stream().anyMatch(includeUrl -> {
-                    boolean urlLocationMatch = includeUrl.getUrl().isPresent() &&
-                            includeUrl.getLocation().orElse(def.getLocation().orElse(defaultLocation)).equals(sourceLocation);
-                    if (urlLocationMatch) {
-                        List<String> urlSpecifics = m_urlSpecifics.get(includeUrl.getUrl().get());
-                        if (urlSpecifics != null) {
-                            return urlSpecifics.contains(ipAddress);
-                        }
-                    }
-                    return false;
-                });
-                // Find match in ranges.
-                if (!urlSpecficMatch) {
-                    return def.getIncludeRanges().stream().anyMatch(includeRange ->
-                            includeRange.getLocation().orElse(def.getLocation().orElse(defaultLocation)).equals(sourceLocation) &&
-                                    InetAddressUtils.isInetAddressInRange(ipAddress, includeRange.getBegin(), includeRange.getEnd()));
-
-                }
+            if(specificMatch) {
+                // IP Address found in specifics.
+                return true;
             }
-            // IP Address found in specifics.
-            return true;
+            // Find match in url specifics
+            boolean urlSpecficMatch = def.getIncludeUrls().stream().anyMatch(includeUrl -> {
+                boolean urlLocationMatch = includeUrl.getUrl().isPresent() &&
+                        includeUrl.getLocation().orElse(def.getLocation().orElse(defaultLocation)).equals(sourceLocation);
+                if (urlLocationMatch) {
+                    List<String> urlSpecifics = m_urlSpecifics.get(includeUrl.getUrl().get());
+                    if (urlSpecifics != null) {
+                        return urlSpecifics.contains(ipAddress);
+                    }
+                }
+                return false;
+            });
+            if (urlSpecficMatch) {
+                //IP Address found in URL specifics.
+                return true;
+            }
+            // Find match in ranges.
+            return def.getIncludeRanges().stream().anyMatch(includeRange ->
+                    includeRange.getLocation().orElse(def.getLocation().orElse(defaultLocation)).equals(sourceLocation) &&
+                            InetAddressUtils.isInetAddressInRange(ipAddress, includeRange.getBegin(), includeRange.getEnd()));
+
         }).findFirst();
 
         if (definition.isPresent()) {

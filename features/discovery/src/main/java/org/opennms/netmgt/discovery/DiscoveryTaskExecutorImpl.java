@@ -77,11 +77,9 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
 
     private final AtomicInteger taskIdTracker = new AtomicInteger();
 
-    private DiscoveryConfigFactory configFactory;
 
     @Override
     public CompletableFuture<Void> handleDiscoveryTask(DiscoveryConfiguration config) {
-        this.configFactory = new DiscoveryConfigFactory(config);
         // Use the range chunker to generate a series of jobs, keyed by location
         final Map<String, List<DiscoveryJob>> jobsByLocation = rangeChunker.chunk(config);
 
@@ -156,13 +154,14 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
                 @Override
                 public void run() {
                     if (summary != null) {
-                        LOG.debug("Job {} of {} at location {} (on task #{}) completed succesfully.",
-                                jobIndex, totalNumberOfJobs, location, taskId);
                         // Perform detection if there are any detectors associated with these IP addresses.
-                        CompletableFuture<List<DiscoveryResult>> resultsFuture = performDetection(job.getLocation(), summary);
+                        CompletableFuture<List<DiscoveryResult>> resultsFuture = performDetection(job.getLocation(), summary, job.getConfig());
 
                         //Send new suspect events after detection completed for all the IP addresses in the job.
                         resultsFuture.whenComplete((results, throwable) -> {
+
+                            LOG.debug("Job {} of {} at location {} (on task #{}) completed succesfully.",
+                                    jobIndex, totalNumberOfJobs, location, taskId);
                             // Generate an event log containing a newSuspect event for every host
                             // that responded to our pings and succeeded detection if there are any detectors associated with an IP Address.
                             final Log eventLog = toNewSuspectEvents(job, results);
@@ -207,10 +206,10 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
      *  This method performs detection for all the IP Addressed that succeeded ping in parallel and returns a
      *  completable future with discovery results that succeeded detection.
      */
-    private CompletableFuture<List<DiscoveryResult>> performDetection(String location, PingSweepSummary summary) {
+    private CompletableFuture<List<DiscoveryResult>> performDetection(String location, PingSweepSummary summary, DiscoveryConfiguration config) {
 
         List<CompletableFuture<DiscoveryResult>> futures = summary.getResponses().entrySet().stream()
-                .map(entry -> launchDetectors(entry.getKey(), entry.getValue(), location)).collect(Collectors.toList());
+                .map(entry -> launchDetectors(entry.getKey(), entry.getValue(), location, config)).collect(Collectors.toList());
         // Combine all futures.
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
         CompletableFuture<List<DiscoveryResult>> futureList = allFutures.thenApply(result -> {
@@ -225,9 +224,10 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
      * This method calls all the detectors in parallel for a given IP Address and combines the result of all detectors
      * into single future.
      */
-    private CompletableFuture<DiscoveryResult> launchDetectors(InetAddress inetAddress, Double pingDuration, String location) {
+    private CompletableFuture<DiscoveryResult> launchDetectors(InetAddress inetAddress, Double pingDuration, String location, DiscoveryConfiguration config) {
 
         CompletableFuture<DiscoveryResult> future = new CompletableFuture<>();
+        DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory(config);
         List<Detector> detectors = configFactory.getListOfDetectors(inetAddress, location);
         if (detectors.size() > 0) {
             // Run all the detectors.
@@ -245,7 +245,8 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
                 });
                 return future;
             } catch (Exception e) {
-                LOG.error("Exception while performing detection in discovery.", e);
+                LOG.error("Exception while performing detection in discovery for IP Address {} at location {}",
+                        inetAddress.getHostAddress(), location, e);
                 future.complete(new DiscoveryResult(false, inetAddress, pingDuration));
             }
         }  else {
@@ -262,6 +263,8 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         try {
+            LOG.info("Attemping to detect '{}' service on IP Address {} at location {}", detector.getName(),
+                    inetAddress.getHostAddress(), location);
             Map<String, String> attributes = detector.getParameters().stream()
                     .collect(Collectors.toMap(Parameter::getKey, Parameter::getValue));
             CompletableFuture<Boolean> result = getLocationAwareDetectorClient().detect()
@@ -271,16 +274,22 @@ public class DiscoveryTaskExecutorImpl implements DiscoveryTaskExecutor {
                     .withAttributes(attributes)
                     .execute();
             result.whenComplete((response, ex) -> {
-                if (ex != null) {
-                    // Don't throw exception as Future join won't like.
-                    LOG.error("Exception while detecting {} service on IP Address {} at location {} ",
-                            detector.getName(), inetAddress.getHostAddress(), location, ex);
-                    future.complete(false);
-                } else {
-                    LOG.info("Detected service {} on IP Address {} at location {}",
-                            detector.getName(), inetAddress.getHostAddress(), location);
-                    future.complete(response);
-                }
+                Logging.withPrefix(Discovery.getLoggingCategory(), new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ex != null) {
+                            // Don't throw exception as Future join won't like.
+                            LOG.error("Exception while detecting '{}' service on IP Address {} at location {} ",
+                                    detector.getName(), inetAddress.getHostAddress(), location, ex);
+                            future.complete(false);
+                        } else {
+                            LOG.info("Service Detection {} for service '{}' on IP Address {} at location {}",
+                                    response ? "succeeded" : "failed", detector.getName(), inetAddress.getHostAddress(), location);
+                            future.complete(response);
+                        }
+                    }
+                });
+
             });
         } catch (Exception e) {
             LOG.error("Exception while detecting {} service on IP Address {} at location {} ",

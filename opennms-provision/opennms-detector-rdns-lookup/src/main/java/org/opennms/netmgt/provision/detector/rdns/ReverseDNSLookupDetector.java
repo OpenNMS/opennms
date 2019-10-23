@@ -32,92 +32,53 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.DetectRequest;
-import org.opennms.netmgt.provision.DetectResults;
-import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.support.DetectResultsImpl;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Address;
 
 /**
- * Reverse DNS Lookup Detector will detect if there is FQDN match for a given IP Address.
+ * Reverse DNS Lookup Detector will detect if there is a valid PTR record for a given IP Address.
  */
-public class ReverseDNSLookupDetector implements SyncServiceDetector {
+public class ReverseDNSLookupDetector extends SyncAbstractDetector {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReverseDNSLookupDetector.class);
 
-    private static final String SERVICE_NAME = "reverse-DNS-lookup";
+    private static final String SERVICE_NAME = "Reverse-DNS-Lookup";
+
+    public ReverseDNSLookupDetector() {
+        super(SERVICE_NAME, -1);
+    }
 
     @Override
-    public DetectResults detect(DetectRequest request) {
-        InetAddress address = request.getAddress();
+    public boolean isServiceDetected(InetAddress address) {
         String hostName = address.getCanonicalHostName();
         if (InetAddressUtils.str(address).equals(hostName)) {
             try {
                 hostName = Address.getHostName(address);
                 //Check again.
                 if (!InetAddressUtils.str(address).equals(hostName)) {
-                    return new DetectResultsImpl(true);
+                    return true;
                 }
             } catch (UnknownHostException e) {
-                LOG.warn("Failed to retrieve the fully qualified domain name for {}.", address);
+                LOG.warn("Failed to retrieve domain/hostname for {}.", address);
             } catch (Exception e) {
-                LOG.warn("Unknown exception while retrieving domain name for {}.", address);
+                LOG.warn("Unknown exception while retrieving domain/hostname for {}.", address);
             }
         } else {
-            return new DetectResultsImpl(true);
+            return true;
         }
-        return new DetectResultsImpl(false);
+        return false;
     }
 
     @Override
-    public void init() {
-
+    protected void onInit() {
+        //pass
     }
 
-    @Override
-    public String getServiceName() {
-        return SERVICE_NAME;
-    }
-
-    @Override
-    public void setServiceName(String serviceName) {
-
-    }
-
-    @Override
-    public int getPort() {
-        return 0;
-    }
-
-    @Override
-    public void setPort(int port) {
-
-    }
-
-    @Override
-    public int getTimeout() {
-        return 0;
-    }
-
-    @Override
-    public void setTimeout(int timeout) {
-
-    }
-
-    @Override
-    public String getIpMatch() {
-        return null;
-    }
-
-    @Override
-    public void setIpMatch(String ipMatch) {
-
-    }
 
     @Override
     public void dispose() {
-
+        //pass
     }
 }
