@@ -52,4 +52,6 @@ public interface ThresholdingSession extends AutoCloseable {
      * @return true if we are thresholding in a distributed environment (i.e. Sentinel) false otherwise (i.e. OpenNMS)
      */
     boolean isDistributed();
+    
+    ThresholdStateMonitor getThresholdStateMonitor();
 }

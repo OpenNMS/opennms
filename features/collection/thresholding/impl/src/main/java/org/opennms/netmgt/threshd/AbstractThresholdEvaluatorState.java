@@ -32,18 +32,18 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import org.joda.time.Duration;
 import org.nustaq.serialization.FSTConfiguration;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.features.distributed.kvstore.api.SerializingBlobStore;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.ResourceId;
@@ -53,9 +53,9 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-import com.google.common.util.concurrent.AtomicDouble;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
@@ -89,7 +89,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
     private boolean isStateDirty;
 
-    private final String key;
+    private String key;
 
     private final SerializingBlobStore<T> kvStore;
 
@@ -97,19 +97,25 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     
     protected final ThresholdingSession thresholdingSession;
     
-    private static final String THRESHOLDING_KV_CONTEXT = "thresholding";
+    static final String THRESHOLDING_KV_CONTEXT = "thresholding";
     
     private final int stateTTL;
     
     private Long sequenceNumber;
 
     private boolean firstEvaluation = true;
+    
+    private String instance;
+
+    private static final Map<Class<? extends AbstractThresholdEvaluatorState.AbstractState>,
+            SerializingBlobStore<? extends AbstractThresholdEvaluatorState.AbstractState>> serdesMap
+            = new ConcurrentHashMap<>();
 
     /**
      * A last updated cache to track when the last time we know we persisted a given key was. This is for performance
      * reasons so that on fetch we can see if we already were the last ones to update and avoid a full fetch if so.
      */
-    private final Map<String, Long> lastUpdatedCache = CacheBuilder.newBuilder()
+    private static final Map<String, Long> lastUpdatedCache = CacheBuilder.newBuilder()
             .maximumSize(10000)
             .build(new CacheLoader<String, Long>() {
                 @Override
@@ -133,21 +139,18 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
         @Override
         public String toString() {
-            return "interpolatedExpression='" + interpolatedExpression + "'";
+            return getInterpolatedExpression().map(ie -> "interpolatedExpression=" + ie).orElse(null);
         }
     }
-    
-    @SuppressWarnings("unchecked")
-    public AbstractThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold,
-                                           ThresholdingSession thresholdingSession) {
+
+    AbstractThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold,
+                                    ThresholdingSession thresholdingSession, Class<T> stateType) {
         Objects.requireNonNull(threshold);
         Objects.requireNonNull(thresholdingSession);
         Objects.requireNonNull(thresholdingSession.getBlobStore());
 
         this.thresholdingSession = thresholdingSession;
-        kvStore = new SerializingBlobStore<>(thresholdingSession.getBlobStore(),
-                fst::asByteArray,
-                bytes -> (T) fst.asObject(bytes));
+        kvStore = getKvStoreForType(stateType, thresholdingSession.getBlobStore());
         key = String.format("%d-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
                 thresholdingSession.getKey().getLocation(), threshold.getDsType(),
                 threshold.getDatasourceExpression(), thresholdingSession.getKey().getResource(), threshold.getType());
@@ -155,6 +158,17 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
         stateTTL = SystemProperties.getInteger("org.opennms.netmgt.threshd.state_ttl",
                 (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS));
         initializeState();
+    }
+
+    /**
+     * This method serves to ensure that we only instantiate a single serdes wrapper for a given state type rather than
+     * creating a separate serdes wrapper for every evaluator. The serdes wrappers will be stored in a map keyed by the
+     * type they deal with.
+     */
+    @SuppressWarnings("unchecked") // The cast is guaranteed to work based on how we are keying the map by the type
+    private static <U extends AbstractThresholdEvaluatorState.AbstractState> SerializingBlobStore<U> getKvStoreForType(Class<U> stateType, BlobStore blobStore) {
+        return (SerializingBlobStore<U>) serdesMap.computeIfAbsent(stateType,
+                c -> SerializingBlobStore.ofType(blobStore, fst::asByteArray, bytes -> c.cast(fst.asObject(bytes))));
     }
 
     protected abstract void initializeState();
@@ -180,29 +194,32 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
     @SuppressWarnings("unchecked")
     private void fetchState() {
-        // Fetch the state to make sure we have the latest if we are thresholding in a distributed environment or if
-        // this is the first time we are evaluating this evaluator
-        //
-        // If both of those conditions are false, then we must be on a standalone instance of OpenNMS and have the state
-        // already in memory so there is no need to fetch it
-        if (!isDistributed() && !firstEvaluation) {
-            return;
-        }
-
-        try {
-            Long lastKnownUpdate = lastUpdatedCache.get(key);
-
-            // If we don't have a record of when this was last updated locally, get it from the store
-            if (lastKnownUpdate == null) {
-                kvStore.get(key, THRESHOLDING_KV_CONTEXT).ifPresent(v -> state = v);
-            } else {
-                // Otherwise get it from the store only if our record is stale
-                kvStore.getIfStale(key, THRESHOLDING_KV_CONTEXT, lastKnownUpdate)
-                        .ifPresent(o -> o.ifPresent(v -> state = v));
+        thresholdingSession.getThresholdStateMonitor().withReadLock(() -> {
+            // Fetch the state to make sure we have the latest if we are thresholding in a distributed environment or if
+            // this is the first time we are evaluating this evaluator
+            //
+            // If both of those conditions are false, then we must be on a standalone instance of OpenNMS and have the
+            // state already in memory so there is no need to fetch it
+            if (!isDistributed() && !firstEvaluation) {
+                return;
             }
-        } catch (RuntimeException e) {
-            RATE_LIMITED_LOGGER.warn("Failed to retrieve state for threshold {}", key, e);
-        }
+
+            try {
+                Long lastKnownUpdate = lastUpdatedCache.get(key);
+
+                // If we don't have a record of when this was last updated locally, get it from the store
+                // Otherwise if we are evaluating for the first time we need to fetch regardless since we have no state
+                if (lastKnownUpdate == null || firstEvaluation) {
+                    kvStore.get(key, THRESHOLDING_KV_CONTEXT).ifPresent(v -> state = v);
+                } else {
+                    // Otherwise get it from the store only if our record is stale
+                    kvStore.getIfStale(key, THRESHOLDING_KV_CONTEXT, lastKnownUpdate)
+                            .ifPresent(o -> o.ifPresent(v -> state = v));
+                }
+            } catch (RuntimeException e) {
+                RATE_LIMITED_LOGGER.warn("Failed to retrieve state for threshold {}", key, e);
+            }
+        });
     }
 
     /**
@@ -217,7 +234,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     }
 
     @Override
-    public Status evaluate(double dsValue, Long sequenceNumber) {
+    public synchronized Status evaluate(double dsValue, Long sequenceNumber) {
         if (sequenceNumber != null) {
             // If a sequence number was provided, only fetch the state if this is the first sequence number we have seen
             // or if this was not the next sequence number (indicating someone else processed the last one)
@@ -231,6 +248,12 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
         }
 
         Status status = evaluateAfterFetch(dsValue);
+        if (firstEvaluation) {
+            firstEvaluation = false;
+            // We don't bother advertising ourselves until the first time we perform an evaluation since we will have
+            // default values until that point (being reinitialized would have no effect)
+            thresholdingSession.getThresholdStateMonitor().trackState(key, this);
+        }
         // Persist the state if it has changed and is now dirty
         persistStateIfNeeded();
         firstEvaluation = false;
@@ -262,6 +285,12 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     public void clearState() {
         clearStateBeforePersist();
         persistStateIfNeeded();
+    }
+
+    @Override
+    public synchronized void reinitialize() {
+        firstEvaluation = true;
+        clearStateBeforePersist();
     }
 
     protected abstract void clearStateBeforePersist();
@@ -379,5 +408,28 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
     private boolean isDistributed() {
         return thresholdingSession.isDistributed();
+    }
+
+    @Override
+    public void setInstance(String instance) {
+        Objects.requireNonNull(instance);
+
+        if (this.instance != null) {
+            throw new IllegalStateException("Cannot apply instance " + instance + " since this evaluator state " +
+                    "already has instance " + this.instance);
+        }
+        
+        if (!firstEvaluation) {
+            throw new IllegalStateException("This state has already been evaluated so changing the instance to " +
+                    instance + " won't have an effect");
+        }
+
+        this.instance = instance;
+        key = String.format("%s-%s", key, instance);
+    }
+    
+    @VisibleForTesting
+    static void clearSerdesMap() {
+        serdesMap.clear();
     }
 }

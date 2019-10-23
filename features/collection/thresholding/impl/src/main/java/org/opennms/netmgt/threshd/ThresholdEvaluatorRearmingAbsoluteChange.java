@@ -75,15 +75,22 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
 
             @Override
             public String toString() {
-                return "lastSample=" + m_lastSample +
-                        "\npreviousTriggeringSample=" + m_previousTriggeringSample +
-                        "\ntriggerCount=" + m_triggerCount +
-                        "\n" + super.toString();
+                StringBuilder sb = new StringBuilder();
+                sb.append("lastSample=").append(m_lastSample);
+                sb.append("\npreviousTriggeringSample=").append(m_previousTriggeringSample);
+                sb.append("\ntriggerCount=").append(m_triggerCount);
+                String superString = super.toString();
+
+                if (superString != null) {
+                    sb.append("\n").append(superString);
+                }
+
+                return sb.toString();
             }
         }
 
         public ThresholdEvaluatorStateRearmingAbsoluteChange(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
-            super(threshold, thresholdingSession);
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateRearmingAbsoluteChange.State.class);
             setThresholdConfig(threshold);
         }
 

@@ -102,7 +102,7 @@ public final class NodeDiscoveryBridge extends NodeCollector {
 
         SnmpAgentConfig peer = getSnmpAgentConfig();
         String community = peer.getReadCommunity();
-        Map<Integer, String> vlanmap = (m_disableBridgeVlanDiscovery) ? Collections.emptyMap() : getVtpVlanMap(peer);
+        Map<Integer, String> vlanmap = (m_disableBridgeVlanDiscovery) ? new HashMap<>() : getVtpVlanMap(peer);
         Map<Integer,SnmpAgentConfig> vlanSnmpAgentConfigMap = new HashMap<Integer, SnmpAgentConfig>();
         for (Integer vlanId: vlanmap.keySet()) {
             LOG.debug("run: node [{}], support cisco vtp: setting peer community for vlan: {}, vlanname: {}",

@@ -1,5 +1,5 @@
 
-==== Categories
+==== Monitored Services
 
 Obtain or modify the status of a set of monitored services based on a given search criteria, based on nodes, IP interfaces, Categories, or monitored services itself.
 

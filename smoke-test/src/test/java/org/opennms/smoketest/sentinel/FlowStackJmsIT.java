@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest.sentinel;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
 
 // Verifies that flows can be processed by a sentinel and are persisted to Elastic communicating via activemq (jms)
@@ -40,6 +41,6 @@ public class FlowStackJmsIT extends AbstractFlowIT {
 
     @Override
     protected String getSentinelReadyString() {
-        return "Route: Sink.Server.Telemetry-Netflow-5 started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-Netflow-5";
+        return "Route: Sink.Server.Telemetry-Netflow-5 started and consuming from: queuingservice://" + SystemInfoUtils.getInstanceId() + ".Sink.Telemetry-Netflow-5";
     }
 }

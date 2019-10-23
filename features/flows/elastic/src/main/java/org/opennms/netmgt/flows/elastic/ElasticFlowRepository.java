@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
+import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -65,13 +66,13 @@ import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
-import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.features.jest.client.SearchResultUtils;
+import org.opennms.features.jest.client.bulk.BulkException;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.index.IndexSelector;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -384,8 +385,9 @@ public class ElasticFlowRepository implements FlowRepository {
         return getTotalBytesFromTopN(N, "netflow.convo_key", null, includeOther, filters)
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                                                .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
-                                                                                   .thenApply(conversation -> new TrafficSummary<>(conversation)
-                                                                                           .withBytesFrom(summary)))
+                                                                                   .thenApply(conversation -> TrafficSummary.from(conversation)
+                                                                                           .withBytesFrom(summary)
+                                                                                           .build()))
                                                                .collect(Collectors.toList()),
                                                       Collectors.toList()));
     }
@@ -397,8 +399,9 @@ public class ElasticFlowRepository implements FlowRepository {
         return getTotalBytesFrom(unescapeConversations(conversations), "netflow.convo_key", null, includeOther, filters)
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                                                .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
-                                                                                   .thenApply(conversation -> new TrafficSummary<>(conversation)
-                                                                                           .withBytesFrom(summary)))
+                                                                                   .thenApply(conversation -> TrafficSummary.from(conversation)
+                                                                                           .withBytesFrom(summary)
+                                                                                           .build()))
                                                                .collect(Collectors.toList()),
                                                       Collectors.toList()));
     }
@@ -458,7 +461,9 @@ public class ElasticFlowRepository implements FlowRepository {
         return getTotalBytesFromTopN(N, "hosts", null, includeOther, filters)
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                 .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
-                                        .thenApply(host -> new TrafficSummary<>(host).withBytesFrom(summary)))
+                                        .thenApply(host -> TrafficSummary.from(host)
+                                                .withBytesFrom(summary)
+                                                .build()))
                                 .collect(Collectors.toList()),
                         Collectors.toList()));
     }
@@ -470,7 +475,9 @@ public class ElasticFlowRepository implements FlowRepository {
         return getTotalBytesFrom(hosts, "hosts", null, includeOther, filters)
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                 .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
-                                        .thenApply(host -> new TrafficSummary<>(host).withBytesFrom(summary)))
+                                        .thenApply(host -> TrafficSummary.from(host)
+                                                .withBytesFrom(summary)
+                                                .build()))
                                 .collect(Collectors.toList()),
                         Collectors.toList()));
     }
@@ -680,7 +687,7 @@ public class ElasticFlowRepository implements FlowRepository {
                     // No results
                     return summaries;
                 }
-                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_NAME);
+                final TrafficSummary.Builder<String> trafficSummary = TrafficSummary.from(OTHER_NAME);
                 for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
                     final boolean isIngress = isIngress(directionBucket);
                     final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
@@ -691,12 +698,12 @@ public class ElasticFlowRepository implements FlowRepository {
                     }
                     final Double sum = sumBuckets.iterator().next().getValue();
                     if (!isIngress) {
-                        trafficSummary.setBytesOut(sum.longValue());
+                        trafficSummary.withBytesOut(sum.longValue());
                     } else {
-                        trafficSummary.setBytesIn(sum.longValue());
+                        trafficSummary.withBytesIn(sum.longValue());
                     }
                 }
-                summaries.put(OTHER_NAME, trafficSummary);
+                summaries.put(OTHER_NAME, trafficSummary.build());
                 return summaries;
             });
         }
@@ -730,7 +737,7 @@ public class ElasticFlowRepository implements FlowRepository {
             return summaries;
         }
         for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
-            final TrafficSummary<String> trafficSummary = new TrafficSummary<>(bucket.getKey());
+            final TrafficSummary.Builder<String> trafficSummary = TrafficSummary.from(bucket.getKey());
             final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");
             for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
                 final boolean isIngress = isIngress(directionBucket);
@@ -742,12 +749,12 @@ public class ElasticFlowRepository implements FlowRepository {
                 }
                 final Double sum = sumBuckets.iterator().next().getValue();
                 if (!isIngress) {
-                    trafficSummary.setBytesOut(sum.longValue());
+                    trafficSummary.withBytesOut(sum.longValue());
                 } else {
-                    trafficSummary.setBytesIn(sum.longValue());
+                    trafficSummary.withBytesIn(sum.longValue());
                 }
             }
-            summaries.put(bucket.getKey(), trafficSummary);
+            summaries.put(bucket.getKey(), trafficSummary.build());
         }
         return summaries;
     }

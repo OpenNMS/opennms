@@ -13,6 +13,7 @@
   <modules>
     <module>engine</module>
     <module>persistence</module>
+    <module>shell</module>
   </modules>
   <build>
     <plugins>

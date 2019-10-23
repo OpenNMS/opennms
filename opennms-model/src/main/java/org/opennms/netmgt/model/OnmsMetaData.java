@@ -33,9 +33,14 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
 @XmlRootElement(name="meta-data")
+@JsonRootName("metaData")
 @Embeddable
 public class OnmsMetaData implements Serializable {
 
@@ -54,6 +59,8 @@ public class OnmsMetaData implements Serializable {
         this.value = Objects.requireNonNull(value);
     }
 
+    @JsonProperty("context")
+    @XmlElement(name="context")
     @Column(name="context", nullable = false)
     public String getContext(){
         return context;
@@ -63,6 +70,8 @@ public class OnmsMetaData implements Serializable {
         this.context = context;
     }
 
+    @JsonProperty("key")
+    @XmlElement(name="key")
     @Column(name="key", nullable = false)
     public String getKey() {
         return key;
@@ -72,6 +81,8 @@ public class OnmsMetaData implements Serializable {
         this.key = key;
     }
 
+    @JsonProperty("value")
+    @XmlElement(name="value")
     @Column(name="value", nullable = false)
     public String getValue() {
         return value;
@@ -79,5 +90,29 @@ public class OnmsMetaData implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("context", context)
+                .add("key", key)
+                .add("value", value)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OnmsMetaData that = (OnmsMetaData) o;
+        return com.google.common.base.Objects.equal(context, that.context) &&
+                com.google.common.base.Objects.equal(key, that.key) &&
+                com.google.common.base.Objects.equal(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(context, key, value);
     }
 }

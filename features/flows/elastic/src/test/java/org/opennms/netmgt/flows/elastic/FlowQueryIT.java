@@ -59,7 +59,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
-import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
@@ -73,9 +72,9 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -114,13 +113,13 @@ public class FlowQueryIT {
 
         // The repository should be empty
         assertThat(flowRepository.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, 0))).get(), equalTo(0L));
-
-        // Load the default set of flows
-        loadDefaultFlows();
     }
 
     @Test
-    public void canGetApplications() throws ExecutionException, InterruptedException {
+    public void canGetApplications() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Get only the first application
         List<String> applications = flowRepository.getApplications("", 1, getFilters()).get();
         assertThat(applications, equalTo(Collections.singletonList("http")));
@@ -141,7 +140,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetTopNApplicationSummaries() throws ExecutionException, InterruptedException {
+    public void canGetTopNApplicationSummaries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Retrieve the Top N applications over the entire time range
         List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplicationSummaries(10, true, getFilters()).get();
 
@@ -198,7 +200,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetAppSummaries() throws ExecutionException, InterruptedException {
+    public void canGetAppSummaries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         List<TrafficSummary<String>> appTrafficSummary =
                 flowRepository.getApplicationSummaries(Collections.singleton("https"), false, getFilters()).get();
         assertThat(appTrafficSummary, hasSize(1));
@@ -219,7 +224,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetTopNAppsSeries() throws ExecutionException, InterruptedException {
+    public void canGetTopNAppsSeries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Top 10
         Table<Directional<String>, Long, Double> appTraffic = flowRepository.getTopNApplicationSeries(10, 10, false,
                 getFilters()).get();
@@ -239,7 +247,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetAppSeries() throws ExecutionException, InterruptedException {
+    public void canGetAppSeries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Get just https
         Table<Directional<String>, Long, Double> appTraffic =
                 flowRepository.getApplicationSeries(Collections.singleton("https"), 10,
@@ -264,7 +275,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetTopNApplicationsWithPartialSums() throws ExecutionException, InterruptedException {
+    public void canGetTopNApplicationsWithPartialSums() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Retrieve the Top N applications over a subset of the range
         final List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplicationSummaries(1, false,
                 Lists.newArrayList(new TimeRangeFilter(10,  20))).get();
@@ -278,7 +292,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetHosts() throws ExecutionException, InterruptedException {
+    public void canGetHosts() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Get only the first host
         List<String> hosts = flowRepository.getHosts(".*", 1, getFilters()).get();
         assertThat(hosts, equalTo(Collections.singletonList("10.1.1.11")));
@@ -299,7 +316,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetTopNHostSummaries() throws ExecutionException, InterruptedException {
+    public void canGetTopNHostSummaries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Retrieve the Top N applications over the entire time range
         List<TrafficSummary<Host>> hostTrafficSummary = flowRepository.getTopNHostSummaries(10, false, getFilters()).get();
 
@@ -344,7 +364,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetHostSummaries() throws ExecutionException, InterruptedException {
+    public void canGetHostSummaries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Get one specific host and no others
         List<TrafficSummary<Host>> hostTrafficSummary =
                 flowRepository.getHostSummaries(Collections.singleton("10.1.1.12"), false, getFilters()).get();
@@ -381,7 +404,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetTopNHostSeries() throws ExecutionException, InterruptedException {
+    public void canGetTopNHostSeries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Top 10
         Table<Directional<Host>, Long, Double> hostTraffic = flowRepository.getTopNHostSeries(10, 10, false,
                 getFilters()).get();
@@ -401,7 +427,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetHostSeries() throws ExecutionException, InterruptedException {
+    public void canGetHostSeries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Get just https
         Table<Directional<Host>, Long, Double> hostTraffic =
                 flowRepository.getHostSeries(Collections.singleton("10.1.1.12"), 10,
@@ -427,7 +456,10 @@ public class FlowQueryIT {
 
     @Ignore
     @Test
-    public void canGetConversations() throws ExecutionException, InterruptedException {
+    public void canGetConversations() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Get all the conversations
         List<String> conversations =
                 flowRepository.getConversations(".*", ".*", ".*", ".*", ".*", 10, getFilters()).get();
@@ -452,7 +484,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetTopNConversationSummaries() throws ExecutionException, InterruptedException {
+    public void canGetTopNConversationSummaries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Retrieve the Top N conversation over the entire time range
         List<TrafficSummary<Conversation>> convoTrafficSummary = flowRepository.getTopNConversationSummaries(2, false, getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(2));
@@ -494,7 +529,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetConversationSummaries() throws ExecutionException, InterruptedException {
+    public void canGetConversationSummaries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Get a specific conversation
         List<TrafficSummary<Conversation>> convoTrafficSummary =
                 flowRepository.getConversationSummaries(ImmutableSet.of("[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]"),
@@ -529,7 +567,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetConversationSeries() throws ExecutionException, InterruptedException {
+    public void canGetConversationSeries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Get series for specific host
         Table<Directional<Conversation>, Long, Double> convoTraffic = flowRepository.getConversationSeries(ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, false, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(2));
@@ -547,7 +588,10 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canRetrieveTopNConversationsSeries() throws ExecutionException, InterruptedException {
+    public void canRetrieveTopNConversationsSeries() throws Exception {
+        // Load the default set of flows
+        loadDefaultFlows();
+
         // Top 10
         Table<Directional<Conversation>, Long, Double> convoTraffic = flowRepository.getTopNConversationSeries(10, 10, false, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(8));
@@ -555,6 +599,51 @@ public class FlowQueryIT {
         // Top 2 with others
         convoTraffic = flowRepository.getTopNConversationSeries(2, 10, true, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(6));
+    }
+
+    @Test
+    public void hasCorrectOrdering() throws Exception {
+        this.loadFlows(new FlowBuilder()
+                .withExporter("SomeFs", "SomeFid", 99)
+                .withSnmpInterfaceId(98)
+                .withDirection(Direction.INGRESS)
+
+                // More documents - less data
+                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
+
+
+                .withFlow(new Date(0), new Date(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
+                .withFlow(new Date(0), new Date(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
+                .withFlow(new Date(0), new Date(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
+
+                // Less documents - more data
+                .withFlow(new Date(0), new Date(10), "192.168.0.3", 1234, "192.168.1.3", 1234, 10000)
+
+                .build());
+
+        final List<TrafficSummary<Host>> summary = flowRepository.getTopNHostSummaries(10, false, getFilters()).get();
+        assertThat(summary, contains(
+                TrafficSummary.from(Host.from("192.168.0.3").build()).withBytes(10000, 0).build(),
+                TrafficSummary.from(Host.from("192.168.1.3").build()).withBytes(10000, 0).build(),
+                TrafficSummary.from(Host.from("192.168.0.2").build()).withBytes(3000, 0).build(),
+                TrafficSummary.from(Host.from("192.168.1.2").build()).withBytes(3000, 0).build(),
+                TrafficSummary.from(Host.from("192.168.0.1").build()).withBytes(500, 0).build(),
+                TrafficSummary.from(Host.from("192.168.1.1").build()).withBytes(500, 0).build()
+        ));
+
+        final Table<Directional<Host>, Long, Double> series = flowRepository.getTopNHostSeries(10, 10, false, getFilters()).get();
+        assertThat(series.rowKeySet(), contains(
+                new Directional<>(Host.from("192.168.0.3").build(), true),
+                new Directional<>(Host.from("192.168.1.3").build(), true),
+                new Directional<>(Host.from("192.168.0.2").build(), true),
+                new Directional<>(Host.from("192.168.1.2").build(), true),
+                new Directional<>(Host.from("192.168.0.1").build(), true),
+                new Directional<>(Host.from("192.168.1.1").build(), true)
+        ));
     }
 
     private <L> void verifyHttpsSeries(Table<Directional<L>, Long, Double> appTraffic, L label) {
@@ -656,6 +745,11 @@ public class FlowQueryIT {
                 .withDirection(Direction.EGRESS)
                 .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
                 .build();
+
+        this.loadFlows(flows);
+    }
+
+    private void loadFlows(final List<FlowDocument> flows) throws FlowException {
         flowRepository.enrichAndPersistFlows(flows, new FlowSource("test", "127.0.0.1"));
 
         // Retrieve all the flows we just persisted

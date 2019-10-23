@@ -857,6 +857,7 @@
             <!-- Turn off queuing in the RRD output -->
             <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>
             <java.awt.headless>true</java.awt.headless>
+            <java.locale.providers>CLDR,COMPAT</java.locale.providers>
             <mock.debug>${mock.debug}</mock.debug>
             <mock.rundbtests>${mock.rundbtests}</mock.rundbtests>
             <mock.leaveDatabase>${mock.leaveDatabase}</mock.leaveDatabase>
@@ -892,6 +893,7 @@
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
+            <java.locale.providers>CLDR,COMPAT</java.locale.providers>
             <!-- The javax.net.ssl ones are used by integrations/opennms-jasper-extensions -->
             <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
             <javax.net.ssl.keyStorePassword>password</javax.net.ssl.keyStorePassword>
@@ -1072,6 +1074,9 @@
     <runPingTests>true</runPingTests> -->
 
     <maxCpus>2</maxCpus>
+
+    <!-- make sure CLDR is the default locale provider anywhere in the maven process -->
+    <java.locale.providers>CLDR,COMPAT</java.locale.providers>
 
     <build.skip.tarball>false</build.skip.tarball>
 
@@ -1283,7 +1288,7 @@
     <powermockVersion>1.6.4</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>0.2.1-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersion>0.2.1</opennmsApiVersion>
     <osgiVersion>6.0.0</osgiVersion>
     <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
@@ -1337,10 +1342,10 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.6</frontendPluginVersion>
-    <nodeVersion>v8.16.0</nodeVersion>
-    <npmVersion>6.4.1</npmVersion>
-    <yarnVersion>v1.16.0</yarnVersion>
+    <frontendPluginVersion>1.8.0</frontendPluginVersion>
+    <nodeVersion>v10.16.3</nodeVersion>
+    <npmVersion>6.10.3</npmVersion>
+    <yarnVersion>v1.17.3</yarnVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>

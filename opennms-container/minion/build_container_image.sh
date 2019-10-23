@@ -13,7 +13,7 @@ source ../registry-config.sh
 source ../version-tags.sh
 
 # OpenNMS Minion packages
-MINION_PACKAGES="opennms-minion opennms-minion-container opennms-minion-features-core opennms-minion-features-default"
+MINION_PACKAGES="opennms-minion"
 
 for PKG in ${MINION_PACKAGES}; do 
   cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
@@ -22,12 +22,14 @@ done
 docker build -t minion \
   --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \
   --build-arg BASE_IMAGE="opennms/openjdk" \
-  --build-arg BASE_IMAGE_VERSION="11.0.4.11" \
+  --build-arg BASE_IMAGE_VERSION="11.0.4.11-b2418" \
   --build-arg VERSION="${VERSION}" \
+  --build-arg SOURCE="${CIRCLE_REPOSITORY_URL}" \
+  --build-arg REVISION="$(git describe --always)" \
+  --build-arg BUILD_JOB_ID="${CIRCLE_WORKFLOW_JOB_ID}" \
   --build-arg BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
   --build-arg BUILD_URL="${CIRCLE_BUILD_URL}" \
   --build-arg BUILD_BRANCH="${CIRCLE_BRANCH}" \
-  --build-arg BUILD_SHA1="${CIRCLE_SHA1}" \
   .
 
 docker image save minion -o images/container.oci

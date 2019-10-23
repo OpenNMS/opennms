@@ -66,6 +66,9 @@
               <goal>yarn</goal>
             </goals>
             <phase>generate-resources</phase>
+            <configuration>
+              <arguments>--prefer-offline --non-interactive --frozen-lockfile --no-progress</arguments>
+            </configuration>
           </execution>
           <execution>
             <id>build release</id>
@@ -74,7 +77,7 @@
             </goals>
             <phase>compile</phase>
             <configuration>
-              <arguments>release</arguments>
+              <arguments>--prefer-offline --non-interactive --frozen-lockfile --no-progress release</arguments>
             </configuration>
           </execution>
         </executions>
@@ -138,7 +141,7 @@
                 </goals>
                 <phase>test</phase>
                 <configuration>
-                  <arguments>maven-test</arguments>
+                  <arguments>--prefer-offline --non-interactive --frozen-lockfile --no-progress maven-test</arguments>
                 </configuration>
               </execution>
             </executions>

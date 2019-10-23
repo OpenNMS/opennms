@@ -81,15 +81,22 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
 
             @Override
             public String toString() {
-                return "multiplier=" + m_multiplier +
-                        "\nlastSample=" + m_lastSample +
-                        "\npreviousTriggeringSample=" + m_previousTriggeringSample +
-                        "\n" + super.toString();
+                StringBuilder sb = new StringBuilder();
+                sb.append("multiplier=").append(m_multiplier);
+                sb.append("\nlastSample=").append(m_lastSample);
+                sb.append("\npreviousTriggeringSample=").append(m_previousTriggeringSample);
+                String superString = super.toString();
+
+                if (superString != null) {
+                    sb.append("\n").append(superString);
+                }
+
+                return sb.toString();
             }
         }
 
         public ThresholdEvaluatorStateRelativeChange(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
-            super(threshold, thresholdingSession);
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateRelativeChange.State.class);
             setThresholdConfig(threshold);
         }
 
@@ -214,10 +221,10 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
         public boolean isTriggered() {
             return false;
         }
-        
-        // FIXME This must be implemented correctly
+
         @Override
         public void clearStateBeforePersist() {
+            initializeState();
         }
 
     }

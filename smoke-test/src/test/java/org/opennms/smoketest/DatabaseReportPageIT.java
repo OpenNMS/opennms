@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import static io.restassured.RestAssured.given;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
@@ -35,7 +36,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +47,12 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.logging.log4j.util.Strings;
 import org.hamcrest.Matchers;
+import org.json.JSONArray;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.smoketest.containers.WebhookEndpointContainer;
 import org.opennms.smoketest.ui.framework.Button;
 import org.opennms.smoketest.ui.framework.CheckBox;
 import org.opennms.smoketest.ui.framework.DeleteAllButton;
@@ -65,10 +71,17 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.shaded.com.google.common.collect.Lists;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
+import com.google.common.io.ByteStreams;
+
+import io.restassured.RestAssured;
 
 public class DatabaseReportPageIT extends UiPageTest {
 
     private static Logger LOG = LoggerFactory.getLogger(DatabaseReportPageIT.class);
+
+    @ClassRule
+    public static WebhookEndpointContainer webhookEndpointContainer = new WebhookEndpointContainer();
 
     private DatabaseReportPage page;
 
@@ -163,7 +176,8 @@ public class DatabaseReportPageIT extends UiPageTest {
         new ScheduledReportsTab(getDriver())
                 .open()
                 .updateSchedule(EarlyMorningReport.id + " admin",
-                      DeliveryOptions.DEFAULTS,
+                      DeliveryOptions.DEFAULTS
+                              .emailRecipients(Lists.newArrayList("opennms-test@opennms.org")), // See NMS-12432 for more details
                       updatedCronExpression);
 
         // Verify it actually was persisted and the UI reloaded
@@ -175,6 +189,55 @@ public class DatabaseReportPageIT extends UiPageTest {
                 .findAny();
         LOG.debug("Schedule was edited, now verify exactly one schedule matches: {}", findMe.isPresent());
         assertThat(findMe.isPresent(), is(true));
+    }
+
+
+    // Verifies that a generated Report can be send to an HTTP Endpoint
+    @Test
+    public void verifyWebhookDelivery() throws IOException {
+        // Setup the Http Endpoint
+        RestAssured.baseURI = webhookEndpointContainer.getBaseUrlExternal().toString();
+        RestAssured.port = webhookEndpointContainer.getWebPort();
+
+        // Verify nothing was posted yet
+        given().basePath("/files").get()
+            .then()
+            .statusCode(200)
+            .body("size()", is(0));
+
+        // Trigger Delivery of the report
+        new ReportTemplateTab(getDriver()).open()
+            .select(EarlyMorningReport.name)
+            .deliverReport(new DeliveryOptions()
+                .format(Formats.PDF)
+                .postToEndpoint("http://opennms-dummy-http-endpoint:8080/files?instanceId=:instanceId")
+            );
+
+        // Ensure it was posted
+        await().atMost(2, MINUTES).pollInterval(10, SECONDS).until(
+            () -> {
+                final String response = given().basePath("/files").get()
+                        .then()
+                        .statusCode(200)
+                        .extract().response().asString();
+                final JSONArray array = new JSONArray(response);
+                if (array.length() == 1) {
+                    // Read PDF
+                    final String filename = array.getJSONObject(0).getString("name");
+                    final InputStream input = given().basePath("/files/" + filename).get()
+                        .then()
+                        .statusCode(200)
+                        .contentType("application/pdf")
+                        .extract().body().asInputStream();
+                    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    ByteStreams.copy(input, outputStream);;
+                    final byte[] receivedBytes = outputStream.toByteArray();
+                    if (receivedBytes.length > 0) {
+                        return true;
+                    }
+                }
+                return false;
+            });
     }
 
     public interface EarlyMorningReport {
@@ -333,8 +396,14 @@ public class DatabaseReportPageIT extends UiPageTest {
             final CheckBox recipientCheckbox = new CheckBox(getDriver(), "sendMailToggle");
             recipientCheckbox.setSelected(!options.emailRecipients.isEmpty());
             if (!options.emailRecipients.isEmpty()) {
-                final String emailRecipients = Strings.join(options.emailRecipients, ',');
+                final String emailRecipients = String.join(",", options.emailRecipients);
                 new TextInput(getDriver(), "mailRecipient").setInput(emailRecipients);
+            }
+
+            // Post to HTTP Endpoint?
+            if (!Strings.isNullOrEmpty(options.webhookEndpoint)) {
+                new CheckBox(getDriver(), "webhookToggle").setSelected(true);
+                new TextInput(getDriver(), "webhookUrl").setInput(options.webhookEndpoint);
             }
 
             // Format
@@ -430,8 +499,8 @@ public class DatabaseReportPageIT extends UiPageTest {
                 final ReportScheduleElement element = new ReportScheduleElement(getDriver());
                 element.setTemplateName(columns.get(1).getText());
                 element.setFormat(columns.get(2).getText());
-                element.setCronExpression(columns.get(5).getText());
-                element.setTriggerName(columns.get(6).getText());
+                element.setCronExpression(columns.get(6).getText());
+                element.setTriggerName(columns.get(7).getText());
                 results.add(element);
             }
             return results;
@@ -465,7 +534,8 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         private String format;
         private boolean persistToDisk;
-        private List<String> emailRecipients;
+        private List<String> emailRecipients = Lists.newArrayList();
+        private String webhookEndpoint;
 
         private DeliveryOptions format(String format) {
             this.format = Objects.requireNonNull(format);
@@ -482,11 +552,17 @@ public class DatabaseReportPageIT extends UiPageTest {
             return this;
         }
 
+        public DeliveryOptions postToEndpoint(String webhookEndpoint) {
+            this.webhookEndpoint = Objects.requireNonNull(webhookEndpoint);
+            return this;
+        }
+
         public String toString() {
             return MoreObjects.toStringHelper(this)
                     .add("format", format)
                     .add("persistToDisk", persistToDisk)
                     .add("emailRecipients", emailRecipients)
+                    .add("webhookEndpoint", webhookEndpoint)
                     .toString();
         }
     }

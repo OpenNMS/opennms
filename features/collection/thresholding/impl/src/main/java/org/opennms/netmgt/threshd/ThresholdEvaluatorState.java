@@ -29,9 +29,9 @@
 package org.opennms.netmgt.threshd;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.netmgt.threshd.api.ReinitializableState;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -45,7 +45,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author ranger
  * @version $Id: $
  */
-public interface ThresholdEvaluatorState {
+public interface ThresholdEvaluatorState extends ReinitializableState {
     public enum Status {
         NO_CHANGE,
         TRIGGERED,
@@ -108,6 +108,8 @@ public interface ThresholdEvaluatorState {
     public ThresholdEvaluatorState getCleanClone();
 
     ThresholdingSession getThresholdingSession();
+    
+    void setInstance(String instance);
 
     class ValueStatus {
         public final double value;

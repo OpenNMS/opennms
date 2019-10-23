@@ -85,7 +85,7 @@
         <dependency>
             <groupId>org.opennms.container</groupId>
             <artifactId>org.opennms.container.shared</artifactId>
-	    <version>${project.version}</version>
+            <version>${project.version}</version>
             <type>tar.gz</type>
         </dependency>
     </dependencies>

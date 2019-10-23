@@ -30,10 +30,7 @@ RPMS_HORIZON=("opennms-core-${RPM_VERSION}.noarch.rpm"
               "opennms-webapp-remoting-${RPM_VERSION}.noarch.rpm"
               "opennms-webapp-hawtio-${RPM_VERSION}.noarch.rpm")
 
-RPMS_MINION=("opennms-minion-${RPM_VERSION}.noarch.rpm"
-             "opennms-minion-container-${RPM_VERSION}.noarch.rpm"
-             "opennms-minion-features-core-${RPM_VERSION}.noarch.rpm"
-             "opennms-minion-features-default-${RPM_VERSION}.noarch.rpm")
+RPMS_MINION=("opennms-minion-${RPM_VERSION}.noarch.rpm")
 
 RPMS_SENTINEL=("opennms-sentinel-${RPM_VERSION}.noarch.rpm")
 

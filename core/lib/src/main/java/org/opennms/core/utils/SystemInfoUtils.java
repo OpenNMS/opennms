@@ -40,6 +40,9 @@ import org.slf4j.LoggerFactory;
 public class SystemInfoUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SystemInfoUtils.class);
 
+    // Note: if you change the default instance ID, unit tests will fail unless you update
+    // core/ipc/sink/kafka/server/src/main/resources/OSGI-INF/blueprint/blueprint-ipc-server.xml
+    // as well
     public static final String OPENNMS_INSTANCE_ID_SYS_PROP = "org.opennms.instance.id";
     public static final String DEFAULT_INSTANCE_ID = "OpenNMS";
 

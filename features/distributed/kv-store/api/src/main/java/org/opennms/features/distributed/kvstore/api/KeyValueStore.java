@@ -41,6 +41,11 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * Asynchronous calls to this API that fail exceptionally will return their future completed exceptionally with the
  * original exception.
+ * <p>
+ * It is up to the client to handle failures (in the form of unchecked exceptions) resulting from calls to this
+ * interface. This is particularly important in the case of asynchronous calls as the backing implementation may be
+ * overwhelmed depending on the rate in which case the user must implement their own retry logic to handle the futures
+ * that have completed exceptionally (in any case where it is not safe to ignore them).
  *
  * @param <T> the type this store puts/gets
  */

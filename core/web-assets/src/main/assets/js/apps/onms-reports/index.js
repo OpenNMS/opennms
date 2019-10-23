@@ -195,7 +195,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                         endpoint: undefined,
                         dashboard: undefined
                     };
-                    scope.onInvalidChange = scope.onInvalidChange || function(invalidState) {};
+                    scope.onInvalidChange = scope.onInvalidChange || function(invalidState) {}; // eslint-disable-line @typescript-eslint/no-empty-function
                     scope.onDateParamStateChange = function(invalidState) {
                         scope.onInvalidChange({invalidState: invalidState});
                     };
@@ -268,7 +268,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             }
         }])
         .directive('multiEmails', function() {
-            const EMAIL_REGEXP = /^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
+            const EMAIL_REGEXP = /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z{|}~])*@[a-zA-Z](-?[a-zA-Z0-9])*(\.[a-zA-Z](-?[a-zA-Z0-9])*)+$/;
             return {
                 restrict: 'A',
                 require: 'ngModel',
