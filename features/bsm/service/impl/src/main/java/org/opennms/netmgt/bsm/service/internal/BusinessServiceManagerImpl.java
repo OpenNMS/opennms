@@ -244,6 +244,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         }
         // edges of the entity are deleted automatically by hibernate
         getDao().delete(entity);
+
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_DELETED_EVENT_UEI, "BSM Manager");
+        eventBuilder.addParam("businessServiceName", businessService.getName());
+        eventBuilder.addParam("businessServiceId", businessService.getId());
+        eventForwarder.sendNow(eventBuilder.getEvent());
     }
 
     @Override
