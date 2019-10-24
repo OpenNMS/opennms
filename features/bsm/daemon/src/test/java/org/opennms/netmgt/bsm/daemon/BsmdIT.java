@@ -32,6 +32,9 @@ import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -40,6 +43,7 @@ import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -206,6 +210,13 @@ public class BsmdIT {
         stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
         verifyParametersOnAnticipatedEventsReceived(m_eventMgr.getEventAnticipator(), simpleBs.getId());
+
+        // Verify that rootCause is set
+        final Optional<Event> event = m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream()
+                .filter(e -> e.getUei().equals(EventConstants.BUSINESS_SERVICE_PROBLEM_UEI))
+                .findFirst();
+
+        assertThat(event.get().getParm("rootCause").getValue().getContent(), is(not(isEmptyOrNullString())));
     }
 
     private static void verifyParametersOnAnticipatedEventsReceived(EventAnticipator anticipator, Long businessServiceId) {

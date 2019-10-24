@@ -13,7 +13,7 @@
    <event>
       <uei>uei.opennms.org/bsm/serviceProblem</uei>
       <event-label>Business Service Monitoring: Service Problem</event-label>
-      <descr>&lt;p>There are currently one or more problems affecting business service '%parm[businessServiceName]%'.
+      <descr>&lt;p>There are currently one or more problems affecting business service '%parm[businessServiceName]%'. Root cause: %parm[rootCause]%.
             args(%parm[##]%): %parm[all]%&lt;/p></descr>
       <logmsg dest="logndisplay">One or more problems are affecting business service '%parm[businessServiceName]%'.
         </logmsg>

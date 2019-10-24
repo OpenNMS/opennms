@@ -30,7 +30,8 @@ package org.opennms.netmgt.bsm.service;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 
 public interface BusinessServiceStateChangeHandler {
-    void handleBusinessServiceStateChanged(BusinessService businessService, Status newStatus, Status oldStatus);
+    void handleBusinessServiceStateChanged(BusinessServiceGraph graph, BusinessService businessService, Status newStatus, Status oldStatus);
 }
