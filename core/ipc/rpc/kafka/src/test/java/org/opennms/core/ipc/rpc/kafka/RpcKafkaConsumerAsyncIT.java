@@ -50,13 +50,9 @@ import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
-import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.test.ThreadLocker;
 import org.osgi.service.cm.ConfigurationAdmin;
-
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
 
 /**
  * This test verifies that the response handling is asynchronous in nature.
@@ -86,7 +82,7 @@ public class RpcKafkaConsumerAsyncIT {
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
         rpcClientFactory = new KafkaRpcClientFactory();
-        rpcClientFactory.setTracerRegistry(tracerRegistry);
+        rpcClientFactory.setTracerRegistry(RpcKafkaIT.tracerRegistry);
         //echoClient = new MockEchoClient(rpcClientFactory, echoRpcModule);
         rpcClientFactory.start();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
@@ -95,7 +91,7 @@ public class RpcKafkaConsumerAsyncIT {
         when(configAdmin.getConfiguration(KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
-        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KAFKA_CONFIG_PID, configAdmin), minionIdentity, tracerRegistry);
+        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KAFKA_CONFIG_PID, configAdmin), minionIdentity, RpcKafkaIT.tracerRegistry);
         kafkaRpcServer.init();
         kafkaRpcServer.bind(echoRpcModule);
     }
@@ -156,17 +152,6 @@ public class RpcKafkaConsumerAsyncIT {
 
     }
 
-
-    private TracerRegistry tracerRegistry = new TracerRegistry() {
-        @Override
-        public Tracer getTracer() {
-            return GlobalTracer.get();
-        }
-
-        @Override
-        public void init(String serviceName) {
-        }
-    };
 
     @After
     public void destroy() throws Exception {

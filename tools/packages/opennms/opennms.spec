@@ -603,7 +603,7 @@ rsync -avr --exclude=examples %{buildroot}%{instprefix}/etc/ %{buildroot}%{share
 chmod -R go-w %{buildroot}%{sharedir}/etc-pristine/
 
 install -d -m 755 "%{buildroot}%{_initrddir}" "%{buildroot}%{_sysconfdir}/sysconfig" "%{buildroot}%{_unitdir}"
-install -m 644 %{buildroot}%{instprefix}/etc/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
+install -m 644 %{buildroot}%{instprefix}/etc/opennms.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 755 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.init      %{buildroot}%{_initrddir}/opennms-remote-poller
 install -m 640 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/opennms-remote-poller
 rm -rf %{buildroot}%{instprefix}/contrib/remote-poller
