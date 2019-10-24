@@ -535,7 +535,7 @@ if [ "%{skip_compile}" = 1 ]; then
 		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 	fi
 	TOPDIR=`pwd`
-	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
+	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -PskipCompile -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
