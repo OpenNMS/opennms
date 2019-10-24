@@ -22,8 +22,9 @@ $theme-colors: (
     "default":                      #f8f9fa,
 
 
-    // Success and meridian color are pretty similar.
-    // It looks weird to have a slightly different blue, so we override it
+    // The primary and meridian color are pretty similar.
+    // It looks weird to have a slightly different blue,
+    // so for primary $color_meridian is used as well
     "primary":                      $color_meridian
 
     // Additional colors may be added here, e.g. "severity-normal"
