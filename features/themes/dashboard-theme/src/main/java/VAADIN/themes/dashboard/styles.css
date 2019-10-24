@@ -50,7 +50,7 @@
 }
 
 #onmslogo {
-    background:url(/opennms/images/o-green-trans.svg) no-repeat;
+    background:url(/opennms/images/o-blue-trans.svg) no-repeat;
     display:block;
     height:44px;
     width:170px;
@@ -62,7 +62,7 @@
 }
 
 .dashboard .wallboard-board {
-    color: #3ba300;
+    color: #2173B2;
     padding: 5px 5px;
     margin: 1px;
 }
