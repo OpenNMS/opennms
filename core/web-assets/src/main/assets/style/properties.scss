@@ -21,6 +21,11 @@ $theme-colors: (
     // Here default is defined the same as "light".
     "default":                      #f8f9fa,
 
+
+    // Success and meridian color are pretty similar.
+    // It looks weird to have a slightly different blue, so we override it
+    "primary":                      $color_meridian
+
     // Additional colors may be added here, e.g. "severity-normal"
     // to allow alerts, badges, buttons, etc to be colored accordingly
 );
