@@ -82,7 +82,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  * life-cycle events when creating or updating alarms.
  *
  * @author jwhite
- *
  */
 @Ignore("flapping - see NMS-12309")
 @RunWith(OpenNMSJUnit4ClassRunner.class)

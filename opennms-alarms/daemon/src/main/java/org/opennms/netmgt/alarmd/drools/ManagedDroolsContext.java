@@ -161,8 +161,10 @@ public class ManagedDroolsContext {
         final KieServices ks = KieServices.Factory.get();
         kieContainer = ks.newKieContainer(releaseId);
         kieSession = kieContainer.newKieSession(kSessionName);
-        // Create and add our clock to the session
+        // When usePseudoClock is set, the clock is expected to be driven manually and we start at 0
+        // instead of the actual current time
         final long now =  usePseudoClock ? 0L : System.currentTimeMillis();
+        // Create and add our clock to the session
         this.clock = new SessionClock(kieSession, now);
 
         // Optionally restore any facts
