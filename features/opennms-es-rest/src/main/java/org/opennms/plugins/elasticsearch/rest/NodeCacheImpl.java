@@ -37,15 +37,13 @@ import java.util.concurrent.ExecutionException;
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.cache.CacheLoader;
 
@@ -58,14 +56,14 @@ public class NodeCacheImpl implements NodeCache {
     private static final Logger LOG = LoggerFactory.getLogger(NodeCacheImpl.class);
 
     private final NodeDao nodeDao;
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
     private final boolean archiveAssetData;
 
     private final Cache<Long, Map<String,String>> cache;
 
-    public NodeCacheImpl(final NodeDao nodeDao, final TransactionOperations transactionOperations, final CacheConfig cacheConfig, final boolean archiveAssetData) {
+    public NodeCacheImpl(final NodeDao nodeDao, final SessionUtils sessionUtils, final CacheConfig cacheConfig, final boolean archiveAssetData) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.archiveAssetData = archiveAssetData;
 
         // Initialize cache
@@ -102,16 +100,13 @@ public class NodeCacheImpl implements NodeCache {
             LOG.debug("Fetching node data from database into cache");
 
             // wrap in a transaction so that Hibernate session is bound and getCategories works
-            transactionOperations.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                    final OnmsNode node = nodeDao.get(nodeId.toString());
-                    if (node != null) {
-                        populateBodyWithNodeInfo(result, node);
-                    }
+            sessionUtils.withReadOnlyTransaction(() -> {
+                final OnmsNode node = nodeDao.get(nodeId.toString());
+                if (node != null) {
+                    populateBodyWithNodeInfo(result, node);
                 }
+                return null;
             });
-
         }
         return result;
     }

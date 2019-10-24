@@ -42,7 +42,7 @@ import org.junit.rules.Timeout;
 import org.opennms.netmgt.flows.rest.classification.GroupDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
-import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
+import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.IpcStrategy;

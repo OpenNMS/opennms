@@ -28,8 +28,14 @@
 
 package org.opennms.netmgt.bsm.daemon;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -41,11 +47,13 @@ import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -60,6 +68,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * This daemon is responsible for driving the Business Service state machine by:
@@ -79,6 +89,8 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     public static final String NAME = "Bsmd";
 
+    public static final long RELOAD_DELAY = 1000;
+
     @Autowired
     @Qualifier("eventIpcManager")
     private EventIpcManager m_eventIpcManager;
@@ -96,6 +108,26 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     private BusinessServiceManager m_manager;
 
     private boolean m_verifyReductionKeys = true;
+
+    private ScheduledExecutorService daemonReloadScheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("bsm-daemon-reload-%d").build());
+
+    {
+        {
+            daemonReloadScheduler.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    if (reloadConfigurationAt > 0L && reloadConfigurationAt < System.currentTimeMillis()) {
+                        reloadConfigurationAt = 0L;
+                        final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "bsmd");
+                        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+                        m_eventIpcManager.sendNow(eventBuilder.getEvent());
+                    }
+                }
+            }, RELOAD_DELAY, RELOAD_DELAY, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private volatile long reloadConfigurationAt = 0L;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -157,6 +189,72 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                 return Status.INDETERMINATE;
             }
         });
+    }
+
+    private Collection<BusinessService> searchPredecessors(final GraphVertex leaf) {
+        final Set<BusinessService> businessServices = new HashSet<>();
+        final Collection<GraphVertex> predecessors = m_stateMachine.getGraph().getPredecessors(leaf);
+        for(final GraphVertex graphVertex : predecessors) {
+            if (graphVertex.getBusinessService() != null) {
+                businessServices.add(graphVertex.getBusinessService());
+            } else {
+                businessServices.addAll(searchPredecessors(graphVertex));
+            }
+        }
+        return businessServices;
+    }
+
+    @EventHandler(ueis = {EventConstants.SERVICE_DELETED_EVENT_UEI, EventConstants.INTERFACE_DELETED_EVENT_UEI, EventConstants.NODE_DELETED_EVENT_UEI, EventConstants.APPLICATION_DELETED_EVENT_UEI})
+    public void serviceInterfaceOrNodeDeleted(Event e) {
+        final Set<String> reductionKeys = m_stateMachine.getGraph().getReductionKeys();
+
+        if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid()))
+                || EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/interfaceDown::%d:%s", e.getNodeid(), e.getInterface()))
+                || EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService()))
+                || EventConstants.APPLICATION_DELETED_EVENT_UEI.equals(e.getUei()) && m_stateMachine.getGraph().getVertexByApplicationId(Integer.parseInt(e.getParm("applicationId").getValue().getContent())) != null) {
+
+            final Set<BusinessService> affectedBusinessServices = new HashSet<>();
+            String cause = "an associated entity";
+
+            if (EventConstants.APPLICATION_DELETED_EVENT_UEI.equals(e.getUei())) {
+                final GraphVertex vertex = m_stateMachine.getGraph().getVertexByApplicationId(Integer.parseInt(e.getParm("applicationId").getValue().getContent()));
+                affectedBusinessServices.addAll(searchPredecessors(vertex));
+                cause = "application '" + e.getParm("applicationName").getValue().getContent() + "'";
+            }
+
+            if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei())) {
+                final GraphVertex vertex = m_stateMachine.getGraph().getVertexByReductionKey(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid()));
+                affectedBusinessServices.addAll(searchPredecessors(vertex));
+                cause = "node '" + e.getNodeid() + "'";
+            }
+
+            if (EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(e.getUei())) {
+                final GraphVertex vertex = m_stateMachine.getGraph().getVertexByReductionKey(String.format("uei.opennms.org/nodes/interfaceDown::%d:%s", e.getNodeid(), e.getInterface()));
+                affectedBusinessServices.addAll(searchPredecessors(vertex));
+                cause = "interface '" + e.getNodeid() + "/" + e.getInterface() + "'";
+            }
+
+            if (EventConstants.SERVICE_DELETED_EVENT_UEI.equals(e.getUei())) {
+                final GraphVertex vertex = m_stateMachine.getGraph().getVertexByReductionKey(String.format("uei.opennms.org/nodes/nodeLostService::%d:%s:%s", e.getNodeid(), e.getInterface(), e.getService()));
+                affectedBusinessServices.addAll(searchPredecessors(vertex));
+                cause = "service '" + e.getNodeid() + "/" + e.getInterface() + "/" + e.getService() + "'";
+            }
+
+            reloadConfigurationAt = System.currentTimeMillis() + RELOAD_DELAY;
+
+            for (final BusinessService businessService : affectedBusinessServices) {
+                final EventBuilder eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "bsmd");
+                eventBuilder.addParam("businessServiceId", businessService.getId());
+                eventBuilder.addParam("businessServiceName", businessService.getName());
+                eventBuilder.addParam("cause", cause);
+                final Event event = eventBuilder.getEvent();
+                try {
+                    m_eventIpcManager.send(event);
+                } catch (EventProxyException ex) {
+                    LOG.error("Cannot send event " + event.getUei(), ex);
+                }
+            }
+        }
     }
 
     /**

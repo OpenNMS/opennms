@@ -98,16 +98,23 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
 
             @Override
             public String toString() {
-                return "exceededCount=" + m_exceededCount +
-                        "\narmed=" + m_armed +
-                        "\n" + super.toString();
+                StringBuilder sb = new StringBuilder();
+                sb.append("exceededCount=").append(m_exceededCount);
+                sb.append("\narmed=").append(m_armed);
+                String superString = super.toString();
+
+                if (superString != null) {
+                    sb.append("\n").append(superString);
+                }
+
+                return sb.toString();
             }
         }
         
         private CollectionResourceWrapper m_lastCollectionResourceUsed;
 
         public ThresholdEvaluatorStateHighLow(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
-            super(threshold, thresholdingSession);
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateHighLow.State.class);
             setThresholdConfig(threshold);
         }
 

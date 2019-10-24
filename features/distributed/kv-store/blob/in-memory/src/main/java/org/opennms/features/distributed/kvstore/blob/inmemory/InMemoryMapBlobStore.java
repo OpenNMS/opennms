@@ -50,6 +50,10 @@ public class InMemoryMapBlobStore extends AbstractAsyncKeyValueStore<byte[]> imp
     public InMemoryMapBlobStore(TimestampGenerator timestampGenerator) {
         this.timestampGenerator = Objects.requireNonNull(timestampGenerator);
     }
+    
+    public static InMemoryMapBlobStore withDefaultTicks() {
+        return new InMemoryMapBlobStore(System::currentTimeMillis);
+    }
 
     @Override
     public long put(String key, byte[] value, String context, Integer ttlInSeconds) {

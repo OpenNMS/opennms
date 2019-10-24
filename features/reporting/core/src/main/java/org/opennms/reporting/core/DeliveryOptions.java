@@ -41,6 +41,8 @@ public class DeliveryOptions implements Serializable {
     protected Boolean m_sendMail;
     protected ReportFormat m_format;
     protected String m_instanceId;
+    protected Boolean m_webhook;
+    protected String m_webhookUrl;
 
     public String getMailTo() {
         return m_mailTo;
@@ -80,6 +82,26 @@ public class DeliveryOptions implements Serializable {
 
     public void setInstanceId(String instanceId) {
         m_instanceId = instanceId;
+    }
+
+    public String getWebhookUrl() {
+        return m_webhookUrl;
+    }
+
+    public boolean isWebhook() {
+        return m_webhook == null ? false : m_webhook;
+    }
+
+    public Boolean getWebhook() {
+        return m_webhook;
+    }
+
+    public void setWebhook(boolean webhook) {
+        m_webhook = webhook;
+    }
+
+    public void setWebhookUrl(String url) {
+        m_webhookUrl = url;
     }
 
 }

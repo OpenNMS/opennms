@@ -68,14 +68,14 @@ import org.opennms.features.alarms.history.elastic.tasks.TaskVisitor;
 import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
-import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
-import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
-import org.opennms.plugins.elasticsearch.rest.template.TemplateInitializer;
+import org.opennms.features.jest.client.bulk.BulkException;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.bulk.FailedItem;
+import org.opennms.features.jest.client.index.IndexSelector;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.features.jest.client.template.TemplateInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -467,7 +467,17 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         }
 
         if (needsIndexing) {
-            final AlarmDocumentDTO doc = documentMapper.apply(alarm);
+            final AlarmDocumentDTO doc;
+            try {
+                doc = documentMapper.apply(alarm);
+            } catch (Exception e) {
+                // This may be triggered by Hibernate ObjectNotFoundExceptions if the event
+                // attached to the alarm entity is already gone. In this case, we simply want to skip
+                // the alarm for now.
+                LOG.warn("Mapping alarm to DTO failed. Document will not be indexed.", e);
+                return Optional.empty();
+            }
+
             alarmDocumentsById.put(alarm.getId(), doc);
             return Optional.of(doc);
         }

@@ -38,7 +38,12 @@ import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.AdminApplicationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DefaultAdminApplicationService class.</p>
@@ -49,7 +54,9 @@ import org.opennms.web.svclayer.AdminApplicationService;
  */
 public class DefaultAdminApplicationService implements
         AdminApplicationService {
-    
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultAdminApplicationService.class);
+
     private ApplicationDao m_applicationDao;
     private MonitoredServiceDao m_monitoredServiceDao;
 
@@ -255,6 +262,12 @@ public class DefaultAdminApplicationService implements
     public void removeApplication(String applicationIdString) {
         OnmsApplication application = findApplication(applicationIdString);
         m_applicationDao.delete(application);
+        final Event event = EventUtils.createApplicationDeletedEvent("Web UI", application.getId(), application.getName());
+        try {
+            Util.createEventProxy().send(event);
+        } catch (final Throwable e) {
+            LOG.error("Can't send event " + event, e);
+        }
     }
 
     /** {@inheritDoc} */
