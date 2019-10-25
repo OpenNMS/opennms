@@ -209,6 +209,14 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                 task.visit(new TaskVisitor() {
                     @Override
                     public void indexAlarms(List<AlarmDocumentDTO> docs) {
+                        // If there are multiple documents for the same alarm id at the same timestamp,
+                        // then keep the last one in the list
+                        final Map<String, AlarmDocumentDTO> deduplicatedDocs = new LinkedHashMap<>();
+                        for (AlarmDocumentDTO doc : docs) {
+                            deduplicatedDocs.put(String.format("%d-%s", doc.getId(), doc.getUpdateTime()), doc);
+                        }
+                        docs = new ArrayList<>(deduplicatedDocs.values());
+
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("Indexing documents for alarms with ids: {}", docs.stream().map(AlarmDocumentDTO::getId).collect(Collectors.toList()));
                         }
