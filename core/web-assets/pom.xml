@@ -55,37 +55,36 @@
         <artifactId>frontend-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>install node and yarn</id>
+            <id>install node</id>
             <goals>
-              <goal>install-node-and-yarn</goal>
+              <goal>install-node-and-npm</goal>
             </goals>
             <phase>generate-resources</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
               <nodeVersion>${nodeVersion}</nodeVersion>
-              <yarnVersion>${yarnVersion}</yarnVersion>
             </configuration>
           </execution>
           <execution>
             <id>install dependencies</id>
             <goals>
-              <goal>yarn</goal>
+              <goal>npm</goal>
             </goals>
             <phase>generate-resources</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <arguments>--prefer-offline --non-interactive --frozen-lockfile --no-progress</arguments>
+              <arguments>--prefer-offline --no-progress clean-install</arguments>
             </configuration>
           </execution>
           <execution>
             <id>build release</id>
             <goals>
-              <goal>yarn</goal>
+              <goal>npm</goal>
             </goals>
             <phase>compile</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <arguments>--prefer-offline --non-interactive --frozen-lockfile --no-progress release</arguments>
+              <arguments>--prefer-offline --no-progress run release</arguments>
             </configuration>
           </execution>
         </executions>
@@ -145,11 +144,11 @@
               <execution>
                 <id>run tests</id>
                 <goals>
-                  <goal>yarn</goal>
+                  <goal>npm</goal>
                 </goals>
                 <phase>test</phase>
                 <configuration>
-                  <arguments>--prefer-offline --non-interactive --frozen-lockfile --no-progress maven-test</arguments>
+                  <arguments>--prefer-offline --no-progress run maven-test</arguments>
                 </configuration>
               </execution>
             </executions>
