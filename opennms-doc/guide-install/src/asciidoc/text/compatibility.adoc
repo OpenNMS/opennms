@@ -11,7 +11,7 @@
 | Cassandra               | 3.11.+
 | Elasticsearch           | 7.x
 | Java Development Kit    | OpenJDK 8, OpenJDK 11
-| Kafka                   | 2.3.0
+| Kafka                   | 1.x - 2.x
 | PostgreSQL              | 10.x - 12.x
 | RRDTool                 | 1.7.x
 |===
