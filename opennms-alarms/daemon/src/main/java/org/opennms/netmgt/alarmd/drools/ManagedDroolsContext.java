@@ -45,8 +45,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.drools.core.ClockType;
-import org.drools.core.time.SessionPseudoClock;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -58,8 +56,9 @@ import org.kie.api.builder.model.KieSessionModel;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.conf.ClockTypeOption;
+import org.kie.api.time.SessionPseudoClock;
 import org.kie.internal.io.ResourceFactory;
+import org.opennms.core.sysprops.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +79,16 @@ public class ManagedDroolsContext {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
     private static final String JMX_DOMAIN_PREFIX = "org.opennms.features.drools.";
+
+    /**
+     * Frequency at which the clock is updated in the session
+     */
+    private static final long CLOCK_UPDATE_INTERVAL_MS = SystemProperties.getLong(
+            "org.opennms.features.drools.clock_update_interval_ms", TimeUnit.SECONDS.toMillis(15));
+
+    /**
+     * Frequency at which the liveness check is scheduled
+     */
     private static final long LIVENESS_CHECK_INTERVAL_MS = TimeUnit.SECONDS.toMillis(5);
 
     private final MetricRegistry metrics;
@@ -101,7 +110,8 @@ public class ManagedDroolsContext {
 
     private Thread thread;
 
-    private SessionPseudoClock clock;
+    private java.util.Timer clockUpdateTimer;
+    private SessionClock clock;
 
     protected AtomicLong fireThreadId = new AtomicLong(-1);
 
@@ -151,12 +161,11 @@ public class ManagedDroolsContext {
         final KieServices ks = KieServices.Factory.get();
         kieContainer = ks.newKieContainer(releaseId);
         kieSession = kieContainer.newKieSession(kSessionName);
-
-        if (usePseudoClock) {
-            this.clock = kieSession.getSessionClock();
-        } else {
-            this.clock = null;
-        }
+        // When usePseudoClock is set, the clock is expected to be driven manually and we start at 0
+        // instead of the actual current time
+        final long now =  usePseudoClock ? 0L : System.currentTimeMillis();
+        // Create and add our clock to the session
+        this.clock = new SessionClock(kieSession, now);
 
         // Optionally restore any facts
         factObjects.forEach(factObject -> kieSession.insert(factObject));
@@ -170,6 +179,22 @@ public class ManagedDroolsContext {
 
         // We're started!
         started.set(true);
+
+        // Schedule the clock updates
+        clockUpdateTimer = new java.util.Timer();
+        clockUpdateTimer.schedule(new TimerTask() {
+           @Override
+           public void run() {
+               try {
+                   if (clock != null) {
+                       clock.advanceTimeToNow();
+                   }
+               } catch (Exception e) {
+                   // Should never happen, but just in case...
+                   LOG.error("Exception occurred while advancing session clock.", e);
+               }
+           }
+       }, CLOCK_UPDATE_INTERVAL_MS, CLOCK_UPDATE_INTERVAL_MS);
 
         // Schedule the liveness check
         livenessTimer = new java.util.Timer();
@@ -259,6 +284,7 @@ public class ManagedDroolsContext {
         // Grab the facts
         final List<Object> factObjects = kieSession.getFactHandles().stream()
                 .map(kieSession::getObject)
+                .filter(o -> !(o instanceof  SessionClock)) // Exclude the fact for our SessionClock
                 .collect(Collectors.toList());
 
         // Dispose the session
@@ -287,12 +313,9 @@ public class ManagedDroolsContext {
         final KieBaseModel base = module.newKieBaseModel(kbaseName);
         base.setDefault(true);
         base.addPackage("*");
-        base.setEventProcessingMode(EventProcessingOption.STREAM);
+        base.setEventProcessingMode(EventProcessingOption.CLOUD);
         final KieSessionModel kieSessionModel = base.newKieSessionModel(kSessionName).setDefault(true)
                 .setType(KieSessionModel.KieSessionType.STATEFUL);
-        if (usePseudoClock) {
-            kieSessionModel.setClockType(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
-        }
 
         LOG.debug("kmodule.xml: {}", module.toXML());
         kfs.writeKModuleXML(module.toXML());
@@ -351,6 +374,10 @@ public class ManagedDroolsContext {
         if (livenessTimer != null) {
             livenessTimer.cancel();
             livenessTimer = null;
+        }
+        if (clockUpdateTimer != null) {
+            clockUpdateTimer.cancel();
+            clockUpdateTimer = null;
         }
         if (kieSession != null) {
             kieSession.halt();
