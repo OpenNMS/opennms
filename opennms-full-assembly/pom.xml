@@ -482,6 +482,7 @@
                 <feature>opennms-core-daemon</feature>
                 <feature>opennms-core-db</feature>
                 <feature>opennms-core-ipc-rpc-commands</feature>
+                <feature>opennms-core-ipc-kafka-shell</feature>
                 <feature>opennms-core</feature>
                 <feature>opennms-core-web</feature>
                 <feature>opennms-dao-api</feature>
@@ -1010,6 +1011,11 @@
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.common</groupId>
+      <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

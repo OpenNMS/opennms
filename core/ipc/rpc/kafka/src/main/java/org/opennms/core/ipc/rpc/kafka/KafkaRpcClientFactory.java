@@ -29,8 +29,8 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL;
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.DEFAULT_TTL;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
@@ -71,6 +71,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.joda.time.Duration;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.logging.Logging;
@@ -145,9 +146,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
+    private MetricRegistry metrics;
     private Map<String, Integer> currentChunkCache = new ConcurrentHashMap<>();
-
-    private MetricRegistry metrics = new MetricRegistry();
     private JmxReporter metricsReporter = null;
 
 
@@ -238,9 +238,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             }
 
             private void addMetrics(RpcRequest request, int messageLen) {
-                final Meter requestSentMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
                 requestSentMeter.mark();
-                final Histogram rpcRequestSize = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SIZE));
+                final Histogram rpcRequestSize = getMetrics().histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SIZE));
                 rpcRequestSize.update(messageLen);
             }
 
@@ -288,7 +288,16 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         return tracerRegistry;
     }
 
+    public MetricRegistry getMetrics() {
+        if (metrics == null) {
+            metrics = new MetricRegistry();
+        }
+        return metrics;
+    }
 
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
+    }
 
     public void start() {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(RpcClientFactory.LOG_PREFIX)) {
@@ -309,7 +318,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             // Start consumer which handles all the responses.
             startKafkaConsumer();
             // Initialize metrics reporter.
-            metricsReporter = JmxReporter.forRegistry(metrics).
+            metricsReporter = JmxReporter.forRegistry(getMetrics()).
                     inDomain(JMX_DOMAIN_RPC).build();
             metricsReporter.start();
             // Initialize tracer from tracer registry.
@@ -371,9 +380,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             this.span = span;
             this.location = location;
             requestCreationTime = System.currentTimeMillis();
-            rpcDuration = metrics.histogram(MetricRegistry.name(location, rpcModule.getId(), RPC_DURATION));
-            failedMeter = metrics.meter(MetricRegistry.name(location, rpcModule.getId(), RPC_FAILED));
-            responseSize = metrics.histogram(MetricRegistry.name(location, rpcModule.getId(), RPC_RESPONSE_SIZE));
+            rpcDuration = getMetrics().histogram(MetricRegistry.name(location, rpcModule.getId(), RPC_DURATION));
+            failedMeter = getMetrics().meter(MetricRegistry.name(location, rpcModule.getId(), RPC_FAILED));
+            responseSize = getMetrics().histogram(MetricRegistry.name(location, rpcModule.getId(), RPC_RESPONSE_SIZE));
         }
 
         @Override

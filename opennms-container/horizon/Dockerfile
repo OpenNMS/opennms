@@ -9,7 +9,7 @@ FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq"
 
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm"
+ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
 
 ARG CONFD_VERSION="0.16.0"
 ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64"
@@ -20,11 +20,13 @@ SHELL ["/bin/bash", "-c"]
 RUN curl -L ${CONFD_URL} -o /usr/bin/confd && \
     chmod +x /usr/bin/confd
 
-RUN rpm --import "${REPO_KEY_URL}" && \
-    yum install -y epel-release && \
-    yum -y install "${REPO_RPM}" && \
-    yum -y install ${REQUIRED_RPMS} && \
-    yum clean all -y && \
+RUN dnf -y install dnf-plugins-core && \
+    dnf config-manager --set-enabled PowerTools && \
+    rpm --import "${REPO_KEY_URL}" && \
+    dnf -y install epel-release && \
+    dnf -y install "${REPO_RPM}" && \
+    dnf -y install ${REQUIRED_RPMS} && \
+    dnf clean all && \
     rm -rf /var/cache/yum
 
 # Allow to send ICMP messages as non-root user
@@ -63,21 +65,21 @@ RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
         mkdir -p /opt/opennms && tar xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
         cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
     elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
-        yum -y localinstall /tmp/rpms/*.rpm && \
+        dnf -y install /tmp/rpms/*.rpm && \
         rm -rf /opt/opennms/logs \
                /opt/opennms/share && \
         mv /var/opennms /opt/opennms/share && \
         mv /var/log/opennms /opt/opennms/logs; \
     else \
-        yum install -y ${ONMS_PACKAGES} && \
+        dnf -y install ${ONMS_PACKAGES} && \
         rm -rf /opt/opennms/logs \
                /opt/opennms/share && \
         mv /var/opennms /opt/opennms/share && \
         mv /var/log/opennms /opt/opennms/logs; \
     fi && \
-    if [[ -n ${ADD_YUM_PACKAGES} ]]; then yum -y install ${ADD_YUM_PACKAGES}; fi && \
+    if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
     rm -rf /tmp/rpms /tmp/tarball && \
-    yum clean all && \
+    dnf clean all && \
     rm -rf /var/cache/yum && \
     rm -rf /opt/opennms/share/rrd \
            /opt/opennms/share/reports \
