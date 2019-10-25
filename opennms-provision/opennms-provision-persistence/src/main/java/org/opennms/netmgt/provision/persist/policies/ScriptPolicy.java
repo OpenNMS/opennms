@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -123,26 +124,35 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
      * {@inheritDoc}
      */
     @Override
-    public OnmsNode act(final OnmsNode node) {
+    public OnmsNode act(final OnmsNode node, Map<String, Object> attributes) {
         try {
             final CompiledScript compiledScript = compileScript(getScript());
             if (compiledScript == null) {
                 LOG.warn("No compiled script available for execution.");
             } else {
-                // Run script in transaction.
-                return (OnmsNode) m_sessionUtils.withTransaction(() -> {
-                    try {
-                        // Fetch node object again from DB.
-                        OnmsNode onmsNode = m_nodeDao.get(node.getId());
-                        final SimpleBindings globals = new SimpleBindings();
-                        globals.put("LOG", LOG);
-                        globals.put("node", onmsNode);
-                        return compiledScript.eval(globals);
-                    } catch (ScriptException e) {
-                        LOG.warn("Error applying ScriptPolicy.", e);
-                    }
-                    return node;
-                });
+                // For the cases where we can't run script in transaction.
+                if (attributes.size() > 0 && attributes.get(RUN_IN_TRANSACTION) != null
+                        && attributes.get(RUN_IN_TRANSACTION).equals(false)) {
+                    runScript(compiledScript, node, attributes);
+                }
+                else {
+                    // Run script in transaction.
+                    return (OnmsNode) m_sessionUtils.withTransaction(() -> {
+                        try {
+                            // Fetch node object again from DB to make it attached.
+                            if (node.getId() != null && node.getId() > 0) {
+                                OnmsNode onmsNode = m_nodeDao.get(node.getId());
+                                return runScript(compiledScript, onmsNode, attributes);
+                            } else {
+                                LOG.warn("Unexpected node {} which is not persisted yet", node);
+                            }
+
+                        } catch (ScriptException e) {
+                            LOG.warn("Error applying ScriptPolicy.", e);
+                        }
+                        return node;
+                    });
+                }
             }
         } catch (ScriptException e) {
             LOG.warn("Error while compiling script.", e);
@@ -153,6 +163,14 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
         }
 
         return node;
+    }
+
+    private OnmsNode runScript(CompiledScript compiledScript, OnmsNode node, Map<String, Object> attributes) throws ScriptException {
+        final SimpleBindings globals = new SimpleBindings();
+        globals.put("LOG", LOG);
+        globals.put("node", node);
+        globals.putAll(attributes);
+        return (OnmsNode) compiledScript.eval(globals);
     }
 
     @Require(value = {})
