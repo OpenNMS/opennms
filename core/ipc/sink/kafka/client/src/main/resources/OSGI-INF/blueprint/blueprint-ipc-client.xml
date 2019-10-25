@@ -42,7 +42,7 @@
     <service interface="org.opennms.core.health.api.HealthCheck">
         <bean class="org.opennms.core.ipc.common.kafka.KafkaHealthCheck" >
             <argument ref="kafkaConfigProvider"/>
-            <argument value="Sink" />
+            <argument value="Sink Producer" />
         </bean>
     </service>
 

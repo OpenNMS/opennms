@@ -133,4 +133,17 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
         m_cache.removeNodeId(oldNode.getLocation().getLocationName(), event.getInterfaceAddress(), oldNode.getId());
         m_cache.setNodeId(newNode.getLocation().getLocationName(), event.getInterfaceAddress(), newNode.getId());
     }
+
+    @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
+    @Transactional
+    public void handleNodeDeleted(Event event) {
+        Long nodeId = event.getNodeid();
+        LOG.debug("Received event: {} with nodeId = {}", event.getUei(), nodeId);
+        if (nodeId == null) {
+            LOG.error("{} : Event with no node ID: {}", EventConstants.INTERFACE_DELETED_EVENT_UEI, event.toString());
+            return;
+        }
+        // remove all interfaces for this node.
+        m_cache.removeInterfacesForNode(nodeId.intValue());
+    }
 }

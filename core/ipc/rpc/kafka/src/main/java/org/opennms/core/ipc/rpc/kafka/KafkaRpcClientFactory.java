@@ -29,8 +29,8 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL;
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.DEFAULT_TTL;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
@@ -71,6 +71,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.joda.time.Duration;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.logging.Logging;
@@ -145,7 +146,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
-    private MetricRegistry metrics = new MetricRegistry();
+    private MetricRegistry metrics;
+    private Map<String, Integer> currentChunkCache = new ConcurrentHashMap<>();
     private JmxReporter metricsReporter = null;
 
 
@@ -236,9 +238,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             }
 
             private void addMetrics(RpcRequest request, int messageLen) {
-                final Meter requestSentMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
                 requestSentMeter.mark();
-                final Histogram rpcRequestSize = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SIZE));
+                final Histogram rpcRequestSize = getMetrics().histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SIZE));
                 rpcRequestSize.update(messageLen);
             }
 
@@ -286,7 +288,16 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         return tracerRegistry;
     }
 
+    public MetricRegistry getMetrics() {
+        if (metrics == null) {
+            metrics = new MetricRegistry();
+        }
+        return metrics;
+    }
 
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
+    }
 
     public void start() {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(RpcClientFactory.LOG_PREFIX)) {
@@ -307,7 +318,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             // Start consumer which handles all the responses.
             startKafkaConsumer();
             // Initialize metrics reporter.
-            metricsReporter = JmxReporter.forRegistry(metrics).
+            metricsReporter = JmxReporter.forRegistry(getMetrics()).
                     inDomain(JMX_DOMAIN_RPC).build();
             metricsReporter.start();
             // Initialize tracer from tracer registry.
@@ -369,9 +380,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             this.span = span;
             this.location = location;
             requestCreationTime = System.currentTimeMillis();
-            rpcDuration = metrics.histogram(MetricRegistry.name(location, rpcModule.getId(), RPC_DURATION));
-            failedMeter = metrics.meter(MetricRegistry.name(location, rpcModule.getId(), RPC_FAILED));
-            responseSize = metrics.histogram(MetricRegistry.name(location, rpcModule.getId(), RPC_RESPONSE_SIZE));
+            rpcDuration = getMetrics().histogram(MetricRegistry.name(location, rpcModule.getId(), RPC_DURATION));
+            failedMeter = getMetrics().meter(MetricRegistry.name(location, rpcModule.getId(), RPC_FAILED));
+            responseSize = getMetrics().histogram(MetricRegistry.name(location, rpcModule.getId(), RPC_RESPONSE_SIZE));
         }
 
         @Override
@@ -394,11 +405,12 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
                     span.setTag(TAG_TIMEOUT, "true");
                     failedMeter.mark();
+                    rpcResponseMap.remove(rpcId);
+                    messageCache.remove(rpcId);
+                    currentChunkCache.remove(rpcId);
                 }
                 rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
                 span.finish();
-                rpcResponseMap.remove(rpcId);
-                messageCache.remove(rpcId);
             } catch (Throwable e) {
                 LOG.warn("Error while handling response for RPC module: {}. Response string: {}", rpcModule.getId(), message, e);
             }
@@ -459,6 +471,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     subscribeToTopics();
 
                     ConsumerRecords<String, byte[]> records = consumer.poll(java.time.Duration.ofMillis(Long.MAX_VALUE));
+
                     for (ConsumerRecord<String, byte[]> record : records) {
                         // Get Response callback from key and send rpc content to callback.
                         ResponseCallback responseCb = rpcResponseMap.get(record.key());
@@ -466,16 +479,11 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage
                                     .parseFrom(record.value());
                             ByteString rpcContent = rpcMessage.getRpcContent();
+                            String rpcId = rpcMessage.getRpcId();
                             // For larger messages which get split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
-                                String rpcId = rpcMessage.getRpcId();
-                                ByteString byteString = messageCache.get(rpcId);
-                                if (byteString != null) {
-                                    messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
-                                } else {
-                                    messageCache.put(rpcId, rpcMessage.getRpcContent());
-                                }
-                                if (rpcMessage.getTotalChunks() != rpcMessage.getCurrentChunkNumber() + 1) {
+                                boolean allChunksReceived = handleChunks(rpcMessage);
+                                if(!allChunksReceived) {
                                     continue;
                                 }
                                 rpcContent = messageCache.get(rpcId);
@@ -486,9 +494,13 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             final String rpcMessageContent = rpcContent.toStringUtf8();
                             responseHandlerExecutor.execute(() ->
                                     responseCb.sendResponse(rpcMessageContent));
+                            // Remove rpcId from the maps so that duplicate response will not be handled.
+                            rpcResponseMap.remove(rpcId);
+                            messageCache.remove(rpcId);
+                            currentChunkCache.remove(rpcId);
                         } else {
-                            LOG.warn("Received a response for request with ID:{}, but no outstanding request was found with this id, The request may have timed out.",
-                                    record.key());
+                            LOG.debug("Received a response for request with ID:{}, but no outstanding request was found with this id." +
+                                            "The request may have timed out or the response may be a duplicate.", record.key());
                         }
                     }
                 } catch (InvalidProtocolBufferException e) {
@@ -506,6 +518,25 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         public void stop() {
             closed.set(true);
             consumer.wakeup();
+        }
+
+        private boolean handleChunks(RpcMessageProtos.RpcMessage rpcMessage) {
+            // Avoid duplicate chunks. discard if chunk is repeated or not in order.
+            String rpcId = rpcMessage.getRpcId();
+            currentChunkCache.putIfAbsent(rpcId, 0);
+            Integer chunkNumber = currentChunkCache.get(rpcId);
+            if(chunkNumber != rpcMessage.getCurrentChunkNumber()) {
+                LOG.debug("Expected chunk = {} but got chunk = {}, ignoring.", chunkNumber, rpcMessage.getCurrentChunkNumber());
+                return false;
+            }
+            ByteString byteString = messageCache.get(rpcId);
+            if (byteString != null) {
+                messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
+            } else {
+                messageCache.put(rpcId, rpcMessage.getRpcContent());
+            }
+            currentChunkCache.put(rpcId, ++chunkNumber);
+            return rpcMessage.getTotalChunks() == chunkNumber;
         }
 
         private void waitTillFirstTopicIsAdded() {

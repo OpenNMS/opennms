@@ -1,0 +1,13 @@
+version: 1
+update_configs:
+  - package_manager: "javascript"
+    directory: "/core/web-assets/"
+    update_schedule: "weekly"
+    default_reviewers:
+      - "rangerrick"
+      - "j-white"
+    default_labels:
+      - "dependabot"
+    commit_message:
+      prefix: "build"
+      include_scope: true

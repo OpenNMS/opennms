@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,17 +29,12 @@
 package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
-import org.kie.api.time.SessionClock;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.alarmd.drools.SessionClock;
 
 global org.opennms.netmgt.alarmd.drools.AlarmService alarmService;
-
-declare org.opennms.netmgt.model.OnmsAlarm
-    @role(event)
-    @timestamp(lastUpdateTime)
-end
 
 /*
    <automation name="cosmicClear" interval="30000" active="true"
@@ -104,13 +99,13 @@ end
 */
 rule "unclear"
   when
+    $sessionClock : SessionClock()
     $trigger : OnmsAlarm(alarmType == OnmsAlarm.PROBLEM_TYPE,
                          severity == OnmsSeverity.CLEARED, lastEvent != null,
                          OnmsSeverity.get(lastEvent.getEventSeverity()).isGreaterThan(OnmsSeverity.CLEARED),
                          lastEventTime > lastAutomationTime)
   then
-    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
-    alarmService.unclearAlarm($trigger, now);
+    alarmService.unclearAlarm($trigger, $sessionClock.now());
 end
 
 /*
@@ -147,15 +142,15 @@ end
 
 rule "escalation"
   when
+    $sessionClock : SessionClock()
     $alarm : OnmsAlarm((alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
                          OnmsSeverity.WARNING.isLessThanOrEqual(severity) &&
                          OnmsSeverity.CRITICAL.isGreaterThan(severity) &&
                          serviceType != null &&
-                         alarmAckTime == null)
-    not( OnmsAlarm( this == $alarm ) over window:time( 1h ) )
+                         alarmAckTime == null &&
+                         lastUpdateTime < $sessionClock.ago("1h"))
   then
-    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
-    alarmService.escalateAlarm($alarm, now);
+    alarmService.escalateAlarm($alarm, $sessionClock.now());
 end
 */
 
@@ -180,10 +175,11 @@ end
 rule "cleanUp"
   salience 0
   when
+    $sessionClock : SessionClock()
     $alarm : OnmsAlarm(severity.isLessThanOrEqual(OnmsSeverity.NORMAL) &&
                        alarmAckTime == null &&
+                       lastUpdateTime < $sessionClock.ago("5m") &&
                        (TTicketState == null || TTicketState == TroubleTicketState.CLOSED || TTicketState == TroubleTicketState.CANCELLED))
-    not( OnmsAlarm( this == $alarm ) over window:time( 5m ) )
   then
     alarmService.deleteAlarm($alarm);
 end
@@ -210,9 +206,10 @@ end
 rule "fullCleanUp"
   salience 0
   when
+    $sessionClock : SessionClock()
     $alarm : OnmsAlarm(severity.isLessThanOrEqual(OnmsSeverity.NORMAL) &&
+                        lastUpdateTime < $sessionClock.ago("1d") &&
                         (TTicketState == null || TTicketState == TroubleTicketState.CLOSED || TTicketState == TroubleTicketState.CANCELLED))
-    not( OnmsAlarm( this == $alarm ) over window:time( 1d ) )
   then
     alarmService.deleteAlarm($alarm);
 end
@@ -234,8 +231,9 @@ end
 rule "GC"
   salience 0
   when
-    $alarm : OnmsAlarm(alarmAckTime == null)
-    not( OnmsAlarm( this == $alarm ) over window:time( 3d ) )
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm(alarmAckTime == null &&
+                       lastUpdateTime < $sessionClock.ago("3d"))
   then
     alarmService.deleteAlarm($alarm);
 end
@@ -257,8 +255,8 @@ end
 rule "fullGC"
   salience 0
   when
-    $alarm : OnmsAlarm()
-    not( OnmsAlarm( this == $alarm ) over window:time( 8d ) )
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm(lastUpdateTime < $sessionClock.ago("8d"))
   then
     alarmService.deleteAlarm($alarm);
 end
@@ -300,16 +298,16 @@ end
 */
 rule "createTickets"
   when
+    $sessionClock : SessionClock()
     $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
     $alarm : OnmsAlarm(severity.isGreaterThan(OnmsSeverity.CLEARED) &&
                        (alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
                        alarmAckUser == null &&
-                       TTicketState == null)
-    not( OnmsAlarm( this == $alarm ) over window:time( 15m ) )
+                       TTicketState == null &&
+                       lastUpdateTime < $sessionClock.ago("15m"))
   then
-    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
-    alarmService.acknowledgeAlarm($alarm, now);
-    $ticketer.createTicket($alarm, now);
+    alarmService.acknowledgeAlarm($alarm, $sessionClock.now());
+    $ticketer.createTicket($alarm, $sessionClock.now());
 end
 
 /*
@@ -338,16 +336,16 @@ end
 */
 rule "createCriticalTicket"
   when
+    $sessionClock : SessionClock()
     $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
     $alarm : OnmsAlarm(severity == OnmsSeverity.CRITICAL &&
                        (alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
                        alarmAckUser == null &&
-                       TTicketState == null)
-    not( OnmsAlarm( this == $alarm ) over window:time( 5m ) )
+                       TTicketState == null &&
+                       lastUpdateTime < $sessionClock.ago("5m"))
   then
-    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
-    alarmService.acknowledgeAlarm($alarm, now);
-    $ticketer.createTicket($alarm, now);
+    alarmService.acknowledgeAlarm($alarm, $sessionClock.now());
+    $ticketer.createTicket($alarm, $sessionClock.now());
 end
 
 /*
@@ -387,14 +385,14 @@ end
 */
 rule "updateTickets"
   when
+    $sessionClock : SessionClock()
     $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
     $alarm : OnmsAlarm(severity.isGreaterThan(OnmsSeverity.CLEARED) &&
                        (alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
-                       TTicketState != null )
-    not( OnmsAlarm( this == $alarm ) over window:time( 15m ) )
+                       TTicketState != null &&
+                       lastUpdateTime < $sessionClock.ago("15m"))
   then
-    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
-    $ticketer.updateTicket($alarm, now);
+    $ticketer.updateTicket($alarm, $sessionClock.now());
 end
 
 /*
@@ -427,14 +425,14 @@ end
 */
 rule "closeClearedAlarmTickets"
   when
+    $sessionClock : SessionClock()
     $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
     $alarm : OnmsAlarm(severity == OnmsSeverity.CLEARED &&
                        alarmType == OnmsAlarm.PROBLEM_TYPE &&
-                       TTicketState == TroubleTicketState.OPEN)
-    not( OnmsAlarm( this == $alarm ) over window:time( 15m ) )
+                       TTicketState == TroubleTicketState.OPEN &&
+                       lastUpdateTime < $sessionClock.ago("15m"))
   then
-    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
-    $ticketer.closeTicket($alarm, now);
+    $ticketer.closeTicket($alarm, $sessionClock.now());
 end
 
 /*  <automation name="clearAlarmsForClosedTickets" interval="60000" active="false"
@@ -462,11 +460,11 @@ end
 */
 rule "clearAlarmsForClosedTickets"
   when
+    $sessionClock : SessionClock()
     AlarmTicketerService(isTicketingEnabled() == true)
     $alarm : OnmsAlarm(severity.isGreaterThan(OnmsSeverity.CLEARED) &&
                        (alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
                        TTicketState == TroubleTicketState.CLOSED)
   then
-    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
-    alarmService.clearAlarm($alarm, now);
+    alarmService.clearAlarm($alarm, $sessionClock.now());
 end

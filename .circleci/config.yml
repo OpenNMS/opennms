@@ -56,7 +56,7 @@ commands:
             name: Calculate cache key
             command: |
               sha256sum core/web-assets/package.json > nodejs-dependency-cache.key
-              sha256sum core/web-assets/yarn.lock >> nodejs-dependency-cache.key
+              sha256sum core/web-assets/package-lock.json >> nodejs-dependency-cache.key
         - restore_cache:
             keys:
               - nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
@@ -111,6 +111,11 @@ commands:
             cd opennms-container/sentinel
             docker image load -i images/container.oci
       - run:
+          name: Start our JVM process monitor
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
@@ -124,6 +129,7 @@ commands:
             ps auxf > ~/test-results/system-logs/ps
             free -m > ~/test-results/system-logs/free
             docker stats --no-stream > ~/test-results/system-logs/docker_stats
+            cp -R /tmp/jvmprocmon ~/test-results/system-logs/
       - run:
           name: Gather test artifacts
           when: always
@@ -295,7 +301,6 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
-                - mvr/health-rest-service
       - smoke-test-minimal:
           requires:
             - horizon-package-build
@@ -310,7 +315,6 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
-                - mvr/health-rest-service
       - horizon-publish-oci:
           requires:
             - horizon-package-build

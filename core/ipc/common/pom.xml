@@ -13,5 +13,6 @@
   <modules>
     <module>aws-sqs</module>
     <module>kafka</module>
+    <module>kafka-shell</module>
   </modules>
 </project>

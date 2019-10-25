@@ -212,11 +212,3 @@ ROOT_INST="${RPM_INSTALL_PREFIX0}"
 if [ "$1" = 0 ] && [ -x "%{_initrddir}/sentinel" ]; then
 	%{_initrddir}/sentinel stop || :
 fi
-
-%postun -p /bin/bash
-ROOT_INST="${RPM_INSTALL_PREFIX0}"
-[ -z "${ROOT_INST}" ] && ROOT_INST="%{sentinelinstprefix}"
-
-if [ "$1" = 0 ] && [ -n "${ROOT_INST}" ] && [ -d "${ROOT_INST}" ]; then
-	rm -rf "${ROOT_INST}" || echo "WARNING: failed to delete ${ROOT_INST}. You may have to clean it up yourself."
-fi
