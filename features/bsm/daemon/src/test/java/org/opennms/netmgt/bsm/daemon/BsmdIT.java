@@ -30,15 +30,22 @@ package org.opennms.netmgt.bsm.daemon;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -65,6 +72,7 @@ import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -202,6 +210,13 @@ public class BsmdIT {
         stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
         verifyParametersOnAnticipatedEventsReceived(m_eventMgr.getEventAnticipator(), simpleBs.getId());
+
+        // Verify that rootCause is set
+        final Optional<Event> event = m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream()
+                .filter(e -> e.getUei().equals(EventConstants.BUSINESS_SERVICE_PROBLEM_UEI))
+                .findFirst();
+
+        assertThat(event.get().getParm("rootCause").getValue().getContent(), is(not(isEmptyOrNullString())));
     }
 
     private static void verifyParametersOnAnticipatedEventsReceived(EventAnticipator anticipator, Long businessServiceId) {
@@ -304,6 +319,98 @@ public class BsmdIT {
         m_eventMgr.sendNow(eventBuilder.getEvent(), true);
 
         await().atMost(5, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)), equalTo(Status.NORMAL));
+    }
+
+    @Test
+    public void verifyEventsForServiceDeletion() throws Exception {
+        EventBuilder eventBuilder;
+        createComplexTree();
+        m_bsmd.start();
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        eventBuilder = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "test")
+                .setNodeid(m_databasePopulator.getNode1().getId())
+                .setInterface(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getIpAddress())
+                .setService(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getMonitoredServices().iterator().next().getServiceName());
+
+        m_eventMgr.sendNow(eventBuilder.getEvent(), true);
+
+        final Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
+        assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
+        assertThat(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream().map(e -> e.getParm("businessServiceName").getValue().getContent()).collect(Collectors.toSet()), containsInAnyOrder("BS2", "BS4"));
+    }
+
+    @Test
+    public void verifyEventsForInterfaceDeletion() throws Exception {
+        EventBuilder eventBuilder;
+        createComplexTree();
+        m_bsmd.start();
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        eventBuilder = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "test")
+                .setNodeid(m_databasePopulator.getNode1().getId())
+                .setInterface(m_databasePopulator.getNode1().getIpInterfaces().iterator().next().getIpAddress());
+
+        m_eventMgr.sendNow(eventBuilder.getEvent(), true);
+
+        final Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
+        assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
+        assertThat(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream().map(e -> e.getParm("businessServiceName").getValue().getContent()).collect(Collectors.toSet()), containsInAnyOrder("BS1", "BS2"));
+    }
+
+    @Test
+    public void verifyEventsForNodeDeletion() throws Exception {
+        EventBuilder eventBuilder;
+        createComplexTree();
+        m_bsmd.start();
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        eventBuilder = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "test")
+                .setNodeid(m_databasePopulator.getNode1().getId());
+
+        m_eventMgr.sendNow(eventBuilder.getEvent(), true);
+
+        final Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
+        assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
+        assertThat(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream().map(e -> e.getParm("businessServiceName").getValue().getContent()).collect(Collectors.toSet()), containsInAnyOrder("BS2", "BS3"));
+    }
+
+    @Test
+    public void verifyEventsForApplicationDeletion() throws Exception {
+        EventBuilder eventBuilder;
+        createComplexTree();
+        m_bsmd.start();
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        eventBuilder = new EventBuilder(EventConstants.BUSINESS_SERVICE_GRAPH_INVALIDATED, "test");
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        eventBuilder = new EventBuilder(EventConstants.APPLICATION_DELETED_EVENT_UEI, "test")
+                .setParam("applicationId", m_applicationDao.findByName("A1").getId())
+                .setParam("applicationName", "A1");
+
+        m_eventMgr.sendNow(eventBuilder.getEvent(), true);
+
+        final Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
+        assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
+        assertThat(m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived().stream().map(e -> e.getParm("businessServiceName").getValue().getContent()).collect(Collectors.toSet()), containsInAnyOrder("BS1", "BS2"));
     }
 
     /**
@@ -492,6 +599,85 @@ public class BsmdIT {
         m_businessServiceDao.flush();
 
         return bs;
+    }
+
+    private String createComplexTree() {
+
+        //             BS1
+        //      --------'----------
+        //     /    \        /  |  \
+        //    BS2    BS3   BS4  A1 R2
+        //   / \    / | \   | \
+        //  I1  A1 I2 R3 A2 R1 A2
+        //
+        // A1 -> I2
+        // A2 -> I1
+        // R2 -> interface of I1
+        // R3 -> node of I1
+        //
+        // R1 = reduction key of I1
+        // Deletion of A1: BS1, BS2
+        // Deletion of I1: BS2, BS4
+
+        final OnmsMonitoredService i1 = m_databasePopulator.getNode1()
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+
+        final OnmsMonitoredService i2 = m_databasePopulator.getNode2()
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+
+        final OnmsApplication a1 = new OnmsApplication();
+        a1.setName("A1");
+        a1.addMonitoredService(i2);
+        int a1Id = m_applicationDao.save(a1);
+        m_applicationDao.flush();
+
+        final OnmsApplication a2 = new OnmsApplication();
+        a2.setName("A2");
+        a2.addMonitoredService(i1);
+        int a2Id = m_applicationDao.save(a2);
+        m_applicationDao.flush();
+
+        BusinessServiceEntity bs2 = new BusinessServiceEntity();
+        bs2.setName("BS2");
+        bs2.setReductionFunction(new HighestSeverityEntity());
+        bs2.setAttribute("my-attr-key", "my-attr-value");
+        bs2.addIpServiceEdge(i1, new IdentityEntity());
+        bs2.addApplicationEdge(m_applicationDao.get(a1Id), new IdentityEntity());
+
+        final BusinessServiceEntity bs3 = new BusinessServiceEntity();
+        bs3.setName("BS3");
+        bs3.setReductionFunction(new HighestSeverityEntity());
+        bs3.setAttribute("my-attr-key", "my-attr-value");
+        bs3.addIpServiceEdge(i2, new IdentityEntity());
+        bs3.addApplicationEdge(m_applicationDao.get(a2Id), new IdentityEntity());
+        bs3.addReductionKeyEdge(ReductionKeyHelper.getNodeDownReductionKey(i1), new IdentityEntity());
+
+        BusinessServiceEntity bs4 = new BusinessServiceEntity();
+        bs4.setName("BS4");
+        bs4.setReductionFunction(new HighestSeverityEntity());
+        bs4.setAttribute("my-attr-key", "my-attr-value");
+        bs4.addReductionKeyEdge(ReductionKeyHelper.getNodeLostServiceReductionKey(i1), new IdentityEntity());
+        bs4.addApplicationEdge(m_applicationDao.get(a2Id), new IdentityEntity());
+
+        final BusinessServiceEntity bs1 = new BusinessServiceEntity();
+        bs1.setName("BS1");
+        bs1.setReductionFunction(new HighestSeverityEntity());
+        bs1.setAttribute("my-attr-key", "my-attr-value");
+        bs1.addChildServiceEdge(bs2, new IdentityEntity());
+        bs1.addChildServiceEdge(bs3, new IdentityEntity());
+        bs1.addChildServiceEdge(bs4, new IdentityEntity());
+        bs1.addApplicationEdge(m_applicationDao.get(a1Id), new IdentityEntity());
+        bs1.addReductionKeyEdge(ReductionKeyHelper.getInterfaceDownReductionKey(i1), new IdentityEntity());
+
+        m_businessServiceDao.save(bs2);
+        m_businessServiceDao.save(bs3);
+        m_businessServiceDao.save(bs4);
+        m_businessServiceDao.save(bs1);
+        m_businessServiceDao.flush();
+
+        return ReductionKeyHelper.getNodeLostServiceReductionKey(i1);
     }
 
     private void deleteAllBusinessServices() {

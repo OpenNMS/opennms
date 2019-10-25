@@ -1345,7 +1345,6 @@
     <frontendPluginVersion>1.8.0</frontendPluginVersion>
     <nodeVersion>v10.16.3</nodeVersion>
     <npmVersion>6.10.3</npmVersion>
-    <yarnVersion>v1.17.3</yarnVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>
@@ -1764,6 +1763,11 @@
       <dependency>
         <groupId>org.opennms.core.ipc.sink</groupId>
         <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.ipc.common</groupId>
+        <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

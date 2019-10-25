@@ -215,14 +215,15 @@ This saves the CI system from having to spawn another stack which takes time to 
 The "machine" image we use on CircleCI is currently limited to 2 vCPUs and 8GB of RAM, so we need to be careful with our memory usage for the tests to run reliably.
 
 Breakdown of the heap sizes for the various containers currently is:
-* Test JVM: 256M
-* OpenNMS: 2GB
+* Maven JVM: 512M
+* Test JVM: 512M
+* OpenNMS: 2G
 * Minion: 512M
 * Sentinel: 512M
 * Cassandra: 512M
 * Elasticsearch: 512M
 * Kafka: 256M
 * ZooKeeper: 512MB
-* Total: **6.25B**
+* Total: **5.75G**
 
 We limit the CPU used by each container to 2 cores in order to help maintain more reliable timing between systems and test runs.

@@ -10,6 +10,8 @@
 %{!?minioninstprefix:%define minioninstprefix /opt/minion}
 # The path where the repositories will live
 %{!?minionrepoprefix:%define minionrepoprefix /opt/minion/repositories}
+# Where Systemd files live
+%{!?_unitdir:%define _unitdir /lib/systemd/system}
 
 # Description
 %{!?_name:%define _name opennms}
@@ -51,8 +53,8 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 BuildRequires:	%{_java}
 BuildRequires:	libxslt
 
-Requires(pre):  %{_java}
-Requires:       %{_java}
+#Requires(pre):  %{_java}
+#Requires:       %{_java}
 Requires:       openssh
 Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
@@ -68,9 +70,9 @@ Requires(pre):  jicmp >= 2.0.0
 Requires:       jicmp6 >= 2.0.0
 Requires(pre):  jicmp6 >= 2.0.0
 
-Obsoletes:      %{name}-container        < 25.0.0
-Obsoletes:      %{name}-features-core    < 25.0.0
-Obsoletes:      %{name}-features-default < 25.0.0
+Conflicts:      %{name}-container        < %{version}-%{release}
+Conflicts:      %{name}-features-core    < %{version}-%{release}
+Conflicts:      %{name}-features-default < %{version}-%{release}
 
 Prefix:         %{minioninstprefix}
 
@@ -82,6 +84,30 @@ http://www.opennms.org/wiki/Minion
 
 %{extrainfo}
 %{extrainfo2}
+
+%package container
+Summary:   Obsolete: Provided for Upgrade Compatibility
+Group:     Applications/System
+Requires:  %{name} >= %{version}-%{release}
+
+%description container
+This package is obsolete, it only exists to ease upgrades.
+
+%package features-core
+Summary:   Obsolete: Provided for Upgrade Compatibility
+Group:     Applications/System
+Requires:  %{name} >= %{version}-%{release}
+
+%description features-core
+This package is obsolete, it only exists to ease upgrades.
+
+%package features-default
+Summary:   Obsolete: Provided for Upgrade Compatibility
+Group:     Applications/System
+Requires:  %{name} >= %{version}-%{release}
+
+%description features-default
+This package is obsolete, it only exists to ease upgrades.
 
 %prep
 
@@ -127,6 +153,9 @@ sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" \
 	> "%{buildroot}%{_initrddir}"/minion
 chmod 755 "%{buildroot}%{_initrddir}"/minion
 rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
+
+mkdir -p "%{buildroot}%{_unitdir}"
+install -c -m 644 "%{buildroot}%{minioninstprefix}/etc/minion.service" "%{buildroot}%{_unitdir}/minion.service"
 
 # move minion.conf to the sysconfig dir
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
@@ -176,9 +205,15 @@ rm -rf %{buildroot}
 %files -f %{_tmppath}/files.minion
 %defattr(664 minion minion 775)
 %attr(755,minion,minion) %{_initrddir}/minion
+%attr(644,minion,minion) %{_unitdir}/minion.service
 %attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
 
+%files container
+
+%files features-core
+
+%files features-default
 
 ### PREINSTALL ###
 
@@ -239,12 +274,3 @@ if [ "$1" = 0 ] && [ -x "%{_initrddir}/minion" ]; then
 	%{_initrddir}/minion stop || :
 fi
 
-### POST-UN-INSTALLATION ###
-
-%postun -p /bin/bash
-ROOT_INST="${RPM_INSTALL_PREFIX0}"
-[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
-
-if [ "$1" = 0 ] && [ -n "${ROOT_INST}" ] && [ -d "${ROOT_INST}" ]; then
-	rm -rf "${ROOT_INST}" || echo "WARNING: failed to delete ${ROOT_INST}. You may have to clean it up yourself."
-fi
