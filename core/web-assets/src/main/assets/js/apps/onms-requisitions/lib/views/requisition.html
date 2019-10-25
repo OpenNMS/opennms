@@ -110,15 +110,25 @@
         </tbody>
       </table>
 
-      <br ng-hide="filteredRequisitions.length > pageSize" />
-
-      <ul uib-pagination total-items="totalItems" num-pages="numPages" ng-model="currentPage" max-size="maxSize" boundary-links="true"
-        class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
-        ng-show="filteredNodes.length > pageSize"></ul>
-
+      <form class="form-inline pull-right" role="pagination">
+        <div uib-pagination total-items="totalItems" ng-model="currentPage" max-size="maxSize" items-per-page="pageSize"
+          previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
+          boundary-links="true" class="pagination-sm align-self-center"
+          ng-show="filteredNodes.length > pageSize"></div>
+        <div class="form-group align-self-center">
+          &nbsp;<label for="pageSize">Page size</label>&nbsp;
+          <select class="custom-select custom-select-sm" id="pageSize" name="pageSize" ng-model="pageSize" ng-change="savePageSize()">
+            <option>10</option>
+            <option>25</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+        </div>
+      </form>
     </div> <!-- table-with-navigation -->
 
   </div> <!-- column -->
 </div> <!-- row -->
 
+<div class="row">&nbsp;</div>
 </div>
