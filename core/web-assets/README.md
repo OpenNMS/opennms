@@ -48,35 +48,35 @@ $ ../../compile.pl clean install
 ## Building by "Hand"
 
 While developing new assets, it can be useful to run the node toolchain directly to build.
-To do so, make sure you have [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/) installed.
+To do so, make sure you have [Node.js](https://nodejs.org/) installed.
 Note that your Node version (and associated binary plugins built in `node_modules/`) may not match the version auto-downloaded by the Maven build, so it is best to do a `../../compile.pl clean` before hand-building.
 
-Once Node and Yarn are installed, download the dependencies with Yarn:
+Once Node is installed, download the dependencies:
 
 ```
-$ yarn
+$ npm install
 ```
 
 Then, there are a number of commands you can run while developing:
 
-* `yarn build`: build all assets in "development" mode -- `.min.js` assets will not be generated (more on this below)
-* `yarn release`: build all assets in "production" mode -- this generates both normal `.js` assets and prod `.min.js` assets
-* `yarn watch`: build "development" assets continually, whenever files change
-* `yarn watch-release`: build "production" assets continually, whenever files change
-* `yarn lint`: check for errors or warnings in your JavaScript code
-* `yarn test`: run unit tests
+* `npm run build`: build all assets in "development" mode -- `.min.js` assets will not be generated (more on this below)
+* `npm run release`: build all assets in "production" mode -- this generates both normal `.js` assets and prod `.min.js` assets
+* `npm run watch`: build "development" assets continually, whenever files change
+* `npm run watch-release`: build "production" assets continually, whenever files change
+* `npm run lint`: check for errors or warnings in your JavaScript code
+* `npm run test`: run unit tests
 
 ## Adding a New Dependency
 
 Bower is no longer used for JS runtime management.
-Instead, this is a normal npm (well, Yarn) project, and you can add dependencies as you would any other similar project.
+Instead, this is a normal npm project, and you can add dependencies as you would any other similar project.
 
 ### Development Dependencies
 
 If you are modifying `webpack.config.js` to do something new and you need a dependency added for that, should run:
 
 ```
-$ yarn add -D <my-new-build-dependency>
+$ npm install --save-dev <my-new-build-dependency>
 ```
 
 ### Runtime Dependencies
@@ -84,7 +84,7 @@ $ yarn add -D <my-new-build-dependency>
 If you need a new dependency to be included into your JavaScript project, you skip the -D (development) flag:
 
 ```
-$ yarn add <my-new-runtime-dependency>
+$ npm install --save-prod <my-new-runtime-dependency>
 ```
 
 ## Adding New Tests
