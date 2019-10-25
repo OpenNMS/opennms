@@ -238,6 +238,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                     && Objects.equals(getAuthProtocol(), other.getAuthProtocol())
                     && Objects.equals(getPrivPassPhrase(), other.getPrivPassPhrase())
                     && Objects.equals(getPrivProtocol(), other.getPrivProtocol())
+                    && Objects.equals(getContextName(), other.getContextName())
                     && Objects.equals(getEngineId(), other.getEngineId())
                     && Objects.equals(getContextEngineId(), other.getContextEngineId())
                     && Objects.equals(getEnterpriseId(), other.getEnterpriseId())
