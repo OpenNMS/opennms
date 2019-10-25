@@ -1345,7 +1345,6 @@
     <frontendPluginVersion>1.8.0</frontendPluginVersion>
     <nodeVersion>v10.16.3</nodeVersion>
     <npmVersion>6.10.3</npmVersion>
-    <yarnVersion>v1.17.3</yarnVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>

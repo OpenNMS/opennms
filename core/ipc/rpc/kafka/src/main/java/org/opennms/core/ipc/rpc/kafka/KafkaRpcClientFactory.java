@@ -145,6 +145,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
+    private Map<String, Integer> currentChunkCache = new ConcurrentHashMap<>();
+
     private MetricRegistry metrics = new MetricRegistry();
     private JmxReporter metricsReporter = null;
 
@@ -394,11 +396,12 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
                     span.setTag(TAG_TIMEOUT, "true");
                     failedMeter.mark();
+                    rpcResponseMap.remove(rpcId);
+                    messageCache.remove(rpcId);
+                    currentChunkCache.remove(rpcId);
                 }
                 rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
                 span.finish();
-                rpcResponseMap.remove(rpcId);
-                messageCache.remove(rpcId);
             } catch (Throwable e) {
                 LOG.warn("Error while handling response for RPC module: {}. Response string: {}", rpcModule.getId(), message, e);
             }
@@ -459,6 +462,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     subscribeToTopics();
 
                     ConsumerRecords<String, byte[]> records = consumer.poll(java.time.Duration.ofMillis(Long.MAX_VALUE));
+
                     for (ConsumerRecord<String, byte[]> record : records) {
                         // Get Response callback from key and send rpc content to callback.
                         ResponseCallback responseCb = rpcResponseMap.get(record.key());
@@ -466,16 +470,11 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage
                                     .parseFrom(record.value());
                             ByteString rpcContent = rpcMessage.getRpcContent();
+                            String rpcId = rpcMessage.getRpcId();
                             // For larger messages which get split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
-                                String rpcId = rpcMessage.getRpcId();
-                                ByteString byteString = messageCache.get(rpcId);
-                                if (byteString != null) {
-                                    messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
-                                } else {
-                                    messageCache.put(rpcId, rpcMessage.getRpcContent());
-                                }
-                                if (rpcMessage.getTotalChunks() != rpcMessage.getCurrentChunkNumber() + 1) {
+                                boolean allChunksReceived = handleChunks(rpcMessage);
+                                if(!allChunksReceived) {
                                     continue;
                                 }
                                 rpcContent = messageCache.get(rpcId);
@@ -486,9 +485,13 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             final String rpcMessageContent = rpcContent.toStringUtf8();
                             responseHandlerExecutor.execute(() ->
                                     responseCb.sendResponse(rpcMessageContent));
+                            // Remove rpcId from the maps so that duplicate response will not be handled.
+                            rpcResponseMap.remove(rpcId);
+                            messageCache.remove(rpcId);
+                            currentChunkCache.remove(rpcId);
                         } else {
-                            LOG.warn("Received a response for request with ID:{}, but no outstanding request was found with this id, The request may have timed out.",
-                                    record.key());
+                            LOG.debug("Received a response for request with ID:{}, but no outstanding request was found with this id." +
+                                            "The request may have timed out or the response may be a duplicate.", record.key());
                         }
                     }
                 } catch (InvalidProtocolBufferException e) {
@@ -506,6 +509,25 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         public void stop() {
             closed.set(true);
             consumer.wakeup();
+        }
+
+        private boolean handleChunks(RpcMessageProtos.RpcMessage rpcMessage) {
+            // Avoid duplicate chunks. discard if chunk is repeated or not in order.
+            String rpcId = rpcMessage.getRpcId();
+            currentChunkCache.putIfAbsent(rpcId, 0);
+            Integer chunkNumber = currentChunkCache.get(rpcId);
+            if(chunkNumber != rpcMessage.getCurrentChunkNumber()) {
+                LOG.debug("Expected chunk = {} but got chunk = {}, ignoring.", chunkNumber, rpcMessage.getCurrentChunkNumber());
+                return false;
+            }
+            ByteString byteString = messageCache.get(rpcId);
+            if (byteString != null) {
+                messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
+            } else {
+                messageCache.put(rpcId, rpcMessage.getRpcContent());
+            }
+            currentChunkCache.put(rpcId, ++chunkNumber);
+            return rpcMessage.getTotalChunks() == chunkNumber;
         }
 
         private void waitTillFirstTopicIsAdded() {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,12 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service;
+package org.opennms.netmgt.alarmd;
 
-import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public interface BusinessServiceStateChangeHandler {
-    void handleBusinessServiceStateChanged(BusinessServiceGraph graph, BusinessService businessService, Status newStatus, Status oldStatus);
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
+import org.opennms.netmgt.alarmd.drools.SessionClock;
+
+public class SessionClockTest {
+
+    @Test
+    public void canConvertStringToDuration() {
+        assertThat(SessionClock.getMsFromTimePeriod(null), equalTo(0L));
+        assertThat(SessionClock.getMsFromTimePeriod("  "), equalTo(0L));
+        assertThat(SessionClock.getMsFromTimePeriod("5m"), equalTo(TimeUnit.MINUTES.toMillis(5)));
+        assertThat(SessionClock.getMsFromTimePeriod("1d"), equalTo(TimeUnit.DAYS.toMillis(1)));
+        assertThat(SessionClock.getMsFromTimePeriod(" 2d "), equalTo(TimeUnit.DAYS.toMillis(2)));
+    }
 }
