@@ -491,6 +491,7 @@
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-kafka</feature>
         <feature>opennms-core-camel</feature>
+        <feature>opennms-core-ipc-kafka-shell</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
     </feature>
@@ -539,6 +540,7 @@
     <feature name="opennms-core-ipc-rpc-kafka" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: Kafka Impl.">
         <feature>opennms-kafka</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
+        <feature>opennms-core-ipc-kafka-shell</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.kafka/${project.version}</bundle>
@@ -548,6 +550,12 @@
         <feature>guava</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.commands/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-core-ipc-kafka-shell" version="${project.version}" description="OpenNMS :: Core :: IPC :: Kafka :: Shell Commands">
+        <feature>opennms-kafka</feature>
+        <feature>opennms-distributed-core-api</feature>
+        <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka-shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-dao-api" version="${project.version}" description="OpenNMS :: DAO :: API">
         <feature>opennms-core</feature>

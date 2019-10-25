@@ -9,16 +9,16 @@ FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
 ARG REQUIRED_RPMS="wget gettext"
 
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm"
+ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
 
 SHELL ["/bin/bash", "-c"]
 
 # Collect generic steps in a layer for caching
 RUN rpm --import "${REPO_KEY_URL}" && \
-    yum install -y epel-release && \
-    yum -y install "${REPO_RPM}" && \
-    yum -y install ${REQUIRED_RPMS} && \
-    yum clean all -y && \
+    dnf -y install epel-release && \
+    dnf -y install "${REPO_RPM}" && \
+    dnf -y install ${REQUIRED_RPMS} && \
+    dnf clean all && \
     rm -rf /var/cache/yum
 
 # Allow to send ICMP messages as non-root user
@@ -46,12 +46,12 @@ COPY ./rpms /tmp/rpms
 SHELL ["/bin/bash", "-c"]
 
 # Install repositories, system and OpenNMS packages and do some cleanup
-RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then yum -y localinstall /tmp/rpms/*.rpm; else yum install -y ${SENTINEL_PACKAGES}; fi && \
-    if [[ -n ${ADD_YUM_PACKAGES} ]]; then yum -y install ${ADD_YUM_PACKAGES}; fi && \
+RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y install /tmp/rpms/*.rpm; else dnf -y install ${SENTINEL_PACKAGES}; fi && \
+    if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
     rm -rf /tmp/rpms && \
-    yum clean all && \
+    dnf clean all && \
     rm -rf /var/cache/yum && \
-    mkdir -p mkdir /opt/sentinel/data/{log,tmp} && \
+    mkdir -p /opt/sentinel/data/{log,tmp} && \
     chown 10001:10001 -R /opt/sentinel && \
     chgrp -R 0 /opt/sentinel && \
     chmod -R g=u /opt/sentinel
