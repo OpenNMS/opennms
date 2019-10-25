@@ -14,6 +14,9 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
+[[gi-compatibility]]
+include::text/compatibility.adoc[]
+
 // Basic Setup OpenNMS
 include::text/basic-setup-opennms/setting-up-opennms.adoc[]
 
