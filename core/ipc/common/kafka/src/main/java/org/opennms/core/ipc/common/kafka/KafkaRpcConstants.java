@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.rpc.kafka;
+package org.opennms.core.ipc.common.kafka;
 
 import java.util.Properties;
 
@@ -39,6 +39,7 @@ public interface KafkaRpcConstants {
     
     public static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
     public static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
+    public static final String RPC_TOPIC_PREFIX = "rpc";
     public static final String RPC_REQUEST_TOPIC_NAME = "rpc-request";
     public static final String RPC_RESPONSE_TOPIC_NAME = "rpc-response";
     //By default, kafka allows 1MB buffer sizes, here rpcContent (refer to proto/rpc.proto) is limited to 900KB to allow space for other parameters in proto file.
@@ -72,5 +73,4 @@ public interface KafkaRpcConstants {
         }
         return maxBufferSize;
     }
-
 }

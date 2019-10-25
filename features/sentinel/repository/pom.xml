@@ -294,6 +294,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.ipc.common</groupId>
+            <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.events.sink</groupId>
             <artifactId>org.opennms.features.events.sink.command</artifactId>
             <version>${project.version}</version>
