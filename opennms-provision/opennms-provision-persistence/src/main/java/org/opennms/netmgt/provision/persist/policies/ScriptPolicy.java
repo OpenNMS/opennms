@@ -130,12 +130,10 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
             if (compiledScript == null) {
                 LOG.warn("No compiled script available for execution.");
             } else {
-                // For the cases where we can't run script in transaction.
+                // For the case where we can run script in transaction, at the end of scan.
                 if (attributes.size() > 0 && attributes.get(RUN_IN_TRANSACTION) != null
-                        && attributes.get(RUN_IN_TRANSACTION).equals(false)) {
-                    runScript(compiledScript, node, attributes);
-                }
-                else {
+                        && attributes.get(RUN_IN_TRANSACTION).equals(true)) {
+
                     // Run script in transaction.
                     return (OnmsNode) m_sessionUtils.withTransaction(() -> {
                         try {
@@ -152,6 +150,8 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
                         }
                         return node;
                     });
+                } else {
+                    runScript(compiledScript, node, attributes);
                 }
             }
         } catch (ScriptException e) {

@@ -694,6 +694,24 @@ public class NodeScan implements Scan {
             m_node = node;
         }
 
+        private void applyNodePolicies(final BatchTask phase) {
+            final List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+            LOG.debug("NodeScan.applyNodePolicies: {}", nodePolicies);
+
+            OnmsNode node = getNode();
+            for(final NodePolicy policy : nodePolicies) {
+                if (node != null) {
+                    node = policy.apply(node, new HashMap<>());
+                }
+            }
+
+            if (node == null) {
+                abort("Aborted scan of node due to configured policy");
+            } else {
+                setNode(node);
+            }
+
+        }
 
         void stampProvisionedInterfaces(final BatchTask phase) {
             if (!isAborted()) { 
@@ -725,6 +743,12 @@ public class NodeScan implements Scan {
         public void run(final ContainerTask<?> parent) {
             //NoAgentScan
             parent.getBuilder().addSequence(
+                                            new RunInBatch() {
+                                                @Override
+                                                public void run(final BatchTask phase) {
+                                                    applyNodePolicies(phase);
+                                                }
+                                            },
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
@@ -884,7 +908,7 @@ public class NodeScan implements Scan {
 
         final List<NodePolicy> nodePolicies = getProvisionService()
                 .getNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
-        LOG.debug("NodeScan.applyNodePolicies: {}", nodePolicies);
+        LOG.debug("NodeScan, EndOfScan applyNodePolicies in transaction: {}", nodePolicies);
 
         OnmsNode node = m_provisionService.getNode(getNodeId());
 

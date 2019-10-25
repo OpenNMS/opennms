@@ -34,7 +34,6 @@ package org.opennms.netmgt.provision.service;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -183,9 +182,7 @@ final class NodeInfoScan implements RunInBatch {
             for(NodePolicy policy : nodePolicies) {
                 if (node != null) {
                     LOG.info("Applying NodePolicy {}({}) to {}", policy.getClass(), policy, node.getLabel());
-                    Map<String,Object> attributes = new HashMap<>();
-                    attributes.put(NodePolicy.RUN_IN_TRANSACTION, false);
-                    node = policy.apply(node, attributes);
+                    node = policy.apply(node, new HashMap<>());
                 }
             }
         

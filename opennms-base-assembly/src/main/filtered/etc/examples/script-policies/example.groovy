@@ -35,8 +35,8 @@ import org.opennms.netmgt.model.OnmsAssetRecord
 import java.util.stream.Collectors
 
 // transaction is a boolean to indicate whether the scripts run in transaction or not.
-// Not in transaction indicates that the node is in initial stage of scanning phase and is not persisted yet.
-// Only use this to add some assets/metadata or return invalid node (returning null) to abort the scan.
+// Not in transaction indicates that the node is in initial stage of scanning phase and  may not be persisted yet.
+// Only use this to add assets/metadata or return invalid node (returning null) to abort the scan.
 
 if(!transaction) {
     LOG.debug("customscript: not in transaction");
@@ -46,12 +46,12 @@ if(!transaction) {
     return node;
 }
 
-// Modifying primary interface should be done in transaction.
+// Modifying primary interface should be done in transaction mode.
 
 // Example script for modifying the primary interface
 
 List<String> interfaceNames = Arrays.asList("Lo0","lo0","lo0.0","loopback0","Lo222","Lo201"
-        ,"mgt0","mgmt0","mgmt","primary","bond0","eth0","Vl103","management", "vlan.12");
+        ,"mgt0","mgmt0","mgmt","primary","bond0","eth0","Vl103","management");
 
 List<OnmsIpInterface> interfacesWithSNMP = node.getInterfacesWithService("SNMP");
 
