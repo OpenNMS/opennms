@@ -31,6 +31,7 @@ package org.opennms.core.ipc.rpc.kafka;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.rpc.api.RpcModule;
