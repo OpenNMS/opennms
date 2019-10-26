@@ -11,5 +11,13 @@
      </constructor-arg>
      <constructor-arg ref="daoContext" />
    </bean>
+    <bean id="karafStartupMonitorContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        <constructor-arg>
+            <list>
+                <value>META-INF/opennms/applicationContext-karafStartupMonitor.xml</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="daoContext" />
+    </bean>
 
 </beans>
