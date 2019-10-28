@@ -29,7 +29,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>org.opennms.features.karaf.health.bundle.Activator</Bundle-Activator
+                        <Bundle-Activator>org.opennms.features.karaf.health.bundle.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
