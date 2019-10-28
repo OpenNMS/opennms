@@ -76,25 +76,6 @@ public class KarafStartupMonitor implements SpringServiceDaemon {
         }
     }
 
-    /*
-    private boolean isKarafOkAlternative() {
-        try {
-            // TODO: if we use this method we wil hae to move the health service to the end of the list in org.apache.features.cfg
-            String healthEndpoint = "http://admin:admin@localhost:8980/opennms/rest/health"; // TODO: patrick Is this URL always correct?
-            String base64Creds = Base64.getEncoder().encodeToString("admin:admin".getBytes());
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Basic " + base64Creds);
-            HttpEntity request = new HttpEntity(headers);
-            ResponseEntity<String> response = new RestTemplate().exchange(healthEndpoint, HttpMethod.GET, request, String.class);
-            // TODO: patrick: do we need to check the content?
-            return true;
-        } catch (Exception e) {
-            // something went wrong => the health endpoint has a problem
-            return false;
-        }
-    }
-    */
-
     @Override
     public synchronized void destroy() {
         LOG.info("{} is stopped.", NAME);
