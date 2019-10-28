@@ -20,7 +20,8 @@ echo "- restore all Karaf related configuration files to a pristine state"
 echo "It might be a good idea to take a backup of $OPENNMS_HOME/etc"
 
 # make sure user wants to proceed
-read -p "Are you ready to continue? (y/n)" answer
+echo "Are you ready to continue? (y/n)"
+read -r answer
 echo
 if [ "$answer" != "y" ]
 then
