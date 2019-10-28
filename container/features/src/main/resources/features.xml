@@ -1648,4 +1648,12 @@
         <feature>opennms-model</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.application/${project.version}</bundle>
     </feature>
+
+    <!-- TODO MVR redefine me -->
+    <feature name="opennms-graph-provider-legacy" description="OpenNMS :: Features :: Graph :: Provider :: VMware + Enlinkd" version="${project.version}">
+        <feature>opennms-graph-service</feature>
+        <feature>opennms-model</feature>
+        <feature>opennms-topology-api</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.legacy/${project.version}</bundle>
+    </feature>
 </features>
