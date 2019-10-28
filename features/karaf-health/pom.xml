@@ -30,6 +30,10 @@
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>org.opennms.features.karaf.health.bundle.Activator</Bundle-Activator>
+                        <Import-Package>
+                           org.opennms.netmgt.daemon;resolution:=optional,
+                           *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

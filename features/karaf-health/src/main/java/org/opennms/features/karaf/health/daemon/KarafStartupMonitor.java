@@ -45,8 +45,6 @@ public class KarafStartupMonitor implements SpringServiceDaemon {
 
     public static final String NAME = "KarafStartupMonitor";
 
-    public static final String LOG_PREFIX = "karafStartupMonitor";
-
     @SuppressWarnings("unchecked")
     private static final ServiceLookup<Class<?>, String> SERVICE_LOOKUP = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
             .blocking()
@@ -57,7 +55,7 @@ public class KarafStartupMonitor implements SpringServiceDaemon {
         LOG.info("{} is starting.", NAME);
 
         if (!isKarafOk()) {
-            String message = String.format(NAME + ": It seems Kafka can't be started properly. This is bad, will fail startup.%n" +
+            String message = String.format(NAME + ": It seems Karaf can't be started properly. This is bad, will fail startup.%n" +
                     "What can you do about this?%n" +
                     "1.) check in logs/karaf.log for problems%n" +
                     "2.) clear the 'data' folder - it contains Karaf's cache%n" +
