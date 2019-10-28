@@ -34,8 +34,6 @@ $theme-colors: (
     // The navbar uses a grey color, which works good for darker backgrounds
     "grey":                         rgba(255, 255, 255, 0.5),
 
-    // Additional colors may be added here, e.g. "severity-normal"
-    // to allow alerts, badges, buttons, etc to be colored accordingly
     // Severities
     "severity-indeterminate":       $severity-indeterminate,
     "severity-Indeterminate":       $severity-indeterminate,
