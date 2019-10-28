@@ -247,7 +247,7 @@ public abstract class BasePolicy<T> {
      * <p>act</p>
      *
      * @param iface a T object.
-     * @param attributes
+     * @param attributes that can be set on script.
      * @return a T object.
      */
     public abstract T act(final T iface, Map<String, Object> attributes);
@@ -257,7 +257,7 @@ public abstract class BasePolicy<T> {
      * <p>apply</p>
      *
      * @param iface a T object.
-     * @param attributes
+     * @param attributes that can be set on script.
      * @return a T object.
      */
     public T apply(final T iface, Map<String, Object> attributes) {

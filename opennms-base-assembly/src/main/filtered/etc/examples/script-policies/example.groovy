@@ -27,10 +27,12 @@
  *******************************************************************************/
 
 
+import org.opennms.core.utils.ByteArrayComparator
+import org.opennms.core.utils.InetAddressUtils
+import org.opennms.netmgt.model.OnmsAssetRecord
 import org.opennms.netmgt.model.OnmsIpInterface
 import org.opennms.netmgt.model.OnmsSnmpInterface
 import org.opennms.netmgt.model.PrimaryType
-import org.opennms.netmgt.model.OnmsAssetRecord
 
 import java.util.stream.Collectors
 
@@ -58,6 +60,7 @@ List<OnmsIpInterface> interfacesWithSNMP = node.getInterfacesWithService("SNMP")
 LOG.debug("customscript : Interfaces with SNMP service {}", interfacesWithSNMP);
 
 List<OnmsSnmpInterface> snmpInterfaces = interfacesWithSNMP.stream()
+        .filter({iface -> iface.getSnmpInterface() != null})
         .map({iface -> iface.getSnmpInterface()}).collect(Collectors.toList());
 
 List<String> ifNames = snmpInterfaces.stream()
@@ -71,37 +74,55 @@ String matchedIfName = interfaceNames.stream()
         .findFirst()
         .orElse(null);
 
-if(matchedIfName != null) {
+OnmsIpInterface ipInterface = null;
 
+if (matchedIfName == null) {
+    // Find lowest IP Address as there is no match in if names.
+    List<byte[]> ipAddressesInBytes = interfacesWithSNMP.stream().map({ onmsIpInterface -> onmsIpInterface.getIpAddress().getAddress() }).collect(Collectors.toList());
+    byte[] lowestNumberedIp = Collections.min(ipAddressesInBytes, new ByteArrayComparator());
+    ipInterface = interfacesWithSNMP.stream()
+            .filter({ onmsIpInterface -> Arrays.equals(onmsIpInterface.getIpAddress().getAddress(), lowestNumberedIp) })
+            .findFirst().orElse(null);
+    if (ipInterface != null) {
+        LOG.debug("customscript : lowest numbered ipAddress = {}", ipInterface.getIpAddress());
+    }
+
+} else {
     LOG.debug("customscript : Found a match for ifName = {}", matchedIfName);
 
     OnmsSnmpInterface result = snmpInterfaces.stream()
-            .filter({snmpInterface -> snmpInterface.getIfName().equals(matchedIfName)})
+            .filter({ snmpInterface -> snmpInterface.getIfName().equals(matchedIfName) })
             .findFirst().orElse(null);
 
-    if(result != null) {
-        OnmsIpInterface ipInterface = interfacesWithSNMP.stream()
-                .filter({iface -> iface.getSnmpInterface().equals(result)})
+    if (result != null) {
+        ipInterface = interfacesWithSNMP.stream()
+                .filter({ iface -> iface.getSnmpInterface().equals(result) })
                 .findFirst()
                 .orElse(null);
-
-        if(ipInterface != null) {
-
-            LOG.debug("customscript : Setting {} as primary on node {}", ipInterface.getIpAddress(), node.getId());
-
-            ipInterface.setIsSnmpPrimary(PrimaryType.PRIMARY);
-
-            interfacesWithSNMP.stream().filter({iface -> !iface.equals(ipInterface)}).forEach({iface ->
-                iface.setIsSnmpPrimary(PrimaryType.SECONDARY);
-                LOG.debug("customscript : Setting {} as secondary on node {}", iface.getIpAddress(), node.getId());
-            });
-
-            node.setLabel(ipInterface.getIpHostName());
-        }
-
     }
 }
 
+if (ipInterface != null) {
+
+    LOG.debug("customscript : Setting {} as primary on node {}", ipInterface.getIpAddress(), node.getId());
+
+    ipInterface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+
+    interfacesWithSNMP.stream().filter({ iface -> !iface.equals(ipInterface) }).forEach({ iface ->
+        iface.setIsSnmpPrimary(PrimaryType.SECONDARY);
+        LOG.debug("customscript : Setting {} as secondary on node {}", iface.getIpAddress(), node.getId());
+    });
+
+    // If IpHostName on the interface is IP Address itself, set sysname as node label.
+    if (InetAddressUtils.str(ipInterface.getIpAddress()).equals(ipInterface.getIpHostName()) && node.getSysName() != null) {
+        LOG.debug("customscript: Setting sysname {} as node label", node.getSysName());
+        node.setLabel(node.getSysName());
+    } else {
+        LOG.debug("customscript: Setting {} as node label", ipInterface.getIpHostName());
+        node.setLabel(ipInterface.getIpHostName());
+    }
+
+}
 return node;
 
 

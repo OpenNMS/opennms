@@ -1242,7 +1242,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * <p>getInterfacesWithService</p>
      *
      * @param svcName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     * @return a List of {@link org.opennms.netmgt.model.OnmsIpInterface} objects.
      */
     @Transient
     @JsonIgnore

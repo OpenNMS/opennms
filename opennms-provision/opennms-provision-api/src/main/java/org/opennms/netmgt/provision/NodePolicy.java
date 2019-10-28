@@ -45,7 +45,7 @@ public interface NodePolicy extends OnmsPolicy {
      * <p>apply</p>
      *
      * @param node a {@link OnmsNode} object.
-     * @param attributes
+     * @param attributes that can be set on script.
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     public OnmsNode apply(OnmsNode node, Map<String, Object> attributes);

@@ -44,7 +44,7 @@ public interface IpInterfacePolicy extends OnmsPolicy {
      * <p>apply</p>
      *
      * @param iface a {@link OnmsIpInterface} object.
-     * @param attributes
+     * @param attributes that can be set on script.
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     OnmsIpInterface apply(OnmsIpInterface iface, Map<String, Object> attributes);

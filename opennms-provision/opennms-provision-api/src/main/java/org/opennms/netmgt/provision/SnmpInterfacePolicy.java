@@ -43,7 +43,7 @@ public interface SnmpInterfacePolicy extends OnmsPolicy {
      * <p>apply</p>
      *
      * @param snmpIface a {@link OnmsSnmpInterface} object.
-     * @param attributes
+     * @param attributes that can be set on script.
      * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     OnmsSnmpInterface apply(OnmsSnmpInterface snmpIface, Map<String, Object> attributes);
