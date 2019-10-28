@@ -32,7 +32,9 @@ import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
 
@@ -69,14 +71,19 @@ public class SampledEthernet implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeInt64("length", this.length);
         bsonWriter.writeName("src_mac");
-        this.src_mac.writeBson(bsonWriter);
+        this.src_mac.writeBson(bsonWriter, enr);
         bsonWriter.writeName("dst_mac");
-        this.dst_mac.writeBson(bsonWriter);
+        this.dst_mac.writeBson(bsonWriter, enr);
         bsonWriter.writeInt64("type", this.type);
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
     }
 }

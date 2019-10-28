@@ -43,16 +43,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.elastic.ElasticSearchRule;
-import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.netmgt.dao.mock.MockTransactionManager;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
-import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 
 import io.searchbox.client.JestClient;
 
@@ -64,20 +63,12 @@ public class ElasticFeedbackRepositoryIT {
     private FeedbackRepository feedbackRepository;
 
     @Rule
-    public ElasticSearchRule elasticServerRule = new ElasticSearchRule(
-            new ElasticSearchServerConfig()
-                    .withDefaults()
-                    .withSetting("http.enabled", true)
-                    .withSetting("http.port", HTTP_PORT)
-                    .withSetting("http.type", "netty4")
-                    .withSetting("transport.type", "netty4")
-                    .withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
-    );
+    public ElasticSearchRule elasticServerRule = new ElasticSearchRule();
 
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException, FeedbackException {
         MockLogAppender.setupLogging(true, "DEBUG");
-        final RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT, null, null);
+        final RestClientFactory restClientFactory = new RestClientFactory(elasticServerRule.getUrl());
         final JestClient client = restClientFactory.createClient();
         final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
         mockTransactionTemplate.setTransactionManager(new MockTransactionManager());

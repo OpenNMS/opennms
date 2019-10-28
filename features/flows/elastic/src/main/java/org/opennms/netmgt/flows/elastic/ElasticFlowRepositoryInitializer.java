@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateInitializer;
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
-import org.opennms.plugins.elasticsearch.rest.template.MergingTemplateLoader;
+import org.opennms.features.jest.client.template.DefaultTemplateInitializer;
+import org.opennms.features.jest.client.template.DefaultTemplateLoader;
+import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.features.jest.client.template.MergingTemplateLoader;
 import org.osgi.framework.BundleContext;
 
 import io.searchbox.client.JestClient;
@@ -47,10 +47,10 @@ public class ElasticFlowRepositoryInitializer extends DefaultTemplateInitializer
     }
 
     protected ElasticFlowRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
-        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings));
+        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
     }
 
     protected ElasticFlowRepositoryInitializer(JestClient client) {
-        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader());
+        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
 }

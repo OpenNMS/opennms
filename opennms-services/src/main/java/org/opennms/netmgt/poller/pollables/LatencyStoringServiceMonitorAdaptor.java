@@ -51,8 +51,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.threshd.ThresholdingService;
-import org.opennms.netmgt.threshd.ThresholdingSession;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

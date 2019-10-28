@@ -36,15 +36,17 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getT
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.UpdatingFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.UnsignedLong;
 
-class IpfixFlow implements Flow {
+class IpfixFlow extends UpdatingFlow implements Flow {
     private static final Logger LOG = LoggerFactory.getLogger(IpfixFlow.class);
 
     private final BsonDocument document;
@@ -80,15 +82,20 @@ class IpfixFlow implements Flow {
 
     @Override
     public String getDstAddr() {
-        return first(getString(this.document, "destinationIPv6Address"),
-                getString(this.document, "destinationIPv4Address"))
+        return first(getString(this.document, "destinationIPv6Address", "address"),
+                getString(this.document, "destinationIPv4Address", "address"))
                 .orElse(null);
     }
 
     @Override
-    public Integer getDstAs() {
+    public Optional<String> getDstAddrHostname() {
+        return first(getString(this.document, "destinationIPv6Address", "hostname"),
+                getString(this.document, "destinationIPv4Address", "hostname"));
+    }
+
+    @Override
+    public Long getDstAs() {
         return getInt64(this.document, "bgpDestinationAsNumber")
-                .map(Long::intValue)
                 .orElse(null);
     }
 
@@ -182,11 +189,19 @@ class IpfixFlow implements Flow {
 
     @Override
     public String getNextHop() {
-        return first(getString(this.document, "ipNextHopIPv6Address"),
-                getString(this.document, "ipNextHopIPv4Address"),
-                getString(this.document, "bgpNextHopIPv6Address"),
-                getString(this.document, "bgpNextHopIPv4Address"))
+        return first(getString(this.document, "ipNextHopIPv6Address", "address"),
+                getString(this.document, "ipNextHopIPv4Address", "address"),
+                getString(this.document, "bgpNextHopIPv6Address", "address"),
+                getString(this.document, "bgpNextHopIPv4Address", "address"))
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<String> getNextHopHostname() {
+        return first(getString(this.document, "ipNextHopIPv6Address", "hostname"),
+                getString(this.document, "ipNextHopIPv4Address", "hostname"),
+                getString(this.document, "bgpNextHopIPv6Address", "hostname"),
+                getString(this.document, "bgpNextHopIPv4Address", "hostname"));
     }
 
     @Override
@@ -344,15 +359,20 @@ class IpfixFlow implements Flow {
 
     @Override
     public String getSrcAddr() {
-        return first(getString(this.document, "sourceIPv6Address"),
-                getString(this.document, "sourceIPv4Address"))
+        return first(getString(this.document, "sourceIPv6Address", "address"),
+                getString(this.document, "sourceIPv4Address", "address"))
                 .orElse(null);
     }
 
     @Override
-    public Integer getSrcAs() {
+    public Optional<String> getSrcAddrHostname() {
+        return first(getString(this.document, "sourceIPv6Address", "hostname"),
+                getString(this.document, "sourceIPv4Address", "hostname"));
+    }
+
+    @Override
+    public Long getSrcAs() {
         return getInt64(this.document, "bgpSourceAsNumber")
-                .map(Long::intValue)
                 .orElse(null);
     }
 
@@ -400,5 +420,17 @@ class IpfixFlow implements Flow {
                 getInt64(this.document, "postDot1qCustomerVlanId"))
                 .map(Long::intValue)
                 .orElse(null);
+    }
+
+    @Override
+    public Optional<Timeout> getTimeout() {
+        final Optional<Long> active = getInt64(this.document, "flowActiveTimeout").map(t -> t * 1000L);
+        final Optional<Long> inactive = getInt64(this.document, "flowInactiveTimeout").map(t -> t * 1000L);
+
+        if (active.isPresent() && inactive.isPresent()) {
+            return Optional.of(new Timeout(active.get(), inactive.get()));
+        } else {
+            return Optional.empty();
+        }
     }
 }

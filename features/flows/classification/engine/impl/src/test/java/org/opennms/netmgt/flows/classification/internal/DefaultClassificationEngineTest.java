@@ -53,11 +53,11 @@ public class DefaultClassificationEngineTest {
     public void verifyRuleEngineBasic() {
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() ->
             Lists.newArrayList(
-                    new RuleBuilder().withName("rule1").withSrcPort(80).build(),
-                    new RuleBuilder().withName("rule2").withDstPort(443).build(),
-                    new RuleBuilder().withName("rule3").withSrcPort(8888).withDstPort(9999).build(),
-                    new RuleBuilder().withName("rule4").withSrcPort(8888).withDstPort(80).build(),
-                    new RuleBuilder().withName("rule5").build()
+                    new RuleBuilder().withName("rule1").withPosition(1).withSrcPort(80).build(),
+                    new RuleBuilder().withName("rule2").withPosition(2).withDstPort(443).build(),
+                    new RuleBuilder().withName("rule3").withPosition(3).withSrcPort(8888).withDstPort(9999).build(),
+                    new RuleBuilder().withName("rule4").withPosition(4).withSrcPort(8888).withDstPort(80).build(),
+                    new RuleBuilder().withName("rule5").withPosition(5).build()
             ), FilterService.NOOP);
 
         assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(443).build()));
@@ -96,13 +96,13 @@ public class DefaultClassificationEngineTest {
     public void verifyRuleEngineExtended() {
         // Define Rule set
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> Lists.newArrayList(
-                new Rule("SSH", "22"),
-                new Rule("HTTP", "80"),
-                new Rule("HTTP_CUSTOM", "192.168.0.1", "80"),
-                new Rule("DUMMY", "192.168.1.*", "8000-9000,80,8080"),
-                new Rule("RANGE-TEST", "7000-8000"),
-                new Rule("OpenNMS", "8980"),
-                new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").build()
+                new RuleBuilder().withName("SSH").withDstPort("22").withPosition(1).build(),
+                new RuleBuilder().withName("HTTP_CUSTOM").withDstAddress("192.168.0.1").withDstPort("80").withPosition(2).build(),
+                new RuleBuilder().withName("HTTP").withDstPort("80").withPosition(3).build(),
+                new RuleBuilder().withName("DUMMY").withDstAddress("192.168.1.*").withDstPort("8000-9000,80,8080").withPosition(4).build(),
+                new RuleBuilder().withName("RANGE-TEST").withDstPort("7000-8000").withPosition(5).build(),
+                new RuleBuilder().withName("OpenNMS").withDstPort("8980").withPosition(6).build(),
+                new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").withPosition(7).build()
             ), FilterService.NOOP
         );
 

@@ -68,13 +68,14 @@ import org.opennms.features.alarms.history.elastic.tasks.TaskVisitor;
 import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
-import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
-import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.TemplateInitializer;
+import org.opennms.features.jest.client.bulk.BulkException;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.bulk.FailedItem;
+import org.opennms.features.jest.client.index.IndexSelector;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.features.jest.client.template.TemplateInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     private static final Gson gson = new Gson();
 
     public static final int DEFAULT_TASK_QUEUE_CAPACITY = 5000;
-    public static final String INDEX_PREFIX = "opennms-alarms";
+    public static final String INDEX_NAME = "opennms-alarms";
 
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
     private final QueryProvider queryProvider = new QueryProvider();
@@ -146,11 +147,13 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
 
     private final ElasticAlarmMetrics alarmsToESMetrics;
 
+    private final IndexSettings indexSettings;
+
     public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer) {
-        this(metrics, client, templateInitializer, new CacheConfig("nodes-for-alarms-in-es"), DEFAULT_TASK_QUEUE_CAPACITY, IndexStrategy.MONTHLY);
+        this(metrics, client, templateInitializer, new CacheConfig("nodes-for-alarms-in-es"), DEFAULT_TASK_QUEUE_CAPACITY, IndexStrategy.MONTHLY, new IndexSettings());
     }
 
-    public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer, CacheConfig nodeCacheConfig, int taskQueueCapacity, IndexStrategy indexStrategy) {
+    public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer, CacheConfig nodeCacheConfig, int taskQueueCapacity, IndexStrategy indexStrategy, IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(client);
         this.templateInitializer = Objects.requireNonNull(templateInitializer);
         //noinspection unchecked
@@ -168,7 +171,8 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         taskQueue = new LinkedBlockingDeque<>(taskQueueCapacity);
         alarmsToESMetrics = new ElasticAlarmMetrics(metrics, taskQueue);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
-        this.indexSelector = new IndexSelector(INDEX_PREFIX, indexStrategy, 0);
+        this.indexSettings = Objects.requireNonNull(indexSettings);
+        this.indexSelector = new IndexSelector(indexSettings, INDEX_NAME, indexStrategy, 0);
     }
 
     public void init() {
@@ -205,6 +209,14 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                 task.visit(new TaskVisitor() {
                     @Override
                     public void indexAlarms(List<AlarmDocumentDTO> docs) {
+                        // If there are multiple documents for the same alarm id at the same timestamp,
+                        // then keep the last one in the list
+                        final Map<String, AlarmDocumentDTO> deduplicatedDocs = new LinkedHashMap<>();
+                        for (AlarmDocumentDTO doc : docs) {
+                            deduplicatedDocs.put(String.format("%d-%s", doc.getId(), doc.getUpdateTime()), doc);
+                        }
+                        docs = new ArrayList<>(deduplicatedDocs.values());
+
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("Indexing documents for alarms with ids: {}", docs.stream().map(AlarmDocumentDTO::getId).collect(Collectors.toList()));
                         }
@@ -238,8 +250,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                                 final TimeRange timeRange = new TimeRange(includeUpdatesAfter, time);
                                 final String query = queryProvider.getActiveAlarmIdsAtTimeAndExclude(timeRange, alarmIdsToKeep, afterAlarmWithId);
 
-                                final Search.Builder search = new Search.Builder(query)
-                                        .addType(AlarmDocumentDTO.TYPE);
+                                final Search.Builder search = new Search.Builder(query);
                                 final List<String> indices = indexSelector.getIndexNames(timeRange.getStart(), timeRange.getEnd());
                                 search.addIndices(indices);
                                 search.setParameter("ignore_unavailable", "true"); // ignore unknown index
@@ -313,13 +324,12 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         final BulkRequest<AlarmDocumentDTO> bulkRequest = new BulkRequest<>(client, alarmDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (AlarmDocumentDTO alarmDocument : alarmDocuments) {
-                final String index = indexStrategy.getIndex(INDEX_PREFIX, Instant.ofEpochMilli(alarmDocument.getUpdateTime()));
+                final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(alarmDocument.getUpdateTime()));
                 final Index.Builder indexBuilder = new Index.Builder(alarmDocument)
-                        .index(index)
-                        .type(AlarmDocumentDTO.TYPE);
+                        .index(index);
                 if (LOG.isTraceEnabled()) {
-                    LOG.trace("Adding index action on index: {} with type: {} and payload: {}",
-                            index, AlarmDocumentDTO.TYPE, gson.toJson(alarmDocument));
+                    LOG.trace("Adding index action on index: {} with payload: {}",
+                            index, gson.toJson(alarmDocument));
                 }
                 bulkBuilder.addAction(indexBuilder.build());
             }
@@ -465,7 +475,17 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         }
 
         if (needsIndexing) {
-            final AlarmDocumentDTO doc = documentMapper.apply(alarm);
+            final AlarmDocumentDTO doc;
+            try {
+                doc = documentMapper.apply(alarm);
+            } catch (Exception e) {
+                // This may be triggered by Hibernate ObjectNotFoundExceptions if the event
+                // attached to the alarm entity is already gone. In this case, we simply want to skip
+                // the alarm for now.
+                LOG.warn("Mapping alarm to DTO failed. Document will not be indexed.", e);
+                return Optional.empty();
+            }
+
             alarmDocumentsById.put(alarm.getId(), doc);
             return Optional.of(doc);
         }

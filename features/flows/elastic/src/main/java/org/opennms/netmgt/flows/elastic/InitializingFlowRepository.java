@@ -34,15 +34,18 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
+import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.opennms.netmgt.flows.filter.api.Filter;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.collect.Table;
@@ -73,8 +76,12 @@ public class InitializingFlowRepository implements FlowRepository {
 
     @Override
     public void persist(Collection<Flow> flows, FlowSource source) throws FlowException {
-        ensureInitialized();
-        delegate.persist(flows, source);
+        try {
+            ensureInitialized();
+            delegate.persist(flows, source);
+        } catch (ConnectionPoolShutdownException ex) {
+            throw new UnrecoverableFlowException(ex.getMessage(), ex);
+        }
     }
 
     @Override
@@ -122,22 +129,22 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversationSummaries(int N, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N, boolean includeOther, List<Filter> filters) {
         return delegate.getTopNConversationSummaries(N, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getConversationSummaries(Set<String> conversations, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Conversation>>> getConversationSummaries(Set<String> conversations, boolean includeOther, List<Filter> filters) {
         return delegate.getConversationSummaries(conversations, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
         return delegate.getConversationSeries(conversations, step, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
         return delegate.getTopNConversationSeries(N, step, includeOther, filters);
     }
 
@@ -147,25 +154,25 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther,
-                                                                                List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther,
+                                                                              List<Filter> filters) {
         return delegate.getTopNHostSummaries(N, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Host>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters) {
         return delegate.getHostSummaries(hosts, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step,
+    public CompletableFuture<Table<Directional<Host>, Long, Double>> getHostSeries(Set<String> hosts, long step,
                                                                                      boolean includeOther,
                                                                                      List<Filter> filters) {
         return delegate.getHostSeries(hosts, step, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters) {
         return delegate.getTopNHostSeries(N, step, includeOther, filters);
     }
 

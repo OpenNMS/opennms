@@ -1,79 +1,80 @@
 #!/usr/bin/make -f
 
+export CONTAINER_TYPE=minion
+export CONTAINER_PREFIX=/usr/share/$(CONTAINER_TYPE)
+
 export DH_VERBOSE=1
 export JAVA_HOME=$(shell bin/find-java.sh 1.8 11.9999)
-export PACKAGE_NAME="opennms-minion"
-export CONTAINER_NAME="opennms-minion-container"
+export PACKAGE_NAME=opennms-$(CONTAINER_TYPE)
 
-export MINION_PREFIX=/usr/share/minion
-export RUNTIME_PREFIX=/var/lib/minion
-export REPO_PREFIX=$(MINION_PREFIX)/repositories
-export LOGDIR=/var/log/minion
+export RUNTIME_PREFIX=/var/lib/$(CONTAINER_TYPE)
+export REPO_PREFIX=$(CONTAINER_PREFIX)/repositories
+export LOGDIR=/var/log/$(CONTAINER_TYPE)
 export SYSCONFDIR=/etc/default
-export ETCDIR=/etc/minion
+export ETCDIR=/etc/$(CONTAINER_TYPE)
+export PIDFILE=$(LOGDIR)/$(CONTAINER_TYPE).pid
 
 %:
 	dh $@
 
+# disable these
+override_dh_update_autotools_config override_dh_strip_nondeterminism:
+
 override_dh_auto_install:
 	# make all the target directories
 	mkdir -p \
-		$$(pwd)/debian/$(PACKAGE_NAME)-{container,features-core,features-default}$(MINION_PREFIX) \
-		$$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX) \
-		$$(pwd)/debian/$(CONTAINER_NAME)$(RUNTIME_PREFIX) \
-		$$(pwd)/debian/$(CONTAINER_NAME)$(LOGDIR) \
-		$$(pwd)/debian/$(CONTAINER_NAME)$(SYSCONFDIR)
+		$$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX) \
+		$$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX) \
+		$$(pwd)/debian/$(PACKAGE_NAME)$(LOGDIR) \
+		$$(pwd)/debian/$(PACKAGE_NAME)$(SYSCONFDIR)
 	
 	# copy all the files from the build tarball
-	rsync -avr --exclude=debian $$(pwd)/ $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/
+	rsync -avr --exclude=debian $$(pwd)/ $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/
 	
-	# translate Minion prefix and etc directories in the init script, and put it in place
-	sed -e "s,/opt/minion/etc,$(SYSCONFDIR),g" \
-			-e "s,RUNAS=root,RUNAS=minion,g" \
-			-e "s,/opt/minion,$(MINION_PREFIX),g" \
+	# translate container prefix and etc directories in the init script, and put it in place
+	sed -e "s,/opt/$(CONTAINER_TYPE)/etc,$(SYSCONFDIR),g" \
+			-e "s,RUNAS=root,RUNAS=$(CONTAINER_TYPE),g" \
+			-e "s,/opt/$(CONTAINER_TYPE)/data/log/$(CONTAINER_TYPE).pid,$(PIDFILE),g" \
+			-e "s,/opt/$(CONTAINER_TYPE),$(CONTAINER_PREFIX),g" \
 			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
-			$$(pwd)/etc/minion.init > $$(pwd)/debian/$(CONTAINER_NAME).minion.init \
-		&& rm -f $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/etc/minion.init
+			$$(pwd)/etc/$(CONTAINER_TYPE).init > $$(pwd)/debian/$(PACKAGE_NAME).$(CONTAINER_TYPE).init \
+		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc/$(CONTAINER_TYPE).init \
+		&& sed -e "s,/opt/$(CONTAINER_TYPE)/etc,$(SYSCONFDIR),g" \
+			-e "s,RUNAS=root,RUNAS=$(CONTAINER_TYPE),g" \
+			-e "s,/opt/$(CONTAINER_TYPE)/data/log/$(CONTAINER_TYPE).pid,$(PIDFILE),g" \
+			-e "s,/opt/$(CONTAINER_TYPE),$(CONTAINER_PREFIX),g" \
+			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
+			$$(pwd)/etc/$(CONTAINER_TYPE).service > $$(pwd)/debian/$(CONTAINER_TYPE).service \
+		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc/$(CONTAINER_TYPE).service
 	
 	# move etc / data / deploy directories to where they will live
-	mv $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/etc $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR) \
-		&& ln -s ../../..$(ETCDIR) $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/etc \
-		&& mv $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/data $$(pwd)/debian/$(CONTAINER_NAME)$(RUNTIME_PREFIX)/ \
-		&& ln -s ../../..$(RUNTIME_PREFIX)/data $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/data \
-		&& mv $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/deploy $$(pwd)/debian/$(CONTAINER_NAME)$(RUNTIME_PREFIX)/ \
-		&& ln -s ../../..$(RUNTIME_PREFIX)/deploy $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/deploy \
+	mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR) \
+		&& ln -s ../../..$(ETCDIR) $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc \
+		&& mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data $$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX)/ \
+		&& ln -s ../../..$(RUNTIME_PREFIX)/data $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data \
+		&& mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/deploy $$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX)/ \
+		&& ln -s ../../..$(RUNTIME_PREFIX)/deploy $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/deploy \
 	
 	# take care of some packaging/lintian warnings
 	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)/usr/share/lintian/overrides
 	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME).lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)/usr/share/lintian/overrides/$(PACKAGE_NAME)
-	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-container/usr/share/lintian/overrides
-	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME)-container.lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)-container/usr/share/lintian/overrides/$(PACKAGE_NAME)-container
-	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-features-core/usr/share/lintian/overrides
-	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME)-features-core.lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)-features-core/usr/share/lintian/overrides/$(PACKAGE_NAME)-features-core
-	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-features-default/usr/share/lintian/overrides
-	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME)-features-default.lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)-features-default/usr/share/lintian/overrides/$(PACKAGE_NAME)-features-default
-	rm -rf $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/COPYING
+	rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/COPYING
 	
-	# move the minion.conf to /etc/defaults and change the default RUNAS to minion
-	sed -e "s,RUNAS=root,RUNAS=minion,g" \
+	# move the .conf to /etc/defaults and change the default RUNAS
+	sed -e "s,RUNAS=root,RUNAS=$(CONTAINER_TYPE),g" \
 		-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
-		$$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/minion.conf > $$(pwd)/debian/$(CONTAINER_NAME)$(SYSCONFDIR)/minion \
-		&& rm -rf $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/minion.conf
+		$$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/$(CONTAINER_TYPE).conf > $$(pwd)/debian/$(PACKAGE_NAME)$(SYSCONFDIR)/$(CONTAINER_TYPE) \
+		&& rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/$(CONTAINER_TYPE).conf
 	
-	# change the logging directory to /var/log/minion
-	sed -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,karaf.log,minion.log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
+	# change the logging directory
+	sed -e "s,.{karaf.log},$(LOGDIR),g" -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,/karaf.log,/$(CONTAINER_TYPE).log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
+	
+	# install the startup scripts
+	dh_systemd_enable --name=$(CONTAINER_TYPE) --no-enable debian/$(CONTAINER_TYPE).service
+	dh_installinit --package=$(PACKAGE_NAME) --name=$(CONTAINER_TYPE) --no-start -u"defaults 21 19"
+	dh_systemd_start --name=$(CONTAINER_TYPE) --no-restart-after-upgrade
 	
 	# set the default location
-	echo "location = MINION" > $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/org.opennms.minion.controller.cfg \
-		&& echo "id = 00000000-0000-0000-0000-000000ddba11" >> $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/org.opennms.minion.controller.cfg
+	echo "location = MINION" > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.opennms.$(CONTAINER_TYPE).controller.cfg \
+		&& echo "id = 00000000-0000-0000-0000-000000ddba11" >> $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.opennms.$(CONTAINER_TYPE).controller.cfg
 	
-	# split out opennms-minion-features-core
-	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-features-core$(REPO_PREFIX)
-	mv $$(pwd)/debian/$(CONTAINER_NAME)$(REPO_PREFIX)/core $$(pwd)/debian/$(PACKAGE_NAME)-features-core$(REPO_PREFIX)/core
-	
-	# split out opennms-minion-features-default
-	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-features-default$(REPO_PREFIX)
-	mv $$(pwd)/debian/$(CONTAINER_NAME)$(REPO_PREFIX)/default $$(pwd)/debian/$(PACKAGE_NAME)-features-default$(REPO_PREFIX)/default
-	
-	# install the init script
-	dh_installinit --package=$(CONTAINER_NAME) --name=minion --no-start -u"defaults 21 19"

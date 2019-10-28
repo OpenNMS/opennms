@@ -84,7 +84,7 @@ public class DroolsNorthbounderIT {
      */
     @After
     public void shutdown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     /**

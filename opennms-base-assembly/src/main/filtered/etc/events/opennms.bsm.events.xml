@@ -13,12 +13,14 @@
    <event>
       <uei>uei.opennms.org/bsm/serviceProblem</uei>
       <event-label>Business Service Monitoring: Service Problem</event-label>
-      <descr>&lt;p>There are currently one or more problems affecting business service '%parm[businessServiceName]%'.
+      <descr>&lt;p>There are currently one or more problems affecting business service '%parm[businessServiceName]%'. Root cause: %parm[rootCause]%.
             args(%parm[##]%): %parm[all]%&lt;/p></descr>
       <logmsg dest="logndisplay">One or more problems are affecting business service '%parm[businessServiceName]%'.
         </logmsg>
       <severity>Indeterminate</severity>
-      <alarm-data reduction-key="%uei%:%parm[businessServiceId]%" alarm-type="1" auto-clean="false"/>
+       <alarm-data reduction-key="%uei%:%parm[businessServiceId]%" alarm-type="1" auto-clean="false">
+           <update-field field-name="severity" update-on-reduction="true"/>
+       </alarm-data>
    </event>
    <event>
       <uei>uei.opennms.org/bsm/serviceProblemResolved</uei>
@@ -30,5 +32,26 @@
         </logmsg>
       <severity>Indeterminate</severity>
       <alarm-data reduction-key="uei.opennms.org/bsm/serviceProblem:%parm[businessServiceId]%" alarm-type="2" auto-clean="false"/>
+   </event>
+   <event>
+       <uei>uei.opennms.org/bsm/graphInvalidated</uei>
+       <event-label>Business Service Monitoring: Graph invalidated</event-label>
+       <descr>&lt;p>Business service '%parm[businessServiceName]%' with ID '%parm[businessServiceId]%' is affected by the deletion of %parm[cause]%. A reload of the BMS daemon is scheduled.&lt;/p></descr>
+       <logmsg dest="logndisplay">Business service '%parm[businessServiceName]%' with ID '%parm[businessServiceId]%' is affected by the deletion of %parm[cause]%.</logmsg>
+       <severity>Warning</severity>
+       <alarm-data reduction-key="%uei%:%parm[businessServiceId]%" alarm-type="1" auto-clean="false">
+       </alarm-data>
+   </event>
+   <event>
+       <uei>uei.opennms.org/internal/serviceDeleted</uei>
+       <event-label>Business Service Monitoring: Service deleted</event-label>
+       <descr>&lt;p>The business service '%parm[businessServiceName]%' has been deleted.
+            args(%parm[##]%): %parm[all]%&lt;/p></descr>
+       <logmsg dest="logndisplay">The business service '%parm[businessServiceName]%' has been deleted.
+       </logmsg>
+       <severity>Indeterminate</severity>
+       <alarm-data reduction-key="%uei%:%parm[businessServiceId]%" alarm-type="2" clear-key="uei.opennms.org/bsm/serviceProblem:%parm[businessServiceId]%" auto-clean="false">
+           <update-field field-name="logmsg" update-on-reduction="false"/>
+       </alarm-data>
    </event>
 </events>

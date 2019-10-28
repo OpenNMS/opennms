@@ -130,7 +130,7 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.spotlight.providers.action.Actions;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.plugins.elasticsearch.rest.credentials.ElasticCredentials;
+import org.opennms.features.jest.client.credentials.ElasticCredentials;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;

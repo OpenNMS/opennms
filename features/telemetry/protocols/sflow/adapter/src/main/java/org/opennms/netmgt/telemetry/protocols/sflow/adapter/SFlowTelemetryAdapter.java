@@ -53,6 +53,8 @@ import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBu
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.MetricRegistry;
+
 public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SFlowTelemetryAdapter.class);
@@ -61,7 +63,8 @@ public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
 
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    public SFlowTelemetryAdapter() {
+    public SFlowTelemetryAdapter(String name, MetricRegistry metricRegistry) {
+        super(name, metricRegistry);
     }
 
     @Override
@@ -76,8 +79,8 @@ public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
         }
 
         final String address = first(
-                getString(document, "agent_address", "ipv6"),
-                getString(document, "agent_address", "ipv4"))
+                getString(document, "agent_address", "ipv6", "address"),
+                getString(document, "agent_address", "ipv4", "address"))
                 .orElseThrow(() -> new IllegalStateException("Incomplete document"));
 
         final InetAddress inetAddress;
@@ -111,7 +114,12 @@ public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
                         "0:4".equals(sampleDocument.get("format").asString().getValue())) {
                         // Handle only (expanded) counter samples
                         try {
-                            final CollectionSet collectionSet = builder.build(agent, sampleDocument.get("data").asDocument());
+                            Long timestamp = null;
+                            if (sampleDocument.containsKey("time")) {
+                                timestamp = sampleDocument.getInt64("time").getValue();
+                            }
+                            final CollectionSet collectionSet = builder.build(agent,
+                                    sampleDocument.get("data").asDocument(), timestamp);
                             return Stream.of(new CollectionSetWithAgent(agent, collectionSet));
                         } catch (final ScriptException e) {
                             LOG.error("Error while running script: {}", e.getMessage());

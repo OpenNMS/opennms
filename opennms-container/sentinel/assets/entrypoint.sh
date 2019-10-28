@@ -10,8 +10,11 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
+umask 002
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
+
+export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
 
 # Error codes
 E_ILLEGAL_ARGS=126

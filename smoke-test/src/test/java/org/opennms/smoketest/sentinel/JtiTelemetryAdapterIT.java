@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.function.Function;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 
 /**
@@ -54,7 +55,7 @@ public class JtiTelemetryAdapterIT extends AbstractAdapterIT {
 
     @Override
     protected Function<String, Boolean> getSentinelReadyVerificationFunction() {
-        return (output) -> output.contains("Route: Sink.Server.Telemetry-JTI started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-JTI");
+        return (output) -> output.contains("Route: Sink.Server.Telemetry-JTI started and consuming from: queuingservice://" + SystemInfoUtils.getInstanceId() + ".Sink.Telemetry-JTI");
     }
 
     @Override

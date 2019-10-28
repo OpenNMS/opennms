@@ -230,4 +230,26 @@
         </logmsg>
       <severity>Normal</severity>
    </event>
+   <event>
+      <uei>uei.opennms.org/internal/telemetry/clockSkewDetected</uei>
+      <event-label>Clock Skew detected</event-label>
+      <descr>Clock skew (%parm[delta]% ms) detected for flow exporter (maxClockSkew = %parm[maxClockSkew]% secs)</descr>
+      <logmsg dest="logndisplay">Clock skew for exporter with interface '%interface%' in location '%parm[monitoringSystemLocation]%' detected by '%parm[monitoringSystemId]%'.</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/translator/telemetry/clockSkewDetected</uei>
+      <event-label>Clock Skew detected</event-label>
+       <descr>Clock skew (%parm[delta]% ms) detected for flow exporter (maxClockSkew = %parm[maxClockSkew]% secs)</descr>
+      <logmsg dest="logndisplay">Clock skew for exporter with interface '%interface%' in location '%parm[monitoringSystemLocation]%' detected by '%parm[monitoringSystemId]%'.</logmsg>
+      <alarm-data reduction-key="%uei%:%parm[monitoringSystemLocation]%:%interface%" alarm-type="3" auto-clean="true" />
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/applicationDeleted</uei>
+      <event-label>OpenNMS-defined application event: applicationDeleted</event-label>
+      <descr>&lt;p>Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.&lt;/p></descr>
+      <logmsg dest="logndisplay">Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.</logmsg>
+      <severity>Warning</severity>
+   </event>
 </events>

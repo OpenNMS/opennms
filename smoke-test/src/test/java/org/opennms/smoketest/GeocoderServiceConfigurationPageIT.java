@@ -42,14 +42,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.smoketest.ui.framework.TextInput;
+import org.opennms.smoketest.ui.framework.Toggle;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 @Ignore("Flapping. See NMS-12114")
 public class GeocoderServiceConfigurationPageIT extends UiPageTest {
@@ -319,9 +321,9 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
             // Click if value has changed or should be disabled
             if (newGeocoder == null && activeGeocoder != null) {
-                new Toggle(getToggleId(activeGeocoder)).toggle();
+                new Toggle(getDriver(), getToggleId(activeGeocoder)).toggle();
             } else if (!Objects.equals(newGeocoder, activeGeocoder)){
-                new Toggle(getToggleId(newGeocoder)).toggle();
+                new Toggle(getDriver(), getToggleId(newGeocoder)).toggle();
             }
         }
 
@@ -373,20 +375,20 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         }
 
         public void setAcceptUsageTerms(boolean acceptUsageTerms) {
-            final Toggle acceptUsageTermsToggle = new Toggle("nominatimAcceptUsageTerms");
+            final Toggle acceptUsageTermsToggle = new Toggle(getDriver(), "nominatimAcceptUsageTerms");
             acceptUsageTermsToggle.setValue(acceptUsageTerms);
         }
 
         public void setEmail(String email) {
-            new TextInput("nominatimEmail").setInput(email);
+            new TextInput(getDriver(), "nominatimEmail").setInput(email);
         }
 
         public void setReferer(String referer) {
-            new TextInput("nominatimReferer").setInput(referer);
+            new TextInput(getDriver(), "nominatimReferer").setInput(referer);
         }
 
         public void setUserAgent(String userAgent) {
-            new TextInput("nominatimUserAgent").setInput(userAgent);
+            new TextInput(getDriver(), "nominatimUserAgent").setInput(userAgent);
         }
     }
 
@@ -397,7 +399,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         }
 
         public void setApiKey(final String apiKey) {
-            new TextInput("mapquestApiKey").setInput(apiKey);
+            new TextInput(getDriver(), "mapquestApiKey").setInput(apiKey);
         }
     }
 
@@ -414,17 +416,17 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
         public void setApiKey(final String apiKey) {
             setAuthMode(GoogleAuthMode.API_KEY);
-            new TextInput("googleApiKey").setInput(apiKey);
+            new TextInput(getDriver(), "googleApiKey").setInput(apiKey);
         }
 
         public void setClientId(final String clientId) {
             setAuthMode(GoogleAuthMode.LEGACY);
-            new TextInput("googleClientId").setInput(clientId);
+            new TextInput(getDriver(), "googleClientId").setInput(clientId);
         }
 
         public void setSignature(final String signature) {
             setAuthMode(GoogleAuthMode.LEGACY);
-            new TextInput("googleClientKey").setInput(signature);
+            new TextInput(getDriver(), "googleClientKey").setInput(signature);
         }
 
         public GoogleAuthMode getAuthMode() {

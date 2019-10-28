@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,57 +64,87 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
     
     /** {@inheritDoc} */
     @Override
-    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
-        return new ThresholdEvaluatorStateHighLow(threshold);
+    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
+        // can get DS expression from threshold
+        
+        return new ThresholdEvaluatorStateHighLow(threshold, thresholdingSession);
     }
     
-    public static class ThresholdEvaluatorStateHighLow extends AbstractThresholdEvaluatorState {
+    public static class ThresholdEvaluatorStateHighLow extends AbstractThresholdEvaluatorState<ThresholdEvaluatorStateHighLow.State> {
         /**
          * Object containing threshold configuration data.
          */
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
 
-        /**
-         * Threshold exceeded count
-         */
-        private int m_exceededCount;
+        static class State extends AbstractThresholdEvaluatorState.AbstractState {
+            private static final long serialVersionUID = 1L;
 
-        /**
-         * Threshold armed flag
-         * 
-         * This flag must be true before evaluate() will return true (indicating
-         * that the threshold has been triggered). This flag is initialized to true
-         * by the constructor and is set to false each time the threshold is
-         * triggered. It can only be reset by the current value of the datasource
-         * falling below (for high threshold) or rising above (for low threshold)
-         * the rearm value.
-         */
-        private boolean m_armed;
+            /**
+             * Threshold exceeded count
+             */
+            private int m_exceededCount;
+
+            /**
+             * Threshold armed flag
+             *
+             * This flag must be true before evaluate() will return true (indicating
+             * that the threshold has been triggered). This flag is initialized to true
+             * by the constructor and is set to false each time the threshold is
+             * triggered. It can only be reset by the current value of the datasource
+             * falling below (for high threshold) or rising above (for low threshold)
+             * the rearm value.
+             */
+            private boolean m_armed;
+
+            @Override
+            public String toString() {
+                StringBuilder sb = new StringBuilder();
+                sb.append("exceededCount=").append(m_exceededCount);
+                sb.append("\narmed=").append(m_armed);
+                String superString = super.toString();
+
+                if (superString != null) {
+                    sb.append("\n").append(superString);
+                }
+
+                return sb.toString();
+            }
+        }
         
         private CollectionResourceWrapper m_lastCollectionResourceUsed;
 
-        public ThresholdEvaluatorStateHighLow(BaseThresholdDefConfigWrapper threshold) {
-            Assert.notNull(threshold, "threshold argument cannot be null");
-            
+        public ThresholdEvaluatorStateHighLow(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateHighLow.State.class);
             setThresholdConfig(threshold);
+        }
+
+        @Override
+        protected void initializeState() {
+            state = new State();
             setExceededCount(0);
             setArmed(true);
-        }    
-
-        public boolean isArmed() {
-            return m_armed;
         }
 
-        public void setArmed(boolean armed) {
-            m_armed = armed;
+        private boolean isArmed() {
+            return state.m_armed;
         }
 
-        public int getExceededCount() {
-            return m_exceededCount;
+        private void setArmed(boolean armed) {
+            if(armed != state.m_armed) {
+                state.m_armed = armed;
+                markDirty();
+            }
         }
 
-        public void setExceededCount(int exceededCount) {
-            m_exceededCount = exceededCount;
+        private int getExceededCount() {
+            return state.m_exceededCount;
+        }
+
+        private void setExceededCount(int exceededCount) {
+            if(exceededCount != state.m_exceededCount) {
+                state.m_exceededCount = exceededCount;
+                markDirty();
+            }
         }
 
         @Override
@@ -120,7 +152,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return m_thresholdConfig;
         }
 
-        public void setThresholdConfig(BaseThresholdDefConfigWrapper thresholdConfig) {
+        private void setThresholdConfig(BaseThresholdDefConfigWrapper thresholdConfig) {
             Assert.notNull(thresholdConfig.getType(), "threshold must have a 'type' value set");
             Assert.notNull(thresholdConfig.getDatasourceExpression(), "threshold must have a 'ds-name' value set");
             Assert.notNull(thresholdConfig.getDsType(), "threshold must have a 'ds-type' value set");
@@ -131,12 +163,12 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             m_thresholdConfig = thresholdConfig;
         }
         
-        public ThresholdType getType() {
+        private ThresholdType getType() {
             return getThresholdConfig().getType();
         }
-        
+
         @Override
-        public Status evaluate(double dsValue) {
+        public Status evaluateAfterFetch(double dsValue) {
             if (isThresholdExceeded(dsValue)) {
                 if (isArmed()) {
                     setExceededCount(getExceededCount() + 1);
@@ -256,7 +288,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         
         @Override
         public ThresholdEvaluatorState getCleanClone() {
-            return new ThresholdEvaluatorStateHighLow(m_thresholdConfig);
+            return new ThresholdEvaluatorStateHighLow(m_thresholdConfig, getThresholdingSession());
         }
 
         @Override
@@ -265,7 +297,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         }
         
         @Override
-        public void clearState() {
+        public void clearStateBeforePersist() {
             setArmed(true);
             setExceededCount(0);
         }

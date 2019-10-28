@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -187,6 +188,60 @@ public class SSLCertMonitorIT {
         PollStatus status = monitor.poll(svc, parameters);
 
         assertTrue(status.isUnavailable());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, https=true)
+    public void testStartTLSFails() throws UnknownHostException {
+        SSLCertMonitor monitor = new SSLCertMonitor() {
+            @Override
+            protected Calendar getCalendarInstance() {
+                final Calendar cal = GregorianCalendar.getInstance();
+                cal.setTimeInMillis(EXPIRE_DATE - 86400000 * 5);
+                return cal;
+            }
+        };
+
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        parameters.put("port", "10342");
+        parameters.put("retry", "0");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("days", "5");
+        parameters.put("starttls-preamble", "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' xmlns:tls='http://www.ietf.org/rfc/rfc2595.txt' to='jabber.org'>");
+        parameters.put("starttls-preamble-response", "^.*rfc2595.*$");
+        parameters.put("starttls-start", "<tls:starttls/>");
+        parameters.put("starttls-start-response", "^.*stream:stream.*$");
+
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
+        PollStatus status = monitor.poll(svc, parameters);
+        assertTrue(status.isUnavailable());
+
+    }
+
+    @Test
+    @Ignore // point at an XMPP server that supports STARTTLS to use this test
+    public void testXMPPStartTLS() throws UnknownHostException {
+        SSLCertMonitor monitor = new SSLCertMonitor();
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        parameters.put("port", "5222");
+        parameters.put("retry", "0");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("days", "5");
+        parameters.put("starttls-preamble", "<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='{ipAddr}' version='1.0'>");
+        parameters.put("starttls-preamble-response", "^.*starttls.*$");
+        parameters.put("starttls-start", "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+        parameters.put("starttls-start-response", "^.*proceed.*$");
+
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", InetAddress.getByName("127.0.0.1"), "SSLCert");
+        // this would normally happen in the poller request builder implementation
+        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        subbedParams.forEach((k, v) -> {
+            parameters.put(k, v);
+        });
+        PollStatus status = monitor.poll(svc, parameters);
+        assertTrue(status.isAvailable());
     }
 
     @Test

@@ -102,7 +102,9 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
         }
         snmpRequestDTO.setTimeToLive(timeToLiveInMilliseconds);
         snmpRequestDTO.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(agent.getAddress()));
-        snmpRequestDTO.addTracingInfo(RpcRequest.TAG_DESCRIPTION, description);
+        if (description != null) {
+            snmpRequestDTO.addTracingInfo(RpcRequest.TAG_DESCRIPTION, description);
+        }
         return client.execute(snmpRequestDTO)
             // Different types of requests can process the responses differently
             .thenApply(this::processResponse);

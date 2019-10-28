@@ -68,7 +68,7 @@ STATUS_WAIT=5
 STOP_TIMEOUT=10
 
 # Value of the -Xmx<size>m option passed to Java.
-JAVA_HEAP_SIZE=1024
+JAVA_HEAP_SIZE=2048
 
 # Additional options passed to Java when starting OpenNMS.
 # ADDITIONAL_MANAGER_OPTIONS=()
@@ -437,7 +437,14 @@ doStart(){
 		ulimit -a >> "$REDIRECT"
 		echo "end ulimit settings" >> "$REDIRECT"
 		echo "Executing command:" "${CMD[@]}" >> "$REDIRECT"
-		runCmd "${CMD[@]}" >>"$REDIRECT" 2>&1 &
+
+		# NMS-12226 runCmd & spawns a subshell process for the function runCmd which is not the PID of the java process.
+		# To avoid this spawn the command directly so the $! is the PID of java.
+		if [[ "$NOEXECUTE" == "0" ]]; then
+			"${CMD[@]}" >>"$REDIRECT" 2>&1 &
+		else
+			echo "Skipping execution: ${CMD[*]}"
+		fi
 		OPENNMS_PID=$!
 		echo $OPENNMS_PID > "$OPENNMS_PIDFILE"
 	else
@@ -719,6 +726,8 @@ else
 	ADD_MODULES="--add-modules=${JAVA_MODULES[*]}"
 	IFS="$OIFS"
 	JAVA_CMD=("${JAVA_CMD[@]}" "$ADD_MODULES")
+	# see NMS-12261 -- use backwards-compatible locale provider by default
+	JAVA_CMD+=("-Djava.locale.providers=CLDR,COMPAT")
 fi
 
 if [ -n "$USE_INCGC" ] && [ "$USE_INCGC" = true ] ; then

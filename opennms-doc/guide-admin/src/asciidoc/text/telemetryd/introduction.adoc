@@ -28,6 +28,8 @@ _Parsers_ and _Listeners_ must work together in a tight manner.
 Therefore they can not be combined in any possible combination.
 Which _Parser_ is supported by which _Listener_ is described in the documentation of each _Parser_ accordingly.
 
+TIP: You can provide the parameter `maxClockSkew` in your parser definition to enable clock skew detection for exporters. It specifies the maximum delta in seconds between exporter and Minion timestamps. If violated an alarm will be generated for the exporting device. The default value is 0, so clock skew detection is disabled. Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events. The default is `3600` seconds, so every hour an event will be sent.
+
 === _Adapters_
 _Adapters_ are responsible for enriching and processing the data dispatched over a queue.
 It receives the data from queue and transforms it into a format usable by _{opennms-product-name}_.
@@ -50,3 +52,13 @@ If a _Listener_ its _Parsers_ is running on _Minion_, the received messages will
 
 .Running _Listener_ on a _Minion_ forwarding packets using the messaging system
 image::telemetryd/telemetryd-minion.png[]
+
+[[telemetryd-reverse-hostname-resolution]]
+=== Reverse hostname resolution
+Some _Parsers_ support reverse hostname resolution to annotate IP addresses with the actual hostname.
+The reverse name lookup will be performed by the _Minion_ while parsing the protocol data.
+The resolved hostname, if found, is attached to the address information and both will be sent to the _Adapter_ for further processing.
+
+For more information see <<ga-dnsresolver, DNS Resolver>>
+
+The following _Parsers_ currently support reverse hostname resolution: Netflow v5, Netflow v9, IPFIX and SFlow.

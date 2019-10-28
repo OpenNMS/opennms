@@ -63,15 +63,17 @@ public class CamelSinkServerProcessor implements Processor {
     private final CamelMessageConsumerManager consumerManager;
     private final SinkModule<?, Message> module;
     private final TracerRegistry tracerRegistry;
-    private MetricRegistry metricRegistry = new MetricRegistry();
+    private final MetricRegistry metricRegistry;
     private JmxReporter jmxReporter = null;
     private Histogram messageSize;
     private Timer dispatchTime;
 
-    public CamelSinkServerProcessor(CamelMessageConsumerManager consumerManager, SinkModule<?, Message> module, TracerRegistry tracerRegistry) {
+    public CamelSinkServerProcessor(CamelMessageConsumerManager consumerManager, SinkModule<?, Message> module,
+                                    TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this.consumerManager = Objects.requireNonNull(consumerManager);
         this.module = Objects.requireNonNull(module);
         this.tracerRegistry = tracerRegistry;
+        this.metricRegistry = metricRegistry;
         jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
         jmxReporter.start();
         messageSize = metricRegistry.histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
@@ -90,6 +92,7 @@ public class CamelSinkServerProcessor implements Processor {
              Timer.Context context = dispatchTime.time()) {
             // Set tags for this span.
             scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageBytes.length);
+            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             if (exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER) instanceof String) {
                 String topic = exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER, String.class);
                 scope.span().setTag(TracerConstants.TAG_TOPIC, topic);

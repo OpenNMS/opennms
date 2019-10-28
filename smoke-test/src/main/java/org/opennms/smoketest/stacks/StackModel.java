@@ -51,6 +51,8 @@ public class StackModel {
     private final boolean telemetryProcessingEnabled;
     private final IpcStrategy ipcStrategy;
     private final TimeSeriesStrategy timeSeriesStrategy;
+    private final BlobStoreStrategy blobStoreStrategy;
+    private final JsonStoreStrategy jsonStoreStrategy;
 
     private StackModel(Builder builder) {
         // Profiles
@@ -65,6 +67,8 @@ public class StackModel {
         // Enums
         ipcStrategy = builder.ipcStrategy;
         timeSeriesStrategy = builder.timeSeriesStrategy;
+        blobStoreStrategy = builder.blobStoreStrategy;
+        jsonStoreStrategy = builder.jsonStoreStrategy;
     }
 
     public static Builder newBuilder() {
@@ -80,6 +84,9 @@ public class StackModel {
 
         private IpcStrategy ipcStrategy = IpcStrategy.JMS;
         private TimeSeriesStrategy timeSeriesStrategy = TimeSeriesStrategy.RRD;
+        
+        private BlobStoreStrategy blobStoreStrategy = BlobStoreStrategy.NOOP;
+        private JsonStoreStrategy jsonStoreStrategy;
 
         /**
          * Profile for the OpenNMS container.
@@ -183,6 +190,26 @@ public class StackModel {
         }
 
         /**
+         * Choose the key value store to use for blobs.
+         *
+         * @return this builder
+         */
+        public Builder withBlobStoreStrategy(BlobStoreStrategy blobStoreStrategy) {
+            this.blobStoreStrategy = blobStoreStrategy;
+            return this;
+        }
+
+        /**
+         * Choose the key value store to use for JSON documents.
+         *
+         * @return this builder
+         */
+        public Builder withJsonStoreStrategy(JsonStoreStrategy jsonStoreStrategy) {
+            this.jsonStoreStrategy = jsonStoreStrategy;
+            return this;
+        }
+
+        /**
          * Build the stack model
          *
          * @return an immutable stack model
@@ -229,4 +256,11 @@ public class StackModel {
         return timeSeriesStrategy;
     }
 
+    public BlobStoreStrategy getBlobStoreStrategy() {
+        return blobStoreStrategy;
+    }
+
+    public JsonStoreStrategy getJsonStoreStrategy() {
+        return jsonStoreStrategy;
+    }
 }

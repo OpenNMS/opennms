@@ -38,9 +38,10 @@ import com.codahale.metrics.MetricRegistry;
 
 public class IpfixAdapter extends AbstractFlowAdapter<BsonDocument> {
 
-    public IpfixAdapter(final MetricRegistry metricRegistry,
+    public IpfixAdapter(final String name,
+                        final MetricRegistry metricRegistry,
                         final FlowRepository flowRepository) {
-        super(metricRegistry, flowRepository, new IpfixConverter());
+        super(name, metricRegistry, flowRepository, new IpfixConverter());
     }
 
     @Override

@@ -39,7 +39,8 @@ public class DefaultRuleDefinition implements RuleDefinition {
     private String srcAddress;
     private String protocol;
     private String exporterFilter;
-    private int groupPriority;
+    private int groupPosition;
+    private int position;
 
     @Override
     public String getName() {
@@ -77,8 +78,13 @@ public class DefaultRuleDefinition implements RuleDefinition {
     }
 
     @Override
-    public int getGroupPriority() {
-        return groupPriority;
+    public int getGroupPosition() {
+        return groupPosition;
+    }
+
+    @Override
+    public int getPosition() {
+        return position;
     }
 
     public void setName(String name) {
@@ -109,8 +115,12 @@ public class DefaultRuleDefinition implements RuleDefinition {
         this.exporterFilter = exporterFilter;
     }
 
-    public void setGroupPriority(int groupPriority) {
-        this.groupPriority = groupPriority;
+    public void setGroupPosition(int groupPosition) {
+        this.groupPosition = groupPosition;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     @Override
@@ -118,19 +128,20 @@ public class DefaultRuleDefinition implements RuleDefinition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DefaultRuleDefinition that = (DefaultRuleDefinition) o;
-        return Objects.equals(groupPriority, that.groupPriority)
+        return Objects.equals(groupPosition, that.groupPosition)
                 && Objects.equals(name, that.name)
                 && Objects.equals(dstAddress, that.dstAddress)
                 && Objects.equals(dstPort, that.dstPort)
                 && Objects.equals(srcPort, that.srcPort)
                 && Objects.equals(srcAddress, that.srcAddress)
                 && Objects.equals(protocol, that.protocol)
-                && Objects.equals(exporterFilter, that.exporterFilter);
+                && Objects.equals(exporterFilter, that.exporterFilter)
+                && Objects.equals(position, that.position);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, dstAddress, dstPort, srcPort, srcAddress, protocol, exporterFilter, groupPriority);
+        return Objects.hash(name, dstAddress, dstPort, srcPort, srcAddress, protocol, exporterFilter, groupPosition, position);
     }
 
 }

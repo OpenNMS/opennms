@@ -110,6 +110,8 @@ public final class OpenNMSStack implements TestRule {
                 || model.getOpenNMS().isKafkaProducerEnabled();
         if (shouldEnableKafka) {
             kafkaContainer = new KafkaContainer()
+                    // Reduce from the default of 1GB
+                    .withEnv("KAFKA_HEAP_OPTS", "-Xms256m -Xmx256m")
                     .withNetwork(Network.SHARED)
                     .withNetworkAliases(OpenNMSContainer.KAFKA_ALIAS);
             chain = chain.around(kafkaContainer);
@@ -194,7 +196,7 @@ public final class OpenNMSStack implements TestRule {
 
     @Override
     public Statement apply(Statement base, Description description) {
-        // Delegate to the test rule we built during initalization
+        // Delegate to the test rule we built during initialization
         return delegateTestRule.apply(base, description);
     }
 

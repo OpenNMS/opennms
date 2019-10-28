@@ -47,6 +47,9 @@ class CollectionSetGenerator {
         TelemetryTop.JuniperNetworksSensors jnprSensors = entSensors.getExtension(TelemetryTop.juniperNetworks);
         Port.GPort port = jnprSensors.getExtension(Port.jnprInterfaceExt);
 
+        // Record the sequence number
+        builder.withSequenceNumber(jtiMsg.getSequenceNumber())
+
         for (Port.InterfaceInfos interfaceInfos : port.getInterfaceStatsList()) {
             // Use the given ifName for the label (we don't have the ifDescr of the physAddr in this context)
             String interfaceLabel = RrdLabelUtils.computeLabelForRRD(interfaceInfos.getIfName(), null, null);
@@ -57,6 +60,10 @@ class CollectionSetGenerator {
             // Store the ifInOctets and ifOutOctets in a familar fashion, allowing the existing graph definitions to be used
             builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifInOctets", interfaceInfos.getIngressStats().getIfOctets(), AttributeType.COUNTER);
             builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifOutOctets", interfaceInfos.getEgressStats().getIfOctets(), AttributeType.COUNTER);
+
+            // Store if1SecPkts
+            builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifIn1SecPkts", interfaceInfos.getIngressStats().getIf1SecPkts(), AttributeType.GAUGE);
+            builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifOut1SecPkts", interfaceInfos.getEgressStats().getIf1SecPkts(), AttributeType.GAUGE);
         }
     }
 }

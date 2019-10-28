@@ -40,8 +40,9 @@ import java.util.stream.Collectors;
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
 import org.opennms.features.alarms.history.api.AlarmState;
 import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
-import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.features.jest.client.index.IndexSelector;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +68,10 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     private long lookbackPeriodMs = DEFAULT_LOOKBACK_PERIOD_MS;
 
-    public ElasticAlarmHistoryRepository(JestClient client, IndexStrategy indexStrategy) {
+    public ElasticAlarmHistoryRepository(JestClient client, IndexStrategy indexStrategy, IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(client);
         Objects.requireNonNull(indexStrategy);
-        this.indexSelector = new IndexSelector(ElasticAlarmIndexer.INDEX_PREFIX, indexStrategy, 0);
+        this.indexSelector = new IndexSelector(indexSettings, ElasticAlarmIndexer.INDEX_NAME, indexStrategy, 0);
     }
 
     @Override
@@ -140,8 +141,7 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
         Integer afterAlarmWithId = null;
         while (true) {
             final String query = getNextQuery.apply(afterAlarmWithId);
-            final Search.Builder search = new Search.Builder(query)
-                    .addType(AlarmDocumentDTO.TYPE);
+            final Search.Builder search = new Search.Builder(query);
             if (timeRange != null) {
                 final List<String> indices = indexSelector.getIndexNames(timeRange.getStart(), timeRange.getEnd());
                 search.addIndices(indices);
@@ -191,7 +191,7 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
     }
 
     private List<AlarmDocumentDTO> findAlarms(String query, TimeRange timeRange) {
-        final Search.Builder search = new Search.Builder(query).addType(AlarmDocumentDTO.TYPE);
+        final Search.Builder search = new Search.Builder(query);
         if (timeRange != null) {
             final List<String> indices = indexSelector.getIndexNames(timeRange.getStart(), timeRange.getEnd());
             search.addIndices(indices);

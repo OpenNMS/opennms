@@ -39,6 +39,8 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,6 +54,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
@@ -59,11 +62,11 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -93,7 +96,7 @@ public class MarkerCacheIT {
     private DatabasePopulator databasePopulator;
 
     @Autowired
-    private TransactionOperations transactionOperations;
+    private SessionUtils sessionUtils;
 
     @Autowired
     private NodeDao nodeDao;
@@ -124,6 +127,9 @@ public class MarkerCacheIT {
         when(flow.getDstAddr()).thenReturn("192.168.2.2");
         when(flow.getOutputSnmp()).thenReturn(3);
         when(flow.getVlan()).thenReturn(null);
+        when(flow.getSrcAddrHostname()).thenReturn(Optional.empty());
+        when(flow.getDstAddrHostname()).thenReturn(Optional.empty());
+        when(flow.getNextHopHostname()).thenReturn(Optional.empty());
         return flow;
     }
 
@@ -147,7 +153,7 @@ public class MarkerCacheIT {
         ), FilterService.NOOP);
 
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionOperations, classificationEngine,
+                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)
@@ -161,8 +167,8 @@ public class MarkerCacheIT {
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
-                    transactionOperations, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(),
+                    sessionUtils, nodeDao, snmpInterfaceDao,
+                    new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),
                     3, 12000);
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));

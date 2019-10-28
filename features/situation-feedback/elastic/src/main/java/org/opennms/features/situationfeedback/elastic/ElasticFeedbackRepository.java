@@ -40,9 +40,10 @@ import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticFeedbackRepository.class);
 
-    private static final String TYPE = "situation-feedback";
+    private static final String INDEX_NAME = "situation-feedback";
 
     private final Gson gson = new Gson();
 
@@ -70,6 +71,8 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
     private final JestClient client;
 
     private final int bulkRetryCount;
+
+    private final IndexSettings indexSettings;
 
     private IndexStrategy indexStrategy;
 
@@ -83,6 +86,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         this.indexStrategy = indexStrategy;
         this.bulkRetryCount = bulkRetryCount;
         this.initializer = initializer;
+        this.indexSettings = initializer.getIndexSettings();
     }
 
     @Override
@@ -98,8 +102,8 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (FeedbackDocument document : documents) {
-                final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(document.getTimestamp()));
-                final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
+                final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(document.getTimestamp()));
+                final Index.Builder indexBuilder = new Index.Builder(document).index(index);
                 bulkBuilder.addAction(indexBuilder.build());
             }
             return new BulkWrapper(bulkBuilder);
@@ -141,7 +145,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
                 "  }\n" + 
                 "}";
 
-        Search.Builder builder = new Search.Builder(query).addType(TYPE);
+        Search.Builder builder = new Search.Builder(query);
         Search search = builder.build();
         SearchResult result;
         try {
@@ -198,7 +202,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
     }
 
     private List<AlarmFeedback> search(String query) throws FeedbackException {
-        Search.Builder builder = new Search.Builder(query).addType(TYPE);
+        Search.Builder builder = new Search.Builder(query);
         try {
             return execute(builder.build());
         } catch (IOException e) {

@@ -37,47 +37,57 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
+import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
-import org.opennms.plugins.elasticsearch.rest.index.IndexSelector;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.features.jest.client.SearchResultUtils;
+import org.opennms.features.jest.client.bulk.BulkException;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.index.IndexSelector;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
@@ -101,7 +111,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticFlowRepository.class);
 
-    private static final String TYPE = "netflow";
+    private static final String INDEX_NAME = "netflow";
 
     private final JestClient client;
 
@@ -147,14 +157,16 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final IndexSelector indexSelector;
 
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
 
     private final NodeDao nodeDao;
     private final SnmpInterfaceDao snmpInterfaceDao;
 
     // An OpenNMS or Sentinel Identity.
-    private Identity identity;
-    private TracerRegistry tracerRegistry;
+    private final Identity identity;
+    private final TracerRegistry tracerRegistry;
+
+    private final IndexSettings indexSettings;
 
     /**
      * Cache for marking nodes and interfaces as having flows.
@@ -165,20 +177,21 @@ public class ElasticFlowRepository implements FlowRepository {
 
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
-                                 TransactionOperations transactionOperations, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
-                                 Identity identity, TracerRegistry tracerRegistry,
+                                 SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
+                                 Identity identity, TracerRegistry tracerRegistry, IndexSettings indexSettings,
                                  int bulkRetryCount, long maxFlowDurationMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.bulkRetryCount = bulkRetryCount;
-        this.indexSelector = new IndexSelector(TYPE, indexStrategy, maxFlowDurationMs);
+        this.indexSelector = new IndexSelector(indexSettings, INDEX_NAME, indexStrategy, maxFlowDurationMs);
         this.identity = identity;
         this.tracerRegistry = tracerRegistry;
+        this.indexSettings = Objects.requireNonNull(indexSettings);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logConversionTimer = metricRegistry.timer("logConversion");
@@ -188,7 +201,7 @@ public class ElasticFlowRepository implements FlowRepository {
         flowsPerLog = metricRegistry.histogram("flowsPerLog");
 
         // Pre-populate marker cache with values from DB
-        this.transactionOperations.execute(cb -> {
+        this.sessionUtils.withTransaction(() -> {
             for (final OnmsNode node : this.nodeDao.findAllHavingFlows()) {
                 this.markerCache.put(node.getId(),
                         this.snmpInterfaceDao.findAllHavingFlows(node.getId()).stream()
@@ -232,13 +245,13 @@ public class ElasticFlowRepository implements FlowRepository {
             // Add location and source address tags to span.
             scope.span().setTag(TracerConstants.TAG_LOCATION, source.getLocation());
             scope.span().setTag(TracerConstants.TAG_SOURCE_ADDRESS, source.getSourceAddress());
+            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
-                    final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(flowDocument.getTimestamp()));
+                    final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
                     final Index.Builder indexBuilder = new Index.Builder(flowDocument)
-                            .index(index)
-                            .type(TYPE);
+                            .index(index);
                     bulkBuilder.addAction(indexBuilder.build());
                 }
                 return new BulkWrapper(bulkBuilder);
@@ -287,7 +300,7 @@ public class ElasticFlowRepository implements FlowRepository {
             }
 
             if (!nodesToUpdate.isEmpty() || !interfacesToUpdate.isEmpty()) {
-                this.transactionOperations.execute(cb -> {
+                sessionUtils.withTransaction(() -> {
                     if (!nodesToUpdate.isEmpty()) {
                         this.nodeDao.markHavingFlows(nodesToUpdate);
                     }
@@ -303,7 +316,7 @@ public class ElasticFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
         final String query = searchQueryProvider.getFlowCountQuery(filters);
-        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(SearchResult::getTotal);
+        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(SearchResultUtils::getTotal);
     }
 
     @Override
@@ -332,7 +345,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                                                                             boolean includeOther,
                                                                                             List<Filter> filters) {
         return getSeriesFor(applications, "netflow.application", step, includeOther, filters)
-                .thenApply((res) -> mapTable(res, s -> s));
+                .thenCompose((res) -> mapTable(res, CompletableFuture::completedFuture));
     }
 
     @Override
@@ -340,7 +353,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                                                                                 boolean includeOther,
                                                                                                 List<Filter> filters) {
         return getSeriesFromTopN(N, step, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters)
-                .thenApply((res) -> mapTable(res, s -> s));
+                .thenCompose((res) -> mapTable(res, CompletableFuture::completedFuture));
     }
 
     @Override
@@ -366,38 +379,73 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversationSummaries(int N,
-                                                                                                 boolean includeOther,
-                                                                                                 List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N,
+                                                                                              boolean includeOther,
+                                                                                              List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.convo_key", null, includeOther, filters)
-                .thenApply((res) -> res.stream()
-                        .map(ElasticFlowRepository::mapFromStringSummary)
-                        .collect(Collectors.toList()));
+                .thenCompose((summaries) -> transpose(summaries.stream()
+                                                               .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
+                                                                                   .thenApply(conversation -> TrafficSummary.from(conversation)
+                                                                                           .withBytesFrom(summary)
+                                                                                           .build()))
+                                                               .collect(Collectors.toList()),
+                                                      Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getConversationSummaries(Set<String> conversations,
-                                                                                             boolean includeOther,
-                                                                                             List<Filter> filters) {
-        return getTotalBytesFrom(unescapeConversations(conversations), "netflow.convo_key", null, includeOther,
-                filters).thenApply(summaries -> summaries.stream()
-                .map(ElasticFlowRepository::mapFromStringSummary)
-                .collect(Collectors.toList()));
+    public CompletableFuture<List<TrafficSummary<Conversation>>> getConversationSummaries(Set<String> conversations,
+                                                                                          boolean includeOther,
+                                                                                          List<Filter> filters) {
+        return getTotalBytesFrom(unescapeConversations(conversations), "netflow.convo_key", null, includeOther, filters)
+                .thenCompose((summaries) -> transpose(summaries.stream()
+                                                               .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
+                                                                                   .thenApply(conversation -> TrafficSummary.from(conversation)
+                                                                                           .withBytesFrom(summary)
+                                                                                           .build()))
+                                                               .collect(Collectors.toList()),
+                                                      Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
         return getSeriesFor(unescapeConversations(conversations), "netflow.convo_key", step, includeOther, filters)
-                .thenApply((res) -> mapTable(res, ElasticFlowRepository::getConversationKey));
+                .thenCompose((res) -> mapTable(res, convoKey -> this.resolveHostnameForConversation(convoKey, filters)));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationSeries(int N,
+    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationSeries(int N,
                                                                                                           long step,
                                                                                                           boolean includeOther,
                                                                                                           List<Filter> filters) {
         return getSeriesFromTopN(N, step, "netflow.convo_key", null, includeOther, filters)
-                .thenApply((res) -> mapTable(res, ElasticFlowRepository::getConversationKey));
+                .thenCompose((res) -> mapTable(res, convoKey -> this.resolveHostnameForConversation(convoKey, filters)));
+    }
+
+    public CompletableFuture<Conversation> resolveHostnameForConversation(final String convoKey, List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
+
+        if (OTHER_NAME.equals(convoKey)) {
+            return CompletableFuture.completedFuture(Conversation.forOther().build());
+        }
+
+        final ConversationKey key = ConversationKeyUtils.fromJsonString(convoKey);
+        final Conversation.Builder result = Conversation.from(key);
+
+        final String hostnameQuery = searchQueryProvider.getHostnameByConversationQuery(convoKey, filters);
+        return searchAsync(hostnameQuery, timeRangeFilter)
+                .thenApply(res ->  {
+                    final JsonObject hit = res.getFirstHit(JsonObject.class).source;
+                    if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), key.getLowerIp())) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withLowerHostname);
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withUpperHostname);
+
+                    } else if (Objects.equals(hit.getAsJsonPrimitive("netflow.dst_addr").getAsString(), key.getLowerIp())) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withLowerHostname);
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withUpperHostname);
+                    }
+
+                    return result.build();
+                });
     }
 
     @Override
@@ -408,30 +456,69 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther,
-                                                                                List<Filter> filters) {
-        return getTotalBytesFromTopN(N, "hosts", null, includeOther, filters);
+    public CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther,
+                                                                              List<Filter> filters) {
+        return getTotalBytesFromTopN(N, "hosts", null, includeOther, filters)
+                .thenCompose((summaries) -> transpose(summaries.stream()
+                                .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
+                                        .thenApply(host -> TrafficSummary.from(host)
+                                                .withBytesFrom(summary)
+                                                .build()))
+                                .collect(Collectors.toList()),
+                        Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts,
+    public CompletableFuture<List<TrafficSummary<Host>>> getHostSummaries(Set<String> hosts,
                                                                             boolean includeOther,
                                                                             List<Filter> filters) {
-        return getTotalBytesFrom(hosts, "hosts", null, includeOther, filters);
+        return getTotalBytesFrom(hosts, "hosts", null, includeOther, filters)
+                .thenCompose((summaries) -> transpose(summaries.stream()
+                                .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
+                                        .thenApply(host -> TrafficSummary.from(host)
+                                                .withBytesFrom(summary)
+                                                .build()))
+                                .collect(Collectors.toList()),
+                        Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step,
+    public CompletableFuture<Table<Directional<Host>, Long, Double>> getHostSeries(Set<String> hosts, long step,
                                                                                      boolean includeOther,
                                                                                      List<Filter> filters) {
-        return getSeriesFor(hosts, "hosts", step, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
+        return getSeriesFor(hosts, "hosts", step, includeOther, filters)
+                .thenCompose((res) -> mapTable(res, host -> this.resolveHostnameForHost(host, filters)));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step,
+    public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step,
                                                                                          boolean includeOther,
                                                                                          List<Filter> filters) {
-        return getSeriesFromTopN(N, step, "hosts", null, includeOther, filters);
+        return getSeriesFromTopN(N, step, "hosts", null, includeOther, filters)
+                .thenCompose((res) -> mapTable(res, host -> this.resolveHostnameForHost(host, filters)));
+    }
+
+    public CompletableFuture<Host> resolveHostnameForHost(final String host, List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
+
+        if (OTHER_NAME.equals(host)) {
+            return CompletableFuture.completedFuture(Host.forOther().build());
+        }
+
+        final Host.Builder result = Host.from(host);
+
+        final String hostnameQuery = searchQueryProvider.getHostnameByHostQuery(host, filters);
+        return searchAsync(hostnameQuery, timeRangeFilter)
+                .thenApply(res ->  {
+                    final JsonObject hit = res.getFirstHit(JsonObject.class).source;
+                    if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), host)) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withHostname);
+                    } else if (Objects.equals(hit.getAsJsonPrimitive("netflow.dst_addr").getAsString(), host)) {
+                        Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withHostname);
+                    }
+
+                    return result.build();
+                });
     }
 
     private CompletableFuture<List<String>> getTopN(int N, String groupByTerm, String keyForMissingTerm, List<Filter> filters) {
@@ -600,7 +687,7 @@ public class ElasticFlowRepository implements FlowRepository {
                     // No results
                     return summaries;
                 }
-                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_NAME);
+                final TrafficSummary.Builder<String> trafficSummary = TrafficSummary.from(OTHER_NAME);
                 for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
                     final boolean isIngress = isIngress(directionBucket);
                     final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
@@ -611,12 +698,12 @@ public class ElasticFlowRepository implements FlowRepository {
                     }
                     final Double sum = sumBuckets.iterator().next().getValue();
                     if (!isIngress) {
-                        trafficSummary.setBytesOut(sum.longValue());
+                        trafficSummary.withBytesOut(sum.longValue());
                     } else {
-                        trafficSummary.setBytesIn(sum.longValue());
+                        trafficSummary.withBytesIn(sum.longValue());
                     }
                 }
-                summaries.put(OTHER_NAME, trafficSummary);
+                summaries.put(OTHER_NAME, trafficSummary.build());
                 return summaries;
             });
         }
@@ -650,7 +737,7 @@ public class ElasticFlowRepository implements FlowRepository {
             return summaries;
         }
         for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
-            final TrafficSummary<String> trafficSummary = new TrafficSummary<>(bucket.getKey());
+            final TrafficSummary.Builder<String> trafficSummary = TrafficSummary.from(bucket.getKey());
             final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");
             for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
                 final boolean isIngress = isIngress(directionBucket);
@@ -662,12 +749,12 @@ public class ElasticFlowRepository implements FlowRepository {
                 }
                 final Double sum = sumBuckets.iterator().next().getValue();
                 if (!isIngress) {
-                    trafficSummary.setBytesOut(sum.longValue());
+                    trafficSummary.withBytesOut(sum.longValue());
                 } else {
-                    trafficSummary.setBytesIn(sum.longValue());
+                    trafficSummary.withBytesIn(sum.longValue());
                 }
             }
-            summaries.put(bucket.getKey(), trafficSummary);
+            summaries.put(bucket.getKey(), trafficSummary.build());
         }
         return summaries;
     }
@@ -678,8 +765,7 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     private CompletableFuture<SearchResult> searchAsync(String query, TimeRangeFilter timeRangeFilter) {
-        Search.Builder builder = new Search.Builder(query)
-                .addType(TYPE);
+        Search.Builder builder = new Search.Builder(query);
         if(timeRangeFilter != null) {
             final List<String> indices = indexSelector.getIndexNames(timeRangeFilter.getStart(), timeRangeFilter.getEnd());
             builder.addIndices(indices);
@@ -756,20 +842,28 @@ public class ElasticFlowRepository implements FlowRepository {
      * Rebuilds the table, mapping the row keys using the given function and fills
      * in missing cells with NaN values.
      */
-    private static <T> Table<Directional<T>, Long, Double> mapTable(Table<Directional<String>, Long, Double> source, Function<String, T> fn) {
-        final ImmutableTable.Builder<Directional<T>, Long, Double> target = ImmutableTable.builder();
+    private static <T> CompletableFuture<Table<Directional<T>, Long, Double>> mapTable(final Table<Directional<String>, Long, Double> source,
+                                                                                       final Function<String, CompletableFuture<T>> fn) {
         final Set<Long> columnKeys = source.columnKeySet();
-        for (Directional<String> sourceRowKey : source.rowKeySet()) {
-            final Directional<T> targetRowKey = new Directional<>(fn.apply(sourceRowKey.getValue()), sourceRowKey.isIngress());
-            for (Long columnKey : columnKeys) {
-                Double value = source.get(sourceRowKey, columnKey);
-                if (value == null) {
-                    value = Double.NaN;
-                }
-                target.put(targetRowKey, columnKey, value);
-            }
-        }
-        return target.build();
+
+        final List<CompletableFuture<Map.Entry<Directional<T>, Map<Long, Double>>>> rowKeys = source.rowKeySet().stream()
+                .map(rk -> fn.apply(rk.getValue()).thenApply(t -> Maps.immutableEntry(new Directional<>(t, rk.isIngress()), source.row(rk))))
+                .collect(Collectors.toList());
+
+        return transpose(rowKeys, Collectors.toList())
+                .thenApply(rows -> {
+                    final ImmutableTable.Builder<Directional<T>, Long, Double> target = ImmutableTable.builder();
+                    for (final Map.Entry<Directional<T>, Map<Long, Double>> row : rows) {
+                        for (final Long columnKey : columnKeys) {
+                            Double value = row.getValue().get(columnKey);
+                            if (value == null) {
+                                value = Double.NaN;
+                            }
+                            target.put(row.getKey(), columnKey, value);
+                        }
+                    }
+                    return target.build();
+                });
     }
 
     private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
@@ -798,14 +892,6 @@ public class ElasticFlowRepository implements FlowRepository {
         }
     }
 
-    private static TrafficSummary<ConversationKey> mapFromStringSummary(TrafficSummary<String> trafficSummary) {
-        final ConversationKey conversationKey = getConversationKey(trafficSummary.getEntity());
-
-        final TrafficSummary<ConversationKey> mapped = new TrafficSummary<>(conversationKey);
-        mapped.copyBytes(trafficSummary);
-        return mapped;
-    }
-    
     private static Set<String> unescapeConversations(Set<String> conversations) {
         // freemarker template is going to auto-escape the string so we need to remove the explicit escaped quotes first
         return conversations.stream()
@@ -813,25 +899,12 @@ public class ElasticFlowRepository implements FlowRepository {
                 .collect(Collectors.toSet());
     }
 
-    private static ConversationKey getConversationKey(String key) {
-        Objects.requireNonNull(key);
-        return key.equals(OTHER_NAME) ? ConversationKeyUtils.forOther() : ConversationKeyUtils.fromJsonString(key);
-    }
-
     public Identity getIdentity() {
         return identity;
     }
 
-    public void setIdentity(Identity identity) {
-        this.identity = identity;
-    }
-
     public TracerRegistry getTracerRegistry() {
         return tracerRegistry;
-    }
-
-    public void setTracerRegistry(TracerRegistry tracerRegistry) {
-        this.tracerRegistry = tracerRegistry;
     }
 
     public void start() {
@@ -845,5 +918,13 @@ public class ElasticFlowRepository implements FlowRepository {
             return tracerRegistry.getTracer();
         }
         return GlobalTracer.get();
+    }
+
+    private static <T, A, R> CompletableFuture<R> transpose(final Collection<CompletableFuture<T>> futures,
+                                                            final Collector<? super T, A, R> collector) {
+        return CompletableFuture.allOf(Iterables.toArray(futures, CompletableFuture.class))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(collector));
     }
 }

@@ -9,17 +9,26 @@ FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
 ARG REQUIRED_RPMS="wget gettext"
 
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm"
+ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
 
 SHELL ["/bin/bash", "-c"]
 
 # Collect generic steps in a layer for caching
 RUN rpm --import "${REPO_KEY_URL}" && \
-    yum install -y epel-release && \
-    yum -y install "${REPO_RPM}" && \
-    yum -y install ${REQUIRED_RPMS} && \
-    yum clean all -y && \
+    dnf -y install epel-release && \
+    dnf -y install "${REPO_RPM}" && \
+    dnf -y install ${REQUIRED_RPMS} && \
+    dnf clean all && \
     rm -rf /var/cache/yum
+
+# Allow to send ICMP messages as non-root user
+RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
+    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
+    ldconfig
+
+# Create Sentinel user with a specific group ID
+RUN groupadd -g 10001 sentinel && \
+    adduser -u 10001 -g 10001 -d /opt/sentinel -s /usr/bin/bash sentinel
 
 ##
 # Install and setup OpenNMS Sentinel RPMS
@@ -37,11 +46,15 @@ COPY ./rpms /tmp/rpms
 SHELL ["/bin/bash", "-c"]
 
 # Install repositories, system and OpenNMS packages and do some cleanup
-RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then yum -y localinstall /tmp/rpms/*.rpm; else yum install -y ${SENTINEL_PACKAGES}; fi && \
-    if [[ -n ${ADD_YUM_PACKAGES} ]]; then yum -y install ${ADD_YUM_PACKAGES}; fi && \
+RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y install /tmp/rpms/*.rpm; else dnf -y install ${SENTINEL_PACKAGES}; fi && \
+    if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
     rm -rf /tmp/rpms && \
-    yum clean all && \
-    rm -rf /var/cache/yum
+    dnf clean all && \
+    rm -rf /var/cache/yum && \
+    mkdir -p /opt/sentinel/data/{log,tmp} && \
+    chown 10001:10001 -R /opt/sentinel && \
+    chgrp -R 0 /opt/sentinel && \
+    chmod -R g=u /opt/sentinel
 
 COPY ./assets/entrypoint.sh /
 
@@ -49,29 +62,38 @@ VOLUME [ "/opt/sentinel/deploy", "/opt/sentinel/etc", "/opt/sentinel/data" ]
 
 WORKDIR /opt/sentinel
 
+### Containers should NOT run as root as a good practice
+USER 10001
+
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 STOPSIGNAL SIGTERM
 
 CMD [ "-f" ]
 
+# Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG VERSION
+ARG SOURCE
+ARG REVISION
+ARG BUILD_JOB_ID
 ARG BUILD_NUMBER
 ARG BUILD_URL
 ARG BUILD_BRANCH
-ARG BUILD_SHA1
 
-LABEL maintainer="The OpenNMS Group" \
-      license="AGPLv3" \
-      name="Sentinel" \
-      version="${VERSION}" \
-      vendor="OpenNMS Community" \
-      cicd.build.date="${BUILD_DATE}" \
-      cicd.build.number="${BUILD_NUMBER}" \
-      cicd.build.url="${BUILD_URL}" \
-      cicd.build.branch="${BUILD_BRANCH}" \
-      cicd.build.sha1="${CIRCLE_SHA1}"
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="OpenNMS Sentinel ${VERSION}" \
+      org.opencontainers.image.source="${SOURCE}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
+      org.opencontainers.image.authors="OpenNMS Community" \
+      org.opencontainers.image.licenses="AGPL-3.0" \
+      org.opennms.image.base="${BASE_IMAGE}:${BASE_IMAGE_VERSION}" \
+      org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
+      org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
+      org.opennms.cicd.buildurl="${BUILD_URL}" \
+      org.opennms.cicd.branch="${BUILD_BRANCH}"
 
 ### Runtime information and not relevant at build time
 

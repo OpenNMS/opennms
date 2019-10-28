@@ -34,14 +34,14 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.opennms.core.test.xml.JsonTest;
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
-import org.opennms.plugins.elasticsearch.rest.template.MergingTemplateLoader;
-import org.opennms.plugins.elasticsearch.rest.template.Version;
+import org.opennms.features.jest.client.template.DefaultTemplateLoader;
+import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.features.jest.client.template.MergingTemplateLoader;
+import org.opennms.features.jest.client.template.Version;
 
 public class MergingTemplateLoaderTest {
 
-    private static final Version version = new Version(6,2,3);
+    private static final Version version = new Version(7,2,0);
 
     @Test
     public void verifyMergingEmpty() throws IOException {

@@ -71,12 +71,16 @@ public class ThresholdConfigWrapper extends BaseThresholdDefConfigWrapper {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public double evaluate(Map<String, Double> values)  throws ThresholdExpressionException {
+    public double evaluate(Map<String, Double> values) {
         Double result=values.get(m_threshold.getDsName());
         if(result==null) {
             return 0.0;
         }
         return result.doubleValue();
+    }
+
+    @Override
+    public void accept(ThresholdDefVisitor thresholdDefVisitor) {
+        thresholdDefVisitor.visit(this);
     }
 }

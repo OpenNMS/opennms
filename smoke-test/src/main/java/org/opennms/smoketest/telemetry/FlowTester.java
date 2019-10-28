@@ -41,11 +41,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
+import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +131,10 @@ public class FlowTester {
 
         // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
+        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl)
+                .connTimeout(5000)
+                .readTimeout(10000)
+                .multiThreaded(true).build());
 
         try {
             client = factory.getObject();
@@ -156,14 +161,15 @@ public class FlowTester {
                 LOG.info("Verifying flows for {}", netflowVersion);
                 verify(() -> {
                     // Verify directly in Elasticsearch that the flows have been created
-                    final SearchResult response = client.execute(new Search.Builder(
-                            "{\"query\":{\"term\":{\"netflow.version\":{\"value\":"
-                                    + gson.toJson(netflowVersion)
-                                    + "}}}}")
+                    final String query = "{\"query\":{\"term\":{\"netflow.version\":{\"value\":"
+                            + gson.toJson(netflowVersion)
+                            + "}}}}";
+                    LOG.info("Executing query: {}", query);
+                    final SearchResult response = client.execute(new Search.Builder(query)
                             .addIndex("netflow-*")
                             .build());
-                    LOG.info("Response {} with {} flow documents: {}", response.isSucceeded() ? "successful" : "failed", response.getTotal(), response.getJsonString());
-                    final boolean foundAllFlowsForProtocol = response.isSucceeded() && response.getTotal() >= numFlowsExpected;
+                    LOG.info("Response {} with {} flow documents: {}", response.isSucceeded() ? "successful" : "failed", SearchResultUtils.getTotal(response), response.getJsonString());
+                    final boolean foundAllFlowsForProtocol = response.isSucceeded() && SearchResultUtils.getTotal(response) >= numFlowsExpected;
 
                     if (!foundAllFlowsForProtocol) {
                         // If we haven't found them all yet, try sending all the packets for this protocol again.

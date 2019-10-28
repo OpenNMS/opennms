@@ -6,27 +6,28 @@ We currently leverage Docker and the TestContainers framework for running the su
 
 ## Running the system tests manually
 
-The tests require Docker images to run.
+### Getting the Docker Images
+The tests require Docker images to run. There are two alternatives to get them, a) or b):
 
-### A) Pull existing images from DockerHub
+#### a) Pull existing images from DockerHub
 
 You can pull existing images down with:
 ```
-docker pull opennms/horizon-core-web:24.0.0-rc
-docker pull opennms/minion:24.0.0-rc
-docker pull opennms/sentinel:24.0.0-rc
+docker pull opennms/horizon-core-web:26.0.0
+docker pull opennms/minion:26.0.0
+docker pull opennms/sentinel:26.0.0
 ```
 
 > Update the tag to match the system tests your running
 
 And then tag them for the tests:
 ```
-docker tag opennms/horizon-core-web:24.0.0-rc horizon
-docker tag opennms/minion:24.0.0-rc minion
-docker tag opennms/sentinel:24.0.0-rc sentinel
+docker tag opennms/horizon-core-web:26.0.0 horizon
+docker tag opennms/minion:26.0.0 minion
+docker tag opennms/sentinel:26.0.0 sentinel
 ```
 
-### B) Pull images from build artifacts
+#### b) Pull images from build artifacts
 
 ```
 export ARTIFACT_URL="https://2866-9377198-gh.circle-artifacts.com/0"
@@ -48,8 +49,31 @@ docker image load -i sentinel.oci
 Once the containers are available, you can run the tests using:
 ```
 cd smoke-test
-mvn -DskipITs=false integration-test```
+mvn -DskipITs=false integration-test
 ```
+**Hint for running on OSX**
+
+It's very likely you will get the following error message:
+
+```
+Caused by: com.github.dockerjava.api.exception.DockerException: Mounts denied:
+The path /var/folders/cj/_yzj5k7d6d11gl5frcn2yqhh0000gn/T/opennms690045176960825494/
+is not shared from OS X and is not known to Docker.
+You can configure shared paths from Docker -> Preferences... -> File Sharing.
+See https://docs.docker.com/docker-for-mac/osxfs/#namespaces for more info.
+```
+
+To fix this issue you have change the tmpdir path for Java with:
+
+```
+mvn -DskipITs=false integration-test -Djava.io.tmpdir=/tmp
+```
+
+### Run tests from local tarball
+
+If you have the code compiled and assembled locally, you can use the tarball build for container images, so you don't have to wait for the CI/CD to download the container image artifact.
+Drop the assembled OpenNMS-tar.gz file in `opennms-container/horizon/tarball` and run `docker build -t horizon .`
+Smoke tests will run the image named `horizon` in your local Docker image repo.
 
 ## Writing system tests
 
@@ -91,19 +115,19 @@ If a test is failing and we have a patched .jar we want to deploy, how can we re
 #### OSGi
 
 1. Link m2s by setting `-Dorg.opennms.dev.m2=/home/jesse/.m2/repository`
-1. Set a breakpoink in the test before the exercised feature is used and re-run it in debug mode
+2. Set a breakpoink in the test before the exercised feature is used and re-run it in debug mode
 3. Reload the bundles in Karaf using: `bundle:watch *`
 
 #### Filesystem
 
-Locate the target path of the .jar: `/opt/opennms/lib/opennms-services-25.0.0-SNAPSHOT.jar`
+Locate the target path of the .jar: `/opt/opennms/lib/opennms-services-26.0.0-SNAPSHOT.jar`
 
 Add the .jar to the overlay:
 ```
 OVERLAY_ROOT="~/git/opennms/smoke-test/src/main/resources/opennms-overlay"
 TARGET_PATH="$OVERLAY_ROOT/lib"
 mkdir -p $TARGET_PATH
-cp target/opennms-services-25.0.0-SNAPSHOT.jar $TARGET_PATH/lib
+cp target/opennms-services-26.0.0-SNAPSHOT.jar $TARGET_PATH/lib
 ```
 
 Re-run the test.
@@ -191,13 +215,15 @@ This saves the CI system from having to spawn another stack which takes time to 
 The "machine" image we use on CircleCI is currently limited to 2 vCPUs and 8GB of RAM, so we need to be careful with our memory usage for the tests to run reliably.
 
 Breakdown of the heap sizes for the various containers currently is:
-* OpenNMS: 1GB
+* Maven JVM: 512M
+* Test JVM: 512M
+* OpenNMS: 2G
 * Minion: 512M
 * Sentinel: 512M
 * Cassandra: 512M
 * Elasticsearch: 512M
-* Kafka: 1GB
+* Kafka: 256M
 * ZooKeeper: 512MB
-* Total: **4.5GB**
+* Total: **5.75G**
 
 We limit the CPU used by each container to 2 cores in order to help maintain more reliable timing between systems and test runs.

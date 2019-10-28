@@ -28,9 +28,9 @@
 
 package org.opennms.features.alarms.history.elastic;
 
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateInitializer;
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.features.jest.client.template.DefaultTemplateInitializer;
+import org.opennms.features.jest.client.template.DefaultTemplateLoader;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.osgi.framework.BundleContext;
 
 import io.searchbox.client.JestClient;
@@ -45,6 +45,6 @@ public class TemplateInitializerForAlarms extends DefaultTemplateInitializer {
     }
 
     public TemplateInitializerForAlarms(JestClient client) {
-        super(client, TEMPLATE_RESOURCE, TEMPLATE_NAME, new DefaultTemplateLoader());
+        super(client, TEMPLATE_RESOURCE, TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
 }

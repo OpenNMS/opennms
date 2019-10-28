@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest.sentinel;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
 
 // Verifies that flows can be processed by a sentinel and are persisted to Elastic communicating via kafka
@@ -40,6 +41,6 @@ public class FlowStackKafkaIT extends AbstractFlowIT {
 
     @Override
     protected String getSentinelReadyString() {
-        return "OpenNMS.Sink.Telemetry-Netflow-5";
+        return SystemInfoUtils.getInstanceId() + ".Sink.Telemetry-Netflow-5";
     }
 }

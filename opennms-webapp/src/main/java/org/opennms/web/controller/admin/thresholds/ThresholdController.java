@@ -41,8 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.FilterOperator;
@@ -63,6 +63,7 @@ import org.opennms.web.api.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -96,13 +97,15 @@ public class ThresholdController extends AbstractController implements Initializ
 
     private boolean eventConfChanged = false;
 
+    @Autowired
+    private WriteableThresholdingDao thresholdingDao;
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView;
-        ThresholdingConfigFactory.init();
         String editGroup = request.getParameter("editGroup");
         String deleteThreshold = request.getParameter("deleteThreshold");
         String editThreshold = request.getParameter("editThreshold");
@@ -157,9 +160,8 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoGroupEdit(String groupName) {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", thresholdingDao.getWriteableConfig().getGroup(groupName));
         return modelAndView;
     }
 
@@ -224,9 +226,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewThreshold(String groupName) {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
-
-        final Group group = configFactory.getGroup(groupName);
+        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         final List<Threshold> thresholds = group.getThresholds();
 
         //We're assuming that adding a threshold puts it at the end of the current list (i.e. that the Group implementation
@@ -279,9 +279,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewExpression(String groupName) {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
-
-        final Group group = configFactory.getGroup(groupName);
+        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         final List<Expression> expressions = group.getExpressions();
 
         //We're assuming that adding a expression puts it at the end of the current list (i.e. that the Group implementation
@@ -334,14 +332,16 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoEditThreshold(String thresholdIndexString, String groupName) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to edit a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
 
-        Threshold threshold = configFactory.getGroup(groupName).getThresholds().get(thresholdIndex);
+        Threshold threshold = thresholdingDao.getWriteableConfig()
+                .getGroup(groupName)
+                .getThresholds()
+                .get(thresholdIndex);
         modelAndView = new ModelAndView("admin/thresholds/editThreshold");
 
         modelAndView.addObject("threshold", threshold);
@@ -466,14 +466,16 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoEditExpression(String expressionIndexString, String groupName) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to edit a threshold");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
 
-        Expression expression = configFactory.getGroup(groupName).getExpressions().get(expressionIndex);
+        Expression expression = thresholdingDao.getWriteableConfig()
+                .getGroup(groupName)
+                .getExpressions()
+                .get(expressionIndex);
         modelAndView = new ModelAndView("admin/thresholds/editExpression");
 
         modelAndView.addObject("expression", expression);
@@ -501,9 +503,8 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private void saveChanges() throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         try {
-            configFactory.saveCurrent();
+            thresholdingDao.saveConfig();
             EventBuilder ebldr = createEventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
             ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, "thresholds.xml");
@@ -525,17 +526,16 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView deleteThreshold(String thresholdIndexString, String groupName) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to delete a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
-        Group group = configFactory.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         group.removeThreshold(group.getThresholds().get(thresholdIndex));
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", group);
         saveChanges();
         return modelAndView;
     }
@@ -553,19 +553,18 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView deleteExpression(String expressionIndexString, String groupName) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to delete a threshold expression");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
-        Group group = configFactory.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         group.removeExpression(group.getExpressions().get(expressionIndex));
         saveChanges();
 
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", group);
         return modelAndView;
     }
 
@@ -701,11 +700,10 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView finishThresholdEdit(HttpServletRequest request) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = configFactory.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         String thresholdIndexString = request.getParameter("thresholdIndex");
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to modify or delete a threshold");
@@ -750,11 +748,10 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView finishExpressionEdit(HttpServletRequest request) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = configFactory.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         String expressionIndexString = request.getParameter("expressionIndex");
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to modify or delete a threshold expression");
@@ -795,7 +792,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
         //and got back to the editGroup page
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", group);
         return modelAndView;
     }
 
@@ -803,17 +800,16 @@ public class ThresholdController extends AbstractController implements Initializ
         //Always reload to get a consistent view of the thresholds before we start editing.  
         //Otherwise we'll be dealing with questions on the mailing lists for the rest of our lives
         try {
-            ThresholdingConfigFactory.reload();
+            thresholdingDao.reload();
         } catch (Throwable e) {
             throw new ServletException("Could not reload ThresholdingConfigFactory because " + e.getMessage(), e);
         }
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/list");
 
         Map<String, Group> groupMap = new TreeMap<String, Group>();
-        for (String aName : configFactory.getGroupNames()) {
-            groupMap.put(aName, configFactory.getGroup(aName));
-        }
+        thresholdingDao.getWriteableConfig()
+                .getGroups()
+                .forEach(g -> groupMap.put(g.getName(), g));
 
         modelAndView.addObject("groupMap", groupMap);
         return modelAndView;

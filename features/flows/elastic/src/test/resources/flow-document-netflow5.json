@@ -11,6 +11,7 @@
   "netflow.convo_key": "[\"SomeLocation\",0,\"192.168.1.2\",\"192.168.2.2\",null]",
   "netflow.direction": "ingress",
   "netflow.dst_addr": "192.168.2.2",
+  "netflow.dst_addr_hostname": "four.three.two.one",
   "netflow.dst_as": 0,
   "netflow.dst_locality": "private",
   "netflow.dst_mask_len": 0,
@@ -35,6 +36,7 @@
   "netflow.src_mask_len": 0,
   "netflow.src_port": 0,
   "netflow.tcp_flags": 0,
+  "netflow.delta_switched": 0,
   "netflow.tos": 0,
   "netflow.version": "Netflow v5",
   "node_dst": {

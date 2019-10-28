@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -81,7 +82,7 @@ public class SinglePortFlowsIT {
                                         .addIndex("netflow-*")
                                         .build());
                         assertEquals(Boolean.TRUE, response.isSucceeded());
-                        assertEquals(0L, response.getTotal().longValue());
+                        assertEquals(0L, SearchResultUtils.getTotal(response));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

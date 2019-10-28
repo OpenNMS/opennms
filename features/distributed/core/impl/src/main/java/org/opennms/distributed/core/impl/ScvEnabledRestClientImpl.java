@@ -119,12 +119,17 @@ public class ScvEnabledRestClientImpl implements RestClient {
 
             final HttpEntity entity = response.getEntity();
             final String json = EntityUtils.toString(entity);
-            final Gson g = new Gson();
+
+            final ClassLoader previousClassLoader = Thread.currentThread().getContextClassLoader();
             try {
+                Thread.currentThread().setContextClassLoader(Gson.class.getClassLoader());
+                final Gson g = new Gson();
                 final JsonObject info = g.fromJson(json, JsonObject.class);
                 return info.get(VERSION_KEY).getAsString();
-            } catch (IllegalStateException e) {
+            }  catch (IllegalStateException e) {
                 throw new IllegalStateException("Failed to parse JSON: " + json, e);
+            } finally {
+                Thread.currentThread().setContextClassLoader(previousClassLoader);
             }
         }
     }

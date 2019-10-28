@@ -30,11 +30,12 @@ package org.opennms.netmgt.flows.elastic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
+import org.opennms.netmgt.flows.api.DetailedFlowException;
+import org.opennms.features.jest.client.bulk.FailedItem;
 
-public class PersistenceException extends FlowException {
+public class PersistenceException extends DetailedFlowException {
 
     private List<FailedItem<FlowDocument>> failedItems = new ArrayList<>();
 
@@ -45,5 +46,11 @@ public class PersistenceException extends FlowException {
 
     public List<FailedItem<FlowDocument>> getFailedItems() {
         return failedItems;
+    }
+
+    @Override
+    public List<String> getDetailedLogMessages() {
+        return getFailedItems().stream()
+                .map(e -> String.format("Failed to persist item with convoKey '%s' and index %d: %s", e.getItem().getConvoKey(), e.getIndex(), e.getCause().getMessage())).collect(Collectors.toList());
     }
 }

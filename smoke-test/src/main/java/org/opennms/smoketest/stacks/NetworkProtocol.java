@@ -43,6 +43,9 @@ public enum NetworkProtocol {
     SSH(TCP),
     HTTP(TCP),
 
+    // Java Debug Wire Protocol
+    JDWP(TCP),
+
     SYSLOG(UDP),
     SNMP(UDP),
     JTI(UDP),

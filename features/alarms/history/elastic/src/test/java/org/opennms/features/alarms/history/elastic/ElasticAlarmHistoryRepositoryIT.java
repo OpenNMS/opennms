@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -51,19 +52,16 @@ import org.opennms.core.time.PseudoClock;
 import org.opennms.features.alarms.history.api.AlarmState;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
 import com.jayway.awaitility.Awaitility;
 
 import io.searchbox.client.JestClient;
-import java.util.Date;
 
 public class ElasticAlarmHistoryRepositoryIT {
-
-    private static final String HTTP_PORT = "9205";
-    private static final String HTTP_TRANSPORT_PORT = "9305";
 
     private JestClient jestClient;
     private ElasticAlarmHistoryRepository repo;
@@ -71,20 +69,14 @@ public class ElasticAlarmHistoryRepositoryIT {
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-            .withDefaults()
-            .withSetting("http.enabled", true)
-            .withSetting("http.port", HTTP_PORT)
-            .withSetting("http.type", "netty4")
-            .withSetting("transport.type", "netty4")
-            .withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
             .withPlugins(PainlessPlugin.class, ReindexPlugin.class)
     );
 
     @Before
     public void setUp() throws IOException {
-        RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT);
+        RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         jestClient = restClientFactory.createClient();
-        repo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY);
+        repo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY, new IndexSettings());
 
         TemplateInitializerForAlarms templateInitializer = new TemplateInitializerForAlarms(jestClient);
         MetricRegistry metrics = new MetricRegistry();

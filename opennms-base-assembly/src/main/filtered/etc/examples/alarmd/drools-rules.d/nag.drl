@@ -29,13 +29,13 @@
 package org.opennms.netmgt.alarmd.usecases;
 
 import java.util.Date;
-import org.kie.api.time.SessionClock;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.alarmd.drools.SessionClock;
 
 global org.opennms.netmgt.alarmd.drools.AlarmService alarmService;
 
@@ -59,10 +59,7 @@ definition for the trigger. i.e.:
 </event>
 
 By default, the rules will send nag events at a 30 second interval. If you need to adjust this
-rate, you must do so at three(3) different places.
- 1) Update the @expires time on the LastNag declaring to be 2X the new interval
- 2) Update the nagIntervalInMs constant in the "schedule nag" rule to match the new interval
- 3) Update the window since in the window:time(*) statement to match the new interval
+rate, modify the nagIntervalInMs variable in the "schedule nag" rule
 */
 
 declare org.opennms.netmgt.model.OnmsAlarm
@@ -76,27 +73,24 @@ declare Nag
    interval : long
 end
 
-declare LastNag
-   @role(event)
-   @expires(1m) // Some time greater than the interval, recommended to be 2x the interval duration
-   @timestamp(lastNaggedAt)
+declare NagHold
    nag : Nag
-   lastNaggedAt : Date
+   expiresAt : Date
 end
 
-function Date getLastNagTimeWith(Date now, Date firstEventTime, long intervalInMs) {
+function Date getNextNagTimeWith(Date now, Date firstEventTime, long intervalInMs) {
     long nowTs = now.getTime();
     long firstEventTimeTs = firstEventTime.getTime();
 
     long msElapsed = (nowTs - firstEventTimeTs);
     long msInLastInterval = msElapsed % intervalInMs;
-    long shouldveNaggedAtTimestamp =  nowTs - msInLastInterval;
+    long shouldNagAtTimestamp =  nowTs - msInLastInterval + intervalInMs;
 
-    return new Date(shouldveNaggedAtTimestamp);
+    return new Date(shouldNagAtTimestamp);
 }
 
-function Date getLastNagTime(Date now, Nag nag) {
-   return getLastNagTimeWith(now, nag.getAlarm().getFirstEventTime(), nag.getInterval());
+function Date getNextNagTime(Date now, Nag nag) {
+   return getNextNagTimeWith(now, nag.getAlarm().getFirstEventTime(), nag.getInterval());
 }
 
 function void copyEventParameters(OnmsEvent sourceEvent, EventBuilder targetEventBuilder) {
@@ -114,6 +108,7 @@ function void copyEventParameters(OnmsEvent sourceEvent, EventBuilder targetEven
 */
 rule "schedule nag"
   when
+    $sessionClock : SessionClock()
     $alarm : OnmsAlarm(alarmType == OnmsAlarm.PROBLEM_TYPE,
                        lastEvent != null,
                        severity.isGreaterThan(OnmsSeverity.CLEARED))
@@ -121,7 +116,7 @@ rule "schedule nag"
     not(Nag( alarm == $alarm ))
   then
       long nagIntervalInMs = 30 * 1000;
-      Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+      Date now = $sessionClock.now();
 
       Nag nag = new Nag();
       nag.setAlarm($alarm);
@@ -129,10 +124,10 @@ rule "schedule nag"
       nag.setInterval(nagIntervalInMs);
       insert(nag);
 
-      LastNag lastNag = new LastNag();
-      lastNag.setNag(nag);
-      lastNag.setLastNaggedAt(getLastNagTime(now, nag));
-      insert(lastNag);
+      NagHold nagHold = new NagHold();
+      nagHold.setNag(nag);
+      nagHold.setExpiresAt(getNextNagTime(now, nag));
+      insert(nagHold);
 end
 
 rule "retract nag when alarm is deleted"
@@ -153,10 +148,11 @@ end
 
 rule "trigger nag"
   when
+    $sessionClock : SessionClock()
     $nag : Nag()
-    not( LastNag( nag == $nag ) over window:time( 30s ) ) // Window duration should match interval
+    not( NagHold( nag == $nag ) )
   then
-    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+    Date now = $sessionClock.now();
     // Build the nag notification
     EventBuilder eb = new EventBuilder($nag.getNagUei(), "nagger");
     // Use the time from the session clock on the event
@@ -174,8 +170,17 @@ rule "trigger nag"
 
     // Re-insert the nag fact using the time at which we should have sent the last nag,
     // which may differ from the current time
-    LastNag lastNag = new LastNag();
-    lastNag.setNag($nag);
-    lastNag.setLastNaggedAt(getLastNagTime(now, $nag));
-    insert(lastNag);
+    NagHold nagHold = new NagHold();
+    nagHold.setNag($nag);
+    nagHold.setExpiresAt(getNextNagTime(now, $nag));
+    insert(nagHold);
+end
+
+
+rule "retract expired holds"
+  when
+    $sessionClock : SessionClock()
+    $hold : NagHold(expiresAt < $sessionClock.now())
+  then
+    retract($hold);
 end

@@ -4,12 +4,7 @@
 CAUTION: Following this guide does not cover data migration from _JRobin_ to _RRDTool_.
 
 CAUTION: To install _jrrd2_ enable the OpenNMS YUM repository ensure the repositories are enabled.
-         You can enable them with `yum-config-manager --enable opennms-repo-stable-common,opennms-repo-stable-rhel7`.
-
-NOTE: A more current version of _RRDTool_ is in the _OpenNMS_ YUM repository.
-      The provided versions can be shown with `yum info rrdtool`.
-      This guide uses the _RRDTool_ provided in the _OpenNMS_ repository.
-      When using the _CentOS_ provided _RRDTool_ package verify the path to the _rrdtool_ binary file.
+         You can enable them with `dnf config-manager --enable opennms-repo-stable-*`.
 
 :!sectnums:
 
@@ -18,7 +13,7 @@ NOTE: A more current version of _RRDTool_ is in the _OpenNMS_ YUM repository.
 .Installation on RHEL
 [source, shell]
 ----
-yum -y install rrdtool jrrd2
+dnf -y install rrdtool jrrd2
 ----
 
 ==== Step 2: Configure {opennms-product-name} to use RRDTool

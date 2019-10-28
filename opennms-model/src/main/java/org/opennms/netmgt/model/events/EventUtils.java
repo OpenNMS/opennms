@@ -36,14 +36,20 @@ import static org.opennms.netmgt.events.api.EventConstants.NODE_CATEGORY_MEMBERS
 import static org.opennms.netmgt.events.api.EventConstants.NODE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_UPDATED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_IP_HOSTNAME;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_CURRENT_LOCATION;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL_SOURCE;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_PREV_LOCATION;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSDESCRIPTION;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSNAME;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_RESCAN_EXISTING;
 import static org.opennms.netmgt.events.api.EventConstants.SERVICE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
+import static org.opennms.netmgt.events.api.EventConstants.APPLICATION_DELETED_EVENT_UEI;
 
 import java.net.InetAddress;
 import java.util.Collection;
@@ -239,6 +245,26 @@ public abstract class EventUtils {
         return bldr.getEvent();
     }
 
+    /**
+     * Constructs a applicationDeleted Event for a given application id and name
+     * @param source
+     *              the source of the event
+     * @param applicationId
+     *              the id of the deleted application
+     * @param applicationName
+     *              the name of the deleted application
+     * @return an Event that represents the applicationDeleted event for the given id and name
+     */
+    public static Event createApplicationDeletedEvent(String source, int applicationId, String applicationName) {
+        debug("createApplicationDeletedEvent for nodeid:  %d", applicationId);
+
+        final EventBuilder bldr = new EventBuilder(APPLICATION_DELETED_EVENT_UEI, source);
+        bldr.addParam(PARM_APPLICATION_ID, applicationId);
+        bldr.addParam(PARM_APPLICATION_NAME, applicationName);
+
+        return bldr.getEvent();
+    }
+
 
     /**
      * Retrieve the value associated with an event parameter and parse it to a
@@ -362,6 +388,26 @@ public abstract class EventUtils {
         if (rescanExisting != null) {
             bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
         }
+        return bldr.getEvent();
+    }
+
+    /**
+     * <p>createNodeLocationChangedEvent</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param prevLocation a {@link java.lang.String} object.
+     * @param currentLocation a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    public static Event createNodeLocationChangedEvent(String source, Integer nodeId, String nodeLabel, String prevLocation, String currentLocation) {
+        debug("createNodeLocationChangedEvent: nodedId: %d", nodeId);
+        EventBuilder bldr = new EventBuilder(NODE_LOCATION_CHANGED_EVENT_UEI, source);
+        bldr.setNodeid(nodeId);
+        bldr.addParam(PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(PARM_NODE_PREV_LOCATION, prevLocation);
+        bldr.addParam(PARM_NODE_CURRENT_LOCATION, currentLocation);
         return bldr.getEvent();
     }
 

@@ -55,6 +55,7 @@ function usage()
     tell "\t-x <description> : the description of the package"
     tell "\t-b <branch> : the name of the branch"
     tell "\t-c <commit> : the commit revision hash from git"
+    tell "\t-S <specfile> : the path to the rpm specification file"
     tell "\t-M <major> : default 0 (0 means a snapshot release)"
     tell "\t-m <minor> : default <datestamp> (ignored unless major is 0)"
     tell "\t-u <micro> : default 1 (ignore unless major is 0)"
@@ -157,7 +158,7 @@ function main()
     local RELEASE_MICRO=1
 
 
-    while getopts adhrs:g:n:x:M:m:u:b:c: OPT; do
+    while getopts adhrs:g:n:x:M:m:u:b:c:S: OPT; do
         case $OPT in
             a)  ASSEMBLY_ONLY=true
                 ;;
@@ -184,6 +185,8 @@ function main()
                 ;;
             c)  COMMIT="$OPTARG"
                 ;;
+            S)  SPECS="$OPTARG"
+                ;;
             *)  usage
                 ;;
         esac
@@ -199,10 +202,22 @@ function main()
     VERSION=$(version)
 
     if $BUILD_RPM; then
+        if [ "$SPECS" == "" ]; then
+            SPECS="tools/packages/opennms/opennms.spec tools/packages/minion/minion.spec tools/packages/sentinel/sentinel.spec"
+        else
+            for spec in $SPECS
+            do
+                if [ ! -f "$spec" ]; then
+                    die "Spec not found: $spec"
+                fi
+            done
+        fi
+
         echo "==== Building OpenNMS RPMs ===="
         echo
         echo "Version: " $VERSION
         echo "Release: " $RELEASE
+        echo "Specs  : " $SPECS
         echo
 
         echo "=== Creating Working Directories ==="
@@ -211,13 +226,14 @@ function main()
 
         echo "=== Copying Source to Source Directory ==="
         run rsync -aqr --exclude=.git --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE/"
+        if $ASSEMBLY_ONLY; then
+            # Include any existing target/ directory from the core/web-assets project so that webpack does not need to run again
+            run rsync -aqr --delete --delete-excluded "$TOPDIR/core/web-assets/" "$WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE/core/web-assets/"
+        fi
 
         echo "=== Creating a tar.gz Archive of the Source in $WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE ==="
         run tar zcf "$WORKDIR/SOURCES/${PACKAGE_NAME}-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "${PACKAGE_NAME}-$VERSION-$RELEASE"
 
-        SPECS="tools/packages/opennms/opennms.spec tools/packages/minion/minion.spec tools/packages/sentinel/sentinel.spec"
-
-        #SPECS="tools/packages/sentinel/sentinel.spec"
         echo "=== Building RPMs ==="
         for spec in $SPECS
         do

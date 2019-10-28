@@ -1,4 +1,5 @@
 org.opennms.netmgt.poller.monitors.AvailabilityMonitor
+org.opennms.netmgt.poller.monitors.ActiveMQMonitor
 org.opennms.netmgt.poller.monitors.BgpSessionMonitor
 org.opennms.netmgt.poller.monitors.BSFMonitor
 org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor

@@ -1,0 +1,24 @@
+<span ng-if="reports.length == 0">No Data available</span>
+
+<div class="row">
+    <div class="col-5">
+        <div class="mx-2 my-2" style="height: calc(100vh - 109px); overflow: scroll">
+            <div class="list-group list-group-flush" ng-if="reports.length > 0">
+                <a ng-repeat="report in reports"
+                   ui-sref-active="active"
+                   ui-sref="report.templates.details({'id': report.id, 'online': report.online})"
+                   class="list-group-item list-group-item-action">
+                    <h5 class="">{{report.name}}</h5>
+                    <div class="text-muted">
+                        {{report.description}}
+                        <span class="badge badge-secondary pull-right" ng-if="!report.online" title="Can only deliver or schedule Report">
+                            no adhoc
+                        </span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-7" ui-view>
+    </div>
+</div>

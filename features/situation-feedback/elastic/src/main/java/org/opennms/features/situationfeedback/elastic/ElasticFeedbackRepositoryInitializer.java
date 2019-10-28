@@ -27,10 +27,10 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.elastic;
 
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateInitializer;
-import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
-import org.opennms.plugins.elasticsearch.rest.template.MergingTemplateLoader;
+import org.opennms.features.jest.client.template.DefaultTemplateInitializer;
+import org.opennms.features.jest.client.template.DefaultTemplateLoader;
+import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.features.jest.client.template.MergingTemplateLoader;
 import org.osgi.framework.BundleContext;
 
 import io.searchbox.client.JestClient;
@@ -46,11 +46,13 @@ public class ElasticFeedbackRepositoryInitializer extends DefaultTemplateInitial
     }
 
     protected ElasticFeedbackRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
-        super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings));
+        super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
     }
 
     protected ElasticFeedbackRepositoryInitializer(JestClient client) {
-        super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new DefaultTemplateLoader());
+        super(client, TEMPLATE_RESOURCE, FEEDBACK_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
+
+
 
 }

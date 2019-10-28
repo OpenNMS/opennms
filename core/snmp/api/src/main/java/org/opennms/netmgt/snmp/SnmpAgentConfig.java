@@ -55,6 +55,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     private InetAddress m_address;
     private InetAddress m_proxyFor;
+    private String profileLabel;
+    private boolean isDefault = true;
 
     public SnmpAgentConfig() {
         this(null);
@@ -164,6 +166,24 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         return m_proxyFor;
     }
 
+    @XmlTransient
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    @XmlTransient
+    public String getProfileLabel() {
+        return profileLabel;
+    }
+
+    public void setProfileLabel(String profileLabel) {
+        this.profileLabel = profileLabel;
+    }
+
     @Override
     public int hashCode() {
         int hash = Objects.hash(getAddress(),
@@ -218,6 +238,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                     && Objects.equals(getAuthProtocol(), other.getAuthProtocol())
                     && Objects.equals(getPrivPassPhrase(), other.getPrivPassPhrase())
                     && Objects.equals(getPrivProtocol(), other.getPrivProtocol())
+                    && Objects.equals(getContextName(), other.getContextName())
                     && Objects.equals(getEngineId(), other.getEngineId())
                     && Objects.equals(getContextEngineId(), other.getContextEngineId())
                     && Objects.equals(getEnterpriseId(), other.getEnterpriseId())

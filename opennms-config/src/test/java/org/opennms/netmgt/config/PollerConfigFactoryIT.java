@@ -142,7 +142,7 @@ public class PollerConfigFactoryIT extends TestCase {
         @Override
         public void update() throws IOException {
             m_config = JaxbUtils.unmarshal(PollerConfiguration.class, m_xml);
-            setUpInternalData();
+            super.update();
         }
 
         @Override

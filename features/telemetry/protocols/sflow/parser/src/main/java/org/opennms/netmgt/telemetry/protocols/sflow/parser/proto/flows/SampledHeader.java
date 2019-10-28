@@ -34,7 +34,9 @@ import java.util.Optional;
 import org.bson.BsonBinary;
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.EthernetHeader;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.Inet4Header;
@@ -149,7 +151,7 @@ public class SampledHeader implements FlowData {
     }
 
     @Override
-    public void writeBson(final BsonWriter bsonWriter) {
+    public void writeBson(final BsonWriter bsonWriter, final SampleDatagramEnrichment enr) {
         bsonWriter.writeStartDocument();
         bsonWriter.writeName("protocol");
         this.protocol.writeBson(bsonWriter);
@@ -158,17 +160,17 @@ public class SampledHeader implements FlowData {
 
         if (this.ethernetHeader != null) {
             bsonWriter.writeName("ethernet");
-            this.ethernetHeader.writeBson(bsonWriter);
+            this.ethernetHeader.writeBson(bsonWriter, enr);
         }
 
         if (this.inet4Header != null) {
             bsonWriter.writeName("ipv4");
-            this.inet4Header.writeBson(bsonWriter);
+            this.inet4Header.writeBson(bsonWriter, enr);
         }
 
         if (this.inet6Header != null) {
             bsonWriter.writeName("ipv6");
-            this.inet6Header.writeBson(bsonWriter);
+            this.inet6Header.writeBson(bsonWriter, enr);
         }
 
         if (this.rawHeader != null) {
@@ -176,5 +178,16 @@ public class SampledHeader implements FlowData {
         }
 
         bsonWriter.writeEndDocument();
+    }
+
+    @Override
+    public void visit(SampleDatagramVisitor visitor) {
+        visitor.accept(this);
+        if (this.inet4Header != null) {
+            inet4Header.visit(visitor);
+        }
+        if (this.inet6Header != null) {
+            inet6Header.visit(visitor);
+        }
     }
 }

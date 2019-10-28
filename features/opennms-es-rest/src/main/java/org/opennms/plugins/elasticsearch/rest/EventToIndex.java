@@ -32,16 +32,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
@@ -50,17 +47,20 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.opennms.netmgt.events.api.EventParameterUtils;
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
+import org.opennms.features.jest.client.bulk.BulkException;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import io.searchbox.action.BulkableAction;
 import io.searchbox.client.JestClient;
@@ -69,14 +69,12 @@ import io.searchbox.core.BulkResult;
 import io.searchbox.core.BulkResult.BulkResultItem;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Index;
-import io.searchbox.core.Update;
 
 public class EventToIndex implements AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EventToIndex.class);
 
-	private static final String INDEX_PREFIX = "opennms-events-raw";
-	private static final String INDEX_TYPE = "eventdata";
+	private static final String INDEX_NAME = "opennms-events-raw";
 
 	private static final String NODE_LABEL_PARAM="nodelabel";
 
@@ -98,18 +96,14 @@ public class EventToIndex implements AutoCloseable {
 
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
 
+	private IndexSettings indexSettings = new IndexSettings();
+
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 			threads,
 			threads,
 			0L, TimeUnit.MILLISECONDS,
 			new SynchronousQueue<>(true),
-			new ThreadFactory() {
-				final AtomicInteger index = new AtomicInteger();
-				@Override
-				public Thread newThread(Runnable r) {
-					return new Thread(r, EventToIndex.class.getSimpleName() + "-Thread-" + String.valueOf(index.incrementAndGet()));
-				}
-			},
+			new ThreadFactoryBuilder().setNameFormat(EventToIndex.class.getSimpleName() + "-Thread-%d").build(),
 			// Throttle incoming tasks by running them on the caller thread
 			new ThreadPoolExecutor.CallerRunsPolicy()
 	);
@@ -166,6 +160,9 @@ public class EventToIndex implements AutoCloseable {
 				.thenAcceptAsync(this::sendEvents, executor)
 				.exceptionally(e -> {
 					LOG.error("Unexpected exception during task completion: " + e.getMessage(), e);
+					if (e.getCause() instanceof ConnectionPoolShutdownException) {
+						ExceptionUtils.handle(getClass(), (ConnectionPoolShutdownException) e.getCause(), events);
+					}
 					return null;
 				});
 	}
@@ -293,20 +290,18 @@ public class EventToIndex implements AutoCloseable {
 			}
 		}
 
-		String completeIndexName = indexStrategy.getIndex(INDEX_PREFIX, cal.toInstant());
+		String completeIndexName = indexStrategy.getIndex(indexSettings, INDEX_NAME, cal.toInstant());
 
 		if (LOG.isDebugEnabled()){
 			String str = "populateEventIndexBodyFromEvent - index:"
 					+ "/"+completeIndexName
-					+ "/"+INDEX_TYPE
 					+ "/"+id
 					+ "\n   body: \n" + body.toJSONString();
 			LOG.debug(str);
 		}
 
 		Index.Builder builder = new Index.Builder(body)
-				.index(completeIndexName)
-				.type(INDEX_TYPE);
+				.index(completeIndexName);
 
 		// NMS-9015: If the event is a database event, set the ID of the
 		// document to the event's database ID. Otherwise, allow ES to
@@ -380,6 +375,14 @@ public class EventToIndex implements AutoCloseable {
 				nodeCache.refreshEntry(event.getNodeid());
 			}
 		}
+	}
+
+	public IndexSettings getIndexSettings() {
+		return indexSettings;
+	}
+
+	public void setIndexSettings(IndexSettings indexSettings) {
+		this.indexSettings = Objects.requireNonNull(indexSettings);
 	}
 
 	private static final void logEsError(String operation, String index, String type, String result, int responseCode, String errorMessage) {

@@ -28,6 +28,12 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.adapter;
 
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.first;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getArray;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getDocument;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.get;
+
 import java.util.List;
 
 import org.bson.BsonDocument;
@@ -39,19 +45,30 @@ import com.google.common.collect.Lists;
 
 public class SFlowConverter implements Converter<BsonDocument> {
 
+    private static RuntimeException invalidDocument() {
+        throw new RuntimeException("Invalid Document");
+    }
+
     @Override
     public List<Flow> convert(final BsonDocument packet) {
         final List<Flow> result = Lists.newLinkedList();
 
         final SFlow.Header header = new SFlow.Header(packet);
 
-        for (final BsonValue sample : packet.getDocument("data").getArray("samples")) {
+        for (final BsonValue sample : getArray(packet, "data", "samples").orElseThrow(SFlowConverter::invalidDocument)) {
             final BsonDocument sampleDocument = sample.asDocument();
 
-            if ("0:1".equals(sampleDocument.get("format").asString().getValue()) ||
-                "0:3".equals(sampleDocument.get("format").asString().getValue())) {
+            final String format = getString(sampleDocument, "format").orElseThrow(SFlowConverter::invalidDocument);
+            if ("0:1".equals(format) || "0:3".equals(format)) {
                 // Handle only (expanded) flow samples
-                result.add(new SFlow(header, sampleDocument.get("data").asDocument()));
+
+                if (first(get(sampleDocument, "data", "flows", "0:1", "ipv4"),
+                           get(sampleDocument, "data", "flows", "0:1", "ipv6"),
+                           get(sampleDocument, "data", "flows", "0:3"),
+                           get(sampleDocument, "data", "flows", "0:4")).isPresent()) {
+                    // Handle only flows containing IP related records
+                    result.add(new SFlow(header, getDocument(sampleDocument, "data").orElseThrow(SFlowConverter::invalidDocument)));
+                }
             }
         }
 

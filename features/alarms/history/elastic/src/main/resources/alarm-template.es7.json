@@ -1,0 +1,292 @@
+{
+  "aliases": {},
+  "index_patterns": "opennms-alarms-*",
+  "mappings": {
+    "dynamic_templates": [],
+    "properties": {
+      "@deleted_time": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "@first_event_time": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "@last_event_time": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "@update_time": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "@version": {
+        "type": "keyword"
+      },
+      "ack_time": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "ack_user": {
+        "type": "text"
+      },
+      "application_dn": {
+        "type": "keyword"
+      },
+      "archived": {
+        "type": "boolean"
+      },
+      "archived_time": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "attributes": {
+        "dynamic": true,
+        "type": "object"
+      },
+      "clear_key": {
+        "type": "keyword"
+      },
+      "counter": {
+        "type": "integer"
+      },
+      "description": {
+        "type": "text"
+      },
+      "dist_poller": {
+        "dynamic": true,
+        "properties": {
+          "id": {
+            "type": "keyword"
+          },
+          "label": {
+            "type": "text"
+          },
+          "location": {
+            "type": "text"
+          }
+        },
+        "type": "object"
+      },
+      "first_automation_time": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "id": {
+        "type": "integer"
+      },
+      "if_index": {
+        "type": "integer"
+      },
+      "ip_address": {
+        "type": "ip"
+      },
+      "journal_memo": {
+        "dynamic": true,
+        "properties": {
+          "author": {
+            "type": "text"
+          },
+          "body": {
+            "type": "text"
+          },
+          "update_time": {
+            "format": "epoch_millis",
+            "type": "date"
+          }
+        },
+        "type": "object"
+      },
+      "last_automation_time": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "last_event": {
+        "dynamic": true,
+        "properties": {
+          "description": {
+            "type": "text"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "log_message": {
+            "type": "text"
+          },
+          "uei": {
+            "type": "text"
+          }
+        },
+        "type": "object"
+      },
+      "log_message": {
+        "type": "text"
+      },
+      "managed_object_instance": {
+        "type": "keyword"
+      },
+      "managed_object_type": {
+        "type": "keyword"
+      },
+      "mouse_over_text": {
+        "type": "text"
+      },
+      "node": {
+        "dynamic": true,
+        "properties": {
+          "categories": {
+            "type": "text"
+          },
+          "foreign_id": {
+            "type": "text"
+          },
+          "foreign_source": {
+            "type": "text"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "label": {
+            "type": "text"
+          }
+        },
+        "type": "object"
+      },
+      "operator_instructions": {
+        "type": "text"
+      },
+      "oss_primary_key": {
+        "type": "keyword"
+      },
+      "part_of_situation": {
+        "type": "boolean"
+      },
+      "qos_alarm_state": {
+        "type": "keyword"
+      },
+      "reduction_key": {
+        "type": "keyword"
+      },
+      "related_alarm_count": {
+        "type": "integer"
+      },
+      "related_alarm_ids": {
+        "type": "integer"
+      },
+      "related_alarm_reduction_keys": {
+        "type": "keyword"
+      },
+      "related_alarms": {
+        "dynamic": true,
+        "properties": {
+          "first_event_time": {
+            "format": "epoch_millis",
+            "type": "date"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "last_event": {
+            "dynamic": true,
+            "properties": {
+              "description": {
+                "type": "text"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "log_message": {
+                "type": "text"
+              },
+              "uei": {
+                "type": "text"
+              }
+            },
+            "type": "object"
+          },
+          "last_event_time": {
+            "format": "epoch_millis",
+            "type": "date"
+          },
+          "managed_object_instance": {
+            "type": "keyword"
+          },
+          "managed_object_type": {
+            "type": "keyword"
+          },
+          "reduction_key": {
+            "type": "keyword"
+          },
+          "severity_id": {
+            "type": "integer"
+          },
+          "severity_label": {
+            "type": "keyword"
+          }
+        },
+        "type": "object"
+      },
+      "service_name": {
+        "type": "keyword"
+      },
+      "service_type": {
+        "type": "keyword"
+      },
+      "severity_id": {
+        "type": "integer"
+      },
+      "severity_label": {
+        "type": "keyword"
+      },
+      "situation": {
+        "type": "boolean"
+      },
+      "sticky_memo": {
+        "dynamic": true,
+        "properties": {
+          "author": {
+            "type": "text"
+          },
+          "body": {
+            "type": "text"
+          },
+          "update_time": {
+            "format": "epoch_millis",
+            "type": "date"
+          }
+        },
+        "type": "object"
+      },
+      "suppressed_time": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "suppressed_until": {
+        "format": "epoch_millis",
+        "type": "date"
+      },
+      "suppressed_user": {
+        "type": "keyword"
+      },
+      "ticket_id": {
+        "type": "keyword"
+      },
+      "ticket_state_id": {
+        "type": "integer"
+      },
+      "ticket_state_name": {
+        "type": "keyword"
+      },
+      "type": {
+        "type": "integer"
+      },
+      "x733_alarm_type": {
+        "type": "keyword"
+      },
+      "x733_probable_cause": {
+        "type": "integer"
+      }
+    }
+  },
+  "order": 1
+}
