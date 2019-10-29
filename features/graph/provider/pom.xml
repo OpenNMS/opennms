@@ -15,7 +15,6 @@
     <modules>
         <module>application</module>
         <module>bsm</module>
-        <module>dummy</module>
         <module>graphml</module>
         <module>legacy</module>
     </modules>

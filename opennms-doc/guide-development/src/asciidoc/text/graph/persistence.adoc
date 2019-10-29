@@ -1,0 +1,52 @@
+// Allow image rendering
+:imagesdir: ../../images
+
+=== Examples
+
+==== Persistence
+
+The _Graph Service API_ allows to persist graphs to the database.
+For persistence the class `GraphRepository` in  is responsible.
+
+The following example shows how to use persistence when implementing a `GraphProvider`.
+
+[source,java]
+----
+public class PersistenceGraphContainerProvider implements GraphContainerProvider {
+
+    private static final String CONTAINER_ID = "persistence-example";
+    private final GraphRepository graphRepository;
+
+    public PersistentDummyGraphContainerProvider(GraphRepository graphRepository) {
+        this.graphRepository = Objects.requireNonNull(graphRepository);
+    }
+
+    @Override
+    public ImmutableGraphContainer loadGraphContainer() {
+        return graphRepository.findContainerById(CONTAINER_ID);
+    }
+
+    @Override
+    public GraphContainerInfo getContainerInfo() {
+        return graphRepository.findContainerInfoById(CONTAINER_ID);
+    }
+
+    public void init() {
+        // This ensures that the container info is already present, even if nothing was persisted yet
+        this.graphRepository.save(createContainerInfo());
+    }
+
+    protected static GraphContainerInfo createContainerInfo() {
+        final DefaultGraphContainerInfo info = new DefaultGraphContainerInfo(CONTAINER_ID);
+        info.setDescription("Example container which uses the GraphRepository for persistence");
+        info.setLabel("Example Persistence Graph Container");
+
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(CONTAINER_ID + ".graph", SimpleVertex.class);
+        graphInfo.setDescription("The only graph of the container");
+        graphInfo.setLabel("Graph");
+        info.getGraphInfos().add(graphInfo);
+
+        return info;
+    }
+}
+----
