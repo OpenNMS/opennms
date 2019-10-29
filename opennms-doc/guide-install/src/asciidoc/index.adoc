@@ -113,6 +113,12 @@ endif::opennms-prime[]
 :sectnums:
 
 // Alternate ways of doing it
+include::text/minion-custom-messaging-system/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-horizon.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-minion.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/tuning-kafka.adoc[]
+
 include::text/install-opennms-versions.adoc[]
 include::text/minion-config-file.adoc[]
 include::text/run-in-non-root.adoc[]
