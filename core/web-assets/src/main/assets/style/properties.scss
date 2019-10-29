@@ -1,6 +1,6 @@
 //colors
 $color_horizon:                     #4c9d29;
-$color_meridian:                    #227cb8;
+$color_meridian:                    #2173B2;
 $link_color:                        #265A87;
 
 $font-size-base:  0.875rem;
@@ -20,6 +20,12 @@ $theme-colors: (
     // are no longer available with bootstrap 4.
     // Here default is defined the same as "light".
     "default":                      #f8f9fa,
+
+
+    // The primary and meridian color are pretty similar.
+    // It looks weird to have a slightly different blue,
+    // so for primary $color_meridian is used as well
+    "primary":                      $color_meridian
 
     // Additional colors may be added here, e.g. "severity-normal"
     // to allow alerts, badges, buttons, etc to be colored accordingly
