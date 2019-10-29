@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -113,7 +113,7 @@ public class ScriptPolicyTest {
         p.setNodeDao(mockNodeDao);
         p.setSessionUtils(new MockSessionUtils());
 
-        node1 = p.apply(node1, new HashMap<>());
+        node1 = p.apply(node1, Collections.emptyMap());
 
         // check that the data of the first node is altered
         assertEquals(PrimaryType.NOT_ELIGIBLE, node1.getIpInterfaceByIpAddress("172.16.0.1").getIsSnmpPrimary());
@@ -121,7 +121,7 @@ public class ScriptPolicyTest {
         assertEquals(PrimaryType.PRIMARY, node1.getIpInterfaceByIpAddress("192.168.0.10").getIsSnmpPrimary());
         assertEquals("custom-location", node1.getLocation().getLocationName());
 
-        node2 = p.apply(node2, new HashMap<>());
+        node2 = p.apply(node2, Collections.emptyMap());
 
         // check that the second node is not modified
         assertEquals(PrimaryType.PRIMARY, node2.getIpInterfaceByIpAddress("172.16.0.1").getIsSnmpPrimary());
@@ -174,7 +174,7 @@ public class ScriptPolicyTest {
         createScriptFile(scriptFile, 1, false);
 
         // first run, it should compile and results in a "Test #1" node label
-        node1 = p.apply(node1, new HashMap<>());
+        node1 = p.apply(node1, Collections.emptyMap());
         assertEquals("Test #1", node1.getLabel());
         Thread.sleep(500);
 
@@ -182,7 +182,7 @@ public class ScriptPolicyTest {
         createScriptFile(scriptFile, 2, true);
 
         // second run with an unmodified lastModified, it should not compile and should still results in a "Test #1" node label
-        node1 = p.apply(node1, new HashMap<>());
+        node1 = p.apply(node1, Collections.emptyMap());
         assertEquals("Test #1", node1.getLabel());
         Thread.sleep(500);
 
@@ -190,7 +190,7 @@ public class ScriptPolicyTest {
         createScriptFile(scriptFile, 3, false);
 
         // third run with a modified lastModified, it should compile and result in a "Test #3" node label
-        node1 = p.apply(node1, new HashMap<>());
+        node1 = p.apply(node1, Collections.emptyMap());
         assertEquals("Test #3", node1.getLabel());
     }
 

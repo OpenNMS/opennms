@@ -159,7 +159,7 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
         } catch (IOException e) {
             LOG.warn("Error while opening script file {}.", m_script, e);
         } catch (Exception e) {
-            LOG.warn("Unkown Error while applying script.", e);
+            LOG.warn("Unkown error while applying script.", e);
         }
 
         return node;
@@ -287,10 +287,10 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
     }
 
     public void setNodeDao(NodeDao nodeDao) {
-        this.m_nodeDao = nodeDao;
+        m_nodeDao = nodeDao;
     }
 
     public void setSessionUtils(SessionUtils sessionUtils) {
-        this.m_sessionUtils = sessionUtils;
+        m_sessionUtils = sessionUtils;
     }
 }

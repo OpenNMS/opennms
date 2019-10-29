@@ -26,12 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 import org.opennms.core.utils.ByteArrayComparator
 import org.opennms.core.utils.InetAddressUtils
 import org.opennms.netmgt.model.OnmsAssetRecord
 import org.opennms.netmgt.model.OnmsIpInterface
-import org.opennms.netmgt.model.OnmsSnmpInterface
 import org.opennms.netmgt.model.PrimaryType
 
 import java.util.stream.Collectors
@@ -40,7 +38,7 @@ import java.util.stream.Collectors
 // Not in transaction indicates that the node is in initial stage of scanning phase and  may not be persisted yet.
 // Only use this to add assets/metadata or return invalid node (returning null) to abort the scan.
 
-if(!transaction) {
+if (!transaction) {
     LOG.debug("customscript: not in transaction");
     OnmsAssetRecord assetRecord = new OnmsAssetRecord();
     assetRecord.setAssetNumber("12345");
@@ -52,20 +50,17 @@ if(!transaction) {
 
 // Example script for modifying the primary interface
 
-List<String> interfaceNames = Arrays.asList("Lo0","lo0","lo0.0","loopback0","Lo222","Lo201"
-        ,"mgt0","mgmt0","mgmt","primary","bond0","eth0","Vl103","management");
+List<String> interfaceNames = Arrays.asList("Lo0", "lo0", "lo0.0", "loopback0", "Lo222", "Lo201"
+        , "mgt0", "mgmt0", "mgmt", "primary", "bond0", "eth0", "Vl103", "management");
 
 List<OnmsIpInterface> interfacesWithSNMP = node.getInterfacesWithService("SNMP");
 
 LOG.debug("customscript : Interfaces with SNMP service {}", interfacesWithSNMP);
 
-List<OnmsSnmpInterface> snmpInterfaces = interfacesWithSNMP.stream()
-        .filter({iface -> iface.getSnmpInterface() != null})
-        .map({iface -> iface.getSnmpInterface()}).collect(Collectors.toList());
-
-List<String> ifNames = snmpInterfaces.stream()
-        .filter({snmpInterface -> snmpInterface.getIfName() != null})
-        .map({snmpInterface -> snmpInterface.getIfName()}).collect(Collectors.toList());
+List<String> ifNames = interfacesWithSNMP.stream()
+        .filter({ ipInterface -> ipInterface.getSnmpInterface() != null })
+        .map({ iface -> iface.getSnmpInterface().getIfName() })
+        .collect(Collectors.toList());
 
 LOG.debug("customscript : ifNames  {}", ifNames);
 
@@ -74,52 +69,49 @@ String matchedIfName = interfaceNames.stream()
         .findFirst()
         .orElse(null);
 
-OnmsIpInterface ipInterface = null;
+OnmsIpInterface matchedIpInterface = null;
 
 if (matchedIfName == null) {
     // Find lowest IP Address as there is no match in if names.
-    List<byte[]> ipAddressesInBytes = interfacesWithSNMP.stream().map({ onmsIpInterface -> onmsIpInterface.getIpAddress().getAddress() }).collect(Collectors.toList());
-    byte[] lowestNumberedIp = Collections.min(ipAddressesInBytes, new ByteArrayComparator());
-    ipInterface = interfacesWithSNMP.stream()
-            .filter({ onmsIpInterface -> Arrays.equals(onmsIpInterface.getIpAddress().getAddress(), lowestNumberedIp) })
-            .findFirst().orElse(null);
-    if (ipInterface != null) {
-        LOG.debug("customscript : lowest numbered ipAddress = {}", ipInterface.getIpAddress());
+    matchedIpInterface = interfacesWithSNMP.stream()
+            .min(Comparator.comparing({ onmsIpInterface -> onmsIpInterface.getIpAddress().getAddress() }, new ByteArrayComparator())).get();
+    if (matchedIpInterface != null) {
+        LOG.debug("customscript : lowest numbered ipAddress = {}", matchedIpInterface.getIpAddress());
     }
 
 } else {
     LOG.debug("customscript : Found a match for ifName = {}", matchedIfName);
 
-    OnmsSnmpInterface result = snmpInterfaces.stream()
-            .filter({ snmpInterface -> snmpInterface.getIfName().equals(matchedIfName) })
-            .findFirst().orElse(null);
+    matchedIpInterface = interfacesWithSNMP.stream()
+            .filter({ ipInterface ->
+                 if(ipInterface.getSnmpInterface() != null) {
+                     return ipInterface.getSnmpInterface().getIfName().equals(matchedIfName);
+                 }
+                 return false;
+             })
+            .findFirst()
+            .orElse(null);
 
-    if (result != null) {
-        ipInterface = interfacesWithSNMP.stream()
-                .filter({ iface -> iface.getSnmpInterface().equals(result) })
-                .findFirst()
-                .orElse(null);
-    }
 }
 
-if (ipInterface != null) {
+if (matchedIpInterface != null) {
 
-    LOG.debug("customscript : Setting {} as primary on node {}", ipInterface.getIpAddress(), node.getId());
+    LOG.debug("customscript : Setting {} as primary on node {}", matchedIpInterface.getIpAddress(), node.getId());
 
-    ipInterface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+    matchedIpInterface.setIsSnmpPrimary(PrimaryType.PRIMARY);
 
-    interfacesWithSNMP.stream().filter({ iface -> !iface.equals(ipInterface) }).forEach({ iface ->
+    interfacesWithSNMP.stream().filter({ iface -> !iface.equals(matchedIpInterface) }).forEach({ iface ->
         iface.setIsSnmpPrimary(PrimaryType.SECONDARY);
         LOG.debug("customscript : Setting {} as secondary on node {}", iface.getIpAddress(), node.getId());
     });
 
     // If IpHostName on the interface is IP Address itself, set sysname as node label.
-    if (InetAddressUtils.str(ipInterface.getIpAddress()).equals(ipInterface.getIpHostName()) && node.getSysName() != null) {
+    if (InetAddressUtils.str(matchedIpInterface.getIpAddress()).equals(matchedIpInterface.getIpHostName()) && node.getSysName() != null) {
         LOG.debug("customscript: Setting sysname {} as node label", node.getSysName());
         node.setLabel(node.getSysName());
     } else {
-        LOG.debug("customscript: Setting {} as node label", ipInterface.getIpHostName());
-        node.setLabel(ipInterface.getIpHostName());
+        LOG.debug("customscript: Setting {} as node label", matchedIpInterface.getIpHostName());
+        node.setLabel(matchedIpInterface.getIpHostName());
     }
 
 }

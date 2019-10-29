@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -466,7 +467,7 @@ public class NodeScan implements Scan {
                         final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
                         for(final IpInterfacePolicy policy : policies) {
                             if (iface != null) {
-                                iface = policy.apply(iface, new HashMap<>());
+                                iface = policy.apply(iface, Collections.emptyMap());
                             }
                         }
 
@@ -536,7 +537,7 @@ public class NodeScan implements Scan {
                         final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
                         for(final IpInterfacePolicy policy : policies) {
                             if (iface != null) {
-                                iface = policy.apply(iface, new HashMap<>());
+                                iface = policy.apply(iface, Collections.emptyMap());
                             }
                         }
 
@@ -606,7 +607,7 @@ public class NodeScan implements Scan {
                     final List<SnmpInterfacePolicy> policies = getProvisionService().getSnmpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
                     for(final SnmpInterfacePolicy policy : policies) {
                         if (snmpIface != null) {
-                            snmpIface = policy.apply(snmpIface, new HashMap<>() );
+                            snmpIface = policy.apply(snmpIface, Collections.emptyMap());
                         }
                     }
 
@@ -701,7 +702,7 @@ public class NodeScan implements Scan {
             OnmsNode node = getNode();
             for(final NodePolicy policy : nodePolicies) {
                 if (node != null) {
-                    node = policy.apply(node, new HashMap<>());
+                    node = policy.apply(node, Collections.emptyMap());
                 }
             }
 
