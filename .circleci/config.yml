@@ -130,6 +130,7 @@ commands:
             free -m > ~/test-results/system-logs/free
             docker stats --no-stream > ~/test-results/system-logs/docker_stats
             cp -R /tmp/jvmprocmon ~/test-results/system-logs/
+            ls -alh ~/project/smoke-test/
       - run:
           name: Gather test artifacts
           when: always
