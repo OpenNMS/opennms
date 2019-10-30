@@ -1371,9 +1371,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getIpInterfaces());
         m_nodeDao.initialize(node.getLocation());
-        m_nodeDao.initialize(node.getSnmpInterfaces());
-        m_nodeDao.initialize(node.getMetaData());
-        m_nodeDao.initialize(node.getAssetRecord());
         return node;
     }
 
