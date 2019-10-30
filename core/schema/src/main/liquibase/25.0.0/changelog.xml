@@ -123,5 +123,17 @@
             WHERE classification_groups.id = t2.id
         </sql>
     </changeSet>
+    <changeSet author="patrick-schweizer" id="25.0.0-add-position-column-to-event_parameters">
+        <addColumn tableName="event_parameters">
+        <column name="position"
+                type="integer"
+                defaultValueNumeric="0" />
 
+        </addColumn>
+        <rollback>
+            <dropColumn
+                    columnName="position"
+                    tableName="event_parameters"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
