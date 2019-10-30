@@ -71,7 +71,7 @@ public class KarafStartupMonitor implements SpringServiceDaemon {
             final KarafHealthService service = SERVICE_LOOKUP.lookup(serviceClass, null);
             return service != null;
         } catch (Exception e) {
-            LOG.warn("Could not lookup {}, will fail.", serviceClass.getName(), e);
+            LOG.error("Could not lookup {}, will fail.", serviceClass.getName(), e);
             return false;
         }
     }

@@ -17,7 +17,7 @@ fi
 echo "This script will try to fix karaf configuration problems by:"
 echo "- pruning $DATA_DIR directory. This is where the Karaf cache sits."
 echo "- restore all Karaf related configuration files to a pristine state"
-echo "It might be a good idea to take a backup of $OPENNMS_HOME/etc"
+echo "We recommend making a backup of $OPENNMS_HOME/etc before proceeding."
 
 # make sure user wants to proceed
 echo "Are you ready to continue? (y/n)"
@@ -42,4 +42,4 @@ cp -p "$PRISTINE_DIR/org.apache."*".cfg" "$ETC_DIR/"
 cp -p "$PRISTINE_DIR/org.ops4j.pax."*".cfg" "$ETC_DIR/"
 cp -p "$PRISTINE_DIR/profile.cfg" "$ETC_DIR/"
 
-echo "Done. Please try again to run OpenNMS."
+echo "Done. Please try restarting OpenNMS."
