@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -41,6 +42,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
@@ -48,6 +51,7 @@ import org.opennms.netmgt.provision.annotations.Policy;
 import org.opennms.netmgt.provision.annotations.Require;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -69,6 +73,12 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
     private long m_lastCompiled = -1;
     private String m_script;
     private CompiledScript m_compiledScript;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private SessionUtils m_sessionUtils;
 
     public ScriptPolicy() {
         this(Paths.get(System.getProperty("opennms.home"), "etc", "script-policies"));
@@ -114,23 +124,53 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
      * {@inheritDoc}
      */
     @Override
-    public OnmsNode act(final OnmsNode node) {
+    public OnmsNode act(final OnmsNode node, Map<String, Object> attributes) {
         try {
             final CompiledScript compiledScript = compileScript(getScript());
-
             if (compiledScript == null) {
                 LOG.warn("No compiled script available for execution.");
             } else {
-                final SimpleBindings globals = new SimpleBindings();
-                globals.put("node", node);
-                globals.put("LOG", LOG);
-                return (OnmsNode) compiledScript.eval(globals);
+                // For the case where we can run script in transaction, at the end of scan.
+                if (attributes.size() > 0 && attributes.get(RUN_IN_TRANSACTION) != null
+                        && attributes.get(RUN_IN_TRANSACTION).equals(true)) {
+
+                    // Run script in transaction.
+                    return (OnmsNode) m_sessionUtils.withTransaction(() -> {
+                        try {
+                            // Fetch node object again from DB to make it attached.
+                            if (node.getId() != null && node.getId() > 0) {
+                                OnmsNode onmsNode = m_nodeDao.get(node.getId());
+                                return runScript(compiledScript, onmsNode, attributes);
+                            } else {
+                                LOG.warn("Unexpected node {} which is not persisted yet", node);
+                            }
+
+                        } catch (ScriptException e) {
+                            LOG.warn("Error applying ScriptPolicy.", e);
+                        }
+                        return node;
+                    });
+                } else {
+                    runScript(compiledScript, node, attributes);
+                }
             }
-        } catch (Exception ex) {
-            LOG.warn("Error applying ScriptPolicy.", ex);
+        } catch (ScriptException e) {
+            LOG.warn("Error while compiling script.", e);
+        } catch (IOException e) {
+            LOG.warn("Error while opening script file {}.", m_script, e);
+        } catch (Exception e) {
+            LOG.warn("Unkown error while applying script.", e);
         }
 
         return node;
+    }
+
+    private OnmsNode runScript(CompiledScript compiledScript, OnmsNode node, Map<String, Object> attributes) throws ScriptException {
+        final SimpleBindings globals = new SimpleBindings();
+        globals.put("LOG", LOG);
+        globals.put("node", node);
+        globals.putAll(attributes);
+        return (OnmsNode) compiledScript.eval(globals);
     }
 
     @Require(value = {})
@@ -244,5 +284,13 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
 
     public void setForeignSource(String foreignSource) {
         putCriteria("foreignSource", foreignSource);
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        m_sessionUtils = sessionUtils;
     }
 }

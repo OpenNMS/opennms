@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.service;
 
+import java.util.Map;
+
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 
@@ -39,7 +41,7 @@ import org.opennms.netmgt.provision.IpInterfacePolicy;
 public class IpInterfacePolicyImpl implements IpInterfacePolicy {
 
     @Override
-    public OnmsIpInterface apply(OnmsIpInterface entity) {
+    public OnmsIpInterface apply(OnmsIpInterface entity, Map<String, Object> attributes) {
         return entity;
     }
 
