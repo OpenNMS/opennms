@@ -55,7 +55,7 @@ import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.PropertyEntity;
 import org.opennms.netmgt.topology.VertexEntity;
-import org.opennms.netmgt.topology.focus.FocusEntity;
+import org.opennms.netmgt.topology.FocusEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

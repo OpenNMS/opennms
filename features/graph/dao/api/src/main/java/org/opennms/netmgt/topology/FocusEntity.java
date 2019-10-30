@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topology.focus;
+package org.opennms.netmgt.topology;
 
 import java.util.List;
 import java.util.Objects;

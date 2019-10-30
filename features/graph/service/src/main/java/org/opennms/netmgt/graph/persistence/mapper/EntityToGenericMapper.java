@@ -42,7 +42,7 @@ import org.opennms.netmgt.graph.persistence.converter.ConverterService;
 import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.PropertyEntity;
-import org.opennms.netmgt.topology.focus.FocusEntity;
+import org.opennms.netmgt.topology.FocusEntity;
 
 public class EntityToGenericMapper {
 

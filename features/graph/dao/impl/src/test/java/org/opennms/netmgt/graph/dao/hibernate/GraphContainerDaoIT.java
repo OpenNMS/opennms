@@ -43,7 +43,7 @@ import org.opennms.netmgt.topology.EdgeEntity;
 import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.VertexEntity;
-import org.opennms.netmgt.topology.focus.FocusEntity;
+import org.opennms.netmgt.topology.FocusEntity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

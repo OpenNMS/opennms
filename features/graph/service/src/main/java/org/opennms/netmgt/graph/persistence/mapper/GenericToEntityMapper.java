@@ -46,7 +46,7 @@ import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.PropertyEntity;
 import org.opennms.netmgt.topology.VertexEntity;
-import org.opennms.netmgt.topology.focus.FocusEntity;
+import org.opennms.netmgt.topology.FocusEntity;
 
 // TODO MVR remove System.out.println
 public class GenericToEntityMapper {

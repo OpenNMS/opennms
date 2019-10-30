@@ -48,7 +48,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.BatchSize;
 import org.opennms.netmgt.graph.dao.api.EntityProperties;
-import org.opennms.netmgt.topology.focus.FocusEntity;
 
 @Entity
 @DiscriminatorValue("graph")
