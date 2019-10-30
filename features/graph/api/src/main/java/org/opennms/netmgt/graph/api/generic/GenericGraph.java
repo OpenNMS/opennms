@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.api.generic;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -418,7 +419,8 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
                     case FocusStrategy.SELECTION:
                         return new Focus(FocusStrategy.SELECTION, focusSelection);
                     default:
-                        throw new IllegalStateException("TODO MVR handle me");
+                        final String[] validValues = new String[]{ FocusStrategy.ALL, FocusStrategy.EMPTY, FocusStrategy.FIRST, FocusStrategy.SELECTION };
+                        throw new IllegalStateException("Focus Strategy '" + focusStrategy + "' not supported. Supported values are: " + Arrays.toString(validValues));
                 }
             }
 

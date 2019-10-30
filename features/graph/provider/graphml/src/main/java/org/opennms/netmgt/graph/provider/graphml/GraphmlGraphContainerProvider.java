@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -162,9 +163,14 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         }).collect(Collectors.toList());
         graphBuilder.addEdges(edges);
 
+        applyFocus(graphMLGraph, graphBuilder);
+        return graphBuilder.build();
+    }
 
+    private static void applyFocus(final GraphMLGraph graphMLGraph, final GenericGraphBuilder graphBuilder) {
         final String strategy = graphMLGraph.getProperty(FOCUS_STRATEGY);
         if (strategy == null || "empty".equalsIgnoreCase(strategy)) {
+            graphBuilder.focus().empty().apply();
         } else if ("all".equalsIgnoreCase(strategy)) {
             graphBuilder.focus().all().apply();
         } else if ("first".equalsIgnoreCase(strategy)) {
@@ -173,10 +179,9 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         } else if ("specific".equalsIgnoreCase(strategy) || "selection".equalsIgnoreCase(strategy)) {
             final List<String> focusIds = getFocusIds(graphMLGraph);
             graphBuilder.focus().selection(graphBuilder.getNamespace(), focusIds).apply();
-        } else {
-            throw new IllegalStateException("TODO MVR handle me"); // TODO MVR
         }
-        return graphBuilder.build();
+        final String[] supportedStrategies = new String[]{"empty", "all", "first", "specific"};
+        throw new IllegalStateException("Provided focus strategy '" + strategy + "' is not supported. Supported values are: " + Arrays.toString(supportedStrategies));
     }
 
     private static List<String> getFocusIds(GraphMLGraph inputGraph) {

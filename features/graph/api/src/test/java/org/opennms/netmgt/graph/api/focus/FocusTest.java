@@ -28,20 +28,35 @@
 
 package org.opennms.netmgt.graph.api.focus;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
 
 import org.junit.Test;
+import org.opennms.netmgt.graph.api.VertexRef;
+
+import com.google.common.collect.Lists;
 
 public class FocusTest {
 
     @Test
     public void verifyEquals() {
+        // Same id should match
         assertEquals(new Focus(FocusStrategy.EMPTY), new Focus(FocusStrategy.EMPTY));
         assertEquals(new Focus(FocusStrategy.ALL), new Focus(FocusStrategy.ALL));
         assertEquals(new Focus(FocusStrategy.FIRST), new Focus(FocusStrategy.FIRST));
         assertEquals(new Focus(FocusStrategy.SELECTION), new Focus(FocusStrategy.SELECTION));
 
-        // TODO MVR verify SelectiveFocus and vertexRef list in focus
+        // Different ids, but same list should not match
+        assertThat(new Focus(FocusStrategy.EMPTY, Lists.newArrayList()), not(equalTo(new Focus(FocusStrategy.SELECTION, Lists.newArrayList()))));
+
+        // Verify same lists match
+        final ArrayList<VertexRef> singleList = Lists.newArrayList(new VertexRef("dummy", "v1"));
+        final ArrayList<VertexRef> singleListCopy = Lists.newArrayList(new VertexRef("dummy", "v1"));
+        assertEquals(new Focus(FocusStrategy.SELECTION, singleList), new Focus(FocusStrategy.SELECTION, singleListCopy));
     }
 
 }

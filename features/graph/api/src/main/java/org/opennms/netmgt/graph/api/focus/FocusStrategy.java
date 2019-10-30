@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.graph.api.focus;
 
-// TODO MVR make this persistable
 public interface FocusStrategy {
     String ALL = "ALL";
     String EMPTY = "EMPTY";
