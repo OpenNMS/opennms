@@ -29,17 +29,22 @@ then
    exit 0
 fi
 
-# Prune data directory, exept for history.txt
+# Prune data directory, except for history.txt
 echo "Pruning directory $DATA_DIR"
 find "$DATA_DIR" -mindepth 1 -maxdepth 1 -not -name 'history.txt' -exec rm -r {} \;
 
 # Restore files
 PRISTINE_DIR="$OPENNMS_HOME/share/etc-pristine"
-ETC_DIR="$OPENNMS_HOME/etc"
-echo "Copying pristine config files to $ETC_DIR"
-cp -p "$PRISTINE_DIR/jmx."*".cfg" $ETC_DIR
-cp -p "$PRISTINE_DIR/org.apache."*".cfg" "$ETC_DIR/"
-cp -p "$PRISTINE_DIR/org.ops4j.pax."*".cfg" "$ETC_DIR/"
-cp -p "$PRISTINE_DIR/profile.cfg" "$ETC_DIR/"
+if [ -d "$PRISTINE_DIR" ]
+then
+    ETC_DIR="$OPENNMS_HOME/etc"
+    echo "Copying pristine config files to $ETC_DIR"
+    cp -p "$PRISTINE_DIR/jmx."*".cfg" $ETC_DIR
+    cp -p "$PRISTINE_DIR/org.apache."*".cfg" "$ETC_DIR/"
+    cp -p "$PRISTINE_DIR/org.ops4j.pax."*".cfg" "$ETC_DIR/"
+    cp -p "$PRISTINE_DIR/profile.cfg" "$ETC_DIR/"
+else
+    echo "Directory $PRISTINE_DIR does not exist. Cannot restore config files."
+fi
 
 echo "Done. Please try restarting OpenNMS."
