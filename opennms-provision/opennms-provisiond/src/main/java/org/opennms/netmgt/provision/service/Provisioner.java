@@ -40,8 +40,11 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
@@ -77,6 +80,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
@@ -104,7 +108,12 @@ public class Provisioner implements SpringServiceDaemon {
     private SnmpAgentConfigFactory m_agentConfigFactory;
     
     private volatile TimeTrackingMonitor m_stats;
-    
+
+    private final ThreadFactory newSuspectThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("newSuspectExecutor")
+            .build();
+    private ExecutorService m_newSuspectExecutor = Executors.newSingleThreadExecutor(newSuspectThreadFactory);
+
     @Autowired
     private ProvisioningAdapterManager m_manager;
 
@@ -230,6 +239,7 @@ public class Provisioner implements SpringServiceDaemon {
     public void destroy() throws Exception {
         m_importSchedule.stop();
         m_scheduledExecutor.shutdown();
+        m_newSuspectExecutor.shutdown();
     }
 
     /**
@@ -292,7 +302,7 @@ public class Provisioner implements SpringServiceDaemon {
     /**
      * <p>createForceRescanScan</p>
      *
-     * @param ipAddress a {@link java.net.InetAddress} object.
+     * @param nodeId a nodeId
      * @return a {@link org.opennms.netmgt.provision.service.ForceRescanScan} object.
      */
     public ForceRescanScan createForceRescanScan(Integer nodeId) {
@@ -651,8 +661,8 @@ public class Provisioner implements SpringServiceDaemon {
                 }
             }
         };
-
-        m_scheduledExecutor.execute(r);
+        // Run new suspect events in a single thread executor so that only one node will be scanned at a given time.
+        m_newSuspectExecutor.execute(r);
         
     }
     
