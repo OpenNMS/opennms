@@ -39,7 +39,7 @@ if [ -d "$PRISTINE_DIR" ]
 then
     ETC_DIR="$OPENNMS_HOME/etc"
     echo "Copying pristine config files to $ETC_DIR"
-    cp -p "$PRISTINE_DIR/jmx."*".cfg" $ETC_DIR
+    cp -p "$PRISTINE_DIR/jmx."*".cfg" "$ETC_DIR"
     cp -p "$PRISTINE_DIR/org.apache."*".cfg" "$ETC_DIR/"
     cp -p "$PRISTINE_DIR/org.ops4j.pax."*".cfg" "$ETC_DIR/"
     cp -p "$PRISTINE_DIR/profile.cfg" "$ETC_DIR/"
