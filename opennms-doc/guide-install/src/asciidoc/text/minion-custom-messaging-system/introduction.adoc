@@ -1,6 +1,6 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../../images
+:imagesdir: ../../images
 
 == Minion with custom messaging system
 
