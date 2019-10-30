@@ -58,8 +58,8 @@ import com.google.common.collect.Lists;
 
 public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 
-    private static final String FOCUS_STRATEGY = "focusStrategy"; // TODO MVR verify value
-    private static final String FOCUS_IDS = "focusIds"; // TODO MVR verify value
+    private static final String FOCUS_STRATEGY = "focus-strategy";
+    private static final String FOCUS_IDS = "focus-ids";
 
     private final GraphML graphML;
     private GenericGraphContainer graphContainer;
@@ -179,9 +179,10 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         } else if ("specific".equalsIgnoreCase(strategy) || "selection".equalsIgnoreCase(strategy)) {
             final List<String> focusIds = getFocusIds(graphMLGraph);
             graphBuilder.focus().selection(graphBuilder.getNamespace(), focusIds).apply();
+        } else {
+            final String[] supportedStrategies = new String[]{"empty", "all", "first", "specific"};
+            throw new IllegalStateException("Provided focus strategy '" + strategy + "' is not supported. Supported values are: " + Arrays.toString(supportedStrategies));
         }
-        final String[] supportedStrategies = new String[]{"empty", "all", "first", "specific"};
-        throw new IllegalStateException("Provided focus strategy '" + strategy + "' is not supported. Supported values are: " + Arrays.toString(supportedStrategies));
     }
 
     private static List<String> getFocusIds(GraphMLGraph inputGraph) {
