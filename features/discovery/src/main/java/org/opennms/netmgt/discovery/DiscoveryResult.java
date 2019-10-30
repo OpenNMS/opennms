@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.daemon;
+package org.opennms.netmgt.discovery;
 
-public enum DaemonReloadEnum {
+import java.net.InetAddress;
 
-    EVENTD("Eventd"),
-    NOTIFD("Notifd"),
-    POLLERD("Pollerd"),
-    SYSLOGD("syslogd"),
-    TELEMETRYD("Telemetryd"),
-    TRAPD("trapd"),
-    Discovery("Discovery");
+/**
+ * Encapsulate detection result and IP Address with ping duration.
+ */
+public class DiscoveryResult {
 
-    private String daemonName;
+    private final Boolean detectResult;
 
-    DaemonReloadEnum(String daemonName) {
-        this.daemonName = daemonName;
+    private final InetAddress address;
+
+    private final Double pingDuration;
+
+    public DiscoveryResult(Boolean detectResult, InetAddress address, Double pingDuration) {
+        this.detectResult = detectResult;
+        this.address = address;
+        this.pingDuration = pingDuration;
     }
 
-    public String getDaemonName() {
-       return this.daemonName;
+    public Boolean getDetectResult() {
+        return detectResult;
+    }
+
+    public InetAddress getAddress() {
+        return address;
+    }
+
+    public Double getPingDuration() {
+        return pingDuration;
     }
 }
