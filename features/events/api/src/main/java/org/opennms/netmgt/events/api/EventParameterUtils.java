@@ -29,8 +29,12 @@
 package org.opennms.netmgt.events.api;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -156,5 +160,21 @@ public abstract class EventParameterUtils {
 
     public static Map<String, Parm> normalize(final List<Parm> parmList) {
         return parmList.stream().collect(Collectors.toMap(Parm::getParmName, Function.identity(), (p1, p2) -> p2));
+    }
+
+    public static List<Parm> normalizePreserveOrder(final List<Parm> parmList) {
+        Objects.requireNonNull(parmList);
+        Set<String> existingNames = new HashSet<>();
+        LinkedList<Parm> filteredList = new LinkedList<>();
+        // go through the list backwards since we want to keep the last element of duplicates names
+        // (existing behaviour)
+        for(int i = parmList.size() -1 ; i >= 0; i--) {
+            Parm parm = parmList.get(i);
+            if(!existingNames.contains(parm.getParmName())){
+                filteredList.addFirst(parm);
+                existingNames.add(parm.getParmName());
+            }
+        }
+        return filteredList;
     }
 }

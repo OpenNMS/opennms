@@ -859,6 +859,7 @@ create table event_parameters (
 	name                text not null,
 	value		    text not null,
 	type		    varchar(256) not null,
+	position        integer default 0 not null,
 
 	constraint pk_eventParameters primary key (eventID, name),
 	constraint fk_eventParametersEventID foreign key (eventID) references events (eventID) ON DELETE CASCADE
