@@ -134,7 +134,7 @@
           <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
           <reuseForks>false</reuseForks>
           <!-- Configure heap and GC -->
-          <argLine>-Xms512m -Xmx512m -XX:+UseG1GC</argLine>
+          <argLine>-Xms1g -Xmx1g -XX:+UseG1GC</argLine>
         </configuration>
         <executions>
           <execution>

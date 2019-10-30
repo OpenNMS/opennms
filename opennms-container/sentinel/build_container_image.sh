@@ -22,7 +22,7 @@ done
 docker build -t meridian-sentinel \
   --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \
   --build-arg BASE_IMAGE="opennms/openjdk" \
-  --build-arg BASE_IMAGE_VERSION="11.0.4.11-b2418" \
+  --build-arg BASE_IMAGE_VERSION="11.0.4.11-b2553" \
   --build-arg VERSION="${VERSION}" \
   --build-arg SOURCE="${CIRCLE_REPOSITORY_URL}" \
   --build-arg REVISION="$(git describe --always)" \
