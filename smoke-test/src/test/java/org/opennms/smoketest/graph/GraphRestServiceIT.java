@@ -116,11 +116,13 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("graphs", Matchers.hasSize(2))
                     .content("graphs[0].id", Matchers.is("markets"))
                     .content("graphs[0].namespace", Matchers.is("acme:markets"))
+                    .content("graphs[0].defaultFocus.type", Matchers.is("ALL"))
                     .content("graphs[0].vertices", Matchers.hasSize(16))
                     .content("graphs[0].edges", Matchers.hasSize(0))
 
                     .content("graphs[1].id", Matchers.is("regions"))
                     .content("graphs[1].namespace", Matchers.is("acme:regions"))
+                    .content("graphs[1].defaultFocus.type", Matchers.is("SELECTION"))
                     .content("graphs[1].vertices", Matchers.hasSize(4))
                     .content("graphs[1].edges", Matchers.hasSize(16));
 
