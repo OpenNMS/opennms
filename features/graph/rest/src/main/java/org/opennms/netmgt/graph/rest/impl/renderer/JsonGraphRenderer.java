@@ -35,7 +35,6 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
-import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
@@ -81,7 +80,6 @@ public class JsonGraphRenderer implements GraphRenderer {
                 final JSONArray jsonVerticesArray = new JSONArray();
                 jsonGraph.put("edges", jsonEdgesArray);
                 jsonGraph.put("vertices", jsonVerticesArray);
-//                jsonGraph.put("defaultFocus", convert(graph.getDefaultFocus()));
 
                 if (graph != null) {
                     graph.asGenericGraph().getProperties().forEach((key, value) -> jsonGraph.put(key, value));
@@ -94,6 +92,13 @@ public class JsonGraphRenderer implements GraphRenderer {
                         jsonEdgesArray.put(jsonEdge);
                     });
 
+                    // Convert the focus
+                    final Focus defaultFocus = graph.getDefaultFocus();
+                    final JSONObject jsonFocus = new JSONObject();
+                    jsonFocus.put("type", defaultFocus.getId());
+                    jsonFocus.put("vertexIds", new JSONArray(defaultFocus.getVertexRefs()));
+                    jsonGraph.put("defaultFocus", jsonFocus);
+
                     // TODO MVR enrich me
                     // enrichmentService.enrich(graph.getVertices());
                     graph.getVertices().stream().forEach(vertex -> {
@@ -104,19 +109,5 @@ public class JsonGraphRenderer implements GraphRenderer {
                 jsonGraphArray.put(jsonGraph);
             });
         return jsonContainer.toString();
-    }
-
-    // TODO MVR
-    public JSONObject convert(Focus focus) {
-        final JSONObject jsonFocus = new JSONObject();
-        jsonFocus.put("id", focus.getId());
-        final JSONArray jsonVertices = new JSONArray();
-        for (VertexRef vertexRef : focus.getVertexRefs()) {
-            final JSONObject jsonVertex = new JSONObject();
-//            vertexRef.asGenericVertex().getProperties().forEach((key, value) -> jsonVertex.put(key, value));
-            jsonVertices.put(jsonVertex);
-        }
-        jsonFocus.put("vertices", jsonVertices);
-        return jsonFocus;
     }
 }

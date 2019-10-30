@@ -266,5 +266,13 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
                 .build();
             return (T) this;
         }
+
+        public GenericGraphBuilder.FocusBuilder focus() {
+            return delegate.focus();
+        }
+
+        public VertexRef getVertexRef(String vertexId) {
+            return delegate.getVertex(vertexId).getVertexRef();
+        }
     }
 }
