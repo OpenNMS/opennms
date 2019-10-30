@@ -164,7 +164,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
+    @EventHandler(uei = EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
     public void handleDiscoveryConfigurationChanged(Event event) {
         LOG.info("handleDiscoveryConfigurationChanged: handling message that a change to configuration happened...");
         reloadAndReStart();
