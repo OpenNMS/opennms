@@ -124,7 +124,7 @@ public class GraphContainerDaoIT {
 
                 // Verify focus has been persisted
                 Assert.assertNotNull(persistedGraphEntity.getDefaultFocus());
-                Assert.assertThat(persistedGraphEntity.getDefaultFocus().getType(), Matchers.is("FIRST")); // TODO MVR use constants instead
+                Assert.assertThat(persistedGraphEntity.getDefaultFocus().getType(), Matchers.is("FIRST"));
             }
             return null;
         });
@@ -224,7 +224,7 @@ public class GraphContainerDaoIT {
         graph.setNamespace(namespace);
         graph.setProperty(EntityProperties.LABEL, String.class, GRAPH_LABEL);
         graph.setProperty(EntityProperties.DESCRIPTION, String.class, GRAPH_DESCRIPTION);
-        graph.setDefaultFocus(new FocusEntity("FIRST")); // TODO MVR
+        graph.setDefaultFocus(new FocusEntity("FIRST"));
 
         final VertexEntity v1 = new VertexEntity();
         v1.setNamespace(namespace);

@@ -61,7 +61,6 @@ public class AbstractGraphEntity {
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "opennmsSequence")
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @Column(name = "id", nullable = false)
-    // TODO MVR this is not used at all :(
     private Long dbId;
 
     @Column(name = "namespace", nullable = false)

@@ -37,7 +37,6 @@ import org.opennms.netmgt.graph.api.VertexRef;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 
-// TODO MVR this is not persistable
 public class Focus {
 
     private final String id;

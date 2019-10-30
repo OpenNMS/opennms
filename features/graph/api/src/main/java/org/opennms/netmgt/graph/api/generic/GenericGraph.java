@@ -145,7 +145,6 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
 
     @Override
     public List<GenericVertex> resolveVertices(Collection<String> vertexIds) {
-        // TODO MVR what do we do with vertexIds from different namespaces?
         final List<GenericVertex> collect = vertexIds.stream().map(vid -> vertexToIdMap.get(vid)).filter(v -> v != null).collect(Collectors.toList());
         return collect;
     }
@@ -210,7 +209,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         GenericGraph that = (GenericGraph) o;
         return Objects.equals(vertexToIdMap, that.vertexToIdMap)
                 && Objects.equals(edgeToIdMap, that.edgeToIdMap)
-                && Objects.equals(getDefaultFocus(), that.getDefaultFocus());
+                && Objects.equals(defaultFocus, that.defaultFocus);
     }
 
     @Override
@@ -240,7 +239,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             this.properties.putAll(graph.getProperties());
             this.addVertices(graph.getVertices());
             this.addEdges(graph.getEdges());
-            this.defaultFocus = graph.defaultFocus; // assuming focus strategy is immutable => not so relevant since the implementation will change anyway with next pull request
+            this.defaultFocus = graph.defaultFocus;
             return this;
         }
         
@@ -370,6 +369,9 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             return new GenericGraph(this);
         }
 
+        /**
+         * Helper to build a focus based on various strategies we support.
+         */
         public class FocusBuilder {
 
             private String focusStrategy = FocusStrategy.EMPTY;
@@ -422,7 +424,11 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
                     case FocusStrategy.EMPTY:
                         return new Focus(FocusStrategy.EMPTY);
                     case FocusStrategy.SELECTION:
-                        return new Focus(FocusStrategy.SELECTION, focusSelection);
+                        // Only use selections, which actually exist in the graph
+                        final List<VertexRef> existingVertexRefs = focusSelection.stream()
+                                .filter(v -> v.getNamespace().equals(getNamespace()) && vertexToIdMap.containsKey(v.getId()))
+                                .collect(Collectors.toList());
+                        return new Focus(FocusStrategy.SELECTION, existingVertexRefs);
                     default:
                         final String[] validValues = new String[]{ FocusStrategy.ALL, FocusStrategy.EMPTY, FocusStrategy.FIRST, FocusStrategy.SELECTION };
                         throw new IllegalStateException("Focus Strategy '" + focusStrategy + "' not supported. Supported values are: " + Arrays.toString(validValues));
@@ -433,8 +439,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             // it to the GenericGraphBuilder afterwards
             public GenericGraphBuilder apply() {
                 final Focus focus = build();
-                focus(focus);
-                return GenericGraphBuilder.this;
+                return focus(focus);
             }
         }
     }

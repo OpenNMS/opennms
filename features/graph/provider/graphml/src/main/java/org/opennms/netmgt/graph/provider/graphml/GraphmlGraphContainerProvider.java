@@ -197,6 +197,7 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     // The graphML specification does not allow for an id on the graphML object itself
     // As we always need a unique Id we check if a property called `containerId` is provided.
     // If so we use that, otherwise we concatenate the ids of the graphs
+    // TODO MVR when sending the topology/graphml/test-topology.xml the cntainer id is test instead of graphml :(
     protected static String determineGraphContainerId(GraphML graphML) {
         if (graphML.getProperty("containerId") != null) {
             return graphML.getProperty("containerId");
