@@ -34,7 +34,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.events.api.EventParameterUtils;
@@ -105,7 +104,7 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
                         break;
                     }
 
-                    try (final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO event_parameters (eventid, name, value, type) VALUES  (?,?,?,?)");
+                    try (final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO event_parameters (eventid, name, value, type, position) VALUES  (?,?,?,?,?)");
                          final PreparedStatement nullifyStatement = connection.prepareStatement("UPDATE events SET eventparms=NULL WHERE eventid=?")) {
 
                         do {
@@ -114,13 +113,15 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
                             final List<Parm> parmList = EventParameterUtils.decode(eventParms);
 
                             if (parmList != null) {
-                                final Map<String, Parm> parmMap = EventParameterUtils.normalize(parmList);
+                                final List<Parm> normalizedParms = EventParameterUtils.normalizePreserveOrder(parmList);
 
-                                for (Map.Entry<String, Parm> entry : parmMap.entrySet()) {
+                                for (int i=0; i < normalizedParms.size(); i++) {
+                                    Parm parm = normalizedParms.get(i);
                                     insertStatement.setInt(1, eventId);
-                                    insertStatement.setString(2, entry.getValue().getParmName());
-                                    insertStatement.setString(3, entry.getValue().getValue().getContent());
-                                    insertStatement.setString(4, entry.getValue().getValue().getType());
+                                    insertStatement.setString(2, parm.getParmName());
+                                    insertStatement.setString(3, parm.getValue().getContent());
+                                    insertStatement.setString(4, parm.getValue().getType());
+                                    insertStatement.setInt(5, i);
                                     insertStatement.execute();
                                     parameterCount++;
                                 }

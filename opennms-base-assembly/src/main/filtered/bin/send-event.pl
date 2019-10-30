@@ -56,7 +56,7 @@ if ($version)  { print "$0 version $VERSION\n"; exit; }
 if ($help)     { print get_help(); exit; }
 
 # parm array is numerically referenced in OpenNMS' templates
-@PARMS = reverse map { parse_parm($_) } @PARMS;
+@PARMS = map { parse_parm($_) } @PARMS;
 
 my $hostname = hostname;
 
