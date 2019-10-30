@@ -68,6 +68,7 @@ public class KarafStartupMonitor implements SpringServiceDaemon {
     private boolean isKarafOk() {
         Class serviceClass = KarafHealthService.class;
         try {
+            LOG.info("Waiting for loading of {}, will block startup until service is available.", serviceClass.getName());
             final KarafHealthService service = SERVICE_LOOKUP.lookup(serviceClass, null);
             return service != null;
         } catch (Exception e) {
