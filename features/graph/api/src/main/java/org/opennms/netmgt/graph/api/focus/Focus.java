@@ -29,12 +29,60 @@
 package org.opennms.netmgt.graph.api.focus;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.VertexRef;
-import org.opennms.netmgt.graph.api.context.GraphContext;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.Lists;
 
 // TODO MVR this is not persistable
-public interface Focus {
+public class Focus {
 
-    List<VertexRef> getFocus(GraphContext graphContext);
+    private final String id;
+    private final List<VertexRef> vertexRefs;
+
+    public Focus(final String id) {
+        this(id, Lists.newArrayList());
+    }
+
+    public Focus(final String id, final List<VertexRef> vertexRefs) {
+        this.id = Objects.requireNonNull(id);
+        this.vertexRefs = Objects.requireNonNull(vertexRefs);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<VertexRef> getVertexRefs() {
+        return vertexRefs;
+    }
+
+    public List<String> getVertexIds() {
+        return vertexRefs.stream().map(v -> v.getId()).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Focus focus = (Focus) o;
+        return Objects.equals(id, focus.id)
+                && Objects.equals(vertexRefs, focus.vertexRefs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, vertexRefs);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("vertexRefs", vertexRefs)
+                .toString();
+    }
 }

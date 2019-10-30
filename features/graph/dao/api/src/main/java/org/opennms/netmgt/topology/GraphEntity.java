@@ -39,13 +39,16 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.BatchSize;
 import org.opennms.netmgt.graph.dao.api.EntityProperties;
+import org.opennms.netmgt.topology.focus.FocusEntity;
 
 @Entity
 @DiscriminatorValue("graph")
@@ -59,6 +62,10 @@ public class GraphEntity extends AbstractGraphEntity {
     )
     @BatchSize(size=1000)
     private List<AbstractGraphEntity> relations = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="focus_id")
+    private FocusEntity defaultFocus;
 
     // TODO MVR verify that this is properly instantiated when loading data via hibernate
     @Transient
@@ -78,6 +85,14 @@ public class GraphEntity extends AbstractGraphEntity {
 
     public List<VertexEntity> getVertices() {
         return getElements(VertexEntity.class);
+    }
+
+    public FocusEntity getDefaultFocus() {
+        return defaultFocus;
+    }
+
+    public void setDefaultFocus(FocusEntity defaultFocus) {
+        this.defaultFocus = defaultFocus;
     }
 
     public VertexEntity getVertexByVertexId(String id) {

@@ -54,9 +54,9 @@ public class ConverterService {
         return converter.toValue(type, stringRepresentation);
     }
 
-    public <T> String toStringRepresentation(Class<?> type, T stringRepresentation) throws IllegalStateException {
+    public <T> String toStringRepresentation(Class<?> type, T object) throws IllegalStateException {
         final Converter<T> converter = getConverter(type);
-        return converter.toStringRepresentation(stringRepresentation);
+        return converter.toStringRepresentation(object);
     }
 
     private Converter getConverter(Class<?> clazz) throws IllegalStateException {

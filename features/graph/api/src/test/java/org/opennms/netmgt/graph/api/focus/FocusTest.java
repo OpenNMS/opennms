@@ -26,29 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.updates.listener;
+package org.opennms.netmgt.graph.api.focus;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
-import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Vertex;
-import org.opennms.netmgt.graph.api.focus.Focus;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.junit.Test;
 
-public interface GraphChangeListener<V extends Vertex, E extends Edge> {
-    void handleVerticesAdded(List<V> verticesAdded);
+public class FocusTest {
 
-    void handleVerticesRemoved(List<V> verticesRemoved);
+    @Test
+    public void verifyEquals() {
+        assertEquals(new Focus(FocusStrategy.EMPTY), new Focus(FocusStrategy.EMPTY));
+        assertEquals(new Focus(FocusStrategy.ALL), new Focus(FocusStrategy.ALL));
+        assertEquals(new Focus(FocusStrategy.FIRST), new Focus(FocusStrategy.FIRST));
+        assertEquals(new Focus(FocusStrategy.SELECTION), new Focus(FocusStrategy.SELECTION));
 
-    void handleVerticesUpdated(List<V> verticesUpdated);
+        // TODO MVR verify SelectiveFocus and vertexRef list in focus
+    }
 
-    void handleEdgesAdded(List<E> edgesAdded);
-
-    void handleEdgesUpdated(List<E> edgesUpdated);
-
-    void handleEdgesRemoved(List<E> edgesRemoved);
-
-    void handleGraphInfoChanged(GraphInfo currentGraphInfo);
-
-    void handleFocusChanged(Focus currentFocus);
 }

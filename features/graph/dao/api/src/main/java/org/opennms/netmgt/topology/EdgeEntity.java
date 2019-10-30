@@ -26,6 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+// TODO MVR move to own package
 package org.opennms.netmgt.topology;
 
 import java.util.Objects;

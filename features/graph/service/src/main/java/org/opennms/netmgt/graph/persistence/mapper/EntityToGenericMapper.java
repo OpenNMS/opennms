@@ -31,10 +31,10 @@ package org.opennms.netmgt.graph.persistence.mapper;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericEdge.GenericEdgeBuilder;
-import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
-import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.generic.GenericVertex.GenericVertexBuilder;
@@ -42,6 +42,7 @@ import org.opennms.netmgt.graph.persistence.converter.ConverterService;
 import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.PropertyEntity;
+import org.opennms.netmgt.topology.focus.FocusEntity;
 
 public class EntityToGenericMapper {
 
@@ -91,6 +92,16 @@ public class EntityToGenericMapper {
             genericGraphBuilder.addEdge(genericEdge.build());
         });
 
+        final FocusEntity focusEntity = graphEntity.getDefaultFocus();
+        if (focusEntity == null || focusEntity.getType().equalsIgnoreCase("EMPTY")) {
+            genericGraphBuilder.focus().empty().apply();
+        } else if(focusEntity.getType().equalsIgnoreCase("FIRST")) {
+            genericGraphBuilder.focus().first().apply();
+        } else if(focusEntity.getType().equalsIgnoreCase("ALL")) {
+            genericGraphBuilder.focus().all().apply();
+        } else if (focusEntity.getType().equalsIgnoreCase("SELECTION")) {
+            genericGraphBuilder.focus().selection(genericGraphBuilder.getNamespace(), focusEntity.getVertexIds()).apply();
+        }
         return genericGraphBuilder.build();
     }
 

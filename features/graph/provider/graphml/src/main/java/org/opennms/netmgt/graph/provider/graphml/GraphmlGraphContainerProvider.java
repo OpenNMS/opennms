@@ -35,13 +35,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.features.graphml.model.GraphML;
+import org.opennms.features.graphml.model.GraphMLGraph;
+import org.opennms.features.graphml.model.GraphMLReader;
+import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
-import org.opennms.netmgt.graph.api.focus.Focus;
-import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
@@ -51,14 +52,13 @@ import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
-import org.opennms.features.graphml.model.GraphML;
-import org.opennms.features.graphml.model.GraphMLGraph;
-import org.opennms.features.graphml.model.GraphMLReader;
-import org.opennms.features.graphml.model.InvalidGraphException;
 
 import com.google.common.collect.Lists;
 
 public class GraphmlGraphContainerProvider implements GraphContainerProvider {
+
+    private static final String FOCUS_STRATEGY = "focusStrategy"; // TODO MVR verify value
+    private static final String FOCUS_IDS = "focusIds"; // TODO MVR verify value
 
     private final GraphML graphML;
     private GenericGraphContainer graphContainer;
@@ -117,8 +117,6 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
                 .description(graphML.getProperty(GenericProperties.DESCRIPTION));
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
                 final GenericGraph convertedGraph = convert(eachGraph);
-                final Focus focus = getFocusStrategy(eachGraph);
-//                convertedGraph.setDefaultFocus(focus);
                 graphContainerBuilder.addGraph(convertedGraph);
             }
             this.graphContainer = graphContainerBuilder.build();
@@ -163,34 +161,30 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
             return edge;
         }).collect(Collectors.toList());
         graphBuilder.addEdges(edges);
+
+
+        final String strategy = graphMLGraph.getProperty(FOCUS_STRATEGY);
+        if (strategy == null || "empty".equalsIgnoreCase(strategy)) {
+        } else if ("all".equalsIgnoreCase(strategy)) {
+            graphBuilder.focus().all().apply();
+        } else if ("first".equalsIgnoreCase(strategy)) {
+            graphBuilder.focus().first().apply();
+            graphBuilder.focus().empty().apply();
+        } else if ("specific".equalsIgnoreCase(strategy) || "selection".equalsIgnoreCase(strategy)) {
+            final List<String> focusIds = getFocusIds(graphMLGraph);
+            graphBuilder.focus().selection(graphBuilder.getNamespace(), focusIds).apply();
+        } else {
+            throw new IllegalStateException("TODO MVR handle me"); // TODO MVR
+        }
         return graphBuilder.build();
     }
 
-    // TODO MVR FocusStrategy or Focus concept is not fully implemented yet
-    private static Focus getFocusStrategy(GraphMLGraph graph) {
-//        final String strategy = graph.getProperty(GenericProperties.FOCUS_STRATEGY);
-//        if (strategy != null) {
-//            if ("all".equalsIgnoreCase(strategy)) return FocusStrategy.ALL;
-//            if ("first".equals(strategy)) return FocusStrategy.FIRST;
-//            if ("empty".equals(strategy)) return FocusStrategy.EMPTY;
-//            if ("specific".equalsIgnoreCase(strategy)) {
-//                final List<String> focusIds = getFocusIds(graph);
-//                return FocusStrategy.SPECIFIC(focusIds);
-//            }
-//
-//        }
-//        return FocusStrategy.FIRST;
-        // TODO MVR implement me fully
-        return FocusStrategy.EMPTY;
-    }
-
-    // TODO MVR impelment me
-    private static List<String> getFocusIds(GraphMLGraph graph) {
-//        final String property = graph.getProperty(GenericProperties.FOCUS_IDS);
-//        if (property != null) {
-//            String[] split = property.split(",");
-//            return Lists.newArrayList(split);
-//        }
+    private static List<String> getFocusIds(GraphMLGraph inputGraph) {
+        final String property = inputGraph.getProperty(FOCUS_IDS);
+        if (property != null) {
+            String[] split = property.split(",");
+            return Lists.newArrayList(split);
+        }
         return Lists.newArrayList();
     }
 

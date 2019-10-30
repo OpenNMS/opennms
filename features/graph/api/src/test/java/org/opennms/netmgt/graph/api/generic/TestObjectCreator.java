@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 
 public class TestObjectCreator {
@@ -85,7 +84,7 @@ public class TestObjectCreator {
             .description("GraphDescription" + UUID.randomUUID().toString())
             .label("GraphLabel" + UUID.randomUUID().toString())
             .property("someProperty", "someProperty" + UUID.randomUUID().toString())
-            .setFocusStrategy(FocusStrategy.FIRST)
+            .focus().first().apply()
             .addVertex(vertex1)
             .addVertex(vertex2)
             .addVertex(vertex3)

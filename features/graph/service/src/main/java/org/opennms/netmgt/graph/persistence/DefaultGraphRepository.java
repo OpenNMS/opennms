@@ -33,12 +33,13 @@ import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -54,6 +55,7 @@ import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.PropertyEntity;
 import org.opennms.netmgt.topology.VertexEntity;
+import org.opennms.netmgt.topology.focus.FocusEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,6 +152,14 @@ public class DefaultGraphRepository implements GraphRepository {
                             graphEntity.setProperty(GenericProperties.NAMESPACE, String.class, graphInfo.getNamespace());
                             graphEntity.setProperty(GenericProperties.LABEL, String.class, graphInfo.getLabel());
                             graphEntity.setProperty(GenericProperties.DESCRIPTION, String.class, graphInfo.getDescription());
+                        }
+
+                        // Update Focus
+                        if (changeSet.hasFocusChanged()) {
+                            final Focus focus = changeSet.getFocus();
+                            final FocusEntity focusEntity = graphEntity.getDefaultFocus();
+                            focusEntity.setType(focus.getId());
+                            focusEntity.setSelection(focus.getVertexIds());
                         }
 
                         // Update Edges
