@@ -404,6 +404,11 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
                 return this;
             }
 
+            public FocusBuilder selection(VertexRef vertexRef) {
+                Objects.requireNonNull(vertexRef);
+                return selection(Lists.newArrayList(vertexRef));
+            }
+
             public Focus build() {
                 switch(focusStrategy) {
                     case FocusStrategy.FIRST:
