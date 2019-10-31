@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 import org.joda.time.Duration;
 import org.junit.After;
@@ -48,6 +49,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -74,6 +76,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +98,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/mockForeignSourceContext.xml",
+        // rescan-threads are set to 10.
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
@@ -690,6 +694,76 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
         //Verify ipinterface count
         assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 2, getInterfaceDao().countAll());
+    }
+
+    @Test(timeout=300000)
+    @JUnitSnmpAgents({
+            @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:/snmpTestData3.properties"),
+            @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
+    })
+    public void testNewSuspectScanBeingSequential() throws Exception {
+
+        // Set rescanThreads=10 same as default config.
+        m_provisioner.setScheduledExecutor(Executors.newScheduledThreadPool(10));
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+        //Verify empty database
+        assertEquals(1, getDistPollerDao().countAll());
+        assertEquals(0, getNodeDao().countAll());
+        assertEquals(0, getInterfaceDao().countAll());
+        assertEquals(0, getMonitoredServiceDao().countAll());
+        assertEquals(0, getServiceTypeDao().countAll());
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+        // Create the newSuspect event
+        Event newSuspectEvent = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "test")
+                .setInterface(InetAddressUtils.getInetAddress("198.51.100.201"))
+                .getEvent();
+
+        Event newSuspectEvent1 = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "test")
+                .setInterface(InetAddressUtils.getInetAddress("198.51.100.204"))
+                .getEvent();
+
+        final EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.204")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).setService("SNMP").getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.204")).setService("SNMP").getEvent());
+        anticipator.anticipateEvent(new NodeLabelChangedEventBuilder("Provisiond").setOldNodeLabel("oldNodeLabel").setNewNodeLabel("newNodeLabel").setNodeid(nextNodeId).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+
+        // Send new suspect threads at once, these two shouldn't create two nodes.
+        m_provisioner.handleNewSuspectEvent(newSuspectEvent);
+        m_provisioner.handleNewSuspectEvent(newSuspectEvent1);
+
+        anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+
+        OnmsNode onmsNode = getNodeDao().get(nextNodeId);
+        assertEquals(null, onmsNode.getForeignSource());
+        assertEquals(null, onmsNode.getForeignId());
+
+        final StringBuilder errorMsg = new StringBuilder();
+        //Verify ipinterface count
+        for (final OnmsIpInterface iface : getInterfaceDao().findAll()) {
+            errorMsg.append(iface.toString());
+        }
+        assertEquals(errorMsg.toString(), 2, getInterfaceDao().countAll());
+
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals("Unexpected number of services found.", 2, getMonitoredServiceDao().countAll());
+
+        //Verify service count
+        assertEquals(1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(6, getSnmpInterfaceDao().countAll());
     }
 
     public void runScan(final Scan scan) throws InterruptedException, ExecutionException {
