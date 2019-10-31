@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision;
 
+import java.util.Map;
+
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 /**
@@ -40,8 +42,9 @@ public interface SnmpInterfacePolicy extends OnmsPolicy {
     /**
      * <p>apply</p>
      *
-     * @param snmpIface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+     * @param snmpIface a {@link OnmsSnmpInterface} object.
+     * @param attributes that can be set on script.
      * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
-    OnmsSnmpInterface apply(OnmsSnmpInterface snmpIface);
+    OnmsSnmpInterface apply(OnmsSnmpInterface snmpIface, Map<String, Object> attributes);
 }
