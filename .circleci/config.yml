@@ -7,7 +7,8 @@ executors:
   integration-test-executor:
     machine: true
   smoke-test-executor:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
 
 commands:
   cached-checkout:
@@ -96,6 +97,15 @@ commands:
         type: boolean
     steps:
       - run:
+          name: Enable swap
+          command: |
+            sudo fallocate -l 8G /swapfile
+            sudo chmod 600 /swapfile
+            sudo mkswap /swapfile
+            sudo swapon /swapfile
+            sudo sysctl vm.swappiness=5
+            cat /proc/sys/vm/swappiness
+      - run:
           name: Load Horizon OCI image
           command: |
             cd opennms-container/horizon
@@ -111,10 +121,15 @@ commands:
             cd opennms-container/sentinel
             docker image load -i images/container.oci
       - run:
-          name: Start our JVM process monitor
+          name: Monitor JVM processes
           background: true
           command: |
             .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
       - run:
           name: Smoke Tests
           no_output_timeout: 30m
