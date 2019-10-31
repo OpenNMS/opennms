@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,18 +42,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
-import org.opennms.netmgt.graph.api.context.DefaultGraphContext;
 import org.opennms.netmgt.graph.api.focus.Focus;
+import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * The graph itself is not immutable (Vertices and Edges can be added and removed) but it's properties are. 
@@ -63,7 +63,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
 //    private final Map<NodeRef, V> nodeRefToVertexMap = new HashMap<>();
 
     // A calculation of the focus
-    private final Focus focusStrategy;
+    private final Focus defaultFocus;
     private final GraphInfo<GenericVertex> graphInfo;
 
     private GenericGraph(GenericGraphBuilder builder) {
@@ -71,7 +71,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         this.jungGraph = builder.jungGraph;
         this.vertexToIdMap = builder.vertexToIdMap;
         this.edgeToIdMap = builder.edgeToIdMap;
-        this.focusStrategy = builder.focusStrategy;
+        this.defaultFocus = builder.defaultFocus;
         this.graphInfo = new GenericGraphInfo();
     }
 
@@ -114,19 +114,14 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     }
 
     @Override
-    public List<Vertex> getDefaultFocus() {
-        if (focusStrategy != null) {
-            return focusStrategy.getFocus(new DefaultGraphContext(this)).stream().map(vr -> vertexToIdMap.get(vr.getId())).collect(Collectors.toList());
-        }
-        return new ArrayList<>();
+    public Focus getDefaultFocus() {
+        return defaultFocus;
     }
 
-//    @Override
+    //    @Override
 //    public Vertex getVertex(NodeRef nodeRef) {
 //        return nodeRefToVertexMap.get(nodeRef);
 //    }
-
-
 
     @Override
     public GenericVertex getVertex(String id) {
@@ -214,13 +209,13 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         GenericGraph that = (GenericGraph) o;
         return Objects.equals(vertexToIdMap, that.vertexToIdMap)
                 && Objects.equals(edgeToIdMap, that.edgeToIdMap)
-                && Objects.equals(focusStrategy, that.focusStrategy);
+                && Objects.equals(defaultFocus, that.defaultFocus);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(),
-                vertexToIdMap, edgeToIdMap, focusStrategy);
+                vertexToIdMap, edgeToIdMap, getDefaultFocus());
     }
     
     public static GenericGraphBuilder builder() {
@@ -235,7 +230,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
 //        private final Map<NodeRef, V> nodeRefToVertexMap = new HashMap<>();
 
         // A calculation of the focus
-        private Focus focusStrategy;
+        private Focus defaultFocus = new Focus(FocusStrategy.EMPTY);
         
         // TODO: Patrick make sure we don't change the namespace after adding edges -> they have been validated against the namespace
         private GenericGraphBuilder() {}
@@ -244,7 +239,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             this.properties.putAll(graph.getProperties());
             this.addVertices(graph.getVertices());
             this.addEdges(graph.getEdges());
-            this.focusStrategy = graph.focusStrategy; // assuming focus strategy is immutable => not so relevant since the implementation will change anyway with next pull request
+            this.defaultFocus = graph.defaultFocus;
             return this;
         }
         
@@ -260,9 +255,14 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             return this;
         }
         
-        public GenericGraphBuilder setFocusStrategy(Focus focusStrategy) {
-            this.focusStrategy = focusStrategy; // TODO MVR verify persistence of this
+        public GenericGraphBuilder focus(Focus defaultFocus) {
+            Objects.requireNonNull(defaultFocus);
+            this.defaultFocus = defaultFocus;
             return this;
+        }
+
+        public FocusBuilder focus() {
+            return new FocusBuilder();
         }
 
         public GenericGraphBuilder addEdges(Collection<GenericEdge> edges) {
@@ -367,6 +367,80 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         
         public GenericGraph build() {
             return new GenericGraph(this);
+        }
+
+        /**
+         * Helper to build a focus based on various strategies we support.
+         */
+        public class FocusBuilder {
+
+            private String focusStrategy = FocusStrategy.EMPTY;
+            private List<VertexRef> focusSelection = new ArrayList<>();
+
+            public FocusBuilder first() {
+                focusStrategy = FocusStrategy.FIRST;
+                return this;
+            }
+
+            public FocusBuilder empty() {
+                focusStrategy = FocusStrategy.EMPTY;
+                return this;
+            }
+
+            public FocusBuilder all() {
+                focusStrategy = FocusStrategy.ALL;
+                return this;
+            }
+
+            public FocusBuilder selection(String vertexNamespace, List<String> vertexIds) {
+                Objects.requireNonNull(vertexNamespace);
+                Objects.requireNonNull(vertexIds);
+                final List<VertexRef> vertexRefs = vertexIds.stream().map(id -> new VertexRef(vertexNamespace, id)).collect(Collectors.toList());
+                return selection(vertexRefs);
+            }
+
+            public FocusBuilder selection(List<VertexRef> vertexRefs) {
+                Objects.requireNonNull(vertexRefs);
+                focusStrategy = FocusStrategy.SELECTION;
+                focusSelection = new ArrayList<>(vertexRefs);
+                return this;
+            }
+
+            public FocusBuilder selection(VertexRef vertexRef) {
+                Objects.requireNonNull(vertexRef);
+                return selection(Lists.newArrayList(vertexRef));
+            }
+
+            public Focus build() {
+                switch(focusStrategy) {
+                    case FocusStrategy.FIRST:
+                        final List<VertexRef> list = Lists.newArrayList();
+                        if (!vertexToIdMap.isEmpty()) {
+                            list.add(vertexToIdMap.values().iterator().next().getVertexRef());
+                        }
+                        return new Focus(FocusStrategy.FIRST, list);
+                    case FocusStrategy.ALL:
+                        return new Focus(FocusStrategy.ALL, vertexToIdMap.values().stream().map(GenericVertex::getVertexRef).collect(Collectors.toList()));
+                    case FocusStrategy.EMPTY:
+                        return new Focus(FocusStrategy.EMPTY);
+                    case FocusStrategy.SELECTION:
+                        // Only use selections, which actually exist in the graph
+                        final List<VertexRef> existingVertexRefs = focusSelection.stream()
+                                .filter(v -> v.getNamespace().equals(getNamespace()) && vertexToIdMap.containsKey(v.getId()))
+                                .collect(Collectors.toList());
+                        return new Focus(FocusStrategy.SELECTION, existingVertexRefs);
+                    default:
+                        final String[] validValues = new String[]{ FocusStrategy.ALL, FocusStrategy.EMPTY, FocusStrategy.FIRST, FocusStrategy.SELECTION };
+                        throw new IllegalStateException("Focus Strategy '" + focusStrategy + "' not supported. Supported values are: " + Arrays.toString(validValues));
+                }
+            }
+
+            // Convenient method to build the focus and apply
+            // it to the GenericGraphBuilder afterwards
+            public GenericGraphBuilder apply() {
+                final Focus focus = build();
+                return focus(focus);
+            }
         }
     }
     

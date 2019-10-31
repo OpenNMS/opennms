@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.updates.change;
 
+// TODO MVR make this test work again
 public class ContainerChangeSetTest {
 
 //    private static final String NAMESPACE = "dummy";

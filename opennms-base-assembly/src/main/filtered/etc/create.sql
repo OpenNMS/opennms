@@ -2715,6 +2715,13 @@ create sequence rulenxtid minvalue 1;
 --##################################################################
 --# Graph tables
 --##################################################################
+CREATE TABLE graph_focus (
+    id bigint not null,
+    type text not null,
+    selection text,
+    CONSTRAINT graph_focus_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE graph_elements (
   id bigint NOT NULL,
   type varchar(25) NOT NULL,
@@ -2723,7 +2730,9 @@ CREATE TABLE graph_elements (
   source_vertex_id text,
   target_vertex_namespace varchar(200),
   target_vertex_id text,
-  CONSTRAINT graph_elements_pkey PRIMARY KEY (id)
+  focus_id bigint,
+  CONSTRAINT graph_elements_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_graph_elements_focus_id FOREIGN KEY (focus_id) REFERENCES graph_focus (id) ON DELETE CASCADE
 );
 
 CREATE TABLE graph_attributes (

@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.graph.api.focus.Focus;
+import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
@@ -44,6 +46,7 @@ import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.PropertyEntity;
 import org.opennms.netmgt.topology.VertexEntity;
+import org.opennms.netmgt.topology.FocusEntity;
 
 // TODO MVR remove System.out.println
 public class GenericToEntityMapper {
@@ -77,6 +80,11 @@ public class GenericToEntityMapper {
         final List<EdgeEntity> edgeEntities = genericGraph.getEdges().stream().map(genericEdge -> toEntity(genericEdge, graphEntity)).collect(Collectors.toList());
         graphEntity.addRelations(edgeEntities);
         System.out.println("\tDONE. Took " + (System.currentTimeMillis() - start) + "ms");
+
+        // Map Focus
+        final Focus focus = genericGraph.getDefaultFocus();
+        graphEntity.setDefaultFocus(toEntity(focus));
+
         return graphEntity;
     }
 
@@ -118,5 +126,17 @@ public class GenericToEntityMapper {
         vertexEntity.setNamespace(genericVertex.getNamespace());
         vertexEntity.setProperties(vertexProperties);
         return vertexEntity;
+    }
+
+    public FocusEntity toEntity(Focus focus) {
+        if (focus != null) {
+            final FocusEntity focusEntity = new FocusEntity();
+            focusEntity.setType(focus.getId());
+            if (focus.getId().toLowerCase().equalsIgnoreCase(FocusStrategy.SELECTION)) {
+               focusEntity.setSelection(focus.getVertexIds());
+            }
+            return focusEntity;
+        }
+        return null;
     }
 }

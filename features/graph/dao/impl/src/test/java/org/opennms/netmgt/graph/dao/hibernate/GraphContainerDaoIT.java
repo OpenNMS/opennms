@@ -30,6 +30,7 @@ package org.opennms.netmgt.graph.dao.hibernate;
 
 import java.util.NoSuchElementException;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.topology.EdgeEntity;
 import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.VertexEntity;
+import org.opennms.netmgt.topology.FocusEntity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -119,6 +121,10 @@ public class GraphContainerDaoIT {
                 Assert.assertEquals(originalGraphEntity.getDescription(), persistedGraphEntity.getDescription());
                 Assert.assertEquals(3, persistedGraphEntity.getVertices().size());
                 Assert.assertEquals(1, persistedGraphEntity.getEdges().size());
+
+                // Verify focus has been persisted
+                Assert.assertNotNull(persistedGraphEntity.getDefaultFocus());
+                Assert.assertThat(persistedGraphEntity.getDefaultFocus().getType(), Matchers.is("FIRST"));
             }
             return null;
         });
@@ -218,7 +224,7 @@ public class GraphContainerDaoIT {
         graph.setNamespace(namespace);
         graph.setProperty(EntityProperties.LABEL, String.class, GRAPH_LABEL);
         graph.setProperty(EntityProperties.DESCRIPTION, String.class, GRAPH_DESCRIPTION);
-
+        graph.setDefaultFocus(new FocusEntity("FIRST"));
 
         final VertexEntity v1 = new VertexEntity();
         v1.setNamespace(namespace);

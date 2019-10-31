@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 public interface GraphChangeListener<V extends Vertex, E extends Edge> {
@@ -48,4 +49,6 @@ public interface GraphChangeListener<V extends Vertex, E extends Edge> {
     void handleEdgesRemoved(List<E> edgesRemoved);
 
     void handleGraphInfoChanged(GraphInfo currentGraphInfo);
+
+    void handleFocusChanged(Focus currentFocus);
 }

@@ -35,13 +35,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 import com.google.common.base.MoreObjects;
 
@@ -140,7 +140,7 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
     }
 
     @Override
-    public List<Vertex> getDefaultFocus() {
+    public Focus getDefaultFocus() {
         return delegate.getDefaultFocus();
     }
 
@@ -265,6 +265,14 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
                 .description(graphInfo.getDescription())
                 .build();
             return (T) this;
+        }
+
+        public GenericGraphBuilder.FocusBuilder focus() {
+            return delegate.focus();
+        }
+
+        public VertexRef getVertexRef(String vertexId) {
+            return delegate.getVertex(vertexId).getVertexRef();
         }
     }
 }

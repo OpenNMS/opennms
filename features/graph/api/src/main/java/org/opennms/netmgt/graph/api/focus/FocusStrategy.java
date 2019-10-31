@@ -28,38 +28,9 @@
 
 package org.opennms.netmgt.graph.api.focus;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.Vertex;
-
-import com.google.common.collect.Lists;
-
-// TODO MVR make this persistable
-public class FocusStrategy {
-    public static final Focus ALL = graphContext -> graphContext.getGraph().getVertices();
-
-    public static final Focus EMPTY = graphContext -> Lists.newArrayList();
-
-    public static final Focus FIRST = graphContext -> {
-        final ImmutableGraph<Vertex, Edge> g = graphContext.getGraph();
-        if (g.getVertexIds().isEmpty()) {
-            return new ArrayList<>();
-        }
-        final Vertex vertex = g.getVertices().get(0);
-        return Lists.newArrayList(vertex.getVertexRef());
-    };
-
-    public static final Focus SPECIFIC(Collection<String> vertexIds) {
-        return graphContext -> {
-            final List<Vertex> list = graphContext.getGraph().resolveVertices(vertexIds);
-            return list.stream()
-                    .map(Vertex::getVertexRef)
-                    .collect(Collectors.toList());
-        };
-    }
+public interface FocusStrategy {
+    String ALL = "ALL";
+    String EMPTY = "EMPTY";
+    String FIRST = "FIRST";
+    String SELECTION = "SELECTION";
 }

@@ -31,23 +31,21 @@ package org.opennms.netmgt.graph.provider.bsm;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
 import org.opennms.netmgt.graph.provider.bsm.AbstractBusinessServiceVertex.AbstractBusinessServiceVertexBuilder;
 import org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraph.BusinessServiceGraphBuilder;
-import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
-import org.opennms.netmgt.graph.simple.AbstractDomainVertex.AbstractDomainVertexBuilder;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
-import org.opennms.netmgt.graph.simple.SimpleGraph;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
@@ -101,7 +99,28 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         for (GraphVertex topLevelBusinessService : sourceGraph.getVerticesByLevel(0)) {
             addVertex(bsmGraph, sourceGraph, topLevelBusinessService, null);
         }
+        // Apply Focus
+        final VertexRef defaultFocusVertex = getDefaultFocusVertex(bsmGraph);
+        if (defaultFocusVertex != null) {
+            bsmGraph.focus().selection(defaultFocusVertex).apply();
+        } else {
+            bsmGraph.focus().selection(Lists.newArrayList()).apply();
+        }
         return bsmGraph.build();
+    }
+
+    private VertexRef getDefaultFocusVertex(BusinessServiceGraphBuilder graphBuilder) {
+        // Grab the business service with the smallest id
+        final List<BusinessService> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessService.class).orderBy("id", true).limit(1).toCriteria());
+
+        // If one was found, use it for the default focus
+        if (!businessServices.isEmpty()) {
+            final BusinessService businessService = businessServices.iterator().next();
+            final String vertexId = AbstractBusinessServiceVertex.Type.BusinessService + ":" + businessService.getId();
+            final VertexRef vertexRef = graphBuilder.getVertexRef(vertexId);
+            return vertexRef;
+        }
+        return null;
     }
 
     private void addVertex(BusinessServiceGraphBuilder targetGraphBuilder, org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {

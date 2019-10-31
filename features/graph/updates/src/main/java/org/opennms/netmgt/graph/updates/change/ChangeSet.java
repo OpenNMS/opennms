@@ -36,6 +36,7 @@ import java.util.Objects;
 import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.updates.listener.GraphChangeListener;
@@ -51,6 +52,7 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
     private List<E> edgesRemoved = new ArrayList<>();
     private List<E> edgesUpdated = new ArrayList<>();
     private GraphInfo currentGraphInfo;
+    private Focus currentFocus;
 
     public ChangeSet(String namespace) {
         this.namespace = namespace;
@@ -104,6 +106,10 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
         this.currentGraphInfo = graphInfo;
     }
 
+    public void focusChanged(Focus newFocus) {
+        this.currentFocus = newFocus;
+    }
+
     public String getNamespace() {
         return namespace;
     }
@@ -116,6 +122,10 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
     // TODO MVR the changes in graph info is weird implemented here... may find a better way/location?
     public GraphInfo getGraphInfo() {
         return currentGraphInfo;
+    }
+
+    public Focus getFocus() {
+        return currentFocus;
     }
 
     public List<V> getVerticesAdded() {
@@ -146,8 +156,13 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
         return currentGraphInfo != null;
     }
 
+    public boolean hasFocusChanged() {
+        return currentFocus != null;
+    }
+
     public boolean hasChanges() {
         return hasGraphInfoChanged()
+                || hasFocusChanged()
                 || !edgesAdded.isEmpty()
                 || !edgesRemoved.isEmpty()
                 || !edgesUpdated.isEmpty()
@@ -178,6 +193,9 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
         if (currentGraphInfo != null) {
             listener.handleGraphInfoChanged(currentGraphInfo);
         }
+        if (currentFocus != null) {
+            listener.handleFocusChanged(currentFocus);
+        }
     }
 
     public void accept(GraphChangeSetListener listener) {
@@ -186,7 +204,6 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
         }
     }
 
-    // TODO MVR do we want to detect focus changes as well? Is the focus correctly set on the graph level?
     protected void detectChanges(G oldGraph, G newGraph) {
         // no old graph exists, add all
         if (oldGraph == null && newGraph != null) {
@@ -209,9 +226,18 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
             if (!oldGraph.getNamespace().equalsIgnoreCase(newGraph.getNamespace())) {
                 throw new IllegalStateException("Cannot detect changes between different namespaces");
             }
+            detectFocusChange(oldGraph, newGraph);
             detectGraphInfoChanges(oldGraph, newGraph);
             detectVertexChanges(oldGraph, newGraph);
             detectEdgeChanges(oldGraph, newGraph);
+        }
+    }
+
+    private void detectFocusChange(G oldGraph, G newGraph) {
+        final Focus oldFocus = oldGraph.getDefaultFocus();
+        final Focus newFocus = newGraph.getDefaultFocus();
+        if (!Objects.equals(oldFocus, newFocus)) {
+            focusChanged(newFocus);
         }
     }
 

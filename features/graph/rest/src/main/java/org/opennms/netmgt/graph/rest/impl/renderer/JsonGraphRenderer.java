@@ -35,6 +35,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -90,6 +91,13 @@ public class JsonGraphRenderer implements GraphRenderer {
                         final JSONObject jsonEdge = new JSONObject(edgeProperties);
                         jsonEdgesArray.put(jsonEdge);
                     });
+
+                    // Convert the focus
+                    final Focus defaultFocus = graph.getDefaultFocus();
+                    final JSONObject jsonFocus = new JSONObject();
+                    jsonFocus.put("type", defaultFocus.getId());
+                    jsonFocus.put("vertexIds", new JSONArray(defaultFocus.getVertexRefs()));
+                    jsonGraph.put("defaultFocus", jsonFocus);
 
                     // TODO MVR enrich me
                     // enrichmentService.enrich(graph.getVertices());

@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.api;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
@@ -61,7 +62,7 @@ public interface ImmutableGraph<V extends Vertex, E extends Edge> extends GraphI
 
     Collection<E> getConnectingEdges(V eachVertex);
 
-    List<Vertex> getDefaultFocus();
+    Focus getDefaultFocus();
 
     // TODO MVR
 //    Vertex getVertex(NodeRef nodeRef);

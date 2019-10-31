@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.graph.persistence;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
@@ -42,11 +47,13 @@ import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.persistence.GraphRepository;
+import org.opennms.netmgt.topology.FocusEntity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -59,10 +66,14 @@ import com.google.common.collect.ImmutableList;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+// TODO MVR dao module should probably be named persistence instead
 public class DefaultGraphRepositoryIT {
 
     @Autowired
     private GraphRepository graphRepository;
+
+    @Autowired
+    private GenericPersistenceAccessor persistenceAccessor;
 
     private static final String NAMESPACE = "dummy";
     private static final String CONTAINER_ID = "unique-id";
@@ -172,6 +183,42 @@ public class DefaultGraphRepositoryIT {
         graphRepository.save(originalContainer);
         GenericGraphContainer loadedContainer = graphRepository.findContainerById(CONTAINER_ID);
         assertEquals(originalContainer.getGraph(NAMESPACE), loadedContainer.getGraph(NAMESPACE));
+    }
+
+    @Test
+    public void verifyFocusPersistence() {
+        final GenericGraphContainerBuilder containerBuilder = GenericGraphContainer.builder().id(CONTAINER_ID);
+        final GenericGraphBuilder graphBuilder = GenericGraph.builder()
+                .namespace(NAMESPACE)
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
+                .addVertex((GenericVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build()));
+        GenericGraphContainer container = containerBuilder.addGraph(graphBuilder.build()).build();
+        graphRepository.save(container);
+
+        // By default the focus should be EMPTY
+        final Focus emptyFocus = graphRepository.findContainerById(container.getId()).getGraph(NAMESPACE).getDefaultFocus();
+        assertThat(emptyFocus.getVertexRefs(), Matchers.hasSize(0));
+
+        // Set to FIRST
+        container = containerBuilder.addGraph(graphBuilder.focus().first().apply().build()).build();
+        graphRepository.save(container);
+        final Focus firstFocus = graphRepository.findContainerById(container.getId()).getGraph(NAMESPACE).getDefaultFocus();
+        assertThat(firstFocus.getVertexRefs(), Matchers.hasSize(1));
+
+        // Set to ALL
+        container = containerBuilder.addGraph(graphBuilder.focus().all().apply().build()).build();
+        graphRepository.save(container);
+        final Focus allFocus = graphRepository.findContainerById(container.getId()).getGraph(NAMESPACE).getDefaultFocus();
+        assertThat(allFocus.getVertexRefs(), Matchers.hasSize(2));
+
+        // Set to Specific
+        container = containerBuilder.addGraph(graphBuilder.focus().selection(Lists.newArrayList(new VertexRef(NAMESPACE, "v2"))).apply().build()).build();
+        graphRepository.save(container);
+        final Focus selectiveFocus = graphRepository.findContainerById(container.getId()).getGraph(NAMESPACE).getDefaultFocus();
+        assertThat(selectiveFocus.getVertexRefs(), Matchers.hasSize(1));
+
+        // Ensure all (obsolete) focus entities have been removed from the underlying database
+        assertThat(persistenceAccessor.findAll(FocusEntity.class), Matchers.hasSize(1)); // only one focus entity should be present
     }
 
     private void verifyEquals(GenericGraphContainer originalContainer, GenericGraphContainer persistedContainer) {
