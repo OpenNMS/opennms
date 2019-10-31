@@ -62,6 +62,8 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/applicationContext-discovery.xml",
 		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+		"classpath:/META-INF/opennms/applicationContext-rpc-detect.xml",
+		"classpath:/applicationContext-discovery-mock.xml",
 
 		// Override the Pinger with a Pinger that always returns true
 		"classpath:/applicationContext-testPinger.xml"

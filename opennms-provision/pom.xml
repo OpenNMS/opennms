@@ -32,6 +32,7 @@
     <module>opennms-requisition-dns</module>
     <module>opennms-requisition-service</module>
     <module>opennms-detector-jms</module>
+    <module>opennms-detector-rdns-lookup</module>
   </modules>
   <dependencyManagement>
     <dependencies>
@@ -93,6 +94,11 @@
             <dependency>
                 <groupId>org.opennms</groupId>
                 <artifactId>opennms-detector-jdbc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>opennms-detector-rdns-lookup</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

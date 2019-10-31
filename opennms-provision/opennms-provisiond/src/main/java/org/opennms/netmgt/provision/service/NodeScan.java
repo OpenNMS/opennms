@@ -32,9 +32,12 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -270,6 +273,12 @@ public class NodeScan implements Scan {
                                         new RunInBatch() {
                                             @Override
                                             public void run(final BatchTask phase) {
+                                                applyNodePolicies(phase);
+                                            }
+                                        },
+                                        new RunInBatch() {
+                                            @Override
+                                            public void run(final BatchTask phase) {
                                                 scanCompleted(phase);
                                             }
                                         }
@@ -458,7 +467,7 @@ public class NodeScan implements Scan {
                         final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
                         for(final IpInterfacePolicy policy : policies) {
                             if (iface != null) {
-                                iface = policy.apply(iface);
+                                iface = policy.apply(iface, Collections.emptyMap());
                             }
                         }
 
@@ -528,7 +537,7 @@ public class NodeScan implements Scan {
                         final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
                         for(final IpInterfacePolicy policy : policies) {
                             if (iface != null) {
-                                iface = policy.apply(iface);
+                                iface = policy.apply(iface, Collections.emptyMap());
                             }
                         }
 
@@ -598,7 +607,7 @@ public class NodeScan implements Scan {
                     final List<SnmpInterfacePolicy> policies = getProvisionService().getSnmpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
                     for(final SnmpInterfacePolicy policy : policies) {
                         if (snmpIface != null) {
-                            snmpIface = policy.apply(snmpIface);
+                            snmpIface = policy.apply(snmpIface, Collections.emptyMap());
                         }
                     }
 
@@ -635,6 +644,7 @@ public class NodeScan implements Scan {
 
         @Override
         public void run(final ContainerTask<?> parent) {
+            //AgentScan
             parent.getBuilder().addSequence(
                                             new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), getLocation(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
                                             new RunInBatch() {
@@ -692,7 +702,7 @@ public class NodeScan implements Scan {
             OnmsNode node = getNode();
             for(final NodePolicy policy : nodePolicies) {
                 if (node != null) {
-                    node = policy.apply(node);
+                    node = policy.apply(node, Collections.emptyMap());
                 }
             }
 
@@ -732,6 +742,7 @@ public class NodeScan implements Scan {
 
         @Override
         public void run(final ContainerTask<?> parent) {
+            //NoAgentScan
             parent.getBuilder().addSequence(
                                             new RunInBatch() {
                                                 @Override
@@ -891,6 +902,27 @@ public class NodeScan implements Scan {
         currentPhase.add(createAgentScan(primaryIface.getIpAddress(), "SNMP"));
         setAgentFound(true);
     }
+
+
+
+    private void applyNodePolicies(final BatchTask currentPhase) {
+
+        final List<NodePolicy> nodePolicies = getProvisionService()
+                .getNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+        LOG.debug("NodeScan, EndOfScan applyNodePolicies in transaction: {}", nodePolicies);
+
+        OnmsNode node = m_provisionService.getNode(getNodeId());
+
+        for (final NodePolicy policy : nodePolicies) {
+            if (node != null) {
+                Map<String, Object> attributes = new HashMap<>();
+                attributes.put(NodePolicy.RUN_IN_TRANSACTION, true);
+                node = policy.apply(node, attributes);
+            }
+        }
+
+    }
+
 
     /**
      * <p>scanCompleted</p>

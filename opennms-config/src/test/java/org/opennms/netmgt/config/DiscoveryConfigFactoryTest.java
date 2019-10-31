@@ -70,7 +70,7 @@ public class DiscoveryConfigFactoryTest {
         final InputStream in = this.getClass().getResourceAsStream("validDiscoveryIncludeFile.txt");
         final long timeout = 100;
         final int retries = 1;
-        DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in, null, null, timeout, retries);
+        DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in, null, null, timeout, retries, null);
         assertEquals(8, specifics.size());
         assertEquals("127.0.0.1", InetAddressUtils.str(specifics.get(0).getAddress()));
         assertEquals("10.1.1.1", InetAddressUtils.str(specifics.get(1).getAddress()));
