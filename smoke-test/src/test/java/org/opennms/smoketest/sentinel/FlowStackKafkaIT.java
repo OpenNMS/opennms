@@ -28,12 +28,10 @@
 
 package org.opennms.smoketest.sentinel;
 
-import org.junit.Ignore;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
 
 // Verifies that flows can be processed by a sentinel and are persisted to Elastic communicating via kafka
-@Ignore("Flapping. See NMS-12369")
 public class FlowStackKafkaIT extends AbstractFlowIT {
 
     @Override
