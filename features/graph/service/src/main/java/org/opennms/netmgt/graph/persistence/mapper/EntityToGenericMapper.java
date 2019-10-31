@@ -29,6 +29,7 @@
 package org.opennms.netmgt.graph.persistence.mapper;
 
 import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericEdge.GenericEdgeBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
@@ -93,14 +94,16 @@ public class EntityToGenericMapper {
         });
 
         final FocusEntity focusEntity = graphEntity.getDefaultFocus();
-        if (focusEntity == null || focusEntity.getType().equalsIgnoreCase("EMPTY")) {
+        if (focusEntity == null || focusEntity.getType().equalsIgnoreCase(FocusStrategy.EMPTY)) {
             genericGraphBuilder.focus().empty().apply();
-        } else if(focusEntity.getType().equalsIgnoreCase("FIRST")) {
+        } else if(focusEntity.getType().equalsIgnoreCase(FocusStrategy.FIRST)) {
             genericGraphBuilder.focus().first().apply();
-        } else if(focusEntity.getType().equalsIgnoreCase("ALL")) {
+        } else if(focusEntity.getType().equalsIgnoreCase(FocusStrategy.ALL)) {
             genericGraphBuilder.focus().all().apply();
-        } else if (focusEntity.getType().equalsIgnoreCase("SELECTION")) {
+        } else if (focusEntity.getType().equalsIgnoreCase(FocusStrategy.SELECTION)) {
             genericGraphBuilder.focus().selection(genericGraphBuilder.getNamespace(), focusEntity.getVertexIds()).apply();
+        } else {
+            throw new IllegalStateException("The focus strategy '" + focusEntity.getType() + "' read from persistence is not known.");
         }
         return genericGraphBuilder.build();
     }
