@@ -53,6 +53,7 @@
         <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
         <entry key="jmx-config.xml" value="jmxConfigDao"/>
         <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
+        <entry key="xml-datacollection-config.xml" value="xmlDataCollectionConfigDao"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
         <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
@@ -242,6 +243,14 @@
   </bean>
 
   <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao" />
+
+  <bean id="xmlDataCollectionConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/xml-datacollection-config.xml" />
+  </bean>
+
+  <bean id="xmlDataCollectionConfigDao" class="org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb">
+    <property name="configResource" ref="xmlDataCollectionConfigResourceLocation" />
+  </bean>
 
   <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value></property>
