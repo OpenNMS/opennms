@@ -232,7 +232,6 @@ require('../services/Synchronize');
     $scope.updateFilteredNodes = function() {
       $scope.currentPage = 1;
       $scope.totalItems = $scope.filteredNodes.length;
-      $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
     };
 
     /**
@@ -272,6 +271,17 @@ require('../services/Synchronize');
       });
     };
 
+   /**
+    * @description Saves the page size on a cookie
+    *
+    * @name RequisitionController:savePageSize
+    * @ngdoc method
+    * @methodOf RequisitionController
+    */
+    $scope.savePageSize = function() {
+      $cookies.put('requisitions_page_size', $scope.pageSize);
+    }
+
     /**
     * @description Initializes the local requisition from the server
     *
@@ -281,6 +291,10 @@ require('../services/Synchronize');
     * @param {function} customHandler An optional method to be called after the initialization is done.
     */
     $scope.initialize = function(customHandler) {
+      var value = $cookies.get('requisitions_page_size');
+      if (value) {
+        $scope.pageSize = value;
+      }
       growl.success('Retrieving requisition ' + $scope.foreignSource + '...');
       RequisitionsService.getRequisition($scope.foreignSource).then(
         function(requisition) { // success

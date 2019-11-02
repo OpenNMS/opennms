@@ -999,8 +999,8 @@
 	<bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
-    <feature name="opennms-bundle-refresher" description="OpenNMS :: Vaadin-Theme Bundle Refresher">
-        <bundle start-level="100">mvn:org.opennms.features.vaadin-components/bundle-refresher/${project.version}</bundle>
+    <feature name="opennms-karaf-health" description="OpenNMS :: Karaf Health">
+        <bundle start-level="100">mvn:org.opennms.features/org.opennms.features.karaf-health/${project.version}</bundle>
     </feature>
     <feature name="opennms-health" version="${project.version}" description="OpenNMS :: Health">
         <feature>dropwizard-metrics</feature>
