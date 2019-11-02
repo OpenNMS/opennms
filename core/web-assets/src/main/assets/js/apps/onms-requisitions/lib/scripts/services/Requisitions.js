@@ -461,12 +461,19 @@ const RequisitionNode  = require('../model/RequisitionNode');
       .success(function(data) {
         const req = new Requisition(data);
         $log.debug('getRequisition: got requisition ' + foreignSource);
-        const requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
-        if (requisitionsData) {
-          $log.debug('getRequisition: updating cache for requisition ' + foreignSource);
-          requisitionsData.setRequisition(req);
-        }
-        deferred.resolve(req);
+        requisitionsService.updateDeployedStatsForRequisition(req).then(
+          function() { // success;
+            const requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
+            if (requisitionsData) {
+              $log.debug('getRequisition: updating cache for requisition ' + foreignSource);
+              requisitionsData.setRequisition(req);
+            }
+            deferred.resolve(req);
+          },
+          function(error) { // error
+            deferred.reject(error);
+          }
+        );
       })
       .error(function(error, status) {
         $log.error('getRequisition: GET ' + url + ' failed:', error, status);
