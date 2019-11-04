@@ -34,7 +34,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- TODO MVR includes apache commons. Do we want to exclude it here? -->
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>

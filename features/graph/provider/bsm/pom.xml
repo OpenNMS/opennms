@@ -31,7 +31,6 @@
             <artifactId>org.opennms.features.graph.api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- TODO MVR this is still weird -->
         <dependency>
             <groupId>org.opennms.features.graph</groupId>
             <artifactId>org.opennms.features.graph.simple</artifactId>

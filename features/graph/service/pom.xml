@@ -52,7 +52,6 @@
             <artifactId>gson</artifactId>
             <version>${gsonVersion}</version>
         </dependency>
-        <!-- TODO MVR dependency ?? -->
         <dependency>
             <groupId>org.opennms.features.graph</groupId>
             <artifactId>org.opennms.features.graph.simple</artifactId>

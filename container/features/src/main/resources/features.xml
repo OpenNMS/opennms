@@ -1568,14 +1568,10 @@
         <feature>opennms-graph-provider-application</feature>
         <feature>opennms-graph-provider-legacy</feature>
     </feature>
-
     <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
         <feature>guava</feature>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.api/${project.version}</bundle>
-        <!-- TODO MVR topology is embedding this, maybe we should do the same here? -->
-        <!-- TODO MVR this depends on commons-collections, verify via headers:<bundle> to see if everything can be imported -->
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.jung/${jungVersion}</bundle>
-        <!-- TODO MVR Graph persistence ??? -->
     </feature>
     <feature name="opennms-graph-updates"  description="OpenNMS :: Features :: Graph :: Updates" version="${project.version}">
         <feature>opennms-graph-api</feature>
@@ -1610,8 +1606,7 @@
         <feature>opennms-graph-service</feature>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.shell/${project.version}</bundle>
     </feature>
-
-    <!-- Providers -->
+    <!-- Graph Providers -->
     <feature name="opennms-graph-provider-graphml" description="OpenNMS :: Features :: Graph :: Provider :: GraphML" version="${project.version}">
         <feature>opennms-graph-service</feature>
         <feature>opennms-core</feature>
