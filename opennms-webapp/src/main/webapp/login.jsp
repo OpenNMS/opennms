@@ -43,7 +43,7 @@
     right: 0;
     bottom: 0;
     /*overflow: auto;*/
-    background-image: url('images/wallpapers/IMG_9269-X2.jpg');
+    background-image: url('images/wallpapers/space-ulf.png');
     background-size: cover;
   }
 
@@ -84,7 +84,7 @@
   <div class="" style=""> <!-- this way it appears a bit above center which feels more natural -->
     <div class="card login-form rounded">
       <div style="padding-bottom: 50px; padding-top: 20px">
-        <img src="images/opennms-logo.png" class="" width="170px" />
+        <img src="images/meridian_logo.svg" class="" width="170px" />
         <span style="font-size: 100%" class="badge badge-meridian pull-right">Meridian</span>
       </div>
       <form class="" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>">
