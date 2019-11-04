@@ -1,4 +1,10 @@
 version: 1
+allowed_updates:
+  - match:
+    update_type: security
+ignored_updates:
+  - match:
+    dependency_name: "ionicons"
 update_configs:
   - package_manager: "javascript"
     directory: "/core/web-assets/"
@@ -7,7 +13,7 @@ update_configs:
       - "rangerrick"
       - "j-white"
     default_labels:
-      - "dependabot"
+      - "dependency update"
     commit_message:
       prefix: "build"
       include_scope: true
