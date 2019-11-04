@@ -119,7 +119,6 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
     }
 
     // Besides its name it may return null
-    // TODO MVR the changes in graph info is weird implemented here... may find a better way/location?
     public GraphInfo getGraphInfo() {
         return currentGraphInfo;
     }

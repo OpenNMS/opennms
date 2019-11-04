@@ -52,10 +52,6 @@ public class GraphGetCommand implements Action {
     @Option(name="--namespace", description="The namespace of the graph", required = true)
     private String namespace;
 
-    // TODO MVR implement format
-//    @Option(name="--format", description="The format to get the graph", required = false)
-//    private String format; // json or graphml/xml
-
     @Override
     public Object execute() throws Exception {
         final GenericGraph genericGraph = graphService.getGraph(containerId, namespace);

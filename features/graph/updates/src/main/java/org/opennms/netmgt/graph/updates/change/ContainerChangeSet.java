@@ -38,7 +38,6 @@ import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.updates.listener.GraphContainerChangeListener;
 import org.opennms.netmgt.graph.updates.listener.GraphContainerChangeSetListener;
 
-// TODO MVR detect info changes
 // TODO MVR enforce graph type
 public class ContainerChangeSet {
 
@@ -102,7 +101,6 @@ public class ContainerChangeSet {
 
         // both containers exists, so calculate changes
         if (oldGraphContainer != null && newGraphContainer != null) {
-            // TODO MVR detect info changes
             final List<String> oldNamespaces = oldGraphContainer.getNamespaces();
             final List<String> newNamespaces = newGraphContainer.getNamespaces();
 

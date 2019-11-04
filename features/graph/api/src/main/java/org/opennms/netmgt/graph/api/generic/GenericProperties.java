@@ -28,11 +28,8 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-// Very similar to the ones from OpenNMS, but only generic ones, no special meaning can be found here
-// TODO MVR decide which properties we still want to support and which can be removed
-
 /**
- * These properties are generally supported and may be used to persist as values to the {@link GenericElement#setProperty(String, Object)}.
+ * These properties are generally supported and may be used to persist as values when building a {@link GenericElement}.
  *
  * @author mvrueden
  */

@@ -31,9 +31,6 @@ package org.opennms.netmgt.graph.simple;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 
-// TODO MVR probably implement ContainerGraphInfo instead of a property
-// TODO MVR make more type safe
-// TODO MVR why is there a DefaultGraphContainerInfo, but no SimpleGraphContainerInfo... this is weird
 public class SimpleGraphContainer extends AbstractDomainGraphContainer<SimpleGraph> {
     
     private SimpleGraphContainer(GenericGraphContainer genericGraphContainer){

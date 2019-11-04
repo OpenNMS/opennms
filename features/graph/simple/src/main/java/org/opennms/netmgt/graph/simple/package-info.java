@@ -31,5 +31,3 @@
  * The main difference is, that the objects here are more Java friendly and no simple key/value stores.
  */
 package org.opennms.netmgt.graph.simple;
-
-// TODO MVR simple should probably be name default or domain?

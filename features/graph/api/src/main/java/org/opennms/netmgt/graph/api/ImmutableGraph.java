@@ -64,9 +64,6 @@ public interface ImmutableGraph<V extends Vertex, E extends Edge> extends GraphI
 
     Focus getDefaultFocus();
 
-    // TODO MVR
-//    Vertex getVertex(NodeRef nodeRef);
-
     GenericGraph asGenericGraph();
 
 }

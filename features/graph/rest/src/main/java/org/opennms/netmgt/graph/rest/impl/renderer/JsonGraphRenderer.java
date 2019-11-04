@@ -83,6 +83,8 @@ public class JsonGraphRenderer implements GraphRenderer {
 
                 if (graph != null) {
                     graph.asGenericGraph().getProperties().forEach((key, value) -> jsonGraph.put(key, value));
+
+                    // Convert Edges
                     graph.getEdges().stream().forEach(edge -> {
                         final GenericEdge genericEdge = edge.asGenericEdge();
                         final Map<String, Object> edgeProperties = new HashMap<>(genericEdge.getProperties());
@@ -92,19 +94,18 @@ public class JsonGraphRenderer implements GraphRenderer {
                         jsonEdgesArray.put(jsonEdge);
                     });
 
+                    // Convert Vertices
+                    graph.getVertices().stream().forEach(vertex -> {
+                        final JSONObject jsonVertex = new JSONObject(vertex.asGenericVertex().getProperties());
+                        jsonVerticesArray.put(jsonVertex);
+                    });
+
                     // Convert the focus
                     final Focus defaultFocus = graph.getDefaultFocus();
                     final JSONObject jsonFocus = new JSONObject();
                     jsonFocus.put("type", defaultFocus.getId());
                     jsonFocus.put("vertexIds", new JSONArray(defaultFocus.getVertexRefs()));
                     jsonGraph.put("defaultFocus", jsonFocus);
-
-                    // TODO MVR enrich me
-                    // enrichmentService.enrich(graph.getVertices());
-                    graph.getVertices().stream().forEach(vertex -> {
-                        final JSONObject jsonVertex = new JSONObject(vertex.asGenericVertex().getProperties());
-                        jsonVerticesArray.put(jsonVertex);
-                    });
                 }
                 jsonGraphArray.put(jsonGraph);
             });

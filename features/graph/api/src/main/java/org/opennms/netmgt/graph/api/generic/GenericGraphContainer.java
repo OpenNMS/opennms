@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-// TODO MVR we must rework the generic and simple objects a bit more... that is kinda weird how it is implemented. The graph could work as an example but is also not fully defined yet
 public class GenericGraphContainer implements ImmutableGraphContainer<GenericGraph> {
 
     private final List<GenericGraph> graphs;

@@ -36,7 +36,6 @@ public class ConverterService {
 
     private final List<Converter<?>> converterRegistry = new ArrayList<>();
 
-        // TODO MVR we probably want import the converters via osgi?!
     public ConverterService() {
         converterRegistry.add(new PrimitiveConverter<>(Boolean.class, Boolean::valueOf));
         converterRegistry.add(new PrimitiveConverter<>(Float.class, Float::valueOf));
