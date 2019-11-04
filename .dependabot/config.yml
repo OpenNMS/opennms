@@ -4,6 +4,8 @@ allowed_updates:
     update_type: security
 ignored_updates:
   - match:
+    dependency_name: "d3"
+  - match:
     dependency_name: "ionicons"
 update_configs:
   - package_manager: "javascript"
