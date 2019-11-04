@@ -46,6 +46,7 @@ import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.api.transformer.SemanticZoomLevelTransformer;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -191,14 +192,8 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     }
 
     @Override
-    public ImmutableGraph<GenericVertex, GenericEdge> getSnapshot(Collection<GenericVertex> verticesInFocus, int szl) {
-        // TODO MVR implement me
-//        return new SemanticZoomLevelTransformer(verticesInFocus, szl).transform(this, () -> {
-//            final SimpleGraph<SimpleVertex, SimpleEdge<SimpleVertex>> snapshotGraph = new SimpleGraph<>(getNamespace());
-//            applyInfo(SimpleGraph.this);
-//            return snapshotGraph;
-//        });
-        return null;
+    public ImmutableGraph<GenericVertex, GenericEdge> getView(Collection<GenericVertex> verticesInFocus, int szl) {
+        return new SemanticZoomLevelTransformer(verticesInFocus, szl).transform(this);
     }
 
     @Override
@@ -367,6 +362,10 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         
         public GenericGraph build() {
             return new GenericGraph(this);
+        }
+
+        public List<GenericVertex> getVertices() {
+            return Lists.newArrayList(vertexToIdMap.values());
         }
 
         /**

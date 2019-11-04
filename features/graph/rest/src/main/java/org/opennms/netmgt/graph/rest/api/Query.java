@@ -26,16 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.rest.impl.renderer;
+package org.opennms.netmgt.graph.rest.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
-import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
+public class Query {
 
-public interface GraphRenderer {
-    String render(List<GraphContainerInfo> containerInfos);
-    String render(ImmutableGraphContainer<?> graphContainer);
-    String render(ImmutableGraph<?, ?> graph);
+    public static final int DEFAULT_SEMANTIC_ZOOM_LEVEL = 1;
+
+    private Integer szl;
+
+    private List<String> verticesInFocus;
+
+    public Integer getSzl() {
+        return szl;
+    }
+
+    public void setSzl(Integer szl) {
+        this.szl = szl;
+    }
+
+    public List<String> getVerticesInFocus() {
+        return verticesInFocus;
+    }
+
+    public void setVerticesInFocus(List<String> verticesInFocus) {
+        this.verticesInFocus = verticesInFocus;
+    }
 }

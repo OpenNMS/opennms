@@ -32,10 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
@@ -54,20 +54,25 @@ public class SemanticZoomLevelTransformer {
         this.szl = szl;
     }
 
-    public GenericGraph transform(GenericGraph sourceGraph, Supplier<GenericGraph> snapshotGraphFactory) {
-        final GenericGraph snapshot = snapshotGraphFactory.get();
-        GenericGraphBuilder snapshotBuilder = GenericGraph.builder().graph(snapshot.asGenericGraph())
-                .addVertices(verticesInFocus);
+    public GenericGraph transform(GenericGraph sourceGraph) {
+        // Determine vertices that are in focus but also actually known by the source graph
+        final List<VertexRef> vertexRefsInFocus = verticesInFocus.stream().map(v -> new VertexRef(v.getNamespace(), v.getId())).collect(Collectors.toList());
+        final List<GenericVertex> knownVerticesInFocus = sourceGraph.resolveVertexRefs(vertexRefsInFocus);
 
-        final List<Vertex> alreadyProcessedVertices = new ArrayList<>();
+        // Now build the view
+        final GenericGraphBuilder graphBuilder = GenericGraph.builder()
+                .graphInfo(sourceGraph)
+                .properties(sourceGraph.getProperties())
+                .addVertices(knownVerticesInFocus);
 
         // Determine all vertices according to szl
-        final List<GenericVertex> verticesToProcess = Lists.newArrayList(verticesInFocus);
+        final List<Vertex> alreadyProcessedVertices = new ArrayList<>();
+        final List<GenericVertex> verticesToProcess = Lists.newArrayList(knownVerticesInFocus);
         for (int i=0; i<szl; i++) {
             final List<GenericVertex> tmpVertices = new ArrayList<>();
             for (GenericVertex eachVertex : verticesToProcess) {
                 final Collection<GenericVertex> neighbors = sourceGraph.getNeighbors(eachVertex);
-                snapshotBuilder.addVertices(neighbors);
+                graphBuilder.addVertices(neighbors);
 
                 // Mark for procession
                 for (GenericVertex eachNeighbor : neighbors) {
@@ -85,15 +90,15 @@ public class SemanticZoomLevelTransformer {
         // Add all edges now
         // First determine all edges
         final List<GenericEdge> edges = new ArrayList<>();
-        for (GenericVertex eachVertex : snapshot.getVertices()) {
+        for (GenericVertex eachVertex : graphBuilder.getVertices()) {
             edges.addAll(sourceGraph.getConnectingEdges(eachVertex));
         }
 
         // Second remove all edges which are "on the edge"
-        final List<GenericEdge> edgesToAdd = edges.stream().filter(e -> snapshot.getVertex(e.getSource().getId()) != null)
-                .filter(e -> snapshot.getVertex(e.getTarget().getId()) != null)
+        final List<GenericEdge> edgesToAdd = edges.stream().filter(e -> graphBuilder.getVertex(e.getSource().getId()) != null)
+                .filter(e -> graphBuilder.getVertex(e.getTarget().getId()) != null)
                 .collect(Collectors.toList());
-        snapshotBuilder.addEdges(edgesToAdd);
-        return snapshotBuilder.build();
+        graphBuilder.addEdges(edgesToAdd);
+        return graphBuilder.build();
     }
 }

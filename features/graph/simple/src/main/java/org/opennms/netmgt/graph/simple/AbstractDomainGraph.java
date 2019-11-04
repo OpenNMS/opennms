@@ -98,11 +98,11 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
     }
 
     @Override
-    public ImmutableGraph<V, E> getSnapshot(Collection<V> verticesInFocus, int szl) {
+    public ImmutableGraph<V, E> getView(Collection<V> verticesInFocus, int szl) {
         Objects.requireNonNull(verticesInFocus);
         Collection<GenericVertex> genericVerticesInFocus = verticesInFocus.stream()
                 .map(AbstractDomainVertex::asGenericVertex).collect(Collectors.toList());
-        GenericGraph genericGraph = this.delegate.getSnapshot(genericVerticesInFocus, szl).asGenericGraph();
+        GenericGraph genericGraph = this.delegate.getView(genericVerticesInFocus, szl).asGenericGraph();
         return convert(genericGraph);
     }
 

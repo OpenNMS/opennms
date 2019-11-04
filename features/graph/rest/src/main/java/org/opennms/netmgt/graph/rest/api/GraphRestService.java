@@ -30,6 +30,7 @@ package org.opennms.netmgt.graph.rest.api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -46,4 +47,12 @@ public interface GraphRestService {
     @GET
     @Path("/{containerId}")
     Response getContainer(@PathParam("containerId") String containerId);
+
+    @GET
+    @Path("/{containerId}/{namespace}")
+    Response getGraph(@PathParam("containerId") String containerId, @PathParam("namespace") String namespace);
+
+    @POST
+    @Path("/{containerId}/{namespace}")
+    Response getView(@PathParam("containerId") String containerId, @PathParam("namespace") String namespace, Query query);
 }

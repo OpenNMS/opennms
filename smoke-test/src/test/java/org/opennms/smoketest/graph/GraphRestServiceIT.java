@@ -35,6 +35,8 @@ import static io.restassured.RestAssured.preemptive;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -125,26 +127,38 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyGetContainer() {
-        createGraphML();
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
-            given().get(CONTAINER_ID).then()
-                    .contentType(ContentType.JSON)
-                    .content("graphs", Matchers.hasSize(2))
-                    .content("graphs[0].id", Matchers.is("markets"))
-                    .content("graphs[0].namespace", Matchers.is("acme:markets"))
-                    .content("graphs[0].defaultFocus.type", Matchers.is("SELECTION"))
-                    .content("graphs[0].defaultFocus.vertexIds.size()", Matchers.is(1))
-                    .content("graphs[0].defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
-                    .content("graphs[0].vertices", Matchers.hasSize(16))
-                    .content("graphs[0].edges", Matchers.hasSize(0))
+        createGraphMLAndWaitUntilDone();
+        given().get(CONTAINER_ID).then()
+                .contentType(ContentType.JSON)
+                .content("graphs", Matchers.hasSize(2))
+                .content("graphs[0].id", Matchers.is("markets"))
+                .content("graphs[0].namespace", Matchers.is("acme:markets"))
+                .content("graphs[0].defaultFocus.type", Matchers.is("SELECTION"))
+                .content("graphs[0].defaultFocus.vertexIds.size()", Matchers.is(1))
+                .content("graphs[0].defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
+                .content("graphs[0].vertices", Matchers.hasSize(16))
+                .content("graphs[0].edges", Matchers.hasSize(0))
 
-                    .content("graphs[1].id", Matchers.is("regions"))
-                    .content("graphs[1].namespace", Matchers.is("acme:regions"))
-                    .content("graphs[1].defaultFocus.type", Matchers.is("ALL"))
-                    .content("graphs[1].defaultFocus.vertexIds.size()", Matchers.is(4))
-                    .content("graphs[1].vertices", Matchers.hasSize(4))
-                    .content("graphs[1].edges", Matchers.hasSize(16));
-        });
+                .content("graphs[1].id", Matchers.is("regions"))
+                .content("graphs[1].namespace", Matchers.is("acme:regions"))
+                .content("graphs[1].defaultFocus.type", Matchers.is("ALL"))
+                .content("graphs[1].defaultFocus.vertexIds.size()", Matchers.is(4))
+                .content("graphs[1].vertices", Matchers.hasSize(4))
+                .content("graphs[1].edges", Matchers.hasSize(16));
+    }
+
+
+    @Test
+    public void verifyGetGraph() {
+        createGraphMLAndWaitUntilDone();
+        given().get(CONTAINER_ID + "/acme:markets")
+                .then()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("markets"))
+                .content("namespace", Matchers.is("acme:markets"))
+                .content("graphs[0].defaultFocus.type", Matchers.is("ALL"))
+                .content("graphs[0].vertices", Matchers.hasSize(16))
+                .content("graphs[0].edges", Matchers.hasSize(0));
     }
 
     @Test
@@ -195,6 +209,78 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                .content("[0].label", Matchers.is("North Region"))      
                .content("[0].id", Matchers.is("north"))
                .content("", Matchers.hasSize(1));
+    }
+
+
+    @Test
+    public void verifyDefaultFocus() {
+        if (restClient.getGraphML(CONTAINER_ID).getStatus() == 404) {
+            restClient.sendGraphML(CONTAINER_ID, getClass().getResourceAsStream("/topology/graphml/test-topology.xml"));
+        }
+        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
+            given().accept(ContentType.JSON).get()
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .content("[0].id", Matchers.is("application"))
+                    .content("[1].id", Matchers.is(CONTAINER_ID));
+        });
+        given().post(CONTAINER_ID + "/test")
+                .then()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("test"))
+                .content("namespace", Matchers.is("test"))
+                .content("defaultFocus.type", Matchers.is("FIRST"))
+                .content("vertices", Matchers.hasSize(1))
+                .content("edges", Matchers.hasSize(0))
+                .content("vertices[0].id", Matchers.is("v1"));
+    }
+
+    @Test
+    public void verifySemanticZoomLevel() {
+        if (restClient.getGraphML(CONTAINER_ID).getStatus() == 404) {
+            restClient.sendGraphML(CONTAINER_ID, getClass().getResourceAsStream("/topology/graphml/test-topology.xml"));
+        }
+        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
+            given().accept(ContentType.JSON).get()
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .content("[0].id", Matchers.is("application"))
+                    .content("[1].id", Matchers.is(CONTAINER_ID));
+        });
+        given().post(CONTAINER_ID + "/test", new JSONObject().put("szl", 1))
+                .then()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("test"))
+                .content("namespace", Matchers.is("test"))
+                .content("vertices", Matchers.hasSize(3))
+                .content("edges", Matchers.hasSize(2))
+                .content("vertices[0].id", Matchers.is("v1"))
+                .content("vertices[1].id", Matchers.is("v1.1"))
+                .content("vertices[2].id", Matchers.is("v1.2"));
+    }
+
+    @Test
+    public void verifyCustomFocus() {
+        if (restClient.getGraphML(CONTAINER_ID).getStatus() == 404) {
+            restClient.sendGraphML(CONTAINER_ID, getClass().getResourceAsStream("/topology/graphml/test-topology.xml"));
+        }
+        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
+            given().accept(ContentType.JSON).get()
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .content("[0].id", Matchers.is("application"))
+                    .content("[1].id", Matchers.is(CONTAINER_ID));
+        });
+        given().post(CONTAINER_ID + "/test", new JSONObject().put("szl", 1).put("verticesInFocus", new JSONArray().put("v1.1.1")))
+                .then()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("test"))
+                .content("namespace", Matchers.is("test"))
+                .content("vertices", Matchers.hasSize(3))
+                .content("edges", Matchers.hasSize(2))
+                .content("vertices[0].id", Matchers.is("v1.1"))
+                .content("vertices[1].id", Matchers.is("v1.1.1"))
+                .content("vertices[2].id", Matchers.is("v1.1.2"));
     }
 
     private void createGraphMLAndWaitUntilDone() {
