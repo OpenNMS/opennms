@@ -33,22 +33,23 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 
 import java.util.concurrent.TimeUnit;
+
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
-import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
     private static final String CONTAINER_ID = "test";
-    private KarafShell karafShell;
-    private RestClient restClient;
+
+    private final RestClient restClient = stack.opennms().getRestClient();
 
     @Before
     public void setUp() {
@@ -56,13 +57,6 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         RestAssured.port = stack.opennms().getWebPort();
         RestAssured.basePath = "/opennms/api/v2/graphs";
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
-
-        // Install features
-        karafShell = new KarafShell(stack.opennms().getSshAddress());
-        karafShell.runCommand("feature:install opennms-graphs opennms-graph-provider-graphml");
-
-        // Set up rest client
-        restClient = stack.opennms().getRestClient();
 
         // Ensure no graph exists
         deleteGraphMLIfExists();
@@ -97,13 +91,34 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("[0].graphs[0].label", Matchers.is("Application Graph"))
                     .content("[0].graphs[0].description", Matchers.is("This Topology Provider displays all defined Applications and their calculated states."))
 
-                    .content("[1].id", Matchers.is(CONTAINER_ID))
-                    .content("[1].label", Matchers.is(GraphMLTopologyIT.LABEL))
-                    .content("[1].graphs.size()", Matchers.is(2))
-                    .content("[1].graphs[0].namespace", Matchers.is("acme:markets"))
-                    .content("[1].graphs[0].label", Matchers.is("Markets"))
-                    .content("[1].graphs[0].description", Matchers.is("The Markets Layer"))
-                    .content("[1].graphs[1].namespace", Matchers.is("acme:regions"));
+                    .content("[1].id", Matchers.is("bsm"))
+                    .content("[1].label", Matchers.is("Business Service Graph"))
+                    .content("[1].graphs.size()", Matchers.is(1))
+                    .content("[1].graphs[0].namespace", Matchers.is("bsm"))
+                    .content("[1].graphs[0].label", Matchers.is("Business Service Graph"))
+                    .content("[1].graphs[0].description", Matchers.is("This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states."))
+
+                    .content("[2].id", Matchers.is("vmware"))
+                    .content("[2].label", Matchers.is("VMware Topology Provider"))
+                    .content("[2].graphs.size()", Matchers.is(1))
+                    .content("[2].graphs[0].namespace", Matchers.is("vmware"))
+                    .content("[2].graphs[0].label", Matchers.is("VMware Topology Provider"))
+                    .content("[2].graphs[0].description", Matchers.is("The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."))
+
+                    .content("[3].id", Matchers.is("nodes"))
+                    .content("[3].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                    .content("[3].graphs.size()", Matchers.is(1))
+                    .content("[3].graphs[0].namespace", Matchers.is("nodes"))
+                    .content("[3].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                    .content("[3].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
+
+                    .content("[4].id", Matchers.is(CONTAINER_ID))
+                    .content("[4].label", Matchers.is(GraphMLTopologyIT.LABEL))
+                    .content("[4].graphs.size()", Matchers.is(2))
+                    .content("[4].graphs[0].namespace", Matchers.is("acme:markets"))
+                    .content("[4].graphs[0].label", Matchers.is("Markets"))
+                    .content("[4].graphs[0].description", Matchers.is("The Markets Layer"))
+                    .content("[4].graphs[1].namespace", Matchers.is("acme:regions"));
         });
     }
 
@@ -116,17 +131,18 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("graphs", Matchers.hasSize(2))
                     .content("graphs[0].id", Matchers.is("markets"))
                     .content("graphs[0].namespace", Matchers.is("acme:markets"))
-                    .content("graphs[0].defaultFocus.type", Matchers.is("ALL"))
+                    .content("graphs[0].defaultFocus.type", Matchers.is("SELECTION"))
+                    .content("graphs[0].defaultFocus.vertexIds.size()", Matchers.is(1))
+                    .content("graphs[0].defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
                     .content("graphs[0].vertices", Matchers.hasSize(16))
                     .content("graphs[0].edges", Matchers.hasSize(0))
 
                     .content("graphs[1].id", Matchers.is("regions"))
                     .content("graphs[1].namespace", Matchers.is("acme:regions"))
-                    .content("graphs[1].defaultFocus.type", Matchers.is("SELECTION"))
+                    .content("graphs[1].defaultFocus.type", Matchers.is("ALL"))
+                    .content("graphs[1].defaultFocus.vertexIds.size()", Matchers.is(4))
                     .content("graphs[1].vertices", Matchers.hasSize(4))
                     .content("graphs[1].edges", Matchers.hasSize(16));
-
-
         });
     }
 
@@ -187,7 +203,10 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .then().statusCode(200)
                     .contentType(ContentType.JSON)
                     .content("[0].id", Matchers.is("application"))
-                    .content("[1].id", Matchers.is(CONTAINER_ID));
+                    .content("[1].id", Matchers.is("bsm"))
+                    .content("[2].id", Matchers.is("vmware"))
+                    .content("[3].id", Matchers.is("nodes"))
+                    .content("[4].id", Matchers.is(CONTAINER_ID));
         });
     }
 
