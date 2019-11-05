@@ -2,6 +2,82 @@
 
 === Changelog
 
+[releasenotes-changelog-25.1.0]
+
+==== Release 25.1.0
+
+Release 25.1.0 is the second release in the Horizon 25 series.
+
+It contains a bunch of bug fixes and enhancements, including packaging fixes, BSM updates, alarmd improvements, and much more.
+
+[WARNING]
+====
+This release contains a couple of breaking changes:
+
+1. Dates in event XML (in the ReST API and published to the event port) now must be formatted in standard ISO-8601 format (eg, `2019-11-05T14:36:00-04:00`).
+2. Scriptd has been changed to execute scripts in a single read-only transaction by default.  If you need the ability to write changes to the database or need to do your own transaction management for any other reason, you will need to add `transactional="false"` to the `<scriptd-configuration ...>` tag in the `scriptd-configuration.xml` file.
+====
+
+The codename for 25.1.0 is _link:https://en.wikipedia.org/wiki/Momo_(food)[Momo]_.
+
+===== Bug
+
+* removed service will break BSM web ui (Issue http://issues.opennms.org/browse/NMS-9322[NMS-9322])
+* Event parameters no longer preserve ordering (Issue http://issues.opennms.org/browse/NMS-9827[NMS-9827])
+* The JMX-Cassandra service goes down for all the cluster when a single instance is down. (Issue http://issues.opennms.org/browse/NMS-10027[NMS-10027])
+* deleting a BSM monitor while an alarm is active doesn't clear the alarm (Issue http://issues.opennms.org/browse/NMS-10184[NMS-10184])
+* default event description is incorrect (Issue http://issues.opennms.org/browse/NMS-10346[NMS-10346])
+* Config tester doesn't detect missing xml datacollection file (Issue http://issues.opennms.org/browse/NMS-10396[NMS-10396])
+* Minion fails to start on Raspberry Pi  (Issue http://issues.opennms.org/browse/NMS-10447[NMS-10447])
+* BSM alarm severity is not being updated (Issue http://issues.opennms.org/browse/NMS-10578[NMS-10578])
+* snmp authentication error traps with Enhanced Linkd / bridge discovery (Issue http://issues.opennms.org/browse/NMS-10582[NMS-10582])
+* Elasticsearch forwarding fails to recover after outage (Issue http://issues.opennms.org/browse/NMS-10697[NMS-10697])
+* Flow rest results for top N queries are not returned in the correct order (Issue http://issues.opennms.org/browse/NMS-12104[NMS-12104])
+* Flow Classification not functioning as expected (Issue http://issues.opennms.org/browse/NMS-12259[NMS-12259])
+* ReST API for meta-data doesn't support JSON (Issue http://issues.opennms.org/browse/NMS-12272[NMS-12272])
+* UI for meta-data is only present when using the horizontal layout (Issue http://issues.opennms.org/browse/NMS-12273[NMS-12273])
+* Groups disappear in classification UI (Issue http://issues.opennms.org/browse/NMS-12291[NMS-12291])
+* BSM simulation mode does not reset the last state (Issue http://issues.opennms.org/browse/NMS-12302[NMS-12302])
+* Docker image for sentinel runs the process as root (Issue http://issues.opennms.org/browse/NMS-12311[NMS-12311])
+* Docker image for Minion runs with UID 1001 but the minion user has UID 997 (Issue http://issues.opennms.org/browse/NMS-12312[NMS-12312])
+* Web Assets Dependency Rollup 2019-09-24 (Issue http://issues.opennms.org/browse/NMS-12320[NMS-12320])
+* Memory leak in Drools engine for alarmd (Issue http://issues.opennms.org/browse/NMS-12322[NMS-12322])
+* Minion RPM upgrade deletes /opt/minion (Issue http://issues.opennms.org/browse/NMS-12324[NMS-12324])
+* Threshold state keys do not incorporate the collected resource's instance label (Issue http://issues.opennms.org/browse/NMS-12329[NMS-12329])
+* Reportd generated reports cause: "No bean named '' is defined" in Persisted Reports (Issue http://issues.opennms.org/browse/NMS-12337[NMS-12337])
+* InterfaceNodeCache doesn't remove deleted nodes immediately (Issue http://issues.opennms.org/browse/NMS-12338[NMS-12338])
+* Delivering a report with "-" in local part of email address is not working (Issue http://issues.opennms.org/browse/NMS-12342[NMS-12342])
+* XMLMarshalException in ipc.log: Unexpected close tag </inst>; expected </instance> (Issue http://issues.opennms.org/browse/NMS-12343[NMS-12343])
+* Update installation guide to CentOS 8 (Issue http://issues.opennms.org/browse/NMS-12348[NMS-12348])
+* Install guide for R-core is broken for CentOS 8 (Issue http://issues.opennms.org/browse/NMS-12352[NMS-12352])
+* Karaf feature install issue with opennms-core-tracing-jaeger (Issue http://issues.opennms.org/browse/NMS-12359[NMS-12359])
+* Fix requisition cache when accessing the Requisitions UI via "Edit in Requisition" (Issue http://issues.opennms.org/browse/NMS-12360[NMS-12360])
+* Listing monitoring locations from the administrative WebUI is not working (Issue http://issues.opennms.org/browse/NMS-12377[NMS-12377])
+
+===== Enhancement
+
+* Add more information into BSM alarms (Issue http://issues.opennms.org/browse/NMS-9352[NMS-9352])
+* Refactor the compatibility matrix in the documentation (Issue http://issues.opennms.org/browse/NMS-9684[NMS-9684])
+* Be able to change the number of rows for the pagination control on the Requisitions UI (Issue http://issues.opennms.org/browse/NMS-9793[NMS-9793])
+* Documentation typo for /rest/ifservices on the developers guide (Issue http://issues.opennms.org/browse/NMS-9842[NMS-9842])
+* Add Web-Hook as delivery option (Issue http://issues.opennms.org/browse/NMS-12153[NMS-12153])
+* Refactor Event Timestamps to ISO-8601 Format (Breaking Change) (Issue http://issues.opennms.org/browse/NMS-12263[NMS-12263])
+* Improve robustness of CassandraBlobStore for async operations (Issue http://issues.opennms.org/browse/NMS-12274[NMS-12274])
+* Clearing threshold states via shell should take effect immediately and not require restart (Issue http://issues.opennms.org/browse/NMS-12277[NMS-12277])
+* List Kafka RPC/Sink topics, Expose Metrics on Karaf shell (Issue http://issues.opennms.org/browse/NMS-12294[NMS-12294])
+* Create proper systemd files for OpenNMS, Minion and Sentinel (Issue http://issues.opennms.org/browse/NMS-12299[NMS-12299])
+* Add ability to update definitions when SNMP profile changes (Issue http://issues.opennms.org/browse/NMS-12307[NMS-12307])
+* Fix security vulnerability with jackson-databind (Issue http://issues.opennms.org/browse/NMS-12308[NMS-12308])
+* Availability boxes on node pages including sub pages differ (Issue http://issues.opennms.org/browse/NMS-12321[NMS-12321])
+* OpenNMS 25 Dependency Still Allows Old PostgreSQL Versions (Issue http://issues.opennms.org/browse/NMS-12341[NMS-12341])
+* Update base container image to use CentOS 8 (Issue http://issues.opennms.org/browse/NMS-12353[NMS-12353])
+* Remove floating OpenJDK dependencies in OCI build (Issue http://issues.opennms.org/browse/NMS-12354[NMS-12354])
+* Detect and help resolve Karaf bootstrap issues (Issue http://issues.opennms.org/browse/NMS-12356[NMS-12356])
+* Update CISCO-ENTITY-SENSOR-MIB threshold trap events to include alarm-data (Issue http://issues.opennms.org/browse/NMS-12362[NMS-12362])
+* switch core/web-assets from yarn to npm (Issue http://issues.opennms.org/browse/NMS-12363[NMS-12363])
+* Collect and display file descriptor statistics via JMX for OpenNMS and Minion (Issue http://issues.opennms.org/browse/NMS-12364[NMS-12364])
+
+
 [releasenotes-changelog-25.0.0]
 
 ==== Release 25.0.0
