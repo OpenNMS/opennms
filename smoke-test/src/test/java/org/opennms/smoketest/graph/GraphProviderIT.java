@@ -28,9 +28,7 @@
 
 package org.opennms.smoketest.graph;
 
-import java.io.IOException;
-
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.utils.KarafShell;
@@ -40,20 +38,12 @@ import org.opennms.smoketest.utils.KarafShell;
  */
 public class GraphProviderIT extends OpenNMSSeleniumIT {
 
-    private KarafShell karafShell;
-
-    @Before
-    public void setUp() throws IOException, InterruptedException {
-        // Install features
-        karafShell = new KarafShell(stack.opennms().getSshAddress());
-        karafShell.runCommand("feature:install opennms-graphs");
-    }
+    private KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
 
     // Here we verify that the graph provider is exposed correctly
     @Test
     public void canExposeGraphProvider() {
         try {
-            karafShell.runCommand("feature:install opennms-graph-provider-bsm");
             karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-bsm"));
             karafShell.runCommand("bsm:generate-hierarchies 5 2");
             karafShell.runCommand("graph:get --container bsm --namespace bsm", output ->
@@ -64,6 +54,7 @@ public class GraphProviderIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore("The provider was removed")
     public void canImportGraphRepository() {
         karafShell.runCommand("feature:install opennms-graph-provider-dummy");
         karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-dummy"));
