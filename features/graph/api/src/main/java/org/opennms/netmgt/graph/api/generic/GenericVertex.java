@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.api.generic;
 import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.aware.LocationAware;
@@ -50,17 +51,17 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeA
 
 //    // TODO MVR implement me
 //    @Override
-//    public NodeRef getNodeRef() {
-//        String nodeId = getProperty(GenericProperties.NODE_ID);
-//        String foreignSource = getProperty(GenericProperties.FOREIGN_SOURCE);
-//        String foreignId = getProperty(GenericProperties.FOREIGN_ID);
-//        if (nodeId != null) {
-//            return NodeRefs.from(nodeId);
-//        } else if (foreignSource != null && foreignId != null) {
-//            return NodeRefs.from(foreignSource + ":" + foreignId);
-//        }
-//        return null;
-//    }
+    public NodeRef getNodeRef() {
+        String nodeId = getProperty(GenericProperties.NODE_ID);
+        String foreignSource = getProperty(GenericProperties.FOREIGN_SOURCE);
+        String foreignId = getProperty(GenericProperties.FOREIGN_ID);
+        if (nodeId != null) {
+            return NodeRef.from(nodeId);
+        } else if (foreignSource != null && foreignId != null) {
+            return NodeRef.from(foreignSource, foreignId);
+        }
+        return null;
+    }
 
     // TODO MVR implement me
     @Override
@@ -96,6 +97,11 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeA
     		property(GenericProperties.ID, id);
     		return this;
     	}
+
+        public GenericVertexBuilder vertex(GenericVertex vertex) {
+            properties(vertex.getProperties());
+            return this;
+        }
     	
     	public GenericVertex build() {
     		return new GenericVertex(properties);

@@ -59,5 +59,10 @@
             <artifactId>org.opennms.features.graph.updates</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.graph.cache</groupId>
+            <artifactId>org.opennms.features.graph.cache.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

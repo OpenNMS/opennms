@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO MVR rework this class
 public class ApplicationSearchProvider implements SearchProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationSearchProvider.class);

@@ -26,33 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.persistence;
+package org.opennms.netmgt.graph.cache.api;
 
-import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
-import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
-import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
+import java.util.List;
 
-// Graph Persistence... only for access of underlying persistence (hibernate)
-// To access all graphs (GraphProviders), use the GraphService
-public interface GraphRepository {
+import org.opennms.netmgt.graph.api.NodeRef;
+import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-    void save(ImmutableGraphContainer graphContainer);
+public interface CachingService {
 
-    void save(GraphContainerInfo containerInfo);
-
-    GenericGraphContainer findContainerById(String containerId);
-
-    GraphContainerInfo findContainerInfoById(String containerId);
-
-    void deleteContainer(String containerId);
-
-    // TODO Remove these
-//    <V extends Vertex, E extends Edge<V>, G extends Graph<V, E>> void save(G graph);
-//
-//    GenericGraph findByNamespace(String namespace);
-//
-//    GraphInfo findGraphInfo(String namespace);
-//
-//    <G extends Graph<V, E>, V extends Vertex, E extends Edge<V>> G findByNamespace(final String namespace, final Function<GenericGraph, G> transformer);
+    List<NodeInfo> get(List<NodeRef> nodeRefs);
 
 }

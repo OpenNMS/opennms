@@ -95,6 +95,15 @@ public class DefaultGraphService implements GraphService {
         throw new NoSuchElementException("Could not find a Graph with namespace '" + namespace + "'.");
     }
 
+    @Override
+    public GenericGraph enrichGraph(GenericGraph graph) {
+        final Optional<GraphContainerProvider> any = graphContainerProviders.stream().filter(containerProvider -> containerProvider.getContainerInfo().getNamespaces().contains(graph.getNamespace())).findAny();
+        if (any.isPresent()) {
+            return any.get().enrich(graph);
+        }
+        throw new NoSuchElementException("TODO MVR"); // TODO MVR
+    }
+
     public void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         graphContainerProviders.add(graphContainerProvider);
     }

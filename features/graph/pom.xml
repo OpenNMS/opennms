@@ -29,6 +29,7 @@
     </build>
     <modules>
         <module>api</module>
+        <module>cache</module>
         <module>dao</module>
         <module>jung</module>
         <module>provider</module>

@@ -44,6 +44,7 @@ import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
@@ -52,7 +53,9 @@ import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphCo
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
+import org.opennms.netmgt.graph.api.info.NodeInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
+import org.opennms.netmgt.graph.cache.api.CachingService;
 
 import com.google.common.collect.Lists;
 
@@ -61,40 +64,50 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     private static final String FOCUS_STRATEGY = "focus-strategy";
     private static final String FOCUS_IDS = "focus-ids";
 
+    private final CachingService cachingService;
     private final GraphML graphML;
     private GenericGraphContainer graphContainer;
     private HashMap<String, GraphMLGraph> vertexIdToGraphMapping;
 
-    public GraphmlGraphContainerProvider(InputStream inputStream) throws InvalidGraphException {
-        this(GraphMLReader.read(inputStream));
-    }
+    public GraphmlGraphContainerProvider(CachingService cachingService, String location) throws IOException, InvalidGraphException {
+        this.cachingService = Objects.requireNonNull(cachingService);
 
-    public GraphmlGraphContainerProvider(GraphML graphML) {
-        this.graphML = Objects.requireNonNull(graphML);
-        // This should not be invoked at this point, however it is static anyways and in order
-        // to know the graph infos we must read the data.
-        // Maybe we can just read it partially at some point, however this is how it is implemented for now
-        loadGraphContainer();
-    }
-
-    public GraphmlGraphContainerProvider(String location) throws IOException, InvalidGraphException {
         if (!new File(location).exists()) {
             throw new FileNotFoundException(location);
         }
         try (InputStream input = new FileInputStream(location)) {
             this.graphML = GraphMLReader.read(input);
         }
-        // TODO MVR duplicated comment
         // This should not be invoked at this point, however it is static anyways and in order
         // to know the graph infos we must read the data.
         // Maybe we can just read it partially at some point, however this is how it is implemented for now
         loadGraphContainer();
     }
 
+    // TODO MVR add notification capabilities
 //    @Override
 //    public void setNotificationService(GraphNotificationService notificationService) {
 //
 //    }
+
+    @Override
+    public GenericGraph enrich(GenericGraph graph) {
+        final List<NodeRef> nodeRefs = graph.getVertices().stream().map(v -> v.getNodeRef()).filter(ref -> ref != null).collect(Collectors.toList());
+        final List<NodeInfo> nodeInfos = cachingService.get(nodeRefs);
+        final GenericGraphBuilder enrichedGraphBuilder = GenericGraph.builder().graph(graph);
+        nodeInfos.forEach(ni -> {
+            final GenericVertex vertex = enrichedGraphBuilder.getVertex(ni.getNodeRef());
+            if (vertex != null) {
+                GenericVertex enrichedVertex = GenericVertex.builder()
+                        .vertex(vertex)
+                        .property(GenericProperties.NODE_INFO, ni)
+                        .build();
+                enrichedGraphBuilder.removeVertex(vertex);
+                enrichedGraphBuilder.addVertex(enrichedVertex);
+            }
+        });
+        return enrichedGraphBuilder.build();
+    }
 
     @Override
     public ImmutableGraphContainer loadGraphContainer() {

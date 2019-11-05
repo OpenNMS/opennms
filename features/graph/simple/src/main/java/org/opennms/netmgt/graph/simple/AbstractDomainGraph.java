@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
+import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
@@ -79,6 +80,12 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
     public V getVertex(String id) {
         Objects.requireNonNull(id);
         return Optional.ofNullable(this.delegate.getVertex(id)).map(this::convert).orElse(null);
+    }
+
+    @Override
+    public V getVertex(NodeRef nodeRef) {
+        Objects.requireNonNull(nodeRef);
+        return Optional.ofNullable(delegate.getVertex(nodeRef)).map(this::convert).orElse(null);
     }
 
     @Override

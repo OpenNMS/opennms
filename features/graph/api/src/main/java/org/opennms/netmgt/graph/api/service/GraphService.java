@@ -49,4 +49,5 @@ public interface GraphService {
 
     GenericGraph getGraph(String namespace);
 
+    GenericGraph enrichGraph(GenericGraph graph);
 }

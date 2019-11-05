@@ -28,14 +28,29 @@
 
 package org.opennms.netmgt.graph.api.info;
 
+import java.net.InetAddress;
+import java.util.Objects;
+
 public class IpInfo {
     private String ipAddress;
+    private boolean primary;
+    private boolean managed;
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public IpInfo(InetAddress ipAddress, boolean primary, boolean managed) {
+        this.ipAddress = Objects.requireNonNull(ipAddress).toString();
+        this.primary = primary;
+        this.managed = managed;
     }
 
     public String getIpAddress() {
         return ipAddress;
+    }
+
+    public boolean isPrimary() {
+        return primary;
+    }
+
+    public boolean isManaged() {
+        return managed;
     }
 }

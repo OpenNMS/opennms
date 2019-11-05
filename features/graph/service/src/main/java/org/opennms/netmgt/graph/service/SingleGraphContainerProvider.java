@@ -67,4 +67,9 @@ public class SingleGraphContainerProvider implements GraphContainerProvider {
         containerInfo.getGraphInfos().add(graphProvider.getGraphInfo());
         return containerInfo;
     }
+
+    @Override
+    public GenericGraph enrich(GenericGraph graph) {
+        return graphProvider.enrich(graph);
+    }
 }

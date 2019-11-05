@@ -78,6 +78,7 @@ public class AbstractDomainVertex implements Vertex, NodeAware, LocationAware  {
         return delegate.getNodeInfo();
     }
 
+    // TODO MVR AFAIK this is not needed
     public String getNodeRefString() {
         return delegate.getProperty(GenericProperties.NODE_REF);
     }

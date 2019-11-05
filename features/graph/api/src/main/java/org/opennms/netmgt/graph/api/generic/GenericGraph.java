@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
+import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
@@ -61,7 +62,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph;
     private final Map<String, GenericVertex> vertexToIdMap;
     private final Map<String, GenericEdge> edgeToIdMap;
-//    private final Map<NodeRef, V> nodeRefToVertexMap = new HashMap<>();
+    private final Map<NodeRef, GenericVertex> nodeRefToVertexMap;
 
     // A calculation of the focus
     private final Focus defaultFocus;
@@ -72,6 +73,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         this.jungGraph = builder.jungGraph;
         this.vertexToIdMap = builder.vertexToIdMap;
         this.edgeToIdMap = builder.edgeToIdMap;
+        this.nodeRefToVertexMap = builder.nodeRefToVertexMap;
         this.defaultFocus = builder.defaultFocus;
         this.graphInfo = new GenericGraphInfo();
     }
@@ -119,10 +121,16 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         return defaultFocus;
     }
 
-    //    @Override
-//    public Vertex getVertex(NodeRef nodeRef) {
-//        return nodeRefToVertexMap.get(nodeRef);
-//    }
+    @Override
+    public GenericVertex getVertex(NodeRef nodeRef) {
+        Objects.requireNonNull(nodeRef);
+        for (NodeRef eachVariant : nodeRef.getVariants()) {
+            if (nodeRefToVertexMap.containsKey(eachVariant)) {
+                return nodeRefToVertexMap.get(eachVariant);
+            }
+        }
+        return null;
+    }
 
     @Override
     public GenericVertex getVertex(String id) {
@@ -222,7 +230,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph = new DirectedSparseGraph<>();
         private final Map<String, GenericVertex> vertexToIdMap = new HashMap<>();
         private final Map<String, GenericEdge> edgeToIdMap = new HashMap<>();
-//        private final Map<NodeRef, V> nodeRefToVertexMap = new HashMap<>();
+        private final Map<NodeRef, GenericVertex> nodeRefToVertexMap = new HashMap<>();
 
         // A calculation of the focus
         private Focus defaultFocus = new Focus(FocusStrategy.EMPTY);
@@ -281,11 +289,9 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             if (jungGraph.containsVertex(vertex.getVertexRef())) return this; // already added
             jungGraph.addVertex(vertex.getVertexRef());
             vertexToIdMap.put(vertex.getId(), vertex);
-
-//            if (vertex.getNodeRef() != null) {
-//                // TODO MVR implement me
-////                nodeRefToVertexMap.put(vertex.getNodeRef(), vertex);
-//            }
+            if (vertex.getNodeRef() != null) {
+                nodeRefToVertexMap.put(vertex.getNodeRef(), vertex);
+            }
             return this; 
         }
 
@@ -334,7 +340,17 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         public GenericVertex getVertex(String id) {
             return vertexToIdMap.get(id);
         }
-        
+
+        public GenericVertex getVertex(NodeRef nodeRef) {
+            Objects.requireNonNull(nodeRef);
+            for (NodeRef eachVariant : nodeRef.getVariants()) {
+                if (nodeRefToVertexMap.containsKey(eachVariant)) {
+                    return nodeRefToVertexMap.get(eachVariant);
+                }
+            }
+            return null;
+        }
+
         public GenericGraphBuilder namespace(String namespace) {
             checkIfNamespaceChangeIsAllowed(namespace);
             return super.namespace(namespace);

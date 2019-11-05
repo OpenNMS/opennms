@@ -29,6 +29,7 @@
 package org.opennms.netmgt.graph.api.service;
 
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 
 // TODO MVR implement me
@@ -60,4 +61,7 @@ public interface GraphContainerProvider {
      * @return The container's meta data
      */
     GraphContainerInfo getContainerInfo();
+
+    // TODO MVR document / Also this is kinda an odd place for the enrichment :-/
+    GenericGraph enrich(GenericGraph graph);
 }

@@ -9,10 +9,13 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
+    <reference id="cachingService" interface="org.opennms.netmgt.graph.cache.api.CachingService" availability="mandatory" />
+
     <!-- GraphMLContainerProviders are exposed by the factory, because they are dynamically created by the GraphmlRepository -->
     <!-- TODO MVR probably need to change this -->
     <bean id="graphMLContainerProviderServiceFactory" class="org.opennms.netmgt.graph.provider.graphml.GraphMLContainerProviderServiceFactory">
         <argument ref="blueprintBundleContext" />
+        <argument ref="cachingService" />
     </bean>
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="graphMLContainerProviderServiceFactory">
         <service-properties>

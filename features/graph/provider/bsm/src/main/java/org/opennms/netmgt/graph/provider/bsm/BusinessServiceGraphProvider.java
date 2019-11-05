@@ -41,6 +41,7 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
@@ -91,6 +92,11 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         graphInfo.setLabel("Business Service Graph"); // Business Services
         graphInfo.setDescription("This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states.");
         return graphInfo;
+    }
+
+    @Override
+    public GenericGraph enrich(GenericGraph graph) {
+        return graph;
     }
 
     private ImmutableGraph<?, ?> createGraph() {

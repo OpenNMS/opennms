@@ -1,4 +1,6 @@
 
+TODO MVR remove this file and verify everything here has been worked on
+
  - [ ] rework getGraphInfo and loadGraph 
  - [ ] implement caching for graphservice
  - [ ] rework simple and generic elements

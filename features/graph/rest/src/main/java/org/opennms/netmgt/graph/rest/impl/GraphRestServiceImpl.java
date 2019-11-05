@@ -103,7 +103,10 @@ public class GraphRestServiceImpl implements GraphRestService {
         }
         final List<GenericVertex> focussedVertices = graph.resolveVertices(query.getVerticesInFocus());
         final GenericGraph view = graph.getView(focussedVertices, query.getSemanticZoomLevel()).asGenericGraph();
-        final JSONObject jsonView = new JsonGraphRenderer().convert(view);
+
+        // Apply enrichment
+        final GenericGraph enrichedView = graphService.enrichGraph(view);
+        final JSONObject jsonView = new JsonGraphRenderer().convert(enrichedView);
         jsonView.put("focus", convert(query));
         jsonView.remove("defaultFocus"); // There shouldn't be a default focus
         return Response.ok(jsonView.toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
