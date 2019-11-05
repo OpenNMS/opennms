@@ -84,6 +84,22 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.13]
+
+==== Release Meridian-2018.1.13
+
+Release 2018.1.13 is a small update to 2018.1.12 that fixes a few UI bugs.
+
+The codename for 2018.1.13 is _Flood_.
+
+===== Bug
+
+* Listing monitoring locations from the administrative WebUI is not working (Issue http://issues.opennms.org/browse/NMS-12377[NMS-12377])
+
+===== Enhancement
+
+* Availability boxes on node pages including sub pages differ (Issue http://issues.opennms.org/browse/NMS-12321[NMS-12321])
+
 [releasenotes-changelog-Meridian-2018.1.12]
 
 ==== Release Meridian-2018.1.12
