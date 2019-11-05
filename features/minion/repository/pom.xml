@@ -187,6 +187,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.ipc.common</groupId>
+            <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-requisition-service</artifactId>
         </dependency>
@@ -225,6 +230,11 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-rdns-lookup</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>

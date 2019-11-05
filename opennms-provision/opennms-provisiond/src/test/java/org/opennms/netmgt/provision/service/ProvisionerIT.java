@@ -41,7 +41,9 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -1414,7 +1416,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         policy.setLabel(OLD_LABEL);
 
         // Apply the policy
-        nodeCopy = policy.apply(nodeCopy);
+        nodeCopy = policy.apply(nodeCopy, Collections.emptyMap());
         assertTrue(nodeCopy.getRequisitionedCategories().contains(TEST_CATEGORY));
 
         final NodeLabelChangedEventBuilder eb = new NodeLabelChangedEventBuilder("OnmsNode.mergeNodeAttributes");

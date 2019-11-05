@@ -14,6 +14,8 @@
                 <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
                 <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
                 <attrib name="TotalSwapSpaceSize" alias="TotalSwapSpace" type="gauge"/>
+                <attrib name="MaxFileDescriptorCount" alias="OsMaxFDCount" type="gauge"/>
+                <attrib name="OpenFileDescriptorCount" alias="OsOpenFDCount" type="gauge"/>
             </mbean>
             <mbean name="JVM Threading" objectname="java.lang:type=Threading">
                 <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>

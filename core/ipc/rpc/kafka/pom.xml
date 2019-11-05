@@ -97,6 +97,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core.snmp</groupId>
+        <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-dao-mock</artifactId>
         <scope>test</scope>

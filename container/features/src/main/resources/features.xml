@@ -491,6 +491,7 @@
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-kafka</feature>
         <feature>opennms-core-camel</feature>
+        <feature>opennms-core-ipc-kafka-shell</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
     </feature>
@@ -539,6 +540,7 @@
     <feature name="opennms-core-ipc-rpc-kafka" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: Kafka Impl.">
         <feature>opennms-kafka</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
+        <feature>opennms-core-ipc-kafka-shell</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.kafka/${project.version}</bundle>
@@ -548,6 +550,12 @@
         <feature>guava</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.commands/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-core-ipc-kafka-shell" version="${project.version}" description="OpenNMS :: Core :: IPC :: Kafka :: Shell Commands">
+        <feature>opennms-kafka</feature>
+        <feature>opennms-distributed-core-api</feature>
+        <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka-shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-dao-api" version="${project.version}" description="OpenNMS :: DAO :: API">
         <feature>opennms-core</feature>
@@ -836,6 +844,7 @@
         <bundle>mvn:org.opennms/opennms-detector-jmx/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-jms/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-lineoriented/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-detector-rdns-lookup/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-simple/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-ssh/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-web/${project.version}</bundle>
@@ -990,8 +999,8 @@
 	<bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
-    <feature name="opennms-bundle-refresher" description="OpenNMS :: Vaadin-Theme Bundle Refresher">
-        <bundle start-level="100">mvn:org.opennms.features.vaadin-components/bundle-refresher/${project.version}</bundle>
+    <feature name="opennms-karaf-health" description="OpenNMS :: Karaf Health">
+        <bundle start-level="100">mvn:org.opennms.features/org.opennms.features.karaf-health/${project.version}</bundle>
     </feature>
     <feature name="opennms-health" version="${project.version}" description="OpenNMS :: Health">
         <feature>dropwizard-metrics</feature>

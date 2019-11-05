@@ -81,6 +81,8 @@ public class DiscoveryConfigurationTest extends XmlTestNoCastor<DiscoveryConfigu
         exampleConf.addIncludeUrl(new IncludeUrl("file:/opt/opennms/etc/include.txt"));
         exampleConf.addIncludeUrl(new IncludeUrl("http://example.com/ip-address-list.txt"));
 
+
+
         return Arrays.asList(new Object[][] {
             {
                 conf,

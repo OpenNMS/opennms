@@ -472,7 +472,6 @@
                 <feature>opennms-activemq-pool</feature>
                 <feature>opennms-activemq-shell</feature>
                 <feature>opennms-bootstrap</feature>
-                <feature>opennms-bundle-refresher</feature>
                 <feature>opennms-collection-api</feature>
                 <feature>opennms-collection-commands</feature>
                 <feature>opennms-collection-persistence-rrd</feature>
@@ -482,6 +481,7 @@
                 <feature>opennms-core-daemon</feature>
                 <feature>opennms-core-db</feature>
                 <feature>opennms-core-ipc-rpc-commands</feature>
+                <feature>opennms-core-ipc-kafka-shell</feature>
                 <feature>opennms-core</feature>
                 <feature>opennms-core-web</feature>
                 <feature>opennms-dao-api</feature>
@@ -587,6 +587,8 @@
                 <feature>opennms-blobstore-shell</feature>
                 <feature>opennms-jsonstore-shell</feature>
                 <feature>opennms-threshold-states-shell</feature>
+                <feature>opennms-core-tracing-jaeger</feature>
+                <feature>opennms-karaf-health</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
@@ -1010,6 +1012,26 @@
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.common</groupId>
+      <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.jaeger-osgi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.jaeger-tracer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.karaf-health</artifactId>
       <version>${project.version}</version>
     </dependency>
 

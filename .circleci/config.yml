@@ -3,11 +3,12 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: opennms/build-env:8-11_1.3
+      - image: opennms/build-env:jdk8-jdk11-3.6.2-b2874
   integration-test-executor:
     machine: true
   smoke-test-executor:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
 
 commands:
   cached-checkout:
@@ -56,7 +57,7 @@ commands:
             name: Calculate cache key
             command: |
               sha256sum core/web-assets/package.json > nodejs-dependency-cache.key
-              sha256sum core/web-assets/yarn.lock >> nodejs-dependency-cache.key
+              sha256sum core/web-assets/package-lock.json >> nodejs-dependency-cache.key
         - restore_cache:
             keys:
               - nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
@@ -96,6 +97,15 @@ commands:
         type: boolean
     steps:
       - run:
+          name: Enable swap
+          command: |
+            sudo fallocate -l 8G /swapfile
+            sudo chmod 600 /swapfile
+            sudo mkswap /swapfile
+            sudo swapon /swapfile
+            sudo sysctl vm.swappiness=5
+            cat /proc/sys/vm/swappiness
+      - run:
           name: Load Horizon OCI image
           command: |
             cd opennms-container/horizon
@@ -111,6 +121,16 @@ commands:
             cd opennms-container/sentinel
             docker image load -i images/container.oci
       - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
@@ -124,6 +144,8 @@ commands:
             ps auxf > ~/test-results/system-logs/ps
             free -m > ~/test-results/system-logs/free
             docker stats --no-stream > ~/test-results/system-logs/docker_stats
+            cp -R /tmp/jvmprocmon ~/test-results/system-logs/
+            ls -alh ~/project/smoke-test/
       - run:
           name: Gather test artifacts
           when: always
@@ -295,8 +317,6 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
-                - mvr/health-rest-service
-                - jira/NMS-12153
       - smoke-test-minimal:
           requires:
             - horizon-package-build
@@ -311,8 +331,6 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
-                - mvr/health-rest-service
-                - jira/NMS-12153
       - horizon-publish-oci:
           requires:
             - horizon-package-build
