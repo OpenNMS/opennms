@@ -409,7 +409,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
     /**
     * @description Updates the requisition object with the deployed statistics.
     *
-    * After retrieving the data, the provided object will be updated.
+    * After retrieving the data successfully, the provided object will be updated.
+    * Otherwise, the provided object will be returned unmodified, and this includes HTTP errors.
     *
     * @name RequisitionsService:updateDeployedStatsForRequisition
     * @ngdoc method
@@ -428,7 +429,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
       })
       .error(function(error, status) {
         $log.error('updateDeployedStatsForRequisition: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve the deployed statistics for requisition ' + existingReq.foreignSource + '. ' + requisitionsService.internal.errorHelp);
+        deferred.resolve(existingReq);
       });
       return deferred.promise;
     };
@@ -462,16 +463,13 @@ const RequisitionNode  = require('../model/RequisitionNode');
         const req = new Requisition(data);
         $log.debug('getRequisition: got requisition ' + foreignSource);
         requisitionsService.updateDeployedStatsForRequisition(req).then(
-          function() { // success;
+          function(updatedReq) { // success;
             const requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
             if (requisitionsData) {
               $log.debug('getRequisition: updating cache for requisition ' + foreignSource);
-              requisitionsData.setRequisition(req);
+              requisitionsData.setRequisition(updatedReq);
             }
-            deferred.resolve(req);
-          },
-          function(error) { // error
-            deferred.reject(error);
+            deferred.resolve(updatedReq);
           }
         );
       })
