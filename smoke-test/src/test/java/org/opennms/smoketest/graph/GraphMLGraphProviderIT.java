@@ -62,17 +62,12 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
 
     private final String URL = stack.opennms().getBaseUrlExternal().toString() + "opennms/rest/graphml/test-graph";
 
-    private KarafShell karafShell;
+    private KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
 
     @Before
     public void setUp() throws IOException, InterruptedException {
-        // Install features
-        karafShell = new KarafShell(stack.opennms().getSshAddress());
-        karafShell.runCommand("feature:install opennms-graphs");
-        karafShell.runCommand("feature:install opennms-graph-provider-graphml");
-        karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-graphml"));
-
-        // Sometimes a previous run did not clean up properly, so we do that before we import a graph
+        // Sometimes a previous run did not clean up properly,
+        // so we do that before we import a graph
         if (existsGraph()) {
             deleteGraph();
         }
@@ -87,12 +82,12 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
 
     @Test
     public void canExposeGraphML() throws IOException, InterruptedException {
-        karafShell.runCommand("graph:list", output -> output.contains("1 registered Graph Container(s)"));
+        karafShell.runCommand("graph:list", output -> output.contains("4 registered Graph Container(s)"));
 
         importGraph();
 
-        karafShell.runCommand("graph:list", output -> output.contains("2 registered Graph Container(s)")
-                && output.contains("3 registered Graph(s)")
+        karafShell.runCommand("graph:list", output -> output.contains("5 registered Graph Container(s)")
+                && output.contains("6 registered Graph(s)")
                 && output.contains(LABEL));
     }
 
