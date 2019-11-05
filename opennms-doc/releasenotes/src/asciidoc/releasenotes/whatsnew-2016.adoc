@@ -141,6 +141,20 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.23]
+
+==== Release Meridian-2016.1.23
+
+Release 2016.1.23 is a small update to 2016.1.22 that fixes an issue with the display of availability on the
+node page.
+
+The codename for 2016.1.23 is _http://mathworld.wolfram.com/BalthasartProjection.html[Balthasart]_.
+
+===== Story
+
+* Add a command to show configuration diffs (Issue http://issues.opennms.org/browse/NMS-12129[NMS-12129])
+* Availability boxes on node pages including sub pages differ (Issue http://issues.opennms.org/browse/NMS-12321[NMS-12321])
+
 [releasenotes-changelog-Meridian-2016.1.22]
 
 ==== Release Meridian-2016.1.22
