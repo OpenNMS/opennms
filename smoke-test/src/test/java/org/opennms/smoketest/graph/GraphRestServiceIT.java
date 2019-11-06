@@ -31,12 +31,15 @@ package org.opennms.smoketest.graph;
 import static com.jayway.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -288,6 +291,78 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .content("vertices[3].id", Matchers.is("v1.1.2"));
     }
 
+    @Test
+    public void verifyNodeSearch() {
+        // Set up test data
+        createRequisition();
+        createGraphMLAndWaitUntilDone(graphmlDocument);
+
+        // Verify suggestions
+        final String response = given().log().ifValidationFails()
+                .params("s", "Node A")
+                .accept(ContentType.JSON)
+                .get("/search/suggestions/{namespace}/", "acme:markets")
+                .then().log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("[0].context", Matchers.is("Node"))
+                .content("[0].label", Matchers.is("Node A"))
+                .content("[0].provider", Matchers.is("NodeSearchProvider"))
+                .content("", Matchers.hasSize(1))
+                .extract().response().asString();
+        final JSONArray result = new JSONArray(new JSONTokener(response));
+        assertThat(result.length(), Matchers.is(1));
+        final String id = result.getJSONObject(0).getString("id");
+        assertNotNull(id);
+
+        // Verify resolution
+        given().log().ifValidationFails()
+                .params("providerId", "NodeSearchProvider")
+                .params("context", "Node")
+                .params("criteria", id)
+                .accept(ContentType.JSON)
+                .get("/search/results/{namespace}/", "acme:markets")
+                .then().log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("[0].namespace", Matchers.is("acme:markets"))
+                .content("[0].id", Matchers.is("north.2"))
+                .content("", Matchers.hasSize(1));
+    }
+
+    @Test
+    public void verifyNodeEnrichment() throws InterruptedException {
+        // Set up test data
+        createRequisition();
+        createGraphMLAndWaitUntilDone(graphmlDocument);
+
+        // Fetch data
+        final JSONObject query = new JSONObject()
+                .put("szl", 0)
+                .put("verticesInFocus", new JSONArray().put("north.1").put("north.2").put("north.3"));
+        given().log().ifValidationFails()
+                .body(query.toString())
+                .contentType(ContentType.JSON)
+                .post(CONTAINER_ID + "/{namespace}", "acme:markets")
+                .then()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("markets"))
+                .content("namespace", Matchers.is("acme:markets"))
+                .content("vertices", Matchers.hasSize(3))
+                .content("edges", Matchers.hasSize(0))
+                .content("vertices[0].id", Matchers.is("north.1"))
+                .content("vertices[1].id", Matchers.is("north.2"))
+                .content("vertices[1].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
+                .content("vertices[1].nodeInfo.foreignId", Matchers.is("node1"))
+                .content("vertices[1].nodeInfo.label", Matchers.is("Node A"))
+                .content("vertices[1].nodeInfo.categories", Matchers.hasItems("Test", "Server"))
+                .content("vertices[2].id", Matchers.is("north.3"))
+                .content("vertices[2].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
+                .content("vertices[2].nodeInfo.foreignId", Matchers.is("node2"))
+                .content("vertices[2].nodeInfo.label", Matchers.is("Node B"))
+                .content("vertices[2].nodeInfo.categories", Matchers.hasItems("Test", "Node"));
+    }
+
     private void createGraphMLAndWaitUntilDone(GraphmlDocument graphmlDocument) {
         graphmlDocument.create(restClient);
     	await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
@@ -300,5 +375,37 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("[3].id", Matchers.is(CONTAINER_ID))
                     .content("[4].id", Matchers.is("vmware"));
         });
+    }
+    private void createRequisition() {
+        // Create nodes in OpenNMS
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">" +
+                "   <node foreign-id=\"node1\" node-label=\"Node A\">" +
+                "       <interface ip-addr=\"::1\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "       <category name=\"Test\" />" +
+                "       <category name=\"Server\" />" +
+                "   </node>" +
+                "   <node foreign-id=\"node2\" node-label=\"Node B\">" +
+                "       <interface ip-addr=\"::1\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "       <category name=\"Test\" />" +
+                "       <category name=\"Node\" />" +
+                "   </node>" +
+                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 2);
     }
 }

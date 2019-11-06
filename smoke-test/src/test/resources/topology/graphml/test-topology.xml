@@ -14,7 +14,6 @@
     <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
     <key id="foreignSource" for="node" attr.name="foreignSource" attr.type="string"></key>
     <key id="foreignID" for="node" attr.name="foreignID" attr.type="string"></key>
-    <key id="nodeID" for="node" attr.name="nodeID" attr.type="string"></key>
     <key id="iconKey" for="node" attr.name="iconKey" attr.type="string"/>
     <data key="label">GraphML Topology Provider (test-graph)</data>
     <data key="breadcrumb-strategy">SHORTEST_PATH_TO_ROOT</data>
@@ -23,19 +22,15 @@
         <data key="namespace">acme:regions</data>
         <data key="focus-strategy">ALL</data>
         <node id="north">
-            <data key="nodeID">1</data>
             <data key="label">North Region</data>
         </node>
         <node id="west">
-            <data key="nodeID">2</data>
             <data key="label">West Region</data>
         </node>
         <node id="south">
-            <data key="nodeID">3</data>
             <data key="label">South Region</data>
         </node>
         <node id="east">
-            <data key="nodeID">4</data>
             <data key="label">East Region</data>
         </node>
     </graph>
