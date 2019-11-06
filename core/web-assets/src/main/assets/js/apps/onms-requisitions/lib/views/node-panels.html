@@ -19,6 +19,9 @@
   </div>
   <div class="col-md-6">
     <div class="my-4 pull-right">
+      <button type="button" class="btn btn-secondary" uib-tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
+        <span class="fa fa-trash"></span>
+      </button>
       <button type="button" class="btn btn-secondary" id="go-horizontal" ng-click="goHorizontalLayout()">
         <span class="fa fa-align-justify"></span> Use Horizontal Layout
       </button>
