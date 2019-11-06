@@ -29,11 +29,13 @@
 package org.opennms.netmgt.graph.search;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.graph.api.NodeRef;
+import org.opennms.netmgt.graph.api.aware.NodeRefAware;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
@@ -44,15 +46,18 @@ import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.collect.Lists;
 
-// TODO MVR verify me
+// TODO MVR write test
 public class NodeSearchProvider implements SearchProvider {
 
-    private NodeDao nodeDao;
+    private final NodeDao nodeDao;
+
+    public NodeSearchProvider(final NodeDao nodeDao) {
+        this.nodeDao = Objects.requireNonNull(nodeDao);
+    }
 
     @Override
     public boolean canSuggest(GraphService graphService, String namespace) {
-        return true; // TODO MVR check for NodeAware
-        // return graphService.getGraphInfo(namespace).isNodeAware();
+        return NodeRefAware.class.isAssignableFrom(graphService.getGraphInfo(namespace).getVertexType());
     }
 
     @Override
@@ -67,6 +72,7 @@ public class NodeSearchProvider implements SearchProvider {
             final SearchSuggestion suggestion = new SearchSuggestion(
                     getProviderId(),
                     "Node",
+                    Integer.toString(eachNode.getId()),
                     eachNode.getLabel()
             );
             suggestions.add(suggestion);
@@ -76,9 +82,9 @@ public class NodeSearchProvider implements SearchProvider {
 
     @Override
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
-        final List<GenericVertex> collect = graphService.getGraph(searchCriteria.getNamespace())
-                .getVertices().stream().filter(v -> v.getNodeInfo().getId().equals(searchCriteria.getCriteria()))
-                .collect(Collectors.toList());
-        return collect;
+        final OnmsNode node = nodeDao.get(searchCriteria.getCriteria());
+        final NodeRef nodeRef = NodeRef.from(node.getId(), node.getForeignSource(), node.getForeignId());
+        final GenericVertex vertex = graphService.getGraph(searchCriteria.getNamespace()).getVertex(nodeRef);
+        return Lists.newArrayList(vertex);
     }
 }

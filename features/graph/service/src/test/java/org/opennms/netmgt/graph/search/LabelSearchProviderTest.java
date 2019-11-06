@@ -40,7 +40,6 @@ import org.mockito.Mockito;
 import org.opennms.core.test.OnmsAssert;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.generic.GenericVertex.GenericVertexBuilder;
 import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
@@ -79,8 +78,11 @@ public class LabelSearchProviderTest {
 
         List<SearchSuggestion> expectations = new ArrayList<>();
         for (GenericVertex vertex : matchingVertices) {
-            SearchSuggestion suggestion = new SearchSuggestion(providerId,
-                    GenericVertex.class.getSimpleName(), vertex.getLabel());
+            SearchSuggestion suggestion = new SearchSuggestion(
+                    providerId,
+                    GenericVertex.class.getSimpleName(),
+                    vertex.getId(),
+                    vertex.getLabel());
             expectations.add(suggestion);
         }
         assertSuggestions(allVertices, searchTerm, expectations);

@@ -44,6 +44,7 @@ public final class ApplicationVertex extends AbstractDomainVertex {
         String NAME = "name";
         String IP_ADDRESS = "ipAddress";
         String SERVICE_TYPE_ID = "serviceTypeId";
+        String APPLICATION_ID = "applicationId";
     }
     
     public ApplicationVertex(GenericVertex vertex) {
@@ -52,6 +53,9 @@ public final class ApplicationVertex extends AbstractDomainVertex {
         Objects.requireNonNull(getProperty(Property.VERTEX_TYPE), Property.VERTEX_TYPE + " cannot be null");
         if(ApplicationVertexType.Service == getVertexType()) {
             Objects.requireNonNull(getProperty(Property.SERVICE_TYPE_ID), Property.SERVICE_TYPE_ID + " cannot be null");
+        }
+        if (ApplicationVertexType.Application == getVertexType()) {
+            Objects.requireNonNull(getProperty(Property.APPLICATION_ID), Property.APPLICATION_ID + " cannot be null");
         }
     }
 
@@ -73,6 +77,10 @@ public final class ApplicationVertex extends AbstractDomainVertex {
 
     public Integer getServiceTypeId() {
         return getProperty(Property.SERVICE_TYPE_ID);
+    }
+
+    public String getApplicationId() {
+        return getProperty(Property.APPLICATION_ID);
     }
 
     private <T> T getProperty(String key) {
@@ -105,6 +113,7 @@ public final class ApplicationVertex extends AbstractDomainVertex {
         public ApplicationVertexBuilder application(OnmsApplication application) {
             this.properties.put(GenericProperties.ID, createVertexId(application));
             this.properties.put(Property.VERTEX_TYPE, ApplicationVertexType.Application);
+            this.properties.put(Property.APPLICATION_ID, application.getId());
             this.properties.put(Property.NAME, application.getName());
             return this;
         }

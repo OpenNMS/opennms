@@ -10,6 +10,7 @@
 ">
     <reference id="graphContainerDao" interface="org.opennms.netmgt.graph.dao.api.GraphContainerDao" availability="mandatory" />
     <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
 
     <!-- Listen for GraphContainerProviders -->
@@ -44,9 +45,13 @@
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultGraphSearchService" />
     </reference-list>
 
-    <!-- LabelSearchProvider -->
+    <!-- Search providers -->
     <bean id="labelSearchProvider" class="org.opennms.netmgt.graph.search.LabelSearchProvider" />
     <service interface="org.opennms.netmgt.graph.api.search.SearchProvider" ref="labelSearchProvider"/>
+    <bean id="nodeSearchProvider" class="org.opennms.netmgt.graph.search.NodeSearchProvider">
+        <argument ref="nodeDao" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.search.SearchProvider" ref="nodeSearchProvider"/>
 
     <!-- Node Service -->
     <bean id="defaultNodeService" class="org.opennms.netmgt.graph.DefaultNodeService">

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.SearchContext;
@@ -42,6 +43,8 @@ import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class LabelSearchProvider implements SearchProvider {
     private static final Logger LOG = LoggerFactory.getLogger(LabelSearchProvider.class);
@@ -57,17 +60,16 @@ public class LabelSearchProvider implements SearchProvider {
         return getVerticesOfGraph(searchContext.getGraphService(), namespace)
                 .parallelStream()
                 .filter(v -> (v.getLabel() != null && v.getLabel().contains(input)))
-                .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), v.getLabel()))
+                .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), v.getId(), v.getLabel()))
                 .limit(searchContext.getSuggestionsLimit())
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
-        return getVerticesOfGraph(graphService, searchCriteria.getNamespace())
-                .parallelStream()
-                .filter(v -> (searchCriteria.getCriteria().equals(v.getLabel())))
-                .collect(Collectors.toList());
+        final VertexRef vertexRef = new VertexRef(searchCriteria.getNamespace(), searchCriteria.getCriteria());
+        final GenericVertex genericVertex = graphService.getGraph(searchCriteria.getNamespace()).resolveVertex(vertexRef);
+        return Lists.newArrayList(genericVertex);
     }
 
     private List<GenericVertex> getVerticesOfGraph(GraphService graphService, String namespace) {

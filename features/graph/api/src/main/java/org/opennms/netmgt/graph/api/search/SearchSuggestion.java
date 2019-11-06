@@ -44,20 +44,32 @@ public class SearchSuggestion implements Comparable<SearchSuggestion> {
     // The context of the suggestion, e.g. category, attribute, node, etc. to allow for a more fine grain suggestion
     // This may be achieved later by sub-classing
     private String context;
+
+    // A unique identifier of the "thing" represented by the suggestion.
+    // This may be used by the provider to determine which "thing" in OpenNMS the suggestion represents
+    // (e.g. category id, node id, etc.)
+    private String id;
+
     // The user-friendly label for the suggestion, which is shown to the user
     private String label;
+
     // The provider from which the suggestion is. This is required to resolve later on
     // This ensures that the originating SearchProvider can actually resolve it
     private String provider;
 
-    public SearchSuggestion(Class providerClass, String context, String label) {
-        this(Objects.requireNonNull(providerClass).getSimpleName(), context, label);
-    }
-
-    public SearchSuggestion(String providerId, String context, String label) {
+    public SearchSuggestion(String providerId, String context, String id, String label) {
+        setId(Objects.requireNonNull(id));
         setLabel(Objects.requireNonNull(label));
         setContext(Objects.requireNonNull(context));
         setProvider(Objects.requireNonNull(providerId));
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getLabel() {
@@ -89,14 +101,15 @@ public class SearchSuggestion implements Comparable<SearchSuggestion> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SearchSuggestion that = (SearchSuggestion) o;
-        return Objects.equals(context, that.context) &&
-                Objects.equals(label, that.label) &&
-                Objects.equals(provider, that.provider);
+        return Objects.equals(context, that.context)
+                && Objects.equals(id, that.id)
+                && Objects.equals(label, that.label)
+                && Objects.equals(provider, that.provider);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(context, label, provider);
+        return Objects.hash(context, id, label, provider);
     }
 
     @Override
@@ -112,6 +125,7 @@ public class SearchSuggestion implements Comparable<SearchSuggestion> {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("context", context)
+                .add("id", context)
                 .add("label", label)
                 .add("provider", provider)
                 .toString();
