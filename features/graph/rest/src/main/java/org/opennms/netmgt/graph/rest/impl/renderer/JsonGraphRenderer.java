@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.rest.impl.renderer;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,22 +47,26 @@ public class JsonGraphRenderer implements GraphRenderer {
     @Override
     public String render(List<GraphContainerInfo> containerInfos) {
         final JSONArray graphContainerJsonArray = new JSONArray();
-        containerInfos.forEach(containerInfo -> {
-            final JSONObject jsonGraphContainerInfoObject = new JSONObject();
-            jsonGraphContainerInfoObject.put("id", containerInfo.getId());
-            jsonGraphContainerInfoObject.put("label", containerInfo.getLabel());
-            jsonGraphContainerInfoObject.put("description", containerInfo.getDescription());
+        containerInfos.stream()
+            .sorted(Comparator.comparing(GraphContainerInfo::getId))
+            .forEach(containerInfo -> {
+                final JSONObject jsonGraphContainerInfoObject = new JSONObject();
+                jsonGraphContainerInfoObject.put("id", containerInfo.getId());
+                jsonGraphContainerInfoObject.put("label", containerInfo.getLabel());
+                jsonGraphContainerInfoObject.put("description", containerInfo.getDescription());
 
-            final JSONArray graphInfoArray = new JSONArray();
-            for (GraphInfo graphInfo : containerInfo.getGraphInfos()) {
-                final JSONObject jsonGraphInfoObject = new JSONObject();
-                jsonGraphInfoObject.put("namespace", graphInfo.getNamespace());
-                jsonGraphInfoObject.put("label", graphInfo.getLabel());
-                jsonGraphInfoObject.put("description", graphInfo.getDescription());
-                graphInfoArray.put(jsonGraphInfoObject);
-            }
-            jsonGraphContainerInfoObject.put("graphs", graphInfoArray);
-            graphContainerJsonArray.put(jsonGraphContainerInfoObject);
+                final JSONArray graphInfoArray = new JSONArray();
+                containerInfo.getGraphInfos().stream()
+                    .sorted(Comparator.comparing(GraphInfo::getNamespace))
+                    .forEach(graphInfo -> {
+                        final JSONObject jsonGraphInfoObject = new JSONObject();
+                        jsonGraphInfoObject.put("namespace", graphInfo.getNamespace());
+                        jsonGraphInfoObject.put("label", graphInfo.getLabel());
+                        jsonGraphInfoObject.put("description", graphInfo.getDescription());
+                        graphInfoArray.put(jsonGraphInfoObject);
+                });
+                jsonGraphContainerInfoObject.put("graphs", graphInfoArray);
+                graphContainerJsonArray.put(jsonGraphContainerInfoObject);
         });
         return graphContainerJsonArray.toString();
     }
@@ -74,7 +79,9 @@ public class JsonGraphRenderer implements GraphRenderer {
 
         final GenericGraphContainer genericGraphContainer = graphContainer.asGenericGraphContainer();
         genericGraphContainer.getProperties().forEach((key, value) -> jsonContainer.put(key, value));
-        graphContainer.getGraphs().forEach(graph -> {
+        graphContainer.getGraphs().stream()
+            .sorted(Comparator.comparing(GraphInfo::getNamespace))
+            .forEach(graph -> {
                 final JSONObject jsonGraph = new JSONObject();
                 final JSONArray jsonEdgesArray = new JSONArray();
                 final JSONArray jsonVerticesArray = new JSONArray();

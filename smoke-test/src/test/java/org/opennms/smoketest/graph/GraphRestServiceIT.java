@@ -98,27 +98,28 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("[1].graphs[0].label", Matchers.is("Business Service Graph"))
                     .content("[1].graphs[0].description", Matchers.is("This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states."))
 
-                    .content("[2].id", Matchers.is("vmware"))
-                    .content("[2].label", Matchers.is("VMware Topology Provider"))
+                    .content("[2].id", Matchers.is("nodes"))
+                    .content("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))
                     .content("[2].graphs.size()", Matchers.is(1))
-                    .content("[2].graphs[0].namespace", Matchers.is("vmware"))
-                    .content("[2].graphs[0].label", Matchers.is("VMware Topology Provider"))
-                    .content("[2].graphs[0].description", Matchers.is("The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."))
+                    .content("[2].graphs[0].namespace", Matchers.is("nodes"))
+                    .content("[2].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                    .content("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
 
-                    .content("[3].id", Matchers.is("nodes"))
-                    .content("[3].label", Matchers.is("Enhanced Linkd Topology Provider"))
-                    .content("[3].graphs.size()", Matchers.is(1))
-                    .content("[3].graphs[0].namespace", Matchers.is("nodes"))
-                    .content("[3].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
-                    .content("[3].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
+                    .content("[3].id", Matchers.is(CONTAINER_ID))
+                    .content("[3].label", Matchers.is(GraphMLTopologyIT.LABEL))
+                    .content("[3].graphs.size()", Matchers.is(2))
+                    .content("[3].graphs[0].namespace", Matchers.is("acme:markets"))
+                    .content("[3].graphs[0].label", Matchers.is("Markets"))
+                    .content("[3].graphs[0].description", Matchers.is("The Markets Layer"))
+                    .content("[3].graphs[1].namespace", Matchers.is("acme:regions"))
 
-                    .content("[4].id", Matchers.is(CONTAINER_ID))
-                    .content("[4].label", Matchers.is(GraphMLTopologyIT.LABEL))
-                    .content("[4].graphs.size()", Matchers.is(2))
-                    .content("[4].graphs[0].namespace", Matchers.is("acme:markets"))
-                    .content("[4].graphs[0].label", Matchers.is("Markets"))
-                    .content("[4].graphs[0].description", Matchers.is("The Markets Layer"))
-                    .content("[4].graphs[1].namespace", Matchers.is("acme:regions"));
+                    .content("[4].id", Matchers.is("vmware"))
+                    .content("[4].label", Matchers.is("VMware Topology Provider"))
+                    .content("[4].graphs.size()", Matchers.is(1))
+                    .content("[4].graphs[0].namespace", Matchers.is("vmware"))
+                    .content("[4].graphs[0].label", Matchers.is("VMware Topology Provider"))
+                    .content("[4].graphs[0].description", Matchers.is("The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."))
+                    ;
         });
     }
 
@@ -204,9 +205,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .contentType(ContentType.JSON)
                     .content("[0].id", Matchers.is("application"))
                     .content("[1].id", Matchers.is("bsm"))
-                    .content("[2].id", Matchers.is("vmware"))
-                    .content("[3].id", Matchers.is("nodes"))
-                    .content("[4].id", Matchers.is(CONTAINER_ID));
+                    .content("[2].id", Matchers.is("nodes"))
+                    .content("[3].id", Matchers.is(CONTAINER_ID))
+                    .content("[4].id", Matchers.is("vmware"));
         });
     }
 
