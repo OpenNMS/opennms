@@ -4,7 +4,8 @@
 
 == Minion with custom messaging system
 
-A messaging system is used for the communication between _Minions_ and _{opennms-product-name}_ and it comes with _ActiveMQ_ as an embedded solution.
+_Minions_ and _{opennms-product-name}_  communicate via a messaging system.
+By default, an embedded _ActiveMQ_ broker is used.
 _{opennms-product-name}_ has special needs to a messaging system to run with specific workloads and network topologies a different messaging system than _ActiveMQ_ can be useful.
 In general the communication between an _{opennms-product-name}_ instance and _Minions_ is provided by two features:
 
