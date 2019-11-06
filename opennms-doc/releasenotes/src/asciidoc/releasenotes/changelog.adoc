@@ -18,7 +18,7 @@ This release contains a couple of breaking changes:
 2. Scriptd has been changed to execute scripts in a single read-only transaction by default.  If you need the ability to write changes to the database or need to do your own transaction management for any other reason, you will need to add `transactional="false"` to the `<scriptd-configuration ...>` tag in the `scriptd-configuration.xml` file.
 ====
 
-The codename for 25.1.0 is _link:https://en.wikipedia.org/wiki/Momo_(food)[Momo]_.
+The codename for 25.1.0 is _link:$$https://en.wikipedia.org/wiki/Momo_(food)$$[Momo]_.
 
 ===== Bug
 
