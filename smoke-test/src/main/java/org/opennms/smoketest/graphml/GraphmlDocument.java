@@ -26,57 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.search;
+package org.opennms.smoketest.graphml;
 
+import java.io.InputStream;
+import java.util.Objects;
 
-import java.util.List;
+import org.opennms.smoketest.utils.RestClient;
 
-import com.google.common.collect.Lists;
+public class GraphmlDocument {
 
-// TODO MVR this does not seem to be used at all
-public class Query {
+    private final String name;
+    private final String resource;
 
-    // selected container
-    private String containerId;
-
-    // graph namespace
-    // TODO MVR each SearchCriteria already has a namespace, however, we apply it here again, as we may require it
-    // and may not have a SearchCriteria defined
-    private String namespace;
-
-    private int szl = 1; // default is always 1
-
-    private List<SearchCriteria> searchCriteria = Lists.newArrayList();
-
-    public int getSzl() {
-        return szl;
+    public GraphmlDocument(final String graphName, final String graphResource) {
+        this.name = Objects.requireNonNull(graphName);
+        this.resource = Objects.requireNonNull(graphResource);
+        Objects.requireNonNull(getResourceAsStream());
     }
 
-    public void setSzl(int szl) {
-        this.szl = szl;
+    public void create(final RestClient client) {
+        if (client.getGraphML(name).getStatus() == 404) {
+            client.sendGraphML(name, getResourceAsStream());
+        }
     }
 
-    public String getContainerId() {
-        return containerId;
+    public void delete(final RestClient client) {
+        if (client.getGraphML(name).getStatus() != 404) {
+            client.deleteGraphML(name);
+        }
     }
 
-    public void setContainerId(String containerId) {
-        this.containerId = containerId;
+    public boolean exists(RestClient client) {
+        return client.getGraphML(name).getStatus() == 200;
     }
 
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
-    public List<SearchCriteria> getSearchCriteria() {
-        return searchCriteria;
-    }
-
-    public void setSearchCriteria(List<SearchCriteria> searchCriteria) {
-        this.searchCriteria = searchCriteria;
+    private InputStream getResourceAsStream() {
+        return getClass().getResourceAsStream(resource);
     }
 }
