@@ -36,9 +36,10 @@ import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.aware.LocationAware;
 import org.opennms.netmgt.graph.api.aware.NodeAware;
+import org.opennms.netmgt.graph.api.aware.NodeRefAware;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-public final class GenericVertex extends GenericElement implements Vertex, NodeAware, LocationAware {
+public final class GenericVertex extends GenericElement implements Vertex, NodeAware, NodeRefAware, LocationAware {
     
     private GenericVertex(Map<String, Object> properties) {
         super(properties);
@@ -49,9 +50,9 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeA
         return new VertexRef(this.getNamespace(), this.getId());
     }
 
-//    // TODO MVR implement me
-//    @Override
+    @Override
     public NodeRef getNodeRef() {
+        // TODO MVR consider nodeRef-String as well. Also what should we do, if multiple properties are defined?
         String nodeId = getProperty(GenericProperties.NODE_ID);
         String foreignSource = getProperty(GenericProperties.FOREIGN_SOURCE);
         String foreignId = getProperty(GenericProperties.FOREIGN_ID);

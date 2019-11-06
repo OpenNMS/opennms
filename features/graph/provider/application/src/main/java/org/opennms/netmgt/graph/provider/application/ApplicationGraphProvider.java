@@ -33,7 +33,6 @@ import java.util.Objects;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
@@ -67,12 +66,6 @@ public class ApplicationGraphProvider implements GraphProvider {
         graphInfo.setLabel(GRAPH_LABEL);
         graphInfo.setDescription(GRAPH_DESCRIPTION);
         return graphInfo;
-    }
-
-    @Override
-    public GenericGraph enrich(GenericGraph graph) {
-        // TODO MVR
-        return graph;
     }
 
     @Override

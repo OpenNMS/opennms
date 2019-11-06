@@ -81,9 +81,4 @@ public class LegacyGraphProvider implements GraphProvider {
         graphInfo.setLabel(delegateInfo.getName());
         return graphInfo;
     }
-
-    @Override
-    public GenericGraph enrich(GenericGraph graph) {
-        return graph;
-    }
 }

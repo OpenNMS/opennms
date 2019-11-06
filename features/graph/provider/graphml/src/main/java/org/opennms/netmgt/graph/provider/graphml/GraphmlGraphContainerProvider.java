@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.features.graphml.model.GraphML;
@@ -44,7 +43,6 @@ import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
-import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
@@ -53,9 +51,7 @@ import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphCo
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
-import org.opennms.netmgt.graph.api.info.NodeInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
-import org.opennms.netmgt.graph.cache.api.CachingService;
 
 import com.google.common.collect.Lists;
 
@@ -64,14 +60,11 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     private static final String FOCUS_STRATEGY = "focus-strategy";
     private static final String FOCUS_IDS = "focus-ids";
 
-    private final CachingService cachingService;
     private final GraphML graphML;
     private GenericGraphContainer graphContainer;
     private HashMap<String, GraphMLGraph> vertexIdToGraphMapping;
 
-    public GraphmlGraphContainerProvider(CachingService cachingService, String location) throws IOException, InvalidGraphException {
-        this.cachingService = Objects.requireNonNull(cachingService);
-
+    public GraphmlGraphContainerProvider(String location) throws IOException, InvalidGraphException {
         if (!new File(location).exists()) {
             throw new FileNotFoundException(location);
         }
@@ -89,25 +82,6 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 //    public void setNotificationService(GraphNotificationService notificationService) {
 //
 //    }
-
-    @Override
-    public GenericGraph enrich(GenericGraph graph) {
-        final List<NodeRef> nodeRefs = graph.getVertices().stream().map(v -> v.getNodeRef()).filter(ref -> ref != null).collect(Collectors.toList());
-        final List<NodeInfo> nodeInfos = cachingService.get(nodeRefs);
-        final GenericGraphBuilder enrichedGraphBuilder = GenericGraph.builder().graph(graph);
-        nodeInfos.forEach(ni -> {
-            final GenericVertex vertex = enrichedGraphBuilder.getVertex(ni.getNodeRef());
-            if (vertex != null) {
-                GenericVertex enrichedVertex = GenericVertex.builder()
-                        .vertex(vertex)
-                        .property(GenericProperties.NODE_INFO, ni)
-                        .build();
-                enrichedGraphBuilder.removeVertex(vertex);
-                enrichedGraphBuilder.addVertex(enrichedVertex);
-            }
-        });
-        return enrichedGraphBuilder.build();
-    }
 
     @Override
     public ImmutableGraphContainer loadGraphContainer() {
@@ -147,7 +121,9 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     }
 
     private final GenericGraph convert(GraphMLGraph graphMLGraph) {
-        final GenericGraphBuilder graphBuilder = GenericGraph.builder().properties(graphMLGraph.getProperties());
+        final GenericGraphBuilder graphBuilder = GenericGraph.builder()
+                .properties(graphMLGraph.getProperties())
+                .property("enrichment.resolveNodes", true); // Enable Node Enrichment
         final List<GenericVertex> vertices = graphMLGraph.getNodes()
                 .stream().map(n -> {
                     // In case of GraphML each vertex does not have a namespace, but it is inherited from the graph

@@ -37,7 +37,6 @@ import java.util.Objects;
 
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
-import org.opennms.netmgt.graph.cache.api.CachingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -56,11 +55,9 @@ public class GraphMLContainerProviderServiceFactory implements ManagedServiceFac
 
     private final BundleContext bundleContext;
     private final Map<String, List<ServiceRegistration<?>>> containerRegistrations = Maps.newHashMap();
-    private final CachingService cachingService;
 
-    public GraphMLContainerProviderServiceFactory(BundleContext bundleContext, CachingService cachingService) {
+    public GraphMLContainerProviderServiceFactory(BundleContext bundleContext) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
-        this.cachingService = Objects.requireNonNull(cachingService);
     }
 
     @Override
@@ -79,7 +76,7 @@ public class GraphMLContainerProviderServiceFactory implements ManagedServiceFac
 
             // Expose the Container Provider
             try {
-                final GraphmlGraphContainerProvider graphmlGraphContainerProvider = new GraphmlGraphContainerProvider(cachingService, location);
+                final GraphmlGraphContainerProvider graphmlGraphContainerProvider = new GraphmlGraphContainerProvider(location);
                 registerService(pid, GraphContainerProvider.class, graphmlGraphContainerProvider, metaData);
             } catch (InvalidGraphException | IOException e) {
                 LOG.error("An error occurred while loading GraphMLContainerProvider from file {}. Ignoring...", location, e);

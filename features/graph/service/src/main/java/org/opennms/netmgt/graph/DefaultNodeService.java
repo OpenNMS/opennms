@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.cache.impl;
+package org.opennms.netmgt.graph;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,26 +35,26 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.graph.api.NodeRef;
+import org.opennms.netmgt.graph.api.NodeService;
 import org.opennms.netmgt.graph.api.info.IpInfo;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
-import org.opennms.netmgt.graph.cache.api.CachingService;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.collect.Lists;
 
-public class DefaultCachingService implements CachingService {
+public class DefaultNodeService implements NodeService {
 
     private final GenericPersistenceAccessor accessor;
 
-    public DefaultCachingService(final GenericPersistenceAccessor accessor) {
+    public DefaultNodeService(final GenericPersistenceAccessor accessor) {
         this.accessor = Objects.requireNonNull(accessor);
     }
 
     @Override
-    public List<NodeInfo> get(final List<NodeRef> nodeRefs) {
+    public List<NodeInfo> resolveNodes(List<NodeRef> nodeRefs) {
         Objects.requireNonNull(nodeRefs);
-        final List<OnmsNode> nodes = getNodes(nodeRefs);
+        final List<OnmsNode> nodes = loadNodes(nodeRefs);
         final List<NodeInfo> nodeInfoList = nodes.stream().map(node -> {
             final Set<String> categories = node.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toSet());
             final List<IpInfo> ipInfoList = node.getIpInterfaces().stream().map(ifc -> new IpInfo(ifc.getIpAddress(), ifc.isPrimary(), ifc.isManaged())).collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class DefaultCachingService implements CachingService {
         return nodeInfoList;
     }
 
-    private List<OnmsNode> getNodes(final List<NodeRef> nodeRefs) {
+    private List<OnmsNode> loadNodes(final List<NodeRef> nodeRefs) {
         final List<Integer> nodeIds = nodeRefs.stream().map(n -> n.getNodeId()).filter(id -> id != null).collect(Collectors.toList());
         final List<String> foreignSources = nodeRefs.stream().map(n -> n.getForeignSource()).filter(fs -> fs != null).distinct().collect(Collectors.toList());
         final List<String> foreignIds = nodeRefs.stream().map(n -> n.getForeignId()).filter(fid -> fid != null).distinct().collect(Collectors.toList());
@@ -100,15 +100,15 @@ public class DefaultCachingService implements CachingService {
             // Only foreignSources AND foreignIds are defined
             if (nodeIds.isEmpty() && !foreignSources.isEmpty() && !foreignIds.isEmpty()) {
                 return accessor.findUsingNamedParameters("select n from OnmsNode n where n.foreignSource in (:foreignSources) and n.foreignId in (:foreignIds)",
-                    new String[] { "foreignSources", "foreignIds" },
-                    new Object[] { foreignSources, foreignIds }
+                        new String[] { "foreignSources", "foreignIds" },
+                        new Object[] { foreignSources, foreignIds }
                 );
             }
 
             // Everything is defined
             return accessor.findUsingNamedParameters("select n from OnmsNode n where n.id in (:nodeIds) or (n.foreignSource in (:foreignSources) and n.foreignId in (:foreignIds))",
-                new String[] { "nodeIds", "foreignSources", "foreignIds" },
-                new Object[] {  nodeIds, foreignSources, foreignIds}
+                    new String[] { "nodeIds", "foreignSources", "foreignIds" },
+                    new Object[] {  nodeIds, foreignSources, foreignIds}
             );
         }
     }

@@ -8,11 +8,13 @@
         http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
+    <reference id="enrichmentService" interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentService" availability="mandatory" />
     <reference id="graphService" interface="org.opennms.netmgt.graph.api.service.GraphService" availability="mandatory" />
     <reference id="graphSearchService" interface="org.opennms.netmgt.graph.api.search.GraphSearchService" availability="mandatory" />
 
     <bean id="graphRestService" class="org.opennms.netmgt.graph.rest.impl.GraphRestServiceImpl">
         <argument ref="graphService" />
+        <argument ref="enrichmentService" />
     </bean>
     <service interface="org.opennms.netmgt.graph.rest.api.GraphRestService" ref="graphRestService">
         <service-properties>

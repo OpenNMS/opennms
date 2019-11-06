@@ -32,7 +32,6 @@ package org.opennms.netmgt.graph.api.service;
 // TODO MVR the graph provider should probably return multiple graphs (e.g. graphml)
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 /**
@@ -63,6 +62,4 @@ public interface GraphProvider {
      * @return
      */
     GraphInfo<?> getGraphInfo();
-
-    GenericGraph enrich(GenericGraph graph);
 }

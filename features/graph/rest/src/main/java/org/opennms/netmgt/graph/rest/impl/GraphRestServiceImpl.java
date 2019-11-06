@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response;
 import org.json.JSONObject;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.enrichment.EnrichmentService;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -49,8 +50,11 @@ public class GraphRestServiceImpl implements GraphRestService {
 
     private GraphService graphService;
 
-    public GraphRestServiceImpl(GraphService graphService) {
+    private EnrichmentService enrichmentService;
+
+    public GraphRestServiceImpl(final GraphService graphService, final EnrichmentService enrichmentService) {
         this.graphService = Objects.requireNonNull(graphService);
+        this.enrichmentService = Objects.requireNonNull(enrichmentService);
     }
 
     @Override
@@ -105,7 +109,7 @@ public class GraphRestServiceImpl implements GraphRestService {
         final GenericGraph view = graph.getView(focussedVertices, query.getSemanticZoomLevel()).asGenericGraph();
 
         // Apply enrichment
-        final GenericGraph enrichedView = graphService.enrichGraph(view);
+        final GenericGraph enrichedView = enrichmentService.enrich(view);
         final JSONObject jsonView = new JsonGraphRenderer().convert(enrichedView);
         jsonView.put("focus", convert(query));
         jsonView.remove("defaultFocus"); // There shouldn't be a default focus

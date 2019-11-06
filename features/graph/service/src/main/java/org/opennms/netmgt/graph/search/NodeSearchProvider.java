@@ -44,6 +44,7 @@ import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.collect.Lists;
 
+// TODO MVR verify me
 public class NodeSearchProvider implements SearchProvider {
 
     private NodeDao nodeDao;

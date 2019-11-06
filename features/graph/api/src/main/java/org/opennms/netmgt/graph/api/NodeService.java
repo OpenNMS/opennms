@@ -26,26 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.service;
+package org.opennms.netmgt.graph.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
-import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-public interface GraphService {
-
-    List<GraphContainerInfo> getGraphContainerInfos();
-
-    GraphContainerInfo getGraphContainerInfo(String containerId);
-
-    GraphInfo getGraphInfo(String graphNamespace);
-
-    GenericGraphContainer getGraphContainer(String containerId);
-
-    GenericGraph getGraph(String containerId, String graphNamespace);
-
-    GenericGraph getGraph(String namespace);
+public interface NodeService {
+    List<NodeInfo> resolveNodes(List<NodeRef> nodeRefs);
 }

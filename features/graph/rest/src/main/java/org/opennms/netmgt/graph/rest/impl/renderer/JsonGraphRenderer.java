@@ -141,9 +141,10 @@ public class JsonGraphRenderer implements GraphRenderer {
                                 jsonVertex.put(eachProperty.getKey(), convert((NodeInfo) value));
                             } else if (value.getClass() == IpInfo.class) {
                                 jsonVertex.put(eachProperty.getKey(), convert((IpInfo) value));
+                            } else {
+                                jsonVertex.put(eachProperty.getKey(), value);
                             }
                         }
-
                     }
                     jsonVerticesArray.put(jsonVertex);
             });

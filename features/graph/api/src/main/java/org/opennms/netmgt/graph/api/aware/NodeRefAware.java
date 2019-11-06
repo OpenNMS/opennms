@@ -26,15 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.cache.api;
-
-import java.util.List;
+package org.opennms.netmgt.graph.api.aware;
 
 import org.opennms.netmgt.graph.api.NodeRef;
-import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-public interface CachingService {
-
-    List<NodeInfo> get(List<NodeRef> nodeRefs);
-
+public interface NodeRefAware {
+    NodeRef getNodeRef();
 }
