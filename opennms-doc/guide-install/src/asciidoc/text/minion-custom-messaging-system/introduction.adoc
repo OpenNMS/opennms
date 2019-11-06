@@ -6,7 +6,7 @@
 
 _Minions_ and _{opennms-product-name}_  communicate via a messaging system.
 By default, an embedded _ActiveMQ_ broker is used.
-_{opennms-product-name}_ has special needs to a messaging system to run with specific workloads and network topologies a different messaging system than _ActiveMQ_ can be useful.
+_{opennms-product-name}_ is designed to work with different messaging systems and based on the system requirements or workload, an alternative to _ActiveMQ_ can be used.
 In general the communication between an _{opennms-product-name}_ instance and _Minions_ is provided by two features:
 
 * _Remote Producer Calls (RPC)_ are used to issue poller or data collection tasks from an _{opennms-product-name}_ instance to a _Minion_ in a remote location
