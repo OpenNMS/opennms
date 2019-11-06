@@ -34,16 +34,16 @@ public class Query {
 
     public static final int DEFAULT_SEMANTIC_ZOOM_LEVEL = 1;
 
-    private Integer szl;
+    private Integer semanticZoomLevel;
 
     private List<String> verticesInFocus;
 
-    public Integer getSzl() {
-        return szl;
+    public Integer getSemanticZoomLevel() {
+        return semanticZoomLevel;
     }
 
-    public void setSzl(Integer szl) {
-        this.szl = szl;
+    public void setSemanticZoomLevel(Integer semanticZoomLevel) {
+        this.semanticZoomLevel = semanticZoomLevel;
     }
 
     public List<String> getVerticesInFocus() {

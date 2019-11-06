@@ -247,7 +247,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("[0].id", Matchers.is("application"))
                     .content("[1].id", Matchers.is(CONTAINER_ID));
         });
-        given().post(CONTAINER_ID + "/test", new JSONObject().put("szl", 1))
+        given().post(CONTAINER_ID + "/test", new JSONObject().put("semanticZoomLevel", 1))
                 .then()
                 .contentType(ContentType.JSON)
                 .content("id", Matchers.is("test"))
@@ -271,7 +271,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("[0].id", Matchers.is("application"))
                     .content("[1].id", Matchers.is(CONTAINER_ID));
         });
-        given().post(CONTAINER_ID + "/test", new JSONObject().put("szl", 1).put("verticesInFocus", new JSONArray().put("v1.1.1")))
+        given().post(CONTAINER_ID + "/test", new JSONObject().put("semanticZoomLevel", 1).put("verticesInFocus", new JSONArray().put("v1.1.1")))
                 .then()
                 .contentType(ContentType.JSON)
                 .content("id", Matchers.is("test"))

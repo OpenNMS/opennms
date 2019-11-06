@@ -89,20 +89,20 @@ public class GraphRestServiceImpl implements GraphRestService {
         if (graph == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        if(query.getSzl() == null) {
-            query.setSzl(Query.DEFAULT_SEMANTIC_ZOOM_LEVEL);
+        if(query.getSemanticZoomLevel() == null) {
+            query.setSemanticZoomLevel(Query.DEFAULT_SEMANTIC_ZOOM_LEVEL);
         }
-        if (query.getSzl() < 0) {
+        if (query.getSemanticZoomLevel() < 0) {
             return Response
                 .status(Response.Status.BAD_REQUEST)
-                .entity(new JSONObject().put("error", "SZL must be >= 0 but was " + query.getSzl()).toString())
+                .entity(new JSONObject().put("error", "SemanticZoomLevel must be >= 0 but was " + query.getSemanticZoomLevel()).toString())
                 .build();
         }
         if (query.getVerticesInFocus().isEmpty()) {
             query.setVerticesInFocus(graph.getDefaultFocus().getVertexIds());
         }
         final List<GenericVertex> focussedVertices = graph.resolveVertices(query.getVerticesInFocus());
-        final GenericGraph view = graph.getView(focussedVertices, query.getSzl()).asGenericGraph();
+        final GenericGraph view = graph.getView(focussedVertices, query.getSemanticZoomLevel()).asGenericGraph();
         final JSONObject jsonView = new JsonGraphRenderer().convert(view);
         jsonView.put("focus", convert(query));
         jsonView.remove("defaultFocus"); // There shouldn't be a default focus
@@ -111,7 +111,7 @@ public class GraphRestServiceImpl implements GraphRestService {
 
     private static JSONObject convert(Query query) {
         final JSONObject jsonQuery = new JSONObject();
-        jsonQuery.put("szl", query.getSzl());
+        jsonQuery.put("szl", query.getSemanticZoomLevel());
         jsonQuery.put("vertices", query.getVerticesInFocus());
         return jsonQuery;
     }
