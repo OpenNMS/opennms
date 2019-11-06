@@ -151,14 +151,24 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     @Test
     public void verifyGetGraph() {
         createGraphMLAndWaitUntilDone(graphmlDocument);
-        given().get(CONTAINER_ID + "/acme:markets")
+        given().get(CONTAINER_ID + "/{namespace}", "acme:markets")
                 .then()
                 .contentType(ContentType.JSON)
                 .content("id", Matchers.is("markets"))
-                .content("namespace", Matchers.is("acme:markets"))
-                .content("graphs[0].defaultFocus.type", Matchers.is("ALL"))
-                .content("graphs[0].vertices", Matchers.hasSize(16))
-                .content("graphs[0].edges", Matchers.hasSize(0));
+                .content("defaultFocus.type", Matchers.is("SELECTION"))
+                .content("defaultFocus.vertexIds.size()", Matchers.is(1))
+                .content("defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
+                .content("vertices", Matchers.hasSize(16))
+                .content("edges", Matchers.hasSize(0));
+        given().get(CONTAINER_ID + "/{namespace}", "acme:regions")
+                .then()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("regions"))
+                .content("namespace", Matchers.is("acme:regions"))
+                .content("defaultFocus.type", Matchers.is("ALL"))
+                .content("defaultFocus.vertexIds.size()", Matchers.is(4))
+                .content("vertices", Matchers.hasSize(4))
+                .content("edges", Matchers.hasSize(16));
     }
 
     @Test
@@ -218,38 +228,21 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         createGraphMLAndWaitUntilDone(graphmlDocument);
 
         // Verify default focus
-        given().post(CONTAINER_ID + "/{namespace}", "test")
-                .then()
-                .contentType(ContentType.JSON)
-                .content("id", Matchers.is("test"))
-                .content("namespace", Matchers.is("test"))
-                .content("defaultFocus.type", Matchers.is("FIRST"))
-                .content("vertices", Matchers.hasSize(1))
-                .content("edges", Matchers.hasSize(0))
-                .content("vertices[0].id", Matchers.is("v1"));
-    }
-
-    @Test
-    public void verifySemanticZoomLevel() {
-        // Use a different graph and create it
-        graphmlDocument = new GraphmlDocument(CONTAINER_ID, "/topology/graphml/test-topology-2.xml");
-        createGraphMLAndWaitUntilDone(graphmlDocument);
-
-        // Verify szl
-        final JSONObject query =  new JSONObject().put("semanticZoomLevel", 1);
         given().log().ifValidationFails()
-                .body(query.toString())
+                .contentType(ContentType.JSON)
+                .body("{}")
                 .post(CONTAINER_ID + "/{namespace}", "test")
                 .then()
                 .log().ifValidationFails()
                 .contentType(ContentType.JSON)
                 .content("id", Matchers.is("test"))
                 .content("namespace", Matchers.is("test"))
-                .content("vertices", Matchers.hasSize(3))
-                .content("edges", Matchers.hasSize(2))
-                .content("vertices[0].id", Matchers.is("v1"))
-                .content("vertices[1].id", Matchers.is("v1.1"))
-                .content("vertices[2].id", Matchers.is("v1.2"));
+                .content("focus.semanticZoomLevel", Matchers.is(1))
+                .content("focus.vertices", Matchers.hasSize(1))
+                .content("vertices", Matchers.hasSize(2))
+                .content("edges", Matchers.hasSize(1))
+                .content("vertices[0].id", Matchers.is("v1.1"))
+                .content("vertices[1].id", Matchers.is("v1.1.2"));
     }
 
     @Test
@@ -263,6 +256,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .put("semanticZoomLevel", 1)
                 .put("verticesInFocus", new JSONArray().put("v1.1.1"));
         given().log().ifValidationFails()
+                .contentType(ContentType.JSON)
                 .body(query.toString())
                 .post(CONTAINER_ID + "/{namespace}", "test")
                 .then()
@@ -270,11 +264,28 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .contentType(ContentType.JSON)
                 .content("id", Matchers.is("test"))
                 .content("namespace", Matchers.is("test"))
-                .content("vertices", Matchers.hasSize(3))
-                .content("edges", Matchers.hasSize(2))
+                .content("vertices", Matchers.hasSize(2))
+                .content("edges", Matchers.hasSize(1))
                 .content("vertices[0].id", Matchers.is("v1.1"))
-                .content("vertices[1].id", Matchers.is("v1.1.1"))
-                .content("vertices[2].id", Matchers.is("v1.1.2"));
+                .content("vertices[1].id", Matchers.is("v1.1.1"));
+
+        //  Increase SZL
+        query.put("semanticZoomLevel", 2);
+        given().log().ifValidationFails()
+                .contentType(ContentType.JSON)
+                .body(query.toString())
+                .post(CONTAINER_ID + "/{namespace}", "test")
+                .then()
+                .log().ifValidationFails()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("test"))
+                .content("namespace", Matchers.is("test"))
+                .content("vertices", Matchers.hasSize(4))
+                .content("edges", Matchers.hasSize(3))
+                .content("vertices[0].id", Matchers.is("v1"))
+                .content("vertices[1].id", Matchers.is("v1.1"))
+                .content("vertices[2].id", Matchers.is("v1.1.1"))
+                .content("vertices[3].id", Matchers.is("v1.1.2"));
     }
 
     private void createGraphMLAndWaitUntilDone(GraphmlDocument graphmlDocument) {

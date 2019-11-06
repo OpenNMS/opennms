@@ -98,7 +98,7 @@ public class GraphRestServiceImpl implements GraphRestService {
                 .entity(new JSONObject().put("error", "SemanticZoomLevel must be >= 0 but was " + query.getSemanticZoomLevel()).toString())
                 .build();
         }
-        if (query.getVerticesInFocus().isEmpty()) {
+        if (query.getVerticesInFocus() == null || query.getVerticesInFocus().isEmpty()) {
             query.setVerticesInFocus(graph.getDefaultFocus().getVertexIds());
         }
         final List<GenericVertex> focussedVertices = graph.resolveVertices(query.getVerticesInFocus());
@@ -111,7 +111,7 @@ public class GraphRestServiceImpl implements GraphRestService {
 
     private static JSONObject convert(Query query) {
         final JSONObject jsonQuery = new JSONObject();
-        jsonQuery.put("szl", query.getSemanticZoomLevel());
+        jsonQuery.put("semanticZoomLevel", query.getSemanticZoomLevel());
         jsonQuery.put("vertices", query.getVerticesInFocus());
         return jsonQuery;
     }

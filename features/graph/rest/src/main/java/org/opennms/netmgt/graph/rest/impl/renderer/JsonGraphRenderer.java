@@ -35,8 +35,10 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
@@ -108,20 +110,24 @@ public class JsonGraphRenderer implements GraphRenderer {
             graph.asGenericGraph().getProperties().forEach((key, value) -> jsonGraph.put(key, value));
 
             // Convert Edges
-            graph.getEdges().stream().forEach(edge -> {
-                final GenericEdge genericEdge = edge.asGenericEdge();
-                final Map<String, Object> edgeProperties = new HashMap<>(genericEdge.getProperties());
-                edgeProperties.put("source", genericEdge.getSource().getId());
-                edgeProperties.put("target", genericEdge.getTarget().getId());
-                final JSONObject jsonEdge = new JSONObject(edgeProperties);
-                jsonEdgesArray.put(jsonEdge);
-            });
+            graph.getEdges().stream()
+                .sorted(Comparator.comparing(Edge::getId))
+                .forEach(edge -> {
+                    final GenericEdge genericEdge = edge.asGenericEdge();
+                    final Map<String, Object> edgeProperties = new HashMap<>(genericEdge.getProperties());
+                    edgeProperties.put("source", genericEdge.getSource().getId());
+                    edgeProperties.put("target", genericEdge.getTarget().getId());
+                    final JSONObject jsonEdge = new JSONObject(edgeProperties);
+                    jsonEdgesArray.put(jsonEdge);
+                });
 
             // Convert Vertices
-            graph.getVertices().stream().forEach(vertex -> {
-                final JSONObject jsonVertex = new JSONObject(vertex.asGenericVertex().getProperties());
-                jsonVerticesArray.put(jsonVertex);
-            });
+            graph.getVertices().stream()
+                .sorted(Comparator.comparing(Vertex::getId))
+                .forEach(vertex -> {
+                    final JSONObject jsonVertex = new JSONObject(vertex.asGenericVertex().getProperties());
+                    jsonVerticesArray.put(jsonVertex);
+                });
 
             // Convert the focus
             final Focus defaultFocus = graph.getDefaultFocus();
