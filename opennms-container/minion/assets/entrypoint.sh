@@ -10,8 +10,7 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
-set -x
-
+umask 002
 MINION_HOME="/opt/minion"
 MINION_CONFIG="/opt/minion/etc/org.opennms.minion.controller.cfg"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
