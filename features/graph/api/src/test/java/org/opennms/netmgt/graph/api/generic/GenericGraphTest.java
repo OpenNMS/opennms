@@ -99,23 +99,23 @@ public class GenericGraphTest {
 
     @Test
     public void shouldConsiderSemanticZoomLevel() {
-        final String NAMESPACE = "dummy";
-        final Focus defaultFocus = new Focus(FocusStrategy.SELECTION, Lists.newArrayList(new VertexRef(NAMESPACE, "v1")));
+        final String namespace = "dummy";
+        final Focus defaultFocus = new Focus(FocusStrategy.SELECTION, Lists.newArrayList(new VertexRef(namespace, "v1")));
         final GenericGraph graph = GenericGraph.builder()
-                .namespace(NAMESPACE)
-                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1").build())
-                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1.1").build())
-                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1.2").build())
-                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1.1.1").build())
-                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1.1.2").build())
-                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1.2.1").build())
-                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1.2.2").build())
-                .addEdge(GenericEdge.builder().namespace(NAMESPACE).source(new VertexRef(NAMESPACE, "v1")).target(new VertexRef(NAMESPACE, "v1.1")).build())
-                .addEdge(GenericEdge.builder().namespace(NAMESPACE).source(new VertexRef(NAMESPACE, "v1")).target(new VertexRef(NAMESPACE, "v1.2")).build())
-                .addEdge(GenericEdge.builder().namespace(NAMESPACE).source(new VertexRef(NAMESPACE, "v1.1")).target(new VertexRef(NAMESPACE, "v1.1.1")).build())
-                .addEdge(GenericEdge.builder().namespace(NAMESPACE).source(new VertexRef(NAMESPACE, "v1.1")).target(new VertexRef(NAMESPACE, "v1.1.2")).build())
-                .addEdge(GenericEdge.builder().namespace(NAMESPACE).source(new VertexRef(NAMESPACE, "v1.2")).target(new VertexRef(NAMESPACE, "v1.2.1")).build())
-                .addEdge(GenericEdge.builder().namespace(NAMESPACE).source(new VertexRef(NAMESPACE, "v1.2")).target(new VertexRef(NAMESPACE, "v1.2.2")).build())
+                .namespace(namespace)
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.2").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.1.1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.1.2").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.2.1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.2.2").build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1")).target(new VertexRef(namespace, "v1.1")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1")).target(new VertexRef(namespace, "v1.2")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1.1")).target(new VertexRef(namespace, "v1.1.1")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1.1")).target(new VertexRef(namespace, "v1.1.2")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1.2")).target(new VertexRef(namespace, "v1.2.1")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1.2")).target(new VertexRef(namespace, "v1.2.2")).build())
                 .focus(defaultFocus)
                 .build();
         final List<GenericVertex> genericVertices = graph.resolveVertices(defaultFocus.getVertexIds());
@@ -128,7 +128,7 @@ public class GenericGraphTest {
         assertThat(view.getVertexIds(), Matchers.hasItems("v1"));
 
         // If provided vertices do not exist, an empty graph is returned instead
-        view = graph.getView(Lists.newArrayList(GenericVertex.builder().namespace(NAMESPACE).id("UNKNOWN").build()), 0);
+        view = graph.getView(Lists.newArrayList(GenericVertex.builder().namespace(namespace).id("UNKNOWN").build()), 0);
         assertNotNull(view);
         assertThat(view.getVertices(), Matchers.hasSize(0));
         assertThat(view.getEdges(), Matchers.hasSize(0));
