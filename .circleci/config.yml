@@ -1,7 +1,7 @@
 version: 2.1
 
 executors:
-  build-executor:
+  centos-build-executor:
     docker:
       - image: opennms/build-env:1.8.0.232.b09-3.6.2-b3291
   integration-test-executor:
@@ -31,7 +31,7 @@ commands:
   restore-maven-cache:
       description: "Maven: Calculate cache key and restore cache"
       steps:
-        - run: 
+        - run:
             name: Calculate cache key from pom files
             command: |
               find . -type f -name "pom.xml" -exec sha256sum "{}" \; | sort -nr >> maven-dependency-cache.key
@@ -291,13 +291,13 @@ workflows:
   build-deploy:
     jobs:
       - build
-      - horizon-package-build:
+      - horizon-rpm-build:
           requires:
             - build
-      - minion-package-build:
+      - minion-rpm-build:
           requires:
             - build
-      - sentinel-package-build:
+      - sentinel-rpm-build:
           requires:
             - build
       - integration-test:
@@ -305,9 +305,9 @@ workflows:
             - build
       - smoke-test-full:
           requires:
-            - horizon-package-build
-            - minion-package-build
-            - sentinel-package-build
+            - horizon-rpm-build
+            - minion-rpm-build
+            - sentinel-rpm-build
           filters:
             branches:
               only:
@@ -319,9 +319,9 @@ workflows:
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
-            - horizon-package-build
-            - minion-package-build
-            - sentinel-package-build
+            - horizon-rpm-build
+            - minion-rpm-build
+            - sentinel-rpm-build
           filters:
             branches:
               ignore:
@@ -333,7 +333,7 @@ workflows:
                 - /.*smoke.*/
       - horizon-publish-oci:
           requires:
-            - horizon-package-build
+            - horizon-rpm-build
           filters:
             branches:
               only:
@@ -341,7 +341,7 @@ workflows:
                 - develop
       - minion-publish-oci:
           requires:
-            - minion-package-build
+            - minion-rpm-build
           filters:
             branches:
               only:
@@ -349,7 +349,7 @@ workflows:
                 - develop
       - sentinel-publish-oci:
           requires:
-            - sentinel-package-build
+            - sentinel-rpm-build
           filters:
             branches:
               only:
@@ -358,15 +358,15 @@ workflows:
 
 jobs:
   build:
-    executor: build-executor
+    executor: centos-build-executor
     # Building currently requires the xlarge containers in order for the webpack compilation
     # in the core/web-assets module to complete reliably
     resource_class: xlarge
     steps:
       - run-build:
           number-vcpu: 8
-  horizon-package-build:
-    executor: build-executor
+  horizon-rpm-build:
+    executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     resource_class: large
     steps:
@@ -395,10 +395,10 @@ jobs:
           root: ~/
           paths:
             - project/opennms-container/horizon/images/
-  minion-package-build:
-    executor: build-executor
+  minion-rpm-build:
+    executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if horizon-package-build is under 15 min
+    # Will need to increase resource class if horizon-rpm-build is under 15 min
     resource_class: large
     steps:
       - attach_workspace:
@@ -427,10 +427,10 @@ jobs:
           root: ~/
           paths:
             - project/opennms-container/minion/images/
-  sentinel-package-build:
-    executor: build-executor
+  sentinel-rpm-build:
+    executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if horizon-package-build is under 19 min
+    # Will need to increase resource class if horizon-rpm-build is under 19 min
     resource_class: large
     steps:
       - attach_workspace:
@@ -460,7 +460,7 @@ jobs:
           paths:
             - project/opennms-container/sentinel/images/
   horizon-publish-oci:
-    executor: build-executor
+    executor: centos-build-executor
     steps:
       - attach_workspace:
           at: ~/
@@ -475,7 +475,7 @@ jobs:
             ./tag.sh
             ./publish.sh
   minion-publish-oci:
-    executor: build-executor
+    executor: centos-build-executor
     steps:
       - attach_workspace:
           at: ~/
@@ -490,7 +490,7 @@ jobs:
             ./tag.sh
             ./publish.sh
   sentinel-publish-oci:
-    executor: build-executor
+    executor: centos-build-executor
     steps:
       - attach_workspace:
           at: ~/
@@ -503,7 +503,7 @@ jobs:
             cd opennms-container/sentinel
             docker image load -i images/container.oci
             ./tag.sh
-            ./publish.sh 
+            ./publish.sh
   integration-test:
     executor: integration-test-executor
     parallelism: 4
@@ -520,7 +520,7 @@ jobs:
           failure-option: -fn
           changes-only: false
   code-coverage:
-    executor: build-executor
+    executor: centos-build-executor
     resource_class: medium
     steps:
       - attach_workspace:
