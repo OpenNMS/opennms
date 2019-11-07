@@ -16,7 +16,5 @@ cat <<END >~/.rpmmacros
 %_binary_filedigest_algorithm 0
 %_source_payload w0.bzdio
 %_binary_payload w0.bzdio
-#%__gpg /usr/bin/gpg2
 %__gpg_sign_cmd %{__gpg} gpg --batch --no-verbose --force-v3-sigs --no-armor --no-secmem-warning --batch --pinentry-mode loopback --passphrase-file $HOME/.gpg-passphrase -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 END
-
