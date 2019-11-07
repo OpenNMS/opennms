@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.graph.api.service;
 
-// TODO MVR the provider must provide information such as namespace, label, descriptin, etc. even if the graph itself is not loaded yet.
-// TODO MVR the graph provider should probably return multiple graphs (e.g. graphml)
-
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
@@ -41,14 +38,11 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
  *
  * @author mvrueden
  */
-// TODO MVR implement me properly
 public interface GraphProvider {
 
     /**
      * Loads the graph, this {@link GraphProvider} handles.
      * Loading may be performed very quickly, but also may take some time.
-     *
-     * The provider should not initialize the container and does not need to cache it.
      *
      * @return The populated graph.
      */
@@ -59,7 +53,7 @@ public interface GraphProvider {
      * A {@link ImmutableGraph} should also embed this information. The difference is, that the info should always be available,
      * even if the graph is not yet loaded, and should also never change during the provider's live time, whereas the
      * graph itself may change (e.g. different vertices/edges and properties (besides the ones defining the info)).
-     * @return
+     * @return the meta information of the graph
      */
     GraphInfo<?> getGraphInfo();
 }

@@ -47,7 +47,7 @@ public interface GenericProperties {
     String LABEL = "label";
 
     /** Reference to a node, either the id, or a <foreignSource>:<foreignId> statement */
-    String NODE_REF = "nodeRef";
+    String NODE_CRITERIA = "nodeCriteria";
 
     String NODE_INFO = "nodeInfo";
 

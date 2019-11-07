@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.application;
 
 import org.opennms.features.topology.api.topo.AbstractLevelAwareVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
+import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertexType;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -47,9 +48,14 @@ public class LegacyApplicationVertex extends AbstractLevelAwareVertex implements
         } else {
             setTooltipText(String.format("Service '%s', IP: %s", vertex.getName(), vertex.getIpAddress()));
             setIpAddress(vertex.getIpAddress());
-            setNodeID(Integer.valueOf(vertex.getNodeRefString())); // TODO MVR ensure that this is actually an id and not fs:fid
             setServiceTypeId(vertex.getServiceTypeId());
             setIconKey("application.monitored-service");
+
+            // Apply node Id if provided
+            final NodeRef nodeRef = vertex.getNodeRef();
+            if (nodeRef != null && nodeRef.getNodeId() != null) {
+                setNodeID(nodeRef.getNodeId());
+            }
         }
     }
 

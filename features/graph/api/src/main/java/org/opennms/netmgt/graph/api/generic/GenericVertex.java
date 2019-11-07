@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -35,6 +36,7 @@ import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.aware.NodeRefAware;
+import org.slf4j.LoggerFactory;
 
 public final class GenericVertex extends GenericElement implements Vertex, NodeRefAware {
     
@@ -49,16 +51,14 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeR
 
     @Override
     public NodeRef getNodeRef() {
-        // TODO MVR consider nodeRef-String as well. Also what should we do, if multiple properties are defined?
-        String nodeId = getProperty(GenericProperties.NODE_ID);
-        String foreignSource = getProperty(GenericProperties.FOREIGN_SOURCE);
-        String foreignId = getProperty(GenericProperties.FOREIGN_ID);
-        if (nodeId != null) {
-            return NodeRef.from(nodeId);
-        } else if (foreignSource != null && foreignId != null) {
-            return NodeRef.from(foreignSource, foreignId);
+        final List<NodeRef> nodeRefs = NodeRef.from(this);
+        if (nodeRefs.isEmpty()) {
+            return null;
         }
-        return null;
+        if (nodeRefs.size() > 1) {
+            LoggerFactory.getLogger(getClass()).warn("Vertex has multiple node references: {}. Using first one: {}", nodeRefs, nodeRefs.get(0));
+        }
+        return nodeRefs.get(0);
     }
 
     @Override

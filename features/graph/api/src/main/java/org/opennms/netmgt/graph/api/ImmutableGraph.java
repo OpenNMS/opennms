@@ -51,7 +51,6 @@ public interface ImmutableGraph<V extends Vertex, E extends Edge> extends GraphI
 
     List<String> getEdgeIds();
 
-    // TODO MVR also provide List<String> vertexIds, int szl method.
     ImmutableGraph<V, E> getView(Collection<V> verticesInFocus, int szl);
 
     List<V> resolveVertices(Collection<String> vertexIds);

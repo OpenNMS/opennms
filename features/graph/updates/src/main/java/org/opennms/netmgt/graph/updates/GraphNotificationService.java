@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.updates;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.updates.change.ChangeSet;
 
+// TODO MVR implement me / test me
 public interface GraphNotificationService {
 
     void graphChanged(ImmutableGraph oldGraph, ImmutableGraph newGraph);

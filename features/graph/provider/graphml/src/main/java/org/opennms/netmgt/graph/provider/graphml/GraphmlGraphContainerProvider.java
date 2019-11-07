@@ -77,12 +77,6 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         loadGraphContainer();
     }
 
-    // TODO MVR add notification capabilities
-//    @Override
-//    public void setNotificationService(GraphNotificationService notificationService) {
-//
-//    }
-
     @Override
     public ImmutableGraphContainer loadGraphContainer() {
         if (graphContainer == null) {

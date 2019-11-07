@@ -32,6 +32,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+
+/**
+ * Object to reference a node.
+ * This can either be done by setting the <code>nodeId</code> or <code>foreignSource</code> AND <code>foreignId</code> fields.
+ * If created from an OnmsNode all fields may be populated.
+ *
+ * Note: This should allow for easier node referencing,
+ *       however it is no guarantee that the node referenced actually exists.
+ *
+ * @author mvrueden
+ */
 public class NodeRef {
 
     private final Integer nodeId;
@@ -83,8 +99,10 @@ public class NodeRef {
         return Objects.hash(nodeId, foreignSource, foreignId);
     }
 
-    // If nodeId, foreignSource and foreignId are set,
-    // this returns multiple variants: nodeId and foreignSource/foreignId node refs
+    /**
+     * If nodeId, foreignSource and foreignId are set,
+     * this returns multiple variants: nodeId and foreignSource/foreignId node refs
+     */
     public List<NodeRef> getVariants() {
         final List<NodeRef> variants = new ArrayList<>();
         if (getNodeId() != null) {
@@ -96,6 +114,13 @@ public class NodeRef {
         return variants;
     }
 
+    /**
+     * Creates a new {@link NodeRef} object from a string.
+     * This can be a nodeId, but also a fs:fid string.
+     *
+     * @param nodeRefCriteria the criteria
+     * @return the reference to a node
+     */
     public static NodeRef from(String nodeRefCriteria) {
         if (nodeRefCriteria.contains(":")) {
             String[] criteria = nodeRefCriteria.split(":");
@@ -109,15 +134,51 @@ public class NodeRef {
         }
     }
 
+    /**
+     * Explicitly use foreignSource and foreignId to create a {@link NodeRef} object.
+     */
     public static NodeRef from(String foreignSource, String foreignId) {
         return new NodeRef(foreignSource, foreignId);
     }
 
+    /**
+     * Creates a {@link NodeRef} with all fields populated
+     */
     public static NodeRef from(int nodeId, String foreignSource, String foreignId) {
         return new NodeRef(nodeId, foreignSource, foreignId);
     }
 
+    /**
+     * Creates a {@link NodeRef} with only the <code>nodeId</code> field set.
+     */
     public static NodeRef from(int nodeId) {
         return new NodeRef(nodeId);
+    }
+
+    /**
+     * Creates {@link NodeRef}s from a {@link GenericVertex}.
+     * If multiple properties are set, they are returned in the following order:
+     *
+     *  - reference defined by node id
+     *  - reference defined by foreignSource/foreignId
+     *  - reference defined by node criteria string
+     */
+    public static List<NodeRef> from(GenericVertex vertex) {
+        Objects.requireNonNull(vertex);
+        final String nodeId = vertex.getProperty(GenericProperties.NODE_ID);
+        final String foreignSource = vertex.getProperty(GenericProperties.FOREIGN_SOURCE);
+        final String foreignId = vertex.getProperty(GenericProperties.FOREIGN_ID);
+        final String nodeRef = vertex.getProperty(GenericProperties.NODE_CRITERIA);
+        final List<NodeRef> nodeRefs = Lists.newArrayList();
+        if (!Strings.isNullOrEmpty(nodeId)) {
+            nodeRefs.add(NodeRef.from(nodeId));
+        }
+        if (!Strings.isNullOrEmpty(foreignSource) && !Strings.isNullOrEmpty(foreignId)) {
+            nodeRefs.add(NodeRef.from(foreignSource, foreignId));
+        }
+        if (!Strings.isNullOrEmpty(nodeRef)) {
+            nodeRefs.add(NodeRef.from(nodeRef));
+        }
+        return nodeRefs;
     }
 }

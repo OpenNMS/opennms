@@ -31,31 +31,27 @@ package org.opennms.netmgt.graph.api.service;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 
-// TODO MVR implement me
+/**
+ * A {@link GraphContainerProvider} is responsible for providing an {@link ImmutableGraphContainer}
+ * as well as the meta information of that container.
+ *
+ * If possible the implementators should not load the full container when {@link #getContainerInfo()} is invoked.
+ */
 public interface GraphContainerProvider {
-    // TODO MVR we have to implement this somehow
-//    /**
-//     * The provider may need to inform about graph changes.
-//     * Whith this method the {@link GraphNotificationService} is passed to the provider.
-//     * @param notificationService
-//     */
-//    void setNotificationService(GraphNotificationService notificationService);
 
     /**
-     * Populates the whole container with all its graphs.
-     * The provider should not initialize the container and does not need to cache it.
-     * Invoking this call and also implement proper caching strategies is the {@link GraphService}'s responsibility.
+     * Returns a fully loaded {@link ImmutableGraphContainer} object, containing ALL vertices and edges.
      * May be slow.
      *
-     * TODO MVR We may need to add eviction strategies or custom caching strategies, e.g. for bsm or vmware, etc.
      * @return The populated container
      */
     ImmutableGraphContainer loadGraphContainer();
 
     /**
-     * Invoking {@link #loadGraphContainer()} may take some time, so it is not feasible to invoke it, if only the meta data
-     * of the container or its graph is requested. Therefore the {@link #getContainerInfo()} should return very quick
-     * with the meta data of the container and its graphs
+     * Invoking {@link #loadGraphContainer()} may take some time, so it is not feasible to invoke it,
+     * if only the meta data of the container is requested.
+     * Therefore the {@link #getContainerInfo()} should return very quickly with the meta data of
+     * the container and its graphs.
      *
      * @return The container's meta data
      */

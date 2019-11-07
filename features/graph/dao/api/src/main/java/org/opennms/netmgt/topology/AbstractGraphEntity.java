@@ -91,7 +91,6 @@ public class AbstractGraphEntity {
         return properties.stream().filter(p -> p.getName().equalsIgnoreCase(key)).findFirst().orElse(null);
     }
 
-    // TODO MVR we could simplyfy this by just removing all and then reinsert?
     public void mergeProperties(List<PropertyEntity> propertyEntities) {
         for (PropertyEntity propertyEntity : propertyEntities) {
             final PropertyEntity alreadyExisting = getProperty(propertyEntity.getName());

@@ -28,27 +28,17 @@
 
 package org.opennms.smoketest.graph;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
-import org.opennms.smoketest.topo.GraphMLTopologyIT;
+import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.utils.KarafShell;
-
-import com.google.common.base.Charsets;
+import org.opennms.smoketest.utils.RestClient;
 
 /**
  * Tests the 'GraphML' Topology Provider
@@ -60,7 +50,9 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
 
     private static final String LABEL = "GraphML Topology Provider (test-graph)";
 
-    private final String URL = stack.opennms().getBaseUrlExternal().toString() + "opennms/rest/graphml/test-graph";
+    private final RestClient restClient = stack.opennms().getRestClient();
+
+    private final GraphmlDocument graphmlDocument = new GraphmlDocument("test-graph", "/topology/graphml/test-topology.xml");
 
     private KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
 
@@ -81,7 +73,7 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
     }
 
     @Test
-    public void canExposeGraphML() throws IOException, InterruptedException {
+    public void canExposeGraphML() throws InterruptedException {
         karafShell.runCommand("graph:list", output -> output.contains("4 registered Graph Container(s)"));
 
         importGraph();
@@ -91,46 +83,22 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
                 && output.contains(LABEL));
     }
 
-    // TODO MVR same code as in GraphMLTopologyIT
-    private boolean existsGraph() throws IOException {
-        try (HttpClientWrapper client = createClientWrapper()) {
-            HttpGet httpGet = new HttpGet(URL);
-            httpGet.addHeader("Accept", "application/xml");
-            CloseableHttpResponse response = client.execute(httpGet);
-            return response.getStatusLine().getStatusCode() == 200;
-        }
+    private boolean existsGraph() {
+        return graphmlDocument.exists(restClient);
     }
 
-    // TODO MVR same code as in GraphMLTopologyIT
-    private void importGraph() throws IOException, InterruptedException {
-        try (HttpClientWrapper client = createClientWrapper()) {
-            HttpPost httpPost = new HttpPost(URL);
-            httpPost.setHeader("Accept", "application/xml");
-            httpPost.setHeader("Content-Type", "application/xml");
-            httpPost.setEntity(new StringEntity(IOUtils.toString(GraphMLTopologyIT.class.getResourceAsStream("/topology/graphml/test-topology.xml"), Charsets.UTF_8)));
-            CloseableHttpResponse response = client.execute(httpPost);
-            assertEquals(201, response.getStatusLine().getStatusCode());
-        }
+    private void importGraph() throws InterruptedException {
+        graphmlDocument.create(restClient);
+
         // We wait to give the GraphMLMetaTopologyFactory the chance to initialize the new Topology
         Thread.sleep(20000);
     }
 
-    // TODO MVR same code as in GraphMLTopologyIT
-    private void deleteGraph() throws IOException, InterruptedException {
-        try (HttpClientWrapper client = createClientWrapper()) {
-            HttpDelete httpDelete = new HttpDelete(URL);
-            CloseableHttpResponse response = client.execute(httpDelete);
-            assertEquals(200, response.getStatusLine().getStatusCode());
-        }
+    private void deleteGraph() throws InterruptedException {
+        graphmlDocument.delete(restClient);
+
         // We wait to give the GraphMLMetaTopologyFactory the chance to clean up afterwards
         Thread.sleep(20000);
-    }
-
-    // TODO MVR same code as in GraphMLTopologyIT
-    private static HttpClientWrapper createClientWrapper() {
-        HttpClientWrapper wrapper = HttpClientWrapper.create();
-        wrapper.addBasicCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
-        return wrapper;
     }
 
 }

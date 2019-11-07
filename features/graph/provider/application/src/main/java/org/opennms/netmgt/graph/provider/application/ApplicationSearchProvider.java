@@ -48,7 +48,6 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO MVR rework this class
 public class ApplicationSearchProvider implements SearchProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationSearchProvider.class);
@@ -56,9 +55,7 @@ public class ApplicationSearchProvider implements SearchProvider {
     private final ApplicationDao applicationDao;
 
     public ApplicationSearchProvider(ApplicationDao applicationDao) {
-        Objects.requireNonNull(applicationDao);
-        this.applicationDao = applicationDao;
-        LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), ApplicationGraph.TOPOLOGY_NAMESPACE);
+        this.applicationDao = Objects.requireNonNull(applicationDao);
     }
 
     @Override
@@ -67,21 +64,14 @@ public class ApplicationSearchProvider implements SearchProvider {
     }
 
     @Override
-    public List<SearchSuggestion> getSuggestions(final SearchContext searchContext,
-                                                 final String namespace, final String input) {
-        Objects.requireNonNull(searchContext);
-        Objects.requireNonNull(namespace);
-        Objects.requireNonNull(input);
+    public List<SearchSuggestion> getSuggestions(final SearchContext searchContext, final String namespace, final String input) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsApplication.class);
+        builder.ilike("name", String.format("%%%s%%", input));
+        builder.orderBy("name", true);
+        builder.limit(searchContext.getSuggestionsLimit());
 
-        LOG.debug("ApplicationSearchProvider->getSuggestions: called with search query: '{}'", input);
-
-        CriteriaBuilder bldr = new CriteriaBuilder(OnmsApplication.class);
-        bldr.ilike("name", String.format("%%%s%%", input));
-        bldr.orderBy("name", true);
-        bldr.limit(searchContext.getSuggestionsLimit());
-        Criteria dbQueryCriteria = bldr.toCriteria();
-
-        List<SearchSuggestion> suggestions = new ArrayList<>();
+        final Criteria dbQueryCriteria = builder.toCriteria();
+        final List<SearchSuggestion> suggestions = new ArrayList<>();
         for (OnmsApplication application : applicationDao.findMatching(dbQueryCriteria)) {
             SearchSuggestion suggestion = new SearchSuggestion(getProviderId(),
                     OnmsApplication.class.getSimpleName(),
@@ -89,7 +79,6 @@ public class ApplicationSearchProvider implements SearchProvider {
                     application.getName());
             suggestions.add(suggestion);
         }
-        LOG.debug("ApplicationServiceSearchProvider->getSuggestions: found {} results: {}", suggestions.size(), suggestions);
         return suggestions;
     }
 
