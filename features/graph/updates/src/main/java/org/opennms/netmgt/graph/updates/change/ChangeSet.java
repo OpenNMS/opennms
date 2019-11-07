@@ -54,11 +54,6 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
     private GraphInfo currentGraphInfo;
     private Focus currentFocus;
 
-    public ChangeSet(String namespace) {
-        this.namespace = namespace;
-        this.changeSetDate = new Date();
-    }
-
     public ChangeSet(G oldGraph, G newGraph) {
         this(oldGraph, newGraph, new Date());
     }
@@ -215,6 +210,11 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
             oldGraph.getVertices().forEach(v -> vertexRemoved(v));
             oldGraph.getEdges().forEach(e -> edgeRemoved(e));
             graphInfoChanged(null);
+        }
+
+        // Nothing to do if same
+        if (oldGraph == newGraph) {
+            return;
         }
 
         // both graph exists, so calculate changes

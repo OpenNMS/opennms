@@ -52,6 +52,9 @@ public class ContainerChangeSet {
     }
     public ContainerChangeSet(ImmutableGraphContainer oldGraphContainer, ImmutableGraphContainer newGraphContainer, Date changeSetDate) {
         this.changeSetDate = changeSetDate;
+        if (oldGraphContainer == null && newGraphContainer == null) {
+            throw new IllegalArgumentException("Cannot detect changes if both containers are null.");
+        }
         detectChanges(oldGraphContainer, newGraphContainer);
     }
 
@@ -99,8 +102,21 @@ public class ContainerChangeSet {
             oldGraphContainer.getGraphs().forEach(g -> graphRemoved(g));
         }
 
+        // nothing to do if they are the same :)
+        if (oldGraphContainer == newGraphContainer) {
+            return;
+        }
+
         // both containers exists, so calculate changes
         if (oldGraphContainer != null && newGraphContainer != null) {
+            // Before changes can be calculated, ensure the containers share the same id, otherwise
+            // we should bail, as this is theoretical/technical possible, but does not make sense from the
+            // domain view the container reflects.
+            if (!oldGraphContainer.getId().equalsIgnoreCase(newGraphContainer.getId())) {
+                throw new IllegalStateException("Cannot detect changes between different containers");
+            }
+
+            // Detect changes
             final List<String> oldNamespaces = oldGraphContainer.getNamespaces();
             final List<String> newNamespaces = newGraphContainer.getNamespaces();
 

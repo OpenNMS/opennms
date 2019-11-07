@@ -32,13 +32,13 @@ import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 /**
  * Acts as a domain specific view on a GenericGraph.
  * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own
  * domain graph. It is a final class. If you need more functionality please extend AbstractDomainGraph.
  */
+// TODO MVR rename to domain and this makes more sense
 public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
 
     public SimpleGraph(GenericGraph graph) {

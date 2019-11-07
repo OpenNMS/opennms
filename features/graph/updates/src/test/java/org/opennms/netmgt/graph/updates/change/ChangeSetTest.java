@@ -28,80 +28,118 @@
 
 package org.opennms.netmgt.graph.updates.change;
 
-// TODO MVR make this test work again
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
+import org.opennms.netmgt.graph.simple.SimpleEdge;
+import org.opennms.netmgt.graph.simple.SimpleGraph;
+import org.opennms.netmgt.graph.simple.SimpleVertex;
+
+// TODO MVR add test for focus change
+// TODO MVR add test for edge changes
 public class ChangeSetTest {
 
-//    private static final String NAMESPACE = "simple";
-//
-//    // Verifies that when a complete new graph was added,
-//    // everything from the new graph is the change
-//    @Test
-//    public void verifyNoOldGraph() {
-//        final SimpleGraph<SimpleVertex, SimpleEdge<SimpleVertex>> newGraph = new SimpleGraph<>(NAMESPACE);
-//        final ChangeSet changeSet = new ChangeSet(null, newGraph);
-//        assertEquals(NAMESPACE, changeSet.getNamespace());
-//
-//        assertEquals(Boolean.TRUE, changeSet.hasGraphInfoChanged());
-//        assertEquals(Boolean.TRUE, changeSet.getVerticesAdded().isEmpty());
-//        assertEquals(Boolean.TRUE, changeSet.getVerticesRemoved().isEmpty());
-//        assertEquals(Boolean.TRUE, changeSet.getVerticesUpdated().isEmpty());
-//        assertEquals(Boolean.TRUE, changeSet.getEdgesAdded().isEmpty());
-//        assertEquals(Boolean.TRUE, changeSet.getEdgesRemoved().isEmpty());
-//        assertEquals(Boolean.TRUE, changeSet.getEdgesUpdated().isEmpty());
-//    }
-//
-//    // Verifies graph updates can be detected
-//    @Test
-//    public void verifyUpdate() {
-//        // Graph with vertices (1,2,3)
-//        final SimpleGraph<SimpleVertex, SimpleEdge<SimpleVertex>> oldGraph = new SimpleGraph<>(NAMESPACE);
-//        oldGraph.addVertex(new SimpleVertex(NAMESPACE, "1"));
-//        oldGraph.addVertex(new SimpleVertex(NAMESPACE, "2"));
-//        oldGraph.addVertex(new SimpleVertex(NAMESPACE, "3"));
-//
-//        // Graph with vertices (3,4)
-//        final SimpleGraph<SimpleVertex, SimpleEdge<SimpleVertex>> newGraph = new SimpleGraph<>(NAMESPACE);
-//        newGraph.setDescription("Some Description");
-//        newGraph.setLabel("Some Label");
-//        newGraph.addVertex(new SimpleVertex(NAMESPACE, "3"));
-//        newGraph.addVertex(new SimpleVertex(NAMESPACE, "4"));
-//        newGraph.getVertex("3").setLabel("Three");
-//
-//        // Detect Changes
-//        // Changes are (removed vertices: 1, 2. Added Vertices: 4, Updated Vertices: 3
-//        final ChangeSet<SimpleGraph<SimpleVertex, SimpleEdge<SimpleVertex>>, SimpleVertex, SimpleEdge<SimpleVertex>> changeSet = new ChangeSet(oldGraph, newGraph);
-//        assertEquals(NAMESPACE, changeSet.getNamespace()); // Ensure the namespace was detected successful
-//
-//        // Verify Change Flags
-//        assertEquals(Boolean.TRUE, changeSet.hasGraphInfoChanged());
-//        assertEquals(Boolean.FALSE, changeSet.getVerticesAdded().isEmpty());
-//        assertEquals(Boolean.FALSE, changeSet.getVerticesRemoved().isEmpty());
-//        assertEquals(Boolean.FALSE, changeSet.getVerticesUpdated().isEmpty());
-//        assertEquals(Boolean.TRUE, changeSet.getEdgesAdded().isEmpty());
-//        assertEquals(Boolean.TRUE, changeSet.getEdgesRemoved().isEmpty());
-//        assertEquals(Boolean.TRUE, changeSet.getEdgesUpdated().isEmpty());
-//
-//        // Verify changes
-//        assertEquals("4", changeSet.getVerticesAdded().get(0).getId());
-//        assertEquals("1", changeSet.getVerticesRemoved().get(0).getId());
-//        assertEquals("2", changeSet.getVerticesRemoved().get(1).getId());
-//        assertEquals("3", changeSet.getVerticesUpdated().get(0).getId());
-//        assertEquals(new DefaultGraphInfo(NAMESPACE, SimpleVertex.class)
-//                .withDescription("Some Description")
-//                .withLabel("Some Label"), changeSet.getGraphInfo());
-//    }
-//
-//    // Verifies that graphs from different namespaces cannot be detected.
-//    // In theory this might be possible, but it does not make sense from a domain point.
-//    @Test
-//    public void verifyNamespaceCannotChange() {
-//        final SimpleGraph<SimpleVertex, SimpleEdge<SimpleVertex>> oldGraph = new SimpleGraph<>(NAMESPACE);
-//        final SimpleGraph<SimpleVertex, SimpleEdge<SimpleVertex>> newGraph = new SimpleGraph<>(NAMESPACE + ".opennms");
-//        try {
-//            new ChangeSet(oldGraph, newGraph);
-//            fail("Expected an exception to be thrown, but succeeded. Bailing");
-//        } catch (IllegalStateException ex) {
-//            // expected, as namespace changes are not supported
-//        }
-//    }
+    private static final String NAMESPACE = "test";
+
+    @Test
+    public void verifyNoChanges() {
+        final SimpleGraph graph = SimpleGraph.builder()
+                .namespace(NAMESPACE)
+                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
+                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build())
+                .build();
+        ChangeSet changeSet = new ChangeSet(graph, graph);
+        assertThat(changeSet.hasChanges(), Matchers.is(false));
+
+        changeSet = new ChangeSet(graph, SimpleGraph.from(graph.asGenericGraph()));
+        assertThat(changeSet.hasChanges(), Matchers.is(false));
+    }
+
+    // Verifies that when a complete new graph was added,
+    // everything from the new graph is the change
+    @Test
+    public void verifyNoOldGraph() {
+        final SimpleGraph graph = SimpleGraph.builder()
+                .namespace(NAMESPACE)
+                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
+                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build())
+                .addEdge(SimpleEdge.builder().namespace(NAMESPACE).id("e1")
+                        .source(new VertexRef(NAMESPACE, "v1"))
+                        .target(new VertexRef(NAMESPACE, "v2"))
+                        .build())
+                .build();
+        final ChangeSet<SimpleGraph, SimpleVertex, SimpleEdge> changeSet = new ChangeSet(null, graph);
+        assertThat(changeSet.getNamespace(), Matchers.is(NAMESPACE));
+        assertThat(changeSet.hasGraphInfoChanged(), Matchers.is(true));
+        assertThat(changeSet.getVerticesAdded(), Matchers.hasSize(2));
+        assertThat(changeSet.getVerticesRemoved(), Matchers.hasSize(0));
+        assertThat(changeSet.getVerticesUpdated(), Matchers.hasSize(0));
+        assertThat(changeSet.getEdgesAdded(), Matchers.hasSize(1));
+        assertThat(changeSet.getEdgesRemoved(), Matchers.hasSize(0));
+        assertThat(changeSet.getEdgesUpdated(), Matchers.hasSize(0));
+        assertThat(changeSet.getGraphInfo(), Matchers.not(Matchers.is(Matchers.nullValue())));
+    }
+
+    // Verifies graph updates can be detected
+    @Test
+    public void verifyUpdate() {
+        // Graph with vertices (1,2,3)
+        final SimpleGraph oldGraph = SimpleGraph.builder()
+                .namespace(NAMESPACE)
+                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("1").build())
+                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("2").build())
+                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("3").build())
+                .build();
+
+        // Graph with vertices (3,4)
+        final SimpleGraph newGraph = SimpleGraph.builder()
+                .namespace(NAMESPACE)
+                .label("Some Label")
+                .description("Some Description")
+                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("3").label("Three").build())
+                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("4").build())
+                .build();
+
+        // Detect changes
+        // Changes are (removed vertices: 1, 2. Added Vertices: 4, Updated Vertices: 3
+        final ChangeSet<SimpleGraph, SimpleVertex, SimpleEdge> changeSet = new ChangeSet(oldGraph, newGraph);
+        assertThat(changeSet.getNamespace(), Matchers.is(NAMESPACE)); // Ensure the namespace was detected successful
+
+        // Verify change Flags
+        assertThat(changeSet.hasGraphInfoChanged(), Matchers.is(true));
+        assertThat(changeSet.getVerticesAdded(), Matchers.hasSize(1));
+        assertThat(changeSet.getVerticesRemoved(), Matchers.hasSize(2));
+        assertThat(changeSet.getVerticesUpdated(), Matchers.hasSize(1));
+        assertThat(changeSet.getEdgesAdded(), Matchers.hasSize(0));
+        assertThat(changeSet.getEdgesRemoved(), Matchers.hasSize(0));
+        assertThat(changeSet.getEdgesUpdated(), Matchers.hasSize(0));
+
+        // Verify changes
+        assertEquals("4", changeSet.getVerticesAdded().get(0).getId());
+        assertEquals("1", changeSet.getVerticesRemoved().get(0).getId());
+        assertEquals("2", changeSet.getVerticesRemoved().get(1).getId());
+        assertEquals("3", changeSet.getVerticesUpdated().get(0).getId());
+        assertEquals(new DefaultGraphInfo(NAMESPACE, SimpleVertex.class)
+                .withDescription("Some Description")
+                .withLabel("Some Label"), changeSet.getGraphInfo());
+    }
+
+    // Verifies that graphs from different namespaces cannot be detected.
+    // In theory this might be possible, but it does not make sense from a domain point.
+    @Test
+    public void verifyNamespaceCannotChange() {
+        final SimpleGraph oldGraph = SimpleGraph.builder().namespace(NAMESPACE).build();
+        final SimpleGraph newGraph = SimpleGraph.builder().namespace(NAMESPACE + ".opennms").build();
+        try {
+            new ChangeSet(oldGraph, newGraph);
+            fail("Expected an exception to be thrown, but succeeded. Bailing");
+        } catch (IllegalStateException ex) {
+            // expected, as namespace changes are not supported
+        }
+    }
 }
