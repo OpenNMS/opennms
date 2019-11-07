@@ -38,6 +38,8 @@ import org.opennms.netmgt.graph.api.Vertex;
  */
 public interface GraphInfo<V extends Vertex> {
 
+    // TODO MVR ensure namespace does not contain spaces and weird characters (only a-z0-9-_.) should be allowed
+    // TODO MVR same is true for vertex,edge and container (the same may be true for id of those elements)
     /** The namespace of the graph. Should be unique overall Graphs */
     String getNamespace();
 

@@ -27,23 +27,25 @@
  *******************************************************************************/
 
 
-package org.opennms.netmgt.graph.shell;
+package org.opennms.netmgt.graph.shell.completer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import com.google.common.collect.Lists;
 
 public class SuggestionCompleterTest {
 
     @Test
     public void shouldExtractNamespace() {
-        extract("application", "graph:search --namespace application --search Blah");
-        extract("", "graph:search --search Blah");
+        extract("application", "graph:search --namespace application Blah");
+        extract("", "graph:search Blah");
     }
 
-
     private void extract(String expectation, String input) {
-        String result = new SuggestionCompleter().extractNamespace(input);
+        final String[] arguments = input.split(" ");
+        final String result = new SuggestionCompleter().extractNamespace(Lists.newArrayList(arguments));
         assertEquals(expectation, result);
     }
 }

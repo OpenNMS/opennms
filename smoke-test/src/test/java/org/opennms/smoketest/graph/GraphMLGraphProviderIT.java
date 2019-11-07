@@ -78,7 +78,7 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
 
         importGraph();
 
-        karafShell.runCommand("graph:list", output -> output.contains("5 registered Graph Container(s)")
+        karafShell.runCommand("graph:list -a", output -> output.contains("5 registered Graph Container(s)")
                 && output.contains("6 registered Graph(s)")
                 && output.contains(LABEL));
     }

@@ -30,9 +30,7 @@ package org.opennms.netmgt.topology;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -53,7 +51,6 @@ import org.opennms.netmgt.graph.dao.api.EntityProperties;
 @DiscriminatorValue("graph")
 public class GraphEntity extends AbstractGraphEntity {
 
-    // TODO MVR at some point this was vertices and edges. However somehow the @Where(TYPE='edge') and @Where(Type='vertex') did not work when updating data :(
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "graph_element_relations",
             joinColumns = { @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false, updatable = true) },
@@ -65,10 +62,6 @@ public class GraphEntity extends AbstractGraphEntity {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="focus_id")
     private FocusEntity defaultFocus;
-
-    // TODO MVR verify that this is properly instantiated when loading data via hibernate
-    @Transient
-    private Map<String, VertexEntity> vertexIdMap = new HashMap<>();
 
     public String getDescription() {
         return getPropertyValue(EntityProperties.DESCRIPTION);
@@ -96,18 +89,13 @@ public class GraphEntity extends AbstractGraphEntity {
 
     public VertexEntity getVertexByVertexId(String id) {
         Objects.requireNonNull(id);
-        // TODO MVR this is not instantiated properly
-//        final VertexEntity vertexEntity = vertexIdMap.get(id);
-//        return vertexEntity;
         return getVertexByProperty(EntityProperties.ID, id);
     }
 
-    // TODO MVR this is very slow
     public EdgeEntity getEdgeByProperty(String key, String value) {
         return getEntitiesByProperty(getEdges(), key, value);
     }
 
-    // TODO MVR this is very slow
     public VertexEntity getVertexByProperty(String key, String value) {
         return getEntitiesByProperty(getVertices(), key, value);
     }
@@ -132,14 +120,6 @@ public class GraphEntity extends AbstractGraphEntity {
         relations.remove(edgeEntity);
     }
 
-    private <E extends AbstractGraphEntity> E getEntitiesByProperty(List<E> entities, String key, String value) {
-        return entities.stream().filter(entity -> entity.getProperties().stream()
-                .filter(property -> property.getName().equals(key) && property.getValue().equals(value))
-                .findAny()
-                .isPresent()
-        ).findAny().orElse(null);
-    }
-
     @Transient
     @SuppressWarnings("unchecked")
     private <T extends AbstractGraphEntity> List<T> getElements(Class<T> type) {
@@ -147,5 +127,13 @@ public class GraphEntity extends AbstractGraphEntity {
                 .filter(type::isInstance)
                 .map(e -> (T)e)
                 .collect(Collectors.toList()));
+    }
+
+    private static <E extends AbstractGraphEntity> E getEntitiesByProperty(List<E> entities, String key, String value) {
+        return entities.stream().filter(entity -> entity.getProperties().stream()
+                .filter(property -> property.getName().equals(key) && property.getValue().equals(value))
+                .findAny()
+                .isPresent()
+        ).findAny().orElse(null);
     }
 }

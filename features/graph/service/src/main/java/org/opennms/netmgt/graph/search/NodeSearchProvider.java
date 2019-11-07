@@ -65,6 +65,7 @@ public class NodeSearchProvider implements SearchProvider {
         final Criteria criteria = new CriteriaBuilder(OnmsNode.class)
                 .ilike("label", "%" + input + "%")
                 .orderBy("label", true)
+                .limit(searchContext.getSuggestionsLimit())
                 .toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
         final List<SearchSuggestion> suggestions = Lists.newArrayList();

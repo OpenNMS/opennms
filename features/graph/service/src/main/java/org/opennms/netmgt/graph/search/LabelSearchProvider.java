@@ -56,7 +56,7 @@ public class LabelSearchProvider implements SearchProvider {
         Objects.requireNonNull(input);
         return getVerticesOfGraph(searchContext.getGraphService(), namespace)
                 .parallelStream()
-                .filter(v -> (v.getLabel() != null && v.getLabel().contains(input)))
+                .filter(v -> (v.getLabel() != null && v.getLabel().toLowerCase().contains(input.toLowerCase())))
                 .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), v.getId(), v.getLabel()))
                 .limit(searchContext.getSuggestionsLimit())
                 .collect(Collectors.toList());

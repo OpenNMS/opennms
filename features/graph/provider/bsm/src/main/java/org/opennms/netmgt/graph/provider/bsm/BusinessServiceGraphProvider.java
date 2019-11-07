@@ -89,7 +89,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
     public GraphInfo<?> getGraphInfo() {
         final DefaultGraphInfo graphInfo = new DefaultGraphInfo(NAMESPACE, SimpleVertex.class);
         graphInfo.setLabel("Business Service Graph"); // Business Services
-        graphInfo.setDescription("This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states.");
+        graphInfo.setDescription("Displays the hierarchy of the defined Business Services and their computed operational states.");
         return graphInfo;
     }
 
@@ -164,6 +164,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         return getClass().getSimpleName();
     }
 
+    // TODO MVR We may need some kind of caching strategy implementation allowing each provider to deal with reloads individually if they so choose
     @Override
     public void onEvent(Event e) {
         // BSM has been reloaded, force reload

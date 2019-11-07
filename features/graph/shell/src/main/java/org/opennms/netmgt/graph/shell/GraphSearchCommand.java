@@ -43,6 +43,8 @@ import org.opennms.netmgt.graph.api.search.GraphSearchService;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
+import org.opennms.netmgt.graph.shell.completer.NamespaceCompleter;
+import org.opennms.netmgt.graph.shell.completer.SuggestionCompleter;
 
 @Command(scope = "graph", name = "search", description="Searches vertices in a given namespace (graph)")
 @Service
@@ -58,30 +60,28 @@ public class GraphSearchCommand implements Action {
     @Option(name="--namespace", description="The namespace of the graph", required = true)
     private String namespace;
 
-    @Completion( SuggestionCompleter.class)
+    @Completion(SuggestionCompleter.class)
     @Option(name = "--search", description = "The search input", required = true, multiValued = false)
     private String input;
 
     @Override
     public Object execute() {
-
-
         final GenericGraph genericGraph = graphService.getGraph(namespace);
         if (genericGraph == null) {
             System.out.println("No graph with namespace " + namespace + " found");
         } else {
             // hack to prevent StringIndexOutOfBoundsException in Karaf Code:
-            String searchString = input.replace("_", " ");
-            List<SearchSuggestion> suggestions = graphSearchService.getSuggestions(namespace, searchString);
-            if(suggestions.size()>0) {
-                SearchSuggestion suggestion = suggestions.get(0);
-                SearchCriteria searchCriteria = new SearchCriteria(
+            final String searchString = input.replace("_", " ");
+            final List<SearchSuggestion> suggestions = graphSearchService.getSuggestions(namespace, searchString);
+            if (suggestions.size() > 0) {
+                final SearchSuggestion suggestion = suggestions.get(0);
+                final SearchCriteria searchCriteria = new SearchCriteria(
                         suggestion.getProvider(),
                         namespace,
-                        searchString,
+                        suggestion.getId(),
                         suggestion.getContext()
                 );
-                List<GenericVertex> vertices = graphSearchService.search(searchCriteria);
+                final List<GenericVertex> vertices = graphSearchService.search(searchCriteria);
                 System.out.println("Search results: " + vertices.size() + " vertices found.");
                 for(GenericVertex vertex : vertices) {
                     System.out.println("");
@@ -92,7 +92,6 @@ public class GraphSearchCommand implements Action {
             } else {
                 System.out.println(String.format("No vertices found for namespace=%s and input=%s", namespace, input));
             }
-
         }
         return null;
     }

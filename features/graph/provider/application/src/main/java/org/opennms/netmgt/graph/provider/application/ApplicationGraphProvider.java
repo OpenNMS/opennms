@@ -40,14 +40,11 @@ import org.opennms.netmgt.graph.provider.application.ApplicationGraph.Applicatio
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ApplicationGraphProvider implements GraphProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationGraphProvider.class);
     private static final String GRAPH_LABEL = "Application Graph";
-    private static final String GRAPH_DESCRIPTION = "This Topology Provider displays all defined Applications and their calculated states.";
+    private static final String GRAPH_DESCRIPTION = "Displays all defined applications and their calculated states.";
 
     private final ApplicationDao applicationDao;
     private final SessionUtils sessionUtils;
@@ -57,7 +54,6 @@ public class ApplicationGraphProvider implements GraphProvider {
         Objects.requireNonNull(sessionUtils);
         this.applicationDao = applicationDao;
         this.sessionUtils = sessionUtils;
-        LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), ApplicationGraph.TOPOLOGY_NAMESPACE);
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,41 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.shell;
+package org.opennms.netmgt.graph.shell.completer;
 
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
-import org.apache.karaf.shell.api.action.lifecycle.Reference;
-import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.console.CommandLine;
-import org.apache.karaf.shell.api.console.Completer;
-import org.apache.karaf.shell.api.console.Session;
-import org.apache.karaf.shell.support.completers.StringsCompleter;
-import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
-import org.opennms.netmgt.graph.api.service.GraphService;
 
-@Service
-public class NamespaceCompleter implements Completer {
+import com.google.common.collect.Lists;
 
-    @Reference
-    private GraphService graphService;
+public class CommandLineUtils {
 
-    @Override
-    public int complete(Session session, CommandLine commandLine, List<String> candidates) {
+    public static String extractArgument(final CommandLine commandLine, final String argumentName) {
+        final List<String> arguments = Lists.newArrayList(commandLine.getArguments());
+        return extractArgument(arguments, argumentName);
+    }
 
-        Set<String> namespaces = new TreeSet<>();
-        List<GraphContainerInfo> infos = graphService.getGraphContainerInfos();
-        for (GraphContainerInfo info : infos) {
-            namespaces.addAll(info.getNamespaces());
+    public static String extractArgument(final List<String> arguments, final String argumentName) {
+        if (arguments.contains(argumentName)) {
+            int index = arguments.indexOf(argumentName);
+            if (arguments.size() > index) {
+                return arguments.get(index + 1);
+            }
+            return null;
         }
-
-        StringsCompleter delegate = new StringsCompleter();
-        for (String namespace : namespaces) {
-            delegate.getStrings().add(namespace);
-        }
-
-        return delegate.complete(session, commandLine, candidates);
+        return null;
     }
 }

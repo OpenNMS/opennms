@@ -26,10 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.shell;
-
+package org.opennms.netmgt.graph.shell.completer;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
@@ -37,48 +39,29 @@ import org.apache.karaf.shell.api.console.CommandLine;
 import org.apache.karaf.shell.api.console.Completer;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.support.completers.StringsCompleter;
-import org.opennms.netmgt.graph.api.search.GraphSearchService;
-import org.opennms.netmgt.graph.api.search.SearchSuggestion;
+import org.opennms.netmgt.graph.api.service.GraphService;
 
 @Service
-public class SuggestionCompleter implements Completer {
+public class NamespaceCompleter implements Completer {
 
     @Reference
-    private GraphSearchService graphSearchService;
+    private GraphService graphService;
+
+    public NamespaceCompleter() {
+
+    }
+
+    public NamespaceCompleter(GraphService graphService) {
+        this.graphService = Objects.requireNonNull(graphService);
+    }
 
     @Override
     public int complete(Session session, CommandLine commandLine, List<String> candidates) {
-        String currentSearch = commandLine.getCursorArgument();
-
-        String namespace = extractNamespace(commandLine.getBuffer());
-
-        StringsCompleter delegate = new StringsCompleter();
-        if (currentSearch != null && currentSearch.length() > 0 && namespace.length() > 0 ) {
-            List<SearchSuggestion> searchSuggestions = graphSearchService.getSuggestions(namespace, currentSearch);
-            for (SearchSuggestion suggestion : searchSuggestions) {
-                // hack to prevent StringIndexOutOfBoundsException in Karaf Code:
-                String label = suggestion.getLabel().replace(" ", "_");
-                delegate.getStrings().add(label);
-            }
-        }
+        final Set<String> namespaces = graphService.getGraphContainerInfos().stream()
+                .flatMap(ci -> ci.getNamespaces().stream())
+                .collect(Collectors.toSet());
+        final StringsCompleter delegate = new StringsCompleter();
+        delegate.getStrings().addAll(namespaces);
         return delegate.complete(session, commandLine, candidates);
     }
-
-    String extractNamespace(String commandLine) {
-
-        int index = commandLine.indexOf("--namespace ");
-        if(index < 0) {
-            return "";
-        }
-        index = index + "--namespace ".length();
-        String namespace = commandLine.substring(index, commandLine.length());
-
-        index = namespace.indexOf(" ");
-        if(index > 0) {
-            namespace = namespace.substring(0, index);
-        }
-
-        return namespace;
-    }
-
 }

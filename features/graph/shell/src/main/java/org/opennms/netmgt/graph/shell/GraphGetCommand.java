@@ -30,11 +30,14 @@ package org.opennms.netmgt.graph.shell;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
+import org.opennms.netmgt.graph.shell.completer.ContainerIdCompleter;
+import org.opennms.netmgt.graph.shell.completer.ContainerNamespaceCompleter;
 
 @Command(scope = "graph", name = "get", description="Gets a graph identified by its namespace")
 @Service
@@ -44,19 +47,19 @@ public class GraphGetCommand implements Action {
     @Reference
     private GraphService graphService;
 
-    // TODO MVR implement autocompletion
+    @Completion(ContainerIdCompleter.class)
     @Option(name="--container", description="The id of the container", required=true)
     private String containerId;
 
-    // TODO MVR implement autocompletion
-    @Option(name="--namespace", description="The namespace of the graph", required = true)
+    @Completion(ContainerNamespaceCompleter.class)
+    @Option(name="--namespace", description="The namespace of the graph", required = false)
     private String namespace;
 
     @Override
     public Object execute() throws Exception {
         final GenericGraph genericGraph = graphService.getGraph(containerId, namespace);
         if (genericGraph == null) {
-            System.out.println("No graph with namespace " + namespace + " found");
+            System.out.println("No graph in container with id '" + containerId + "' and namespace '" + namespace + "' found");
         } else {
             System.out.println("Graph Details:");
             genericGraph.getProperties().forEach((key, value) -> System.out.println("  " + key + " => " + value));

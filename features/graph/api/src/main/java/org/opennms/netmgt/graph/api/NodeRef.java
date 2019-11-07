@@ -165,13 +165,17 @@ public class NodeRef {
      */
     public static List<NodeRef> from(GenericVertex vertex) {
         Objects.requireNonNull(vertex);
-        final String nodeId = vertex.getProperty(GenericProperties.NODE_ID);
+        final Object nodeId = vertex.getProperty(GenericProperties.NODE_ID);
         final String foreignSource = vertex.getProperty(GenericProperties.FOREIGN_SOURCE);
         final String foreignId = vertex.getProperty(GenericProperties.FOREIGN_ID);
         final String nodeRef = vertex.getProperty(GenericProperties.NODE_CRITERIA);
         final List<NodeRef> nodeRefs = Lists.newArrayList();
-        if (!Strings.isNullOrEmpty(nodeId)) {
-            nodeRefs.add(NodeRef.from(nodeId));
+        if (nodeId != null) {
+            if (nodeId instanceof String) {
+                nodeRefs.add(NodeRef.from((String) nodeId));
+            } else if (nodeId instanceof Integer) {
+                nodeRefs.add(NodeRef.from((Integer) nodeId));
+            }
         }
         if (!Strings.isNullOrEmpty(foreignSource) && !Strings.isNullOrEmpty(foreignId)) {
             nodeRefs.add(NodeRef.from(foreignSource, foreignId));

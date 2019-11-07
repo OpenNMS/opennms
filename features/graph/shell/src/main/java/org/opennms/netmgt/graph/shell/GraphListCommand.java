@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -44,9 +45,12 @@ import org.opennms.netmgt.graph.api.service.GraphService;
 @Service
 public class GraphListCommand implements Action {
 
-    private static final int MAX_DESCRIPTION_LENGTH = 40;
+    private static final int MAX_DESCRIPTION_LENGTH = 100;
     private static final String CONTAINER_ROW_TEMPLATE = "%%-%ds   %%-%ds   %%-%ds   %%s";
     private static final String GRAPH_ROW_TEMPLATE = "%%-%ds   %%-%ds   %%-%ds   %%s";
+
+    @Option(name="-a", aliases = {"--all"}, description = "Lists all graphs as well")
+    public boolean showAll = false;
 
     @Reference
     private GraphService graphService;
@@ -70,17 +74,19 @@ public class GraphListCommand implements Action {
             }
 
             // Print graphs
-            System.out.println();
-            System.out.println(graphCount + " registered Graph(s):");
-            final List<GraphInfo> graphInfos = graphContainerInfoList.stream().flatMap(ci -> ci.getGraphInfos().stream()).collect(Collectors.toList());
-            final int maxNamespaceLength = graphInfos.stream().mapToInt(gi -> gi.getNamespace().length()).max().getAsInt();
-            final int maxGraphLabelLength = graphInfos.stream().mapToInt(gi -> gi.getLabel() != null ? gi.getLabel().length() : 0).max().getAsInt();
-            final String GraphRowFormat = String.format(GRAPH_ROW_TEMPLATE, maxNamespaceLength > "Namespace".length() ? maxNamespaceLength : "Namespace".length(), maxGraphLabelLength, MAX_DESCRIPTION_LENGTH);
-            System.out.println(String.format(GraphRowFormat, "Namespace", "Label", "Description", "Container ID"));
-            for (GraphContainerInfo eachContainerInfo : graphContainerInfoList) {
-                for (GraphInfo eachGraphInfo : eachContainerInfo.getGraphInfos()) {
-                    final String description = cutString(eachGraphInfo.getDescription());
-                    System.out.println(String.format(GraphRowFormat, eachGraphInfo.getNamespace(), eachGraphInfo.getLabel() == null ? "" : eachGraphInfo.getLabel(), description, eachContainerInfo.getId()));
+            if (showAll) {
+                System.out.println();
+                System.out.println(graphCount + " registered Graph(s):");
+                final List<GraphInfo> graphInfos = graphContainerInfoList.stream().flatMap(ci -> ci.getGraphInfos().stream()).collect(Collectors.toList());
+                final int maxNamespaceLength = graphInfos.stream().mapToInt(gi -> gi.getNamespace().length()).max().getAsInt();
+                final int maxGraphLabelLength = graphInfos.stream().mapToInt(gi -> gi.getLabel() != null ? gi.getLabel().length() : 0).max().getAsInt();
+                final String GraphRowFormat = String.format(GRAPH_ROW_TEMPLATE, maxNamespaceLength > "Namespace".length() ? maxNamespaceLength : "Namespace".length(), maxGraphLabelLength, MAX_DESCRIPTION_LENGTH);
+                System.out.println(String.format(GraphRowFormat, "Namespace", "Label", "Description", "Container ID"));
+                for (GraphContainerInfo eachContainerInfo : graphContainerInfoList) {
+                    for (GraphInfo eachGraphInfo : eachContainerInfo.getGraphInfos()) {
+                        final String description = cutString(eachGraphInfo.getDescription());
+                        System.out.println(String.format(GraphRowFormat, eachGraphInfo.getNamespace(), eachGraphInfo.getLabel() == null ? "" : eachGraphInfo.getLabel(), description, eachContainerInfo.getId()));
+                    }
                 }
             }
         } else {
